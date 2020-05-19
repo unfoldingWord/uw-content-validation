@@ -6,7 +6,7 @@ This non-component function can also have a playground to test it out
 ```js
 import doBasicTextChecks from './basic-text-check.js';
 
-const text  = " Peace  on Earth,, good will to men! ";
+const text  = " Peace  on Earth,, good will to all) men/people! ";
 const result = doBasicTextChecks('Sample', text, 'that was supplied');
 <>
 {result.errorList.length} errors: {result.errorList}<br/>
