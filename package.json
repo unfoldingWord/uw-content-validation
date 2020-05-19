@@ -1,12 +1,12 @@
 {
-  "name": "resource-checker",
-  "description": "Components for Checking uW Resources.",
+  "name": "content-checker",
+  "description": "Components for Checking uW Content/Resources.",
   "version": "0.0.1",
   "private": false,
-  "homepage": "https://unfoldingword-dev.github.io/ResourceChecker/",
+  "homepage": "https://unfoldingword.github.io/content-checker/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/unfoldingWord-dev/ResourceChecker"
+    "url": "https://github.com/unfoldingWord/content-checker/"
   },
   "license": "MIT",
   "engines": {
