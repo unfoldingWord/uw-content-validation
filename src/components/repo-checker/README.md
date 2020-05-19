@@ -1,8 +1,70 @@
+## Repo Checker - Readme
+
+The code below requests some info and then checks a file.
+
+```js
+import { useContext } from 'react';
+import { Paper } from '@material-ui/core';
+import {
+  AuthenticationContextProvider,
+  RepositoryContextProvider,
+  RepositoryContext,
+  FileContextProvider,
+  FileContext,
+} from 'gitea-react-toolkit';
+//   import usfmJS from 'usfm-js';
+// import {
+//   Book
+// } from 'scripture-resources-rcl';
+
+/* Seems unnecessary
+  function Component() {
+  //const { state: auth, component: authComponent } = useContext(AuthenticationContext);
+  const { state: repo, component: repoComponent } = useContext(RepositoryContext);
+  const { state: file, component: fileComponent } = useContext(FileContext);
+
+  return //(!auth && authComponent) ||
+    (!repo && repoComponent) || fileComponent;
+};*/
+
+const [repository, setRepository] = React.useState();
+const [filepath, setFilepath] = React.useState();
+const [file, setFile] = React.useState();
+
+<AuthenticationContextProvider>
+  <RepositoryContextProvider
+    full_name="repo-checker/Rob's playground"
+    repository={repository}
+    onRepository={setRepository}
+    config={ {
+      server: "https://bg.door43.org",
+      tokenid: "PlaygroundTesting",
+    }}
+    full_name='unfoldingWord/en_ult'
+    // If we don't put the branch here, presumably the default branch is used ???
+    branch='master'
+  >
+    <FileContextProvider
+      // If we don't put the filepath here, the user can select from a list
+      // was 'en_tn_08-RUT.tsv' '08-RUT.usfm' '57-TIT.
+      filepath= '43-LUK.usfm'
+      onFilepath={setFilepath}
+      file={file}
+      onFile={setFile}
+    >
+
+      <RepoChecker />
+
+    </FileContextProvider>
+  </RepositoryContextProvider>
+</AuthenticationContextProvider>
+```
+
 ## Component Description
 
-This component takes a string as input, pre-processes the string, and 
-finally counts all the words. Review the source code for all the 
-pre-processing that is performed for each format. 
+This component takes a string as input, pre-processes the string, and
+finally counts all the words. Review the source code for all the
+pre-processing that is performed for each format.
 
 This component also supports an optional format property. The default
 is `markdown`. As of this writing, supported formats are:
@@ -14,7 +76,7 @@ is `markdown`. As of this writing, supported formats are:
 
 Here are selected pre-processing examples for Markdown:
 - All links, image refs, embedded HTML are removed. *This includes bare URLs; see Markdown example below*
-- In order to treat Scripture references (3:16), time (4:00), 
+- In order to treat Scripture references (3:16), time (4:00),
 and floating point numbers as one "word", the colon and periods are changed
 to text: "colon", "dash", and "decimal".
 - The numbers for ordered lists are removed.
@@ -22,7 +84,7 @@ to text: "colon", "dash", and "decimal".
 - Consecutive runs of spaces are reduced to a single space.
 - All letters are lower-cased.
 
-After this processing, the following reqular expression is used to 
+After this processing, the following reqular expression is used to
 match all consecutive runs of non-space characters and placed into an array.
 These are the words captured by this algorithm.
 
@@ -57,16 +119,16 @@ If both are provided, only the attribute value is taken for counting.
 The first example is a simple text string. This example uses the text in the children elements of the component (i.e., between the open and close tags).
 
 ```js
-<WordCountBasic format='string'>
+<RepoChecker format='string'>
 To be or not to be.
-</WordCountBasic>
+</RepoChecker>
 ```
 
 This example uses the attribute `text` to provide the text to word count.
 
 ```js
 let mytext = `that is the question`;
-<WordCountBasic format='string' text={mytext} />
+<RepoChecker format='string' text={mytext} />
 ```
 
 ### Markdown Example
@@ -75,7 +137,7 @@ Note that in order to preserve line endings, the text must be wrapped in a JavaS
 to make it an expression.
 
 ```js
-<WordCountBasic format='markdown'>
+<RepoChecker format='markdown'>
 {`
 # Heading 1
 
@@ -120,7 +182,7 @@ _this is a test_
 
 __this is a test__
 `}
-</WordCountBasic>
+</RepoChecker>
 ```
 
 ### USFM Example
@@ -128,7 +190,7 @@ __this is a test__
 The first two verses of the Book Jude are used for this example.
 
 ```js
-<WordCountBasic format='usfm'>
+<RepoChecker format='usfm'>
 \id JUD EN_ULT en_English_ltr Thu Jun 13 2019 11:54:01 GMT-0400 (EDT) tc
 \usfm 3.0
 \ide UTF-8
@@ -139,7 +201,7 @@ The first two verses of the Book Jude are used for this example.
 \mt Jude
 \s5
 \c 1
-\p 
+\p
 \v 1 \zaln-s | x-strong="G24550" x-lemma="Ἰούδας" x-morph="Gr,N,,,,,NMS," x-occurrence="1" x-occurrences="1" x-content="Ἰούδας"\*\w Jude|x-occurrence="1" x-occurrences="1"\w*\zaln-e\*,
 \zaln-s | x-strong="G14010" x-lemma="δοῦλος" x-morph="Gr,N,,,,,NMS," x-occurrence="1" x-occurrences="1" x-content="δοῦλος"\*\w a|x-occurrence="1" x-occurrences="1"\w*
 \w servant|x-occurrence="1" x-occurrences="1"\w*\zaln-e\*
@@ -164,7 +226,7 @@ The first two verses of the Book Jude are used for this example.
 \zaln-s | x-strong="G50830" x-lemma="τηρέω" x-morph="Gr,V,PEP,DMP," x-occurrence="1" x-occurrences="1" x-content="τετηρημένοις"\*\w kept|x-occurrence="1" x-occurrences="1"\w*\zaln-e\*
 \zaln-s | x-strong="G24240" x-lemma="Ἰησοῦς" x-morph="Gr,N,,,,,DMS," x-occurrence="2" x-occurrences="2" x-content="Ἰησοῦ"\*\w for|x-occurrence="1" x-occurrences="1"\w*
 \w Jesus|x-occurrence="2" x-occurrences="2"\w*\zaln-e\*
-\zaln-s | x-strong="G55470" x-lemma="χριστός" x-morph="Gr,N,,,,,DMS," x-occurrence="1" x-occurrences="1" x-content="Χριστῷ"\*\w Christ|x-occurrence="2" x-occurrences="2"\w*\zaln-e\*: 
+\zaln-s | x-strong="G55470" x-lemma="χριστός" x-morph="Gr,N,,,,,DMS," x-occurrence="1" x-occurrences="1" x-content="Χριστῷ"\*\w Christ|x-occurrence="2" x-occurrences="2"\w*\zaln-e\*:
 \v 2 \zaln-s | x-strong="G41290" x-lemma="πληθύνω" x-morph="Gr,V,OAP3,,S," x-occurrence="1" x-occurrences="1" x-content="πληθυνθείη"\*\w May|x-occurrence="1" x-occurrences="1"\w*\zaln-e\*
 \zaln-s | x-strong="G16560" x-lemma="ἔλεος" x-morph="Gr,N,,,,,NNS," x-occurrence="1" x-occurrences="1" x-content="ἔλεος"\*\w mercy|x-occurrence="1" x-occurrences="1"\w*\zaln-e\*
 \zaln-s | x-strong="G25320" x-lemma="καί" x-morph="Gr,CC,,,,,,,," x-occurrence="1" x-occurrences="2" x-content="καὶ"\*\w and|x-occurrence="1" x-occurrences="2"\w*\zaln-e\*
@@ -175,7 +237,7 @@ The first two verses of the Book Jude are used for this example.
 \w multiplied|x-occurrence="1" x-occurrences="1"\w*\zaln-e\*
 \zaln-s | x-strong="G47710" x-lemma="σύ" x-morph="Gr,RP,,,2D,P," x-occurrence="1" x-occurrences="1" x-content="ὑμῖν"\*\w to|x-occurrence="1" x-occurrences="1"\w*
 \w you|x-occurrence="1" x-occurrences="1"\w*\zaln-e\*.
-</WordCountBasic>
+</RepoChecker>
 ```
 
 ### UTN Example
@@ -183,7 +245,7 @@ The first two verses of the Book Jude are used for this example.
 The first two verses of the Titus Translation Notes are used for this example. Note that the Tab Separated Value text must be wrapped in backticks and then wrapped in curly braces.
 
 ```js
-<WordCountBasic format='utn'>
+<RepoChecker format='utn'>
 {`
 Book	Chapter	Verse	ID	SupportReference	OrigQuote	Occurrence	GLQuote	OccurrenceNote
 TIT	front	intro	m2jl			0		# Introduction to Titus<br><br>## Part 1: General Introduction<br><br>### Outline of the Book of Titus<br><br>1. Paul instructs Titus to appoint godly leaders (1:1-16)<br>1. Paul instructs Titus to train people to live godly lives (2:1-3:11)<br>1. Paul ends by sharing some of his plans and sending greetings to various believers (3:12-15)<br><br>### Who wrote the Book of Titus?<br><br>Paul wrote the Book of Titus. Paul was from the city of Tarsus. He had been known as Saul in his early life. Before becoming a Christian, Paul was a Pharisee. He persecuted Christians. After he became a Christian, he traveled several times throughout the Roman Empire telling people about Jesus.<br><br>### What is the Book of Titus about?<br><br>Paul wrote this letter to Titus, his fellow worker, who was leading the churches on the island of Crete. Paul instructed him about selecting church leaders. Paul also described how the believers should behave towards each other. He also encouraged them all to live in a way that pleases God.<br><br>### How should the title of this book be translated?<br><br>Translators may choose to call this book by its traditional title, ***Titus.*** Or they may choose a clearer title, such as ***Paul’s Letter to Titus*** or ***A Letter to Titus.*** (See: [[rc://en/ta/man/translate/translate-names]])<br><br>## Part 2: Important Religious and Cultural Concepts<br><br>### In what roles can people serve within the church?<br><br>There are some teachings in the Book of Titus about whether a woman or divorced man can serve in positions of leadership within the church. Scholars disagree about the meaning of these teachings. Further study on these issues may be necessary before translating this book.<br><br>## Part 3: Important Translation Issues<br><br>### Singular and plural **you**<br><br>In this book, the word **I** refers to Paul. Also, the word **you** is almost always singular and refers to Titus. The exception to this is 3:15. (See: [[rc://en/ta/man/translate/figs-exclusive]] and [[rc://en/ta/man/translate/figs-you]])<br><br>### What is the meaning of **God our Savior?**<br><br>This is a common phrase in this letter. Paul meant to make the readers think about how God forgave them in Christ for sinning against him, and by forgiving them he saved them from being punished when he judges all people. A similar phrase in this letter is **our great God and Savior Jesus Christ.**
@@ -197,5 +259,5 @@ TIT	1	2	r2gj		πρὸ χρόνων αἰωνίων	1	before all the ages of time
 
 
 `}
-</WordCountBasic>
+</RepoChecker>
 ```

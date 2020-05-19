@@ -46,7 +46,7 @@ const tableIcons = {
   ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 
-function WordCountBasic({
+function RepoChecker({
   format,
   text,
   classes,
@@ -58,7 +58,7 @@ function WordCountBasic({
   let results = text ? wordCount(text,format): wordCount(children,format);
   if ( ! results.isValidFormat ) {
     return (
-      <Typography className={classes.root} style={style} 
+      <Typography className={classes.root} style={style}
         align='center' variant='h6'>
       Invalid format: {format} <br/>
       Valid formats are: {results.validFormats} <br/>
@@ -72,7 +72,7 @@ function WordCountBasic({
     <Paper className={classes.paper}>
       <Typography className={classes.root} style={style}>
         Total number of words: <strong>{results.total}</strong> <br/>
-        Distinct number of words: <strong>{results.distinct}</strong> <br/> 
+        Distinct number of words: <strong>{results.distinct}</strong> <br/>
         Number of Markdown Level 1 Headings: <strong>{results.l1count}</strong>
       </Typography>
       <MaterialTable
@@ -86,7 +86,7 @@ function WordCountBasic({
   );
 };
 
-WordCountBasic.propTypes = {
+RepoChecker.propTypes = {
   /** @ignore */
   classes: PropTypes.object.isRequired,
   /** @ignore */
@@ -100,12 +100,12 @@ const styles = theme => ({
   },
 });
 
-export default withStyles(styles)(WordCountBasic);
+export default withStyles(styles)(RepoChecker);
 
 
 /* code graveyard
 
-      <Typography className={classes.root} style={style} 
+      <Typography className={classes.root} style={style}
         align='center' variant='h6'>
       List of all the words
       </Typography>
@@ -127,12 +127,12 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
 
-      <Typography className={classes.root} style={style} 
+      <Typography className={classes.root} style={style}
         align='center' variant='h6'>
       Word Frequency Table
       </Typography>
 
-      <Table className={classes.table} 
+      <Table className={classes.table}
           size="small" aria-label="a dense table">
             <TableHead>
               <TableRow>

@@ -1,12 +1,12 @@
 {
-  "name": "uw-word-count",
-  "description": "Components for Counting Words.",
-  "version": "0.1.2",
+  "name": "resource-checker",
+  "description": "Components for Checking uW Resources.",
+  "version": "0.0.1",
   "private": false,
-  "homepage": "https://unfoldingword.github.io/uw-word-count/",
+  "homepage": "https://unfoldingword-dev.github.io/ResourceChecker/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/unfoldingWord/uw-word-count"
+    "url": "https://github.com/unfoldingWord-dev/ResourceChecker"
   },
   "license": "MIT",
   "engines": {
@@ -46,9 +46,12 @@
     "react-styleguidist": "^9.1.14",
     "serialize-javascript": "^2.1.2",
     "url-loader": "^2.1.0",
-    "usfm-js": "^2.0.0"
+    "usfm-js": "^2.0.2",
+    "gitea-react-toolkit": "^1.0.0-beta.7",
+    "scripture-resources-rcl": "^0.14.1"
   },
   "devDependencies": {
+    "markdown-translatable": "^0.11.0",
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
     "@babel/plugin-proposal-class-properties": "^7.5.5",

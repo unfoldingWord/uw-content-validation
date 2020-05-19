@@ -1,1 +1,1 @@
-export {default as WordCountBasic} from './word-count-basic';
+export {default as RepoChecker} from './repo-checker';

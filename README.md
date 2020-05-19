@@ -1,8 +1,8 @@
 [![Custom badge](https://img.shields.io/endpoint?color=%2374b9ff&url=https%3A%2F%2Fraw.githubusercontent.com%2unfoldingWord%2Fuw-word-count%2Fmaster%2Fcoverage%2Fshields.json)]()
 
-# Word Count React Component Library
+# uW Repo Checker React Component Library
 
-GH Pages: https://unfoldingword.github.io/uw-word-count/
+GH Pages: https://unfoldingword-dev.github.io/ResourceChecker/
 
 ## The Stack
 
@@ -67,6 +67,6 @@ Must use `hostname -I` to get the host address. **Neither `localhost` nor `127.0
 
 ```
 $ hostname -I
-100.115.92.202 
+100.115.92.202
 $
 ```
