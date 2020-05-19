@@ -110,7 +110,7 @@ The input to the component may be provide in two ways:
 - As the value for the attribute `text`
 - As the `children` text value between the open and close of the component tag
 
-If both are provided, only the attribute value is taken for counting.
+If both are provided, only the attribute value is taken for checking.
 
 ## Examples
 
@@ -124,7 +124,7 @@ To be or not to be.
 </RepoChecker>
 ```
 
-This example uses the attribute `text` to provide the text to word count.
+This example uses the attribute `text` to provide the text to content check.
 
 ```js
 let mytext = `that is the question`;

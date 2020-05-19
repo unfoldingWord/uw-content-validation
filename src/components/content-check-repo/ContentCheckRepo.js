@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import {fetchWordCountRepo} from './helpers';
+import {fetchContentCheckRepo} from './helpers';
 import * as util from '../../core/utilities';
 
 import AddBox from '@material-ui/icons/AddBox';
@@ -45,19 +45,19 @@ const tableIcons = {
 };
 
 
-function WordCountRepo({
+function ContentCheckRepo({
   url,
   classes,
   style,
-}) 
+})
 {
 
-  const [res, setVal] = useState("Waiting-WordCountRepo");
+  const [res, setVal] = useState("Waiting-ContentCheckRepo");
   useEffect( () => {
     const fetchData = async () => {
       let result;
       try {
-        result = await fetchWordCountRepo({ url: url });
+        result = await fetchContentCheckRepo({ url: url });
       } catch(error) {
         setVal(
           <div>
@@ -75,7 +75,7 @@ function WordCountRepo({
         <Paper className={classes.paper}>
           <Typography className={classes.root} style={style}>
             Total number of words: <strong>{result.grandTotals.total}</strong> <br/>
-            Distinct number of words: <strong>{result.grandTotals.distinct}</strong> <br/> 
+            Distinct number of words: <strong>{result.grandTotals.distinct}</strong> <br/>
             Number of Markdown Level 1 Headings: <strong>{result.grandTotals.l1count}</strong>
           </Typography>
           <MaterialTable
@@ -87,10 +87,10 @@ function WordCountRepo({
           />
         </Paper>
       );
-    
+
     };
     fetchData();
-  }, []); 
+  }, []);
   // the parameter [] allows the effect to skip if value unchanged
   // an empty [] will only update on mount of component
 
@@ -102,7 +102,7 @@ function WordCountRepo({
 };
 
 
-WordCountRepo.propTypes = {
+ContentCheckRepo.propTypes = {
   /** @ignore */
   classes: PropTypes.object,
   /** The URL to a repo, folder, or file for word gounts. */
@@ -116,7 +116,7 @@ const styles = theme => ({
   },
 });
 
-export default withStyles(styles)(WordCountRepo);
+export default withStyles(styles)(ContentCheckRepo);
 
 /*
       setVal(
@@ -125,9 +125,9 @@ export default withStyles(styles)(WordCountRepo);
             <pre>{mkey}</pre>
           ))}
         </div>
-      );  
-  
-  
+      );
+
+
   let mt = util.wf_to_mt(results.wordFrequency);
   let aw = util.aw_to_mt(results.allWords);
 
@@ -135,7 +135,7 @@ export default withStyles(styles)(WordCountRepo);
     <Paper className={classes.paper}>
       <Typography className={classes.root} style={style}>
         Total number of words: {results.total} <br/>
-        Distinct number of words: {results.distinct} <br/> 
+        Distinct number of words: {results.distinct} <br/>
         Number of Markdown Level 1 Headings: {results.l1count}
       </Typography>
       <MaterialTable

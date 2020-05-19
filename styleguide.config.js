@@ -25,7 +25,7 @@ let sections = [
 	// 	name: 'Resource Checker',
 	// 	components: () => {
 	// 		const componentNames = [
-	// 			'word-count-repo',
+	// 			'content-check-repo',
 	// 		];
 	// 		return componentNames.map(componentName => {
 	// 			const filename = upperFirst(camelCase(componentName));

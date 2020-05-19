@@ -23,7 +23,7 @@ import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import MaterialTable from 'material-table';
-import { wordCount } from '../../core';
+import { doBasicTextChecks } from '../../core';
 import * as util from '../../core/utilities.js';
 
 const tableIcons = {
@@ -55,7 +55,7 @@ function RepoChecker({
 }) {
 
   console.log("format:",format); // format='xxx' format='string'
-  let results = text ? wordCount(text,format): wordCount(children,format);
+  let results = text ? doBasicTextChecks('Text', text,format): doBasicTextChecks('Children',children,format);
   if ( ! results.isValidFormat ) {
     return (
       <Typography className={classes.root} style={style}
@@ -71,9 +71,8 @@ function RepoChecker({
   return (
     <Paper className={classes.paper}>
       <Typography className={classes.root} style={style}>
-        Total number of words: <strong>{results.total}</strong> <br/>
-        Distinct number of words: <strong>{results.distinct}</strong> <br/>
-        Number of Markdown Level 1 Headings: <strong>{results.l1count}</strong>
+        {results.errorList.length} errors: <strong>{results.errorList}</strong> <br/>
+        {results.warningList.length} warnings: <strong>{results.warningList}</strong>
       </Typography>
       <MaterialTable
         icons={tableIcons}

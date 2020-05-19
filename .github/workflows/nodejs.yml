@@ -6,7 +6,7 @@ env:
   NODE_ENV: test
 jobs:
   test:
-    runs-on: macos-latest
+    runs-on: linux-latest
     strategy:
       matrix:
         node-version: [10.15.1]
