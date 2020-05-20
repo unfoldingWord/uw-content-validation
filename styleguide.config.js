@@ -21,18 +21,42 @@ let sections = [
 			});
 		}
 	},
-	// {
-	// 	name: 'Resource Checker',
-	// 	components: () => {
-	// 		const componentNames = [
-	// 			'content-check-repo',
-	// 		];
-	// 		return componentNames.map(componentName => {
-	// 			const filename = upperFirst(camelCase(componentName));
-	// 			return path.resolve(__dirname, `src/components/${componentName}`, `${filename}.js`)
-	// 		});
-	// 	}
-	// },
+	{
+		name: 'Repo Checker',
+		components: () => {
+			const componentNames = [
+				'content-check-repo',
+			];
+			return componentNames.map(componentName => {
+				const filename = upperFirst(camelCase(componentName));
+				return path.resolve(__dirname, `src/components/${componentName}`, `${filename}.js`)
+			});
+		}
+	},
+	{
+		name: 'File Checker',
+		components: () => {
+			const componentNames = [
+				'content-check-repo',
+			];
+			return componentNames.map(componentName => {
+				const filename = upperFirst(camelCase(componentName));
+				return path.resolve(__dirname, `src/components/${componentName}`, `${filename}.js`)
+			});
+		}
+	},
+	{
+		name: 'Table Line (TSV) Checker',
+		components: () => {
+			const componentNames = [
+				'content-check-repo',
+			];
+			return componentNames.map(componentName => {
+				const filename = upperFirst(camelCase(componentName));
+				return path.resolve(__dirname, `src/components/${componentName}`, `${filename}.js`)
+			});
+		}
+	},
 	{
 		name: 'Core',
 		content: 'src/core/README.md',

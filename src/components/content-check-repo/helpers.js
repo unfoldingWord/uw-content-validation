@@ -217,7 +217,7 @@ export async function fetchContentCheckRepo({ url })
       "type": "blob",
       "size": 498,
       "sha": "a8d3267bda97f7933e8ca2fe416d06f53ed05d77",
-      "url": "https://git.door43.org/api/v1/repos/cecil.new/tD-DataRestructure/git/blobs/a8d3267bda97f7933e8ca2fe416d06f53ed05d77"
+      "url": "https://git.door43.org/api/v1/repos/tx-manager-test-data/tD-DataRestructure/git/blobs/a8d3267bda97f7933e8ca2fe416d06f53ed05d77"
     }
 
     These values are iterated over and all the blobs are fetched, stored and
