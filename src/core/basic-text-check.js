@@ -91,7 +91,8 @@ function doBasicTextChecks(fieldName, fieldText, optionalFieldLocation) {
         addWarning("Unexpected space after ellipse character", " (at character " + (ix + 1) + ") in '" + extract.replace(/ /g, '␣') + "'" + ourAtString);
     }
     // Check for doubled punctuation chars (international)
-    for (let punctChar of '.’\'[](){}<>⟨⟩:,،、‒–—―…!.‹›«»‐-?‘’“”\'";/⁄·&*@•^†‡°”¡¿※#№÷×ºª%‰+−=‱¶′″‴§~_|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥') {
+    // Doesn't check for doubled forward slash coz that might occur in a link, e.g., https://etc…
+    for (let punctChar of '.’\'[](){}<>⟨⟩:,،、‒–—―…!.‹›«»‐-?‘’“”\'";⁄·&*@•^†‡°”¡¿※#№÷×ºª%‰+−=‱¶′″‴§~_|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥') {
         ix = fieldText.indexOf(punctChar + punctChar);
         if (ix >= 0) {
             let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')

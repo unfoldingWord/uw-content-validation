@@ -53,14 +53,14 @@ function checkTN_TSVDataRow(BBB, line, rowLocation) {
 
 
     if (line == EXPECTED_TN_HEADING_LINE) // Assume it must be ok
-    return result; // We can't detect if it's in the wrong place
+        return result; // We can't detect if it's in the wrong place
 
     let bbb = BBB.toLowerCase();
-    console.log( "bbb", bbb);
+    console.log("bbb", bbb);
     let numChaptersThisBook = 10;
     // TODO: Why can't we make this work???
     // let numChaptersThisBook = books.chaptersInBook(bbb).length;
-    console.log( "numChaptersThisBook", numChaptersThisBook);
+    console.log("numChaptersThisBook", numChaptersThisBook);
 
     let fields = line.split('\t');
     if (fields.length == NUM_EXPECTED_TSV_FIELDS) {
@@ -92,7 +92,7 @@ function checkTN_TSVDataRow(BBB, line, rowLocation) {
                     addError("Invalid large '" + C + "' chapter number", atString);
             }
             else
-                addError("Bad chapter number", " '"+C+"' with" + CV_withString);
+                addError("Bad chapter number", " '" + C + "' with" + CV_withString);
         }
         else
             addError("Missing chapter number", ` ?:${V}${withString}`);
@@ -107,17 +107,25 @@ function checkTN_TSVDataRow(BBB, line, rowLocation) {
                     addError("Invalid large '" + V + "' verse number", " for chapter " + C + atString);
             }
             else
-                addError("Bad verse number", " '"+V+"'"+atString);
+                addError("Bad verse number", " '" + V + "'" + atString);
 
         }
         else
             addError("Missing verse number", ` after ${C}:? ${withString}`);
 
         if (!fieldID)
-            addError("Missing ID", atString);
+            addError("Missing ID field", atString);
         else {
-            if (fieldID.length!=4)
-                addError("ID should be exactly 4 characters", " (not "+fieldID.length+")"+atString)
+            if (fieldID.length != 4)
+                addWarning("ID should be exactly 4 characters", " (not " + fieldID.length + ")" + atString)
+            else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(fieldID[0]) < 0)
+                addWarning("ID should start with a lowercase letter or digit", " (not '" + fieldID[0] + "')" + atString)
+            else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(fieldID[3]) < 0)
+                addWarning("ID should end with a lowercase letter or digit", " (not '" + fieldID[3] + "')" + atString)
+            else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(fieldID[1]) < 0)
+                addWarning("ID characters should only be lowercase letters, digits, or hypen", " (not '" + fieldID[1] + "')" + atString)
+            else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(fieldID[2]) < 0)
+                addWarning("ID characters should only be lowercase letters, digits, or hypen", " (not '" + fieldID[2] + "')" + atString)
         }
 
         if (support_reference) { // need to check UTN against UTA
@@ -147,7 +155,7 @@ function checkTN_TSVDataRow(BBB, line, rowLocation) {
         }
 
     } else
-        addError("Found " + fields.length + " field" + (fields.length==1?'':'s')+ " instead of " + NUM_EXPECTED_TSV_FIELDS, ' in '+BBB+ ' line '+rowLocation);
+        addError("Found " + fields.length + " field" + (fields.length == 1 ? '' : 's') + " instead of " + NUM_EXPECTED_TSV_FIELDS, ' in ' + BBB + ' line ' + rowLocation);
 
     return result;
 }

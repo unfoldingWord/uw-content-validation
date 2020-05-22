@@ -34,6 +34,30 @@ let sections = [
 		}
 	},
 	{
+		name: 'Scripture Burrito Checker',
+		components: () => {
+			const componentNames = [
+				'content-check-repo',
+			];
+			return componentNames.map(componentName => {
+				const filename = upperFirst(camelCase(componentName));
+				return path.resolve(__dirname, `src/components/${componentName}`, `${filename}.js`)
+			});
+		}
+	},
+	{
+		name: 'Resource Container Checker',
+		components: () => {
+			const componentNames = [
+				'content-check-repo',
+			];
+			return componentNames.map(componentName => {
+				const filename = upperFirst(camelCase(componentName));
+				return path.resolve(__dirname, `src/components/${componentName}`, `${filename}.js`)
+			});
+		}
+	},
+	{
 		name: 'File Checker',
 		components: () => {
 			const componentNames = [
