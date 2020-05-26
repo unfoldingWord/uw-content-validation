@@ -78,14 +78,14 @@ function isWhitespace(myString) {
     return false;
 }
 
-function doOurBasicTextChecks(fieldName, fieldText, optionalFieldLocation) {
+function doOurBasicTextChecks(fieldName, fieldText, linkTypes, optionalFieldLocation) {
     // Does basic checks for small errors like leading/trailing spaces, etc.
 
     // We assume that checking for compulsory fields is done elsewhere
 
     // Updates the global error and warning lists
 
-    resultObject = doBasicTextChecks(fieldName, fieldText, optionalFieldLocation)
+    resultObject = doBasicTextChecks(fieldName, fieldText, linkTypes, optionalFieldLocation)
     for (let errorEntry in resultObject.errorList)
         addError(errorEntry[0], errorEntry[1]);
     for (let warningEntry in resultObject.warningList)

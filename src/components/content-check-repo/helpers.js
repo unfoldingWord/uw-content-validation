@@ -42,7 +42,7 @@ async function getCheckResults(treeMap) {
         } else if ( ext === "usfm" ) {
             format = "usfm";
         }
-        let results = doBasicTextChecks('File', content,format);
+        let results = doBasicTextChecks('File', content, -1, format);
         for (let i=0; i < results.allWords.length; i++) {
             allWords.push(results.allWords[i])
         }
@@ -62,7 +62,7 @@ async function getCheckResults(treeMap) {
         }
         //console.log(k," Totals:",results.total)
     }
-    let results = doBasicTextChecks('String',allWords.join('\n'),"string");
+    let results = doBasicTextChecks('String', allWords.join('\n'), -1, "string");
     results.l1count = allL1Counts;
     return results;
 }

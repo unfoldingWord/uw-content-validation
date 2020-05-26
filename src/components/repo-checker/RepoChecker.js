@@ -55,7 +55,7 @@ function RepoChecker({
 }) {
 
   console.log("format:",format); // format='xxx' format='string'
-  let results = text ? doBasicTextChecks('Text', text,format): doBasicTextChecks('Children',children,format);
+  let results = text ? doBasicTextChecks('Text', text, -1, format): doBasicTextChecks('Children', children, -1, format);
   if ( ! results.isValidFormat ) {
     return (
       <Typography className={classes.root} style={style}

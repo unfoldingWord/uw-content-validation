@@ -1,8 +1,13 @@
 import { isWhitespace, countOccurrences } from './text-handling-functions'
 
 
-function doBasicTextChecks(fieldName, fieldText, optionalFieldLocation) {
+export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation) {
     // Does basic checks for small errors like leading/trailing spaces, etc.
+
+    // fieldName (str): Used for identification
+    // fieldText (str): The field being checked
+    // allowedLinks (bool): doesn't check links -- only checks lack of links
+    // optionalFieldLocation (str): Used to inform where this field is located
 
     // We assume that checking for compulsory fields is done elsewhere
 
@@ -12,21 +17,19 @@ function doBasicTextChecks(fieldName, fieldText, optionalFieldLocation) {
     //      2/ the detailed location string
     //  (Returned in this way for more intelligent processing at a higher level)
 
-    let result = {};
-    result.errorList = [];
-    result.warningList = [];
+    let result = {errorList:[], warningList:[]};
 
     function addError(errorPart, locationPart) {
-        console.log("ERROR: " + errorPart + locationPart);
+        // console.log("ERROR: " + errorPart + locationPart);
         result.errorList.push([errorPart, locationPart]);
     }
     function addWarning(warningPart, locationPart) {
-        console.log(`Warning: ${warningPart}${locationPart}`);
-            result.warningList.push([warningPart, locationPart]);
+        // console.log(`Warning: ${warningPart}${locationPart}`);
+        result.warningList.push([warningPart, locationPart]);
     }
 
     if (!fieldText) // Nothing to check
-    return result;
+        return result;
 
     // Create our more detailed location string by prepending the fieldName
     let ourAtString = " in '" + fieldName + "'";
@@ -92,7 +95,9 @@ function doBasicTextChecks(fieldName, fieldText, optionalFieldLocation) {
     }
     // Check for doubled punctuation chars (international)
     // Doesn't check for doubled forward slash coz that might occur in a link, e.g., https://etc…
-    for (let punctChar of '.’\'[](){}<>⟨⟩:,،、‒–—―…!.‹›«»‐-?‘’“”\'";⁄·&*@•^†‡°”¡¿※#№÷×ºª%‰+−=‱¶′″‴§~_|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥') {
+    let checkList = '.’\'(){}<>⟨⟩:,،、‒–—―…!.‹›«»‐-?‘’“”\'";⁄·&*@•^†‡°”¡¿※#№÷×ºª%‰+−=‱¶′″‴§~_|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥';
+    if (! allowedLinks) checkList += '[]' // Double square brackets can be part of markdown links
+    for (let punctChar of checkList) {
         ix = fieldText.indexOf(punctChar + punctChar);
         if (ix >= 0) {
             let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
@@ -125,6 +130,21 @@ function doBasicTextChecks(fieldName, fieldText, optionalFieldLocation) {
             addWarning("Mismatched " + punctSet + " characters (left=" + lCount + ", right=" + rCount + ")", ourAtString);
     }
 
+    if (!allowedLinks) {
+        // Simple check that there aren't any
+        ix = fieldText.indexOf('://');
+        if (ix == -1) ix = fieldText.indexOf('http');
+        if (ix == -1) ix = fieldText.indexOf('ftp');
+        // The following might have to be removed if text fields can contain email addresses
+        if (ix == -1) ix = fieldText.indexOf('.org');
+        if (ix == -1) ix = fieldText.indexOf('.com');
+        if (ix == -1) ix = fieldText.indexOf('.info');
+        if (ix == -1) ix = fieldText.indexOf('.bible');
+        if (ix >= 0) {
+            let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
+            addWarning("Unexpected link", " (at character " + (ix + 1) + ") in '" + extract.replace(/ /g, '␣') + "'" + ourAtString);
+        }
+    }
     return result;
 }
 // end of doBasicTextChecks function

@@ -78,14 +78,14 @@ function isWhitespace(myString) {
     return false;
 }
 
-function doOurBasicTextChecks(fieldName, fieldText, optionalFieldLocation) {
+function doOurBasicTextChecks(fieldName, fieldText, linkTypes, optionalFieldLocation) {
     // Does basic checks for small errors like leading/trailing spaces, etc.
 
     // We assume that checking for compulsory fields is done elsewhere
 
     // Updates the global error and warning lists
 
-    resultObject = doBasicTextChecks(fieldName, fieldText, optionalFieldLocation)
+    resultObject = doBasicTextChecks(fieldName, fieldText, linkTypes, optionalFieldLocation)
     for (let errorEntry in resultObject.errorList)
         addError(errorEntry[0], errorEntry[1]);
     for (let warningEntry in resultObject.warningList)
@@ -308,7 +308,7 @@ function checkTN_TSVDataRow(BBB, line, rowLocation) {
 
 
         if (orig_quote) { // need to check UTN against UHB and UGNT
-            doOurBasicTextChecks('OrigQuote', orig_quote, atString);
+            doOurBasicTextChecks('OrigQuote', orig_quote, 0, atString);
         }
 
         if (occurrence) { // This should usually be a digit
@@ -321,11 +321,11 @@ function checkTN_TSVDataRow(BBB, line, rowLocation) {
         }
 
         if (GL_quote) { // need to check UTN against ULT
-            doOurBasicTextChecks('GLQuote', GL_quote, atString);
+            doOurBasicTextChecks('GLQuote', GL_quote, 0, atString);
         }
 
         if (occurrenceNote) {
-            doOurBasicTextChecks('OccurrenceNote', occurrenceNote, atString);
+            doOurBasicTextChecks('OccurrenceNote', occurrenceNote, 1, atString);
         }
 
     } else

@@ -82,8 +82,25 @@ let sections = [
 		}
 	},
 	{
-		name: 'Core',
+		name: 'Core functions',
 		content: 'src/core/README.md',
+		sections: [
+			{
+				name: 'Basic text check',
+				content: 'src/core/basic-text-check.md'
+				// description: ''
+			},
+			{
+				name: 'Basic link check',
+				content: 'src/core/basic-link-check.md'
+				// description: ''
+			},
+			{
+				name: 'TSV table line check',
+				content: 'src/core/tsv-table-line-check.md'
+				// description: ''
+			}
+		]
 	}
 ];
 

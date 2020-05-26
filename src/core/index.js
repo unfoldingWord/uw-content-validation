@@ -3,4 +3,5 @@ export * from './basic-text-check.js';
 export * from './table-line-check.js';
 export * from './table-file-check.js';
 export * from './repo-check.js';
+export * from './books/';
 // export * from './utilities.js';

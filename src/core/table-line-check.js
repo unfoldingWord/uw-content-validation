@@ -21,29 +21,27 @@ function checkTN_TSVDataRow(BBB, line, rowLocation) {
 
   Returns errorList, warningList
  */
-    console.log("checkTN_TSVDataRow(" + BBB + ", " + line + ", " + rowLocation + ")…");
+    // console.log("checkTN_TSVDataRow(" + BBB + ", " + line + ", " + rowLocation + ")…");
 
-    let result = {};
-    result.errorList = [];
-    result.warningList = [];
+    let result = {errorList:[], warningList:[]};
 
     function addError(errorPart, locationPart) {
-        console.log("ERROR: " + errorPart + locationPart);
+        // console.log("ERROR: " + errorPart + locationPart);
         result.errorList.push([errorPart, locationPart]);
     }
     function addWarning(warningPart, locationPart) {
-        console.log(`Warning: ${warningPart}${locationPart}`);
+        // console.log(`Warning: ${warningPart}${locationPart}`);
         result.warningList.push([warningPart, locationPart]);
     }
 
-    function doOurBasicTextChecks(fieldName, fieldText, optionalFieldLocation) {
+    function doOurBasicTextChecks(fieldName, fieldText, linkTypes, optionalFieldLocation) {
         // Does basic checks for small errors like leading/trailing spaces, etc.
 
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global error and warning lists
 
-        let resultObject = doBasicTextChecks(fieldName, fieldText, optionalFieldLocation)
+        let resultObject = doBasicTextChecks(fieldName, fieldText, linkTypes, optionalFieldLocation)
         for (let errorEntry of resultObject.errorList)
             addError(errorEntry[0], errorEntry[1]);
         for (let warningEntry of resultObject.warningList)
@@ -55,12 +53,14 @@ function checkTN_TSVDataRow(BBB, line, rowLocation) {
     if (line == EXPECTED_TN_HEADING_LINE) // Assume it must be ok
         return result; // We can't detect if it's in the wrong place
 
-    let bbb = BBB.toLowerCase();
-    console.log("bbb", bbb);
-    let numChaptersThisBook = 10;
-    // TODO: Why can't we make this work???
-    // let numChaptersThisBook = books.chaptersInBook(bbb).length;
-    console.log("numChaptersThisBook", numChaptersThisBook);
+    const bbb = BBB.toLowerCase();
+    let numChaptersThisBook;
+    try {
+        numChaptersThisBook = books.chaptersInBook(bbb).length;
+    } catch (e) {
+        addError("Invalid book code passed to checkTN_TSVDataRow", " '" + BBB + "' in first parameter: " + e);
+    }
+    const haveGoodBookCode = numChaptersThisBook !== undefined;
 
     let fields = line.split('\t');
     if (fields.length == NUM_EXPECTED_TSV_FIELDS) {
@@ -78,18 +78,30 @@ function checkTN_TSVDataRow(BBB, line, rowLocation) {
         else
             addError("Missing book code", " at" + CV_withString);
 
-        let numVersesThisChapter;
+        let numVersesThisChapter, haveGoodChapterNumber;
         if (C) {
             if (C == 'front') { }
             else if (/^\d+$/.test(C)) {
                 let intC = Number(C);
-                numVersesThisChapter = 41;
-                // TODO: Why can't we make this work???
-                // numVersesThisChapter = books.versesInChapter(bbb, intC);
-                if (intC == 0)
+                if (intC == 0){
                     addError("Invalid zero '" + C + "' chapter number", atString);
-                if (intC > numChaptersThisBook)
+                    haveGoodChapterNumber = false;
+                }
+                // TODO: Does this next section need rewriting (see verse check below)???
+                else if (intC > numChaptersThisBook){
                     addError("Invalid large '" + C + "' chapter number", atString);
+                    haveGoodChapterNumber = false;
+                }
+                try {
+                    numVersesThisChapter = books.versesInChapter(bbb, intC);
+                    haveGoodChapterNumber = true;
+                } catch (e) {
+                    if (!haveGoodBookCode)
+                    // addError("Invalid chapter number", atString);
+                    // else
+                    addWarning("Unable to check chapter number", " '" + C + "'"+atString);
+                    haveGoodChapterNumber = false;
+                }
             }
             else
                 addError("Bad chapter number", " '" + C + "' with" + CV_withString);
@@ -103,8 +115,13 @@ function checkTN_TSVDataRow(BBB, line, rowLocation) {
                 let intV = Number(V);
                 if (intV == 0)
                     addError("Invalid zero '" + V + "' verse number", atString);
-                if (intV > numVersesThisChapter)
-                    addError("Invalid large '" + V + "' verse number", " for chapter " + C + atString);
+                else {
+                    if (haveGoodChapterNumber) {
+                        if (intV > numVersesThisChapter)
+                            addError("Invalid large '" + V + "' verse number", " for chapter " + C + atString);
+                    } else
+                        addWarning("Unable to check verse number", " '" + V + "'"+atString);
+                }
             }
             else
                 addError("Bad verse number", " '" + V + "'" + atString);
