@@ -1,5 +1,41 @@
 import { doBasicTextChecks } from './basic-text-check'
 
+async function startLiveLinksCheck(linksList, existingErrorList, existingWarningList, callbackFunction) {
+    // This (slow) function checks the targets of the given links
+    //  to ensure that they actually exist
+    // NOTE: no caching yet
+    console.log("startLiveLinksCheck for " + linksList.length + " links…")
+    console.log("startLiveLinksCheck was given " + existingErrorList.length + " errors and " + existingWarningList.length + " warnings.")
+
+    let result = { errorList: existingErrorList, warningList: existingWarningList };
+
+    function addError(errorPart, locationPart) {
+        console.log("LINK ERROR: " + errorPart + locationPart);
+        result.errorList.push([errorPart, locationPart]);
+    }
+    function addWarning(warningPart, locationPart) {
+        console.log(`Link Warning: ${warningPart}${locationPart}`);
+        result.warningList.push([warningPart, locationPart]);
+    }
+
+    // Now try fetching each link in turn
+    for (let linkEntry of linksList) {
+        console.log("startLiveLinksCheck linkEntry", JSON.stringify(linkEntry));
+        const fetchLink = linkEntry[1]? linkEntry[1]: linkEntry[2]; // Why ??? !!!
+        console.log("startLiveLinksCheck attempting to fetch", fetchLink, '…');
+        try {
+            let response = await fetch(fetchLink);
+            const reponseText = response.text();
+            console.log("startLiveLinksCheck got response: ", reponseText.length, reponseText);
+        } catch (e) {
+            console.log("startLiveLinksCheck had an error fetching '" + fetchLink + "': " + e);
+            addError("Error fetching link", " " + fetchLink);
+        }
+    }
+
+    console.log("startLiveLinksCheck calling callback function…");
+    callbackFunction(result);
+}
 
 function doBasicLinkChecks(fieldName, fieldText, linkOptions, optionalFieldLocation) {
     // Does basic checks for fields that are links or that contain links
@@ -45,7 +81,7 @@ function doBasicLinkChecks(fieldName, fieldText, linkOptions, optionalFieldLocat
         result = doBasicTextChecks(fieldName, fieldText, true, optionalFieldLocation);
 
     // Parameter nonsense check
-    if (linkOptions.expectedCount > 0 && linkOptions.expectedCount > 0)
+    if (linkOptions.allowedCount > 0 && linkOptions.expectedCount > linkOptions.allowedCount)
         addError("Bad options for doBasicLinkChecks: expectedCount=" + linkOptions.expectedCount + " but allowedCount=" + linkOptions.allowedCount, "");
 
     // Check for embedded links
@@ -54,9 +90,12 @@ function doBasicLinkChecks(fieldName, fieldText, linkOptions, optionalFieldLocat
     if (linkOptions.linkTypesAllowed) {
         linkRegexParts = [];
         for (let linkType of linkOptions.linkTypesAllowed) {
-            console.log("linkType", linkType);
-            if (linkType == 'md') {
-                linkRegexParts.push('\\[\\[(https*://[^ ]+)\\]\\]');
+            console.log("doBasicLinkChecks linkType", linkType);
+            if (linkType == 'RC')
+                linkRegexParts.push('(rc://[^ ]+)');
+            else if (linkType == 'md') {
+                linkRegexParts.push('\\[\\[(https*://[^ ]+)\\]\\]'); // [[link]]
+                linkRegexParts.push(']\\((https*://[^ ]+)\\)'); // [this](link)
             }
             else if (linkType == 'naked')
                 linkRegexParts.push('(https*://[^ ]+)');
@@ -66,16 +105,24 @@ function doBasicLinkChecks(fieldName, fieldText, linkOptions, optionalFieldLocat
     } else { // No link types specified
         linkRegexParts = [];
     }
-    console.log("linkRegexParts", JSON.stringify(linkRegexParts));
+    console.log("doBasicLinkChecks linkRegexParts", JSON.stringify(linkRegexParts));
     const linkRegex = new RegExp(linkRegexParts.join('|'), 'g');
     // console.log("linkRegex", JSON.stringify(linkRegex));
     // const regexResults = fieldText.matchAll(linkRegex);
     // console.log("regexResults", regexResults.length, JSON.stringify(regexResults));
     const regexResultsArray = [...fieldText.matchAll(linkRegex)];
-    console.log("regexResultsArray", regexResultsArray.length, JSON.stringify(regexResultsArray));
+    console.log("doBasicLinkChecks regexResultsArray", regexResultsArray.length, JSON.stringify(regexResultsArray));
 
     if (regexResultsArray.length < linkOptions.expectedCount)
         addError("Not enough links (expected " + linkOptions.expectedCount + " link" + (linkOptions.expectedCount == 1 ? "" : "s") + ")", " (only found " + regexResultsArray.length + ")" + ourAtString);
+
+    if (linkOptions.checkTargets && linkOptions.callbackFunction && regexResultsArray) {
+        startLiveLinksCheck(regexResultsArray, result.errorList.slice(0), result.warningList.slice(0), linkOptions.callbackFunction);
+        addWarning(regexResultsArray.length + " link target" + (regexResultsArray.length == 1 ? ' is' : 's are') + " still being checked…", "")
+        console.log("doBasicLinkChecks now returning initial result…");
+    }
+
+    console.log("doBasicLinkChecks returning with " + result.errorList.length + " errors and " + result.warningList.length + " warnings.");
     return result;
 }
 // end of doBasicLinkChecks function

@@ -61,73 +61,75 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     let ix = fieldText.indexOf('  ');
     if (ix >= 0) {
         let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
-        addWarning("Unexpected double spaces", " (at character " + (ix + 1) + ") in '" + extract.replace(/ /g, '␣') + "'" + ourAtString);
+        addWarning("Unexpected double spaces", " (at character " + (ix + 1).toLocaleString() + ") in '" + extract.replace(/ /g, '␣') + "'" + ourAtString);
     }
     ix = fieldText.indexOf('\n');
     if (ix >= 0) {
         let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
-        addWarning("Unexpected newLine character", " (at character " + (ix + 1) + ") in '" + extract + "'" + ourAtString);
+        addWarning("Unexpected newLine character", " (at character " + (ix + 1).toLocaleString() + ") in '" + extract + "'" + ourAtString);
     }
     ix = fieldText.indexOf('\r');
     if (ix >= 0) {
         let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
-        addWarning("Unexpected carriageReturn character", " (at character " + (ix + 1) + ") in '" + extract + "'" + ourAtString);
+        addWarning("Unexpected carriageReturn character", " (at character " + (ix + 1).toLocaleString() + ") in '" + extract + "'" + ourAtString);
     }
     ix = fieldText.indexOf('\xA0'); // non-break space
     if (ix >= 0) {
         let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
-        addWarning("Unexpected non-break space character", " (at character " + (ix + 1) + ") in '" + extract.replace(/\xA0/g, '⍽') + "'" + ourAtString);
+        addWarning("Unexpected non-break space character", " (at character " + (ix + 1).toLocaleString() + ") in '" + extract.replace(/\xA0/g, '⍽') + "'" + ourAtString);
     }
     ix = fieldText.indexOf('\u202F'); // narrow non-break space
     if (ix >= 0) {
         let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
-        addWarning("Unexpected narrow non-break space character", " (at character " + (ix + 1) + ") in '" + extract.replace(/\u202F/g, '⍽') + "'" + ourAtString);
+        addWarning("Unexpected narrow non-break space character", " (at character " + (ix + 1).toLocaleString() + ") in '" + extract.replace(/\u202F/g, '⍽') + "'" + ourAtString);
     }
     ix = fieldText.indexOf(' …');
     if (ix >= 0) {
         let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
-        addWarning("Unexpected space before ellipse character", " (at character " + (ix + 1) + ") in '" + extract.replace(/ /g, '␣') + "'" + ourAtString);
+        addWarning("Unexpected space before ellipse character", " (at character " + (ix + 1).toLocaleString() + ") in '" + extract.replace(/ /g, '␣') + "'" + ourAtString);
     }
     ix = fieldText.indexOf('… ');
     if (ix >= 0) {
         let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
-        addWarning("Unexpected space after ellipse character", " (at character " + (ix + 1) + ") in '" + extract.replace(/ /g, '␣') + "'" + ourAtString);
+        addWarning("Unexpected space after ellipse character", " (at character " + (ix + 1).toLocaleString() + ") in '" + extract.replace(/ /g, '␣') + "'" + ourAtString);
     }
     // Check for doubled punctuation chars (international)
     // Doesn't check for doubled forward slash coz that might occur in a link, e.g., https://etc…
-    let checkList = '.’\'(){}<>⟨⟩:,،、‒–—―…!.‹›«»‐-?‘’“”\'";⁄·&*@•^†‡°”¡¿※#№÷×ºª%‰+−=‱¶′″‴§~_|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥';
+    //  or doubled # coz that occurs in markdown
+    let checkList = '.’\'(){}<>⟨⟩:,،、‒–—―…!.‹›«»‐-?‘’“”\'";⁄·&*@•^†‡°¡¿※№÷×ºª%‰+−=‱¶′″‴§~_|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥';
     if (! allowedLinks) checkList += '[]' // Double square brackets can be part of markdown links
     for (let punctChar of checkList) {
         ix = fieldText.indexOf(punctChar + punctChar);
         if (ix >= 0) {
             let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
-            addWarning("Unexpected doubled " + punctChar + " character", " (at character " + (ix + 1) + ") in '" + extract + "'" + ourAtString);
+            addWarning("Unexpected doubled " + punctChar + " character", " (at character " + (ix + 1).toLocaleString() + ") in '" + extract + "'" + ourAtString);
         }
     }
     // Check for punctuation chars following space
-    for (let punctChar of '.’\')}>⟩:,،、‒–—―…!.‹›«»‐-?‘’“”\'";/⁄·*@•^†‡°”¡¿※#№÷×ºª%‰+−=‱¶′″‴§~_|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥') {
+    for (let punctChar of '.’\')}>⟩:,،、‒–—―…!.‹›«»‐-?’”\'";/⁄·*@•^†‡°¡¿※#№÷×ºª%‰+−=‱¶′″‴§~_|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥') {
         ix = fieldText.indexOf(' ' + punctChar);
         if (ix >= 0) {
             let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
-            addWarning("Unexpected " + punctChar + " character after space", " (at character " + (ix + 1) + ") in '" + extract.replace(/ /g, '␣') + "'" + ourAtString);
+            addWarning("Unexpected " + punctChar + " character after space", " (at character " + (ix + 1).toLocaleString() + ") in '" + extract.replace(/ /g, '␣') + "'" + ourAtString);
         }
     }
     // Check for punctuation chars before space
-    for (let punctChar of '’\'[({<⟨،、‒–—―….‹«‐-‘’“”\'"/⁄·@\•^†‡°”¡¿※#№÷×ºª%‰+−=‱¶′″‴§~_|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥') {
+    for (let punctChar of '’\'[({<⟨،、‒–—―‹«‐‘’“\'"/⁄·@\•^†‡°¡¿※№÷×ºª%‰+−=‱¶′″‴§~_|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥') {
         ix = fieldText.indexOf(punctChar + ' ');
         if (ix >= 0) {
             let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
-            addWarning("Unexpected space after " + punctChar + " character", " (at character " + (ix + 1) + ") in '" + extract.replace(/ /g, '␣') + "'" + ourAtString);
+            addWarning("Unexpected space after " + punctChar + " character", " (at character " + (ix + 1).toLocaleString() + ") in '" + extract.replace(/ /g, '␣') + "'" + ourAtString);
         }
     }
 
     // Check matched pairs
-    for (let punctSet of ['[]', '()', '{}', '<>', '⟨⟩', '‘’', '“”', '‹›', '«»']) {
+    for (let punctSet of ['[]', '()', '{}', '<>', '⟨⟩', '“”', '‹›', '«»']) {
+        // Can't check '‘’' coz they might be used as apostrophe
         let leftChar = punctSet[0], rightChar = punctSet[1];
         let lCount = countOccurrences(fieldText, leftChar);
         let rCount = countOccurrences(fieldText, rightChar);
         if (lCount != rCount)
-            addWarning("Mismatched " + punctSet + " characters (left=" + lCount + ", right=" + rCount + ")", ourAtString);
+            addWarning("Mismatched " + punctSet + " characters (left=" + lCount.toLocaleString() + ", right=" + rCount.toLocaleString() + ")", ourAtString);
     }
 
     if (!allowedLinks) {
@@ -142,7 +144,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
         if (ix == -1) ix = fieldText.indexOf('.bible');
         if (ix >= 0) {
             let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
-            addWarning("Unexpected link", " (at character " + (ix + 1) + ") in '" + extract.replace(/ /g, '␣') + "'" + ourAtString);
+            addWarning("Unexpected link", " (at character " + (ix + 1).toLocaleString() + ") in '" + extract.replace(/ /g, '␣') + "'" + ourAtString);
         }
     }
     return result;

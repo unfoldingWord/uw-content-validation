@@ -34,9 +34,10 @@ function RenderList(props) {
     );
 }
 <>
-{result.errorList.length} error{result.errorList.length==1? '':'s'}{result.errorList.length?':':''}
+<b>Check</b> "{chosenText}"<br/><br/>
+<b style={{color:result.errorList.length?'red':'green'}}>{result.errorList.length} error{result.errorList.length==1? '':'s'}</b>{result.errorList.length?':':''}
 <RenderList listType='e' />
-{result.warningList.length} warning{result.warningList.length==1? '':'s'}{result.warningList.length?':':''}
+<b style={{color:result.warningList.length?'orange':'green'}}>{result.warningList.length} warning{result.warningList.length==1? '':'s'}</b>{result.warningList.length?':':''}
 <RenderList listType='w' />
 </>
 ```
