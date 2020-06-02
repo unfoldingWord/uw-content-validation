@@ -52,7 +52,7 @@ function addSuccessMessage(successString) {
     successList.push(successString);
 }
 function addError(message, index, extract, location) {
-    console.log("tfc ERROR: " + message + (index>0?" (at character "+index+")":"") + (extract?" "+extract:"") + location);
+    console.log("ufc ERROR: " + message + (index>0?" (at character "+index+")":"") + (extract?" "+extract:"") + location);
     let similarCount = 0;
     errorList.forEach((errMsg) => { if (errMsg.startsWith(message)) similarCount += 1 });
     if (similarCount < MAX_SIMILAR_MESSAGES)
@@ -62,7 +62,7 @@ function addError(message, index, extract, location) {
     else suppressedErrorCount += 1;
 }
 function addWarning(message, index, extract, location) {
-    console.log("tfc Warning: "+message + (index>0?" (at character "+index+")":"") + (extract?" "+extract:"") + location);
+    console.log("ufc Warning: "+message + (index>0?" (at character "+index+")":"") + (extract?" "+extract:"") + location);
     let similarCount = 0;
     warningList.forEach((warningMsg) => { if (warningMsg.startsWith(message)) similarCount += 1 });
     if (similarCount < MAX_SIMILAR_MESSAGES)
@@ -113,21 +113,21 @@ function checkUSFMFile(file) {
             if (rest) {
                 if (MARKERS_WITHOUT_CONTENT.indexOf(marker) >= 0)
                     if (isWhitespace(rest))
-                        addWarning(`Unexpected whitespace '${rest}'`, ` after \\${marker} marker${lineLocation}`);
+                        addWarning(`Unexpected whitespace '${rest}'`, 1, "", ` after \\${marker} marker${lineLocation}`);
                     else
                         addError(`Unexpected content '${rest}'`, ` after \\${marker} marker${lineLocation}`);
                 else if (rest[0] == ' ') {
                     let extract = rest.substring(0, 10).replace(/ /g, '␣');
                     if (rest.length > 10) extract += '…';
                     if (isWhitespace(rest))
-                        addWarning(`Found only whitespace with \\${marker}`, ` being '${extract}'${lineLocation}`);
+                        addWarning(`Found only whitespace with \\${marker}`, marker.length, "", ` being '${extract}'${lineLocation}`);
                     else
-                        addWarning(`Unexpected leading space(s) for \\${marker}`, ` with '${extract}'${lineLocation}`);
+                        addWarning(`Unexpected leading space(s) for \\${marker}`, marker.length, "", ` with '${extract}'${lineLocation}`);
                 }
 
             } else { // nothing following the marker
                 if (MARKERS_WITH_COMPULSORY_CONTENT.indexOf(marker) >= 0)
-                    addError("Expected compulsory content", ` after \\${marker} marker${lineLocation}`);
+                    addError("Expected compulsory content", marker.length, "", ` after \\${marker} marker${lineLocation}`);
             }
         } else
             addError(`Unexpected '${marker}' marker at start of line`, atString);
@@ -203,9 +203,6 @@ function checkUSFMFile(file) {
     console.log("  Returning with " + successList.length + " successes, " + errorList.length + " errors, " + warningList.length + " warnings.");
 }
 
-
-const NUM_EXPECTED_TN_FIELDS = 9;
-const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
 
 function checkTN_TSVDataRow(BBB, line, rowLocation) {
     /* This function is only for checking one data row

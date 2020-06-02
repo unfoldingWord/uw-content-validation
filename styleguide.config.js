@@ -99,7 +99,17 @@ let sections = [
 				name: 'TSV table line check',
 				content: 'src/core/tsv-table-line-check.md'
 				// description: ''
-			}
+			},
+			{
+				name: 'TSV table check',
+				content: 'src/core/tsv-table-text-check.md'
+				// description: ''
+			},
+			// {
+			// 	name: 'USFM text check',
+			// 	content: 'src/core/usfm-text-check.md'
+			// 	// description: ''
+			// },
 		]
 	}
 ];

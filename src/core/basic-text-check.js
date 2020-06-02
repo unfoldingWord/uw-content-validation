@@ -12,20 +12,22 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     // We assume that checking for compulsory fields is done elsewhere
 
     // Returns an error list and a warning list
-    //  Both lists contain lists of two strings:
-    //      1/ the error string
-    //      2/ the detailed location string
+    //  Both lists contain lists of four objects:
+    //      1/ the error description string
+    //      2/ the 0-based index for the position in the string (or -1 if irrelevant)
+    //      3/ a short extract of the string containing the error (or empty-string if irrelevant)
+    //      4/ the detailed location string
     //  (Returned in this way for more intelligent processing at a higher level)
 
     let result = {errorList:[], warningList:[]};
 
-    function addError(errorPart, locationPart) {
-        // console.log("ERROR: " + errorPart + locationPart);
-        result.errorList.push([errorPart, locationPart]);
+    function addError(message, index, extract, location) {
+        // console.log("dBTC ERROR: '" + message + "', " + index + ", '" + extract + "', " + location);
+        result.errorList.push([message, index, extract, location]);
     }
-    function addWarning(warningPart, locationPart) {
-        // console.log(`Warning: ${warningPart}${locationPart}`);
-        result.warningList.push([warningPart, locationPart]);
+    function addWarning(message, index, extract, location) {
+        // console.log("dBTC Warning: '" + message + "', " + index + ", '" + extract + "', " + location);
+        result.warningList.push([message, index, extract, location]);
     }
 
     if (!fieldText) // Nothing to check
@@ -39,70 +41,70 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     }
 
     if (isWhitespace(fieldText)) {
-        addError("Only found whitespace", ourAtString);
+        addError("Only found whitespace", -1, "", ourAtString);
         return result;
     }
     if (fieldText[0] == ' ') {
-        let extract = fieldText.substring(0, 10).replace(/ /g, '␣') + (fieldText.length > 10 ? '…' : '');
-        addWarning("Unexpected leading space" + (fieldText[1] == ' ' ? "s" : ""), ` in '${extract}'${ourAtString}`);
+        const extract = fieldText.substring(0, 10).replace(/ /g, '␣') + (fieldText.length > 10 ? '…' : '');
+        addWarning("Unexpected leading space" + (fieldText[1] == ' ' ? "s" : ""), 0, extract, ourAtString);
     }
     if (fieldText.substring(0, 4) == '<br>' || fieldText.substring(0, 5) == '<br/>' || fieldText.substring(0, 6) == '<br />') {
-        let extract = fieldText.substring(0, 10) + (fieldText.length > 10 ? '…' : '');
-        addWarning("Unexpected leading break", " in '" + extract + "'" + ourAtString);
+        const extract = fieldText.substring(0, 10) + (fieldText.length > 10 ? '…' : '');
+        addWarning("Unexpected leading break", 0, extract, ourAtString);
     }
-    if (fieldText[fieldText.length - 1] == ' ') {
-        let extract = (fieldText.length > 10 ? '…' : '') + fieldText.substring(fieldText.length - 10).replace(/ /g, '␣');
-        addWarning("Unexpected trailing space(s)", " in '" + extract + "'" + ourAtString);
+    if (fieldText[fieldText.length-1] == ' ') {
+        const extract = (fieldText.length > 10 ? '…' : '') + fieldText.substring(fieldText.length - 10).replace(/ /g, '␣');
+        addWarning("Unexpected trailing space(s)", fieldText.length-1, extract, ourAtString);
     }
     if (fieldText.substring(fieldText.length - 4) == '<br>' || fieldText.substring(fieldText.length - 5) == '<br/>' || fieldText.substring(fieldText.length - 6) == '<br />') {
-        let extract = (fieldText.length > 10 ? '…' : '') + fieldText.substring(fieldText.length - 10);
-        addWarning("Unexpected trailing break", " in '" + extract + "'" + ourAtString);
+        const extract = (fieldText.length > 10 ? '…' : '') + fieldText.substring(fieldText.length - 10);
+        addWarning("Unexpected trailing break", fieldText.length-1, extract, ourAtString);
     }
     let ix = fieldText.indexOf('  ');
     if (ix >= 0) {
-        let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
-        addWarning("Unexpected double spaces", " (at character " + (ix + 1).toLocaleString() + ") in '" + extract.replace(/ /g, '␣') + "'" + ourAtString);
+        const extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6).replace(/ /g, '␣') + (ix + 6 < fieldText.length ? '…' : '')
+        addWarning("Unexpected double spaces", ix, extract, ourAtString);
     }
     ix = fieldText.indexOf('\n');
     if (ix >= 0) {
-        let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
-        addWarning("Unexpected newLine character", " (at character " + (ix + 1).toLocaleString() + ") in '" + extract + "'" + ourAtString);
+        const extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
+        addWarning("Unexpected newLine character", ix, extract, ourAtString);
     }
     ix = fieldText.indexOf('\r');
     if (ix >= 0) {
-        let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
-        addWarning("Unexpected carriageReturn character", " (at character " + (ix + 1).toLocaleString() + ") in '" + extract + "'" + ourAtString);
+        const extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
+        addWarning("Unexpected carriageReturn character", ix, extract, ourAtString);
     }
     ix = fieldText.indexOf('\xA0'); // non-break space
     if (ix >= 0) {
-        let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
-        addWarning("Unexpected non-break space character", " (at character " + (ix + 1).toLocaleString() + ") in '" + extract.replace(/\xA0/g, '⍽') + "'" + ourAtString);
+        const extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6).replace(/\xA0/g, '⍽') + (ix + 6 < fieldText.length ? '…' : '')
+        addWarning("Unexpected non-break space character", ix, extract, ourAtString);
     }
     ix = fieldText.indexOf('\u202F'); // narrow non-break space
     if (ix >= 0) {
-        let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
-        addWarning("Unexpected narrow non-break space character", " (at character " + (ix + 1).toLocaleString() + ") in '" + extract.replace(/\u202F/g, '⍽') + "'" + ourAtString);
+        const extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6).replace(/\u202F/g, '⍽') + (ix + 6 < fieldText.length ? '…' : '')
+        addWarning("Unexpected narrow non-break space character", ix, extract, ourAtString);
     }
     ix = fieldText.indexOf(' …');
     if (ix >= 0) {
-        let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
-        addWarning("Unexpected space before ellipse character", " (at character " + (ix + 1).toLocaleString() + ") in '" + extract.replace(/ /g, '␣') + "'" + ourAtString);
+        const extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
+        addWarning("Unexpected space before ellipse character", ix, extract, ourAtString);
     }
     ix = fieldText.indexOf('… ');
     if (ix >= 0) {
-        let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
-        addWarning("Unexpected space after ellipse character", " (at character " + (ix + 1).toLocaleString() + ") in '" + extract.replace(/ /g, '␣') + "'" + ourAtString);
+        const extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
+        addWarning("Unexpected space after ellipse character", ix, extract, ourAtString);
     }
     // Check for doubled punctuation chars (international)
     // Doesn't check for doubled forward slash coz that might occur in a link, e.g., https://etc…
     //  or doubled # coz that occurs in markdown
-    let checkList = '.’\'(){}<>⟨⟩:,،、‒–—―…!.‹›«»‐-?‘’“”\'";⁄·&*@•^†‡°¡¿※№÷×ºª%‰+−=‱¶′″‴§~_|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥';
-    if (! allowedLinks) checkList += '[]' // Double square brackets can be part of markdown links
+    let checkList = '.’\'(){}<>⟨⟩:,،、‒–—―…!‹›«»‐-?‘’“”\'";⁄·&*@•^†‡°¡¿※№÷×ºª%‰+−=‱¶′″‴§~_|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥';
+    if (! allowedLinks) checkList += '[].' // Double square brackets can be part of markdown links, double periods can be part of a path
     for (let punctChar of checkList) {
         ix = fieldText.indexOf(punctChar + punctChar);
         if (ix >= 0) {
             let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
-            addWarning("Unexpected doubled " + punctChar + " character", " (at character " + (ix + 1).toLocaleString() + ") in '" + extract + "'" + ourAtString);
+            addWarning("Unexpected doubled " + punctChar + " character", ix, extract, ourAtString);
         }
     }
     // Check for punctuation chars following space
@@ -110,7 +112,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
         ix = fieldText.indexOf(' ' + punctChar);
         if (ix >= 0) {
             let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
-            addWarning("Unexpected " + punctChar + " character after space", " (at character " + (ix + 1).toLocaleString() + ") in '" + extract.replace(/ /g, '␣') + "'" + ourAtString);
+            addWarning("Unexpected " + punctChar + " character after space", ix, extract, ourAtString);
         }
     }
     // Check for punctuation chars before space
@@ -118,18 +120,18 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
         ix = fieldText.indexOf(punctChar + ' ');
         if (ix >= 0) {
             let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
-            addWarning("Unexpected space after " + punctChar + " character", " (at character " + (ix + 1).toLocaleString() + ") in '" + extract.replace(/ /g, '␣') + "'" + ourAtString);
+            addWarning("Unexpected space after " + punctChar + " character", ix, extract, ourAtString);
         }
     }
 
     // Check matched pairs
     for (let punctSet of ['[]', '()', '{}', '<>', '⟨⟩', '“”', '‹›', '«»']) {
         // Can't check '‘’' coz they might be used as apostrophe
-        let leftChar = punctSet[0], rightChar = punctSet[1];
-        let lCount = countOccurrences(fieldText, leftChar);
-        let rCount = countOccurrences(fieldText, rightChar);
+        const leftChar = punctSet[0], rightChar = punctSet[1];
+        const lCount = countOccurrences(fieldText, leftChar);
+        const rCount = countOccurrences(fieldText, rightChar);
         if (lCount != rCount)
-            addWarning("Mismatched " + punctSet + " characters (left=" + lCount.toLocaleString() + ", right=" + rCount.toLocaleString() + ")", ourAtString);
+            addWarning("Mismatched " + punctSet + " characters (left=" + lCount.toLocaleString() + ", right=" + rCount.toLocaleString() + ")", -1, "", ourAtString);
     }
 
     if (!allowedLinks) {
@@ -144,7 +146,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
         if (ix == -1) ix = fieldText.indexOf('.bible');
         if (ix >= 0) {
             let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
-            addWarning("Unexpected link", " (at character " + (ix + 1).toLocaleString() + ") in '" + extract.replace(/ /g, '␣') + "'" + ourAtString);
+            addWarning("Unexpected link", ix, extract, ourAtString);
         }
     }
     return result;

@@ -22,13 +22,13 @@ const chosenText = textB;
 // The third parameter is "linksAllowed"
 const result = doBasicTextChecks('Sample', chosenText, false, 'that was supplied');
 
-function RenderList(props) {
-    // Display our list of 2-part lists in a nicer format
+function RenderArray(props) {
+    // Display our array of 4-part lists in a nicer format
     // Uses 'result' object from outer scope
-    const myList = props.listType=='e' ? result.errorList : result.warningList;
+    const myList = props.arrayType=='e' ? result.errorList : result.warningList;
     return ( <ul>
             {myList.map(function(listEntry){
-                return <li><b style={{color:props.listType=='e'?'red':'orange'}}>{listEntry[0]}</b> {listEntry[1]}</li>;
+                return <li><b style={{color:props.arrayType=='e'?'red':'orange'}}>{listEntry[0]}</b> {(listEntry[1]>0?" (at character "+listEntry[1]+")":"")} {listEntry[2]?" in '"+listEntry[2]+"'":""} {listEntry[3]}</li>;
             })}
           </ul>
     );
@@ -36,8 +36,8 @@ function RenderList(props) {
 <>
 <b>Check</b> "{chosenText}"<br/><br/>
 <b style={{color:result.errorList.length?'red':'green'}}>{result.errorList.length} error{result.errorList.length==1? '':'s'}</b>{result.errorList.length?':':''}
-<RenderList listType='e' />
+<RenderArray arrayType='e' />
 <b style={{color:result.warningList.length?'orange':'green'}}>{result.warningList.length} warning{result.warningList.length==1? '':'s'}</b>{result.warningList.length?':':''}
-<RenderList listType='w' />
+<RenderArray arrayType='w' />
 </>
 ```

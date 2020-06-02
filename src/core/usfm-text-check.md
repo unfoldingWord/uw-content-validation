@@ -1,6 +1,6 @@
-## TSV Table Line Check Sandbox
+## USFM Text Check Sandbox
 
-This function checks one tab-separated line for typical formatting errors.
+This function checks the given USFM text for typical formatting errors.
 
 It returns a list of errors and a list of warnings.
 
