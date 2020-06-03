@@ -26,22 +26,22 @@ function checkTN_TSVText(BBB, tableText, location) {
         result.successList.push(successString);
     }
     function addError(message, index, extract, location) {
-        console.log("tfc ERROR: " + message + (index > 0 ? " (at character " + index + ")" : "") + (extract ? " " + extract : "") + location);
+        console.log("tfc ERROR: " + message + (index > 0 ? " (at character " + index+1 + ")" : "") + (extract ? " " + extract : "") + location);
         let similarCount = 0;
-        result.errorList.forEach((errMsg) => { if (errMsg[0] == message) similarCount += 1 });
+        result.errorList.forEach((errMsg) => { if (errMsg[0].startsWith(message)) similarCount += 1 });
         if (similarCount < MAX_SIMILAR_MESSAGES)
-            // result.errorList.push(message + (index > 0 ? " (at character " + index + ")" : "") + (extract ? " " + extract : "") + location);
+            // result.errorList.push(message + (index > 0 ? " (at character " + index+1 + ")" : "") + (extract ? " " + extract : "") + location);
             result.errorList.push([message, index, extract, location]);
             else if (similarCount == MAX_SIMILAR_MESSAGES)
             result.errorList.push([`${message}  ◄ MORE SIMILAR ERRORS SUPPRESSED`, -1, "", ""]);
         else suppressedErrorCount += 1;
     }
     function addWarning(message, index, extract, location) {
-        console.log("tfc Warning: " + message + (index > 0 ? " (at character " + index + ")" : "") + (extract ? " " + extract : "") + location);
+        console.log("tfc Warning: " + message + (index > 0 ? " (at character " + index+1 + ")" : "") + (extract ? " " + extract : "") + location);
         let similarCount = 0;
-        result.warningList.forEach((warningMsg) => { if (warningMsg[0] == message) similarCount += 1 });
+        result.warningList.forEach((warningMsg) => { if (warningMsg[0].startsWith(message)) similarCount += 1 });
         if (similarCount < MAX_SIMILAR_MESSAGES)
-            // result.warningList.push(message + (index > 0 ? " (at character " + index + ")" : "") + (extract ? " " + extract : "") + location);
+            // result.warningList.push(message + (index > 0 ? " (at character " + index+1 + ")" : "") + (extract ? " " + extract : "") + location);
             result.warningList.push([message, index, extract, location]);
         else if (similarCount == MAX_SIMILAR_MESSAGES)
             result.warningList.push([`${message}  ◄ MORE SIMILAR WARNINGS SUPPRESSED`, -1, "", ""]);

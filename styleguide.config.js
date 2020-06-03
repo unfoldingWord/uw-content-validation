@@ -105,11 +105,11 @@ let sections = [
 				content: 'src/core/tsv-table-text-check.md'
 				// description: ''
 			},
-			// {
-			// 	name: 'USFM text check',
-			// 	content: 'src/core/usfm-text-check.md'
-			// 	// description: ''
-			// },
+			{
+				name: 'USFM text check',
+				content: 'src/core/usfm-text-check.md'
+				// description: ''
+			},
 		]
 	}
 ];

@@ -52,21 +52,21 @@ function addSuccessMessage(successString) {
     successList.push(successString);
 }
 function addError(message, index, extract, location) {
-    console.log("r-c ERROR: " + message + (index>0?" (at character "+index+")":"") + (extract?" "+extract:"") + location);
+    console.log("r-c ERROR: " + message + (index>0?" (at character "+index+1+")":"") + (extract?" "+extract:"") + location);
     let similarCount = 0;
-    errorList.forEach((errMsg) => { if (errMsg.startsWith(message)) similarCount += 1 });
+    errorList.forEach((errMsg) => { if (errMsg[0].startsWith(message)) similarCount += 1 });
     if (similarCount < MAX_SIMILAR_MESSAGES)
-        errorList.push(message + (index>0?" (at character "+index+")":"") + (extract?" "+extract:"") + location);
+        errorList.push(message + (index>0?" (at character "+index+1+")":"") + (extract?" "+extract:"") + location);
     else if (similarCount == MAX_SIMILAR_MESSAGES)
         errorList.push(`${message}  ◄ MORE SIMILAR ERRORS SUPPRESSED`);
     else suppressedErrorCount += 1;
 }
 function addWarning(message, index, extract, location) {
-    console.log("r-c Warning: "+message + (index>0?" (at character "+index+")":"") + (extract?" "+extract:"") + location);
+    console.log("r-c Warning: "+message + (index>0?" (at character "+index+1+")":"") + (extract?" "+extract:"") + location);
     let similarCount = 0;
-    warningList.forEach((warningMsg) => { if (warningMsg.startsWith(message)) similarCount += 1 });
+    warningList.forEach((warningMsg) => { if (warningMsg[0].startsWith(message)) similarCount += 1 });
     if (similarCount < MAX_SIMILAR_MESSAGES)
-        warningList.push(message + (index>0?" (at character "+index+")":"") + (extract?" "+extract:"") + location);
+        warningList.push(message + (index>0?" (at character "+index+1+")":"") + (extract?" "+extract:"") + location);
     else if (similarCount == MAX_SIMILAR_MESSAGES)
         warningList.push(`${message}  ◄ MORE SIMILAR WARNINGS SUPPRESSED`);
     else suppressedWarningCount += 1;

@@ -116,7 +116,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
         }
     }
     // Check for punctuation chars before space
-    for (let punctChar of '’\'[({<⟨،、‒–—―‹«‐‘’“\'"/⁄·@\•^†‡°¡¿※№÷×ºª%‰+−=‱¶′″‴§~_|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥') {
+    for (let punctChar of '’\'[({<⟨،、‒–—―‹«‐‘’“/⁄·@\•^†‡°¡¿※№÷×ºª%‰+−=‱¶′″‴§~_|‖¦©℗℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥') {
         ix = fieldText.indexOf(punctChar + ' ');
         if (ix >= 0) {
             let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
