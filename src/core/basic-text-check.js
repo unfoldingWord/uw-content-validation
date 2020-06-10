@@ -19,7 +19,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     //      4/ the detailed location string
     //  (Returned in this way for more intelligent processing at a higher level)
 
-    let result = {errorList:[], warningList:[]};
+    let result = { errorList: [], warningList: [] };
 
     function addError(message, index, extract, location) {
         // console.log("dBTC ERROR: '" + message + "', " + index + ", '" + extract + "', " + location);
@@ -44,6 +44,28 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
         addError("Only found whitespace", -1, "", ourAtString);
         return result;
     }
+
+    let ix = fieldText.indexOf('<<<<<<<');
+    if (ix >= 0) {
+        let iy = ix + 5; // Want extract to focus more on what follows
+        const extract = (iy > 5 ? '…' : '') + fieldText.substring(iy - 5, iy + 6).replace(/ /g, '␣') + (iy + 6 < fieldText.length ? '…' : '')
+        addWarning("Unresolved GIT conflict", ix, extract, ourAtString);
+    } else {
+        ix = fieldText.indexOf('=======');
+        if (ix >= 0) {
+            let iy = ix + 5; // Want extract to focus more on what follows
+            const extract = (iy > 5 ? '…' : '') + fieldText.substring(iy - 5, iy + 6).replace(/ /g, '␣') + (iy + 6 < fieldText.length ? '…' : '')
+            addWarning("Unresolved GIT conflict", ix, extract, ourAtString);
+        } else {
+            ix = fieldText.indexOf('>>>>>>>>');
+            if (ix >= 0) {
+                let iy = ix + 5; // Want extract to focus more on what follows
+                const extract = (iy > 5 ? '…' : '') + fieldText.substring(iy - 5, iy + 6).replace(/ /g, '␣') + (iy + 6 < fieldText.length ? '…' : '')
+                addWarning("Unresolved GIT conflict", ix, extract, ourAtString);
+            }
+        }
+    }
+
     if (fieldText[0] == ' ') {
         const extract = fieldText.substring(0, 10).replace(/ /g, '␣') + (fieldText.length > 10 ? '…' : '');
         addWarning("Unexpected leading space" + (fieldText[1] == ' ' ? "s" : ""), 0, extract, ourAtString);
@@ -52,15 +74,15 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
         const extract = fieldText.substring(0, 10) + (fieldText.length > 10 ? '…' : '');
         addWarning("Unexpected leading break", 0, extract, ourAtString);
     }
-    if (fieldText[fieldText.length-1] == ' ') {
+    if (fieldText[fieldText.length - 1] == ' ') {
         const extract = (fieldText.length > 10 ? '…' : '') + fieldText.substring(fieldText.length - 10).replace(/ /g, '␣');
-        addWarning("Unexpected trailing space(s)", fieldText.length-1, extract, ourAtString);
+        addWarning("Unexpected trailing space(s)", fieldText.length - 1, extract, ourAtString);
     }
     if (fieldText.substring(fieldText.length - 4) == '<br>' || fieldText.substring(fieldText.length - 5) == '<br/>' || fieldText.substring(fieldText.length - 6) == '<br />') {
         const extract = (fieldText.length > 10 ? '…' : '') + fieldText.substring(fieldText.length - 10);
-        addWarning("Unexpected trailing break", fieldText.length-1, extract, ourAtString);
+        addWarning("Unexpected trailing break", fieldText.length - 1, extract, ourAtString);
     }
-    let ix = fieldText.indexOf('  ');
+    ix = fieldText.indexOf('  ');
     if (ix >= 0) {
         const extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6).replace(/ /g, '␣') + (ix + 6 < fieldText.length ? '…' : '')
         addWarning("Unexpected double spaces", ix, extract, ourAtString);
@@ -99,7 +121,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     // Doesn't check for doubled forward slash coz that might occur in a link, e.g., https://etc…
     //  or doubled # coz that occurs in markdown
     let checkList = '.’\'(){}<>⟨⟩:,،、‒–—―…!‹›«»‐-?‘’“”\'";⁄·&*@•^†‡°¡¿※№÷×ºª%‰+−=‱¶′″‴§~_|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥';
-    if (! allowedLinks) checkList += '[].' // Double square brackets can be part of markdown links, double periods can be part of a path
+    if (!allowedLinks) checkList += '[].' // Double square brackets can be part of markdown links, double periods can be part of a path
     for (let punctChar of checkList) {
         ix = fieldText.indexOf(punctChar + punctChar);
         if (ix >= 0) {

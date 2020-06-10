@@ -96,6 +96,11 @@ let sections = [
 				// description: ''
 			},
 			{
+				name: 'Markdown text check',
+				content: 'src/core/markdown-text-check.md'
+				// description: ''
+			},
+			{
 				name: 'TSV table line check',
 				content: 'src/core/tsv-table-line-check.md'
 				// description: ''

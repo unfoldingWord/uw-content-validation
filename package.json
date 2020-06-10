@@ -1,7 +1,7 @@
 {
   "name": "content-checker",
   "description": "Components for Checking uW Content/Resources.",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "private": false,
   "homepage": "https://unfoldingword.github.io/content-checker/",
   "repository": {
@@ -43,6 +43,7 @@
     "prop-types": "^15.7.2",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
+    "react-markdown": "^4.0.6",
     "react-styleguidist": "^9.1.14",
     "serialize-javascript": "^2.1.2",
     "url-loader": "^2.1.0",
