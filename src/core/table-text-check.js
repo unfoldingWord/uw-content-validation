@@ -26,7 +26,7 @@ function checkTN_TSVText(BBB, tableText, location) {
         result.successList.push(successString);
     }
     function addError(message, index, extract, location) {
-        console.log("tfc ERROR: " + message + (index > 0 ? " (at character " + index+1 + ")" : "") + (extract ? " " + extract : "") + location);
+        // console.log("TSV ERROR: " + message + (index > 0 ? " (at character " + index+1 + ")" : "") + (extract ? " " + extract : "") + location);
         let similarCount = 0;
         result.errorList.forEach((errMsg) => { if (errMsg[0].startsWith(message)) similarCount += 1 });
         if (similarCount < MAX_SIMILAR_MESSAGES)
@@ -37,7 +37,7 @@ function checkTN_TSVText(BBB, tableText, location) {
         else suppressedErrorCount += 1;
     }
     function addWarning(message, index, extract, location) {
-        console.log("tfc Warning: " + message + (index > 0 ? " (at character " + index+1 + ")" : "") + (extract ? " " + extract : "") + location);
+        // console.log("TSV Warning: " + message + (index > 0 ? " (at character " + index+1 + ")" : "") + (extract ? " " + extract : "") + location);
         let similarCount = 0;
         result.warningList.forEach((warningMsg) => { if (warningMsg[0].startsWith(message)) similarCount += 1 });
         if (similarCount < MAX_SIMILAR_MESSAGES)
@@ -168,7 +168,7 @@ function checkTN_TSVText(BBB, tableText, location) {
     else
         addSuccessMessage("No errors or warnings found by checkTN_TSVText v" + checkerVersionString)
     console.log(`  Returning with ${result.successList.length.toLocaleString()} successes, ${result.errorList.length.toLocaleString()} errors, ${result.warningList.length.toLocaleString()} warnings.`);
-    console.log("checkTN_TSVText result is", JSON.stringify(result));
+    // console.log("checkTN_TSVText result is", JSON.stringify(result));
     return result;
 }
 // end of checkTN_TSVText function

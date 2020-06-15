@@ -1,6 +1,3 @@
-// import { React, useContext } from 'react';
-
-
 export function isWhitespace(myString) {
     if (/^\s+$/.test(myString)) return true;
     return false;

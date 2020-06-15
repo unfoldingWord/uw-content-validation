@@ -1,1 +1,1 @@
-export {default as RepoChecker} from './repo-checker';
+export {default as checkFile} from './file-check';

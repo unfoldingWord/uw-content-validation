@@ -1,4 +1,4 @@
-import { React, useContext } from 'react';
+import React, { useContext } from 'react';
 // import PropTypes from 'prop-types';
 // import ReactJson from 'react-json-view';
 // import { Paper, Button } from '@material-ui/core';
@@ -52,7 +52,7 @@ function addSuccessMessage(successString) {
     successList.push(successString);
 }
 function addError(message, index, extract, location) {
-    console.log("tfc ERROR: " + message + (index>0?" (at character "+index+1+")":"") + (extract?" "+extract:"") + location);
+    // console.log("tfc ERROR: " + message + (index>0?" (at character "+index+1+")":"") + (extract?" "+extract:"") + location);
     let similarCount = 0;
     errorList.forEach((errMsg) => { if (errMsg[0].startsWith(message)) similarCount += 1 });
     if (similarCount < MAX_SIMILAR_MESSAGES)
@@ -62,7 +62,7 @@ function addError(message, index, extract, location) {
     else suppressedErrorCount += 1;
 }
 function addWarning(message, index, extract, location) {
-    console.log("tfc Warning: "+message + (index>0?" (at character "+index+1+")":"") + (extract?" "+extract:"") + location);
+    // console.log("tfc Warning: "+message + (index>0?" (at character "+index+1+")":"") + (extract?" "+extract:"") + location);
     let similarCount = 0;
     warningList.forEach((warningMsg) => { if (warningMsg[0].startsWith(message)) similarCount += 1 });
     if (similarCount < MAX_SIMILAR_MESSAGES)
@@ -506,11 +506,11 @@ export function RepoChecker() {
         }
 
         for (let j = 0; j < successList.length; j++) {
-            let success_msg = successList[j];
+            const success_msg = successList[j];
             msgLines += "Success: " + success_msg + "\n"
         }
         for (let j = 0; j < errorList.length; j++) {
-            let error_msg = errorList[j];
+            const error_msg = errorList[j];
             msgLines += "ERROR: " + error_msg + "\n"
         }
         if (errorList.length > 0) {
@@ -519,7 +519,7 @@ export function RepoChecker() {
             msgLines += "\n"
         }
         for (let j = 0; j < warningList.length; j++) {
-            let warning_msg = warningList[j];
+            const warning_msg = warningList[j];
             msgLines += "Warning: " + warning_msg + "\n"
         }
         if (warningList.length > 0) {

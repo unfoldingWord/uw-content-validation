@@ -1,34 +1,34 @@
-## Markdown Text Check Sandbox
+## Plain Text Check Sandbox
 
-This function checks the given markdown-formatted text for typical formatting errors.
+This function checks the given text for typical formatting errors.
 
 It returns a list of errors and a list of warnings.
 
 ```js
-import Markdown from 'react-markdown'
-import checkMarkdownText from './markdown-text-check.js';
+import checkPlainText from './plain-text-check.js';
 
-// Markdown text samples
-const textSG = `# Short Good Markdown Test
+// Plain text samples
+const textSG = `Short Good Plain Test
 
 This is a paragraph.
 
-## Second level heading
+Second level heading
 
 Another paragraph.
 
-  * List item 1
-  * List item 2
+  List item 1
+  List item 2
 `;
-const textSB = `### Short Bad Markdown Test
-This should be a paragraph.
+const textSB = `Short Ba,d Plain Test
 
-# First level heading
+This should be a  paragraph.
+
+First level heading
 
 Another  paragraph.
 
-  * List item 1
-   * List item 2
+  List item 1
+   List item 2
 `;
 
 // You can choose any of the above texts here
@@ -36,7 +36,7 @@ Another  paragraph.
 const chosenText = textSB;
 const chosenName = 'textSB';
 
-const result = checkMarkdownText(chosenName, chosenText, 'that was supplied');
+const result = checkPlainText(chosenName, chosenText, 'that was supplied');
 
 function RenderLines(props){
     return ( <ol>
@@ -59,8 +59,7 @@ function RenderArray(props) {
     );
 }
 <>
-<b>Raw Markdown (but normalized)</b> <RenderLines text={chosenText} />
-<b>Formatted Text</b> <Markdown source={chosenText} />
+<b>Source (normalized)</b> <RenderLines text={chosenText} />
 <b style={{color:result.errorList.length?'red':'green'}}>{result.errorList.length} error{result.errorList.length==1? '':'s'}</b>{result.errorList.length?':':''}
 <RenderArray arrayType='e' />
 <b style={{color:result.warningList.length?'orange':'green'}}>{result.warningList.length} warning{result.warningList.length==1? '':'s'}</b>{result.warningList.length?':':''}

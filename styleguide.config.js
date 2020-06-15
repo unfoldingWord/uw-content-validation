@@ -10,7 +10,19 @@ let sections = [
 		content: 'README.md',
 	},
 	{
-		name: 'Resource Checker',
+		name: 'Coming... Resource Checker',
+		components: () => {
+			const componentNames = [
+				'resource-check',
+			];
+			return componentNames.map(componentName => {
+				const filename = upperFirst(camelCase(componentName));
+				return path.resolve(__dirname, `src/components/${componentName}`, `${filename}.js`)
+			});
+		}
+	},
+	{
+		name: 'Coming... Repo Checker',
 		components: () => {
 			const componentNames = [
 				'repo-checker',
@@ -22,10 +34,10 @@ let sections = [
 		}
 	},
 	{
-		name: 'Repo Checker',
+		name: 'Coming... Scripture Burrito Checker',
 		components: () => {
 			const componentNames = [
-				'content-check-repo',
+				'ScriptureBurrito-check',
 			];
 			return componentNames.map(componentName => {
 				const filename = upperFirst(camelCase(componentName));
@@ -34,22 +46,10 @@ let sections = [
 		}
 	},
 	{
-		name: 'Scripture Burrito Checker',
+		name: 'Coming... Resource Container Checker',
 		components: () => {
 			const componentNames = [
-				'content-check-repo',
-			];
-			return componentNames.map(componentName => {
-				const filename = upperFirst(camelCase(componentName));
-				return path.resolve(__dirname, `src/components/${componentName}`, `${filename}.js`)
-			});
-		}
-	},
-	{
-		name: 'Resource Container Checker',
-		components: () => {
-			const componentNames = [
-				'content-check-repo',
+				'ResourceContainer-check',
 			];
 			return componentNames.map(componentName => {
 				const filename = upperFirst(camelCase(componentName));
@@ -61,19 +61,7 @@ let sections = [
 		name: 'File Checker',
 		components: () => {
 			const componentNames = [
-				'content-check-repo',
-			];
-			return componentNames.map(componentName => {
-				const filename = upperFirst(camelCase(componentName));
-				return path.resolve(__dirname, `src/components/${componentName}`, `${filename}.js`)
-			});
-		}
-	},
-	{
-		name: 'Table Line (TSV) Checker',
-		components: () => {
-			const componentNames = [
-				'content-check-repo',
+				'file-check',
 			];
 			return componentNames.map(componentName => {
 				const filename = upperFirst(camelCase(componentName));
@@ -87,32 +75,37 @@ let sections = [
 		sections: [
 			{
 				name: 'Basic text check',
-				content: 'src/core/basic-text-check.md'
+				content: 'src/core/basic-text-check.md',
 				// description: ''
 			},
 			{
 				name: 'Basic link check',
-				content: 'src/core/basic-link-check.md'
+				content: 'src/core/basic-link-check.md',
+				// description: ''
+			},
+			{
+				name: 'Plain text check',
+				content: 'src/core/plain-text-check.md',
 				// description: ''
 			},
 			{
 				name: 'Markdown text check',
-				content: 'src/core/markdown-text-check.md'
+				content: 'src/core/markdown-text-check.md',
 				// description: ''
 			},
 			{
 				name: 'TSV table line check',
-				content: 'src/core/tsv-table-line-check.md'
+				content: 'src/core/tsv-table-line-check.md',
 				// description: ''
 			},
 			{
 				name: 'TSV table check',
-				content: 'src/core/tsv-table-text-check.md'
+				content: 'src/core/tsv-table-text-check.md',
 				// description: ''
 			},
 			{
 				name: 'USFM text check',
-				content: 'src/core/usfm-text-check.md'
+				content: 'src/core/usfm-text-check.md',
 				// description: ''
 			},
 		]

@@ -1,11 +1,3 @@
-// import { React, useContext } from 'react';
-// import PropTypes from 'prop-types';
-// import ReactJson from 'react-json-view';
-// import { Paper, Button } from '@material-ui/core';
-// import {
-//     RepositoryContext,
-//     FileContext,
-// } from 'gitea-react-toolkit';
 import * as books from '../core';
 import doBasicTextChecks from './basic-text-check';
 

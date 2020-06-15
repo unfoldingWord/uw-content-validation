@@ -28,7 +28,7 @@ function checkUSFMText(BBB, tableText, location) {
 
      Returns a result object containing a successList, errorList, warningList
      */
-    console.log("checkUSFMText(" + BBB + ", " + tableText.length + ", " + location + ")…");
+    console.log("checkUSFMText(" + BBB + ", " + tableText.length.toLocaleString() + " chars, '" + location + "')…");
     if (location[0] != ' ') location = ' ' + location;
 
     let result = { successList: [], errorList: [], warningList: [] };
@@ -39,7 +39,7 @@ function checkUSFMText(BBB, tableText, location) {
         result.successList.push(successString);
     }
     function addError(message, index, extract, location) {
-        console.log("tfc ERROR: " + message + (index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
+        // console.log("USFM ERROR: " + message + (index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
         let similarCount = 0;
         result.errorList.forEach((errMsg) => { if (errMsg[0].startsWith(message)) similarCount += 1 });
         if (similarCount < MAX_SIMILAR_MESSAGES)
@@ -50,7 +50,7 @@ function checkUSFMText(BBB, tableText, location) {
         else suppressedErrorCount += 1;
     }
     function addWarning(message, index, extract, location) {
-        console.log("tfc Warning: " + message + (index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
+        // console.log("USFM Warning: " + message + (index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
         let similarCount = 0;
         result.warningList.forEach((warningMsg) => { if (warningMsg[0].startsWith(message)) similarCount += 1 });
         if (similarCount < MAX_SIMILAR_MESSAGES)
@@ -77,7 +77,6 @@ function checkUSFMText(BBB, tableText, location) {
     // end of doOurBasicTextChecks function
 
     function checkUSFMLineContents(marker, rest, lineLocation) {
-
         if (ALLOWED_LINE_START_MARKERS.indexOf(marker) >= 0) {
             if (rest) {
                 if (MARKERS_WITHOUT_CONTENT.indexOf(marker) >= 0)
@@ -93,14 +92,14 @@ function checkUSFMText(BBB, tableText, location) {
                     else
                         addWarning(`Unexpected leading space(s) for \\${marker}`, marker.length, "", ` with '${extract}'${lineLocation}`);
                 }
-                doOurBasicTextChecks(marker, rest, [], lineLocation);
+                doOurBasicTextChecks(marker, rest, [], ' field '+lineLocation);
             } else { // nothing following the marker
                 if (MARKERS_WITH_COMPULSORY_CONTENT.indexOf(marker) >= 0)
                     addError("Expected compulsory content", marker.length, "", ` after \\${marker} marker${lineLocation}`);
             }
         } else {
             addError(`Unexpected '${marker}' marker at start of line`, marker.length, "", lineLocation);
-            if (rest) doOurBasicTextChecks(marker, rest, [], lineLocation);
+            if (rest) doOurBasicTextChecks(marker, rest, [], ' field '+lineLocation);
         }
     }
     // end of checkUSFMLine function
@@ -159,13 +158,13 @@ function checkUSFMText(BBB, tableText, location) {
         lastC = C; lastV = V;
     }
 
-    addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data lines in '${location}'.`)
-    if (result.errorList || result.warningList)
-        addSuccessMessage(`checkTN_TSVText v${checkerVersionString} finished with ${result.errorList.length.toLocaleString()} errors and ${result.warningList.length.toLocaleString()} warnings`)
+    addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data lines in '${location}'`)
+    if (result.errorList.length || result.warningList.length)
+        addSuccessMessage(`checkUSFMText v${checkerVersionString} finished with ${result.errorList.length.toLocaleString()} errors and ${result.warningList.length.toLocaleString()} warnings`)
     else
-        addSuccessMessage("No errors or warnings found by checkTN_TSVText v" + checkerVersionString)
+        addSuccessMessage("No errors or warnings found by checkUSFMText v" + checkerVersionString)
     console.log(`  Returning with ${result.successList.length.toLocaleString()} successes, ${result.errorList.length.toLocaleString()} errors, ${result.warningList.length.toLocaleString()} warnings.`);
-    console.log("checkTN_TSVText result is", JSON.stringify(result));
+    // console.log("checkUSFMText result is", JSON.stringify(result));
     return result;
 }
 // end of checkUSFMText function

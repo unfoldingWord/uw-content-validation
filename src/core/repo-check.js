@@ -1,4 +1,4 @@
-import { React, useContext } from 'react';
+import React, { useContext } from 'react';
 // import PropTypes from 'prop-types';
 // import ReactJson from 'react-json-view';
 // import { Paper, Button } from '@material-ui/core';
@@ -531,11 +531,11 @@ export function RepoChecker() {
         }
 
         for (let j = 0; j < successList.length; j++) {
-            let success_msg = successList[j];
+            const success_msg = successList[j];
             msgLines += "Success: " + success_msg + "\n"
         }
         for (let j = 0; j < errorList.length; j++) {
-            let error_msg = errorList[j];
+            const error_msg = errorList[j];
             msgLines += "ERROR: " + error_msg + "\n"
         }
         if (errorList.length > 0) {
@@ -544,7 +544,7 @@ export function RepoChecker() {
             msgLines += "\n"
         }
         for (let j = 0; j < warningList.length; j++) {
-            let warning_msg = warningList[j];
+            const warning_msg = warningList[j];
             msgLines += "Warning: " + warning_msg + "\n"
         }
         if (warningList.length > 0) {
