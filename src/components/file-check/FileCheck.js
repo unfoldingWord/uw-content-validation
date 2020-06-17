@@ -150,7 +150,7 @@ export function FileCheck(props) {
             if (props.arrayType == 's')
                 return (<ol>
                     {result.successList.map(function (listEntry) {
-                        return <li><b style={{ color: 'green' }}>{listEntry}</b></li>;
+                        return <li key={listEntry.id}><b style={{ color: 'green' }}>{listEntry}</b></li>;
                     })}
                 </ol>
                 );
@@ -158,7 +158,7 @@ export function FileCheck(props) {
             const myList = props.arrayType == 'e' ? result.errorList : result.warningList;
             return (<ul>
                 {myList.map(function (listEntry) {
-                    return <li><b style={{ color: props.arrayType == 'e' ? 'red' : 'orange' }}>{listEntry[0]}</b> {(listEntry[1] > 0 ? " (at character " + (listEntry[1] + 1) + ")" : "")} {listEntry[2] ? " in '" + listEntry[2] + "'" : ""} {listEntry[3]}</li>;
+                    return <li key={listEntry.id}><b style={{ color: props.arrayType == 'e' ? 'red' : 'orange' }}>{listEntry[0]}</b> {(listEntry[1] > 0 ? " (at character " + (listEntry[1] + 1) + ")" : "")} {listEntry[2] ? " in '" + listEntry[2] + "'" : ""} {listEntry[3]}</li>;
                 })}
             </ul>
             );
@@ -167,6 +167,7 @@ export function FileCheck(props) {
 
         if (result.errorList.length || result.warningList.length)
             returnedResult = (<>
+                <p>Checked <b>{file.name}</b></p>
                 <b style={{ color: result.errorList.length ? 'red' : 'green' }}>{result.errorList.length} error{result.errorList.length == 1 ? '' : 's'}</b>{result.errorList.length ? ':' : ''}
                 <RenderArray arrayType='e' />
                 <b style={{ color: result.warningList.length ? 'orange' : 'green' }}>{result.warningList.length} warning{result.warningList.length == 1 ? '' : 's'}</b>{result.warningList.length ? ':' : ''}
@@ -174,6 +175,7 @@ export function FileCheck(props) {
             </>);
         else // no errors
             returnedResult = (<>
+                <p>Checked <b>{file.name}</b></p>
                 <b style={{ color: 'green' }}>{result.successList.length} check{result.successList.length == 1 ? '' : 's'} completed</b>{result.successList.length ? ':' : ''}
                 <RenderArray arrayType='s' />
             </>);

@@ -1,9 +1,9 @@
-[![Custom badge](https://img.shields.io/endpoint?color=%2374b9ff&url=https%3A%2F%2Fraw.githubusercontent.com%2unfoldingWord%2Fcontent-checker%2Fmaster%2Fcoverage%2Fshields.json)]()
-[![Install, Build & Run Cypress](https://github.com/unfoldingWord/content-checker/workflows/Install,%20Build%20&%20Run%20Cypress/badge.svg)]()
+[![Custom badge](https://img.shields.io/endpoint?color=%2374b9ff&url=https%3A%2F%2Fraw.githubusercontent.com%2unfoldingWord%2Fcontent-validation-rcl%2Fmaster%2Fcoverage%2Fshields.json)]()
+[![Install, Build & Run Cypress](https://github.com/unfoldingWord/content-validation-rcl/workflows/Install,%20Build%20&%20Run%20Cypress/badge.svg)]()
 
-# uW Content/Resource Checker React Component Library
+# uW Content/Resource Validation React Component Library
 
-GH Pages: https://unfoldingword.github.io/content-checker/
+GH Pages: https://unfoldingword.github.io/content-validation-rcl/
 
 ## The Stack
 

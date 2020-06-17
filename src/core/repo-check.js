@@ -220,7 +220,7 @@ function checkUSFMFile(file) {
         lastC = C; lastV = V;
     }
 
-    addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data lines in ${file.name}.`)
+    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} lines in ${file.name}.`)
     if (errorList || warningList)
         addSuccessMessage("RepoChecker v" + checkerVersionString + " finished with " + errorList.length + " errors and " + warningList.length + " warnings")
     else
@@ -488,7 +488,7 @@ function checkTN_TSVFile(file) {
 
         }
     }
-    addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data lines in ${file.name}.`)
+    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} lines in ${file.name}.`)
     if (errorList || warningList)
         addSuccessMessage(`RepoChecker v${checkerVersionString} finished with ${errorList.length.toLocaleString()} errors and ${warningList.length.toLocaleString()} warnings`)
     else

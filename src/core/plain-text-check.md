@@ -41,7 +41,7 @@ const result = checkPlainText(chosenName, chosenText, 'that was supplied');
 function RenderLines(props){
     return ( <ol>
         {props.text.split('\n').map(function(line){
-            return <li>{line}</li>;
+            return <li key={line.id}>{line}</li>;
         })}
         </ol>
     );
@@ -53,7 +53,7 @@ function RenderArray(props) {
     const myList = props.arrayType=='e'? result.errorList : result.warningList;
     return ( <ul>
             {myList.map(function(listEntry){
-                return <li><b style={{color:props.arrayType=='e'?'red':'orange'}}>{listEntry[0]}</b> {(listEntry[1]>0?" (at character "+(listEntry[1]+1)+")":"")} {listEntry[2]?" in '"+listEntry[2]+"'":""} {listEntry[3]}</li>;
+                return <li key={listEntry.id}><b style={{color:props.arrayType=='e'?'red':'orange'}}>{listEntry[0]}</b> {(listEntry[1]>0?" (at character "+(listEntry[1]+1)+")":"")} {listEntry[2]?" in '"+listEntry[2]+"'":""} {listEntry[3]}</li>;
             })}
           </ul>
     );

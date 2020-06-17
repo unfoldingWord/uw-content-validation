@@ -44,7 +44,7 @@ const [file, setFile] = React.useState();
     <FileContextProvider
       // If we don't put the filepath here, the user can select from a list
       // was 'en_tn_08-RUT.tsv' '08-RUT.usfm' '57-TIT.
-      filepath= '01-GEN.usfm'
+      filepath= '08-RUT.usfm'
       onFilepath={setFilepath}
       file={file}
       onFile={setFile}

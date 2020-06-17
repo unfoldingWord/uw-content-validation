@@ -122,7 +122,7 @@ function checkMarkdownText(textName, markdownText, location) {
         lastNumLeadingSpaces = numLeadingSpaces;
     }
 
-    addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data lines in '${location}'.`)
+    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} lines in '${location}'.`)
     if (result.errorList || result.warningList)
         addSuccessMessage(`checkMarkdownText v${checkerVersionString} finished with ${result.errorList.length.toLocaleString()} errors and ${result.warningList.length.toLocaleString()} warnings`)
     else

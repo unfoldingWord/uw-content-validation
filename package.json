@@ -1,12 +1,12 @@
 {
-  "name": "content-checker",
+  "name": "content-validation-rcl",
   "description": "Components for Checking uW Content/Resources.",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "private": false,
-  "homepage": "https://unfoldingword.github.io/content-checker/",
+  "homepage": "https://unfoldingword.github.io/content-validation-rcl/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/unfoldingWord/content-checker/"
+    "url": "https://github.com/unfoldingWord/content-validation-rcl/"
   },
   "license": "MIT",
   "engines": {
