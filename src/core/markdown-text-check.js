@@ -3,59 +3,37 @@ import doBasicTextChecks from './basic-text-check';
 
 
 const checkerVersionString = '0.0.1';
-const MAX_SIMILAR_MESSAGES = 3;
 
 
-function checkMarkdownText(textName, markdownText, location) {
+function checkMarkdownText(textName, markdownText, location, optionalOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
-     Returns a result object containing a successList, errorList, warningList
+     Returns a result object containing a successList and a warningList
      */
     console.log("checkMarkdownText(" + textName + ", " + markdownText.length + ", " + location + ")…");
     if (location[0] != ' ') location = ' ' + location;
 
-    let result = { successList: [], errorList: [], warningList: [] };
-    let suppressedErrorCount = 0, suppressedWarningCount = 0;
+    let result = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
         console.log("Success: " + successString);
         result.successList.push(successString);
     }
-    function addError(message, index, extract, location) {
-        // console.log("Markdown ERROR: " + message + (index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        let similarCount = 0;
-        result.errorList.forEach((errMsg) => { if (errMsg[0].startsWith(message)) similarCount += 1 });
-        if (similarCount < MAX_SIMILAR_MESSAGES)
-            // result.errorList.push(message + (index > 0 ? " (at character " + index+1 + ")" : "") + (extract ? " " + extract : "") + location);
-            result.errorList.push([message, index, extract, location]);
-        else if (similarCount == MAX_SIMILAR_MESSAGES)
-            result.errorList.push([`${message}  ◄ MORE SIMILAR ERRORS SUPPRESSED`, -1, "", ""]);
-        else suppressedErrorCount += 1;
-    }
-    function addWarning(message, index, extract, location) {
-        // console.log("Markdown Warning: " + message + (index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        let similarCount = 0;
-        result.warningList.forEach((warningMsg) => { if (warningMsg[0].startsWith(message)) similarCount += 1 });
-        if (similarCount < MAX_SIMILAR_MESSAGES)
-            // result.warningList.push(message + (index > 0 ? " (at character " + index+1 + ")" : "") + (extract ? " " + extract : "") + location);
-            result.warningList.push([message, index, extract, location]);
-        else if (similarCount == MAX_SIMILAR_MESSAGES)
-            result.warningList.push([`${message}  ◄ MORE SIMILAR WARNINGS SUPPRESSED`, -1, "", ""]);
-        else suppressedWarningCount += 1;
+    function addNotice(priority, message, index, extract, location) {
+        console.log("Markdown Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
+        result.noticeList.push([priority, message, index, extract, location]);
     }
 
-    function doOurBasicTextChecks(fieldName, fieldText, linkTypes, optionalFieldLocation) {
+    function doOurBasicTextChecks(fieldName, fieldText, linkTypes, optionalFieldLocation, optionalOptions) {
         // Does basic checks for small errors like leading/trailing spaces, etc.
 
         // We assume that checking for compulsory fields is done elsewhere
 
-        // Updates the global error and warning lists
+        // Updates the global list of notices
 
-        const resultObject = doBasicTextChecks(fieldName, fieldText, linkTypes, optionalFieldLocation)
-        for (let errorEntry of resultObject.errorList)
-            addError(errorEntry[0], errorEntry[1], errorEntry[2], errorEntry[3]);
-        for (let warningEntry of resultObject.warningList)
-            addWarning(warningEntry[0], warningEntry[1], warningEntry[2], warningEntry[3]);
+        const resultObject = doBasicTextChecks(fieldName, fieldText, linkTypes, optionalFieldLocation, optionalOptions);
+        for (let noticeEntry of resultObject.noticeList)
+            addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
     }
     // end of doOurBasicTextChecks function
 
@@ -81,7 +59,7 @@ function checkMarkdownText(textName, markdownText, location) {
         // console.log("After removing more leading spaces have '"+thisText+"'");
 
         if (thisText)
-            doOurBasicTextChecks(lineName, thisText, [], lineLocation);
+            doOurBasicTextChecks(lineName, thisText, [], lineLocation, optionalOptions);
     }
     // end of checkMarkdownLine function
 
@@ -103,14 +81,14 @@ function checkMarkdownText(textName, markdownText, location) {
             const thisHeaderLevel = line.match(/^#*/)[0].length;
             // console.log("Got thisHeaderLevel="+ thisHeaderLevel + " for "+line+atString);
             if (thisHeaderLevel > headerLevel+1)
-                addWarning("Header levels should only increment by one", 0, '', atString);
+                addNotice(172, "Header levels should only increment by one", 0, '', atString);
             if (thisHeaderLevel > 0)
                 headerLevel = thisHeaderLevel;
 
             numLeadingSpaces = line.match(/^ */)[0].length;
             console.log("Got numLeadingSpaces="+ numLeadingSpaces + " for "+line+atString);
             if (numLeadingSpaces && lastNumLeadingSpaces && numLeadingSpaces!=lastNumLeadingSpaces)
-                addWarning("Nesting seems confused", 0, '', atString);
+                addNotice(472, "Nesting seems confused", 0, '', atString);
 
             checkMarkdownLineContents("line "+n.toLocaleString(), line, location);
         } else {
@@ -123,11 +101,11 @@ function checkMarkdownText(textName, markdownText, location) {
     }
 
     addSuccessMessage(`Checked all ${lines.length.toLocaleString()} lines in '${location}'.`)
-    if (result.errorList || result.warningList)
-        addSuccessMessage(`checkMarkdownText v${checkerVersionString} finished with ${result.errorList.length.toLocaleString()} errors and ${result.warningList.length.toLocaleString()} warnings`)
+    if (result.errorList || result.noticeList)
+        addSuccessMessage(`checkMarkdownText v${checkerVersionString} finished with ${result.errorList.length.toLocaleString()} errors and ${result.noticeList.length.toLocaleString()} warnings`)
     else
         addSuccessMessage("No errors or warnings found by checkMarkdownText v" + checkerVersionString)
-    console.log(`  Returning with ${result.successList.length.toLocaleString()} successes, ${result.errorList.length.toLocaleString()} errors, ${result.warningList.length.toLocaleString()} warnings.`);
+    console.log(`  Returning with ${result.successList.length.toLocaleString()} successes, ${result.errorList.length.toLocaleString()} errors, ${result.noticeList.length.toLocaleString()} warnings.`);
     // console.log("checkMarkdownText result is", JSON.stringify(result));
     return result;
 }

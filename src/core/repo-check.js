@@ -41,50 +41,29 @@ const checkerVersionString = '0.0.4';
 // }
 
 
-let MAX_SIMILAR_MESSAGES = 3;
 let successList = [];
-let errorList = [];
-let warningList = [];
-let suppressedErrorCount = 0, suppressedWarningCount = 0;
+let noticeList = [];
 
 function addSuccessMessage(successString) {
     console.log("Success: " + successString);
     successList.push(successString);
 }
-function addError(message, index, extract, location) {
-    console.log("r-c ERROR: " + message + (index>0?" (at character "+index+1+")":"") + (extract?" "+extract:"") + location);
-    let similarCount = 0;
-    errorList.forEach((errMsg) => { if (errMsg[0].startsWith(message)) similarCount += 1 });
-    if (similarCount < MAX_SIMILAR_MESSAGES)
-        errorList.push(message + (index>0?" (at character "+index+1+")":"") + (extract?" "+extract:"") + location);
-    else if (similarCount == MAX_SIMILAR_MESSAGES)
-        errorList.push(`${message}  ◄ MORE SIMILAR ERRORS SUPPRESSED`);
-    else suppressedErrorCount += 1;
-}
-function addWarning(message, index, extract, location) {
-    console.log("r-c Warning: "+message + (index>0?" (at character "+index+1+")":"") + (extract?" "+extract:"") + location);
-    let similarCount = 0;
-    warningList.forEach((warningMsg) => { if (warningMsg[0].startsWith(message)) similarCount += 1 });
-    if (similarCount < MAX_SIMILAR_MESSAGES)
-        warningList.push(message + (index>0?" (at character "+index+1+")":"") + (extract?" "+extract:"") + location);
-    else if (similarCount == MAX_SIMILAR_MESSAGES)
-        warningList.push(`${message}  ◄ MORE SIMILAR WARNINGS SUPPRESSED`);
-    else suppressedWarningCount += 1;
+function addNotice(priority, message, index, extract, location) {
+    console.log("r-c Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
+    result.noticeList.push([priority, message, index, extract, location]);
 }
 
 
-function doOurBasicTextChecks(fieldName, fieldText, linkTypes, optionalFieldLocation) {
+function doOurBasicTextChecks(fieldName, fieldText, linkTypes, optionalFieldLocation, optionalOptions) {
     // Does basic checks for small errors like leading/trailing spaces, etc.
 
     // We assume that checking for compulsory fields is done elsewhere
 
-    // Updates the global error and warning lists
+    // Updates the global list of notices
 
-    const resultObject = doBasicTextChecks(fieldName, fieldText, linkTypes, optionalFieldLocation)
-    for (let errorEntry in resultObject.errorList)
-        addError(errorEntry[0], errorEntry[1], errorEntry[2], errorEntry[3]);
-    for (let warningEntry in resultObject.warningList)
-        addError(warningEntry[0], warningEntry[1], warningEntry[2], warningEntry[3]);
+    const resultObject = doBasicTextChecks(fieldName, fieldText, linkTypes, optionalFieldLocation, optionalOptions);
+    for (let noticeEntry in resultObject.noticeList)
+        addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
 }
 // end of doOurBasicTextChecks function
 
@@ -94,19 +73,19 @@ function checkMarkdownFile(file) {
 
       It also has the advantage of being able to compare one line with the previous one.
 
-     Updates successList, errorList, warningList
+     Updates successList and warningList
      */
     console.log("checkMarkdownFile(" + file.name + ")…");
 
     let lastThreeFilenameChars = file.name.substring(file.name.length - 3);
     if (lastThreeFilenameChars != '.md')
-        addError("Filename '" + file.name + "' should end with '.md'", " (not '" + lastThreeFilenameChars + "')");
+        addNotice(500, "Filename '" + file.name + "' should end with '.md'", " (not '" + lastThreeFilenameChars + "')");
     else { // should be in form en_tn_08-RUT.tsv
         let mainFilenamePart = file.name.substring(0, file.name.length - 3);
         console.log("mainFilenamePart", mainFilenamePart);
         let underlineCount = countOccurrences(file.name, '_');
         if (underlineCount != 2)
-            addError("Filename '" + file.name + "' should contain exactly three underscore characters", " (found " + underlineCount + ")");
+            addNotice(500, "Filename '" + file.name + "' should contain exactly three underscore characters", " (found " + underlineCount + ")");
         let filename_bits = mainFilenamePart.substring(0, mainFilenamePart.length - 4).split('_');
         console.assert(filename_bits.length == 3);
     }
@@ -129,7 +108,7 @@ const MARKERS_WITHOUT_CONTENT = ['b', 'ts-s', 's5']; // TEMP XXXXX
 const MARKERS_WITH_COMPULSORY_CONTENT = [].concat(INTRO_LINE_START_MARKERS).concat(HEADING_MARKERS)
     .concat(CV_MARKERS).concat(NOTE_MARKERS).concat(SPECIAL_MARKERS);
 function checkUSFMFile(file) {
-    // Updates successList, errorList, warningList
+    // Updates successList and warningList
     console.log("checkUSFMFile(" + file.name + ")…");
 
     function checkUSFMLine(marker, rest, lineLocation) {
@@ -138,31 +117,31 @@ function checkUSFMFile(file) {
             if (rest) {
                 if (MARKERS_WITHOUT_CONTENT.indexOf(marker) >= 0)
                     if (isWhitespace(rest))
-                        addWarning(`Unexpected whitespace '${rest}'`, ` after \\${marker} marker${lineLocation}`);
+                        addNotice(500, `Unexpected whitespace '${rest}'`, ` after \\${marker} marker${lineLocation}`);
                     else
-                        addError(`Unexpected content '${rest}'`, ` after \\${marker} marker${lineLocation}`);
+                        addNotice(500, `Unexpected content '${rest}'`, ` after \\${marker} marker${lineLocation}`);
                 else if (rest[0] == ' ') {
                     let extract = rest.substring(0, 10).replace(/ /g, '␣');
                     if (rest.length > 10) extract += '…';
                     if (isWhitespace(rest))
-                        addWarning(`Found only whitespace with \\${marker}`, ` being '${extract}'${lineLocation}`);
+                        addNotice(500, `Found only whitespace with \\${marker}`, ` being '${extract}'${lineLocation}`);
                     else
-                        addWarning(`Unexpected leading space(s) for \\${marker}`, ` with '${extract}'${lineLocation}`);
+                        addNotice(500, `Unexpected leading space(s) for \\${marker}`, ` with '${extract}'${lineLocation}`);
                 }
 
             } else { // nothing following the marker
                 if (MARKERS_WITH_COMPULSORY_CONTENT.indexOf(marker) >= 0)
-                    addError("Expected compulsory content", ` after \\${marker} marker${lineLocation}`);
+                    addNotice(500, "Expected compulsory content", ` after \\${marker} marker${lineLocation}`);
             }
         } else
-            addError(`Unexpected '${marker}' marker at start of line`, atString);
+            addNotice(500, `Unexpected '${marker}' marker at start of line`, atString);
     }
     // end of checkUSFMLine function
 
     let lastFiveFilenameChars = file.name.substring(file.name.length - 5)
     let BBB; // 3-character UPPERCASE USFM bookcode
     if (lastFiveFilenameChars != '.usfm')
-        addError(`Filename '${file.name}' should end with '.usfm'`, ` (not '${lastFiveFilenameChars}')`);
+        addNotice(500, `Filename '${file.name}' should end with '.usfm'`, ` (not '${lastFiveFilenameChars}')`);
     else { // should be in form 08-RUT.usfm
         let mainFilenamePart = file.name.substring(0, file.name.length - 5);
         console.log("mainFilenamePart", mainFilenamePart);
@@ -170,10 +149,10 @@ function checkUSFMFile(file) {
         console.log("BBB = " + BBB);
         let pre_BBB_char = mainFilenamePart.charAt(mainFilenamePart.length - 4);
         if (pre_BBB_char != '-')
-            addError("Filename '" + file.name + "' should contain a hyphen before the book code", " (not '" + pre_BBB_char + "')");
+            addNotice(500, "Filename '" + file.name + "' should contain a hyphen before the book code", " (not '" + pre_BBB_char + "')");
         let underlineCount = countOccurrences(file.name, '_');
         if (underlineCount != 0)
-            addError("Filename '" + file.name + "' should contain no underscore characters", " (found " + underlineCount + ")");
+            addNotice(500, "Filename '" + file.name + "' should contain no underscore characters", " (found " + underlineCount + ")");
         // let filename_bits = mainFilenamePart.substring(0, mainFilenamePart.length - 4).split('_');
         // console.assert(filename_bits.length == 3);
     }
@@ -185,7 +164,7 @@ function checkUSFMFile(file) {
         numChaptersThisBook = books.chaptersInBook(bbb).length;
     }
     catch {
-        addError("Filename '" + file.name + "' should contain a valid book number", " (not '" + BBB + "')");
+        addNotice(500, "Filename '" + file.name + "' should contain a valid book number", " (not '" + BBB + "')");
     }
 
     let lines = file.content.split('\n');
@@ -199,13 +178,13 @@ function checkUSFMFile(file) {
         let atString = " at " + BBB + " " + C + ":" + V + " on line " + n.toLocaleString() + " of " + file.name;
         // console.log("line '"+ line+"'"+ atString);
         if (!line) {
-            // addWarning("Unexpected blank line" + atString);
+            // addNotice(500, "Unexpected blank line" + atString);
             continue;
         }
         if (line.indexOf('\r') >= 0)
-            addError("Unexpected carriageReturn character", atString);
+            addNotice(500, "Unexpected carriageReturn character", atString);
         if (line[0] != '\\')
-            addError("Expected line to start with backslash not '" + line[0] + "'", atString);
+            addNotice(500, "Expected line to start with backslash not '" + line[0] + "'", atString);
 
         let marker = line.substring(1).split(' ', 1)[0];
         let rest = line.substring(marker.length + 2)
@@ -221,11 +200,11 @@ function checkUSFMFile(file) {
     }
 
     addSuccessMessage(`Checked all ${lines.length.toLocaleString()} lines in ${file.name}.`)
-    if (errorList || warningList)
-        addSuccessMessage("RepoChecker v" + checkerVersionString + " finished with " + errorList.length + " errors and " + warningList.length + " warnings")
+    if (errorList || noticeList)
+        addSuccessMessage("RepoChecker v" + checkerVersionString + " finished with " + errorList.length + " errors and " + noticeList.length + " warnings")
     else
         addSuccessMessage("No errors or warnings found by RepoChecker v" + checkerVersionString)
-    console.log("  Returning with " + successList.length + " successes, " + errorList.length + " errors, " + warningList.length + " warnings.");
+    console.log("  Returning with " + successList.length + " successes, " + errorList.length + " errors, " + noticeList.length + " warnings.");
 }
 
 
@@ -238,7 +217,7 @@ function checkTN_TSVDataRow(BBB, line, rowLocation) {
 
           It's designed to be able to quickly show errors for a single row being displayed/edited.
 
-  Updates successList, errorList, warningList
+  Updates successList and warningList
  */
     console.log("checkTN_TSVDataRow(" + BBB + ", " + line + ", " + rowLocation + ")…");
 
@@ -256,10 +235,10 @@ function checkTN_TSVDataRow(BBB, line, rowLocation) {
         // Check the fields one-by-one
         if (B) {
             if (B != BBB)
-                addError("Wrong '" + B + "' book code", " (expected '" + BBB + "')" + CV_withString);
+                addNotice(500, "Wrong '" + B + "' book code", " (expected '" + BBB + "')" + CV_withString);
         }
         else
-            addError("Missing book code", " at" + CV_withString);
+            addNotice(500, "Missing book code", " at" + CV_withString);
 
         let numVersesThisChapter;
         if (C) {
@@ -268,59 +247,59 @@ function checkTN_TSVDataRow(BBB, line, rowLocation) {
                 let intC = Number(C);
                 numVersesThisChapter = books.versesInChapter(bbb, intC);
                 if (intC == 0)
-                    addError("Invalid zero '" + C + "' chapter number", atString);
+                    addNotice(500, "Invalid zero '" + C + "' chapter number", atString);
                 if (intC > numChaptersThisBook)
-                    addError("Invalid large '" + C + "' chapter number", atString);
+                    addNotice(500, "Invalid large '" + C + "' chapter number", atString);
             }
             else
-                addError("Bad chapter number", " with" + CV_withString);
+                addNotice(500, "Bad chapter number", " with" + CV_withString);
         }
         else
-            addError("Missing chapter number", ` ?:${V}${withString}`);
+            addNotice(500, "Missing chapter number", ` ?:${V}${withString}`);
 
         if (V) {
             if (V == 'intro') { }
             else if (/^\d+$/.test(V)) {
                 let intV = Number(V);
                 if (intV == 0)
-                    addError("Invalid zero '" + V + "' verse number", atString);
+                    addNotice(500, "Invalid zero '" + V + "' verse number", atString);
                 if (intV > numVersesThisChapter)
-                    addError("Invalid large '" + V + "' verse number", " for chapter " + C + atString);
+                    addNotice(500, "Invalid large '" + V + "' verse number", " for chapter " + C + atString);
             }
             else
-                addError("Bad verse number", atString);
+                addNotice(500, "Bad verse number", atString);
 
         }
         else
-            addError("Missing verse number", ` after ${C}:? ${withString}`);
+            addNotice(500, "Missing verse number", ` after ${C}:? ${withString}`);
 
         if (!fieldID)
-            addError("Missing ID", atString);
+            addNotice(500, "Missing ID", atString);
 
         if (support_reference) { // need to check UTN against UTA
-            doOurBasicTextChecks('SupportReference', support_reference, atString);
+            doOurBasicTextChecks('SupportReference', support_reference, atString, optionalOptions);
         }
 
 
         if (orig_quote) { // need to check UTN against UHB and UGNT
-            doOurBasicTextChecks('OrigQuote', orig_quote, 0, atString);
+            doOurBasicTextChecks('OrigQuote', orig_quote, 0, atString, optionalOptions);
         }
 
         if (occurrence) { // This should usually be a digit
             if (occurrence == '0') {
                 if (V != 'intro')
-                    addError("Invalid '" + occurrence + "' occurrence field", atString);
+                    addNotice(500, "Invalid '" + occurrence + "' occurrence field", atString);
             }
             else if ('123456789'.indexOf(occurrence) < 0)
-                addError("Invalid '" + occurrence + "' occurrence field", atString);
+                addNotice(500, "Invalid '" + occurrence + "' occurrence field", atString);
         }
 
         if (GL_quote) { // need to check UTN against ULT
-            doOurBasicTextChecks('GLQuote', GL_quote, 0, atString);
+            doOurBasicTextChecks('GLQuote', GL_quote, 0, atString, optionalOptions);
         }
 
         if (occurrenceNote) {
-            doOurBasicTextChecks('OccurrenceNote', occurrenceNote, 1, atString);
+            doOurBasicTextChecks('OccurrenceNote', occurrenceNote, 1, atString, optionalOptions);
         }
 
     } else
@@ -334,14 +313,14 @@ function checkTN_TSVFile(file) {
 
       It also has the advantage of being able to compare one row with the previous one.
 
-     Updates successList, errorList, warningList
+     Updates successList and warningList
      */
     console.log("checkTN_TSVFile(" + file.name + ")…");
 
     let lastFourFilenameChars = file.name.substring(file.name.length - 4);
     let BBB; // 3-character UPPERCASE USFM bookcode
     if (lastFourFilenameChars != '.tsv')
-        addError("Filename '" + file.name + "' should end with '.tsv'", " (not '" + lastFourFilenameChars + "')");
+        addNotice(500, "Filename '" + file.name + "' should end with '.tsv'", " (not '" + lastFourFilenameChars + "')");
     else { // should be in form en_tn_08-RUT.tsv
         let mainFilenamePart = file.name.substring(0, file.name.length - 4);
         console.log("mainFilenamePart", mainFilenamePart);
@@ -349,10 +328,10 @@ function checkTN_TSVFile(file) {
         console.log("BBB = " + BBB);
         let pre_BBB_char = mainFilenamePart.charAt(mainFilenamePart.length - 4);
         if (pre_BBB_char != '-')
-            addError("Filename '" + file.name + "' should contain a hyphen before the book code", " (not '" + pre_BBB_char + "')");
+            addNotice(500, "Filename '" + file.name + "' should contain a hyphen before the book code", " (not '" + pre_BBB_char + "')");
         let underlineCount = countOccurrences(file.name, '_');
         if (underlineCount != 2)
-            addError("Filename '" + file.name + "' should contain exactly three underscore characters", " (found " + underlineCount + ")");
+            addNotice(500, "Filename '" + file.name + "' should contain exactly three underscore characters", " (found " + underlineCount + ")");
         let filename_bits = mainFilenamePart.substring(0, mainFilenamePart.length - 4).split('_');
         console.assert(filename_bits.length == 3);
     }
@@ -364,7 +343,7 @@ function checkTN_TSVFile(file) {
         numChaptersThisBook = books.chaptersInBook(bbb).length;
     }
     catch {
-        addError("Filename '" + file.name + "' should contain a valid book number", " (not '" + BBB + "')");
+        addNotice(500, "Filename '" + file.name + "' should contain a valid book number", " (not '" + BBB + "')");
     }
 
     let lines = file.content.split('\n');
@@ -378,7 +357,7 @@ function checkTN_TSVFile(file) {
             if (lines[0] == EXPECTED_TN_HEADING_LINE)
                 addSuccessMessage("Checked TSV header in " + file.name);
             else
-                addError("Bad TSV header", " in " + file.name + ": '" + lines[0] + "'");
+                addNotice(500, "Bad TSV header", " in " + file.name + ": '" + lines[0] + "'");
         }
         else // not the header
         {
@@ -394,10 +373,10 @@ function checkTN_TSVFile(file) {
                 // Check the fields one-by-one
                 if (B) {
                     if (B != BBB)
-                        addError("Wrong '" + B + "' book code (expected '" + BBB + "')", CV_withString);
+                        addNotice(500, "Wrong '" + B + "' book code (expected '" + BBB + "')", CV_withString);
                 }
                 else
-                    addError("Missing book code", " at" + CV_withString);
+                    addNotice(500, "Missing book code", " at" + CV_withString);
 
                 if (C) {
                     if (C == 'front') { }
@@ -406,76 +385,76 @@ function checkTN_TSVFile(file) {
                         if (C != lastC)
                             numVersesThisChapter = books.versesInChapter(bbb, intC);
                         if (intC == 0)
-                            addError("Invalid zero '" + C + "' chapter number", atString);
+                            addNotice(500, "Invalid zero '" + C + "' chapter number", atString);
                         if (intC > numChaptersThisBook)
-                            addError("Invalid large '" + C + "' chapter number", atString);
+                            addNotice(500, "Invalid large '" + C + "' chapter number", atString);
                         if (/^\d+$/.test(lastC)) {
                             let lastintC = Number(lastC);
                             if (intC < lastintC)
-                                addError("Receding '" + C + "' chapter number after '" + lastC + "'", atString);
+                                addNotice(500, "Receding '" + C + "' chapter number after '" + lastC + "'", atString);
                             else if (intC > lastintC + 1)
-                                addError("Advancing '" + C + "' chapter number after '" + lastC + "'", atString);
+                                addNotice(500, "Advancing '" + C + "' chapter number after '" + lastC + "'", atString);
                         }
                     }
                     else
-                        addError("Bad chapter number", " with" + CV_withString);
+                        addNotice(500, "Bad chapter number", " with" + CV_withString);
                 }
                 else
-                    addError("Missing chapter number", " after " + lastC + ':' + V + withString);
+                    addNotice(500, "Missing chapter number", " after " + lastC + ':' + V + withString);
 
                 if (V) {
                     if (V == 'intro') { }
                     else if (/^\d+$/.test(V)) {
                         let intV = Number(V);
                         if (intV == 0)
-                            addError("Invalid zero '" + V + "' verse number", atString);
+                            addNotice(500, "Invalid zero '" + V + "' verse number", atString);
                         if (intV > numVersesThisChapter)
-                            addError("Invalid large '" + V + "' verse number for chapter " + C, atString);
+                            addNotice(500, "Invalid large '" + V + "' verse number for chapter " + C, atString);
                         if (/^\d+$/.test(lastV)) {
                             let lastintV = Number(lastV);
                             if (intV < lastintV)
-                                addError("Receding '" + V + "' verse number after '" + lastV + "'", atString);
+                                addNotice(500, "Receding '" + V + "' verse number after '" + lastV + "'", atString);
                             // else if (intV > lastintV + 1)
-                            //   addWarning("Skipped verses with '" + V + "' verse number after '" + lastV + "'" + atString);
+                            //   addNotice(500, "Skipped verses with '" + V + "' verse number after '" + lastV + "'" + atString);
                         }
                     }
                     else
-                        addError("Bad verse number", atString);
+                        addNotice(500, "Bad verse number", atString);
 
                 }
                 else
-                    addError("Missing verse number", " after " + C + ':' + lastV + withString);
+                    addNotice(500, "Missing verse number", " after " + C + ':' + lastV + withString);
 
                 if (fieldID) {
                     if (fieldID_list.indexOf(fieldID) >= 0)
-                        addError("Duplicate '" + fieldID + "' ID", atString);
+                        addNotice(500, "Duplicate '" + fieldID + "' ID", atString);
                 } else
-                    addError("Missing ID", atString);
+                    addNotice(500, "Missing ID", atString);
 
                 if (support_reference) { // need to check UTN against UTA
-                    doOurBasicTextChecks('SupportReference', support_reference, atString);
+                    doOurBasicTextChecks('SupportReference', support_reference, atString, optionalOptions);
                 }
 
 
                 if (orig_quote) { // need to check UTN against UHB and UGNT
-                    doOurBasicTextChecks('OrigQuote', orig_quote, atString);
+                    doOurBasicTextChecks('OrigQuote', orig_quote, atString, optionalOptions);
                 }
 
                 if (occurrence) { // This should usually be a digit
                     if (occurrence == '0') {
                         if (V != 'intro')
-                            addError("Invalid '" + occurrence + "' occurrence field", atString);
+                            addNotice(500, "Invalid '" + occurrence + "' occurrence field", atString);
                     }
                     else if ('123456789'.indexOf(occurrence) < 0)
-                        addError("Invalid '" + occurrence + "' occurrence field", atString);
+                        addNotice(500, "Invalid '" + occurrence + "' occurrence field", atString);
                 }
 
                 if (GL_quote) { // need to check UTN against ULT
-                    doOurBasicTextChecks('GLQuote', GL_quote, atString);
+                    doOurBasicTextChecks('GLQuote', GL_quote, atString, optionalOptions);
                 }
 
                 if (occurrenceNote) {
-                    doOurBasicTextChecks('OccurrenceNote', occurrenceNote, atString);
+                    doOurBasicTextChecks('OccurrenceNote', occurrenceNote, atString, optionalOptions);
                 }
 
                 if (B != lastB || C != lastC || V != lastV) {
@@ -489,12 +468,12 @@ function checkTN_TSVFile(file) {
         }
     }
     addSuccessMessage(`Checked all ${lines.length.toLocaleString()} lines in ${file.name}.`)
-    if (errorList || warningList)
-        addSuccessMessage(`RepoChecker v${checkerVersionString} finished with ${errorList.length.toLocaleString()} errors and ${warningList.length.toLocaleString()} warnings`)
+    if (errorList || noticeList)
+        addSuccessMessage(`RepoChecker v${checkerVersionString} finished with ${errorList.length.toLocaleString()} errors and ${noticeList.length.toLocaleString()} warnings`)
     else
         addSuccessMessage("No errors or warnings found by RepoChecker v" + checkerVersionString)
-    console.log(`  Returning with ${successList.length.toLocaleString()} successes, ${errorList.length.toLocaleString()} errors, ${warningList.length.toLocaleString()} warnings.`);
-    // return [successList, errorList, warningList];
+    console.log(`  Returning with ${successList.length.toLocaleString()} successes, ${errorList.length.toLocaleString()} errors, ${noticeList.length.toLocaleString()} warnings.`);
+    // return [successList and warningList];
 }
 // end of checkTN_TSVFile function
 
@@ -508,7 +487,7 @@ export function RepoChecker() {
     // Main part of RepoChecker function
     successList.length = 0;
     errorList.length = 0;
-    warningList.length = 0;
+    noticeList.length = 0;
     suppressedErrorCount = 0;
     suppressedWarningCount = 0;
     let msgLines = '';
@@ -543,12 +522,12 @@ export function RepoChecker() {
             if (suppressedErrorCount > 0) msgLines += " (" + suppressedErrorCount.toLocaleString() + " further errors suppressed.)"
             msgLines += "\n"
         }
-        for (let j = 0; j < warningList.length; j++) {
-            const warning_msg = warningList[j];
+        for (let j = 0; j < noticeList.length; j++) {
+            const warning_msg = noticeList[j];
             msgLines += "Warning: " + warning_msg + "\n"
         }
-        if (warningList.length > 0) {
-            msgLines += "Displayed " + warningList.length.toLocaleString() + " warnings above.";
+        if (noticeList.length > 0) {
+            msgLines += "Displayed " + noticeList.length.toLocaleString() + " warnings above.";
             if (suppressedWarningCount > 0) msgLines += " (" + suppressedWarningCount.toLocaleString() + " further warnings suppressed.)"
             msgLines += "\n"
         }

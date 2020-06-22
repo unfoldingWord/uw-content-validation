@@ -14,6 +14,41 @@ GH Pages: https://unfoldingword.github.io/content-validation-rcl/
 - Github + NPM + Github Pages for Hosting.
 - Cypress for testing
 
+## Design Philosophy
+
+This code is designed to thoroughly check various types of Bible-related content data files. This includes:
+
+1. Unified Standard Format Marker (USFM) Bible content files, including aligned Bibles
+1. Translation Notes (TN) tables in Tab-Separated Values (TSV) files
+1. Markdown files (and markdown fields in TSV files)
+1. Plain-text files
+1. Metadata (manifest) JSON files (not implemented yet)
+
+Note: There is also a separate function for checking individual TN/TSV lines which is intended to be able to provide instant user feedback if built into a TSV editor.
+
+The higher-level checking functions provide:
+
+1. A list of things that were checked (successList)
+1. A list of (higher-priority) errors
+1. A list of (lower-priority) warnings
+
+However, the lower-level checking functions provide only one list of `notices` (i.e., warnings/errors) consisting of:
+
+1. A notice priority number in the range 1-1000. Each different type of warning/error has a unique number (but not each instance of those warnings/errors). By default, notice priority numbers 700 and over are considered `errors` and 0-699 are considered `warnings`.
+1. The actual general description text of the notice
+1. A zero-based integer index which indicates the position of the error on the line or in the text as appropriate. -1 indicates that this index does not contain any useful information.
+1. An extract of the checked text which indicates the area containing the problem. Where helpful, some character substitutions have already been made, for example, if the notice is about spaces, it is generally helpful to display spaces as a visible character in an attempt to best highlight the issue to the user.
+1. A string indicating the context of the notice, e.g., `in line 17 of 'someBook.usfm'.
+1. ~~An optional list of character substitions that would be helpful for displaying an extract of the offending line. For example, if the notice is about spaces, it is generally helpful to display spaces as a visible character in an attempt to best highlight the issue to the user.~~
+
+Keeping our notices in this format, rather than the simplicity of just saving an array of single strings, allows the above *notice components* to be processed at a higher level. The default is to funnel them all through the supplied `xx` function which does the following:
+
+1. Removes excess repeated errors. For example, if there's a systematic error in a file, say with unneeded leading spaces in every field, rather than returning with hundreds of errors, only the first several errors will be returned, followed by an "errors suppressed" message.
+1. Separates notices into error and warning lists based on the priority number.
+1. Combines all the notice components into a single string.
+
+However, the user is, of course, free to create their own alternative version of this function. This is probably also the place to consider localisation of all the notices into different interface languages.
+
 ## Functionality and Limitations
 
 See component `README` for details.

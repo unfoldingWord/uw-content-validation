@@ -4,11 +4,10 @@ import doBasicTextChecks from './basic-text-check';
 
 
 const checkerVersionString = '0.0.5';
-const MAX_SIMILAR_MESSAGES = 3;
 
 
 const INTRO_LINE_START_MARKERS = ['id', 'usfm', 'ide', 'h',
-    'toc1', 'toc22', 'toc3', 'mt', 'mt1', 'mt2'];
+    'toc1', 'toc2', 'toc3', 'mt', 'mt1', 'mt2'];
 const CV_MARKERS = ['c', 'v'];
 const HEADING_MARKERS = ['s', 's1', 's2', 's3', 's4', 'r', 'd', 'rem'];
 const PARAGRAPH_MARKERS = ['p', 'q', 'q1', 'q2', 'q3', 'q4', 'm',
@@ -26,66 +25,45 @@ const MARKERS_WITH_COMPULSORY_CONTENT = [].concat(INTRO_LINE_START_MARKERS).conc
     .concat(CV_MARKERS).concat(NOTE_MARKERS).concat(SPECIAL_MARKERS);
 
 
-function checkUSFMText(BBB, tableText, location) {
+function checkUSFMText(BBB, tableText, location, optionalOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
-     Returns a result object containing a successList, errorList, warningList
+     Returns a result object containing a successList and a warningList
      */
     console.log("checkUSFMText(" + BBB + ", " + tableText.length.toLocaleString() + " chars, '" + location + "')…");
     if (location[0] != ' ') location = ' ' + location;
 
-    let result = { successList: [], errorList: [], warningList: [] };
-    let suppressedErrorCount = 0, suppressedWarningCount = 0;
+    let result = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
         console.log("Success: " + successString);
         result.successList.push(successString);
     }
-    function addError(message, index, extract, location) {
-        // console.log("USFM ERROR: " + message + (index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        let similarCount = 0;
-        result.errorList.forEach((errMsg) => { if (errMsg[0].startsWith(message)) similarCount += 1 });
-        if (similarCount < MAX_SIMILAR_MESSAGES)
-            // result.errorList.push(message + (index > 0 ? " (at character " + index+1 + ")" : "") + (extract ? " " + extract : "") + location);
-            result.errorList.push([message, index, extract, location]);
-        else if (similarCount == MAX_SIMILAR_MESSAGES)
-            result.errorList.push([`${message}  ◄ MORE SIMILAR ERRORS SUPPRESSED`, -1, "", ""]);
-        else suppressedErrorCount += 1;
-    }
-    function addWarning(message, index, extract, location) {
-        // console.log("USFM Warning: " + message + (index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        let similarCount = 0;
-        result.warningList.forEach((warningMsg) => { if (warningMsg[0].startsWith(message)) similarCount += 1 });
-        if (similarCount < MAX_SIMILAR_MESSAGES)
-            // result.warningList.push(message + (index > 0 ? " (at character " + index+1 + ")" : "") + (extract ? " " + extract : "") + location);
-            result.warningList.push([message, index, extract, location]);
-        else if (similarCount == MAX_SIMILAR_MESSAGES)
-            result.warningList.push([`${message}  ◄ MORE SIMILAR WARNINGS SUPPRESSED`, -1, "", ""]);
-        else suppressedWarningCount += 1;
+    function addNotice(priority, message, index, extract, location) {
+        // console.log("USFM Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
+        result.noticeList.push([priority, message, index, extract, location]);
     }
 
 
-    function doOurBasicTextChecks(fieldName, fieldText, linkTypes, fieldLocation) {
+    function doOurBasicTextChecks(fieldName, fieldText, linkTypes, fieldLocation, optionalOptions) {
         // Does basic checks for small errors like leading/trailing spaces, etc.
 
         // We assume that checking for compulsory fields is done elsewhere
 
-        // Updates the global error and warning lists
+        // Updates the global list of notices
 
-        const resultObject = doBasicTextChecks(fieldName, fieldText, linkTypes, fieldLocation)
-        for (let errorEntry of resultObject.errorList)
-            addError(errorEntry[0], errorEntry[1], errorEntry[2], errorEntry[3]);
-        for (let warningEntry of resultObject.warningList)
-            addWarning(warningEntry[0], warningEntry[1], warningEntry[2], warningEntry[3]);
+        const resultObject = doBasicTextChecks(fieldName, fieldText, linkTypes, fieldLocation, optionalOptions);
+        for (let noticeEntry of resultObject.noticeList)
+            addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
     }
     // end of doOurBasicTextChecks function
 
 
-    function checkUSFMLineInternals(marker, rest, lineLocation) {
+    function checkUSFMLineInternals(marker, rest, lineLocation, optionalOptions) {
         // Handles character formatting within the line contents
         let adjustedRest = rest;
 
-        if (rest) doOurBasicTextChecks('\\' + marker, rest, [], ' field ' + lineLocation);
+        if (rest) doOurBasicTextChecks('\\' + marker, rest, [], ' field ' + lineLocation, optionalOptions);
         }
     // end of checkUSFMLineInternals function
 
@@ -95,13 +73,13 @@ function checkUSFMText(BBB, tableText, location) {
         if (ALLOWED_LINE_START_MARKERS.indexOf(marker) >= 0) {
             if (rest && MARKERS_WITHOUT_CONTENT.indexOf(marker) >= 0)
                 if (isWhitespace(rest))
-                    addWarning(`Unexpected whitespace '${rest}'`, 1, "", ` after \\${marker} marker${lineLocation}`);
+                    addNotice(301, `Unexpected whitespace '${rest}'`, 1, "", ` after \\${marker} marker${lineLocation}`);
                 else
-                    addError(`Unexpected content '${rest}'`, ` after \\${marker} marker${lineLocation}`);
+                    addNotice(401, `Unexpected content '${rest}'`, ` after \\${marker} marker${lineLocation}`);
             else if (MARKERS_WITH_COMPULSORY_CONTENT.indexOf(marker) >= 0 && !rest)
-                addError("Expected compulsory content", marker.length, "", ` after \\${marker} marker${lineLocation}`);
+                addNotice(711, "Expected compulsory content", marker.length, "", ` after \\${marker} marker${lineLocation}`);
         } else
-            addError(`Unexpected \\'${marker}' marker at start of line`, marker.length, "", lineLocation);
+            addNotice(marker=='s5'?611:811, `Unexpected \\'${marker}' marker at start of line`, marker.length, "", lineLocation);
         if (rest) checkUSFMLineInternals(marker, rest, lineLocation);
     }
     // end of checkUSFMLine function
@@ -114,7 +92,7 @@ function checkUSFMText(BBB, tableText, location) {
         numChaptersThisBook = books.chaptersInBook(bbb).length;
     }
     catch {
-        addError("Bad function call: should be given a valid book abbreviation", -1, BBB, " (not '" + BBB + "')" + location);
+        addNotice(900, "Bad function call: should be given a valid book abbreviation", -1, BBB, " (not '" + BBB + "')" + location);
     }
 
     let lines = tableText.split('\n');
@@ -129,11 +107,11 @@ function checkUSFMText(BBB, tableText, location) {
         let atString = " at " + BBB + " " + C + ":" + V + " on line " + n.toLocaleString() + location;
         // console.log("line '"+line+"'"+ atString);
         if (!line) {
-            // addWarning("Unexpected blank line", 0, '', atString);
+            // addNotice(100, "Unexpected blank line", 0, '', atString);
             continue;
         }
         if (line.indexOf('\r') >= 0)
-            addError("Unexpected carriageReturn character", atString);
+            addNotice(703, "Unexpected carriageReturn character", atString);
 
         let marker, rest;
         if (line[0] == '\\') {
@@ -143,7 +121,7 @@ function checkUSFMText(BBB, tableText, location) {
         } else { // Line didn't start with a backslash
             // NOTE: Some USFM Bibles commonly have this
             //          so it's not necessarily either an error or a warning
-            addError("Expected line to start with backslash", 0, line[0], atString);
+            addNotice(980, "Expected line to start with backslash", 0, line[0], atString);
             marker = 'rem'; // to try to avoid consequential errors
             rest = line;
         }
@@ -155,11 +133,11 @@ function checkUSFMText(BBB, tableText, location) {
             try {
                 intC = parseInt(C);
             } catch (e) {
-                addError("Unable to convert chapter number to integer", 3, rest.substring(0, 5), atString);
+                addNotice(724, "Unable to convert chapter number to integer", 3, rest.substring(0, 5), atString);
                 intC = -999; // Used to prevent consequential errors
             }
             if (C == lastC || (intC > 0 && intC != lastIntC + 1))
-                addError("Chapter number didn't increment correctly", 3, rest.substring(0, 5) + ' (' + lastC + ' → ' + C + ')', atString);
+                addNotice(764, "Chapter number didn't increment correctly", 3, rest.substring(0, 5) + ' (' + lastC + ' → ' + C + ')', atString);
             lastC = C; lastV = '0';
             lastIntC = intC; lastIntV = 0;
         } else if (marker == 'v') {
@@ -168,11 +146,11 @@ function checkUSFMText(BBB, tableText, location) {
                 try {
                     intV = parseInt(V);
                 } catch (e) {
-                    addError("Unable to convert verse number to integer", 3, rest.substring(0, 5), atString);
+                    addNotice(723, "Unable to convert verse number to integer", 3, rest.substring(0, 5), atString);
                     intV = -999; // Used to prevent consequential errors
                 }
                 if (V == lastV || (intV > 0 && intV != lastIntV + 1))
-                    addError("Verse number didn't increment correctly", 3, rest.substring(0, 5) + ' (' + lastV + ' → ' + V + ')', atString);
+                    addNotice(763, "Verse number didn't increment correctly", 3, rest.substring(0, 5) + ' (' + lastV + ' → ' + V + ')', atString);
                 lastV = V; lastIntV = intV;
             } else { // handle verse bridge
                 const bits = V.split('-');
@@ -182,13 +160,13 @@ function checkUSFMText(BBB, tableText, location) {
                     intFirstV = parseInt(firstV);
                     intSecondV = parseInt(secondV);
                 } catch (e) {
-                    addError("Unable to convert verse bridge numbers to integers", 3, rest.substring(0, 9), atString);
+                    addNotice(762, "Unable to convert verse bridge numbers to integers", 3, rest.substring(0, 9), atString);
                     intFirstV = -999; intSecondV = -998; // Used to prevent consequential errors
                 }
                 if (intSecondV <= intFirstV)
-                    addError("Verse bridge numbers not in ascending order", 3, rest.substring(0, 9) + ' (' + firstV + ' → ' + secondV + ')', atString);
+                    addNotice(769, "Verse bridge numbers not in ascending order", 3, rest.substring(0, 9) + ' (' + firstV + ' → ' + secondV + ')', atString);
                 else if (firstV == lastV || (intFirstV > 0 && intFirstV != lastIntV + 1))
-                    addError("Bridged verse numbers didn't increment correctly", 3, rest.substring(0, 9) + ' (' + lastV + ' → ' + firstV + ')', atString);
+                    addNotice(765, "Bridged verse numbers didn't increment correctly", 3, rest.substring(0, 9) + ' (' + lastV + ' → ' + firstV + ')', atString);
                 lastV = secondV; lastIntV = intSecondV;
             }
         }
@@ -196,7 +174,7 @@ function checkUSFMText(BBB, tableText, location) {
         // console.log("Now"+atString);
 
         if (marker == 'id' && !rest.startsWith(BBB))
-            addError("Expected \\id line to start with book code", 4, rest.substring(0, 4), atString);
+            addNotice(987, "Expected \\id line to start with book code", 4, rest.substring(0, 4), atString);
 
         // if (marker=='toc1'||marker=='toc2'||marker=='toc3')
         // Do general checks
@@ -204,11 +182,11 @@ function checkUSFMText(BBB, tableText, location) {
     }
 
     addSuccessMessage(`Checked all ${lines.length.toLocaleString()} lines in '${location}'`)
-    if (result.errorList.length || result.warningList.length)
-        addSuccessMessage(`checkUSFMText v${checkerVersionString} finished with ${result.errorList.length.toLocaleString()} errors and ${result.warningList.length.toLocaleString()} warnings`)
+    if (result.noticeList.length)
+        addSuccessMessage(`checkUSFMText v${checkerVersionString} finished with ${result.noticeList.length.toLocaleString()} notices`)
     else
         addSuccessMessage("No errors or warnings found by checkUSFMText v" + checkerVersionString)
-    console.log(`  Returning with ${result.successList.length.toLocaleString()} successes, ${result.errorList.length.toLocaleString()} errors, ${result.warningList.length.toLocaleString()} warnings.`);
+    console.log(`  Returning with ${result.successList.length.toLocaleString()} successes and ${result.noticeList.length.toLocaleString()} notices.`);
     // console.log("checkUSFMText result is", JSON.stringify(result));
     return result;
 }

@@ -3,49 +3,29 @@ import checkTN_TSVDataRow from './table-line-check';
 
 
 const checkerVersionString = '0.0.5';
-const MAX_SIMILAR_MESSAGES = 3;
 
 const NUM_EXPECTED_TN_FIELDS = 9;
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
 
 
-function checkTN_TSVText(BBB, tableText, location) {
+function checkTN_TSVText(BBB, tableText, location, optionalOptions) {
     /* This function is optimised for checking the entire file, i.e., all rows.
 
       It also has the advantage of being able to compare one row with the previous one.
 
-     Returns a result object containing a successList, errorList, warningList
+     Returns a result object containing a successList and a warningList
      */
     console.log("checkTN_TSVText(" + BBB + ", " + tableText.length + ", " + location + ")…");
 
-    let result = { successList: [], errorList: [], warningList: [] };
-    let suppressedErrorCount = 0, suppressedWarningCount = 0;
+    let result = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
         console.log("Success: " + successString);
         result.successList.push(successString);
     }
-    function addError(message, index, extract, location) {
-        // console.log("TSV ERROR: " + message + (index > 0 ? " (at character " + index+1 + ")" : "") + (extract ? " " + extract : "") + location);
-        let similarCount = 0;
-        result.errorList.forEach((errMsg) => { if (errMsg[0].startsWith(message)) similarCount += 1 });
-        if (similarCount < MAX_SIMILAR_MESSAGES)
-            // result.errorList.push(message + (index > 0 ? " (at character " + index+1 + ")" : "") + (extract ? " " + extract : "") + location);
-            result.errorList.push([message, index, extract, location]);
-            else if (similarCount == MAX_SIMILAR_MESSAGES)
-            result.errorList.push([`${message}  ◄ MORE SIMILAR ERRORS SUPPRESSED`, -1, "", ""]);
-        else suppressedErrorCount += 1;
-    }
-    function addWarning(message, index, extract, location) {
-        // console.log("TSV Warning: " + message + (index > 0 ? " (at character " + index+1 + ")" : "") + (extract ? " " + extract : "") + location);
-        let similarCount = 0;
-        result.warningList.forEach((warningMsg) => { if (warningMsg[0].startsWith(message)) similarCount += 1 });
-        if (similarCount < MAX_SIMILAR_MESSAGES)
-            // result.warningList.push(message + (index > 0 ? " (at character " + index+1 + ")" : "") + (extract ? " " + extract : "") + location);
-            result.warningList.push([message, index, extract, location]);
-        else if (similarCount == MAX_SIMILAR_MESSAGES)
-            result.warningList.push([`${message}  ◄ MORE SIMILAR WARNINGS SUPPRESSED`, -1, "", ""]);
-        else suppressedWarningCount += 1;
+    function addNotice(priority, message, index, extract, location) {
+        console.log("TSV Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
+        result.noticeList.push([priority, message, index, extract, location]);
     }
 
 
@@ -56,7 +36,7 @@ function checkTN_TSVText(BBB, tableText, location) {
         numChaptersThisBook = books.chaptersInBook(bbb).length;
     }
     catch {
-        addError("Bad function call: should be given a valid book abbreviation", -1, BBB, " (not '" + BBB + "')" + location);
+        addNotice(747, "Bad function call: should be given a valid book abbreviation", -1, BBB, " (not '" + BBB + "')" + location);
     }
 
     let lines = tableText.split('\n');
@@ -71,7 +51,7 @@ function checkTN_TSVText(BBB, tableText, location) {
             if (lines[0] == EXPECTED_TN_HEADING_LINE)
                 addSuccessMessage("Checked TSV header " + location);
             else
-                addError("Bad TSV header", -1, "", location + ": '" + lines[0] + "'");
+                addNotice(746, "Bad TSV header", -1, "", location + ": '" + lines[0] + "'");
         }
         else // not the header
         {
@@ -85,18 +65,16 @@ function checkTN_TSVText(BBB, tableText, location) {
 
                 // Use the row check to do most basic checks
                 const firstResult = checkTN_TSVDataRow(BBB, lines[n], n);
-                for (let errorEntry of firstResult.errorList)
-                    addError(errorEntry[0], errorEntry[1], errorEntry[2], errorEntry[3]);
-                for (let warningEntry of firstResult.warningList)
-                    addWarning(warningEntry[0], warningEntry[1], warningEntry[2], warningEntry[3]);
+                for (let noticeEntry of firstResult.warningList)
+                    addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
 
                 // So here we only have to check against the previous and next fields for out-of-order problems
                 if (B) {
                     if (B != BBB)
-                        addError("Wrong '" + B + "' book code (expected '" + BBB + "')", CV_withString);
+                        addNotice(745, "Wrong '" + B + "' book code (expected '" + BBB + "')", CV_withString);
                 }
                 else
-                    addError("Missing book code", " at" + CV_withString);
+                    addNotice(744, "Missing book code", " at" + CV_withString);
 
                 if (C) {
                     if (C == 'front') { }
@@ -105,51 +83,51 @@ function checkTN_TSVText(BBB, tableText, location) {
                         if (C != lastC)
                             numVersesThisChapter = books.versesInChapter(bbb, intC);
                         if (intC == 0)
-                            addError("Invalid zero '" + C + "' chapter number", atString);
+                            addNotice(551, "Invalid zero '" + C + "' chapter number", atString);
                         if (intC > numChaptersThisBook)
-                            addError("Invalid large '" + C + "' chapter number", atString);
+                            addNotice(737, "Invalid large '" + C + "' chapter number", atString);
                         if (/^\d+$/.test(lastC)) {
                             let lastintC = Number(lastC);
                             if (intC < lastintC)
-                                addError("Receding '" + C + "' chapter number after '" + lastC + "'", atString);
+                                addNotice(736, "Receding '" + C + "' chapter number after '" + lastC + "'", atString);
                             else if (intC > lastintC + 1)
-                                addError("Advancing '" + C + "' chapter number after '" + lastC + "'", atString);
+                                addNotice(735, "Advancing '" + C + "' chapter number after '" + lastC + "'", atString);
                         }
                     }
                     else
-                        addError("Bad chapter number", " with" + CV_withString);
+                        addNotice(734, "Bad chapter number", " with" + CV_withString);
                 }
                 else
-                    addError("Missing chapter number", " after " + lastC + ':' + V + withString);
+                    addNotice(739, "Missing chapter number", " after " + lastC + ':' + V + withString);
 
                 if (V) {
                     if (V == 'intro') { }
                     else if (/^\d+$/.test(V)) {
                         let intV = Number(V);
                         if (intV == 0)
-                            addError("Invalid zero '" + V + "' verse number", atString);
+                            addNotice(552, "Invalid zero '" + V + "' verse number", atString);
                         if (intV > numVersesThisChapter)
-                            addError("Invalid large '" + V + "' verse number for chapter " + C, atString);
+                            addNotice(734, "Invalid large '" + V + "' verse number for chapter " + C, atString);
                         if (/^\d+$/.test(lastV)) {
                             let lastintV = Number(lastV);
                             if (intV < lastintV)
-                                addError("Receding '" + V + "' verse number after '" + lastV + "'", atString);
+                                addNotice(733, "Receding '" + V + "' verse number after '" + lastV + "'", atString);
                             // else if (intV > lastintV + 1)
-                            //   addWarning("Skipped verses with '" + V + "' verse number after '" + lastV + "'" + atString);
+                            //   addNotice(556, "Skipped verses with '" + V + "' verse number after '" + lastV + "'" + atString);
                         }
                     }
                     else
-                        addError("Bad verse number", atString);
+                        addNotice(738, "Bad verse number", atString);
 
                 }
                 else
-                    addError("Missing verse number", " after " + C + ':' + lastV + withString);
+                    addNotice(790, "Missing verse number", " after " + C + ':' + lastV + withString);
 
                 if (fieldID) {
                     if (fieldID_list.indexOf(fieldID) >= 0)
-                        addError("Duplicate '" + fieldID + "' ID", atString);
+                        addNotice(729, "Duplicate '" + fieldID + "' ID", atString);
                 } else
-                    addError("Missing ID", atString);
+                    addNotice(730, "Missing ID", atString);
 
 
                 if (B != lastB || C != lastC || V != lastV) {
@@ -163,11 +141,11 @@ function checkTN_TSVText(BBB, tableText, location) {
         }
     }
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data lines in '${location}'.`)
-    if (result.errorList || result.warningList)
-        addSuccessMessage(`checkTN_TSVText v${checkerVersionString} finished with ${result.errorList.length.toLocaleString()} errors and ${result.warningList.length.toLocaleString()} warnings`)
+    if (result.errorList || result.noticeList)
+        addSuccessMessage(`checkTN_TSVText v${checkerVersionString} finished with ${result.errorList.length.toLocaleString()} errors and ${result.noticeList.length.toLocaleString()} warnings`)
     else
         addSuccessMessage("No errors or warnings found by checkTN_TSVText v" + checkerVersionString)
-    console.log(`  Returning with ${result.successList.length.toLocaleString()} successes, ${result.errorList.length.toLocaleString()} errors, ${result.warningList.length.toLocaleString()} warnings.`);
+    console.log(`  Returning with ${result.successList.length.toLocaleString()} successes, ${result.errorList.length.toLocaleString()} errors, ${result.noticeList.length.toLocaleString()} warnings.`);
     // console.log("checkTN_TSVText result is", JSON.stringify(result));
     return result;
 }

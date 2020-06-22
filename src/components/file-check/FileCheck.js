@@ -12,60 +12,28 @@ import checkMarkdownText from '../../core/markdown-text-check.js';
 import checkPlainText from '../../core/plain-text-check.js';
 // import checkManifestText from '../../core/manifest-text-check.js';
 import checkTN_TSVText from '../../core/table-text-check.js';
-
+import processNotices from '../../core/notice-handling-functions.js';
 
 const checkerVersionString = '0.0.4';
 
-function display_object(given_title, given_object) {
-    let output = given_title + ' object:\n';
-    // for (let property_name in given_object)
-    //     output += "  " + property_name + '\n';
-    for (let property_name in given_object) {
-        //try {
-        let this_property_contents = '' + given_object[property_name];
-        if (this_property_contents.length > 50)
-            this_property_contents = '(' + this_property_contents.length + ') ' + this_property_contents.substring(0, 50) + '…';
-        output += '  ' + property_name + ': ' + this_property_contents + '\n';
-        /*}
-        catch (e) {
-          console.log("Can't parse " + property_name);
-        }*/
-    }
-    console.log(output);
-}
-// end of display_object function
-
-
-// let MAX_SIMILAR_MESSAGES = 3;
-// let successList = [];
-// let errorList = [];
-// let warningList = [];
-// let suppressedErrorCount = 0, suppressedWarningCount = 0;
-
-// function addSuccessMessage(successString) {
-//     console.log("fc Success: " + successString);
-//     successList.push(successString);
+// function display_object(given_title, given_object) {
+//     let output = given_title + ' object:\n';
+//     // for (let property_name in given_object)
+//     //     output += "  " + property_name + '\n';
+//     for (let property_name in given_object) {
+//         //try {
+//         let this_property_contents = '' + given_object[property_name];
+//         if (this_property_contents.length > 50)
+//             this_property_contents = '(' + this_property_contents.length + ') ' + this_property_contents.substring(0, 50) + '…';
+//         output += '  ' + property_name + ': ' + this_property_contents + '\n';
+//         /*}
+//         catch (e) {
+//           console.log("Can't parse " + property_name);
+//         }*/
+//     }
+//     console.log(output);
 // }
-// function addError(message, index, extract, location) {
-//     console.log("fc ERROR: " + message + (index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-//     let similarCount = 0;
-//     errorList.forEach((errMsg) => { if (errMsg[0].startsWith(message)) similarCount += 1 });
-//     if (similarCount < MAX_SIMILAR_MESSAGES)
-//         errorList.push(message + (index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-//     else if (similarCount == MAX_SIMILAR_MESSAGES)
-//         errorList.push(`${message}  ◄ MORE SIMILAR ERRORS SUPPRESSED`);
-//     else suppressedErrorCount += 1;
-// }
-// function addWarning(message, index, extract, location) {
-//     console.log("fc Warning: " + message + (index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-//     let similarCount = 0;
-//     warningList.forEach((warningMsg) => { if (warningMsg[0].startsWith(message)) similarCount += 1 });
-//     if (similarCount < MAX_SIMILAR_MESSAGES)
-//         warningList.push(message + (index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-//     else if (similarCount == MAX_SIMILAR_MESSAGES)
-//         warningList.push(`${message}  ◄ MORE SIMILAR WARNINGS SUPPRESSED`);
-//     else suppressedWarningCount += 1;
-// }
+// // end of display_object function
 
 
 export function FileCheck(props) {
@@ -79,9 +47,9 @@ export function FileCheck(props) {
     let givenLocation = props['location'];
     if (givenLocation && givenLocation[0] != ' ') givenLocation = ' ' + givenLocation;
 
-    let returnedResult = ( <>
+    let returnedResult = (<>
         <b style={{ color: 'purple' }}>Loading…</b>
-        </> );
+    </>);
 
     if (file) {
         /* Has fields: name, path, sha, type=file,
@@ -89,59 +57,37 @@ export function FileCheck(props) {
           html_url, git_url, download_url,
           _links:object, branch, filepath. */
         // display_object("file", file);
-        let result;
-        const ourLocation = " in "+file.name+givenLocation;
+        let preliminaryResult;
+        const ourLocation = ' in ' + file.name + givenLocation;
+        const checkingOptions = { 'extractLength': 25 };
         if (file.name.toLowerCase().endsWith('.tsv'))
-            result = checkTN_TSVText(file.name, file.content, ourLocation);
+            preliminaryResult = checkTN_TSVText(file.name, file.content, ourLocation, checkingOptions);
         else if (file.name.toLowerCase().endsWith('.usfm')) {
             const filenameMain = file.name.substring(0, file.name.length - 5);
             // console.log("Have USFM filenameMain=" + filenameMain);
             const BBB = filenameMain.substring(filenameMain.length - 3);
             console.log("Have USFM bookcode=" + BBB);
-            result = checkUSFMText(BBB, file.content, ourLocation);
+            preliminaryResult = checkUSFMText(BBB, file.content, ourLocation, checkingOptions);
         } else if (file.name.toLowerCase().endsWith('.md'))
-            result = checkMarkdownText(file.name, file.content, ourLocation);
+            preliminaryResult = checkMarkdownText(file.name, file.content, ourLocation, checkingOptions);
         else if (file.name.toLowerCase().startsWith('manifest.'))
-            result = checkManifestText(file.name, file.content, ourLocation);
+            resupreliminaryResultlt = checkManifestText(file.name, file.content, ourLocation, checkingOptions);
         else {
             // msg_html += "<p style=\"color:#538b01\">'<span style=\"font-style:italic\">" + file.name + "</span>' is not recognized, so ignored.</p>";
             msgLines += "Warning: '" + file.name + "' is not recognized, so treated as plain text.\n";
-            result = checkPlainText(file.name, file.content, ourLocation);
+            preliminaryResult = checkPlainText(file.name, file.content, ourLocation, checkingOptions);
         }
+        console.log("FileCheck got initial results with " + preliminaryResult.successList.length + " success messages and " + preliminaryResult.noticeList.length + " notices");
+        // for (let j=0; j<preliminaryResult.noticeList.length; j++)
+        //     console.log(j, preliminaryResult.noticeList[j][0], preliminaryResult.noticeList[j][1], preliminaryResult.noticeList[j][2], preliminaryResult.noticeList[j][3], preliminaryResult.noticeList[j][4]);
 
-        // if (result) {
-        //     for (let j = 0; j < result.successList.length; j++) {
-        //         const success_msg = result.successList[j];
-        //         msgLines.push("Success: " + success_msg);
-        //     }
-        //     for (let j = 0; j < result.errorList.length; j++) {
-        //         const error_msg = result.errorList[j];
-        //         msgLines.push("ERROR: " + error_msg);
-        //     }
-        //     if (result.errorList.length > 0) {
-        //         msgLines.push("Displayed " + result.errorList.length.toLocaleString() + " errors above.");
-        //         if (suppressedErrorCount > 0) msgLines.push("(" + suppressedErrorCount.toLocaleString() + " further errors suppressed.)");
-        //         // msgLines += "\n"
-        //     }
-        //     for (let j = 0; j < result.warningList.length; j++) {
-        //         const warning_msg = result.warningList[j];
-        //         msgLines.push("Warning: " + warning_msg);
-        //     }
-        //     if (result.warningList.length > 0) {
-        //         msgLines.push("Displayed " + result.warningList.length.toLocaleString() + " warnings above.");
-        //         if (suppressedWarningCount > 0) msgLines.push(" (" + suppressedWarningCount.toLocaleString() + " further warnings suppressed.)");
-        //         // msgLines += "\n"
-        //     }
-        // }
-
-        // function RenderLines(props) {
-        //     return (<ol>
-        //         {props.text.split('\n').map(function (line) {
-        //             return <li>{line}</li>;
-        //         })}
-        //     </ol>
-        //     );
-        // }
+        // Now do our final handling of the result
+        // const processOptions = { 'maximumSimilarMessages':3, 'errorPriorityLevel':800, 'sortBy':'ByPriority'};
+        const result = processNotices(preliminaryResult); //, processOptions); // Also takes optional options
+        console.log("FileCheck got processed results with " + result.successList.length + " success messages, " + result.errorList.length + " errors and " + result.warningList.length + " warnings");
+        console.log("  numIgnoredNotices="+result.numIgnoredNotices, "numSuppressedErrors="+result.numSuppressedErrors, "numSuppressedWarnings="+result.numSuppressedWarnings);
+        // for (let j=0; j<result.warningList.length; j++)
+        //     console.log(j, result.warningList[j][0], result.warningList[j][1], result.warningList[j][2], result.warningList[j][3], result.warningList[j][4]);
 
         function RenderArray(props) {
             // Display our array of 4-part lists in a nicer format
@@ -154,20 +100,26 @@ export function FileCheck(props) {
                     })}
                 </ol>
                 );
-                else {
-            const myList = props.arrayType == 'e' ? result.errorList : result.warningList;
-            return (<ul>
-                {myList.map(function (listEntry) {
-                    return <li key={listEntry.id}><b style={{ color: props.arrayType == 'e' ? 'red' : 'orange' }}>{listEntry[0]}</b> {(listEntry[1] > 0 ? " (at character " + (listEntry[1] + 1) + ")" : "")} {listEntry[2] ? " in '" + listEntry[2] + "'" : ""} {listEntry[3]}</li>;
-                })}
-            </ul>
-            );
+            else {
+                const myList = props.arrayType == 'e' ? result.errorList : result.warningList;
+                return (<ul>
+                    {myList.map(function (listEntry) {
+                        return <li key={listEntry.id}>
+                            <b style={{ color: props.arrayType == 'e' ? 'red' : 'orange' }}>{listEntry[1]}</b>
+                            {listEntry[2] > 0 ? " (at character " + (listEntry[2] + 1) + ")" : ""}
+                            <span style={{color:'DimGray'}}>{listEntry[3] ? " in '" + listEntry[3] + "'" : ""}</span>
+                            {listEntry[4]}
+                            <small style={{color:'Gray'}}>{listEntry[0] >= 0 ? " (Priority " + listEntry[0] + ")" : ""}</small>
+                        </li>;
+                    })}
+                </ul>
+                );
+            }
         }
-    }
 
         if (result.errorList.length || result.warningList.length)
             returnedResult = (<>
-                <p>Checked <b>{file.name}</b></p>
+                <p>Checked <b>{file.name}</b>{result.numIgnoredNotices ? " (with a total of "+result.numIgnoredNotices.toLocaleString()+" notices ignored)":""}</p>
                 <b style={{ color: result.errorList.length ? 'red' : 'green' }}>{result.errorList.length} error{result.errorList.length == 1 ? '' : 's'}</b>{result.errorList.length ? ':' : ''}
                 <RenderArray arrayType='e' />
                 <b style={{ color: result.warningList.length ? 'orange' : 'green' }}>{result.warningList.length} warning{result.warningList.length == 1 ? '' : 's'}</b>{result.warningList.length ? ':' : ''}
@@ -175,7 +127,7 @@ export function FileCheck(props) {
             </>);
         else // no errors
             returnedResult = (<>
-                <p>Checked <b>{file.name}</b></p>
+                <p>Checked <b>{file.name}</b>{result.numIgnoredNotices ? " (with a total of "+result.numIgnoredNotices.toLocaleString()+" notices ignored)":""}</p>
                 <b style={{ color: 'green' }}>{result.successList.length} check{result.successList.length == 1 ? '' : 's'} completed</b>{result.successList.length ? ':' : ''}
                 <RenderArray arrayType='s' />
             </>);

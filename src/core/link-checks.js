@@ -1,21 +1,17 @@
 import { doBasicTextChecks } from './basic-text-check'
 
-async function startLiveLinksCheck(linksList, existingErrorList, existingWarningList, callbackFunction) {
+async function startLiveLinksCheck(linksList, existingNoticeList, callbackFunction) {
     // This (slow) function checks the targets of the given links
     //  to ensure that they actually exist
     // NOTE: no caching yet
     console.log("startLiveLinksCheck for " + linksList.length + " link(s)…")
-    // console.log("startLiveLinksCheck was given " + existingErrorList.length + " errors and " + existingWarningList.length + " warnings.")
+    // console.log("startLiveLinksCheck was given " + existingNoticeList.length + " warnings.")
 
-    let result = { errorList: existingErrorList, warningList: existingWarningList };
+    let result = { noticeList: existingNoticeList };
 
-    function addError(message, index, extract, location) {
-        console.log("sLLC LINK ERROR: '" + message + "', " + index + ", '" + extract + "', " + location);
-        result.errorList.push([message, index, extract, location]);
-    }
-    function addWarning(message, index, extract, location) {
-        console.log("sLLC Link Warning: '" + message + "', " + index + ", '" + extract + "', " + location);
-        result.warningList.push([message, index, extract, location]);
+    function addNotice(priority, message, index, extract, location) {
+        console.log("sLLC Link Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
+        result.noticeList.push([priority, message, index, extract, location]);
     }
 
     // Now try fetching each link in turn
@@ -29,7 +25,7 @@ async function startLiveLinksCheck(linksList, existingErrorList, existingWarning
             console.log("startLiveLinksCheck got response: ", reponseText.length, reponseText);
         } catch (e) {
             console.log("startLiveLinksCheck had an error fetching '" + fetchLink + "': " + e);
-            addError("Error fetching link", -1, "", " " + fetchLink);
+            addNotice(500, "Error fetching link", -1, "", " " + fetchLink);
         }
     }
 
@@ -52,15 +48,11 @@ function doBasicLinkChecks(fieldName, fieldText, linkOptions, optionalFieldLocat
     // console.log( "linkOptions", JSON.stringify(linkOptions));
     // console.log( "linkOptionsEC", linkOptions.expectedCount);
 
-    let result = { errorList: [], warningList: [] };
+    let result = { noticeList: [] };
 
-    function addError(message, index, extract, location) {
-        console.log("dBLC ERROR: '" + message + "', " + index + ", '" + extract + "', " + location);
-        result.errorList.push([message, index, extract, location]);
-    }
-    function addWarning(message, index, extract, location) {
-        console.log("dBLC Warning: '" + message + "', " + index + ", '" + extract + "', " + location);
-        result.warningList.push([message, index, extract, location]);
+    function addNotice(priority, message, index, extract, location) {
+        console.log("dBLC Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
+        result.noticeList.push([priority, message, index, extract, location]);
     }
 
     // Create our more detailed location string by prepending the fieldName
@@ -72,17 +64,17 @@ function doBasicLinkChecks(fieldName, fieldText, linkOptions, optionalFieldLocat
 
     if (!fieldText) { // Nothing to check
         if (linkOptions.expectedCount > 0)
-            addError("Blank field / missing link (expected " + linkOptions.expectedCount + " link" + (linkOptions.expectedCount == 1 ? "" : "s") + ")", -1, "", ourAtString);
+            addNotice(500, "Blank field / missing link (expected " + linkOptions.expectedCount + " link" + (linkOptions.expectedCount == 1 ? "" : "s") + ")", -1, "", ourAtString);
         return result;
     }
 
     // Ok, we have something in our field
     if (linkOptions.otherTextAllowed)
-        result = doBasicTextChecks(fieldName, fieldText, true, optionalFieldLocation);
+        result = doBasicTextChecks(fieldName, fieldText, true, optionalFieldLocation, optionalOptions);
 
     // Parameter nonsense check
     if (linkOptions.allowedCount > 0 && linkOptions.expectedCount > linkOptions.allowedCount)
-        addError("Bad options for doBasicLinkChecks: expectedCount=" + linkOptions.expectedCount + " but allowedCount=" + linkOptions.allowedCount, -1, "", "");
+        addNotice(500, "Bad options for doBasicLinkChecks: expectedCount=" + linkOptions.expectedCount + " but allowedCount=" + linkOptions.allowedCount, -1, "", "");
 
     // Check for embedded links
     // First, create our regex from the allowed link types
@@ -100,7 +92,7 @@ function doBasicLinkChecks(fieldName, fieldText, linkOptions, optionalFieldLocat
             else if (linkType == 'naked')
                 linkRegexParts.push('(https*://[^ ]+)');
             else
-                addError("Unknown '" + linkType + "' linkType parameter", -1, "", "");
+                addNotice(500, "Unknown '" + linkType + "' linkType parameter", -1, "", "");
         }
     } else { // No link types specified
         linkRegexParts = [];
@@ -114,15 +106,15 @@ function doBasicLinkChecks(fieldName, fieldText, linkOptions, optionalFieldLocat
     // console.log("doBasicLinkChecks regexResultsArray", regexResultsArray.length, JSON.stringify(regexResultsArray));
 
     if (regexResultsArray.length < linkOptions.expectedCount)
-        addError("Not enough links (expected " + linkOptions.expectedCount + " link" + (linkOptions.expectedCount == 1 ? "" : "s") + ")", -1, "", " (only found " + regexResultsArray.length + ")" + ourAtString);
+        addNotice(500, "Not enough links (expected " + linkOptions.expectedCount + " link" + (linkOptions.expectedCount == 1 ? "" : "s") + ")", -1, "", " (only found " + regexResultsArray.length + ")" + ourAtString);
 
     if (linkOptions.checkTargets && linkOptions.callbackFunction && regexResultsArray) {
-        startLiveLinksCheck(regexResultsArray, result.errorList.slice(0), result.warningList.slice(0), linkOptions.callbackFunction);
-        addWarning(regexResultsArray.length + " link target" + (regexResultsArray.length == 1 ? ' is' : 's are') + " still being checked…", -1, "", "");
+        startLiveLinksCheck(regexResultsArray, result.errorList.slice(0), result.noticeList.slice(0), linkOptions.callbackFunction);
+        addNotice(regexResultsArray.length + " link target" + (regexResultsArray.length == 1 ? ' is' : 's are') + " still being checked…", -1, "", "");
         console.log("doBasicLinkChecks now returning initial result…");
     }
 
-    console.log("doBasicLinkChecks returning with " + result.errorList.length + " errors and " + result.warningList.length + " warnings.");
+    console.log("doBasicLinkChecks returning with " + result.errorList.length + " errors and " + result.noticeList.length + " warnings.");
     return result;
 }
 // end of doBasicLinkChecks function
