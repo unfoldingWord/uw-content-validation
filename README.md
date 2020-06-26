@@ -41,13 +41,15 @@ However, the lower-level checking functions provide only one list of `notices` (
 1. A string indicating the context of the notice, e.g., `in line 17 of 'someBook.usfm'.
 1. ~~An optional list of character substitions that would be helpful for displaying an extract of the offending line. For example, if the notice is about spaces, it is generally helpful to display spaces as a visible character in an attempt to best highlight the issue to the user.~~
 
-Keeping our notices in this format, rather than the simplicity of just saving an array of single strings, allows the above *notice components* to be processed at a higher level. The default is to funnel them all through the supplied `xx` function which does the following:
+Keeping our notices in this format, rather than the simplicity of just saving an array of single strings, allows the above *notice components* to be processed at a higher level. The default is to funnel them all through the supplied `processNotices` function (in core/notice-handling-functions.fs) which does the following:
 
 1. Removes excess repeated errors. For example, if there's a systematic error in a file, say with unneeded leading spaces in every field, rather than returning with hundreds of errors, only the first several errors will be returned, followed by an "errors suppressed" message.
 1. Separates notices into error and warning lists based on the priority number.
 1. Combines all the notice components into a single string.
 
-However, the user is, of course, free to create their own alternative version of this function. This is probably also the place to consider localisation of all the notices into different interface languages.
+However, the user is, of course, free to create their own alternative version of this function. This is possibly also the place to consider localisation of all the notices into different interface languages.
+
+Note that the original structure of these components were taken from https://github.com/unfoldingWord/uw-word-count (which can be played with at https://unfoldingword.github.io/uw-word-count/.)
 
 ## Functionality and Limitations
 

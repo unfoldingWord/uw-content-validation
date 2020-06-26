@@ -69,7 +69,7 @@ function ContentCheckRepo({
       let keys = Array.from(Object.keys(result.grandTotals));
 
       // ok - we have results to show
-      let mt = util.wf_to_mt(result.grandTotals.wordFrequency);
+      // let mt = util.wf_to_mt(result.grandTotals.wordFrequency);
       //let aw = util.aw_to_mt(result.grandTotals.allWords);
       setVal (
         <Paper className={classes.paper}>

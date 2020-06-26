@@ -1,56 +1,51 @@
 ## File Check - Readme
 
-The code below requests some info to select a repository
-and then checks one file selected from the repo.
+The code below requests some info to select an online repository
+and then validates the content of one file selected from the repo.
+
+gitea-react-toolkit (https://github.com/unfoldingWord/gitea-react-toolkit and
+explorable at https://gitea-react-toolkit.netlify.com/) is used to fetch the file.
 
 ```js
-import { useContext } from 'react';
-import { Paper } from '@material-ui/core';
+// import { useContext } from 'react';
+// import { Paper } from '@material-ui/core';
 import {
   AuthenticationContextProvider,
-  RepositoryContextProvider,
-  RepositoryContext,
-  FileContextProvider,
-  FileContext,
+  RepositoryContextProvider, RepositoryContext,
+  FileContextProvider, FileContext,
 } from 'gitea-react-toolkit';
-
-/* Seems unnecessary
-  function Component() {
-  //const { state: auth, component: authComponent } = useContext(AuthenticationContext);
-  const { state: repo, component: repoComponent } = useContext(RepositoryContext);
-  const { state: file, component: fileComponent } = useContext(FileContext);
-
-  return //(!auth && authComponent) ||
-    (!repo && repoComponent) || fileComponent;
-};*/
 
 const [repository, setRepository] = React.useState();
 const [filepath, setFilepath] = React.useState();
-const [file, setFile] = React.useState();
+// const [file, setFile] = React.useState();
 
 <AuthenticationContextProvider>
   <RepositoryContextProvider
-    full_name="repo-checker/Rob's playground"
+    // full_name="content-validation-rcl/file-check" // seems unnecessary???
     repository={repository}
     onRepository={setRepository}
     config={ {
       server: "https://bg.door43.org",
       tokenid: "PlaygroundTesting",
     }}
-    full_name='unfoldingWord/en_ult'
-    // If we don't put the branch here, presumably the default branch is used ???
-    branch='master'
+    // full_name='unfoldingWord/hbo_uhb' // OT books only
+    // full_name='unfoldingWord/el-x-koine_ugnt' // NT books only
+    full_name='unfoldingWord/en_ult' // Can use ult or ust here
+    // full_name='unfoldingWord/en_tn' // Can use ult or ust here
+    // If we don't put the branch here, the default branch is used
+    // branch='master'
   >
     <FileContextProvider
-      // If we don't put the filepath here, the user can select from a list
-      // was 'en_tn_08-RUT.tsv' '08-RUT.usfm' '57-TIT.
-      filepath= '01-GEN.usfm'
+      // If we don't put the filepath here, the user can select from a list <- DOESN'T WORK !!!
+      filepath= '08-RUT.usfm'
+      // filepath= '41-MAT.usfm'
+      // filepath= 'en_tn_01-GEN.tsv'
       onFilepath={setFilepath}
-      file={file}
-      onFile={setFile}
+      // file={file}
+      // onFile={setFile}
     >
 
-      <FileCheck location="from README.md"/>
+      <FileCheck location="from file-check/README.md"/>
 
     </FileContextProvider>
   </RepositoryContextProvider>

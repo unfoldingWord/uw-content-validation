@@ -1,5 +1,25 @@
 // utilities
 
+export function display_object(given_title, given_object) {
+    let output = given_title + ' object:\n';
+    // for (let property_name in given_object)
+    //     output += "  " + property_name + '\n';
+    for (let property_name in given_object) {
+      //try {
+      let this_property_contents = '' + given_object[property_name];
+      if (this_property_contents.length > 50)
+        this_property_contents = '(' + this_property_contents.length + ') ' + this_property_contents.substring(0, 50) + '…';
+      output += '  ' + property_name + ': ' + this_property_contents + '\n';
+      /*}
+      catch (e) {
+        console.log("Can't parse " + property_name);
+      }*/
+    }
+    console.log(output);
+  }
+  // end of display_object function
+
+/*
 // function to convert an array to an object
 // with keys being 0..n
 export const array_to_obj = ( ar => {
@@ -61,3 +81,4 @@ export const aw_to_mt = ( ar => {
 
     return mt;
 });
+*/

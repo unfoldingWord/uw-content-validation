@@ -19,6 +19,11 @@ function checkTN_TSVDataRow(BBB, line, rowNumber, optionalOptions) {
 
     function addNotice(priority, message, index, extract, location) {
         console.log("TSV Line Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
+        console.assert(typeof priority == 'number', "addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"'");
+        console.assert(typeof message == 'string', "addNotice: 'message' parameter should be a string");
+        console.assert(typeof index == 'number', "addNotice: 'index' parameter should be a number not a '"+(typeof priority)+"'");
+        console.assert(typeof extract == 'string', "addNotice: 'extract' parameter should be a string");
+        console.assert(typeof location == 'string', "addNotice: 'location' parameter should be a string");
         result.noticeList.push([priority, message, index, extract, location]);
     }
 
@@ -30,8 +35,15 @@ function checkTN_TSVDataRow(BBB, line, rowNumber, optionalOptions) {
         // Updates the global list of notices
 
         const resultObject = doBasicTextChecks(fieldName, fieldText, linkTypes, optionalFieldLocation, optionalOptions);
-        for (let noticeEntry of resultObject.noticeList)
-            addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+        
+        // Choose only ONE of the following
+        // This is the fast way of append the results from this field
+        result.noticeList = result.noticeList.concat(resultObject.noticeList);
+
+        // If we need to put everything through addNotice, e.g., for debugging
+        //  process results line by line
+        // for (let noticeEntry of resultObject.noticeList)
+        //     addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
     }
     // end of doOurBasicTextChecks function
 

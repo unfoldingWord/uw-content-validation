@@ -23,6 +23,11 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
 
     function addNotice(priority, message, index, extract, location) {
         // console.log("dBTC Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
+        console.assert(typeof priority == 'number', "addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"'");
+        console.assert(typeof message == 'string', "addNotice: 'message' parameter should be a string");
+        console.assert(typeof index == 'number', "addNotice: 'index' parameter should be a number not a '"+(typeof priority)+"'");
+        console.assert(typeof extract == 'string', "addNotice: 'extract' parameter should be a string");
+        console.assert(typeof location == 'string', "addNotice: 'location' parameter should be a string");
         result.noticeList.push([priority, message, index, extract, location]);
     }
 

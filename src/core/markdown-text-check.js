@@ -21,6 +21,11 @@ function checkMarkdownText(textName, markdownText, location, optionalOptions) {
     }
     function addNotice(priority, message, index, extract, location) {
         console.log("Markdown Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
+        console.assert(typeof priority == 'number', "addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"'");
+        console.assert(typeof message == 'string', "addNotice: 'message' parameter should be a string");
+        console.assert(typeof index == 'number', "addNotice: 'index' parameter should be a number not a '"+(typeof priority)+"'");
+        console.assert(typeof extract == 'string', "addNotice: 'extract' parameter should be a string");
+        console.assert(typeof location == 'string', "addNotice: 'location' parameter should be a string");
         result.noticeList.push([priority, message, index, extract, location]);
     }
 
@@ -32,8 +37,15 @@ function checkMarkdownText(textName, markdownText, location, optionalOptions) {
         // Updates the global list of notices
 
         const resultObject = doBasicTextChecks(fieldName, fieldText, linkTypes, optionalFieldLocation, optionalOptions);
-        for (let noticeEntry of resultObject.noticeList)
-            addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+
+        // Choose only ONE of the following
+        // This is the fast way of append the results from this field
+        result.noticeList = result.noticeList.concat(resultObject.noticeList);
+
+        // If we need to put everything through addNotice, e.g., for debugging
+        //  process results line by line
+        // for (let noticeEntry of resultObject.noticeList)
+        //     addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
     }
     // end of doOurBasicTextChecks function
 
@@ -100,12 +112,12 @@ function checkMarkdownText(textName, markdownText, location, optionalOptions) {
         lastNumLeadingSpaces = numLeadingSpaces;
     }
 
-    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} lines in '${location}'.`)
-    if (result.errorList || result.noticeList)
-        addSuccessMessage(`checkMarkdownText v${checkerVersionString} finished with ${result.errorList.length.toLocaleString()} errors and ${result.noticeList.length.toLocaleString()} warnings`)
+    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} lines in '${location}'.`);
+    if (result.noticeList)
+        addSuccessMessage(`checkMarkdownText v${checkerVersionString} finished with ${result.noticeList.length.toLocaleString()} notice(s)`);
     else
         addSuccessMessage("No errors or warnings found by checkMarkdownText v" + checkerVersionString)
-    console.log(`  Returning with ${result.successList.length.toLocaleString()} successes, ${result.errorList.length.toLocaleString()} errors, ${result.noticeList.length.toLocaleString()} warnings.`);
+    console.log(`  Returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
     // console.log("checkMarkdownText result is", JSON.stringify(result));
     return result;
 }

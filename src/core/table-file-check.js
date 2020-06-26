@@ -50,6 +50,11 @@ function addSuccessMessage(successString) {
 }
 function addNotice(priority, message, index, extract, location) {
     console.log("tfc Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
+    console.assert(typeof priority == 'number', "addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"'");
+    console.assert(typeof message == 'string', "addNotice: 'message' parameter should be a string");
+    console.assert(typeof index == 'number', "addNotice: 'index' parameter should be a number not a '"+(typeof priority)+"'");
+    console.assert(typeof extract == 'string', "addNotice: 'extract' parameter should be a string");
+    console.assert(typeof location == 'string', "addNotice: 'location' parameter should be a string");
     result.noticeList.push([priority, message, index, extract, location]);
 }
 
@@ -62,8 +67,15 @@ function doOurBasicTextChecks(fieldName, fieldText, linkTypes, optionalFieldLoca
     // Updates the global list of notices
 
     const resultObject = doBasicTextChecks(fieldName, fieldText, linkTypes, optionalFieldLocation, optionalOptions);
-    for (let noticeEntry in resultObject.noticeList)
-        addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+
+    // Choose only ONE of the following
+    // This is the fast way of append the results from this field
+    result.noticeList = result.noticeList.concat(resultObject.noticeList);
+
+    // If we need to put everything through addNotice, e.g., for debugging
+    //  process results line by line
+    // for (let noticeEntry of resultObject.noticeList)
+    //     addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
 }
 // end of doOurBasicTextChecks function
 
@@ -174,12 +186,12 @@ function checkUSFMFile(file) {
         lastC = C; lastV = V;
     }
 
-    addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data lines in ${file.name}.`)
-    if (errorList || noticeList)
-        addSuccessMessage("RepoChecker v" + checkerVersionString + " finished with " + errorList.length + " errors and " + noticeList.length + " warnings")
+    addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data lines in ${file.name}.`);
+    if (noticeList)
+        addSuccessMessage("RepoChecker v" + checkerVersionString + " finished with " + noticeList.length + " notices");
     else
         addSuccessMessage("No errors or warnings found by RepoChecker v" + checkerVersionString)
-    console.log("  Returning with " + successList.length + " successes, " + errorList.length + " errors, " + noticeList.length + " warnings.");
+    console.log("  Returning with " + successList.length + " successes, " + noticeList.length + " notices.");
 }
 
 
@@ -442,13 +454,13 @@ function checkTN_TSVFile(file) {
 
         }
     }
-    addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data lines in ${file.name}.`)
-    if (errorList || noticeList)
-        addSuccessMessage(`RepoChecker v${checkerVersionString} finished with ${errorList.length.toLocaleString()} errors and ${noticeList.length.toLocaleString()} warnings`)
+    addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data lines in ${file.name}.`);
+    if (noticeList)
+        addSuccessMessage(`RepoChecker v${checkerVersionString} finished with ${noticeList.length.toLocaleString()} notices`);
     else
         addSuccessMessage("No errors or warnings found by RepoChecker v" + checkerVersionString)
-    console.log(`  Returning with ${successList.length.toLocaleString()} successes, ${errorList.length.toLocaleString()} errors, ${noticeList.length.toLocaleString()} warnings.`);
-    // return [successList, warningList];
+    console.log(`  Returning with ${successList.length.toLocaleString()} successes, ${noticeList.length.toLocaleString()} notices.`);
+    return result;
 }
 // end of checkTN_TSVFile function
 
@@ -461,10 +473,7 @@ export function RepoChecker() {
 
     // Main part of RepoChecker function
     successList.length = 0;
-    errorList.length = 0;
     noticeList.length = 0;
-    suppressedErrorCount = 0;
-    suppressedWarningCount = 0;
     let msgLines = '';
 
     if (file) {
@@ -492,18 +501,12 @@ export function RepoChecker() {
             const error_msg = errorList[j];
             msgLines += "ERROR: " + error_msg + "\n"
         }
-        if (errorList.length > 0) {
-            msgLines += "Displayed " + errorList.length.toLocaleString() + " errors above.";
-            if (suppressedErrorCount > 0) msgLines += " (" + suppressedErrorCount.toLocaleString() + " further errors suppressed.)"
-            msgLines += "\n"
-        }
         for (let j = 0; j < noticeList.length; j++) {
             const warning_msg = noticeList[j];
             msgLines += "Warning: " + warning_msg + "\n"
         }
         if (noticeList.length > 0) {
             msgLines += "Displayed " + noticeList.length.toLocaleString() + " warnings above.";
-            if (suppressedWarningCount > 0) msgLines += " (" + suppressedWarningCount.toLocaleString() + " further warnings suppressed.)"
             msgLines += "\n"
         }
 

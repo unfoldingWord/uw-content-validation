@@ -1,9 +1,9 @@
 import * as books from '../core';
-import { isWhitespace, countOccurrences } from './text-handling-functions'
+import {isWhitespace} from './text-handling-functions'
 import doBasicTextChecks from './basic-text-check';
 
 
-const checkerVersionString = '0.0.5';
+const USFM_VALIDATOR_VERSION = '0.0.6';
 
 
 const INTRO_LINE_START_MARKERS = ['id', 'usfm', 'ide', 'h',
@@ -41,6 +41,11 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
     }
     function addNotice(priority, message, index, extract, location) {
         // console.log("USFM Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
+        console.assert(typeof priority == 'number', "addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"'");
+        console.assert(typeof message == 'string', "addNotice: 'message' parameter should be a string");
+        console.assert(typeof index == 'number', "addNotice: 'index' parameter should be a number not a '"+(typeof priority)+"'");
+        console.assert(typeof extract == 'string', "addNotice: 'extract' parameter should be a string");
+        console.assert(typeof location == 'string', "addNotice: 'location' parameter should be a string");
         result.noticeList.push([priority, message, index, extract, location]);
     }
 
@@ -53,8 +58,16 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
         // Updates the global list of notices
 
         const resultObject = doBasicTextChecks(fieldName, fieldText, linkTypes, fieldLocation, optionalOptions);
+
+        // Choose only ONE of the following
+        // This is the fast way of append the results from this field
+        //result.noticeList = result.noticeList.concat(resultObject.noticeList);
+
+        // If we need to put everything through addNotice, e.g., for debugging
+        //  process results line by line
         for (let noticeEntry of resultObject.noticeList)
-            addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+            if (noticeEntry[0] != 663) // Suppress these misleading warnings coz open quote can occur in one verse and close in another
+                addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
     }
     // end of doOurBasicTextChecks function
 
@@ -79,7 +92,7 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
             else if (MARKERS_WITH_COMPULSORY_CONTENT.indexOf(marker) >= 0 && !rest)
                 addNotice(711, "Expected compulsory content", marker.length, "", ` after \\${marker} marker${lineLocation}`);
         } else
-            addNotice(marker=='s5'?611:811, `Unexpected \\'${marker}' marker at start of line`, marker.length, "", lineLocation);
+            addNotice(marker=='s5'?611:811, `Unexpected '\\${marker}' marker at start of line`, 1, "", lineLocation);
         if (rest) checkUSFMLineInternals(marker, rest, lineLocation);
     }
     // end of checkUSFMLine function
@@ -101,6 +114,7 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
     let lastB = '', lastC = '', lastV = '', C = '0', V = '0';
     let lastIntC = 0, lastIntV = 0;
     let numVersesThisChapter = 0;
+    let lastMarker = '', lastRest = '';
     for (let n = 1; n <= lines.length; n++) {
         let line = lines[n - 1];
         if (C == '0') V = n.toString();
@@ -141,6 +155,8 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
             lastC = C; lastV = '0';
             lastIntC = intC; lastIntV = 0;
         } else if (marker == 'v') {
+            // if (rest.length < 8)
+            //     addNotice(664, "Verse line seems too short", rest.length-1, rest, atString);
             V = (rest) ? rest.split(' ', 1)[0] : '?';
             if (V.indexOf('-') < 0) { // no hyphen -> no verse bridge
                 try {
@@ -176,17 +192,30 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
         if (marker == 'id' && !rest.startsWith(BBB))
             addNotice(987, "Expected \\id line to start with book code", 4, rest.substring(0, 4), atString);
 
-        // if (marker=='toc1'||marker=='toc2'||marker=='toc3')
+        // Check the order of markers
+        // In headers
+        if (marker=='toc2' && lastMarker!='toc1')
+            addNotice(87, "Expected \\toc2 line to follow \\toc1", 1, "(not '"+lastMarker+"')", atString);
+        else if (marker=='toc3' && lastMarker!='toc2')
+            addNotice(87, "Expected \\toc3 line to follow \\toc2", 1, "(not '"+lastMarker+"')", atString);
+        // In chapters
+        else if ((PARAGRAPH_MARKERS.indexOf(marker)>=0 || marker=='s5' || marker=='ts\\*')
+                && PARAGRAPH_MARKERS.indexOf(lastMarker)>=0
+                && !lastRest)
+            addNotice(399, "Useless paragraph marker", 1, "('"+lastMarker+"' before '"+marker+"')", atString);
+
         // Do general checks
         checkUSFMLineContents(marker, rest, atString);
+
+        lastMarker = marker; lastRest = rest;
     }
 
     addSuccessMessage(`Checked all ${lines.length.toLocaleString()} lines in '${location}'`)
     if (result.noticeList.length)
-        addSuccessMessage(`checkUSFMText v${checkerVersionString} finished with ${result.noticeList.length.toLocaleString()} notices`)
+        addSuccessMessage(`checkUSFMText v${USFM_VALIDATOR_VERSION} finished with ${result.noticeList.length.toLocaleString()} notice(s)`)
     else
-        addSuccessMessage("No errors or warnings found by checkUSFMText v" + checkerVersionString)
-    console.log(`  Returning with ${result.successList.length.toLocaleString()} successes and ${result.noticeList.length.toLocaleString()} notices.`);
+        addSuccessMessage("No errors or warnings found by checkUSFMText v" + USFM_VALIDATOR_VERSION)
+    console.log(`  Returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
     // console.log("checkUSFMText result is", JSON.stringify(result));
     return result;
 }
