@@ -41,11 +41,16 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
     }
     function addNotice(priority, message, index, extract, location) {
         // console.log("USFM Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        console.assert(typeof priority == 'number', "addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"'");
-        console.assert(typeof message == 'string', "addNotice: 'message' parameter should be a string");
-        console.assert(typeof index == 'number', "addNotice: 'index' parameter should be a number not a '"+(typeof priority)+"'");
-        console.assert(typeof extract == 'string', "addNotice: 'extract' parameter should be a string");
-        console.assert(typeof location == 'string', "addNotice: 'location' parameter should be a string");
+        console.assert(typeof priority==='number', "addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"'");
+        console.assert(priority!==undefined, "addNotice: 'priority' parameter should be defined");
+        console.assert(typeof message==='string', "addNotice: 'message' parameter should be a string not a '"+(typeof message)+"'");
+        console.assert(message!==undefined, "addNotice: 'message' parameter should be defined");
+        console.assert(typeof index==='number', "addNotice: 'index' parameter should be a number not a '"+(typeof index)+"'");
+        console.assert(index!==undefined, "addNotice: 'index' parameter should be defined");
+        console.assert(typeof extract==='string', "addNotice: 'extract' parameter should be a string not a '"+(typeof extract)+"'");
+        console.assert(extract!==undefined, "addNotice: 'extract' parameter should be defined");
+        console.assert(typeof location==='string', "addNotice: 'location' parameter should be a string not a '"+(typeof location)+"'");
+        console.assert(location!==undefined, "addNotice: 'location' parameter should be defined");
         result.noticeList.push([priority, message, index, extract, location]);
     }
 
@@ -56,13 +61,17 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global list of notices
+        console.assert(typeof fieldName==='string', "doOurBasicTextChecks: 'fieldName' parameter should be a string not a '"+(typeof fieldName)+"'");
+        console.assert(fieldName!==undefined, "doOurBasicTextChecks: 'fieldName' parameter should be defined");
+        console.assert(typeof fieldText==='string', "doOurBasicTextChecks: 'fieldText' parameter should be a string not a '"+(typeof fieldText)+"'");
+        console.assert(fieldText!==undefined, "doOurBasicTextChecks: 'fieldText' parameter should be defined");
+        console.assert( allowedLinks===true || allowedLinks===false, "doOurBasicTextChecks: allowedLinks parameter must be either true or false");
 
         const resultObject = doBasicTextChecks(fieldName, fieldText, linkTypes, fieldLocation, optionalOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
         //result.noticeList = result.noticeList.concat(resultObject.noticeList);
-
         // If we need to put everything through addNotice, e.g., for debugging
         //  process results line by line
         for (let noticeEntry of resultObject.noticeList)
@@ -117,7 +126,7 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
     let lastMarker = '', lastRest = '';
     for (let n = 1; n <= lines.length; n++) {
         let line = lines[n - 1];
-        if (C == '0') V = n.toString();
+        if (C==='0') V = n.toString();
         let atString = " at " + BBB + " " + C + ":" + V + " on line " + n.toLocaleString() + location;
         // console.log("line '"+line+"'"+ atString);
         if (!line) {
@@ -128,7 +137,7 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
             addNotice(703, "Unexpected carriageReturn character", atString);
 
         let marker, rest;
-        if (line[0] == '\\') {
+        if (line[0]==='\\') {
             marker = line.substring(1).split(' ', 1)[0];
             rest = line.substring(marker.length + 2); // Skip backslash, marker, and space after marker
             // console.log("Line " + n + ": marker='" + marker + "' rest='" + rest + "'");
@@ -142,7 +151,7 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
 
         // Handle C/V numbers including verse bridges
         let intC, intV;
-        if (marker == 'c') {
+        if (marker==='c') {
             C = rest; V = '0';
             try {
                 intC = parseInt(C);
@@ -154,7 +163,7 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
                 addNotice(764, "Chapter number didn't increment correctly", 3, rest.substring(0, 5) + ' (' + lastC + ' → ' + C + ')', atString);
             lastC = C; lastV = '0';
             lastIntC = intC; lastIntV = 0;
-        } else if (marker == 'v') {
+        } else if (marker==='v') {
             // if (rest.length < 8)
             //     addNotice(664, "Verse line seems too short", rest.length-1, rest, atString);
             V = (rest) ? rest.split(' ', 1)[0] : '?';
@@ -189,7 +198,7 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
         atString = " at " + BBB + " " + C + ":" + V + " on line " + n.toLocaleString() + location;
         // console.log("Now"+atString);
 
-        if (marker == 'id' && !rest.startsWith(BBB))
+        if (marker==='id' && !rest.startsWith(BBB))
             addNotice(987, "Expected \\id line to start with book code", 4, rest.substring(0, 4), atString);
 
         // Check the order of markers

@@ -50,11 +50,16 @@ function addSuccessMessage(successString) {
 }
 function addNotice(priority, message, index, extract, location) {
     console.log("r-c Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-    console.assert(typeof priority == 'number', "addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"'");
-    console.assert(typeof message == 'string', "addNotice: 'message' parameter should be a string");
-    console.assert(typeof index == 'number', "addNotice: 'index' parameter should be a number not a '"+(typeof priority)+"'");
-    console.assert(typeof extract == 'string', "addNotice: 'extract' parameter should be a string");
-    console.assert(typeof location == 'string', "addNotice: 'location' parameter should be a string");
+    console.assert(typeof priority==='number', "addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"'");
+    console.assert(priority!==undefined, "addNotice: 'priority' parameter should be defined");
+    console.assert(typeof message==='string', "addNotice: 'message' parameter should be a string not a '"+(typeof message)+"'");
+    console.assert(message!==undefined, "addNotice: 'message' parameter should be defined");
+    console.assert(typeof index==='number', "addNotice: 'index' parameter should be a number not a '"+(typeof index)+"'");
+    console.assert(index!==undefined, "addNotice: 'index' parameter should be defined");
+    console.assert(typeof extract==='string', "addNotice: 'extract' parameter should be a string not a '"+(typeof extract)+"'");
+    console.assert(extract!==undefined, "addNotice: 'extract' parameter should be defined");
+    console.assert(typeof location==='string', "addNotice: 'location' parameter should be a string not a '"+(typeof location)+"'");
+    console.assert(location!==undefined, "addNotice: 'location' parameter should be defined");
     result.noticeList.push([priority, message, index, extract, location]);
 }
 
@@ -65,13 +70,17 @@ function doOurBasicTextChecks(fieldName, fieldText, linkTypes, optionalFieldLoca
     // We assume that checking for compulsory fields is done elsewhere
 
     // Updates the global list of notices
+    console.assert(typeof fieldName==='string', "doOurBasicTextChecks: 'fieldName' parameter should be a string not a '"+(typeof fieldName)+"'");
+    console.assert(fieldName!==undefined, "doOurBasicTextChecks: 'fieldName' parameter should be defined");
+    console.assert(typeof fieldText==='string', "doOurBasicTextChecks: 'fieldText' parameter should be a string not a '"+(typeof fieldText)+"'");
+    console.assert(fieldText!==undefined, "doOurBasicTextChecks: 'fieldText' parameter should be defined");
+    console.assert( allowedLinks===true || allowedLinks===false, "doOurBasicTextChecks: allowedLinks parameter must be either true or false");
 
     const resultObject = doBasicTextChecks(fieldName, fieldText, linkTypes, optionalFieldLocation, optionalOptions);
 
     // Choose only ONE of the following
     // This is the fast way of append the results from this field
     result.noticeList = result.noticeList.concat(resultObject.noticeList);
-
     // If we need to put everything through addNotice, e.g., for debugging
     //  process results line by line
     // for (let noticeEntry of resultObject.noticeList)
@@ -132,7 +141,7 @@ function checkUSFMFile(file) {
                         addNotice(500, `Unexpected whitespace '${rest}'`, ` after \\${marker} marker${lineLocation}`);
                     else
                         addNotice(500, `Unexpected content '${rest}'`, ` after \\${marker} marker${lineLocation}`);
-                else if (rest[0] == ' ') {
+                else if (rest[0]===' ') {
                     let extract = rest.substring(0, 10).replace(/ /g, '␣');
                     if (rest.length > 10) extract += '…';
                     if (isWhitespace(rest))
@@ -186,7 +195,7 @@ function checkUSFMFile(file) {
     let numVersesThisChapter = 0;
     for (let n = 1; n <= lines.length; n++) {
         let line = lines[n - 1];
-        if (C == '0') V = n.toString();
+        if (C==='0') V = n.toString();
         let atString = " at " + BBB + " " + C + ":" + V + " on line " + n.toLocaleString() + " of " + file.name;
         // console.log("line '"+ line+"'"+ atString);
         if (!line) {
@@ -202,8 +211,8 @@ function checkUSFMFile(file) {
         let rest = line.substring(marker.length + 2)
         // console.log("Line " + n + ": marker='" + marker + "' rest='" + rest + "'");
 
-        if (marker == 'c') C = rest;
-        else if (marker == 'v') V = rest.split(' ', 1)[0];
+        if (marker==='c') C = rest;
+        else if (marker==='v') V = rest.split(' ', 1)[0];
         atString = " at " + BBB + " " + C + ":" + V + " on line " + n.toLocaleString() + " of " + file.name;
 
         checkUSFMLine(marker, rest, atString);
@@ -254,7 +263,7 @@ function checkTN_TSVDataRow(BBB, line, rowLocation) {
 
         let numVersesThisChapter;
         if (C) {
-            if (C == 'front') { }
+            if (C==='front') { }
             else if (/^\d+$/.test(C)) {
                 let intC = Number(C);
                 numVersesThisChapter = books.versesInChapter(bbb, intC);
@@ -270,7 +279,7 @@ function checkTN_TSVDataRow(BBB, line, rowLocation) {
             addNotice(500, "Missing chapter number", ` ?:${V}${withString}`);
 
         if (V) {
-            if (V == 'intro') { }
+            if (V==='intro') { }
             else if (/^\d+$/.test(V)) {
                 let intV = Number(V);
                 if (intV == 0)
@@ -298,7 +307,7 @@ function checkTN_TSVDataRow(BBB, line, rowLocation) {
         }
 
         if (occurrence) { // This should usually be a digit
-            if (occurrence == '0') {
+            if (occurrence==='0') {
                 if (V != 'intro')
                     addNotice(500, "Invalid '" + occurrence + "' occurrence field", atString);
             }
@@ -391,7 +400,7 @@ function checkTN_TSVFile(file) {
                     addNotice(500, "Missing book code", " at" + CV_withString);
 
                 if (C) {
-                    if (C == 'front') { }
+                    if (C==='front') { }
                     else if (/^\d+$/.test(C)) {
                         let intC = Number(C);
                         if (C != lastC)
@@ -415,7 +424,7 @@ function checkTN_TSVFile(file) {
                     addNotice(500, "Missing chapter number", " after " + lastC + ':' + V + withString);
 
                 if (V) {
-                    if (V == 'intro') { }
+                    if (V==='intro') { }
                     else if (/^\d+$/.test(V)) {
                         let intV = Number(V);
                         if (intV == 0)
@@ -453,7 +462,7 @@ function checkTN_TSVFile(file) {
                 }
 
                 if (occurrence) { // This should usually be a digit
-                    if (occurrence == '0') {
+                    if (occurrence==='0') {
                         if (V != 'intro')
                             addNotice(500, "Invalid '" + occurrence + "' occurrence field", atString);
                     }

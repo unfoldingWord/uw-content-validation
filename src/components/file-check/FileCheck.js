@@ -2,27 +2,19 @@ import React, { useContext } from 'react';
 // import PropTypes from 'prop-types';
 // import ReactJson from 'react-json-view';
 // import { Paper, Button } from '@material-ui/core';
-import {
-    RepositoryContext,
-    FileContext,
-} from 'gitea-react-toolkit';
-// import { checkMarkdownText, checkTN_TSVText, checkManifestText, checkPlainText, checkUSFMText } from '../../core';
-import checkUSFMText from '../../core/usfm-text-check.js';
-import checkMarkdownText from '../../core/markdown-text-check.js';
-import checkPlainText from '../../core/plain-text-check.js';
-// import checkManifestText from '../../core/manifest-text-check.js';
-import checkTN_TSVText from '../../core/table-text-check.js';
+import { RepositoryContext, FileContext } from 'gitea-react-toolkit';
+import checkFile from './checkFile.js';
 import processNotices from '../../core/notice-handling-functions.js';
 import { display_object } from '../../core/utilities.js';
 
-const checkerVersionString = '0.0.4';
 
+const CHECKER_VERSION_STRING = '0.0.3';
 
 function FileCheck(props) {
     const { state: repo, component: repoComponent } = useContext(RepositoryContext);
     const { state: file, component: fileComponent } = useContext(FileContext);
 
-    console.log("I'm here in FileCheck v" + checkerVersionString);
+    console.log("I'm here in FileCheck v" + CHECKER_VERSION_STRING);
     display_object("props", props);
     // display_object("repo", repo);
     /* Has fields: id:number, owner:object, name, full_name, description,
@@ -40,9 +32,6 @@ function FileCheck(props) {
       _links:object, branch, filepath. */
     // display_object("file", file);
 
-    let givenLocation = props['location'];
-    if (givenLocation && givenLocation[0] != ' ') givenLocation = ' ' + givenLocation;
-
     //  Displays "Loading…" correctly when loading
     //      but keeps it there even if there's errors or problems :-(
     let returnedResult;
@@ -55,40 +44,21 @@ function FileCheck(props) {
             <b style={{ color: 'purple' }}>Attempting to load a file…</b>
         </>);
 
-    const checkingOptions = { 'extractLength': 25 };
     if (file) {
-        let preliminaryResult;
-        const ourLocation = ' in ' + file.name + givenLocation;
-        if (file.name.toLowerCase().endsWith('.tsv')) {
-            const filenameMain = file.name.substring(0, file.name.length - 4); // drop .tsv
-            // console.log("Have TSV filenameMain=" + filenameMain);
-            const BBB = filenameMain.substring(filenameMain.length - 3);
-            console.log("Have TSV bookcode=" + BBB);
-            preliminaryResult = checkTN_TSVText(BBB, file.content, ourLocation, checkingOptions);
-            }
-        else if (file.name.toLowerCase().endsWith('.usfm')) {
-            const filenameMain = file.name.substring(0, file.name.length - 5); // drop .usfm
-            // console.log("Have USFM filenameMain=" + filenameMain);
-            const BBB = filenameMain.substring(filenameMain.length - 3);
-            console.log("Have USFM bookcode=" + BBB);
-            preliminaryResult = checkUSFMText(BBB, file.content, ourLocation, checkingOptions);
-        } else if (file.name.toLowerCase().endsWith('.md'))
-            preliminaryResult = checkMarkdownText(file.name, file.content, ourLocation, checkingOptions);
-        else if (file.name.toLowerCase().startsWith('manifest.'))
-            preliminaryResult = checkManifestText(file.name, file.content, ourLocation, checkingOptions);
-        else {
-            // msg_html += "<p style=\"color:#538b01\">'<span style=\"font-style:italic\">" + file.name + "</span>' is not recognized, so ignored.</p>";
-            msgLines += "Warning: '" + file.name + "' is not recognized, so treated as plain text.\n";
-            preliminaryResult = checkPlainText(file.name, file.content, ourLocation, checkingOptions);
-        }
+        let givenLocation = props['location'] ? props['location'] : "";
+        if (givenLocation && givenLocation[0] != ' ') givenLocation = ' ' + givenLocation;
+
+            const checkingOptions = { // Uncomment any of these to test them
+            // 'extractLength': 25,
+        };
+        // Or this allows the parameters to be specified as a FileCheck property
+        if (props.extractLength) checkingOptions.extractLength = parseInt(props.extractLength);
+
+        let preliminaryResult = checkFile(file.name, file.content, givenLocation, checkingOptions);
         console.log("FileCheck got initial results with " + preliminaryResult.successList.length + " success message(s) and " + preliminaryResult.noticeList.length + " notice(s)");
 
         // Add some extra fields to our preliminaryResult object in case we need this information again later
         preliminaryResult.repoFullname = repo.full_name;
-        preliminaryResult.checkedFileCount = 1;
-        preliminaryResult.checkedName = file.name;
-        preliminaryResult.checkedSize = file.size;
-        preliminaryResult.checkingOptions = file.checkingOptions;
 
         // Now do our final handling of the result
         const processOptions = { // Uncomment any of these to test them
@@ -98,6 +68,12 @@ function FileCheck(props) {
             // 'sortBy': 'ByPriority', // default is 'AsFound'
             // 'ignorePriorityNumberList': [123, 202], // default is []
         };
+        // Or this allows the parameters to be specified as a FileCheck property
+        if (props.maximumSimilarMessages) processOptions.maximumSimilarMessages = parseInt(props.maximumSimilarMessages);
+        if (props.errorPriorityLevel) processOptions.errorPriorityLevel = parseInt(props.errorPriorityLevel);
+        if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = parseInt(props.cutoffPriorityLevel);
+        if (props.sortBy) processOptions.sortBy = props.sortBy;
+        // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
         const result = processNotices(preliminaryResult, processOptions);
         console.log("FileCheck got processed results with " + result.successList.length.toLocaleString() + " success message(s), " + result.errorList.length.toLocaleString() + " error(s) and " + result.warningList.length.toLocaleString() + " warning(s)");
         console.log("  numIgnoredNotices=" + result.numIgnoredNotices.toLocaleString(), "numSuppressedErrors=" + result.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + result.numSuppressedWarnings.toLocaleString());
@@ -106,7 +82,7 @@ function FileCheck(props) {
             // Display our array of 4-part lists in a nicer format
             // Uses 'result' object from outer scope
             let myList;
-            if (props.arrayType == 's')
+            if (props.arrayType === 's')
                 return (<ol>
                     {result.successList.map(function (listEntry) {
                         return <li key={listEntry.id}>
@@ -116,11 +92,11 @@ function FileCheck(props) {
                 </ol>
                 );
             else {
-                const myList = props.arrayType == 'e' ? result.errorList : result.warningList;
+                const myList = props.arrayType === 'e' ? result.errorList : result.warningList;
                 return (<ul>
                     {myList.map(function (listEntry) {
                         return <li key={listEntry.id}>
-                            <b style={{ color: props.arrayType == 'e' ? 'red' : 'orange' }}>{listEntry[1]}</b>
+                            <b style={{ color: props.arrayType === 'e' ? 'red' : 'orange' }}>{listEntry[1]}</b>
                             {listEntry[2] > 0 ? " (at character " + (listEntry[2] + 1) + ")" : ""}
                             <span style={{ color: 'DimGray' }}>{listEntry[3] ? " in '" + listEntry[3] + "'" : ""}</span>
                             {listEntry[4]}

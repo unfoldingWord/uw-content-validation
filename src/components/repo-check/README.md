@@ -1,21 +1,16 @@
-## Repo Checker - Readme
+## Repo Check - Readme
 
-The code below requests some info and then checks a file.
+The code below requests some info and then checks a repo.
 
 ```js
-import { useContext } from 'react';
-import { Paper } from '@material-ui/core';
+// import { useContext } from 'react';
+// import { Paper } from '@material-ui/core';
 import {
   AuthenticationContextProvider,
   RepositoryContextProvider,
   RepositoryContext,
-  FileContextProvider,
-  FileContext,
 } from 'gitea-react-toolkit';
-//   import usfmJS from 'usfm-js';
-// import {
-//   Book
-// } from 'scripture-resources-rcl';
+import checkRepo from './checkRepo.js';
 
 /* Seems unnecessary
   function Component() {
@@ -28,8 +23,6 @@ import {
 };*/
 
 const [repository, setRepository] = React.useState();
-const [filepath, setFilepath] = React.useState();
-const [file, setFile] = React.useState();
 
 <AuthenticationContextProvider>
   <RepositoryContextProvider
@@ -40,27 +33,21 @@ const [file, setFile] = React.useState();
       server: "https://bg.door43.org",
       tokenid: "PlaygroundTesting",
     }}
-    full_name='unfoldingWord/en_ult'
-    // If we don't put the branch here, presumably the default branch is used ???
-    branch='master'
+    // full_name='unfoldingWord/hbo_uhb' // OT books only
+    // full_name='unfoldingWord/el-x-koine_ugnt' // NT books only
+    full_name='unfoldingWord/en_ult' // Can use ult or ust here
+    // full_name='unfoldingWord/en_tn'
+    // If we don't put the branch here, the default branch is used
+    // branch='master'
   >
-    <FileContextProvider
-      // If we don't put the filepath here, the user can select from a list
-      // was 'en_tn_08-RUT.tsv' '08-RUT.usfm' '57-TIT.
-      filepath= '43-LUK.usfm'
-      onFilepath={setFilepath}
-      file={file}
-      onFile={setFile}
-    >
 
-      <RepoChecker />
+  <RepoCheck extractLength="13" maximumSimilarMessages="2" location="from repo-check/README.md"/>
 
-    </FileContextProvider>
   </RepositoryContextProvider>
 </AuthenticationContextProvider>
 ```
 
-## Component Description
+<!-- ## Component Description
 
 This component takes a string as input, pre-processes the string, and
 finally counts all the words. Review the source code for all the
@@ -260,4 +247,4 @@ TIT	1	2	r2gj		πρὸ χρόνων αἰωνίων	1	before all the ages of time
 
 `}
 </RepoChecker>
-```
+``` -->

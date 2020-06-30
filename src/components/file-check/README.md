@@ -3,8 +3,8 @@
 The code below requests some info to select an online repository
 and then validates the content of one file selected from the repo.
 
-gitea-react-toolkit (https://github.com/unfoldingWord/gitea-react-toolkit and
-explorable at https://gitea-react-toolkit.netlify.com/) is used to fetch the file.
+This uses gitea-react-toolkit (https://github.com/unfoldingWord/gitea-react-toolkit and
+explorable at https://gitea-react-toolkit.netlify.com/) to fetch the file.
 
 ```js
 // import { useContext } from 'react';
@@ -26,26 +26,28 @@ const [filepath, setFilepath] = React.useState();
     onRepository={setRepository}
     config={ {
       server: "https://bg.door43.org",
+      // server: "https://develop.door43.org",
       tokenid: "PlaygroundTesting",
     }}
     // full_name='unfoldingWord/hbo_uhb' // OT books only
     // full_name='unfoldingWord/el-x-koine_ugnt' // NT books only
-    full_name='unfoldingWord/en_ult' // Can use ult or ust here
-    // full_name='unfoldingWord/en_tn' // Can use ult or ust here
+    // full_name='unfoldingWord/en_ult' // Can use ult or ust here
+    full_name='unfoldingWord/en_tn'
     // If we don't put the branch here, the default branch is used
     // branch='master'
   >
     <FileContextProvider
       // If we don't put the filepath here, the user can select from a list <- DOESN'T WORK !!!
-      filepath= '08-RUT.usfm'
-      // filepath= '41-MAT.usfm'
-      // filepath= 'en_tn_01-GEN.tsv'
+      // filepath= '08-RUT.usfm' // e.g., for UHB, ULT, or UST
+      // filepath= '41-MAT.usfm' // e.g., for UGNT, ULT, or UST
+      filepath= 'en_tn_01-GEN.tsv' // for TN
+      // filepath= 'en_tn_17-EST.tsv' // for TN
       onFilepath={setFilepath}
       // file={file}
       // onFile={setFile}
     >
 
-      <FileCheck location="from file-check/README.md"/>
+      <FileCheck extractLength="13" maximumSimilarMessages="2" location="from file-check/README.md"/>
 
     </FileContextProvider>
   </RepositoryContextProvider>

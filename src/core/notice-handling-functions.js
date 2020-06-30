@@ -106,7 +106,7 @@ export function processNotices(noticeObject, optionalOptions) {
     try {
         maximumSimilarMessages = optionalOptions.maximumSimilarMessages;
     } catch (e) {}
-    if (maximumSimilarMessages === undefined) {
+    if (typeof maximumSimilarMessages != 'number' || isNaN(maximumSimilarMessages)) {
         maximumSimilarMessages = DEFAULT_MAXIMUM_SIMILAR_MESSAGES;
         // console.log("Using default maximumSimilarMessages=" + maximumSimilarMessages);
     } else
@@ -138,7 +138,7 @@ export function processNotices(noticeObject, optionalOptions) {
         console.log("Ignored " + resultObject.numIgnoredNotices + " notices");
 
     // Sort the remainingNoticeList as required
-    if (sortBy == 'ByPriority')
+    if (sortBy==='ByPriority')
         remainingNoticeList.sort(function (a, b){return b[0]-a[0]});
     else if (sortBy != 'AsFound')
         console.log("ERROR: Sorting '"+sortBy+"' is not implemented yet!!!");

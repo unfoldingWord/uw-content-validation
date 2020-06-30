@@ -11,11 +11,16 @@ async function startLiveLinksCheck(linksList, existingNoticeList, callbackFuncti
 
     function addNotice(priority, message, index, extract, location) {
         console.log("sLLC Link Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        console.assert(typeof priority == 'number', "addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"'");
-        console.assert(typeof message == 'string', "addNotice: 'message' parameter should be a string");
-        console.assert(typeof index == 'number', "addNotice: 'index' parameter should be a number not a '"+(typeof priority)+"'");
-        console.assert(typeof extract == 'string', "addNotice: 'extract' parameter should be a string");
-        console.assert(typeof location == 'string', "addNotice: 'location' parameter should be a string");
+        console.assert(typeof priority==='number', "addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"'");
+        console.assert(priority!==undefined, "addNotice: 'priority' parameter should be defined");
+        console.assert(typeof message==='string', "addNotice: 'message' parameter should be a string not a '"+(typeof message)+"'");
+        console.assert(message!==undefined, "addNotice: 'message' parameter should be defined");
+        console.assert(typeof index==='number', "addNotice: 'index' parameter should be a number not a '"+(typeof index)+"'");
+        console.assert(index!==undefined, "addNotice: 'index' parameter should be defined");
+        console.assert(typeof extract==='string', "addNotice: 'extract' parameter should be a string not a '"+(typeof extract)+"'");
+        console.assert(extract!==undefined, "addNotice: 'extract' parameter should be defined");
+        console.assert(typeof location==='string', "addNotice: 'location' parameter should be a string not a '"+(typeof location)+"'");
+        console.assert(location!==undefined, "addNotice: 'location' parameter should be defined");
         result.noticeList.push([priority, message, index, extract, location]);
     }
 
@@ -57,11 +62,16 @@ function doBasicLinkChecks(fieldName, fieldText, linkOptions, optionalFieldLocat
 
     function addNotice(priority, message, index, extract, location) {
         console.log("dBLC Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        console.assert(typeof priority == 'number', "addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"'");
-        console.assert(typeof message == 'string', "addNotice: 'message' parameter should be a string");
-        console.assert(typeof index == 'number', "addNotice: 'index' parameter should be a number not a '"+(typeof priority)+"'");
-        console.assert(typeof extract == 'string', "addNotice: 'extract' parameter should be a string");
-        console.assert(typeof location == 'string', "addNotice: 'location' parameter should be a string");
+        console.assert(typeof priority==='number', "addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"'");
+        console.assert(priority!==undefined, "addNotice: 'priority' parameter should be defined");
+        console.assert(typeof message==='string', "addNotice: 'message' parameter should be a string not a '"+(typeof message)+"'");
+        console.assert(message!==undefined, "addNotice: 'message' parameter should be defined");
+        console.assert(typeof index==='number', "addNotice: 'index' parameter should be a number not a '"+(typeof index)+"'");
+        console.assert(index!==undefined, "addNotice: 'index' parameter should be defined");
+        console.assert(typeof extract==='string', "addNotice: 'extract' parameter should be a string not a '"+(typeof extract)+"'");
+        console.assert(extract!==undefined, "addNotice: 'extract' parameter should be defined");
+        console.assert(typeof location==='string', "addNotice: 'location' parameter should be a string not a '"+(typeof location)+"'");
+        console.assert(location!==undefined, "addNotice: 'location' parameter should be defined");
         result.noticeList.push([priority, message, index, extract, location]);
     }
 
@@ -93,13 +103,13 @@ function doBasicLinkChecks(fieldName, fieldText, linkOptions, optionalFieldLocat
         linkRegexParts = [];
         for (let linkType of linkOptions.linkTypesAllowed) {
             // console.log("doBasicLinkChecks linkType", linkType);
-            if (linkType == 'RC')
+            if (linkType==='RC')
                 linkRegexParts.push('(rc://[^ ]+)');
-            else if (linkType == 'md') {
+            else if (linkType==='md') {
                 linkRegexParts.push('\\[\\[(https*://[^ ]+)\\]\\]'); // [[link]]
                 linkRegexParts.push(']\\((https*://[^ ]+)\\)'); // [this](link)
             }
-            else if (linkType == 'naked')
+            else if (linkType==='naked')
                 linkRegexParts.push('(https*://[^ ]+)');
             else
                 addNotice(500, "Unknown '" + linkType + "' linkType parameter", -1, "", "");

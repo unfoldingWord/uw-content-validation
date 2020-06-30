@@ -15,7 +15,7 @@ function checkTN_TSVText(BBB, tableText, location, optionalOptions) {
 
      Returns a result object containing a successList and a warningList
      */
-    console.log("checkTN_TSVText(" + BBB + ", " + tableText.length + ", " + location + ")…");
+    console.log("checkTN_TSVText(" + BBB + ", " + tableText.length + ", " + location + ","+JSON.stringify(optionalOptions)+")…");
 
     let result = { successList: [], noticeList: [] };
 
@@ -24,12 +24,17 @@ function checkTN_TSVText(BBB, tableText, location, optionalOptions) {
         result.successList.push(successString);
     }
     function addNotice(priority, message, index, extract, location) {
-        console.log("TSV Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        console.assert(typeof priority == 'number', "addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"'");
-        console.assert(typeof message == 'string', "addNotice: 'message' parameter should be a string");
-        console.assert(typeof index == 'number', "addNotice: 'index' parameter should be a number not a '"+(typeof priority)+"'");
-        console.assert(typeof extract == 'string', "addNotice: 'extract' parameter should be a string");
-        console.assert(typeof location == 'string', "addNotice: 'location' parameter should be a string");
+        // console.log("TSV Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
+        console.assert(typeof priority==='number', "addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"'");
+        console.assert(priority!==undefined, "addNotice: 'priority' parameter should be defined");
+        console.assert(typeof message==='string', "addNotice: 'message' parameter should be a string not a '"+(typeof message)+"'");
+        console.assert(message!==undefined, "addNotice: 'message' parameter should be defined");
+        console.assert(typeof index==='number', "addNotice: 'index' parameter should be a number not a '"+(typeof index)+"'");
+        console.assert(index!==undefined, "addNotice: 'index' parameter should be defined");
+        console.assert(typeof extract==='string', "addNotice: 'extract' parameter should be a string not a '"+(typeof extract)+"'");
+        console.assert(extract!==undefined, "addNotice: 'extract' parameter should be defined");
+        console.assert(typeof location==='string', "addNotice: 'location' parameter should be a string not a '"+(typeof location)+"'");
+        console.assert(location!==undefined, "addNotice: 'location' parameter should be defined");
         result.noticeList.push([priority, message, index, extract, location]);
     }
 
@@ -51,7 +56,8 @@ function checkTN_TSVText(BBB, tableText, location, optionalOptions) {
     let fieldID_list = [];
     let numVersesThisChapter = 0;
     for (let n = 0; n < lines.length; n++) {
-        console.log("checkTN_TSVText checking line " + n + ": " + JSON.stringify(lines[n]));
+        // console.log("checkTN_TSVText checking line " + n + ": " + JSON.stringify(lines[n]));
+        let inString = " in line " + n.toLocaleString() + location;
         if (n == 0) {
             if (lines[0] == EXPECTED_TN_HEADING_LINE)
                 addSuccessMessage("Checked TSV header " + location);
@@ -63,13 +69,12 @@ function checkTN_TSVText(BBB, tableText, location, optionalOptions) {
             let fields = lines[n].split('\t');
             if (fields.length == NUM_EXPECTED_TN_FIELDS) {
                 let [B, C, V, fieldID, support_reference, orig_quote, occurrence, GL_quote, occurrenceNote] = fields;
-                let inString = " in line " + n.toLocaleString() + " in " + location;
                 let withString = " with '" + fieldID + "'" + inString;
                 let CV_withString = ' ' + C + ':' + V + withString;
                 let atString = " at " + B + ' ' + C + ':' + V + " (" + fieldID + ")" + inString;
 
                 // Use the row check to do most basic checks
-                const firstResult = checkTN_TSVDataRow(BBB, lines[n], n);
+                const firstResult = checkTN_TSVDataRow(BBB, lines[n], atString, optionalOptions);
                 for (let noticeEntry of firstResult.noticeList)
                     addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
 
@@ -82,7 +87,7 @@ function checkTN_TSVText(BBB, tableText, location, optionalOptions) {
                     addNotice(744, "Missing book code", " at" + CV_withString);
 
                 if (C) {
-                    if (C == 'front') { }
+                    if (C==='front') { }
                     else if (/^\d+$/.test(C)) {
                         let intC = Number(C);
                         if (C != lastC)
@@ -106,7 +111,7 @@ function checkTN_TSVText(BBB, tableText, location, optionalOptions) {
                     addNotice(739, "Missing chapter number", " after " + lastC + ':' + V + withString);
 
                 if (V) {
-                    if (V == 'intro') { }
+                    if (V==='intro') { }
                     else if (/^\d+$/.test(V)) {
                         let intV = Number(V);
                         if (intV == 0)
@@ -132,7 +137,7 @@ function checkTN_TSVText(BBB, tableText, location, optionalOptions) {
                     if (fieldID_list.indexOf(fieldID) >= 0)
                         addNotice(729, "Duplicate '" + fieldID + "' ID", atString);
                 } else
-                    addNotice(730, "Missing ID", atString);
+                    addNotice(730, "Missing ID", -1, '', atString);
 
 
                 if (B != lastB || C != lastC || V != lastV) {
@@ -141,8 +146,10 @@ function checkTN_TSVText(BBB, tableText, location, optionalOptions) {
                 }
 
             } else
-                console.log("  Line " + n + ": Has " + fields.length + " fields instead of " + EXPECTED_TN_HEADING_LINE);
-
+                if (n==lines.length-1) // it's the last line
+                    console.log("  Line " + n + ": Has " + fields.length + " field(s) instead of " +NUM_EXPECTED_TN_FIELDS+": "+ EXPECTED_TN_HEADING_LINE.replace(/\t/g,', '));
+                else
+                    addNotice(888, "Wrong number of tabbed fields", -1, '', inString)
         }
     }
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data lines in '${location}'.`);

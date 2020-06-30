@@ -1,5 +1,9 @@
 import { isWhitespace, countOccurrences } from './text-handling-functions'
 
+const CHECKER_VERSION_STRING = '0.0.3';
+
+const DEFAULT_EXTRACT_LENGTH = 10;
+
 
 export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalOptions) {
     // Does basic checks for small errors like leading/trailing spaces, etc.
@@ -18,16 +22,26 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     //      3/ a short extract of the string containing the error (or empty-string if irrelevant)
     //      4/ the detailed location string
     //  (Returned in this way for more intelligent processing at a higher level)
+    console.assert(typeof fieldName==='string', "doBasicTextChecks: 'fieldName' parameter should be a number not a '"+(typeof priority)+"'");
+    console.assert(fieldName!==undefined, "doBasicTextChecks: 'fieldName' parameter should be defined");
+    console.assert(typeof fieldText==='string', "doBasicTextChecks: 'fieldText' parameter should be a number not a '"+(typeof priority)+"'");
+    console.assert(fieldText!==undefined, "doBasicTextChecks: 'fieldText' parameter should be defined");
+    console.assert( allowedLinks===true || allowedLinks===false, "doBasicTextChecks: allowedLinks parameter must be either true or false");
 
     let result = { noticeList: [] };
 
     function addNotice(priority, message, index, extract, location) {
         // console.log("dBTC Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        console.assert(typeof priority == 'number', "addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"'");
-        console.assert(typeof message == 'string', "addNotice: 'message' parameter should be a string");
-        console.assert(typeof index == 'number', "addNotice: 'index' parameter should be a number not a '"+(typeof priority)+"'");
-        console.assert(typeof extract == 'string', "addNotice: 'extract' parameter should be a string");
-        console.assert(typeof location == 'string', "addNotice: 'location' parameter should be a string");
+        console.assert(typeof priority==='number', "addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"'");
+        console.assert(priority!==undefined, "addNotice: 'priority' parameter should be defined");
+        console.assert(typeof message==='string', "addNotice: 'message' parameter should be a string not a '"+(typeof message)+"'");
+        console.assert(message!==undefined, "addNotice: 'message' parameter should be defined");
+        console.assert(typeof index==='number', "addNotice: 'index' parameter should be a number not a '"+(typeof index)+"'");
+        console.assert(index!==undefined, "addNotice: 'index' parameter should be defined");
+        console.assert(typeof extract==='string', "addNotice: 'extract' parameter should be a string not a '"+(typeof extract)+"'");
+        console.assert(extract!==undefined, "addNotice: 'extract' parameter should be defined");
+        console.assert(typeof location==='string', "addNotice: 'location' parameter should be a string not a '"+(typeof location)+"'");
+        console.assert(location!==undefined, "addNotice: 'location' parameter should be defined");
         result.noticeList.push([priority, message, index, extract, location]);
     }
 
@@ -46,95 +60,109 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
         return result;
     }
 
+    let extractLength;
+    try {
+        extractLength = optionalOptions.extractLength;
+    } catch (e) {}
+    if (typeof extractLength != 'number' || isNaN(extractLength)) {
+        extractLength = DEFAULT_EXTRACT_LENGTH;
+        // console.log("Using default extractLength=" + extractLength);
+    }
+    // else
+    //     console.log("Using supplied extractLength=" + extractLength, "cf. default="+DEFAULT_EXTRACT_LENGTH);
+    const halfLength = Math.floor(extractLength / 2); // rounded down
+    const halfLengthPlus = Math.floor((extractLength+1) / 2); // rounded up
+    // console.log("Using halfLength=" + halfLength, "halfLengthPlus="+halfLengthPlus);
+
     let ix = fieldText.indexOf('<<<<<<<');
     if (ix >= 0) {
-        let iy = ix + 5; // Want extract to focus more on what follows
-        const extract = (iy > 5 ? '…' : '') + fieldText.substring(iy - 5, iy + 6).replace(/ /g, '␣') + (iy + 6 < fieldText.length ? '…' : '')
+        let iy = ix+halfLength; // Want extract to focus more on what follows
+        const extract = (iy>halfLength ? '…' : '') + fieldText.substring(iy-halfLength, iy+halfLengthPlus).replace(/ /g, '␣') + (iy+halfLengthPlus < fieldText.length ? '…' : '')
         addNotice(993, "Unresolved GIT conflict", ix, extract, ourAtString);
     } else {
         ix = fieldText.indexOf('=======');
         if (ix >= 0) {
-            let iy = ix + 5; // Want extract to focus more on what follows
-            const extract = (iy > 5 ? '…' : '') + fieldText.substring(iy - 5, iy + 6).replace(/ /g, '␣') + (iy + 6 < fieldText.length ? '…' : '')
+            let iy = ix+halfLength; // Want extract to focus more on what follows
+            const extract = (iy>halfLength ? '…' : '') + fieldText.substring(iy-halfLength, iy+halfLengthPlus).replace(/ /g, '␣') + (iy+halfLengthPlus < fieldText.length ? '…' : '')
             addNotice(992, "Unresolved GIT conflict", ix, extract, ourAtString);
         } else {
             ix = fieldText.indexOf('>>>>>>>>');
             if (ix >= 0) {
-                let iy = ix + 5; // Want extract to focus more on what follows
-                const extract = (iy > 5 ? '…' : '') + fieldText.substring(iy - 5, iy + 6).replace(/ /g, '␣') + (iy + 6 < fieldText.length ? '…' : '')
+                let iy = ix+halfLength; // Want extract to focus more on what follows
+                const extract = (iy>halfLength ? '…' : '') + fieldText.substring(iy-halfLength, iy+halfLengthPlus).replace(/ /g, '␣') + (iy+halfLengthPlus < fieldText.length ? '…' : '')
                 addNotice(991, "Unresolved GIT conflict", ix, extract, ourAtString);
             }
         }
     }
 
-    if (fieldText[0] == ' ') {
-        const extract = fieldText.substring(0, 10).replace(/ /g, '␣') + (fieldText.length > 10 ? '…' : '');
-        addNotice(203, "Unexpected leading space" + (fieldText[1] == ' ' ? "s" : ""), 0, extract, ourAtString);
+    if (fieldText[0]===' ') {
+        const extract = fieldText.substring(0, 10).replace(/ /g, '␣') + (fieldText.length > extractLength ? '…' : '');
+        addNotice(203, "Unexpected leading space" + (fieldText[1]===' ' ? "s" : ""), 0, extract, ourAtString);
     }
-    if (fieldText.substring(0, 4) == '<br>' || fieldText.substring(0, 5) == '<br/>' || fieldText.substring(0, 6) == '<br />') {
-        const extract = fieldText.substring(0, 10) + (fieldText.length > 10 ? '…' : '');
+    if (fieldText.substring(0, 4)==='<br>' || fieldText.substring(0, 5)==='<br/>' || fieldText.substring(0, 6)==='<br />') {
+        const extract = fieldText.substring(0, 10) + (fieldText.length > extractLength ? '…' : '');
         addNotice(205, "Unexpected leading break", 0, extract, ourAtString);
     }
-    if (fieldText[fieldText.length - 1] == ' ') {
-        const extract = (fieldText.length > 10 ? '…' : '') + fieldText.substring(fieldText.length - 10).replace(/ /g, '␣');
+    if (fieldText[fieldText.length - 1]===' ') {
+        const extract = (fieldText.length > extractLength ? '…' : '') + fieldText.substring(fieldText.length - 10).replace(/ /g, '␣');
         addNotice(202, "Unexpected trailing space(s)", fieldText.length - 1, extract, ourAtString);
     }
-    if (fieldText.substring(fieldText.length - 4) == '<br>' || fieldText.substring(fieldText.length - 5) == '<br/>' || fieldText.substring(fieldText.length - 6) == '<br />') {
-        const extract = (fieldText.length > 10 ? '…' : '') + fieldText.substring(fieldText.length - 10);
+    if (fieldText.substring(fieldText.length - 4)==='<br>' || fieldText.substring(fieldText.length - 5)==='<br/>' || fieldText.substring(fieldText.length - 6)==='<br />') {
+        const extract = (fieldText.length > extractLength ? '…' : '') + fieldText.substring(fieldText.length - 10);
         addNotice(204, "Unexpected trailing break", fieldText.length - 1, extract, ourAtString);
     }
     ix = fieldText.indexOf('  ');
     if (ix >= 0) {
-        const extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6).replace(/ /g, '␣') + (ix + 6 < fieldText.length ? '…' : '')
+        const extract = (ix>halfLength ? '…' : '') + fieldText.substring(ix-halfLength, ix+halfLengthPlus).replace(/ /g, '␣') + (ix+halfLengthPlus < fieldText.length ? '…' : '')
         addNotice(194, "Unexpected double spaces", ix, extract, ourAtString);
     }
     ix = fieldText.indexOf('\n');
     if (ix >= 0) {
-        const extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
+        const extract = (ix>halfLength ? '…' : '') + fieldText.substring(ix-halfLength, ix+halfLengthPlus) + (ix+halfLengthPlus < fieldText.length ? '…' : '')
         addNotice(583, "Unexpected newLine character", ix, extract, ourAtString);
     }
     ix = fieldText.indexOf('\r');
     if (ix >= 0) {
-        const extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
+        const extract = (ix>halfLength ? '…' : '') + fieldText.substring(ix-halfLength, ix+halfLengthPlus) + (ix+halfLengthPlus < fieldText.length ? '…' : '')
         addNotice(582, "Unexpected carriageReturn character", ix, extract, ourAtString);
     }
     ix = fieldText.indexOf('\xA0'); // non-break space
     if (ix >= 0) {
-        const extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6).replace(/\xA0/g, '⍽') + (ix + 6 < fieldText.length ? '…' : '')
+        const extract = (ix>halfLength ? '…' : '') + fieldText.substring(ix-halfLength, ix+halfLengthPlus).replace(/\xA0/g, '⍽') + (ix+halfLengthPlus < fieldText.length ? '…' : '')
         addNotice(581, "Unexpected non-break space character", ix, extract, ourAtString);
     }
     ix = fieldText.indexOf('\u202F'); // narrow non-break space
     if (ix >= 0) {
-        const extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6).replace(/\u202F/g, '⍽') + (ix + 6 < fieldText.length ? '…' : '')
+        const extract = (ix>halfLength ? '…' : '') + fieldText.substring(ix-halfLength, ix+halfLengthPlus).replace(/\u202F/g, '⍽') + (ix+halfLengthPlus < fieldText.length ? '…' : '')
         addNotice(580, "Unexpected narrow non-break space character", ix, extract, ourAtString);
     }
     ix = fieldText.indexOf(' …');
     if (ix >= 0) {
-        const extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
+        const extract = (ix>halfLength ? '…' : '') + fieldText.substring(ix-halfLength, ix+halfLengthPlus) + (ix+halfLengthPlus < fieldText.length ? '…' : '')
         addNotice(579, "Unexpected space before ellipse character", ix, extract, ourAtString);
     }
     ix = fieldText.indexOf('… ');
     if (ix >= 0) {
-        const extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
+        const extract = (ix>halfLength ? '…' : '') + fieldText.substring(ix-halfLength, ix+halfLengthPlus) + (ix+halfLengthPlus < fieldText.length ? '…' : '')
         addNotice(578, "Unexpected space after ellipse character", ix, extract, ourAtString);
     }
     // Check for doubled punctuation chars (international)
     // Doesn't check for doubled forward slash coz that might occur in a link, e.g., https://etc…
     //  or doubled # coz that occurs in markdown
-    let checkList = '.’\'(){}<>⟨⟩:,،、‒–—―…!‹›«»‐-?‘’“”\'";⁄·&*@•^†‡°¡¿※№÷×ºª%‰+−=‱¶′″‴§~_|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥';
-    if (!allowedLinks) checkList += '[].' // Double square brackets can be part of markdown links, double periods can be part of a path
+    let checkList = '’\'({}<>⟨⟩:,،、‒–—―…!‹›«»‐-?‘’“”\'";⁄·&*@•^†‡°¡¿※№÷×ºª%‰+−=‱¶′″‴§~_|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥';
+    if (!allowedLinks) checkList += '[].)' // Double square brackets can be part of markdown links, double periods can be part of a path
     for (let punctChar of checkList) {
         ix = fieldText.indexOf(punctChar + punctChar);
         if (ix >= 0) {
-            let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
-            addNotice(577, "Unexpected doubled " + punctChar + " character", ix, extract, ourAtString);
+            let extract = (ix>halfLength ? '…' : '') + fieldText.substring(ix-halfLength, ix+halfLengthPlus) + (ix+halfLengthPlus < fieldText.length ? '…' : '')
+            addNotice(577, "Unexpected doubled " + punctChar + " characters", ix, extract, ourAtString);
         }
     }
     // Check for punctuation chars following space
     for (let punctChar of '.\')}>⟩:,،、‒–—―…!.‹›«»‐-?’”\'";/⁄·*@•^†‡°¡¿※#№÷×ºª%‰‱¶′″‴§~_|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥') {
         ix = fieldText.indexOf(' ' + punctChar);
         if (ix >= 0) {
-            let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
+            let extract = (ix>halfLength ? '…' : '') + fieldText.substring(ix-halfLength, ix+halfLengthPlus) + (ix+halfLengthPlus < fieldText.length ? '…' : '')
             addNotice(591, "Unexpected " + punctChar + " character after space", ix, extract, ourAtString);
         }
     }
@@ -142,7 +170,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     for (let punctChar of '\'[({<⟨،、‒–—―‹«‐‘“/⁄·@\•^†‡°¡¿※№×ºª%‰‱¶′″‴§~_|‖¦©℗℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥') {
         ix = fieldText.indexOf(punctChar + ' ');
         if (ix >= 0) {
-            let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
+            let extract = (ix>halfLength ? '…' : '') + fieldText.substring(ix-halfLength, ix+halfLengthPlus) + (ix+halfLengthPlus < fieldText.length ? '…' : '')
             addNotice(592, "Unexpected space after " + punctChar + " character", ix, extract, ourAtString);
         }
     }
@@ -168,7 +196,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
         if (ix == -1) ix = fieldText.indexOf('.info');
         if (ix == -1) ix = fieldText.indexOf('.bible');
         if (ix >= 0) {
-            let extract = (ix > 5 ? '…' : '') + fieldText.substring(ix - 5, ix + 6) + (ix + 6 < fieldText.length ? '…' : '')
+            let extract = (ix>halfLength ? '…' : '') + fieldText.substring(ix-halfLength, ix+halfLengthPlus) + (ix+halfLengthPlus < fieldText.length ? '…' : '')
             addNotice(765, "Unexpected link", ix, extract, ourAtString);
         }
     }
