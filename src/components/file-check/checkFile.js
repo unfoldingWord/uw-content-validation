@@ -6,7 +6,7 @@ import checkTN_TSVText from '../../core/table-text-check.js';
 // import { display_object } from '../../core/utilities.js';
 
 
-const CHECKER_VERSION_STRING = '0.0.1';
+const CHECKER_VERSION_STRING = '0.0.2';
 
 function checkFile(filename, fileContent, givenLocation, checkingOptions) {
     console.log("I'm here in checkFile v" + CHECKER_VERSION_STRING);
@@ -33,16 +33,15 @@ function checkFile(filename, fileContent, givenLocation, checkingOptions) {
     else if (filename.toLowerCase().startsWith('manifest.'))
         checkFileResult = checkManifestText(filename, fileContent, ourLocation, checkingOptions);
     else {
-        // msg_html += "<p style=\"color:#538b01\">'<span style=\"font-style:italic\">" + filename + "</span>' is not recognized, so ignored.</p>";
-        msgLines += "Warning: '" + filename + "' is not recognized, so treated as plain text.\n";
         checkFileResult = checkPlainText(filename, fileContent, ourLocation, checkingOptions);
+        checkFileResult.noticeList.unshift([995,"File extension is not recognized, so treated as plain text.",-1,'',filename]);
     }
     console.log("checkFile got initial results with " + checkFileResult.successList.length + " success message(s) and " + checkFileResult.noticeList.length + " notice(s)");
 
     // Add some extra fields to our checkFileResult object in case we need this information again later
     checkFileResult.checkedFileCount = 1;
-    checkFileResult.checkedName = filename;
-    checkFileResult.checkedSize = fileContent.length;
+    checkFileResult.checkedFilename = filename;
+    checkFileResult.checkedFilesize = fileContent.length;
     checkFileResult.checkingOptions = checkingOptions;
 
     return checkFileResult;

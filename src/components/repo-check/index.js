@@ -1,1 +1,2 @@
-export {default} from './RepoChecker';
+export {default} from './checkRepo';
+export {default} from './RepoCheck';

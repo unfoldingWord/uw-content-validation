@@ -34,7 +34,7 @@ function checkPlainText(textName, markdownText, location, optionalOptions) {
         result.noticeList.push([priority, message, index, extract, location]);
     }
 
-    function doOurBasicTextChecks(fieldName, fieldText, linkTypes, optionalFieldLocation, optionalOptions) {
+    function doOurBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalOptions) {
         // Does basic checks for small errors like leading/trailing spaces, etc.
 
         // We assume that checking for compulsory fields is done elsewhere
@@ -46,7 +46,7 @@ function checkPlainText(textName, markdownText, location, optionalOptions) {
         console.assert(fieldText!==undefined, "doOurBasicTextChecks: 'fieldText' parameter should be defined");
         console.assert( allowedLinks===true || allowedLinks===false, "doOurBasicTextChecks: allowedLinks parameter must be either true or false");
 
-        const resultObject = doBasicTextChecks(fieldName, fieldText, linkTypes, optionalFieldLocation, optionalOptions);
+        const resultObject = doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -64,7 +64,7 @@ function checkPlainText(textName, markdownText, location, optionalOptions) {
         let thisText = lineText.trimStart(); // So we don't get "leading space" and "doubled spaces" errors
 
         if (thisText)
-            doOurBasicTextChecks(lineName, thisText, [], lineLocation, optionalOptions);
+            doOurBasicTextChecks(lineName, thisText, false, lineLocation, optionalOptions);
     }
     // end of checkPlainLine function
 
@@ -89,7 +89,7 @@ function checkPlainText(textName, markdownText, location, optionalOptions) {
         lastLineContents = line;
     }
 
-    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} lines in '${location}'.`);
+    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line(s) in '${location}'.`);
     if (result.noticeList)
         addSuccessMessage(`checkPlainText v${checkerVersionString} finished with ${result.noticeList.length.toLocaleString()} notice(s)`);
     else

@@ -9,7 +9,7 @@ export function display_object(given_title, given_object) {
       let this_property_contents = '' + given_object[property_name];
       if (this_property_contents.length > 50)
         this_property_contents = '(' + this_property_contents.length + ') ' + this_property_contents.substring(0, 50) + '…';
-      output += '  ' + property_name + ': ' + this_property_contents + '\n';
+      output += '  ' + property_name + ' (type='+typeof given_object[property_name]+ '): ' + this_property_contents + '\n';
       /*}
       catch (e) {
         console.log("Can't parse " + property_name);

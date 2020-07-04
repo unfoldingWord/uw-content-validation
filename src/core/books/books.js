@@ -11,25 +11,34 @@ import data from './books.json';
 //   "chapters": number[];
 // }
 
+export const isValidBookCode = (bookId) => {
+  return bookId.toLowerCase() in data;
+}
+
+export const usfmNumberName = (bookId) => {
+  try {return data[bookId.toLowerCase()].usfm;}
+  catch(err) {throw new Error("usfmNumberName() given invalid bookId: '" + bookId + "'");}
+}
+
 export const chaptersInBook = (bookId) => {
   let chapters;
-    try {
+  try {
     chapters = data[bookId].chapters;
-    } catch (err) {
-      throw new Error("chaptersInBook() given invalid bookId: '"+bookId+"'");
-    }
-    if ( chapters === undefined ) {
-      throw new Error("chaptersInBook(): Invalid bookId: '"+bookId+"'");
-    }
-    return chapters;
+  } catch (err) {
+    throw new Error("chaptersInBook() given invalid bookId: '" + bookId + "'");
+  }
+  if (chapters === undefined) {
+    throw new Error("chaptersInBook(): Invalid bookId: '" + bookId + "'");
+  }
+  return chapters;
 };
 
 export const versesInChapter = (bookId, chapter) => {
   const verses = chaptersInBook(bookId)[chapter - 1];
-  if ( verses === undefined ) {
-    throw new Error("versesInChapter("+bookId+") given invalid chapter: "+chapter);
+  if (verses === undefined) {
+    throw new Error("versesInChapter(" + bookId + ") given invalid chapter: " + chapter);
   }
-return verses;
+  return verses;
 };
 
 // export const bookData = (bookId) => {

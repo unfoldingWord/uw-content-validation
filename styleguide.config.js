@@ -10,18 +10,6 @@ let sections = [
 		content: 'README.md',
 	},
 	{
-		name: 'Coming... Resource Checker',
-		components: () => {
-			const componentNames = [
-				'resource-check',
-			];
-			return componentNames.map(componentName => {
-				const filename = upperFirst(camelCase(componentName));
-				return path.resolve(__dirname, `src/components/${componentName}`, `${filename}.js`)
-			});
-		}
-	},
-	{
 		name: 'Coming... Scripture Burrito Checker',
 		components: () => {
 			const componentNames = [
@@ -38,6 +26,18 @@ let sections = [
 		components: () => {
 			const componentNames = [
 				'ResourceContainer-check',
+			];
+			return componentNames.map(componentName => {
+				const filename = upperFirst(camelCase(componentName));
+				return path.resolve(__dirname, `src/components/${componentName}`, `${filename}.js`)
+			});
+		}
+	},
+	{
+		name: 'Book Package Checker',
+		components: () => {
+			const componentNames = [
+				'book-package-check',
 			];
 			return componentNames.map(componentName => {
 				const filename = upperFirst(camelCase(componentName));

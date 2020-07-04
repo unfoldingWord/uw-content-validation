@@ -39,7 +39,6 @@ function checkTN_TSVText(BBB, tableText, location, optionalOptions) {
     }
 
 
-    // if (ALLOWED_BBBs.indexOf(BBB) == -1)
     let bbb = BBB.toLowerCase();
     let numChaptersThisBook = 0;
     try {
@@ -152,7 +151,7 @@ function checkTN_TSVText(BBB, tableText, location, optionalOptions) {
                     addNotice(888, "Wrong number of tabbed fields", -1, '', inString)
         }
     }
-    addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data lines in '${location}'.`);
+    addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line(s) in '${location}'.`);
     if (result.noticeList)
         addSuccessMessage(`checkTN_TSVText v${checkerVersionString} finished with ${result.noticeList.length.toLocaleString()} notice(s)`);
     else

@@ -48,7 +48,7 @@ function FileCheck(props) {
         let givenLocation = props['location'] ? props['location'] : "";
         if (givenLocation && givenLocation[0] != ' ') givenLocation = ' ' + givenLocation;
 
-            const checkingOptions = { // Uncomment any of these to test them
+        let checkingOptions = { // Uncomment any of these to test them
             // 'extractLength': 25,
         };
         // Or this allows the parameters to be specified as a FileCheck property
@@ -58,10 +58,12 @@ function FileCheck(props) {
         console.log("FileCheck got initial results with " + preliminaryResult.successList.length + " success message(s) and " + preliminaryResult.noticeList.length + " notice(s)");
 
         // Add some extra fields to our preliminaryResult object in case we need this information again later
+        preliminaryResult.checkType = 'File';
         preliminaryResult.repoFullname = repo.full_name;
+        preliminaryResult.checkingOptions = checkingOptions;
 
         // Now do our final handling of the result
-        const processOptions = { // Uncomment any of these to test them
+        let processOptions = { // Uncomment any of these to test them
             // 'maximumSimilarMessages': 3, // default is 2
             // 'errorPriorityLevel': 800, // default is 700
             // 'cutoffPriorityLevel': 100, // default is 0

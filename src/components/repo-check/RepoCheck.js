@@ -52,12 +52,13 @@ import { display_object } from '../../core/utilities.js';
 
 const CHECKER_VERSION_STRING = '0.0.1';
 
-function RepoCheck(url, classes, style, props) {
+function RepoCheck(/*url, classes, style,*/ props) {
   const { state: repo, component: repoComponent } = useContext(RepositoryContext);
 
   console.log("I'm here in RepoCheck v" + CHECKER_VERSION_STRING);
   display_object("props", props);
   display_object("props.classes", props.classes);
+  let classes = props.classes;
   display_object("repo", repo);
   /* Has fields: id:number, owner:object, name, full_name, description,
       empty, private, fork, parent, mirror, size,

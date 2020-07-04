@@ -64,7 +64,7 @@ function addNotice(priority, message, index, extract, location) {
 }
 
 
-function doOurBasicTextChecks(fieldName, fieldText, linkTypes, optionalFieldLocation, optionalOptions) {
+function doOurBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalOptions) {
     // Does basic checks for small errors like leading/trailing spaces, etc.
 
     // We assume that checking for compulsory fields is done elsewhere
@@ -76,7 +76,7 @@ function doOurBasicTextChecks(fieldName, fieldText, linkTypes, optionalFieldLoca
     console.assert(fieldText!==undefined, "doOurBasicTextChecks: 'fieldText' parameter should be defined");
     console.assert( allowedLinks===true || allowedLinks===false, "doOurBasicTextChecks: allowedLinks parameter must be either true or false");
 
-    const resultObject = doBasicTextChecks(fieldName, fieldText, linkTypes, optionalFieldLocation, optionalOptions);
+    const resultObject = doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalOptions);
 
     // Choose only ONE of the following
     // This is the fast way of append the results from this field
@@ -167,7 +167,7 @@ function checkUSFMFile(file) {
         let mainFilenamePart = file.name.substring(0, file.name.length - 5);
         console.log("mainFilenamePart", mainFilenamePart);
         BBB = mainFilenamePart.substring(mainFilenamePart.length - 3);
-        console.log("BBB = " + BBB);
+        console.log("BBB='" + BBB+"'");
         let pre_BBB_char = mainFilenamePart.charAt(mainFilenamePart.length - 4);
         if (pre_BBB_char != '-')
             addNotice(500, "Filename '" + file.name + "' should contain a hyphen before the book code", " (not '" + pre_BBB_char + "')");
@@ -178,7 +178,6 @@ function checkUSFMFile(file) {
         // console.assert(filename_bits.length == 3);
     }
 
-    // if (ALLOWED_BBBs.indexOf(BBB) == -1)
     let bbb = BBB.toLowerCase();
     let numChaptersThisBook = 0;
     try {
@@ -220,7 +219,7 @@ function checkUSFMFile(file) {
         lastC = C; lastV = V;
     }
 
-    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} lines in ${file.name}.`);
+    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line(s) in ${file.name}.`);
     if (noticeList)
         addSuccessMessage("RepoChecker v" + checkerVersionString + " finished with " + noticeList.length + " notices")
     else
@@ -346,7 +345,7 @@ function checkTN_TSVFile(file) {
         let mainFilenamePart = file.name.substring(0, file.name.length - 4);
         console.log("mainFilenamePart", mainFilenamePart);
         BBB = mainFilenamePart.substring(mainFilenamePart.length - 3);
-        console.log("BBB = " + BBB);
+        console.log("BBB='" + BBB+"'");
         let pre_BBB_char = mainFilenamePart.charAt(mainFilenamePart.length - 4);
         if (pre_BBB_char != '-')
             addNotice(500, "Filename '" + file.name + "' should contain a hyphen before the book code", " (not '" + pre_BBB_char + "')");
@@ -357,7 +356,6 @@ function checkTN_TSVFile(file) {
         console.assert(filename_bits.length == 3);
     }
 
-    // if (ALLOWED_BBBs.indexOf(BBB) == -1)
     let bbb = BBB.toLowerCase();
     let numChaptersThisBook = 0;
     try {
@@ -488,7 +486,7 @@ function checkTN_TSVFile(file) {
 
         }
     }
-    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} lines in ${file.name}.`);
+    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line(s) in ${file.name}.`);
     if (noticeList)
         addSuccessMessage(`RepoChecker v${checkerVersionString} finished with ${noticeList.length.toLocaleString()} notices`);
     else

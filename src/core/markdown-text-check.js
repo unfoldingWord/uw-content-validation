@@ -34,7 +34,7 @@ function checkMarkdownText(textName, markdownText, location, optionalOptions) {
         result.noticeList.push([priority, message, index, extract, location]);
     }
 
-    function doOurBasicTextChecks(fieldName, fieldText, linkTypes, optionalFieldLocation, optionalOptions) {
+    function doOurBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalOptions) {
         // Does basic checks for small errors like leading/trailing spaces, etc.
 
         // We assume that checking for compulsory fields is done elsewhere
@@ -46,7 +46,7 @@ function checkMarkdownText(textName, markdownText, location, optionalOptions) {
         console.assert(fieldText!==undefined, "doOurBasicTextChecks: 'fieldText' parameter should be defined");
         console.assert( allowedLinks===true || allowedLinks===false, "doOurBasicTextChecks: allowedLinks parameter must be either true or false");
 
-        const resultObject = doBasicTextChecks(fieldName, fieldText, linkTypes, optionalFieldLocation, optionalOptions);
+        const resultObject = doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -121,7 +121,7 @@ function checkMarkdownText(textName, markdownText, location, optionalOptions) {
         lastNumLeadingSpaces = numLeadingSpaces;
     }
 
-    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} lines in '${location}'.`);
+    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line(s) in '${location}'.`);
     if (result.noticeList)
         addSuccessMessage(`checkMarkdownText v${checkerVersionString} finished with ${result.noticeList.length.toLocaleString()} notice(s)`);
     else

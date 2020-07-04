@@ -55,7 +55,7 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
     }
 
 
-    function doOurBasicTextChecks(fieldName, fieldText, linkTypes, fieldLocation, optionalOptions) {
+    function doOurBasicTextChecks(fieldName, fieldText, allowedLinks, fieldLocation, optionalOptions) {
         // Does basic checks for small errors like leading/trailing spaces, etc.
 
         // We assume that checking for compulsory fields is done elsewhere
@@ -67,7 +67,7 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
         console.assert(fieldText!==undefined, "doOurBasicTextChecks: 'fieldText' parameter should be defined");
         console.assert( allowedLinks===true || allowedLinks===false, "doOurBasicTextChecks: allowedLinks parameter must be either true or false");
 
-        const resultObject = doBasicTextChecks(fieldName, fieldText, linkTypes, fieldLocation, optionalOptions);
+        const resultObject = doBasicTextChecks(fieldName, fieldText, allowedLinks, fieldLocation, optionalOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -85,7 +85,7 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
         // Handles character formatting within the line contents
         let adjustedRest = rest;
 
-        if (rest) doOurBasicTextChecks('\\' + marker, rest, [], ' field ' + lineLocation, optionalOptions);
+        if (rest) doOurBasicTextChecks('\\' + marker, rest, false, ' field ' + lineLocation, optionalOptions);
         }
     // end of checkUSFMLineInternals function
 
@@ -107,7 +107,6 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
     // end of checkUSFMLine function
 
 
-    // if (ALLOWED_BBBs.indexOf(BBB) == -1)
     let bbb = BBB.toLowerCase();
     let numChaptersThisBook = 0;
     try {
@@ -219,7 +218,7 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
         lastMarker = marker; lastRest = rest;
     }
 
-    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} lines in '${location}'`)
+    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line(s) in '${location}'`)
     if (result.noticeList.length)
         addSuccessMessage(`checkUSFMText v${USFM_VALIDATOR_VERSION} finished with ${result.noticeList.length.toLocaleString()} notice(s)`)
     else
