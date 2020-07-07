@@ -23,7 +23,7 @@ export const usfmNumberName = (bookId) => {
 export const chaptersInBook = (bookId) => {
   let chapters;
   try {
-    chapters = data[bookId].chapters;
+    chapters = data[bookId.toLowerCase()].chapters;
   } catch (err) {
     throw new Error("chaptersInBook() given invalid bookId: '" + bookId + "'");
   }
@@ -46,10 +46,10 @@ export const versesInChapter = (bookId, chapter) => {
 //   return _bookData;
 // };
 
-// export const testament = (bookId) => {
-//   const _testament = bookData(bookId).testament;
-//   return _testament;
-// };
+export const testament = (bookId) => {
+  const _testament = data[bookId.toLowerCase()].testament;
+  return _testament;
+};
 
 // export const newTestament = () => {
 //   let list[] = [];

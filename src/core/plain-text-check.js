@@ -4,6 +4,8 @@ import doBasicTextChecks from './basic-text-check';
 
 const checkerVersionString = '0.0.1';
 
+const DEFAULT_EXTRACT_LENGTH = 10;
+
 
 function checkPlainText(textName, markdownText, location, optionalOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
@@ -12,6 +14,20 @@ function checkPlainText(textName, markdownText, location, optionalOptions) {
      */
     console.log("checkPlainText(" + textName + ", " + markdownText.length + ", " + location + ")…");
     if (location[0] != ' ') location = ' ' + location;
+
+    let extractLength;
+    try {
+        extractLength = optionalOptions.extractLength;
+    } catch (e) {}
+    if (typeof extractLength != 'number' || isNaN(extractLength)) {
+        extractLength = DEFAULT_EXTRACT_LENGTH;
+        // console.log("Using default extractLength=" + extractLength);
+    }
+    // else
+    //     console.log("Using supplied extractLength=" + extractLength, "cf. default="+DEFAULT_EXTRACT_LENGTH);
+    const halfLength = Math.floor(extractLength / 2); // rounded down
+    const halfLengthPlus = Math.floor((extractLength+1) / 2); // rounded up
+    // console.log("Using halfLength=" + halfLength, "halfLengthPlus="+halfLengthPlus);
 
     let result = { successList: [], noticeList: [] };
 

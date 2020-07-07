@@ -1,4 +1,4 @@
-const PROCESSOR_VERSION_STRING = '0.0.3';
+const PROCESSOR_VERSION_STRING = '0.0.4';
 
 // All of the following can be overriden with optionalOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 2; // Zero means no suppression of similar messages
@@ -10,7 +10,7 @@ export function processNotices(noticeObject, optionalOptions) {
     /*
         Expects to get an object with:
             successList: a list of strings describing what has been checked
-            noticeList: a list of 5 components to notices, being:
+            noticeList: a list of 5 compulsory components to notices, being:
                 1/ A notice priority number in the range 1-1000.
                     Each different type of warning/error has a unique number
                       (but not each instance of those warnings/errors).
@@ -28,6 +28,10 @@ export function processNotices(noticeObject, optionalOptions) {
                       character in an attempt to best highlight the issue to the user.
                 5/ A string indicating the context of the notice,
                         e.g., `in line 17 of 'someBook.usfm'.
+                There is also an optional 6th notice component (where multiple files/repos are checked)
+                6/ A string indicating an extra location component, e.g., repoCode or bookCode
+                    This will need to be added to the location string (#5 above) but is left
+                        to now in order to allow the most display flexibility
 
         Available options are:
             errorPriorityLevel (integer; default is DEFAULT_ERROR_PRIORITY_LEVEL above)
@@ -49,7 +53,12 @@ export function processNotices(noticeObject, optionalOptions) {
         const thisPriority = thisNotice[0], thisMsg = thisNotice[1];
         const oldMsg = numberStore[thisPriority];
         if (oldMsg && oldMsg!=thisMsg && errorList.indexOf(thisPriority)<0
-          && !thisMsg.endsWith(' character after space')) {
+          // Some of the messages include the troubling character in the message
+          //    so we expect them to differ slightly
+          && !thisMsg.startsWith('Unexpected doubled ')
+          && !thisMsg.startsWith('Unexpected space after ')
+          && !thisMsg.endsWith(' character after space')
+          ) {
             console.log("PROGRAMMING ERROR:", thisPriority, "has at least two messages: '"+oldMsg+"' and '"+thisMsg+"'");
             errorList.push(thisPriority); // so that we only give the error once
         }
@@ -143,6 +152,16 @@ export function processNotices(noticeObject, optionalOptions) {
     else if (sortBy != 'AsFound')
         console.log("ERROR: Sorting '"+sortBy+"' is not implemented yet!!!");
 
+    // Add in extra location info if it's there
+    // Default is to prepend it to the msg
+    //  This prevents errors/warnings from different repos or books from being combined
+    if (remainingNoticeList && remainingNoticeList[0].length==6) { // normally it's 5
+        console.log("We need to add the extra location, e.g. '"+remainingNoticeList[0][5]+"': will prepend it to the message");
+        let newNoticeList = [];
+        for (let thisNotice of remainingNoticeList)
+            newNoticeList.push([thisNotice[0], thisNotice[5]+' '+thisNotice[1], thisNotice[2], thisNotice[3], thisNotice[4]]);
+        remainingNoticeList = newNoticeList;
+    }
     // Count the number of occurrences of each message
     let allTotals = {};
     for (let thisNotice of remainingNoticeList)

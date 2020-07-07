@@ -30,10 +30,10 @@ function FileCheck(props) {
       size, encoding=base64, content,
       html_url, git_url, download_url,
       _links:object, branch, filepath. */
-    // display_object("file", file);
 
     //  Displays "Loading…" correctly when loading
     //      but keeps it there even if there's errors or problems :-(
+    // TODO: Add a timeout function
     let returnedResult;
     if (repo) // this displays briefly once the repo is loaded, but before the file is loaded
         returnedResult = (<>

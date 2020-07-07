@@ -1,5 +1,8 @@
 import { doBasicTextChecks } from './basic-text-check'
 
+const DEFAULT_EXTRACT_LENGTH = 10;
+
+
 async function startLiveLinksCheck(linksList, existingNoticeList, callbackFunction) {
     // This (slow) function checks the targets of the given links
     //  to ensure that they actually exist

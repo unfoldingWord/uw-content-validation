@@ -12,22 +12,20 @@ import {
 } from 'gitea-react-toolkit';
 import BookPackageCheck from './BookPackageCheck.js';
 
-/* Seems unnecessary
-  function Component() {
-  //const { state: auth, component: authComponent } = useContext(AuthenticationContext);
+function Component() {
+  const { state: auth, component: authComponent } = useContext(AuthenticationContext);
   const { state: repo, component: repoComponent } = useContext(RepositoryContext);
   const { state: file, component: fileComponent } = useContext(FileContext);
 
-  return //(!auth && authComponent) ||
-    (!repo && repoComponent) || fileComponent;
-};*/
+  return (!auth && authComponent) || (!repo && repoComponent) || fileComponent;
+};
 
-// const [repository, setRepository] = React.useState();
+const [repository, setRepository] = React.useState();
 
 <AuthenticationContextProvider>
   <RepositoryContextProvider
-    // repository={repository}
-    // onRepository={setRepository}
+    repository={repository}
+    onRepository={setRepository}
     config={ {
       server: "https://bg.door43.org",
       tokenid: "PlaygroundTesting",

@@ -5,6 +5,7 @@ import doBasicTextChecks from './basic-text-check';
 
 const USFM_VALIDATOR_VERSION = '0.0.6';
 
+const DEFAULT_EXTRACT_LENGTH = 10;
 
 const INTRO_LINE_START_MARKERS = ['id', 'usfm', 'ide', 'h',
     'toc1', 'toc2', 'toc3', 'mt', 'mt1', 'mt2'];
@@ -32,6 +33,20 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
      */
     console.log("checkUSFMText(" + BBB + ", " + tableText.length.toLocaleString() + " chars, '" + location + "')…");
     if (location[0] != ' ') location = ' ' + location;
+
+    let extractLength;
+    try {
+        extractLength = optionalOptions.extractLength;
+    } catch (e) {}
+    if (typeof extractLength != 'number' || isNaN(extractLength)) {
+        extractLength = DEFAULT_EXTRACT_LENGTH;
+        // console.log("Using default extractLength=" + extractLength);
+    }
+    // else
+    //     console.log("Using supplied extractLength=" + extractLength, "cf. default="+DEFAULT_EXTRACT_LENGTH);
+    const halfLength = Math.floor(extractLength / 2); // rounded down
+    const halfLengthPlus = Math.floor((extractLength+1) / 2); // rounded up
+    // console.log("Using halfLength=" + halfLength, "halfLengthPlus="+halfLengthPlus);
 
     let result = { successList: [], noticeList: [] };
 
@@ -85,6 +100,13 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
         // Handles character formatting within the line contents
         let adjustedRest = rest;
 
+        if (marker=='c' && isNaN(rest))
+            addNotice(822, "Expected \\c field to contain an integer", 3, '\\c '+rest, lineLocation);
+        if (marker=='v') {
+            let Vstr =  (rest) ? rest.split(' ', 1)[0] : '?';
+            if (isNaN(Vstr) && Vstr.indexOf('-')<0)
+            addNotice(822, "Expected \\v field to contain an integer", 3, '\\v '+rest, lineLocation);
+        }
         if (rest) doOurBasicTextChecks('\\' + marker, rest, false, ' field ' + lineLocation, optionalOptions);
         }
     // end of checkUSFMLineInternals function
@@ -107,6 +129,7 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
     // end of checkUSFMLine function
 
 
+    // Main code for checkUSFMText()
     let bbb = BBB.toLowerCase();
     let numChaptersThisBook = 0;
     try {
@@ -159,7 +182,7 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
                 intC = -999; // Used to prevent consequential errors
             }
             if (C == lastC || (intC > 0 && intC != lastIntC + 1))
-                addNotice(764, "Chapter number didn't increment correctly", 3, rest.substring(0, 5) + ' (' + lastC + ' → ' + C + ')', atString);
+                addNotice(764, "Chapter number didn't increment correctly", 3, rest.substring(0, 5) + ' (' + (lastC?lastC:'0') + ' → ' + C + ')', atString);
             lastC = C; lastV = '0';
             lastIntC = intC; lastIntV = 0;
         } else if (marker==='v') {
@@ -174,7 +197,7 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
                     intV = -999; // Used to prevent consequential errors
                 }
                 if (V == lastV || (intV > 0 && intV != lastIntV + 1))
-                    addNotice(763, "Verse number didn't increment correctly", 3, rest.substring(0, 5) + ' (' + lastV + ' → ' + V + ')', atString);
+                    addNotice(763, "Verse number didn't increment correctly", 3, rest.substring(0, 5) + ' (' + (lastV?lastV:'0') + ' → ' + V + ')', atString);
                 lastV = V; lastIntV = intV;
             } else { // handle verse bridge
                 const bits = V.split('-');
@@ -184,13 +207,13 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
                     intFirstV = parseInt(firstV);
                     intSecondV = parseInt(secondV);
                 } catch (e) {
-                    addNotice(762, "Unable to convert verse bridge numbers to integers", 3, rest.substring(0, 9), atString);
+                    addNotice(762, "Unable to convert verse bridge numbers to integers", 3, rest.substring(0, Math.max(9, extractLength)), atString);
                     intFirstV = -999; intSecondV = -998; // Used to prevent consequential errors
                 }
                 if (intSecondV <= intFirstV)
-                    addNotice(769, "Verse bridge numbers not in ascending order", 3, rest.substring(0, 9) + ' (' + firstV + ' → ' + secondV + ')', atString);
+                    addNotice(769, "Verse bridge numbers not in ascending order", 3, rest.substring(0, Math.max(9, extractLength)) + ' (' + firstV + ' → ' + secondV + ')', atString);
                 else if (firstV == lastV || (intFirstV > 0 && intFirstV != lastIntV + 1))
-                    addNotice(765, "Bridged verse numbers didn't increment correctly", 3, rest.substring(0, 9) + ' (' + lastV + ' → ' + firstV + ')', atString);
+                    addNotice(765, "Bridged verse numbers didn't increment correctly", 3, rest.substring(0, Math.max(9, extractLength)) + ' (' + lastV + ' → ' + firstV + ')', atString);
                 lastV = secondV; lastIntV = intSecondV;
             }
         }
@@ -198,7 +221,7 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
         // console.log("Now"+atString);
 
         if (marker==='id' && !rest.startsWith(BBB))
-            addNotice(987, "Expected \\id line to start with book code", 4, rest.substring(0, 4), atString);
+            addNotice(987, "Expected \\id line to start with book code", 4, rest.substring(0, Math.max(4, extractLength)), atString);
 
         // Check the order of markers
         // In headers

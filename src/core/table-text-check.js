@@ -7,6 +7,7 @@ const checkerVersionString = '0.0.5';
 const NUM_EXPECTED_TN_FIELDS = 9;
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
 
+const DEFAULT_EXTRACT_LENGTH = 10;
 
 function checkTN_TSVText(BBB, tableText, location, optionalOptions) {
     /* This function is optimised for checking the entire file, i.e., all rows.
@@ -38,6 +39,20 @@ function checkTN_TSVText(BBB, tableText, location, optionalOptions) {
         result.noticeList.push([priority, message, index, extract, location]);
     }
 
+
+    let extractLength;
+    try {
+        extractLength = optionalOptions.extractLength;
+    } catch (e) {}
+    if (typeof extractLength != 'number' || isNaN(extractLength)) {
+        extractLength = DEFAULT_EXTRACT_LENGTH;
+        // console.log("Using default extractLength=" + extractLength);
+    }
+    // else
+    //     console.log("Using supplied extractLength=" + extractLength, "cf. default="+DEFAULT_EXTRACT_LENGTH);
+    const halfLength = Math.floor(extractLength / 2); // rounded down
+    const halfLengthPlus = Math.floor((extractLength+1) / 2); // rounded up
+    // console.log("Using halfLength=" + halfLength, "halfLengthPlus="+halfLengthPlus);
 
     let bbb = BBB.toLowerCase();
     let numChaptersThisBook = 0;
