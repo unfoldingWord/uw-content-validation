@@ -3,7 +3,7 @@ import checkMarkdownText from '../../core/markdown-text-check.js';
 import checkPlainText from '../../core/plain-text-check.js';
 // import checkManifestText from '../../core/manifest-text-check.js';
 import checkTN_TSVText from '../../core/table-text-check.js';
-// import { display_object } from '../../core/utilities.js';
+// import { displayObject } from '../../core/utilities.js';
 
 
 const CHECKER_VERSION_STRING = '0.0.2';

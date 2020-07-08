@@ -138,6 +138,7 @@ export async function fetchFileFromServer({username, repository, path, branch='m
 };
 
 export async function getFile({username, repository, path, branch}) {
+  // console.log("getFile", username, repository, path, branch);
   if (repository === "en_ta") {
     //console.log("getFile(): path=",path," branch=",branch);
   }
@@ -165,7 +166,7 @@ export async function repositoryExists({username, repository}) {
 };
 
 export async function get({uri, params}) {
-  console.log("get() uri,params:",uri,params);
+  // console.log("get() uri,params:",uri,params);
   const {data} = await api.get(baseURL+uri, { params });
   return data;
 };

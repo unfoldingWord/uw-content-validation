@@ -1,6 +1,6 @@
 // utilities
 
-export function display_object(given_title, given_object) {
+export function displayObject(given_title, given_object) {
     let output = given_title + ' object:\n';
     // for (let property_name in given_object)
     //     output += "  " + property_name + '\n';
@@ -17,7 +17,7 @@ export function display_object(given_title, given_object) {
     }
     console.log(output);
   }
-  // end of display_object function
+  // end of displayObject function
 
 /*
 // function to convert an array to an object

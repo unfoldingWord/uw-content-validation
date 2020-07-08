@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { RepositoryContextProvider, RepositoryContext, FileContextProvider, FileContext } from 'gitea-react-toolkit';
 // import { forwardRef } from 'react';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 // import { Typography } from '@material-ui/core';
 // import List from '@material-ui/core/List';
@@ -24,12 +24,12 @@ import { withStyles } from '@material-ui/core/styles';
 // import Search from '@material-ui/icons/Search';
 // import ViewColumn from '@material-ui/icons/ViewColumn';
 // import MaterialTable from 'material-table';
-import { fetchRepo } from './helpers';
+// import { fetchRepo } from './helpers';
 import * as books from '../../core/books/books.js';
-import * as util from '../../core/utilities.js';
+// import * as util from '../../core/utilities.js';
 import checkBookPackage from './checkBookPackage.js';
 import processNotices from '../../core/notice-handling-functions.js';
-import { display_object } from '../../core/utilities.js';
+// import { displayObject } from '../../core/utilities.js';
 
 // const tableIcons = {
 //   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -69,8 +69,8 @@ function BookPackageCheck(/*username, language_code, book_code,*/ props) {
 //   console.log("BPC fileComponent", typeof fileComponent);
 
   console.log("I'm here in BookPackageCheck v" + CHECKER_VERSION_STRING);
-  // display_object("props", props);
-  // display_object("props.classes", props.classes);
+  // displayObject("props", props);
+  // displayObject("props.classes", props.classes);
   let username = props.username;
   // console.log("username='"+ username+"'");
   let language_code = props.language_code;
@@ -89,183 +89,109 @@ function BookPackageCheck(/*username, language_code, book_code,*/ props) {
 if (props.extractLength) checkingOptions.extractLength = parseInt(props.extractLength);
 
 
-let returnedResult = <span>Loading/Waiting</span>;
-if (1) { // failing async code -- works except doesn't render when completed
-useEffect(() => {
+let returnedResult = <p style={{ color: 'magenta' }}>Waiting for check results for {username} {language_code} <b>{book_code}</b> book package…</p>;
+
+// failing async code -- sorta works except doesn't render when completed
+// let preliminaryResult = { successList:[], noticeList:[]};
+let processedResult = { successList:[], errorList:[], warningList:[] };
+// useEffect(() => {
+    // Use an IIFE (Immediately Invoked Function Expression)
+    //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
     (async () => {
-    let preliminaryResult = await checkBookPackage(username, language_code, book_code, checkingOptions);
-    console.log("2checkBookPackage() returned", typeof preliminaryResult, JSON.stringify(preliminaryResult));
+        console.log("Started unnamedFunction()");
+        let preliminaryResult = await checkBookPackage(username, language_code, book_code, checkingOptions);
+        console.log("checkBookPackage() returned", typeof preliminaryResult); //, JSON.stringify(preliminaryResult));
 
-    // Add some extra fields to our preliminaryResult object in case we need this information again later
-preliminaryResult.checkType = 'BookPackage';
-preliminaryResult.username = username;
-preliminaryResult.language_code = language_code;
-preliminaryResult.book_code = book_code;
-preliminaryResult.checkingOptions = checkingOptions;
+        // Add some extra fields to our preliminaryResult object in case we need this information again later
+        preliminaryResult.checkType = 'BookPackage';
+        preliminaryResult.username = username;
+        preliminaryResult.language_code = language_code;
+        preliminaryResult.book_code = book_code;
+        preliminaryResult.checkingOptions = checkingOptions;
 
-// Now do our final handling of the result
-let processOptions = { // Uncomment any of these to test them
-    // 'maximumSimilarMessages': 3, // default is 2
-    // 'errorPriorityLevel': 800, // default is 700
-    // 'cutoffPriorityLevel': 100, // default is 0
-    // 'sortBy': 'ByPriority', // default is 'AsFound'
-    // 'ignorePriorityNumberList': [123, 202], // default is []
-};
-// Or this allows the parameters to be specified as a BookPackageCheck property
-if (props.maximumSimilarMessages) processOptions.maximumSimilarMessages = parseInt(props.maximumSimilarMessages);
-if (props.errorPriorityLevel) processOptions.errorPriorityLevel = parseInt(props.errorPriorityLevel);
-if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = parseInt(props.cutoffPriorityLevel);
-if (props.sortBy) processOptions.sortBy = props.sortBy;
-// if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
-const result = processNotices(preliminaryResult, processOptions);
-console.log("BookPackageCheck got back processed results with " + result.successList.length.toLocaleString() + " success message(s), " + result.errorList.length.toLocaleString() + " error(s) and " + result.warningList.length.toLocaleString() + " warning(s)");
-console.log("  numIgnoredNotices=" + result.numIgnoredNotices.toLocaleString(), "numSuppressedErrors=" + result.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + result.numSuppressedWarnings.toLocaleString());
+        console.log("Here with preliminaryResult", typeof preliminaryResult);
+        // Now do our final handling of the result -- we have some options available
+        let processOptions = { // Uncomment any of these to test them
+            // 'maximumSimilarMessages': 3, // default is 2
+            // 'errorPriorityLevel': 800, // default is 700
+            // 'cutoffPriorityLevel': 100, // default is 0
+            // 'sortBy': 'ByPriority', // default is 'AsFound'
+            // 'ignorePriorityNumberList': [123, 202], // default is []
+        };
+        // Or this allows the parameters to be specified as a BookPackageCheck property
+        if (props.maximumSimilarMessages) processOptions.maximumSimilarMessages = parseInt(props.maximumSimilarMessages);
+        if (props.errorPriorityLevel) processOptions.errorPriorityLevel = parseInt(props.errorPriorityLevel);
+        if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = parseInt(props.cutoffPriorityLevel);
+        if (props.sortBy) processOptions.sortBy = props.sortBy;
+        // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
+        processedResult = processNotices(preliminaryResult, processOptions);
+        console.log("BookPackageCheck got back processedResult with " + processedResult.successList.length.toLocaleString() + " success message(s), " + processedResult.errorList.length.toLocaleString() + " error(s) and " + processedResult.warningList.length.toLocaleString() + " warning(s)");
+        console.log("  numIgnoredNotices=" + processedResult.numIgnoredNotices.toLocaleString(), "numSuppressedErrors=" + processedResult.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + processedResult.numSuppressedWarnings.toLocaleString());
+        console.log("Finished unnamedFunction().");
 
-// WHY WHY WHY doesn't this render from inside useEffect/async???
+    // WHY WHY WHY doesn't this render from inside useEffect/async???
+    console.log("Here now in rendering bit!");
 
-function RenderArray(props) {
-    // Display our array of 4-part lists in a nicer format
-    // Uses 'result' object from outer scope
-    let myList;
-    if (props.arrayType === 's')
-        return (<ol>
-            {result.successList.map(function (listEntry) {
-                return <li key={listEntry.id}>
-                    <b style={{ color: 'green' }}>{listEntry}</b>
-                </li>;
-            })}
-        </ol>
-        );
-    else {
-        const myList = props.arrayType === 'e' ? result.errorList : result.warningList;
-        return (<ul>
-            {myList.map(function (listEntry) {
-                return <li key={listEntry.id}>
-                    <b style={{ color: props.arrayType === 'e' ? 'red' : 'orange' }}>{listEntry[1]}</b>
-                    {listEntry[2] > 0 ? " (at character " + (listEntry[2] + 1) + ")" : ""}
-                    <span style={{ color: 'DimGray' }}>{listEntry[3] ? " in '" + listEntry[3] + "'" : ""}</span>
-                    {listEntry[4]}
-                    <small style={{ color: 'Gray' }}>{listEntry[0] >= 0 ? " (Priority " + listEntry[0] + ")" : ""}</small>
-                </li>;
-            })}
-        </ul>
-        );
+    function RenderArray(props) {
+        // Display our array of 4-part lists in a nicer format
+        // Uses 'result' object from outer scope
+        let myList;
+        if (props.arrayType === 's')
+            return (<ol>
+                {processedResult.successList.map(function (listEntry) {
+                    return <li key={listEntry.id}>
+                        <b style={{ color: 'green' }}>{listEntry}</b>
+                    </li>;
+                })}
+            </ol>
+            );
+        else {
+            const myList = props.arrayType === 'e' ? processedResult.errorList : processedResult.warningList;
+            return (<ul>
+                {myList.map(function (listEntry) {
+                    return <li key={listEntry.id}>
+                        <b style={{ color: props.arrayType === 'e' ? 'red' : 'orange' }}>{listEntry[1]}</b>
+                        {listEntry[2] > 0 ? " (at character " + (listEntry[2] + 1) + ")" : ""}
+                        <span style={{ color: 'DimGray' }}>{listEntry[3] ? " in '" + listEntry[3] + "'" : ""}</span>
+                        {listEntry[4]}
+                        <small style={{ color: 'Gray' }}>{listEntry[0] >= 0 ? " (Priority " + listEntry[0] + ")" : ""}</small>
+                    </li>;
+                })}
+            </ul>
+            );
+        }
     }
-}
 
-if (result.errorList.length || result.warningList.length)
-    returnedResult = (<>
-        <p>Checked <b>{username} {language_code} {book_code}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)
-            {result.numIgnoredNotices ? " (but " + result.numIgnoredNotices.toLocaleString() + " ignored errors/warnings)" : ""}</p>
-        <b style={{ color: result.errorList.length ? 'red' : 'green' }}>{result.errorList.length.toLocaleString()} error{result.errorList.length == 1 ? '' : 's'}</b>{result.errorList.length ? ':' : ''}
-        <small style={{ color: 'Gray' }}>{result.numSuppressedErrors ? " (" + result.numSuppressedErrors.toLocaleString() + " similar one" + (result.numSuppressedErrors == 1 ? '' : 's') + " suppressed)" : ''}</small>
-        <RenderArray arrayType='e' />
-        <b style={{ color: result.warningList.length ? 'orange' : 'green' }}>{result.warningList.length.toLocaleString()} warning{result.warningList.length == 1 ? '' : 's'}</b>{result.warningList.length ? ':' : ''}
-        <small style={{ color: 'Gray' }}>{result.numSuppressedWarnings ? " (" + result.numSuppressedWarnings.toLocaleString() + " similar one" + (result.numSuppressedWarnings == 1 ? '' : 's') + " suppressed)" : ''}</small>
-        <RenderArray arrayType='w' />
-    </>);
-else // no errors or warnings
-    returnedResult = (<>
-        <p>Checked <b>{username} {language_code} {book_code}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)
-        {result.numIgnoredNotices ? " (with a total of " + result.numIgnoredNotices.toLocaleString() + " notices ignored)" : ""}</p>
-        <b style={{ color: 'green' }}>{result.successList.length.toLocaleString()} check{result.successList.length == 1 ? '' : 's'} completed</b>{result.successList.length ? ':' : ''}
-        <RenderArray arrayType='s' />
-    </>);
-})(); // end of async part
-}, []); // end of useEffect part
+    if (processedResult.errorList.length || processedResult.warningList.length)
+        returnedResult = (<>
+            <p>Checked <b>{username} {language_code} {book_code}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)
+                {processedResult.numIgnoredNotices ? " (but " + processedResult.numIgnoredNotices.toLocaleString() + " ignored errors/warnings)" : ""}</p>
+            <b style={{ color: processedResult.errorList.length ? 'red' : 'green' }}>{processedResult.errorList.length.toLocaleString()} error{processedResult.errorList.length == 1 ? '' : 's'}</b>{processedResult.errorList.length ? ':' : ''}
+            <small style={{ color: 'Gray' }}>{processedResult.numSuppressedErrors ? " (" + processedResult.numSuppressedErrors.toLocaleString() + " similar one" + (processedResult.numSuppressedErrors == 1 ? '' : 's') + " suppressed)" : ''}</small>
+            <RenderArray arrayType='e' />
+            <b style={{ color: processedResult.warningList.length ? 'orange' : 'green' }}>{processedResult.warningList.length.toLocaleString()} warning{processedResult.warningList.length == 1 ? '' : 's'}</b>{processedResult.warningList.length ? ':' : ''}
+            <small style={{ color: 'Gray' }}>{processedResult.numSuppressedWarnings ? " (" + processedResult.numSuppressedWarnings.toLocaleString() + " similar one" + (processedResult.numSuppressedWarnings == 1 ? '' : 's') + " suppressed)" : ''}</small>
+            <RenderArray arrayType='w' />
+        </>);
+    else // no errors or warnings
+        returnedResult = (<>
+            <p>Checked <b>{username} {language_code} {book_code}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)
+            {processedResult.numIgnoredNotices ? " (with a total of " + processedResult.numIgnoredNotices.toLocaleString() + " notices ignored)" : ""}</p>
+            <b style={{ color: 'green' }}>{processedResult.successList.length.toLocaleString()} check{processedResult.successList.length == 1 ? '' : 's'} completed</b>{processedResult.successList.length ? ':' : ''}
+            <RenderArray arrayType='s' />
+        </>);
+    console.log("Finished rendering bit.");
 
-// return (<span>Loading</span>);
+    // console.log("ReturningINSIDE", typeof returnedResult);
+    // return returnedResult;
+
+
+    })(); // end of async part in unnamedFunction
+
+// }, []); // end of useEffect part
+
+console.log("ReturningOUTSIDE", typeof returnedResult);
 return returnedResult;
-
-} else { // sync code
-let preliminaryResult = checkBookPackage(username, language_code, book_code, checkingOptions);
-console.log("2checkBookPackage() returned", typeof preliminaryResult, JSON.stringify(preliminaryResult));
-if (!('successList' in preliminaryResult)) {
-  console.log("Waiting for check results for", username, language_code, book_code+"…");
-return (<p style={{ color: 'magenta' }}>Waiting for check results for {username} {language_code} {book_code}…</p>);
-} else {
-console.log("BookPackageCheck got initial results with " + preliminaryResult.successList.length + " success message(s) and " + preliminaryResult.noticeList.length + " notice(s)");
-
-// Add some extra fields to our preliminaryResult object in case we need this information again later
-preliminaryResult.checkType = 'BookPackage';
-preliminaryResult.username = username;
-preliminaryResult.language_code = language_code;
-preliminaryResult.book_code = book_code;
-preliminaryResult.checkingOptions = checkingOptions;
-
-// Now do our final handling of the result
-let processOptions = { // Uncomment any of these to test them
-    // 'maximumSimilarMessages': 3, // default is 2
-    // 'errorPriorityLevel': 800, // default is 700
-    // 'cutoffPriorityLevel': 100, // default is 0
-    // 'sortBy': 'ByPriority', // default is 'AsFound'
-    // 'ignorePriorityNumberList': [123, 202], // default is []
-};
-// Or this allows the parameters to be specified as a BookPackageCheck property
-if (props.maximumSimilarMessages) processOptions.maximumSimilarMessages = parseInt(props.maximumSimilarMessages);
-if (props.errorPriorityLevel) processOptions.errorPriorityLevel = parseInt(props.errorPriorityLevel);
-if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = parseInt(props.cutoffPriorityLevel);
-if (props.sortBy) processOptions.sortBy = props.sortBy;
-// if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
-const result = processNotices(preliminaryResult, processOptions);
-console.log("BookPackageCheck got processed results with " + result.successList.length.toLocaleString() + " success message(s), " + result.errorList.length.toLocaleString() + " error(s) and " + result.warningList.length.toLocaleString() + " warning(s)");
-console.log("  numIgnoredNotices=" + result.numIgnoredNotices.toLocaleString(), "numSuppressedErrors=" + result.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + result.numSuppressedWarnings.toLocaleString());
-
-let returnedResult;
-function RenderArray(props) {
-    // Display our array of 4-part lists in a nicer format
-    // Uses 'result' object from outer scope
-    let myList;
-    if (props.arrayType === 's')
-        return (<ol>
-            {result.successList.map(function (listEntry) {
-                return <li key={listEntry.id}>
-                    <b style={{ color: 'green' }}>{listEntry}</b>
-                </li>;
-            })}
-        </ol>
-        );
-    else {
-        const myList = props.arrayType === 'e' ? result.errorList : result.warningList;
-        return (<ul>
-            {myList.map(function (listEntry) {
-                return <li key={listEntry.id}>
-                    <b style={{ color: props.arrayType === 'e' ? 'red' : 'orange' }}>{listEntry[1]}</b>
-                    {listEntry[2] > 0 ? " (at character " + (listEntry[2] + 1) + ")" : ""}
-                    <span style={{ color: 'DimGray' }}>{listEntry[3] ? " in '" + listEntry[3] + "'" : ""}</span>
-                    {listEntry[4]}
-                    <small style={{ color: 'Gray' }}>{listEntry[0] >= 0 ? " (Priority " + listEntry[0] + ")" : ""}</small>
-                </li>;
-            })}
-        </ul>
-        );
-    }
-}
-
-if (result.errorList.length || result.warningList.length)
-    returnedResult = (<>
-        <p>Checked <b>{username} {language_code} {book_code}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)
-            {result.numIgnoredNotices ? " (but " + result.numIgnoredNotices.toLocaleString() + " ignored errors/warnings)" : ""}</p>
-        <b style={{ color: result.errorList.length ? 'red' : 'green' }}>{result.errorList.length.toLocaleString()} error{result.errorList.length == 1 ? '' : 's'}</b>{result.errorList.length ? ':' : ''}
-        <small style={{ color: 'Gray' }}>{result.numSuppressedErrors ? " (" + result.numSuppressedErrors.toLocaleString() + " similar one" + (result.numSuppressedErrors == 1 ? '' : 's') + " suppressed)" : ''}</small>
-        <RenderArray arrayType='e' />
-        <b style={{ color: result.warningList.length ? 'orange' : 'green' }}>{result.warningList.length.toLocaleString()} warning{result.warningList.length == 1 ? '' : 's'}</b>{result.warningList.length ? ':' : ''}
-        <small style={{ color: 'Gray' }}>{result.numSuppressedWarnings ? " (" + result.numSuppressedWarnings.toLocaleString() + " similar one" + (result.numSuppressedWarnings == 1 ? '' : 's') + " suppressed)" : ''}</small>
-        <RenderArray arrayType='w' />
-    </>);
-else // no errors or warnings
-    returnedResult = (<>
-        <p>Checked <b>{username} {language_code} {book_code}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)
-        {result.numIgnoredNotices ? " (with a total of " + result.numIgnoredNotices.toLocaleString() + " notices ignored)" : ""}</p>
-        <b style={{ color: 'green' }}>{result.successList.length.toLocaleString()} check{result.successList.length == 1 ? '' : 's'} completed</b>{result.successList.length ? ':' : ''}
-        <RenderArray arrayType='s' />
-    </>);
-
-    // return (!repo && repoComponent) || (!file && fileComponent) || returnedResult;
-    return returnedResult;
-};
-}
-
 }
 
 // BookPackageCheck.propTypes = {
@@ -283,4 +209,3 @@ const styles = theme => ({
 });
 
 export default withStyles(styles)(BookPackageCheck);
-// export default BookPackageCheck;

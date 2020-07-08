@@ -58,6 +58,7 @@ export function processNotices(noticeObject, optionalOptions) {
           && !thisMsg.startsWith('Unexpected doubled ')
           && !thisMsg.startsWith('Unexpected space after ')
           && !thisMsg.endsWith(' character after space')
+          && !thisMsg.endsWith(' marker at start of line')
           ) {
             console.log("PROGRAMMING ERROR:", thisPriority, "has at least two messages: '"+oldMsg+"' and '"+thisMsg+"'");
             errorList.push(thisPriority); // so that we only give the error once
@@ -155,7 +156,7 @@ export function processNotices(noticeObject, optionalOptions) {
     // Add in extra location info if it's there
     // Default is to prepend it to the msg
     //  This prevents errors/warnings from different repos or books from being combined
-    if (remainingNoticeList && remainingNoticeList[0].length==6) { // normally it's 5
+    if (remainingNoticeList.length && remainingNoticeList[0].length==6) { // normally it's 5
         console.log("We need to add the extra location, e.g. '"+remainingNoticeList[0][5]+"': will prepend it to the message");
         let newNoticeList = [];
         for (let thisNotice of remainingNoticeList)

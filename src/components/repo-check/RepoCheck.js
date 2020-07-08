@@ -28,7 +28,7 @@ import { fetchRepo } from './helpers';
 import * as util from '../../core/utilities.js';
 import checkRepo from './checkRepo.js';
 import processNotices from '../../core/notice-handling-functions.js';
-import { display_object } from '../../core/utilities.js';
+import { displayObject } from '../../core/utilities.js';
 
 // const tableIcons = {
 //   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -56,10 +56,10 @@ function RepoCheck(/*url, classes, style,*/ props) {
   const { state: repo, component: repoComponent } = useContext(RepositoryContext);
 
   console.log("I'm here in RepoCheck v" + CHECKER_VERSION_STRING);
-  display_object("props", props);
-  display_object("props.classes", props.classes);
+  displayObject("props", props);
+  displayObject("props.classes", props.classes);
   let classes = props.classes;
-  display_object("repo", repo);
+  displayObject("repo", repo);
   /* Has fields: id:number, owner:object, name, full_name, description,
       empty, private, fork, parent, mirror, size,
       html_url, ssh_url, clone_url, website,

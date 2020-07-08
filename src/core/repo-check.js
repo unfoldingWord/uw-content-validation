@@ -11,7 +11,7 @@ import doBasicTextChecks from './basic-text-check';
 
 
 const checkerVersionString = '0.0.4';
-// function display_object(given_title, given_object) {
+// function displayObject(given_title, given_object) {
 //   let output = given_title + ' object:\n';
 //   // for (let property_name in given_object)
 //   //     output += "  " + property_name + '\n';
@@ -28,7 +28,7 @@ const checkerVersionString = '0.0.4';
 //   }
 //   console.log(output);
 // }
-// end of display_object function
+// end of displayObject function
 
 // console.log(fileComponent);
 // let fCString = JSON.stringify(fileComponent, null, 4);
@@ -37,7 +37,7 @@ const checkerVersionString = '0.0.4';
 // console.log(JSON.stringify(fileComponent, null, 4));
 
 // if (repo) {
-//   // display_object("repo", repo);
+//   // displayObject("repo", repo);
 // }
 
 
@@ -513,7 +513,7 @@ export function RepoChecker() {
           size, encoding=base64, content,
           html_url, git_url, download_url,
           _links:object, branch, filepath. */
-        // display_object("file", file);
+        // displayObject("file", file);
         if (file.name.toLowerCase().endsWith('.tsv'))
             checkTN_TSVFile(file);
         else if (file.name.toLowerCase().endsWith('.usfm'))

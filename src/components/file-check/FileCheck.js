@@ -5,7 +5,7 @@ import React, { useContext } from 'react';
 import { RepositoryContext, FileContext } from 'gitea-react-toolkit';
 import checkFile from './checkFile.js';
 import processNotices from '../../core/notice-handling-functions.js';
-import { display_object } from '../../core/utilities.js';
+import { displayObject } from '../../core/utilities.js';
 
 
 const CHECKER_VERSION_STRING = '0.0.3';
@@ -15,8 +15,8 @@ function FileCheck(props) {
     const { state: file, component: fileComponent } = useContext(FileContext);
 
     console.log("I'm here in FileCheck v" + CHECKER_VERSION_STRING);
-    display_object("props", props);
-    // display_object("repo", repo);
+    displayObject("props", props);
+    // displayObject("repo", repo);
     /* Has fields: id:number, owner:object, name, full_name, description,
         empty, private, fork, parent, mirror, size,
         html_url, ssh_url, clone_url, website,
@@ -25,7 +25,7 @@ function FileCheck(props) {
         has_issues, has_wiki, has_pull_requests, ignore_whitespace_conflicts,
         allow_merge_commits, allow_rebase, allow_rebase_explicit, allow_squash_merge,
         avatar_url, branch, tree_url */
-    // display_object("file", file);
+    // displayObject("file", file);
     /* Has fields: name, path, sha, type=file,
       size, encoding=base64, content,
       html_url, git_url, download_url,
