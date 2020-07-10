@@ -1,6 +1,6 @@
 import * as books from '../../core/books/books';
 import checkFile from '../file-check/checkFile';
-// import { consoleLogObject } from '../../core/utilities';
+import { consoleLogObject } from '../../core/utilities';
 import { getFile } from '../../core/getApi';
 
 const CHECKER_VERSION_STRING = '0.0.2';
@@ -16,6 +16,7 @@ async function checkBookPackage(username, language_code, bookCode, checkingOptio
         console.log("Success: " + successString);
         checkBookPackageResult.successList.push(successString);
     }
+
     function addNotice(priority, message, index, extract, location, extra) {
         // console.log("checkBookPackage Notice: (priority=" + priority + ") " + message + (index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
         console.assert(typeof priority === 'number', "cBP addNotice: 'priority' parameter should be a number not a '" + (typeof priority) + "'");
@@ -113,8 +114,8 @@ async function checkBookPackage(username, language_code, bookCode, checkingOptio
             totalCheckedSize += fileContent.length;
             checkedRepoNames.push(repoCode);
         } catch (e) {
-            console.log("Failed to load", username, repoName, filename, branch, e+'');
-            addNotice(996, "Failed to load", -1, "", generalLocation+" "+filename+": "+e+'', repoCode);
+            console.log("Failed to load", username, repoName, filename, branch, e + '');
+            addNotice(996, "Failed to load", -1, "", generalLocation + " " + filename + ": " + e + '', repoCode);
             continue;
         }
 
@@ -122,7 +123,7 @@ async function checkBookPackage(username, language_code, bookCode, checkingOptio
         //  so that we can adjust the returned strings ourselves
         doOurCheckFile(repoCode, filename, fileContent, generalLocation, checkingOptions); // Adds the notices to checkBookPackageResult
         checkedFileCount += 1;
-        addSuccessMessage(checkedFileCount+"/ Checked " + repoCode.toUpperCase() + " file: " + filename);
+        addSuccessMessage(checkedFileCount + "/ Checked " + repoCode.toUpperCase() + " file: " + filename);
     }
 
     // Add some extra fields to our checkFileResult object

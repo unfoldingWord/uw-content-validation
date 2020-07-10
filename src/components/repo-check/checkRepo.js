@@ -82,7 +82,7 @@ async function checkRepo(repoObject, givenLocation, checkingOptions) {
         const filename = bookOrFileCode+'.txt';
         const file_content = "hello there\nThis is a file\n";
         doOurCheckFile(bookOrFileCode, filename, file_content, ourLocation, checkingOptions);
-    addSuccessMessage(checkedFileCount + "/ Checked " + bookOrFileCode.toUpperCase() + " file: " + filename);
+    addSuccessMessage("Checked " + bookOrFileCode.toUpperCase() + " file: " + filename + " >>>>>>>>>>>>> TO BE COMPLETED!!!");
     }
 
     // Add some extra fields to our checkFileResult object

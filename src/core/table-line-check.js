@@ -27,7 +27,7 @@ function checkTN_TSVDataRow(BBB, line, rowLocation, optionalCheckingOptions) {
     let result = { errorList: [], noticeList: [] };
 
     function addNotice(priority, message, index, extract, location) {
-        console.log("TSV Line Notice: (priority=" + priority + ") " + message + ", " + index + ", "+extract+", " + location);
+        // console.log("TSV Line Notice: (priority=" + priority + ") " + message + ", " + index + ", "+extract+", " + location);
         console.assert(priority !== undefined, "cTSVrow addNotice: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', "cTSVrow addNotice: 'priority' parameter should be a number not a '" + (typeof priority) + "': "+priority);
         console.assert(message !== undefined, "cTSVrow addNotice: 'message' parameter should be defined");

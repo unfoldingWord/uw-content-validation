@@ -29,6 +29,7 @@ import * as books from '../../core/books/books.js';
 // import * as util from '../../core/utilities.js';
 import checkBookPackage from './checkBookPackage.js';
 import processNotices from '../../core/notice-handling-functions.js';
+import { RenderSuccessesErrorsWarnings } from '../RenderProcessedResults';
 // import { consoleLogObject } from '../../core/utilities.js';
 
 // const tableIcons = {
@@ -118,56 +119,19 @@ function BookPackageCheck(/*username, language_code, bookCode,*/ props) {
 
             // console.log("Here now in rendering bit!");
 
-            function RenderArray(props) {
-                // Display our array of 5-part lists in a nicer format
-                //  1/ priority number, 2/ message, 3/ index (integer), 4/ extract (optional), 5/ location
-                // Uses 'processedResult' object from outer scope
-                let myList;
-                if (props.arrayType === 's')
-                    return (<ol>
-                        {processedResult.successList.map(function (listEntry) {
-                            return <li key={listEntry.id}>
-                                <b style={{ color: 'green' }}>{listEntry}</b>
-                            </li>;
-                        })}
-                    </ol>
-                    );
-                else {
-                    const myList = props.arrayType === 'e' ? processedResult.errorList : processedResult.warningList;
-                    return (<ul>
-                        {myList.map(function (listEntry) {
-                            return <li key={listEntry.id}>
-                                <b style={{ color: props.arrayType === 'e' ? 'red' : 'orange' }}>{listEntry[1]}</b>
-                                {listEntry[2] > 0 ? " (at character " + (listEntry[2] + 1) + ")" : ""}
-                                <span style={{ color: 'DimGray' }}>{listEntry[3] ? " in '" + listEntry[3] + "'" : ""}</span>
-                                {listEntry[4]}
-                                <small style={{ color: 'Gray' }}>{listEntry[0] >= 0 ? " (Priority " + listEntry[0] + ")" : ""}</small>
-                            </li>;
-                        })}
-                    </ul>
-                    );
-                }
-            }
-
             if (processedResult.errorList.length || processedResult.warningList.length)
                 setResultValue(<>
                     <p>Checked <b>{username} {language_code} {bookCode}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
                         {processedResult.numIgnoredNotices ? " (but " + processedResult.numIgnoredNotices.toLocaleString() + " ignored errors/warnings)" : ""}</p>
                     <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResult.checkedFileCount} file{processedResult.checkedFileCount==1?'':'s'} from {processedResult.checkedRepoNames.join(', ')}.</p>
-                    <b style={{ color: processedResult.errorList.length ? 'red' : 'green' }}>{processedResult.errorList.length.toLocaleString()} error{processedResult.errorList.length == 1 ? '' : 's'}</b>{processedResult.errorList.length ? ':' : ''}
-                    <small style={{ color: 'Gray' }}>{processedResult.numSuppressedErrors ? " (" + processedResult.numSuppressedErrors.toLocaleString() + " similar one" + (processedResult.numSuppressedErrors == 1 ? '' : 's') + " suppressed)" : ''}</small>
-                    <RenderArray arrayType='e' />
-                    <b style={{ color: processedResult.warningList.length ? 'orange' : 'green' }}>{processedResult.warningList.length.toLocaleString()} warning{processedResult.warningList.length == 1 ? '' : 's'}</b>{processedResult.warningList.length ? ':' : ''}
-                    <small style={{ color: 'Gray' }}>{processedResult.numSuppressedWarnings ? " (" + processedResult.numSuppressedWarnings.toLocaleString() + " similar one" + (processedResult.numSuppressedWarnings == 1 ? '' : 's') + " suppressed)" : ''}</small>
-                    <RenderArray arrayType='w' />
+                    <RenderSuccessesErrorsWarnings results={processedResult} />
                 </>);
             else // no errors or warnings
                 setResultValue(<>
                     <p>Checked <b>{username} {language_code} {bookCode}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
                     <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResult.checkedFileCount} file{processedResult.checkedFileCount==1?'':'s'} from {processedResult.checkedRepoNames.join(', ')}.</p>
                     {processedResult.numIgnoredNotices ? " (with a total of " + processedResult.numIgnoredNotices.toLocaleString() + " notices ignored)" : ""}</p>
-                    <b style={{ color: 'green' }}>{processedResult.successList.length.toLocaleString()} check{processedResult.successList.length == 1 ? '' : 's'} completed</b>{processedResult.successList.length ? ':' : ''}
-                    <RenderArray arrayType='s' />
+                    <RenderSuccessesErrorsWarnings results={processedResult} />
                 </>);
 
             // console.log("Finished rendering bit.");

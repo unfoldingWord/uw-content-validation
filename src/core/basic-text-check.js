@@ -32,7 +32,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     let result = { noticeList: [] };
 
     function addNotice(priority, message, index, extract, location) {
-        console.log("dBTC Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
+        // console.log("dBTC Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
         console.assert(priority!==undefined, "dBTCs addNotice: 'priority' parameter should be defined");
         console.assert(typeof priority==='number', "dBTCs addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"': "+priority);
         console.assert(message!==undefined, "dBTCs addNotice: 'message' parameter should be defined");

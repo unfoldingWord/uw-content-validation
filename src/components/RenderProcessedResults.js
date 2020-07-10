@@ -13,7 +13,7 @@ export function RenderLines(props) {
 
 
 export function RenderSettings(props) {
-    // console.log("In RenderSettings");
+    console.log("In RenderSettings");
     // consoleLogObject('RenderSettings props', props);
     // consoleLogObject('RenderSettings settings', props.settings);
     return <div>
@@ -84,7 +84,6 @@ export function RenderProcessedArray(props) {
     //      2/ arrayType
     console.log("In RenderProcessedArray with ", props.arrayType);
     // consoleLogObject('RenderProcessedArray props', props);
-    let myList;
     if (props.arrayType === 's')
         return <ol>
             {props.results.successList.map(function (listEntry) {
@@ -111,7 +110,7 @@ export function RenderProcessedArray(props) {
 
 
 export function RenderErrors(props) {
-    console.log("In RenderErrors");
+    // console.log("In RenderErrors");
     // consoleLogObject('RenderErrors props', props);
     return <>
         <b style={{ color: props.results.errorList.length ? 'red' : 'green' }}>{props.results.errorList.length.toLocaleString()} error{props.results.errorList.length == 1 ? '' : 's'}</b>{props.results.errorList.length ? ':' : ''}
@@ -122,7 +121,7 @@ export function RenderErrors(props) {
 
 
 export function RenderWarnings(props) {
-    console.log("In RenderWarnings");
+    // console.log("In RenderWarnings");
     // consoleLogObject('RenderWarnings props', props);
     return <>
         <b style={{ color: props.results.warningList.length ? 'orange' : 'green' }}>{props.results.warningList.length.toLocaleString()} warning{props.results.warningList.length == 1 ? '' : 's'}</b>{props.results.warningList.length ? ':' : ''}

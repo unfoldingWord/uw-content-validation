@@ -1,31 +1,35 @@
 // utilities
 
+import { isUndefined } from "lodash";
 
-export function consoleLogObject(given_title, givenObject) {
-    let output = given_title + ' object:\n';
-    // for (let propertyName in givenObject)
-    //     output += "  " + propertyName + '\n';
-    for (let propertyName in givenObject) {
-        //try {
-        let thisPropertyContents = '' + givenObject[propertyName];
+
+export function consoleLogObject(clTitle, clObject) {
+    // console.log(clTitle);
+    let clOutput = clTitle + ' ' + (typeof clObject) + ':\n';
+    for (let clPropertyName in clObject) {
+        // console.log('   ', clTitle, clPropertyName);
+        let thisPropertyContents = '' + clObject[clPropertyName];
         if (thisPropertyContents.length > 50)
             thisPropertyContents = '(' + thisPropertyContents.length + ') ' + thisPropertyContents.substring(0, 50) + '…';
-        output += '  ' + propertyName + ' (type=' + typeof givenObject[propertyName] + '): ' + thisPropertyContents + '\n';
-        /*}
-        catch (e) {
-          console.log("Can't parse " + propertyName);
-        }*/
+        let oType = typeof clObject[clPropertyName];
+        // From https://stackoverflow.com/questions/12996871/why-does-typeof-array-with-objects-return-object-and-not-array#12996879
+        if (oType == 'object' && Object.prototype.toString.call(clObject[clPropertyName]) == '[object Array]') oType = 'array';
+        clOutput += '  ' + clPropertyName + ' (type=' + oType + ')';
+        let oLength;
+        try { oLength = clObject[clPropertyName].length; }
+        catch (e) { oLength = 'null' }
+        if (oLength !== undefined) clOutput += ' (length=' + oLength + ')';
+        if (thisPropertyContents !== undefined) clOutput += ': ' + thisPropertyContents + '\n';
     }
-    console.log(output);
+    console.log(clOutput);
 }
 // end of consoleLogObject function
 
 
 export function displayPropertyNames(given_title, givenObject) {
-    let output = given_title + " " + typeof givenObject + ":\n";
-    for (let propertyName in givenObject) {
+    let output = given_title + ' ' + (typeof givenObject) + ':\n';
+    for (let propertyName in givenObject)
         output += '  ' + propertyName + ' (type=' + typeof givenObject[propertyName] + ')\n';
-    }
     console.log(output);
 }
 // end of displayPropertyNames function

@@ -49,12 +49,11 @@ export function processNotices(givenNoticeObject, optionalProcessingOptions) {
 
     // Check that notice priority numbers are unique (to detect programming errors)
     if (1) { // May be commented out of production code
-        let numberStore = {};
-        let errorList = [];
+        let numberStore = {}, errorList = [];
         for (let thisGivenNotice of givenNoticeObject.noticeList) {
             const thisPriority = thisGivenNotice[0], thisMsg = thisGivenNotice[1];
             const oldMsg = numberStore[thisPriority];
-            if (oldMsg && oldMsg != thisMsg && noticeList.indexOf(thisPriority) < 0
+            if (oldMsg && oldMsg != thisMsg && givenNoticeObject.noticeList.indexOf(thisPriority) < 0
                 // Some of the messages include the troubling character in the message
                 //    so we expect them to differ slightly
                 && !thisMsg.startsWith('Unexpected doubled ')
