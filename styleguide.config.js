@@ -9,6 +9,7 @@ let sections = [
 		name: 'README',
 		content: 'README.md',
 	},
+	/*
 	{
 		name: 'Coming... Scripture Burrito Checker',
 		components: () => {
@@ -33,6 +34,7 @@ let sections = [
 			});
 		}
 	},
+	*/
 	{
 		name: 'Book Package Checker',
 		components: () => {
@@ -73,6 +75,16 @@ let sections = [
 		name: 'Core functions',
 		content: 'src/core/README.md',
 		sections: [
+			{
+				name: 'Raw text check',
+				content: 'src/core/raw-text-check.md',
+				// description: ''
+			},
+			{
+				name: 'Notice processing',
+				content: 'src/core/notice-processing.md',
+				// description: ''
+			},
 			{
 				name: 'Basic text check',
 				content: 'src/core/basic-text-check.md',

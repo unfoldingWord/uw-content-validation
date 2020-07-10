@@ -7,7 +7,7 @@ const checkerVersionString = '0.0.1';
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-function checkMarkdownText(textName, markdownText, location, optionalOptions) {
+function checkMarkdownText(textName, markdownText, location, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
      Returns a result object containing a successList and a warningList
@@ -17,7 +17,7 @@ function checkMarkdownText(textName, markdownText, location, optionalOptions) {
 
     let extractLength;
     try {
-        extractLength = optionalOptions.extractLength;
+        extractLength = optionalCheckingOptions.extractLength;
     } catch (e) {}
     if (typeof extractLength != 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
@@ -37,20 +37,20 @@ function checkMarkdownText(textName, markdownText, location, optionalOptions) {
     }
     function addNotice(priority, message, index, extract, location) {
         console.log("Markdown Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        console.assert(typeof priority==='number', "addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"'");
-        console.assert(priority!==undefined, "addNotice: 'priority' parameter should be defined");
-        console.assert(typeof message==='string', "addNotice: 'message' parameter should be a string not a '"+(typeof message)+"'");
-        console.assert(message!==undefined, "addNotice: 'message' parameter should be defined");
-        console.assert(typeof index==='number', "addNotice: 'index' parameter should be a number not a '"+(typeof index)+"'");
-        console.assert(index!==undefined, "addNotice: 'index' parameter should be defined");
-        console.assert(typeof extract==='string', "addNotice: 'extract' parameter should be a string not a '"+(typeof extract)+"'");
-        console.assert(extract!==undefined, "addNotice: 'extract' parameter should be defined");
-        console.assert(typeof location==='string', "addNotice: 'location' parameter should be a string not a '"+(typeof location)+"'");
-        console.assert(location!==undefined, "addNotice: 'location' parameter should be defined");
+        console.assert(typeof priority==='number', "cMT addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"': "+priority);
+        console.assert(priority!==undefined, "cMT addNotice: 'priority' parameter should be defined");
+        console.assert(typeof message==='string', "cMT addNotice: 'message' parameter should be a string not a '"+(typeof message)+"': "+message);
+        console.assert(message!==undefined, "cMT addNotice: 'message' parameter should be defined");
+        console.assert(typeof index==='number', "cMT addNotice: 'index' parameter should be a number not a '"+(typeof index)+"': "+index);
+        console.assert(index!==undefined, "cMT addNotice: 'index' parameter should be defined");
+        console.assert(typeof extract==='string', "cMT addNotice: 'extract' parameter should be a string not a '"+(typeof extract)+"': "+extract);
+        console.assert(extract!==undefined, "cMT addNotice: 'extract' parameter should be defined");
+        console.assert(typeof location==='string', "cMT addNotice: 'location' parameter should be a string not a '"+(typeof location)+"': "+location);
+        console.assert(location!==undefined, "cMT addNotice: 'location' parameter should be defined");
         result.noticeList.push([priority, message, index, extract, location]);
     }
 
-    function doOurBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalOptions) {
+    function doOurBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
         // Does basic checks for small errors like leading/trailing spaces, etc.
 
         // We assume that checking for compulsory fields is done elsewhere
@@ -62,7 +62,7 @@ function checkMarkdownText(textName, markdownText, location, optionalOptions) {
         console.assert(fieldText!==undefined, "doOurBasicTextChecks: 'fieldText' parameter should be defined");
         console.assert( allowedLinks===true || allowedLinks===false, "doOurBasicTextChecks: allowedLinks parameter must be either true or false");
 
-        const resultObject = doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalOptions);
+        const resultObject = doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -81,11 +81,11 @@ function checkMarkdownText(textName, markdownText, location, optionalOptions) {
 
         // Remove leading and trailing hash signs
         thisText = thisText.replace(/^#+|#$/g,'')
-        console.log("After removing hashes have '"+thisText+"'");
+        // console.log("After removing hashes have '"+thisText+"'");
 
         // Remove leading spaces
         thisText = thisText.replace(/^ +/g,'')
-        console.log("After removing leading spaces have '"+thisText+"'");
+        // console.log("After removing leading spaces have '"+thisText+"'");
 
         // // Remove leading asterisks
         // thisText = thisText.replace(/^\*/g,'')
@@ -96,7 +96,7 @@ function checkMarkdownText(textName, markdownText, location, optionalOptions) {
         // console.log("After removing more leading spaces have '"+thisText+"'");
 
         if (thisText)
-            doOurBasicTextChecks(lineName, thisText, [], lineLocation, optionalOptions);
+            doOurBasicTextChecks(lineName, thisText, false, lineLocation, optionalCheckingOptions);
     }
     // end of checkMarkdownLine function
 

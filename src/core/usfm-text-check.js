@@ -10,23 +10,23 @@ const DEFAULT_EXTRACT_LENGTH = 10;
 const INTRO_LINE_START_MARKERS = ['id', 'usfm', 'ide', 'h',
     'toc1', 'toc2', 'toc3', 'mt', 'mt1', 'mt2'];
 const CV_MARKERS = ['c', 'v'];
-const HEADING_MARKERS = ['s', 's1', 's2', 's3', 's4', 'r', 'd', 'rem'];
+const HEADING_TYPE_MARKERS = ['s', 's1', 's2', 's3', 's4', 'r', 'd', 'rem', 'sp', 'qs'];
 const PARAGRAPH_MARKERS = ['p', 'q', 'q1', 'q2', 'q3', 'q4', 'm',
     'pi', 'pi1', 'pi2', 'pi3', 'pi4', 'li', 'li1', 'li2', 'li3', 'li4'];
 const NOTE_MARKERS = ['f', 'x'];
 const SPECIAL_MARKERS = ['w', 'zaln-s', 'k-s'];
 const MILESTONE_MARKERS = ['ts-s', 'ts-e', 'ts\\*', 'k-e\\*']; // Is this a good way to handle it???
-const ALLOWED_LINE_START_MARKERS = [].concat(INTRO_LINE_START_MARKERS).concat(HEADING_MARKERS)
+const ALLOWED_LINE_START_MARKERS = [].concat(INTRO_LINE_START_MARKERS).concat(HEADING_TYPE_MARKERS)
     .concat(CV_MARKERS).concat(PARAGRAPH_MARKERS)
     .concat(NOTE_MARKERS).concat(SPECIAL_MARKERS).concat(MILESTONE_MARKERS);
 const DEPRECATED_MARKERS = ['h1', 'h2', 'h3', 'h4', 'pr',
     'ph', 'ph1', 'ph2', 'ph3', 'ph4', 'addpn', 'pro', 'fdc', 'xdc'];
 const MARKERS_WITHOUT_CONTENT = ['b'].concat(MILESTONE_MARKERS);
-const MARKERS_WITH_COMPULSORY_CONTENT = [].concat(INTRO_LINE_START_MARKERS).concat(HEADING_MARKERS)
+const MARKERS_WITH_COMPULSORY_CONTENT = [].concat(INTRO_LINE_START_MARKERS).concat(HEADING_TYPE_MARKERS)
     .concat(CV_MARKERS).concat(NOTE_MARKERS).concat(SPECIAL_MARKERS);
 
 
-function checkUSFMText(BBB, tableText, location, optionalOptions) {
+function checkUSFMText(BBB, tableText, location, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
      Returns a result object containing a successList and a warningList
@@ -36,7 +36,7 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
 
     let extractLength;
     try {
-        extractLength = optionalOptions.extractLength;
+        extractLength = optionalCheckingOptions.extractLength;
     } catch (e) {}
     if (typeof extractLength != 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
@@ -56,21 +56,21 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
     }
     function addNotice(priority, message, index, extract, location) {
         // console.log("USFM Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        console.assert(typeof priority==='number', "addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"'");
-        console.assert(priority!==undefined, "addNotice: 'priority' parameter should be defined");
-        console.assert(typeof message==='string', "addNotice: 'message' parameter should be a string not a '"+(typeof message)+"'");
-        console.assert(message!==undefined, "addNotice: 'message' parameter should be defined");
-        console.assert(typeof index==='number', "addNotice: 'index' parameter should be a number not a '"+(typeof index)+"'");
-        console.assert(index!==undefined, "addNotice: 'index' parameter should be defined");
-        console.assert(typeof extract==='string', "addNotice: 'extract' parameter should be a string not a '"+(typeof extract)+"'");
-        console.assert(extract!==undefined, "addNotice: 'extract' parameter should be defined");
-        console.assert(typeof location==='string', "addNotice: 'location' parameter should be a string not a '"+(typeof location)+"'");
-        console.assert(location!==undefined, "addNotice: 'location' parameter should be defined");
+        console.assert(typeof priority==='number', "cUSFM addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"': "+priority);
+        console.assert(priority!==undefined, "cUSFM addNotice: 'priority' parameter should be defined");
+        console.assert(typeof message==='string', "cUSFM addNotice: 'message' parameter should be a string not a '"+(typeof message)+"': "+message);
+        console.assert(message!==undefined, "cUSFM addNotice: 'message' parameter should be defined");
+        console.assert(typeof index==='number', "cUSFM addNotice: 'index' parameter should be a number not a '"+(typeof index)+"': "+index);
+        console.assert(index!==undefined, "cUSFM addNotice: 'index' parameter should be defined");
+        console.assert(typeof extract==='string', "cUSFM addNotice: 'extract' parameter should be a string not a '"+(typeof extract)+"': "+extract);
+        console.assert(extract!==undefined, "cUSFM addNotice: 'extract' parameter should be defined");
+        console.assert(typeof location==='string', "cUSFM addNotice: 'location' parameter should be a string not a '"+(typeof location)+"': "+location);
+        console.assert(location!==undefined, "cUSFM addNotice: 'location' parameter should be defined");
         result.noticeList.push([priority, message, index, extract, location]);
     }
 
 
-    function doOurBasicTextChecks(fieldName, fieldText, allowedLinks, fieldLocation, optionalOptions) {
+    function doOurBasicTextChecks(fieldName, fieldText, allowedLinks, fieldLocation, optionalCheckingOptions) {
         // Does basic checks for small errors like leading/trailing spaces, etc.
 
         // We assume that checking for compulsory fields is done elsewhere
@@ -82,7 +82,7 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
         console.assert(fieldText!==undefined, "doOurBasicTextChecks: 'fieldText' parameter should be defined");
         console.assert( allowedLinks===true || allowedLinks===false, "doOurBasicTextChecks: allowedLinks parameter must be either true or false");
 
-        const resultObject = doBasicTextChecks(fieldName, fieldText, allowedLinks, fieldLocation, optionalOptions);
+        const resultObject = doBasicTextChecks(fieldName, fieldText, allowedLinks, fieldLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -96,7 +96,7 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
     // end of doOurBasicTextChecks function
 
 
-    function checkUSFMLineInternals(marker, rest, lineLocation, optionalOptions) {
+    function checkUSFMLineInternals(marker, rest, lineLocation, optionalCheckingOptions) {
         // Handles character formatting within the line contents
         let adjustedRest = rest;
 
@@ -107,7 +107,7 @@ function checkUSFMText(BBB, tableText, location, optionalOptions) {
             if (isNaN(Vstr) && Vstr.indexOf('-')<0)
             addNotice(822, "Expected \\v field to contain an integer", 3, '\\v '+rest, lineLocation);
         }
-        if (rest) doOurBasicTextChecks('\\' + marker, rest, false, ' field ' + lineLocation, optionalOptions);
+        if (rest) doOurBasicTextChecks('\\' + marker, rest, false, ' field ' + lineLocation, optionalCheckingOptions);
         }
     // end of checkUSFMLineInternals function
 

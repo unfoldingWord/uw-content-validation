@@ -6,6 +6,8 @@ It returns a list of errors and a list of warnings.
 
 ```js
 import checkTN_TSVDataRow from './table-line-check.js';
+import processNotices from './notice-handling-functions';
+import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
 
 // Empty, Header, Nonsense, Good, Bad, Very bad, and Actual line samples
 const lineE = "";
@@ -36,24 +38,12 @@ const lineA9 = "GEN\t1\t9\tha33\t\t\t0\tIt was so\t“It happened like that” o
 //  (to demonstrate differing results)
 const chosenLine = lineA9;
 
-const result = checkTN_TSVDataRow('GEN', chosenLine, 'that was supplied');
+let preliminaryResult = checkTN_TSVDataRow('GEN', chosenLine, 'that was supplied');
+preliminaryResult.successList = ["Done TSV table line checks"];
+const processedResult = processNotices(preliminaryResult);
 
-function RenderArray(props) {
-    // Display our array of 4-part lists in a nicer format
-    // Uses 'result' object from outer scope
-    const myList = props.arrayType=='e'? result.errorList : result.warningList;
-    return ( <ul>
-            {myList.map(function(listEntry){
-                return <li key={listEntry.id}><b style={{color:props.arrayType=='e'?'red':'orange'}}>{listEntry[0]}</b> {(listEntry[1]>0?" (at character "+(listEntry[1]+1)+")":"")} {listEntry[2]?" in '"+listEntry[2]+"'":""} {listEntry[3]}</li>;
-            })}
-          </ul>
-    );
-}
 <>
 <b>Check</b> "{chosenLine}"<br/><br/>
-<b style={{color:result.errorList.length?'red':'green'}}>{result.errorList.length} error{result.errorList.length==1? '':'s'}</b>{result.errorList.length?':':''}
-<RenderArray arrayType='e' />
-<b style={{color:result.warningList.length?'orange':'green'}}>{result.warningList.length} warning{result.warningList.length==1? '':'s'}</b>{result.warningList.length?':':''}
-<RenderArray arrayType='w' />
+<RenderSuccessesErrorsWarnings results={processedResult} />
 </>
 ```

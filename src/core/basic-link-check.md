@@ -4,6 +4,8 @@ This function is for checking text fields that are links, or that contain links.
 
 ```js
 import doBasicLinkChecks from './link-checks.js';
+import processNotices from './notice-handling-functions';
+import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
 
 // Empty, space, link, RC, good, and bad text samples
 const textE = "";
@@ -23,9 +25,9 @@ let result;
 // Define our callback function
 function acceptUpdatedResult(newResult){
     // Update the results with later results
-    console.log("acceptUpdatedResult callback function is updating result now with "+newResult.errorList.length+" errors and "+newResult.warningList.length+" warnings.");
-    result.errorList = newResult.errorList;
-    result.warningList = newResult.warningList;
+    console.log("acceptUpdatedResult callback function is updating result now with "+newprocessedResult.errorList.length+" errors and "+newprocessedResult.warningList.length+" warnings.");
+    processedResult.errorList = newprocessedResult.errorList;
+    processedResult.warningList = newprocessedResult.warningList;
     // Now how can we tell Styleguidist to refresh???
 }
 
@@ -43,24 +45,12 @@ const linkOptions = {
 
 // This function returns the results of the fast checks
 //  and if specified in linkOptions, the callback will update result later with results of slower checks
-result = doBasicLinkChecks('Sample', chosenText, linkOptions, 'that was supplied');
+const preliminaryResult = doBasicLinkChecks('Sample', chosenText, linkOptions, 'that was supplied');
+preliminaryResult.successList = ["Done basic text checks"];
+result = processNotices(preliminaryResult);
 
-function RenderArray(props) {
-    // Display our array of 4-part lists in a nicer format
-    // Uses 'result' object from outer scope
-    const myList = props.arrayType=='e' ? result.errorList : result.warningList;
-    return ( <ul>
-            {myList.map(function(listEntry){
-                return <li key={listEntry.id}><b style={{color:props.arrayType=='e'?'red':'orange'}}>{listEntry[0]}</b> {(listEntry[1]>0?" (at character "+(listEntry[1]+1)+")":"")} {listEntry[2]?" in '"+listEntry[2]+"'":""} {listEntry[3]}</li>;
-            })}
-          </ul>
-    );
-}
 <>
 <b>Check</b> "{chosenText}"<br/><br/>
-<b style={{color:result.errorList.length?'red':'green'}}>{result.errorList.length} error{result.errorList.length==1? '':'s'}</b>{result.errorList.length?':':''}
-<RenderArray arrayType='e' />
-<b style={{color:result.warningList.length?'orange':'green'}}>{result.warningList.length} warning{result.warningList.length==1? '':'s'}</b>{result.warningList.length?':':''}
-<RenderArray arrayType='w' />
+<RenderSuccessesErrorsWarnings results={processedResult} />
 </>
 ```

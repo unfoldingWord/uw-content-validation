@@ -5,7 +5,7 @@ const CHECKER_VERSION_STRING = '0.0.3';
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalOptions) {
+export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
     // Does basic checks for small errors like leading/trailing spaces, etc.
 
     // fieldName (str): Used for identification
@@ -22,33 +22,36 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     //      3/ a short extract of the string containing the error (or empty-string if irrelevant)
     //      4/ the detailed location string
     //  (Returned in this way for more intelligent processing at a higher level)
-    console.assert(typeof fieldName==='string', "doBasicTextChecks: 'fieldName' parameter should be a number not a '"+(typeof priority)+"'");
+    // console.log("doBasicTextChecks(" + fieldName + ", " + fieldText.length.toLocaleString() + " chars, " +allowedLinks +", '"+ optionalFieldLocation + "')…");
     console.assert(fieldName!==undefined, "doBasicTextChecks: 'fieldName' parameter should be defined");
-    console.assert(typeof fieldText==='string', "doBasicTextChecks: 'fieldText' parameter should be a number not a '"+(typeof priority)+"'");
+    console.assert(typeof fieldName==='string', "doBasicTextChecks: 'fieldName' parameter should be a number not a '"+(typeof fieldName)+"': "+fieldName);
     console.assert(fieldText!==undefined, "doBasicTextChecks: 'fieldText' parameter should be defined");
+    console.assert(typeof fieldText==='string', "doBasicTextChecks: 'fieldText' parameter should be a number not a '"+(typeof fieldText)+"': "+fieldText);
     console.assert( allowedLinks===true || allowedLinks===false, "doBasicTextChecks: allowedLinks parameter must be either true or false");
 
     let result = { noticeList: [] };
 
     function addNotice(priority, message, index, extract, location) {
-        // console.log("dBTC Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        console.assert(typeof priority==='number', "addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"'");
-        console.assert(priority!==undefined, "addNotice: 'priority' parameter should be defined");
-        console.assert(typeof message==='string', "addNotice: 'message' parameter should be a string not a '"+(typeof message)+"'");
-        console.assert(message!==undefined, "addNotice: 'message' parameter should be defined");
-        console.assert(typeof index==='number', "addNotice: 'index' parameter should be a number not a '"+(typeof index)+"'");
-        console.assert(index!==undefined, "addNotice: 'index' parameter should be defined");
-        console.assert(typeof extract==='string', "addNotice: 'extract' parameter should be a string not a '"+(typeof extract)+"'");
-        console.assert(extract!==undefined, "addNotice: 'extract' parameter should be defined");
-        console.assert(typeof location==='string', "addNotice: 'location' parameter should be a string not a '"+(typeof location)+"'");
-        console.assert(location!==undefined, "addNotice: 'location' parameter should be defined");
+        console.log("dBTC Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
+        console.assert(priority!==undefined, "dBTCs addNotice: 'priority' parameter should be defined");
+        console.assert(typeof priority==='number', "dBTCs addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"': "+priority);
+        console.assert(message!==undefined, "dBTCs addNotice: 'message' parameter should be defined");
+        console.assert(typeof message==='string', "dBTCs addNotice: 'message' parameter should be a string not a '"+(typeof message)+"': "+message);
+        console.assert(index!==undefined, "dBTCs addNotice: 'index' parameter should be defined");
+        console.assert(typeof index==='number', "dBTCs addNotice: 'index' parameter should be a number not a '"+(typeof index)+"': "+index);
+        console.assert(extract!==undefined, "dBTCs addNotice: 'extract' parameter should be defined");
+        console.assert(typeof extract==='string', "dBTCs addNotice: 'extract' parameter should be a string not a '"+(typeof extract)+"': "+extract);
+        console.assert(location!==undefined, "dBTCs addNotice: 'location' parameter should be defined");
+        console.assert(typeof location==='string', "dBTCs addNotice: 'location' parameter should be a string not a '"+(typeof location)+"': "+location);
         result.noticeList.push([priority, message, index, extract, location]);
     }
 
+
+    // Main code for doBasicTextChecks()
     if (!fieldText) // Nothing to check
         return result;
 
-    // Create our more detailed location string by prepending the fieldName
+        // Create our more detailed location string by prepending the fieldName
     let ourAtString = " in '" + fieldName + "'";
     if (optionalFieldLocation) {
         if (optionalFieldLocation[0] != ' ') ourAtString += ' ';
@@ -62,7 +65,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
 
     let extractLength;
     try {
-        extractLength = optionalOptions.extractLength;
+        extractLength = optionalCheckingOptions.extractLength;
     } catch (e) {}
     if (typeof extractLength != 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;

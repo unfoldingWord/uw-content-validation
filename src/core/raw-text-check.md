@@ -1,13 +1,15 @@
-## Basic Text Field Check Sandbox
+## Raw Text Field Check Sandbox
 
 This function can be passed a text (incl. markdown) field
 and checks for basic errors like leading/trailing spaces,
 bad punctuation, etc.
 
+The raw function returns only a list of notices
+(which are normally processed later into a list of errors and warnings).
+
 ```js
 import doBasicTextChecks from './basic-text-check';
-import processNotices from './notice-handling-functions';
-import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
+import { RenderLines, RenderRawNotices } from '../components/RenderProcessedResults';
 
 // Empty, space, good, and bad, link, and RC text samples
 const textE = "";
@@ -22,12 +24,11 @@ const textRC2 = "Compare with rc://en/tw/dict/bible/other/canaan";
 const chosenText = textB;
 
 // The third parameter is "linksAllowed"
-let preliminaryResult = doBasicTextChecks('Sample', chosenText, false, 'that was supplied');
-preliminaryResult.successList = ["Done basic text checks"];
-const processedResult = processNotices(preliminaryResult);
+let rawResult = doBasicTextChecks('Sample', chosenText, false, 'that was supplied');
+rawResult.successList = ["Done basic text checks"];
 
 <>
 <b>Check</b> "{chosenText}"<br/><br/>
-<RenderSuccessesErrorsWarnings results={processedResult} />
+<RenderRawNotices results={rawResult} />
 </>
 ```

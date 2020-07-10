@@ -7,7 +7,7 @@ const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOr
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
-function checkTN_TSVDataRow(BBB, line, rowLocation, optionalOptions) {
+function checkTN_TSVDataRow(BBB, line, rowLocation, optionalCheckingOptions) {
     /* This function is only for checking one data row
           and doesn't assume that it has any previous context.
 
@@ -15,53 +15,53 @@ function checkTN_TSVDataRow(BBB, line, rowLocation, optionalOptions) {
 
   Returns errorList, warningList
  */
-    // console.log("checkTN_TSVDataRow(" + BBB + ", " + line + ", " + rowLocation +", "+JSON.stringify(optionalOptions)+ ")…");
-    console.assert(typeof BBB === 'string', "addNotice: 'BBB' parameter should be a string not a '" + (typeof BBB) + "'");
-    console.assert(BBB !== undefined, "addNotice: 'BBB' parameter should be defined");
-    console.assert(BBB.length == 3, "addNotice: 'BBB' parameter should be three characters long not " + BBB.length);
-    console.assert(typeof line === 'string', "addNotice: 'line' parameter should be a string not a '" + (typeof line) + "'");
-    console.assert(line !== undefined, "addNotice: 'line' parameter should be defined");
-    console.assert(typeof rowLocation === 'string', "addNotice: 'rowLocation' parameter should be a string not a '" + (typeof rowLocation) + "'");
-    console.assert(rowLocation !== undefined, "addNotice: 'rowLocation' parameter should be defined");
+    // console.log("checkTN_TSVDataRow(" + BBB + ", " + line + ", " + rowLocation +", "+JSON.stringify(optionalCheckingOptions)+ ")…");
+    console.assert(BBB !== undefined, "checkTN_TSVDataRow: 'BBB' parameter should be defined");
+    console.assert(typeof BBB === 'string', "checkTN_TSVDataRow: 'BBB' parameter should be a string not a '" + (typeof BBB) + "'");
+    console.assert(BBB.length == 3, "checkTN_TSVDataRow: 'BBB' parameter should be three characters long not " + BBB.length);
+    console.assert(line !== undefined, "checkTN_TSVDataRow: 'line' parameter should be defined");
+    console.assert(typeof line === 'string', "checkTN_TSVDataRow: 'line' parameter should be a string not a '" + (typeof line) + "'");
+    console.assert(rowLocation !== undefined, "checkTN_TSVDataRow: 'rowLocation' parameter should be defined");
+    console.assert(typeof rowLocation === 'string', "checkTN_TSVDataRow: 'rowLocation' parameter should be a string not a '" + (typeof rowLocation) + "'");
 
     let result = { errorList: [], noticeList: [] };
 
     function addNotice(priority, message, index, extract, location) {
-        console.log("TSV Line Notice: (priority=" + priority + ") " + message + (index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        console.assert(typeof priority === 'number', "addNotice: 'priority' parameter should be a number not a '" + (typeof priority) + "'");
-        console.assert(priority !== undefined, "addNotice: 'priority' parameter should be defined");
-        console.assert(typeof message === 'string', "addNotice: 'message' parameter should be a string not a '" + (typeof message) + "'");
-        console.assert(message !== undefined, "addNotice: 'message' parameter should be defined");
-        console.assert(typeof index === 'number', "addNotice: 'index' parameter should be a number not a '" + (typeof index) + "'");
-        console.assert(index !== undefined, "addNotice: 'index' parameter should be defined");
-        console.assert(typeof extract === 'string', "addNotice: 'extract' parameter should be a string not a '" + (typeof extract) + "'");
-        console.assert(extract !== undefined, "addNotice: 'extract' parameter should be defined");
-        console.assert(typeof location === 'string', "addNotice: 'location' parameter should be a string not a '" + (typeof location) + "'");
-        console.assert(location !== undefined, "addNotice: 'location' parameter should be defined");
+        console.log("TSV Line Notice: (priority=" + priority + ") " + message + ", " + index + ", "+extract+", " + location);
+        console.assert(priority !== undefined, "cTSVrow addNotice: 'priority' parameter should be defined");
+        console.assert(typeof priority === 'number', "cTSVrow addNotice: 'priority' parameter should be a number not a '" + (typeof priority) + "': "+priority);
+        console.assert(message !== undefined, "cTSVrow addNotice: 'message' parameter should be defined");
+        console.assert(typeof message === 'string', "cTSVrow addNotice: 'message' parameter should be a string not a '" + (typeof message) + "': "+message);
+        console.assert(index !== undefined, "cTSVrow addNotice: 'index' parameter should be defined");
+        console.assert(typeof index === 'number', "cTSVrow addNotice: 'index' parameter should be a number not a '" + (typeof index) + "': "+index);
+        console.assert(extract !== undefined, "cTSVrow addNotice: 'extract' parameter should be defined");
+        console.assert(typeof extract === 'string', "cTSVrow addNotice: 'extract' parameter should be a string not a '" + (typeof extract) + "': "+extract);
+        console.assert(location !== undefined, "cTSVrow addNotice: 'location' parameter should be defined");
+        console.assert(typeof location === 'string', "cTSVrow addNotice: 'location' parameter should be a string not a '" + (typeof location) + "': "+location);
         result.noticeList.push([priority, message, index, extract, location]);
     }
 
-    function doOurBasicTextChecks(fieldName, fieldText, allowedLinks, rowLocation, optionalOptions) {
+    function doOurBasicTextChecks(fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions) {
         // Does basic checks for small errors like leading/trailing spaces, etc.
 
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global list of notices
-        console.assert(typeof fieldName === 'string', "doOurBasicTextChecks: 'fieldName' parameter should be a string not a '" + (typeof fieldName) + "'");
         console.assert(fieldName !== undefined, "doOurBasicTextChecks: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldText === 'string', "doOurBasicTextChecks: 'fieldText' parameter should be a string not a '" + (typeof fieldText) + "'");
+        console.assert(typeof fieldName === 'string', "doOurBasicTextChecks: 'fieldName' parameter should be a string not a '" + (typeof fieldName) + "'");
         console.assert(fieldText !== undefined, "doOurBasicTextChecks: 'fieldText' parameter should be defined");
+        console.assert(typeof fieldText === 'string', "doOurBasicTextChecks: 'fieldText' parameter should be a string not a '" + (typeof fieldText) + "'");
         console.assert(allowedLinks === true || allowedLinks === false, "doOurBasicTextChecks: allowedLinks parameter must be either true or false");
 
-        const resultObject = doBasicTextChecks(fieldName, fieldText, allowedLinks, rowLocation, optionalOptions);
+        const resultObject = doBasicTextChecks(fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
-        result.noticeList = result.noticeList.concat(resultObject.noticeList);
+        // result.noticeList = result.noticeList.concat(resultObject.noticeList);
         // If we need to put everything through addNotice, e.g., for debugging
         //  process results line by line
-        // for (let noticeEntry of resultObject.noticeList)
-        //     addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+        for (let noticeEntry of resultObject.noticeList)
+            addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
     }
     // end of doOurBasicTextChecks function
 
@@ -71,7 +71,7 @@ function checkTN_TSVDataRow(BBB, line, rowLocation, optionalOptions) {
 
     let extractLength;
     try {
-        extractLength = optionalOptions.extractLength;
+        extractLength = optionalCheckingOptions.extractLength;
     } catch (e) { }
     if (typeof extractLength != 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
@@ -106,10 +106,10 @@ function checkTN_TSVDataRow(BBB, line, rowLocation, optionalOptions) {
         // Check the fields one-by-one
         if (B) {
             if (B != BBB)
-                addNotice(500, "Wrong '" + B + "' book code", -1, "", " (expected '" + BBB + "')" + rowLocation);
+                addNotice(978, "Wrong '" + B + "' book code", -1, "", " (expected '" + BBB + "')" + rowLocation);
         }
         else
-            addNotice(500, "Missing book code", 0, "", rowLocation);
+            addNotice(977, "Missing book code", 0, "", rowLocation);
 
         let numVersesThisChapter, haveGoodChapterNumber;
         if (C) {
@@ -179,12 +179,12 @@ function checkTN_TSVDataRow(BBB, line, rowLocation, optionalOptions) {
         }
 
         if (support_reference) { // need to check UTN against UTA
-            doOurBasicTextChecks('SupportReference', support_reference, true, rowLocation, optionalOptions);
+            doOurBasicTextChecks('SupportReference', support_reference, true, rowLocation, optionalCheckingOptions);
         }
 
 
         if (orig_quote) { // need to check UTN against UHB and UGNT
-            doOurBasicTextChecks('OrigQuote', orig_quote, false, rowLocation, optionalOptions);
+            doOurBasicTextChecks('OrigQuote', orig_quote, false, rowLocation, optionalCheckingOptions);
         }
 
         if (occurrence) { // This should usually be a digit
@@ -199,11 +199,11 @@ function checkTN_TSVDataRow(BBB, line, rowLocation, optionalOptions) {
         }
 
         if (GL_quote) { // need to check UTN against ULT
-            doOurBasicTextChecks('GLQuote', GL_quote, false, rowLocation, optionalOptions);
+            doOurBasicTextChecks('GLQuote', GL_quote, false, rowLocation, optionalCheckingOptions);
         }
 
         if (occurrenceNote) {
-            doOurBasicTextChecks('OccurrenceNote', occurrenceNote, true, rowLocation, optionalOptions);
+            doOurBasicTextChecks('OccurrenceNote', occurrenceNote, true, rowLocation, optionalCheckingOptions);
         }
 
     } else

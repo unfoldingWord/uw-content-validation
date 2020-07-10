@@ -9,14 +9,14 @@ const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOr
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
-function checkTN_TSVText(BBB, tableText, location, optionalOptions) {
+function checkTN_TSVText(BBB, tableText, location, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all rows.
 
       It also has the advantage of being able to compare one row with the previous one.
 
      Returns a result object containing a successList and a warningList
      */
-    console.log("checkTN_TSVText(" + BBB + ", " + tableText.length + ", " + location + ","+JSON.stringify(optionalOptions)+")…");
+    console.log("checkTN_TSVText(" + BBB + ", " + tableText.length + ", " + location + ","+JSON.stringify(optionalCheckingOptions)+")…");
 
     let result = { successList: [], noticeList: [] };
 
@@ -26,23 +26,23 @@ function checkTN_TSVText(BBB, tableText, location, optionalOptions) {
     }
     function addNotice(priority, message, index, extract, location) {
         // console.log("TSV Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        console.assert(typeof priority==='number', "addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"'");
-        console.assert(priority!==undefined, "addNotice: 'priority' parameter should be defined");
-        console.assert(typeof message==='string', "addNotice: 'message' parameter should be a string not a '"+(typeof message)+"'");
-        console.assert(message!==undefined, "addNotice: 'message' parameter should be defined");
-        console.assert(typeof index==='number', "addNotice: 'index' parameter should be a number not a '"+(typeof index)+"'");
-        console.assert(index!==undefined, "addNotice: 'index' parameter should be defined");
-        console.assert(typeof extract==='string', "addNotice: 'extract' parameter should be a string not a '"+(typeof extract)+"'");
-        console.assert(extract!==undefined, "addNotice: 'extract' parameter should be defined");
-        console.assert(typeof location==='string', "addNotice: 'location' parameter should be a string not a '"+(typeof location)+"'");
-        console.assert(location!==undefined, "addNotice: 'location' parameter should be defined");
+        console.assert(typeof priority==='number', "TSV addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"': "+priority);
+        console.assert(priority!==undefined, "TSV addNotice: 'priority' parameter should be defined");
+        console.assert(typeof message==='string', "TSV addNotice: 'message' parameter should be a string not a '"+(typeof message)+"': "+message);
+        console.assert(message!==undefined, "TSV addNotice: 'message' parameter should be defined");
+        console.assert(typeof index==='number', "TSV addNotice: 'index' parameter should be a number not a '"+(typeof index)+"': "+index);
+        console.assert(index!==undefined, "TSV addNotice: 'index' parameter should be defined");
+        console.assert(typeof extract==='string', "TSV addNotice: 'extract' parameter should be a string not a '"+(typeof extract)+"': "+extract);
+        console.assert(extract!==undefined, "TSV addNotice: 'extract' parameter should be defined");
+        console.assert(typeof location==='string', "TSV addNotice: 'location' parameter should be a string not a '"+(typeof location)+"': "+location);
+        console.assert(location!==undefined, "TSV addNotice: 'location' parameter should be defined");
         result.noticeList.push([priority, message, index, extract, location]);
     }
 
 
     let extractLength;
     try {
-        extractLength = optionalOptions.extractLength;
+        extractLength = optionalCheckingOptions.extractLength;
     } catch (e) {}
     if (typeof extractLength != 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
@@ -88,7 +88,7 @@ function checkTN_TSVText(BBB, tableText, location, optionalOptions) {
                 let atString = " at " + B + ' ' + C + ':' + V + " (" + fieldID + ")" + inString;
 
                 // Use the row check to do most basic checks
-                const firstResult = checkTN_TSVDataRow(BBB, lines[n], atString, optionalOptions);
+                const firstResult = checkTN_TSVDataRow(BBB, lines[n], atString, optionalCheckingOptions);
                 for (let noticeEntry of firstResult.noticeList)
                     addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
 

@@ -31,7 +31,7 @@ const [repository, setRepository] = React.useState();
       tokenid: "PlaygroundTesting",
     }}>
 
-  <BookPackageCheck username="unfoldingWord" language_code='en' book_code='HAB'/>
+  <BookPackageCheck username="unfoldingWord" language_code='en' bookCode='HAB'/>
 
   </RepositoryContextProvider>
 </AuthenticationContextProvider>
