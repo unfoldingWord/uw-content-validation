@@ -47,6 +47,9 @@ const [filepath, setFilepath] = React.useState();
       // onFile={setFile}
     >
 
+      // Specifying extractLength and maximumSimilarMessages is just to show off options
+      //  -- those fields are not necessary (or normal) here
+      // The location field appears in check messages to help the user locate the issue
       <FileCheck extractLength="13" maximumSimilarMessages="2" location="from file-check/README.md"/>
 
     </FileContextProvider>

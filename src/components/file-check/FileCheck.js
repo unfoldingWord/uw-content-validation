@@ -3,10 +3,11 @@ import React, { useContext } from 'react';
 // import ReactJson from 'react-json-view';
 // import { Paper, Button } from '@material-ui/core';
 import { RepositoryContext, FileContext } from 'gitea-react-toolkit';
+import { withStyles } from '@material-ui/core/styles';
 import checkFile from './checkFile.js';
 import processNotices from '../../core/notice-handling-functions.js';
 import { RenderSuccessesErrorsWarnings } from '../RenderProcessedResults';
-import { consoleLogObject } from '../../core/utilities.js';
+// import { consoleLogObject } from '../../core/utilities.js';
 
 
 const CHECKER_VERSION_STRING = '0.0.3';
@@ -15,8 +16,8 @@ function FileCheck(props) {
     const { state: repo, component: repoComponent } = useContext(RepositoryContext);
     const { state: file, component: fileComponent } = useContext(FileContext);
 
-    console.log("I'm here in FileCheck v" + CHECKER_VERSION_STRING);
-    consoleLogObject("props", props);
+    // console.log("I'm here in FileCheck v" + CHECKER_VERSION_STRING);
+    // consoleLogObject("props", props);
     // consoleLogObject("repo", repo);
     /* Has fields: id:number, owner:object, name, full_name, description,
         empty, private, fork, parent, mirror, size,
@@ -101,4 +102,9 @@ function FileCheck(props) {
 };
 // end of FileCheck()
 
-export default FileCheck;
+const styles = theme => ({
+    root: {
+    },
+});
+
+export default withStyles(styles)(FileCheck);
