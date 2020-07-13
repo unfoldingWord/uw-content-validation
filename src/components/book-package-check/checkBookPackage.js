@@ -1,3 +1,4 @@
+import React from 'react';
 import * as books from '../../core/books/books';
 import checkFile from '../file-check/checkFile';
 import { consoleLogObject } from '../../core/utilities';
@@ -6,14 +7,14 @@ import { getFile } from '../../core/getApi';
 const CHECKER_VERSION_STRING = '0.0.2';
 
 
-async function checkBookPackage(username, language_code, bookCode, checkingOptions) {
-    console.log("I'm here in checkBookPackage v" + CHECKER_VERSION_STRING);
-    console.log("  with " + username + ", " + language_code + ", " + bookCode + ", " + JSON.stringify(checkingOptions));
+async function checkBookPackage(username, language_code, bookCode, setResultValue, checkingOptions) {
+    // console.log("I'm here in checkBookPackage v" + CHECKER_VERSION_STRING + "\n"
+    //           + "  with " + username + ", " + language_code + ", " + bookCode + ", " + JSON.stringify(checkingOptions));
 
     let checkBookPackageResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        console.log("Success: " + successString);
+        // console.log("checkBookPackage success: " + successString);
         checkBookPackageResult.successList.push(successString);
     }
 
@@ -49,7 +50,7 @@ async function checkBookPackage(username, language_code, bookCode, checkingOptio
         console.assert(fileLocation !== undefined, "doOurCheckFile: 'fileLocation' parameter should be defined");
 
         const resultObject = checkFile(filename, file_content, fileLocation, optionalCheckingOptions);
-        console.log("checkFile() returned", resultObject.successList.length, "success message(s) and", resultObject.noticeList.length, "notice(s)");
+        // console.log("checkFile() returned", resultObject.successList.length, "success message(s) and", resultObject.noticeList.length, "notice(s)");
 
         for (let successEntry of resultObject.successList)
             console.log("  ", successEntry);
@@ -82,9 +83,9 @@ async function checkBookPackage(username, language_code, bookCode, checkingOptio
 
     // So now we want to work through checking this one specified Bible book in various repos:
     //  UHB/UGNT, ULT, UST, UTN, UTW, UTQ
-    let checkedFileCount = 0, checkedFilenames = [], totalCheckedSize = 0, checkedRepoNames = [];
+    let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0, checkedRepoNames = [];
     for (let repoCode of [(whichTestament == 'old' ? 'UHB' : 'UGNT'), 'ULT', 'UST', 'TN', 'TQ']) {
-        console.log("Let's try", repoCode, "(", language_code, bookCode, "from", username, ")");
+        // console.log("Let's try", repoCode, "(", language_code, bookCode, "from", username, ")");
         const repoLocation = " in " + repoCode.toUpperCase() + generalLocation;
 
         let repo_language_code = language_code;
@@ -93,23 +94,29 @@ async function checkBookPackage(username, language_code, bookCode, checkingOptio
         const repoName = repo_language_code + '_' + repoCode.toLowerCase();
 
         const fullRepoName = username + '/' + repoName;
-        console.log("Let's try1", bookCode, "from", fullRepoName);
+        // console.log("Let's try1", bookCode, "from", fullRepoName);
 
         let filename;
-        if (repoCode == 'UHB' || repoCode == 'UGNT' || repoCode == 'ULT' || repoCode == 'UST')
+        if (repoCode == 'UHB' || repoCode == 'UGNT' || repoCode == 'ULT' || repoCode == 'UST') {
             filename = bookNumberAndName + '.usfm';
-        else if (repoCode == 'TN')
+            checkedFilenameExtensions.add('usfm');
+        }
+        else if (repoCode == 'TN') {
             filename = language_code + '_tn_' + bookNumberAndName + '.tsv';
-        else if (repoCode == 'TQ')
+            checkedFilenameExtensions.add('tsv');
+        }
+        else if (repoCode == 'TQ') {
             // How are we going to handle all these folders of .md files ???
             // This resource will eventually be converted to TSV tables
             filename = bookCode.toLowerCase() + '/01/02.md';
+            checkedFilenameExtensions.add('md');
+    }
         // console.log("Need to load", filename, "from", fullRepoName, generalLocation);
 
         console.log("Try to load", username, repoName, filename, branch);
         try {
             const fileContent = await getFile({ username, repository: repoName, path: filename, branch });
-            console.log("Fetched file_content for", repoName, filename, typeof fileContent, fileContent.length);
+            // console.log("Fetched file_content for", repoName, filename, typeof fileContent, fileContent.length);
             checkedFilenames.push(filename);
             totalCheckedSize += fileContent.length;
             checkedRepoNames.push(repoCode);
@@ -124,12 +131,16 @@ async function checkBookPackage(username, language_code, bookCode, checkingOptio
         doOurCheckFile(repoCode, filename, fileContent, generalLocation, checkingOptions); // Adds the notices to checkBookPackageResult
         checkedFileCount += 1;
         addSuccessMessage(checkedFileCount + "/ Checked " + repoCode.toUpperCase() + " file: " + filename);
+
+        // Update our "waiting" message
+    setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {language_code} <b>{bookCode}</b> book package: checked {checkedFileCount} repo{checkedFileCount==1?'':'s'}…</p>);
     }
 
     // Add some extra fields to our checkFileResult object
     //  in case we need this information again later
     checkBookPackageResult.checkedFileCount = checkedFileCount;
     checkBookPackageResult.checkedFilenames = checkedFilenames;
+    checkBookPackageResult.checkedFilenameExtensions = [...checkedFilenameExtensions]; // convert Set to Array
     checkBookPackageResult.checkedFilesizes = totalCheckedSize;
     checkBookPackageResult.checkedRepoNames = checkedRepoNames;
     // checkBookPackageResult.checkedOptions = checkingOptions; // This is done at the caller level

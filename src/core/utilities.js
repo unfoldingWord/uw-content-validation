@@ -1,25 +1,27 @@
 // utilities
 
-import { isUndefined } from "lodash";
+// import { isUndefined } from "lodash";
 
 
 export function consoleLogObject(clTitle, clObject) {
-    // console.log(clTitle);
-    let clOutput = clTitle + ' ' + (typeof clObject) + ':\n';
+    // Print an object's componenets to the console
+    // Note: the following line succeeds even if length and/or size are undefined
+    let clOutput = `cLO: ${clTitle} ${typeof clObject} (length=${clObject.length}) (size=${clObject.size}):\n`;
     for (let clPropertyName in clObject) {
-        // console.log('   ', clTitle, clPropertyName);
-        let thisPropertyContents = '' + clObject[clPropertyName];
+        // console.log("   ", clTitle, clPropertyName); // for debugging only!
+        let thisPropertyContents = "" + clObject[clPropertyName];
         if (thisPropertyContents.length > 50)
-            thisPropertyContents = '(' + thisPropertyContents.length + ') ' + thisPropertyContents.substring(0, 50) + '…';
+            thisPropertyContents = "(" + thisPropertyContents.length + ") " + thisPropertyContents.substring(0, 50) + "…";
         let oType = typeof clObject[clPropertyName];
         // From https://stackoverflow.com/questions/12996871/why-does-typeof-array-with-objects-return-object-and-not-array#12996879
-        if (oType == 'object' && Object.prototype.toString.call(clObject[clPropertyName]) == '[object Array]') oType = 'array';
-        clOutput += '  ' + clPropertyName + ' (type=' + oType + ')';
+        if (oType == "object" && Object.prototype.toString.call(clObject[clPropertyName]) == "[object Array]")
+            oType = "array";
+        clOutput += "  " + clPropertyName + " (type=" + oType + ")";
         let oLength;
         try { oLength = clObject[clPropertyName].length; }
-        catch (e) { oLength = 'null' }
-        if (oLength !== undefined) clOutput += ' (length=' + oLength + ')';
-        if (thisPropertyContents !== undefined) clOutput += ': ' + thisPropertyContents + '\n';
+        catch (e) { oLength = "null" }
+        if (oLength !== undefined) clOutput += " (length=" + oLength + ")";
+        if (thisPropertyContents !== undefined) clOutput += ": " + thisPropertyContents + "\n";
     }
     console.log(clOutput);
 }
@@ -27,9 +29,9 @@ export function consoleLogObject(clTitle, clObject) {
 
 
 export function displayPropertyNames(given_title, givenObject) {
-    let output = given_title + ' ' + (typeof givenObject) + ':\n';
+    let output = "dPN: " + given_title + " " + (typeof givenObject) + ":\n";
     for (let propertyName in givenObject)
-        output += '  ' + propertyName + ' (type=' + typeof givenObject[propertyName] + ')\n';
+        output += "  " + propertyName + " (type=" + typeof givenObject[propertyName] + ")\n";
     console.log(output);
 }
 // end of displayPropertyNames function
@@ -64,8 +66,8 @@ export const wf_to_mt = ( ob => {
   const mt = {};
   mt.title = "Word Frequency";
   mt.columns = [
-      { title: 'Word', field: 'word' },
-      { title: 'Count', field: 'check' },
+      { title: "Word", field: "word" },
+      { title: "Count", field: "check" },
   ];
   mt.data = [];
   Object.keys(ob).forEach ( w => {
@@ -85,8 +87,8 @@ export const aw_to_mt = ( ar => {
   const mt = {};
   mt.title = "All Words in Text Order";
   mt.columns = [
-      { title: 'Order', field: 'order' , type: 'numeric'},
-      { title: 'Word', field: 'word' },
+      { title: "Order", field: "order" , type: "numeric"},
+      { title: "Word", field: "word" },
   ];
   mt.data = [];
   Object.keys(ob).forEach ( n => {

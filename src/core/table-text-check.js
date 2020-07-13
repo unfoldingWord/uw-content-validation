@@ -16,16 +16,16 @@ function checkTN_TSVText(BBB, tableText, location, optionalCheckingOptions) {
 
      Returns a result object containing a successList and a warningList
      */
-    console.log("checkTN_TSVText(" + BBB + ", " + tableText.length + ", " + location + ","+JSON.stringify(optionalCheckingOptions)+")…");
+    // console.log("checkTN_TSVText(" + BBB + ", " + tableText.length + ", " + location + ","+JSON.stringify(optionalCheckingOptions)+")…");
 
     let result = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        console.log("Success: " + successString);
+        // console.log("checkTN_TSVText success: " + successString);
         result.successList.push(successString);
     }
     function addNotice(priority, message, index, extract, location) {
-        // console.log("TSV Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
+        // console.log("checkTN_TSVText notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
         console.assert(typeof priority==='number', "TSV addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"': "+priority);
         console.assert(priority!==undefined, "TSV addNotice: 'priority' parameter should be defined");
         console.assert(typeof message==='string', "TSV addNotice: 'message' parameter should be a string not a '"+(typeof message)+"': "+message);

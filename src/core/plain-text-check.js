@@ -12,7 +12,7 @@ function checkPlainText(textName, markdownText, location, optionalCheckingOption
 
      Returns a result object containing a successList and a warningList
      */
-    console.log("checkPlainText(" + textName + ", " + markdownText.length + ", " + location + ")…");
+    // console.log("checkPlainText(" + textName + ", " + markdownText.length + ", " + location + ")…");
     if (location[0] != ' ') location = ' ' + location;
 
     let extractLength;
@@ -32,11 +32,11 @@ function checkPlainText(textName, markdownText, location, optionalCheckingOption
     let result = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        console.log("Success: " + successString);
+        // console.log("checkPlainText success: " + successString);
         result.successList.push(successString);
     }
     function addNotice(priority, message, index, extract, location) {
-        console.log("PlainText Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
+        console.log("checkPlainText notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
         console.assert(typeof priority==='number', "cPT addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"': "+priority);
         console.assert(priority!==undefined, "cPT addNotice: 'priority' parameter should be defined");
         console.assert(typeof message==='string', "cPT addNotice: 'message' parameter should be a string not a '"+(typeof message)+"': "+message);
@@ -76,7 +76,7 @@ function checkPlainText(textName, markdownText, location, optionalCheckingOption
 
     function checkPlainLineContents(lineName, lineText, lineLocation) {
 
-        console.log("checkPlainLineContents for '"+lineName+"', '"+lineText+"' at"+lineLocation);
+        // console.log("checkPlainLineContents for '"+lineName+"', '"+lineText+"' at"+lineLocation);
         let thisText = lineText.trimStart(); // So we don't get "leading space" and "doubled spaces" errors
 
         if (thisText)

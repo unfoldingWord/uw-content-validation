@@ -44,8 +44,8 @@ export function processNotices(givenNoticeObject, optionalProcessingOptions) {
 
         Returns an object with:
     */
-    console.log("processNotices v" + PROCESSOR_VERSION_STRING, "with options=" + JSON.stringify(optionalProcessingOptions) + '\n'
-        + "  Given " + givenNoticeObject.successList.length.toLocaleString() + " success string(s) plus " + givenNoticeObject.noticeList.length.toLocaleString() + " notice(s)");
+    // console.log("processNotices v" + PROCESSOR_VERSION_STRING, "with options=" + JSON.stringify(optionalProcessingOptions) + '\n'
+    //     + "  Given " + givenNoticeObject.successList.length.toLocaleString() + " success string(s) plus " + givenNoticeObject.noticeList.length.toLocaleString() + " notice(s)");
 
     // Check that notice priority numbers are unique (to detect programming errors)
     if (1) { // May be commented out of production code
@@ -129,9 +129,9 @@ export function processNotices(givenNoticeObject, optionalProcessingOptions) {
 
     // Specialised processing
     // If have s5 marker warnings, add one error
-    consoleLogObject('givenNoticeObject', givenNoticeObject);
+    // consoleLogObject('givenNoticeObject', givenNoticeObject);
     for (let thisParticularNotice of givenNoticeObject.noticeList) {
-        console.log("thisParticularNotice", thisParticularNotice)
+        // console.log("thisParticularNotice", thisParticularNotice)
         if (thisParticularNotice[1].indexOf('\\s5') >= 0) {
             let thisthisParticularNoticeArray = [errorPriorityLevel + 1, "\\s5 fields should be coded as \\ts\\* milestones", -1, '', " in " + givenNoticeObject.checkType];
             if (thisParticularNotice.length == 6) thisParticularNotice.push(thisParticularNotice[5]); // Sometime we have an additional file identifier
@@ -166,7 +166,7 @@ export function processNotices(givenNoticeObject, optionalProcessingOptions) {
     // Default is to prepend it to the msg
     //  This prevents errors/warnings from different repos or books from being combined
     if (remainingNoticeList.length && remainingNoticeList[0].length == 6) { // normally it's 5
-        console.log("We need to add the extra location, e.g. '" + remainingNoticeList[0][5] + "': will prepend it to the messages");
+        // console.log("We need to add the extra location, e.g. '" + remainingNoticeList[0][5] + "': will prepend it to the messages");
         let newNoticeList = [];
         for (let thisNotice of remainingNoticeList)
             newNoticeList.push([thisNotice[0], thisNotice[5] + ' ' + thisNotice[1], thisNotice[2], thisNotice[3], thisNotice[4]]);

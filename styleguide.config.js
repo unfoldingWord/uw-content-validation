@@ -9,32 +9,6 @@ let sections = [
 		name: 'README',
 		content: 'README.md',
 	},
-	/*
-	{
-		name: 'Coming... Scripture Burrito Checker',
-		components: () => {
-			const componentNames = [
-				'ScriptureBurrito-check',
-			];
-			return componentNames.map(componentName => {
-				const filename = upperFirst(camelCase(componentName));
-				return path.resolve(__dirname, `src/components/${componentName}`, `${filename}.js`)
-			});
-		}
-	},
-	{
-		name: 'Coming... Resource Container Checker',
-		components: () => {
-			const componentNames = [
-				'ResourceContainer-check',
-			];
-			return componentNames.map(componentName => {
-				const filename = upperFirst(camelCase(componentName));
-				return path.resolve(__dirname, `src/components/${componentName}`, `${filename}.js`)
-			});
-		}
-	},
-	*/
 	{
 		name: 'Book Package Checker',
 		components: () => {
@@ -72,6 +46,8 @@ let sections = [
 		}
 	},
 	{
+		// The difficulty with displaying core functions this way
+		//	is that they all appear and run on a SINGLE web-page.
 		name: 'Core functions',
 		content: 'src/core/README.md',
 		sections: [
@@ -118,6 +94,11 @@ let sections = [
 			{
 				name: 'USFM text check',
 				content: 'src/core/usfm-text-check.md',
+				// description: ''
+			},
+			{
+				name: 'Manifest check',
+				content: 'src/core/manifest-text-check.md',
 				// description: ''
 			},
 		]

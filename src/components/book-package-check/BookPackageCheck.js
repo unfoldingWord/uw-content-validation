@@ -59,7 +59,7 @@ function BookPackageCheck(/*username, language_code, bookCode,*/ props) {
     // Check a single Bible book across many repositories
     const [result, setResultValue] = useState("Waiting-CheckBookPackage");
 
-    console.log("I'm here in BookPackageCheck v" + CHECKER_VERSION_STRING);
+    // console.log("I'm here in BookPackageCheck v" + CHECKER_VERSION_STRING);
     // consoleLogObject("props", props);
     // consoleLogObject("props.classes", props.classes);
     let username = props.username;
@@ -68,7 +68,7 @@ function BookPackageCheck(/*username, language_code, bookCode,*/ props) {
     // console.log("language_code='"+ language_code+"'");
     let bookCode = props.bookCode;
     // console.log("bookCode='"+ bookCode+"'");
-    let branch = undefined;
+    let branch = 'master'; // TEMP should be undefined ???? TEMP
 
     if (!books.isValidBookCode(bookCode))
         return (<p>Please enter a valid USFM book code. ('{bookCode}' is not valid.)</p>);
@@ -88,8 +88,8 @@ function BookPackageCheck(/*username, language_code, bookCode,*/ props) {
             // Display our "waiting" message
             setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {language_code} <b>{bookCode}</b> book package…</p>);
 
-            let preliminaryResult = await checkBookPackage(username, language_code, bookCode, checkingOptions);
-            console.log("checkBookPackage() returned", typeof preliminaryResult); //, JSON.stringify(preliminaryResult));
+            let preliminaryResult = await checkBookPackage(username, language_code, bookCode, setResultValue, checkingOptions);
+            // console.log("checkBookPackage() returned", typeof preliminaryResult); //, JSON.stringify(preliminaryResult));
 
             // Add some extra fields to our preliminaryResult object in case we need this information again later
             preliminaryResult.checkType = 'BookPackage';
@@ -119,20 +119,26 @@ function BookPackageCheck(/*username, language_code, bookCode,*/ props) {
 
             // console.log("Here now in rendering bit!");
 
+            function renderSummary() {
+                return (<div>
+                <p>Checked <b>{username} {language_code} {bookCode}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResult.checkedFileCount} file{processedResult.checkedFileCount==1?'':'s'} from {processedResult.checkedRepoNames.join(', ')}
+                <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResult.checkedFilenameExtensions.length} file type{processedResult.checkedFilenameExtensions.size == 1 ? '' : 's'}: {processedResult.checkedFilenameExtensions.join(', ')}.</p>
+                </div>);
+            }
+
             if (processedResult.errorList.length || processedResult.warningList.length)
-                setResultValue(<>
-                    <p>Checked <b>{username} {language_code} {bookCode}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
+                setResultValue(<div>
+                    <p>{renderSummary()}
                         {processedResult.numIgnoredNotices ? " (but " + processedResult.numIgnoredNotices.toLocaleString() + " ignored errors/warnings)" : ""}</p>
-                    <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResult.checkedFileCount} file{processedResult.checkedFileCount==1?'':'s'} from {processedResult.checkedRepoNames.join(', ')}.</p>
                     <RenderSuccessesErrorsWarnings results={processedResult} />
-                </>);
+                </div>);
             else // no errors or warnings
-                setResultValue(<>
-                    <p>Checked <b>{username} {language_code} {bookCode}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
-                    <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResult.checkedFileCount} file{processedResult.checkedFileCount==1?'':'s'} from {processedResult.checkedRepoNames.join(', ')}.</p>
+                setResultValue(<div>
+                    <p>{renderSummary()}
                     {processedResult.numIgnoredNotices ? " (with a total of " + processedResult.numIgnoredNotices.toLocaleString() + " notices ignored)" : ""}</p>
                     <RenderSuccessesErrorsWarnings results={processedResult} />
-                </>);
+                </div>);
 
             // console.log("Finished rendering bit.");
         })(); // end of async part in unnamedFunction

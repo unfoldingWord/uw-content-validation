@@ -12,7 +12,7 @@ function checkMarkdownText(textName, markdownText, location, optionalCheckingOpt
 
      Returns a result object containing a successList and a warningList
      */
-    console.log("checkMarkdownText(" + textName + ", " + markdownText.length + ", " + location + ")…");
+    // console.log("checkMarkdownText(" + textName + ", " + markdownText.length + ", " + location + ")…");
     if (location[0] != ' ') location = ' ' + location;
 
     let extractLength;
@@ -32,21 +32,21 @@ function checkMarkdownText(textName, markdownText, location, optionalCheckingOpt
     let result = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        console.log("Success: " + successString);
+        // console.log("checkMarkdownText success: " + successString);
         result.successList.push(successString);
     }
     function addNotice(priority, message, index, extract, location) {
-        console.log("Markdown Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        console.assert(typeof priority==='number', "cMT addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"': "+priority);
-        console.assert(priority!==undefined, "cMT addNotice: 'priority' parameter should be defined");
-        console.assert(typeof message==='string', "cMT addNotice: 'message' parameter should be a string not a '"+(typeof message)+"': "+message);
-        console.assert(message!==undefined, "cMT addNotice: 'message' parameter should be defined");
-        console.assert(typeof index==='number', "cMT addNotice: 'index' parameter should be a number not a '"+(typeof index)+"': "+index);
-        console.assert(index!==undefined, "cMT addNotice: 'index' parameter should be defined");
-        console.assert(typeof extract==='string', "cMT addNotice: 'extract' parameter should be a string not a '"+(typeof extract)+"': "+extract);
-        console.assert(extract!==undefined, "cMT addNotice: 'extract' parameter should be defined");
-        console.assert(typeof location==='string', "cMT addNotice: 'location' parameter should be a string not a '"+(typeof location)+"': "+location);
-        console.assert(location!==undefined, "cMT addNotice: 'location' parameter should be defined");
+        console.log("checkMarkdownText notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
+        console.assert(priority!==undefined, "cMdT addNotice: 'priority' parameter should be defined");
+        console.assert(typeof priority==='number', "cMdT addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"': "+priority);
+        console.assert(message!==undefined, "cMdT addNotice: 'message' parameter should be defined");
+        console.assert(typeof message==='string', "cMdT addNotice: 'message' parameter should be a string not a '"+(typeof message)+"': "+message);
+        console.assert(index!==undefined, "cMdT addNotice: 'index' parameter should be defined");
+        console.assert(typeof index==='number', "cMdT addNotice: 'index' parameter should be a number not a '"+(typeof index)+"': "+index);
+        console.assert(extract!==undefined, "cMdT addNotice: 'extract' parameter should be defined");
+        console.assert(typeof extract==='string', "cMdT addNotice: 'extract' parameter should be a string not a '"+(typeof extract)+"': "+extract);
+        console.assert(location!==undefined, "cMdT addNotice: 'location' parameter should be defined");
+        console.assert(typeof location==='string', "cMdT addNotice: 'location' parameter should be a string not a '"+(typeof location)+"': "+location);
         result.noticeList.push([priority, message, index, extract, location]);
     }
 
@@ -56,11 +56,11 @@ function checkMarkdownText(textName, markdownText, location, optionalCheckingOpt
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global list of notices
-        console.assert(typeof fieldName==='string', "doOurBasicTextChecks: 'fieldName' parameter should be a string not a '"+(typeof fieldName)+"'");
-        console.assert(fieldName!==undefined, "doOurBasicTextChecks: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldText==='string', "doOurBasicTextChecks: 'fieldText' parameter should be a string not a '"+(typeof fieldText)+"'");
-        console.assert(fieldText!==undefined, "doOurBasicTextChecks: 'fieldText' parameter should be defined");
-        console.assert( allowedLinks===true || allowedLinks===false, "doOurBasicTextChecks: allowedLinks parameter must be either true or false");
+        console.assert(fieldName!==undefined, "cMdT doOurBasicTextChecks: 'fieldName' parameter should be defined");
+        console.assert(typeof fieldName==='string', "cMdT doOurBasicTextChecks: 'fieldName' parameter should be a string not a '"+(typeof fieldName)+"'");
+        console.assert(fieldText!==undefined, "cMdT doOurBasicTextChecks: 'fieldText' parameter should be defined");
+        console.assert(typeof fieldText==='string', "cMdT doOurBasicTextChecks: 'fieldText' parameter should be a string not a '"+(typeof fieldText)+"'");
+        console.assert( allowedLinks===true || allowedLinks===false, "cMdT doOurBasicTextChecks: allowedLinks parameter must be either true or false");
 
         const resultObject = doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
 
@@ -76,7 +76,7 @@ function checkMarkdownText(textName, markdownText, location, optionalCheckingOpt
 
     function checkMarkdownLineContents(lineName, lineText, lineLocation) {
 
-        console.log("checkMarkdownLineContents for '"+lineName+"', '"+lineText+"' at"+lineLocation);
+        // console.log(`checkMarkdownLineContents for '${lineName} ${lineText}' at${lineLocation}`);
         let thisText = lineText
 
         // Remove leading and trailing hash signs
@@ -123,7 +123,7 @@ function checkMarkdownText(textName, markdownText, location, optionalCheckingOpt
                 headerLevel = thisHeaderLevel;
 
             numLeadingSpaces = line.match(/^ */)[0].length;
-            console.log("Got numLeadingSpaces="+ numLeadingSpaces + " for "+line+atString);
+            // console.log("Got numLeadingSpaces="+ numLeadingSpaces + " for "+line+atString);
             if (numLeadingSpaces && lastNumLeadingSpaces && numLeadingSpaces!=lastNumLeadingSpaces)
                 addNotice(472, "Nesting seems confused", 0, '', atString);
 

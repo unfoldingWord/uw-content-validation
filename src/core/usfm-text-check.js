@@ -31,7 +31,7 @@ function checkUSFMText(BBB, tableText, location, optionalCheckingOptions) {
 
      Returns a result object containing a successList and a warningList
      */
-    console.log("checkUSFMText(" + BBB + ", " + tableText.length.toLocaleString() + " chars, '" + location + "')…");
+    // console.log("checkUSFMText(" + BBB + ", " + tableText.length.toLocaleString() + " chars, '" + location + "')…");
     if (location[0] != ' ') location = ' ' + location;
 
     let extractLength;
@@ -51,11 +51,11 @@ function checkUSFMText(BBB, tableText, location, optionalCheckingOptions) {
     let result = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        console.log("Success: " + successString);
+        // console.log("checkUSFMText success: " + successString);
         result.successList.push(successString);
     }
     function addNotice(priority, message, index, extract, location) {
-        // console.log("USFM Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
+        // console.log("checkUSFMText notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
         console.assert(typeof priority==='number', "cUSFM addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"': "+priority);
         console.assert(priority!==undefined, "cUSFM addNotice: 'priority' parameter should be defined");
         console.assert(typeof message==='string', "cUSFM addNotice: 'message' parameter should be a string not a '"+(typeof message)+"': "+message);

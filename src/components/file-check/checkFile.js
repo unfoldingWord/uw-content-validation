@@ -1,9 +1,9 @@
-import checkUSFMText from '../../core/usfm-text-check.js';
-import checkMarkdownText from '../../core/markdown-text-check.js';
-import checkPlainText from '../../core/plain-text-check.js';
-// import checkManifestText from '../../core/manifest-text-check.js';
-import checkTN_TSVText from '../../core/table-text-check.js';
-// import { consoleLogObject } from '../../core/utilities.js';
+import checkUSFMText from '../../core/usfm-text-check';
+import checkMarkdownText from '../../core/markdown-text-check';
+import checkPlainText from '../../core/plain-text-check';
+import checkManifestText from '../../core/manifest-text-check';
+import checkTN_TSVText from '../../core/table-text-check';
+// import { consoleLogObject } from '../../core/utilities';
 
 
 const CHECKER_VERSION_STRING = '0.0.2';

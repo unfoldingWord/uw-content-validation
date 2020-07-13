@@ -13,7 +13,7 @@ export function RenderLines(props) {
 
 
 export function RenderSettings(props) {
-    console.log("In RenderSettings");
+    // console.log("In RenderSettings");
     // consoleLogObject('RenderSettings props', props);
     // consoleLogObject('RenderSettings settings', props.settings);
     return <div>
@@ -28,7 +28,7 @@ export function RenderSettings(props) {
 
 
 export function RenderRawNotices(props) {
-    console.log("In RenderRawNotices");
+    // console.log("In RenderRawNotices");
     // consoleLogObject('RenderRawNotices props', props);
 
     let propertyList = [];
@@ -82,8 +82,9 @@ export function RenderProcessedArray(props) {
     // Expects props to contain:
     //      1/ results
     //      2/ arrayType
-    console.log("In RenderProcessedArray with ", props.arrayType);
+    // console.log("In RenderProcessedArray with ", props.arrayType);
     // consoleLogObject('RenderProcessedArray props', props);
+
     if (props.arrayType === 's')
         return <ol>
             {props.results.successList.map(function (listEntry) {
@@ -92,7 +93,7 @@ export function RenderProcessedArray(props) {
                 </li>;
             })}
         </ol>;
-    else {
+    else { // not 's' (successList)
         const myList = props.arrayType === 'e' ? props.results.errorList : props.results.warningList;
         return <ul>
             {myList.map(function (listEntry) {
@@ -132,7 +133,7 @@ export function RenderWarnings(props) {
 
 
 export function RenderErrorsAndWarnings(props) {
-    console.log("In RenderErrorsAndWarnings");
+    // console.log("In RenderErrorsAndWarnings");
     // consoleLogObject('RenderErrorsAndWarnings props', props);
     return <>
         <RenderErrors results={props.results} />
@@ -142,7 +143,7 @@ export function RenderErrorsAndWarnings(props) {
 
 
 export function RenderSuccessesErrorsWarnings(props) {
-    console.log("In RenderSuccessesErrorsWarnings");
+    // console.log("In RenderSuccessesErrorsWarnings");
 
     // consoleLogObject('RenderSuccessesErrorsWarnings props', props);
     if (props.results.errorList.length || props.results.warningList.length)
