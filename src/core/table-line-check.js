@@ -58,7 +58,7 @@ function checkTN_TSVDataRow(BBB, line, rowLocation, optionalCheckingOptions) {
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
         // result.noticeList = result.noticeList.concat(resultObject.noticeList);
-        // If we need to put everything through addNotice, e.g., for debugging
+        // If we need to put everything through addNotice, e.g., for debugging or filtering
         //  process results line by line
         for (let noticeEntry of resultObject.noticeList)
             addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
@@ -88,7 +88,7 @@ function checkTN_TSVDataRow(BBB, line, rowLocation, optionalCheckingOptions) {
     try {
         numChaptersThisBook = books.chaptersInBook(bbb).length;
     } catch (e) {
-        addNotice(500, "Invalid book code passed to checkTN_TSVDataRow", -1, "", " '" + BBB + "' in first parameter: " + e);
+        addNotice(979, "Invalid book code passed to checkTN_TSVDataRow", -1, "", " '" + BBB + "' in first parameter: " + e);
     }
     const haveGoodBookCode = numChaptersThisBook !== undefined;
 
@@ -117,12 +117,12 @@ function checkTN_TSVDataRow(BBB, line, rowLocation, optionalCheckingOptions) {
             else if (/^\d+$/.test(C)) {
                 let intC = Number(C);
                 if (intC == 0) {
-                    addNotice(500, "Invalid zero '" + C + "' chapter number", -1, "", rowLocation);
+                    addNotice(824, "Invalid zero '" + C + "' chapter number", -1, "", rowLocation);
                     haveGoodChapterNumber = false;
                 }
                 // TODO: Does this next section need rewriting (see verse check below)???
                 else if (intC > numChaptersThisBook) {
-                    addNotice(500, "Invalid large '" + C + "' chapter number", -1, "", rowLocation);
+                    addNotice(823, "Invalid large '" + C + "' chapter number", -1, "", rowLocation);
                     haveGoodChapterNumber = false;
                 }
                 try {
@@ -132,50 +132,50 @@ function checkTN_TSVDataRow(BBB, line, rowLocation, optionalCheckingOptions) {
                     if (!haveGoodBookCode)
                         // addNotice(500, "Invalid chapter number", rowLocation);
                         // else
-                        addNotice(500, "Unable to check chapter number", -1, "", " '" + C + "'" + rowLocation);
+                        addNotice(822, "Unable to check chapter number", -1, "", " '" + C + "'" + rowLocation);
                     haveGoodChapterNumber = false;
                 }
             }
             else
-                addNotice(500, "Bad chapter number", -1, "", " '" + C + "' with" + rowLocation);
+                addNotice(821, "Bad chapter number", -1, "", " '" + C + "' with" + rowLocation);
         }
         else
-            addNotice(500, "Missing chapter number", -1, "", ` ?:${V}${withString}`);
+            addNotice(820, "Missing chapter number", -1, "", ` ?:${V}${withString}`);
 
         if (V) {
             if (V === 'intro') { }
             else if (/^\d+$/.test(V)) {
                 let intV = Number(V);
                 if (intV == 0)
-                    addNotice(500, "Invalid zero '" + V + "' verse number", -1, "", rowLocation);
+                    addNotice(814, "Invalid zero '" + V + "' verse number", -1, "", rowLocation);
                 else {
                     if (haveGoodChapterNumber) {
                         if (intV > numVersesThisChapter)
-                            addNotice(500, "Invalid large '" + V + "' verse number", " for chapter " + C + rowLocation);
+                            addNotice(813, "Invalid large '" + V + "' verse number", " for chapter " + C + rowLocation);
                     } else
-                        addNotice(500, "Unable to check verse number", -1, "", " '" + V + "'" + rowLocation);
+                        addNotice(812, "Unable to check verse number", -1, "", " '" + V + "'" + rowLocation);
                 }
             }
             else
-                addNotice(500, "Bad verse number", -1, "", " '" + V + "'" + rowLocation);
+                addNotice(811, "Bad verse number", -1, "", " '" + V + "'" + rowLocation);
 
         }
         else
-            addNotice(500, "Missing verse number", -1, "" ` after ${C}:? ${rowLocation}`);
+            addNotice(810, "Missing verse number", -1, "" ` after ${C}:? ${rowLocation}`);
 
         if (!fieldID)
-            addNotice(500, "Missing ID field", rowLocation);
+            addNotice(779, "Missing ID field", rowLocation);
         else {
             if (fieldID.length != 4)
-                addNotice(500, "ID should be exactly 4 characters", -1, "", " (not " + fieldID.length + ")" + rowLocation)
+                addNotice(778, "ID should be exactly 4 characters", -1, "", " (not " + fieldID.length + ")" + rowLocation)
             else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(fieldID[0]) < 0)
-                addNotice(500, "ID should start with a lowercase letter or digit", 0, "", " (not '" + fieldID[0] + "')" + rowLocation)
+                addNotice(176, "ID should start with a lowercase letter or digit", 0, "", " (not '" + fieldID[0] + "')" + rowLocation)
             else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(fieldID[3]) < 0)
-                addNotice(500, "ID should end with a lowercase letter or digit", 3, "", " (not '" + fieldID[3] + "')" + rowLocation)
+                addNotice(175, "ID should end with a lowercase letter or digit", 3, "", " (not '" + fieldID[3] + "')" + rowLocation)
             else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(fieldID[1]) < 0)
-                addNotice(500, "ID characters should only be lowercase letters, digits, or hypen", 1, "", " (not '" + fieldID[1] + "')" + rowLocation)
+                addNotice(174, "ID characters should only be lowercase letters, digits, or hypen", 1, "", " (not '" + fieldID[1] + "')" + rowLocation)
             else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(fieldID[2]) < 0)
-                addNotice(500, "ID characters should only be lowercase letters, digits, or hypen", 2, "", " (not '" + fieldID[2] + "')" + rowLocation)
+                addNotice(173, "ID characters should only be lowercase letters, digits, or hypen", 2, "", " (not '" + fieldID[2] + "')" + rowLocation)
         }
 
         if (support_reference) { // need to check UTN against UTA
@@ -195,7 +195,7 @@ function checkTN_TSVDataRow(BBB, line, rowLocation, optionalCheckingOptions) {
                 //     addNotice(500, "Invalid zero occurrence field", -1, "", rowLocation);
             }
             else if ('123456789'.indexOf(occurrence) < 0) // it's not one of these integers
-                addNotice(500, "Invalid '" + occurrence + "' occurrence field", -1, "", rowLocation);
+                addNotice(592, "Invalid '" + occurrence + "' occurrence field", -1, "", rowLocation);
         }
 
         if (GL_quote) { // need to check UTN against ULT
@@ -207,7 +207,7 @@ function checkTN_TSVDataRow(BBB, line, rowLocation, optionalCheckingOptions) {
         }
 
     } else
-        addNotice(500, "Found " + fields.length + " field" + (fields.length == 1 ? '' : 's') + " instead of " + NUM_EXPECTED_TSV_FIELDS, -1, "", rowLocation);
+        addNotice(868, "Found " + fields.length + " field" + (fields.length == 1 ? '' : 's') + " instead of " + NUM_EXPECTED_TSV_FIELDS, -1, "", rowLocation);
 
     return result;
 }

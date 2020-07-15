@@ -62,13 +62,18 @@ let sections = [
 				// description: ''
 			},
 			{
-				name: 'Basic text check',
+				name: 'Basic text field check',
 				content: 'src/core/basic-text-check.md',
 				// description: ''
 			},
 			{
 				name: 'Basic link check',
 				content: 'src/core/basic-link-check.md',
+				// description: ''
+			},
+			{
+				name: 'Basic file check',
+				content: 'src/core/basic-file-check.md',
 				// description: ''
 			},
 			{

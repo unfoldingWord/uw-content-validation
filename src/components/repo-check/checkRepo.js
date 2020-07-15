@@ -125,7 +125,7 @@ async function checkRepo(repoObject, givenLocation, setResultValue, checkingOpti
         setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for <b>{repoObject.full_name}</b> repo: checked {checkedFileCount} file{checkedFileCount==1?'':'s'}…</p>);
         }
 
-        console.log("Fetching and checking", thisFilename);
+        // console.log("Fetching and checking", thisFilename);
         const file_content = await getBlobContent(thisFilename, detailObject);
         // console.log("Got", file_content.length, file_content.substring(0, 19));
         doOurCheckFile(bookOrFileCode, thisFilename, file_content, ourLocation, checkingOptions);

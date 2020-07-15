@@ -36,17 +36,17 @@ function checkPlainText(textName, markdownText, location, optionalCheckingOption
         result.successList.push(successString);
     }
     function addNotice(priority, message, index, extract, location) {
-        console.log("checkPlainText notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        console.assert(typeof priority==='number', "cPT addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"': "+priority);
+        // console.log("checkPlainText notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
         console.assert(priority!==undefined, "cPT addNotice: 'priority' parameter should be defined");
-        console.assert(typeof message==='string', "cPT addNotice: 'message' parameter should be a string not a '"+(typeof message)+"': "+message);
+        console.assert(typeof priority==='number', "cPT addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"': "+priority);
         console.assert(message!==undefined, "cPT addNotice: 'message' parameter should be defined");
-        console.assert(typeof index==='number', "cPT addNotice: 'index' parameter should be a number not a '"+(typeof index)+"': "+index);
+        console.assert(typeof message==='string', "cPT addNotice: 'message' parameter should be a string not a '"+(typeof message)+"': "+message);
         console.assert(index!==undefined, "cPT addNotice: 'index' parameter should be defined");
-        console.assert(typeof extract==='string', "cPT addNotice: 'extract' parameter should be a string not a '"+(typeof extract)+"': "+extract);
+        console.assert(typeof index==='number', "cPT addNotice: 'index' parameter should be a number not a '"+(typeof index)+"': "+index);
         console.assert(extract!==undefined, "cPT addNotice: 'extract' parameter should be defined");
-        console.assert(typeof location==='string', "cPT addNotice: 'location' parameter should be a string not a '"+(typeof location)+"': "+location);
+        console.assert(typeof extract==='string', "cPT addNotice: 'extract' parameter should be a string not a '"+(typeof extract)+"': "+extract);
         console.assert(location!==undefined, "cPT addNotice: 'location' parameter should be defined");
+        console.assert(typeof location==='string', "cPT addNotice: 'location' parameter should be a string not a '"+(typeof location)+"': "+location);
         result.noticeList.push([priority, message, index, extract, location]);
     }
 
@@ -56,10 +56,10 @@ function checkPlainText(textName, markdownText, location, optionalCheckingOption
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global list of notices
-        console.assert(typeof fieldName==='string', "doOurBasicTextChecks: 'fieldName' parameter should be a string not a '"+(typeof fieldName)+"'");
         console.assert(fieldName!==undefined, "doOurBasicTextChecks: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldText==='string', "doOurBasicTextChecks: 'fieldText' parameter should be a string not a '"+(typeof fieldText)+"'");
+        console.assert(typeof fieldName==='string', "doOurBasicTextChecks: 'fieldName' parameter should be a string not a '"+(typeof fieldName)+"'");
         console.assert(fieldText!==undefined, "doOurBasicTextChecks: 'fieldText' parameter should be defined");
+        console.assert(typeof fieldText==='string', "doOurBasicTextChecks: 'fieldText' parameter should be a string not a '"+(typeof fieldText)+"'");
         console.assert( allowedLinks===true || allowedLinks===false, "doOurBasicTextChecks: allowedLinks parameter must be either true or false");
 
         const resultObject = doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
@@ -67,7 +67,7 @@ function checkPlainText(textName, markdownText, location, optionalCheckingOption
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
         result.noticeList = result.noticeList.concat(resultObject.noticeList);
-        // If we need to put everything through addNotice, e.g., for debugging
+        // If we need to put everything through addNotice, e.g., for debugging or filtering
         //  process results line by line
         // for (let noticeEntry of resultObject.noticeList)
         //     addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
@@ -87,7 +87,7 @@ function checkPlainText(textName, markdownText, location, optionalCheckingOption
 
     // Main code for checkPlainText function
     const lines = markdownText.split('\n');
-    console.log("  '" + location + "' has " + lines.length.toLocaleString() + " total lines");
+    // console.log("  '" + location + "' has " + lines.length.toLocaleString() + " total lines");
 
     let headerLevel = 0;
     let lastNumLeadingSpaces = 0;
@@ -110,7 +110,7 @@ function checkPlainText(textName, markdownText, location, optionalCheckingOption
         addSuccessMessage(`checkPlainText v${checkerVersionString} finished with ${result.noticeList.length.toLocaleString()} notice(s)`);
     else
         addSuccessMessage("No errors or warnings found by checkPlainText v" + checkerVersionString)
-    console.log(`  Returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
+    // console.log(`  checkPlainText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
     // console.log("checkPlainText result is", JSON.stringify(result));
     return result;
 }

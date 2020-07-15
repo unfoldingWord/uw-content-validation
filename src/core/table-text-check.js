@@ -64,7 +64,7 @@ function checkTN_TSVText(BBB, tableText, location, optionalCheckingOptions) {
     }
 
     let lines = tableText.split('\n');
-    console.log("  '" + location + "' has " + lines.length.toLocaleString() + " total lines (expecting " + NUM_EXPECTED_TN_FIELDS + " fields in each line)");
+    // console.log("  '" + location + "' has " + lines.length.toLocaleString() + " total lines (expecting " + NUM_EXPECTED_TN_FIELDS + " fields in each line)");
 
     let lastB = '', lastC = '', lastV = '';
     let fieldID_list = [];
@@ -171,7 +171,7 @@ function checkTN_TSVText(BBB, tableText, location, optionalCheckingOptions) {
         addSuccessMessage(`checkTN_TSVText v${checkerVersionString} finished with ${result.noticeList.length.toLocaleString()} notice(s)`);
     else
         addSuccessMessage("No errors or warnings found by checkTN_TSVText v" + checkerVersionString)
-    console.log(`  Returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
+    // console.log(`  checkTN_TSVText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
     // console.log("checkTN_TSVText result is", JSON.stringify(result));
     return result;
 }

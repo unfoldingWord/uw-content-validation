@@ -25,9 +25,9 @@ let result;
 // Define our callback function
 function acceptUpdatedResult(newResult){
     // Update the results with later results
-    console.log("acceptUpdatedResult callback function is updating result now with "+newprocessedResult.errorList.length+" errors and "+newprocessedResult.warningList.length+" warnings.");
-    processedResult.errorList = newprocessedResult.errorList;
-    processedResult.warningList = newprocessedResult.warningList;
+    console.log("acceptUpdatedResult callback function is updating result now with "+newResult.errorList.length+" errors and "+newResult.warningList.length+" warnings.");
+    processedResult.errorList = newResult.errorList;
+    processedResult.warningList = newResult.warningList;
     // Now how can we tell Styleguidist to refresh???
 }
 

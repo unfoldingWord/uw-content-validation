@@ -30,9 +30,9 @@ const [filepath, setFilepath] = React.useState();
       tokenid: "PlaygroundTesting",
     }}
     // full_name='unfoldingWord/hbo_uhb' // OT books only
-    // full_name='unfoldingWord/el-x-koine_ugnt' // NT books only
+    full_name='unfoldingWord/el-x-koine_ugnt' // NT books only
     // full_name='unfoldingWord/en_ult' // Can use ult or ust here
-    full_name='unfoldingWord/en_tn'
+    // full_name='unfoldingWord/en_tn'
     // If we don't put the branch here, the default branch is used
     // branch='master'
   >
@@ -40,17 +40,24 @@ const [filepath, setFilepath] = React.useState();
       // If we don't put the filepath here, the user can select from a list <- DOESN'T WORK !!!
       // filepath= '08-RUT.usfm' // e.g., for UHB, ULT, or UST
       // filepath= '41-MAT.usfm' // e.g., for UGNT, ULT, or UST
-      filepath= 'en_tn_01-GEN.tsv' // for TN
+      filepath= '50-EPH.usfm' // e.g., for UGNT, ULT, or UST
+      // filepath= '65-3JN.usfm' // e.g., for UGNT, ULT, or UST
+      // filepath= 'en_tn_01-GEN.tsv' // for TN
       // filepath= 'en_tn_17-EST.tsv' // for TN
+      // filepath= 'en_tn_65-3JN.tsv' // for TN
       onFilepath={setFilepath}
       // file={file}
       // onFile={setFile}
     >
 
-      // Specifying extractLength and maximumSimilarMessages is just to show off options
-      //  -- those fields are not necessary (or normal) here
-      // The location field appears in check messages to help the user locate the issue
-      <FileCheck extractLength="13" maximumSimilarMessages="2" location="from file-check/README.md"/>
+      <FileCheck
+        // Specifying extractLength and maximumSimilarMessages is just to show off options
+        //  -- those fields are not necessary (or normal) here
+        // The location field appears in check messages to help the user locate the issue
+        extractLength="13"
+        maximumSimilarMessages="2"
+        location="from file-check/README.md"
+      />
 
     </FileContextProvider>
   </RepositoryContextProvider>

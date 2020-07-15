@@ -16,14 +16,14 @@ export function RenderSettings(props) {
     // console.log("In RenderSettings");
     // consoleLogObject('RenderSettings props', props);
     // consoleLogObject('RenderSettings settings', props.settings);
-    return <div>
+    return <>
         {
             Object.keys(props.settings).map((key, i) => (
                 <p key={i}>&nbsp;&nbsp;&nbsp;&nbsp;
                     <span><b>{key}</b>: {props.settings[key]}</span>
                 </p>
             ), [])}
-    </div>;
+    </>;
 }
 
 

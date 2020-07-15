@@ -142,7 +142,7 @@ function checkManifestText(textName, manifestText, location, optionalCheckingOpt
         addSuccessMessage(`checkManifestText v${checkerVersionString} finished with ${result.noticeList.length.toLocaleString()} notice(s)`);
     else
         addSuccessMessage("No errors or warnings found by checkManifestText v" + checkerVersionString)
-    // console.log(`  Returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
+    // console.log(`  checkManifestText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
     // console.log("checkManifestText result is", JSON.stringify(result));
     return result;
 }

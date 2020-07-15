@@ -14,7 +14,8 @@ function checkFile(filename, fileContent, givenLocation, checkingOptions) {
     console.log("I'm here in checkFile v" + CHECKER_VERSION_STRING);
     console.log("  with " + filename + ", " + fileContent.length + " chars, " + givenLocation + ", " + JSON.stringify(checkingOptions));
 
-    const ourLocation = ' in ' + filename + givenLocation;
+    const ourLocation = givenLocation;
+    if (ourLocation[0] != ' ') ourLocation = ' ' + ourLocation;
 
     let checkFileResult;
     if (filename.toLowerCase().endsWith('.tsv')) {
@@ -28,8 +29,8 @@ function checkFile(filename, fileContent, givenLocation, checkingOptions) {
         const filenameMain = filename.substring(0, filename.length - 5); // drop .usfm
         // console.log("Have USFM filenameMain=" + filenameMain);
         const BBB = filenameMain.substring(filenameMain.length - 3);
-        console.log("Have USFM bookcode=" + BBB);
-        checkFileResult = checkUSFMText(BBB, fileContent, ourLocation, checkingOptions);
+        // console.log("Have USFM bookcode=" + BBB);
+        checkFileResult = checkUSFMText(BBB, filename, fileContent, ourLocation, checkingOptions);
     } else if (filename.toLowerCase().endsWith('.md'))
         checkFileResult = checkMarkdownText(filename, fileContent, ourLocation, checkingOptions);
     else if (filename.toLowerCase().endsWith('.txt'))
@@ -40,7 +41,7 @@ function checkFile(filename, fileContent, givenLocation, checkingOptions) {
         checkFileResult = checkPlainText(filename, fileContent, ourLocation, checkingOptions);
         checkFileResult.noticeList.unshift([995, "File extension is not recognized, so treated as plain text.", -1, '', filename]);
     }
-    console.log("checkFile got initial results with " + checkFileResult.successList.length + " success message(s) and " + checkFileResult.noticeList.length + " notice(s)");
+    // console.log("checkFile got initial results with " + checkFileResult.successList.length + " success message(s) and " + checkFileResult.noticeList.length + " notice(s)");
 
     // Add some extra fields to our checkFileResult object
     //  in case we need this information again later

@@ -39,7 +39,7 @@ async function startLiveLinksCheck(linksList, existingNoticeList, callbackFuncti
             console.log("startLiveLinksCheck got response: ", reponseText.length, reponseText);
         } catch (e) {
             console.log("startLiveLinksCheck had an error fetching '" + fetchLink + "': " + e);
-            addNotice(500, "Error fetching link", -1, "", " " + fetchLink);
+            addNotice(439, "Error fetching link", -1, "", " " + fetchLink);
         }
     }
 
@@ -88,7 +88,7 @@ function doBasicLinkChecks(fieldName, fieldText, linkOptions, optionalFieldLocat
 
     if (!fieldText) { // Nothing to check
         if (linkOptions.expectedCount > 0)
-            addNotice(500, "Blank field / missing link (expected " + linkOptions.expectedCount + " link" + (linkOptions.expectedCount == 1 ? "" : "s") + ")", -1, "", ourAtString);
+            addNotice(438, "Blank field / missing link (expected " + linkOptions.expectedCount + " link" + (linkOptions.expectedCount == 1 ? "" : "s") + ")", -1, "", ourAtString);
         return result;
     }
 
@@ -98,7 +98,7 @@ function doBasicLinkChecks(fieldName, fieldText, linkOptions, optionalFieldLocat
 
     // Parameter nonsense check
     if (linkOptions.allowedCount > 0 && linkOptions.expectedCount > linkOptions.allowedCount)
-        addNotice(500, "Bad options for doBasicLinkChecks: expectedCount=" + linkOptions.expectedCount + " but allowedCount=" + linkOptions.allowedCount, -1, "", "");
+        addNotice(111, "Bad options for doBasicLinkChecks: expectedCount=" + linkOptions.expectedCount + " but allowedCount=" + linkOptions.allowedCount, -1, "", "");
 
     // Check for embedded links
     // First, create our regex from the allowed link types
@@ -116,7 +116,7 @@ function doBasicLinkChecks(fieldName, fieldText, linkOptions, optionalFieldLocat
             else if (linkType==='naked')
                 linkRegexParts.push('(https*://[^ ]+)');
             else
-                addNotice(500, "Unknown '" + linkType + "' linkType parameter", -1, "", "");
+                addNotice(441, "Unknown '" + linkType + "' linkType parameter", -1, "", "");
         }
     } else { // No link types specified
         linkRegexParts = [];
@@ -130,7 +130,7 @@ function doBasicLinkChecks(fieldName, fieldText, linkOptions, optionalFieldLocat
     // console.log("doBasicLinkChecks regexResultsArray", regexResultsArray.length, JSON.stringify(regexResultsArray));
 
     if (regexResultsArray.length < linkOptions.expectedCount)
-        addNotice(500, "Not enough links (expected " + linkOptions.expectedCount + " link" + (linkOptions.expectedCount == 1 ? "" : "s") + ")", -1, "", " (only found " + regexResultsArray.length + ")" + ourAtString);
+        addNotice(287, "Not enough links (expected " + linkOptions.expectedCount + " link" + (linkOptions.expectedCount == 1 ? "" : "s") + ")", -1, "", " (only found " + regexResultsArray.length + ")" + ourAtString);
 
     if (linkOptions.checkTargets && linkOptions.callbackFunction && regexResultsArray) {
         startLiveLinksCheck(regexResultsArray, result.noticeList.slice(0), linkOptions.callbackFunction);
@@ -138,7 +138,7 @@ function doBasicLinkChecks(fieldName, fieldText, linkOptions, optionalFieldLocat
         console.log("doBasicLinkChecks now returning initial result…");
     }
 
-    console.log("doBasicLinkChecks returning with " + result.noticeList.length + " notices.");
+    // console.log("  doBasicLinkChecks returning with " + result.noticeList.length + " notices.");
     return result;
 }
 // end of doBasicLinkChecks function

@@ -1,10 +1,10 @@
 ## Repo Check - Readme
 
-The code below requests some info and then checks a repo.
+The code below requests some info and then checks a Door43 repository.
+
+**Warning**: Some repos contain many files, and downloading and checking them all might slow-down your browser.
 
 ```js
-// import { useContext } from 'react';
-// import { Paper } from '@material-ui/core';
 import {
   AuthenticationContextProvider,
   RepositoryContextProvider,
@@ -34,14 +34,21 @@ const [repository, setRepository] = React.useState();
       tokenid: "PlaygroundTesting",
     }}
     // full_name='unfoldingWord/hbo_uhb' // OT books only
-    // full_name='unfoldingWord/el-x-koine_ugnt' // NT books only
-    full_name='unfoldingWord/en_ult' // Can use ult or ust here
+    full_name='unfoldingWord/el-x-koine_ugnt' // NT books only
+    // full_name='unfoldingWord/en_ult' // Can use ult or ust here
     // full_name='unfoldingWord/en_tn'
     // If we don't put the branch here, the default branch is used
     // branch='master'
   >
 
-  <RepoCheck extractLength="13" maximumSimilarMessages="2" location="from repo-check/README.md"/>
+  <RepoCheck
+    // Specifying extractLength and maximumSimilarMessages is just to show off options
+    //  -- those fields are not necessary (or normal) here
+    // The location field appears in check messages to help the user locate the issue
+    extractLength="13"
+    maximumSimilarMessages="2"
+    location="from repo-check/README.md"
+  />
 
   </RepositoryContextProvider>
 </AuthenticationContextProvider>

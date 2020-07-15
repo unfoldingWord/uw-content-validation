@@ -1,7 +1,7 @@
 {
   "name": "content-validation-rcl",
   "description": "Components for Checking uW Content/Resources.",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "private": false,
   "homepage": "https://unfoldingword.github.io/content-validation-rcl/",
   "repository": {

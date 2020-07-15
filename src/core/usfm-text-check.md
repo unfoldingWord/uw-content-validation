@@ -173,7 +173,8 @@ const textB = `\\id GEN Bad USFM test
 //  (to demonstrate differing results)
 const chosenText = textH;
 
-let preliminaryResult = checkUSFMText('GEN', chosenText, 'that was supplied');
+// Second (unused) parameter is filename
+let preliminaryResult = checkUSFMText('GEN', '', chosenText, 'that was supplied');
 preliminaryResult.successList = ["Done USFM text checks"];
 const processedResult = processNotices(preliminaryResult);
 

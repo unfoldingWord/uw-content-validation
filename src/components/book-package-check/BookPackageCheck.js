@@ -120,25 +120,25 @@ function BookPackageCheck(/*username, language_code, bookCode,*/ props) {
             // console.log("Here now in rendering bit!");
 
             function renderSummary() {
-                return (<div>
+                return (<>
                 <p>Checked <b>{username} {language_code} {bookCode}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
                 <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResult.checkedFileCount} file{processedResult.checkedFileCount==1?'':'s'} from {processedResult.checkedRepoNames.join(', ')}
                 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResult.checkedFilenameExtensions.length} file type{processedResult.checkedFilenameExtensions.size == 1 ? '' : 's'}: {processedResult.checkedFilenameExtensions.join(', ')}.</p>
-                </div>);
+                </>);
             }
 
             if (processedResult.errorList.length || processedResult.warningList.length)
-                setResultValue(<div>
+                setResultValue(<>
                     <p>{renderSummary()}
                         {processedResult.numIgnoredNotices ? " (but " + processedResult.numIgnoredNotices.toLocaleString() + " ignored errors/warnings)" : ""}</p>
                     <RenderSuccessesErrorsWarnings results={processedResult} />
-                </div>);
+                </>);
             else // no errors or warnings
-                setResultValue(<div>
+                setResultValue(<>
                     <p>{renderSummary()}
                     {processedResult.numIgnoredNotices ? " (with a total of " + processedResult.numIgnoredNotices.toLocaleString() + " notices ignored)" : ""}</p>
                     <RenderSuccessesErrorsWarnings results={processedResult} />
-                </div>);
+                </>);
 
             // console.log("Finished rendering bit.");
         })(); // end of async part in unnamedFunction

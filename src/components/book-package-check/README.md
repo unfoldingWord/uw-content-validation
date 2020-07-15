@@ -3,8 +3,6 @@
 The code below requests some info and then checks a single Bible book in several repos.
 
 ```js
-// import { useContext } from 'react';
-// import { Paper } from '@material-ui/core';
 import {
   AuthenticationContextProvider,
   RepositoryContextProvider,
@@ -31,7 +29,11 @@ const [repository, setRepository] = React.useState();
       tokenid: "PlaygroundTesting",
     }}>
 
-  <BookPackageCheck username="unfoldingWord" language_code='en' bookCode='HAB'/>
+  <BookPackageCheck
+    username="unfoldingWord"
+    language_code='en'
+    bookCode='HAB'
+  />
 
   </RepositoryContextProvider>
 </AuthenticationContextProvider>

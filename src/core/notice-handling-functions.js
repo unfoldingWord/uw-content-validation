@@ -56,6 +56,7 @@ export function processNotices(givenNoticeObject, optionalProcessingOptions) {
             if (oldMsg && oldMsg != thisMsg && givenNoticeObject.noticeList.indexOf(thisPriority) < 0
                 // Some of the messages include the troubling character in the message
                 //    so we expect them to differ slightly
+                && !thisMsg.startsWith('Mismatched ')
                 && !thisMsg.startsWith('Unexpected doubled ')
                 && !thisMsg.startsWith('Unexpected space after ')
                 && !thisMsg.endsWith(' character after space')

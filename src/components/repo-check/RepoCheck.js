@@ -138,25 +138,25 @@ function RepoCheck(/*username, language_code,*/ props) {
             console.log("language_code='"+ language_code+"'");
 
             function renderSummary() {
-                return (<div>
+                return (<>
                 <p>Checked <b>{username} {language_code}</b> (from <i>{repo.branch === undefined ? 'DEFAULT' : repo.branch}</i> branches)</p>
                 <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResult.checkedFileCount} file{processedResult.checkedFileCount == 1 ? '' : 's'} from {repo.full_name}: {processedResult.checkedFilenames.join(', ')}
                 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResult.checkedFilenameExtensions.length} file type{processedResult.checkedFilenameExtensions.size == 1 ? '' : 's'}: {processedResult.checkedFilenameExtensions.join(', ')}.</p>
-                </div>);
+                </>);
             }
 
             if (processedResult.errorList.length || processedResult.warningList.length)
-                setResultValue(<div>
+                setResultValue(<>
                     <p>{renderSummary()}
                     {processedResult.numIgnoredNotices ? " (but " + processedResult.numIgnoredNotices.toLocaleString() + " ignored errors/warnings)" : ""}</p>
                     <RenderSuccessesErrorsWarnings results={processedResult} />
-                </div>);
+                </>);
             else // no errors or warnings
-                setResultValue(<div>
+                setResultValue(<>
                     <p>{renderSummary()}
                         {processedResult.numIgnoredNotices ? " (with a total of " + processedResult.numIgnoredNotices.toLocaleString() + " notices ignored)" : ""}</p>
                 <RenderSuccessesErrorsWarnings results={processedResult} />
-                </div>);
+                </>);
 
             // console.log("Finished rendering bit.");
         })(); // end of async part in unnamedFunction

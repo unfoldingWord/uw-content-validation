@@ -57,7 +57,7 @@ function FileCheck(props) {
         if (props.extractLength) checkingOptions.extractLength = parseInt(props.extractLength);
 
         let preliminaryResult = checkFile(file.name, file.content, givenLocation, checkingOptions);
-        console.log("FileCheck got initial results with " + preliminaryResult.successList.length + " success message(s) and " + preliminaryResult.noticeList.length + " notice(s)");
+        // console.log("FileCheck got initial results with " + preliminaryResult.successList.length + " success message(s) and " + preliminaryResult.noticeList.length + " notice(s)");
 
         // Add some extra fields to our preliminaryResult object in case we need this information again later
         preliminaryResult.checkType = 'File';
@@ -79,8 +79,8 @@ function FileCheck(props) {
         if (props.sortBy) processOptions.sortBy = props.sortBy;
         // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
         const processedResult = processNotices(preliminaryResult, processOptions);
-        console.log("FileCheck got processed results with " + processedResult.successList.length.toLocaleString() + " success message(s), " + processedResult.errorList.length.toLocaleString() + " error(s) and " + processedResult.warningList.length.toLocaleString() + " warning(s)\n"
-            + "  numIgnoredNotices=" + processedResult.numIgnoredNotices.toLocaleString(), "numSuppressedErrors=" + processedResult.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + processedResult.numSuppressedWarnings.toLocaleString());
+        // console.log("FileCheck got processed results with " + processedResult.successList.length.toLocaleString() + " success message(s), " + processedResult.errorList.length.toLocaleString() + " error(s) and " + processedResult.warningList.length.toLocaleString() + " warning(s)\n"
+        //     + "  numIgnoredNotices=" + processedResult.numIgnoredNotices.toLocaleString(), "numSuppressedErrors=" + processedResult.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + processedResult.numSuppressedWarnings.toLocaleString());
 
         if (processedResult.errorList.length || processedResult.warningList.length)
             returnedResult = <>
