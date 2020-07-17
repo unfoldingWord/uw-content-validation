@@ -37,7 +37,8 @@ function FileCheck(props) {
     //      but keeps it there even if there's errors or problems :-(
     // TODO: Add a timeout function
     let returnedResult;
-    if (repo) // this displays briefly once the repo is loaded, but before the file is loaded
+    if (repo) // the repo metadata is loaded now
+        // this displays briefly once the repo is loaded, but before the file is loaded
         returnedResult = (<>
             <b style={{ color: 'magenta' }}>Attempting to load a file from <b>{repo.full_name}</b> <i>{repo.branch === undefined ? 'DEFAULT' : repo.branch}</i> branch…</b>
         </>);
@@ -46,9 +47,10 @@ function FileCheck(props) {
             <b style={{ color: 'purple' }}>Attempting to load a file…</b>
         </>);
 
-    if (file) {
+    if (file) { // the file is loaded now and the content is now available to use
         let givenLocation = props['location'] ? props['location'] : "";
-        if (givenLocation && givenLocation[0] != ' ') givenLocation = ' ' + givenLocation;
+        if (givenLocation && givenLocation[0] != " ") givenLocation = " " + givenLocation;
+        givenLocation = " in " + repo.full_name + givenLocation;
 
         let checkingOptions = { // Uncomment any of these to test them
             // 'extractLength': 25,

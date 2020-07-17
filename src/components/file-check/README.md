@@ -40,6 +40,7 @@ const [filepath, setFilepath] = React.useState();
       // If we don't put the filepath here, the user can select from a list <- DOESN'T WORK !!!
       // filepath= '08-RUT.usfm' // e.g., for UHB, ULT, or UST
       // filepath= '41-MAT.usfm' // e.g., for UGNT, ULT, or UST
+      // filepath= '42-MRK.usfm' // e.g., for UGNT, ULT, or UST
       filepath= '50-EPH.usfm' // e.g., for UGNT, ULT, or UST
       // filepath= '65-3JN.usfm' // e.g., for UGNT, ULT, or UST
       // filepath= 'en_tn_01-GEN.tsv' // for TN
@@ -53,10 +54,10 @@ const [filepath, setFilepath] = React.useState();
       <FileCheck
         // Specifying extractLength and maximumSimilarMessages is just to show off options
         //  -- those fields are not necessary (or normal) here
-        // The location field appears in check messages to help the user locate the issue
-        extractLength="13"
+        extractLength="13" // Default is 10
         maximumSimilarMessages="2"
-        location="from file-check/README.md"
+        // The location field appears in check messages to help the user locate the issue
+        location="set in file-check/README.md"
       />
 
     </FileContextProvider>

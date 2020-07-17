@@ -108,7 +108,7 @@ export function doBasicFileChecks(filename, fileText, optionalFileLocation, opti
         const lCount = countOccurrences(fileText, leftChar);
         const rCount = countOccurrences(fileText, rightChar);
         if (lCount != rCount)
-            addNotice(663, "Mismatched " + leftChar+rightChar + " characters", -1, "(left=" + lCount.toLocaleString() + ", right=" + rCount.toLocaleString() + ")", ourAtString);
+            addNotice(163, "Mismatched " + leftChar+rightChar + " characters", -1, "(left=" + lCount.toLocaleString() + ", right=" + rCount.toLocaleString() + ")", ourAtString);
     }
 
     // if (!allowedLinks) {

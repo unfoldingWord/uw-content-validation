@@ -56,6 +56,7 @@ function checkMarkdownText(textName, markdownText, location, optionalCheckingOpt
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global list of notices
+        // console.log(`cMdT doOurBasicTextChecks(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${fieldLocation}, …)`);
         console.assert(fieldName!==undefined, "cMdT doOurBasicTextChecks: 'fieldName' parameter should be defined");
         console.assert(typeof fieldName==='string', "cMdT doOurBasicTextChecks: 'fieldName' parameter should be a string not a '"+(typeof fieldName)+"'");
         console.assert(fieldText!==undefined, "cMdT doOurBasicTextChecks: 'fieldText' parameter should be defined");

@@ -57,6 +57,7 @@ function checkManifestText(textName, manifestText, location, optionalCheckingOpt
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global list of notices
+        // console.log(`cManT doOurBasicTextChecks(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${fieldLocation}, …)`);
         console.assert(fieldName!==undefined, "cManT doOurBasicTextChecks: 'fieldName' parameter should be defined");
         console.assert(typeof fieldName==='string', "cManT doOurBasicTextChecks: 'fieldName' parameter should be a string not a '"+(typeof fieldName)+"'");
         console.assert(fieldText!==undefined, "cManT doOurBasicTextChecks: 'fieldText' parameter should be defined");

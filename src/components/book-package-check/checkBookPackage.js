@@ -58,7 +58,7 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
         // Process results line by line,  appending the repoCode as an extra field as we go
         for (let noticeEntry of resultObject.noticeList)
             // noticeEntry is an array of five fields: 1=priority, 2=msg, 3=index, 4=extract, 5=location
-            if (noticeEntry[0] != 663) // Suppress these misleading warnings coz open quote can occur in one verse and close in another
+            if (noticeEntry[0] != 663) // Mismatched left/right chars -- suppress these misleading warnings coz open quote can occur in one verse and close in another
                 // We add the repoCode as an extra value
                 addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], repoCode);
     }

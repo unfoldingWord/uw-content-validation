@@ -89,8 +89,13 @@ function checkTN_TSVText(BBB, tableText, location, optionalCheckingOptions) {
 
                 // Use the row check to do most basic checks
                 const firstResult = checkTN_TSVDataRow(BBB, lines[n], atString, optionalCheckingOptions);
-                for (let noticeEntry of firstResult.noticeList)
-                    addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+                // Choose only ONE of the following
+                // This is the fast way of append the results from this field
+                result.noticeList = result.noticeList.concat(firstResult.noticeList);
+                // If we need to put everything through addNotice, e.g., for debugging or filtering
+                //  process results line by line
+                // for (let noticeEntry of firstResult.noticeList)
+                //     addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
 
                 // So here we only have to check against the previous and next fields for out-of-order problems
                 if (B) {
