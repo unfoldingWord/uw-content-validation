@@ -3,7 +3,7 @@ import { displayPropertyNames, consoleLogObject } from "./utilities";
 const PROCESSOR_VERSION_STRING = '0.0.5';
 
 // All of the following can be overriden with optionalProcessingOptions
-const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 2; // Zero means no suppression of similar messages
+const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
 const DEFAULT_ERROR_PRIORITY_LEVEL = 700; // This level or higher becomes an error (cf. warnings)
 const DEFAULT_CUTOFF_PRIORITY_LEVEL = 0; // This level or lower gets excluded from the lists
 const DEFAULT_IGNORE_PRIORITY_NUMBER_LIST = [];

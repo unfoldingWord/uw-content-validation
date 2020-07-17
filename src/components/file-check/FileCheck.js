@@ -10,7 +10,7 @@ import { RenderSuccessesErrorsWarnings } from '../RenderProcessedResults';
 // import { consoleLogObject } from '../../core/utilities.js';
 
 
-const CHECKER_VERSION_STRING = '0.0.3';
+const CHECKER_VERSION_STRING = '0.0.4';
 
 function FileCheck(props) {
     const { state: repo, component: repoComponent } = useContext(RepositoryContext);
@@ -49,8 +49,8 @@ function FileCheck(props) {
 
     if (file) { // the file is loaded now and the content is now available to use
         let givenLocation = props['location'] ? props['location'] : "";
-        if (givenLocation && givenLocation[0] != " ") givenLocation = " " + givenLocation;
-        givenLocation = " in " + repo.full_name + givenLocation;
+        if (givenLocation && givenLocation[0] != " ") givenLocation = ` ${givenLocation}`;
+        givenLocation = ` in ${repo.full_name} repo${givenLocation}`;
 
         let checkingOptions = { // Uncomment any of these to test them
             // 'extractLength': 25,

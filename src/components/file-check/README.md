@@ -57,7 +57,7 @@ const [filepath, setFilepath] = React.useState();
         extractLength="13" // Default is 10
         maximumSimilarMessages="2"
         // The location field appears in check messages to help the user locate the issue
-        location="set in file-check/README.md"
+        location="as specified in file-check/README.md"
       />
 
     </FileContextProvider>

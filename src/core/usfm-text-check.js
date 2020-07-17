@@ -170,7 +170,7 @@ function checkUSFMText(BBB, filename, givenText, location, optionalCheckingOptio
 
     async function runBCSGrammarCheck(filename, fileText, fileLocation) {
         // Runs the BCS USFM Grammar checker
-        //  which can be quite slow on large, complex USFM files
+        //  which can be quite time-consuming on large, complex USFM files
         console.log("Running BCS USFM grammar check (can take quite a while for a large book)…");
         const ourUsfmParser = new grammar.USFMParser(fileText); // Optional 2nd parameter is grammar.LEVEL.RELAXED
         // Returns a Boolean indicating whether the input USFM text satisfies the grammar or not.
@@ -178,16 +178,16 @@ function checkUSFMText(BBB, filename, givenText, location, optionalCheckingOptio
         const isValidUSFM = ourUsfmParser.validate();
         console.log(`  Finished BCS USFM grammar check with ${isValidUSFM} and ${ourUsfmParser.warnings.length} warnings.`);
         if (!isValidUSFM)
-            addNotice(944, "USFM Grammar check fails", -1, "", fileLocation);
+            addNotice(944, "USFM3 Grammar Check doesn't pass", -1, "", fileLocation);
         console.log("  Warnings:", JSON.stringify(ourUsfmParser.warnings));
         // Display these warnings but with a lower priority
         for (let warningString of ourUsfmParser.warnings)
-        if (!warningString.startsWith("Empty lines present") // we allow these
-        && !warningString.startsWith("Trailing spaces present at line end") // we find these ourselves
-        ) {
-            let adjustedString = warningString.trim()
-            addNotice(50, "USFMGrammar found: " + adjustedString, -1, "", fileLocation);
-        }
+            if (!warningString.startsWith("Empty lines present") // we allow empty lines in our USFM
+                && !warningString.startsWith("Trailing spaces present at line end") // we find these ourselves
+            ) {
+                let adjustedString = warningString.trim()
+                addNotice(50, "USFMGrammar found: " + adjustedString, -1, "", fileLocation);
+            }
         // return { isValidUSFM: isValidUSFM, warnings: [...ourUsfmParser.warnings] };
     }
 
