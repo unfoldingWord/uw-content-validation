@@ -168,7 +168,7 @@ function checkUSFMText(BBB, filename, givenText, location, optionalCheckingOptio
     }
 
 
-    async function runBCSGrammarCheck(filename, fileText, fileLocation) {
+    function runBCSGrammarCheck(filename, fileText, fileLocation) {
         // Runs the BCS USFM Grammar checker
         //  which can be quite time-consuming on large, complex USFM files
         console.log("Running BCS USFM grammar check (can take quite a while for a large book)…");
@@ -247,7 +247,7 @@ function checkUSFMText(BBB, filename, givenText, location, optionalCheckingOptio
     // end of checkUSFMLineContents function
 
 
-    async function mainUSFMCheck(BBB, filename, givenText, location) {
+    function mainUSFMCheck(BBB, filename, givenText, location) {
         console.log("Running mainUSFMCheck() (can take quite a while for a large book)…");
         let bbb = BBB.toLowerCase();
         let numChaptersThisBook = 0;
