@@ -103,3 +103,37 @@ export const testament = (bookId) => {
 //   }
 //   return "";
 // }
+
+const oftenMissingList = [
+  ['NEH', 7, 68],
+  ['MAT', 16, 3],
+  ['MAT', 17, 21],
+  ['MAT', 18, 11],
+  ['MAT', 23, 14],
+  ['MRK', 7, 16],
+  ['MRK', 9, 44],
+  ['MRK', 9, 46],
+  ['MRK', 11, 26],
+  ['MRK', 15, 28],
+  ['MRK', 16, 9],
+  ['LUK', 17, 36],
+  ['LUK', 22, 43],
+  ['LUK', 22, 44],
+  ['LUK', 23, 17],
+  ['JHN', 5, 4],
+  ['JHN', 7, 53],
+  ['JHN', 8, 1],
+  ['ACT', 8, 37],
+  ['ACT', 15, 34],
+  ['ACT', 24, 7],
+  ['ACT', 28, 29],
+  ['ROM', 16, 24],
+  ['2CO', 13, 14]
+];
+
+
+export function isOftenMissing(BBB,C,V) {
+  function matchBCV(entry) { return entry[0]===BBB && entry[1]===C && entry[2]===V; }
+
+  return oftenMissingList.find(matchBCV) !== undefined;
+}

@@ -2,7 +2,9 @@
 
 This function checks the given text for typical formatting errors.
 
-It returns a list of errors and a list of warnings.
+It returns a list of success messages and a list of prioritised notice components.
+
+The notices are then processed into a list of errors and a list of warnings for display.
 
 ```js
 import checkPlainText from './plain-text-check.js';
@@ -38,9 +40,9 @@ Another  paragraph.
 const chosenText = textSB;
 const chosenName = 'textSB';
 
-let preliminaryResult = checkPlainText(chosenName, chosenText, 'that was supplied');
-preliminaryResult.successList = ["Done plain text checks"];
-const processedResult = processNotices(preliminaryResult);
+let rawResult = checkPlainText(chosenName, chosenText, 'that was supplied');
+rawResult.successList = ["Done plain text checks"];
+const processedResult = processNotices(rawResult);
 
 <>
 <b>Source (normalized)</b> <RenderLines text={chosenText} />

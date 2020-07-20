@@ -69,9 +69,8 @@ async function checkRepo(repoObject, givenLocation, setResultValue, checkingOpti
         // Process results line by line,  appending the bookOrFileCode as an extra field as we go
         for (let noticeEntry of resultObject.noticeList)
             // noticeEntry is an array of five fields: 1=priority, 2=msg, 3=index, 4=extract, 5=location
-            if (noticeEntry[0] != 663) // Mismatched left/right chars -- suppress these misleading warnings coz open quote can occur in one verse and close in another
-                // We add the bookOrFileCode as an extra value
-                addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], bookOrFileCode);
+            // We add the bookOrFileCode as an extra value
+            addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], bookOrFileCode);
     }
     // end of doOurCheckFile function
 

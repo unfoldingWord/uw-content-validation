@@ -11,7 +11,7 @@ const DEFAULT_EXTRACT_LENGTH = 10;
 function checkManifestText(textName, manifestText, location, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
-     Returns a result object containing a successList and a warningList
+     Returns a result object containing a successList and a noticeList
      */
     console.log("checkManifestText(" + textName + ", " + manifestText.length + ", " + location + ")…");
     if (location[0] != ' ') location = ' ' + location;
@@ -108,11 +108,13 @@ function checkManifestText(textName, manifestText, location, optionalCheckingOpt
     const lines = manifestText.split('\n');
     // console.log("  '" + location + "' has " + lines.length.toLocaleString() + " total lines");
     let formData;
-    try { formData = yaml.parse(manifestText); }
+    try {
+        formData = yaml.parse(manifestText);
+        // console.log("Got formData", JSON.stringify(formData));
+    }
     catch(e) {
         addNotice(916, e.message, -1, "", ourLocation)
     }
-    console.log("formData", formData);
 
 
     let lastNumLeadingSpaces = 0;

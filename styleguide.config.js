@@ -102,6 +102,16 @@ let sections = [
 				// description: ''
 			},
 			{
+				name: 'USFM grammar check (from BCS)',
+				content: 'src/core/BCS-usfm-grammar-check.md',
+				// description: ''
+			},
+			{
+				name: 'USFM-JS check',
+				content: 'src/core/usfm-js-check.md',
+				// description: ''
+			},
+			{
 				name: 'Manifest check',
 				content: 'src/core/manifest-text-check.md',
 				// description: ''

@@ -86,13 +86,13 @@ export function RenderProcessedArray(props) {
     // consoleLogObject('RenderProcessedArray props', props);
 
     if (props.arrayType === 's')
-        return <ol>
+        return <ul>
             {props.results.successList.map(function (listEntry) {
                 return <li key={listEntry.id}>
-                    <b style={{ color: 'green' }}>{listEntry}</b>
+                    <b style={{ color: props.results.errorList.length || props.results.warningList.length?'limegreen':'green' }}>{listEntry}</b>
                 </li>;
             })}
-        </ol>;
+        </ul>;
     else { // not 's' (successList)
         const myList = props.arrayType === 'e' ? props.results.errorList : props.results.warningList;
         return <ul>
@@ -146,22 +146,20 @@ export function RenderSuccessesErrorsWarnings(props) {
     // console.log("In RenderSuccessesErrorsWarnings");
 
     // consoleLogObject('RenderSuccessesErrorsWarnings props', props);
-    if (props.results.errorList.length || props.results.warningList.length)
-        return <>
-            <RenderErrorsAndWarnings results={props.results} />
-        </>;
-    else { // no errors or warnings
-        let successCount;
-        if (props.results.successList.length == 1) successCount = 'One';
-        else if (props.results.successList.length == 2) successCount = 'Two';
-        else if (props.results.successList.length == 3) successCount = 'Three';
-        else if (props.results.successList.length == 4) successCount = 'Four';
-        else if (props.results.successList.length == 5) successCount = 'Five';
-        else successCount = props.results.successList.length.toLocaleString();
 
-        return <>
-            <b style={{ color: 'green' }}>{successCount} check{props.results.successList.length == 1 ? '' : 's'} completed</b>{props.results.successList.length ? ':' : ''}
-            <RenderProcessedArray results={props.results} arrayType='s' />
-        </>;
-    }
+    const haveErrorsOrWarnings = props.results.errorList.length || props.results.warningList.length;
+
+    let successCount;
+    if (props.results.successList.length == 1) successCount = 'One';
+    else if (props.results.successList.length == 2) successCount = 'Two';
+    else if (props.results.successList.length == 3) successCount = 'Three';
+    else if (props.results.successList.length == 4) successCount = 'Four';
+    else if (props.results.successList.length == 5) successCount = 'Five';
+    else successCount = props.results.successList.length.toLocaleString();
+
+    return <>
+        <b style={{ color: haveErrorsOrWarnings? 'limegreen':'green' }}>{successCount} check{props.results.successList.length == 1 ? '' : 's'} completed</b>{props.results.successList.length ? ':' : ''}
+        <RenderProcessedArray results={props.results} arrayType='s' />
+        {haveErrorsOrWarnings?<RenderErrorsAndWarnings results={props.results} />:""}
+    </>;
 }

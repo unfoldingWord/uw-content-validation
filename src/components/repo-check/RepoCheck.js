@@ -103,16 +103,16 @@ function RepoCheck(/*username, language_code,*/ props) {
             // Or this allows the parameters to be specified as a RepoCheck property
             if (props.extractLength) checkingOptions.extractLength = parseInt(props.extractLength);
 
-            let preliminaryResult = await checkRepo(repo, "in "+repo.full_name, setResultValue, checkingOptions);
-            // console.log("checkRepo() returned", typeof preliminaryResult); //, JSON.stringify(preliminaryResult));
+            let rawResult = await checkRepo(repo, "in "+repo.full_name, setResultValue, checkingOptions);
+            // console.log("checkRepo() returned", typeof rawResult); //, JSON.stringify(rawResult));
 
-            // Add some extra fields to our preliminaryResult object in case we need this information again later
-            preliminaryResult.checkType = 'Repo';
-            preliminaryResult.username = username;
-            preliminaryResult.language_code = language_code;
-            preliminaryResult.checkedOptions = checkingOptions;
+            // Add some extra fields to our rawResult object in case we need this information again later
+            rawResult.checkType = 'Repo';
+            rawResult.username = username;
+            rawResult.language_code = language_code;
+            rawResult.checkedOptions = checkingOptions;
 
-            console.log("Here with preliminaryResult", typeof preliminaryResult);
+            console.log("Here with rawResult", typeof rawResult);
             // Now do our final handling of the result -- we have some options available
             let processOptions = { // Uncomment any of these to test them
                 // 'maximumSimilarMessages': 3, // default is 2
@@ -127,7 +127,7 @@ function RepoCheck(/*username, language_code,*/ props) {
             if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = parseInt(props.cutoffPriorityLevel);
             if (props.sortBy) processOptions.sortBy = props.sortBy;
             // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
-            const processedResult = processNotices(preliminaryResult, processOptions);
+            const processedResult = processNotices(rawResult, processOptions);
             console.log("RepoCheck got back processedResult with " + processedResult.successList.length.toLocaleString() + " success message(s), " + processedResult.errorList.length.toLocaleString() + " error(s) and " + processedResult.warningList.length.toLocaleString() + " warning(s)\n"
                 + "  numIgnoredNotices=" + processedResult.numIgnoredNotices.toLocaleString(), "numSuppressedErrors=" + processedResult.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + processedResult.numSuppressedWarnings.toLocaleString());
 

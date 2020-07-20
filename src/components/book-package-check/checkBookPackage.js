@@ -1,8 +1,8 @@
 import React from 'react';
 import * as books from '../../core/books/books';
 import checkFile from '../file-check/checkFile';
-import { consoleLogObject } from '../../core/utilities';
 import { getFile } from '../../core/getApi';
+// import { consoleLogObject } from '../../core/utilities';
 
 const CHECKER_VERSION_STRING = '0.0.2';
 
@@ -58,9 +58,8 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
         // Process results line by line,  appending the repoCode as an extra field as we go
         for (let noticeEntry of resultObject.noticeList)
             // noticeEntry is an array of five fields: 1=priority, 2=msg, 3=index, 4=extract, 5=location
-            if (noticeEntry[0] != 663) // Mismatched left/right chars -- suppress these misleading warnings coz open quote can occur in one verse and close in another
-                // We add the repoCode as an extra value
-                addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], repoCode);
+            // We add the repoCode as an extra value
+            addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], repoCode);
     }
     // end of doOurCheckFile function
 
@@ -132,8 +131,8 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
         checkedFileCount += 1;
         addSuccessMessage(checkedFileCount + "/ Checked " + repoCode.toUpperCase() + " file: " + filename);
 
-        // Update our "waiting" message
-    setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {language_code} <b>{bookCode}</b> book package: checked {checkedFileCount} repo{checkedFileCount==1?'':'s'}…</p>);
+        // Update our "waiting" message {checkedFileCount==1?'':'s'}
+        setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {language_code} <b>{bookCode}</b> book package: checked <b>{checkedFileCount}</b>/5 repos…</p>);
     }
 
     // Add some extra fields to our checkFileResult object

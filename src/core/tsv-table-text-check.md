@@ -2,7 +2,9 @@
 
 This function checks the given block of TSV table lines for typical formatting errors.
 
-It returns a list of errors and a list of warnings.
+It returns a list of success messages and a list of prioritised notice components.
+
+The notices are then processed into a list of errors and a list of warnings for display.
 
 ```js
 import checkTN_TSVText from './table-text-check.js';
@@ -35,9 +37,9 @@ const lineA9 = "GEN\t1\t9\tha33\t\t\t0\tIt was so\t“It happened like that” o
 //  (to demonstrate differing results)
 const chosenText = textA;
 
-let preliminaryResult = checkTN_TSVText('GEN', chosenText, 'that was supplied');
-preliminaryResult.successList = ["Done TSV table checks"];
-const processedResult = processNotices(preliminaryResult);
+let rawResult = checkTN_TSVText('GEN', chosenText, 'that was supplied');
+rawResult.successList = ["Done TSV table checks"];
+const processedResult = processNotices(rawResult);
 
 <>
 <b>Check</b> <RenderLines text={chosenText} />

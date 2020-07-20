@@ -2,7 +2,9 @@
 
 This function checks one tab-separated line for typical formatting errors.
 
-It returns a list of errors and a list of warnings.
+It returns a list of success messages and a list of prioritised notice components.
+
+The notices are then processed into a list of errors and a list of warnings for display.
 
 ```js
 import checkTN_TSVDataRow from './table-line-check.js';
@@ -38,9 +40,9 @@ const lineA9 = "GEN\t1\t9\tha33\t\t\t0\tIt was so\t“It happened like that” o
 //  (to demonstrate differing results)
 const chosenLine = lineA9;
 
-let preliminaryResult = checkTN_TSVDataRow('GEN', chosenLine, 'that was supplied');
-preliminaryResult.successList = ["Done TSV table line checks"];
-const processedResult = processNotices(preliminaryResult);
+let rawResult = checkTN_TSVDataRow('GEN', chosenLine, 'that was supplied');
+rawResult.successList = ["Done TSV table line checks"];
+const processedResult = processNotices(rawResult);
 
 <>
 <b>Check</b> "{chosenLine}"<br/><br/>

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 // import PropTypes from 'prop-types';
 // import ReactJson from 'react-json-view';
 // import { Paper, Button } from '@material-ui/core';
@@ -15,8 +15,9 @@ const CHECKER_VERSION_STRING = '0.0.4';
 function FileCheck(props) {
     const { state: repo, component: repoComponent } = useContext(RepositoryContext);
     const { state: file, component: fileComponent } = useContext(FileContext);
+    // const [result, setResultValue] = useState("Waiting-CheckFile");
 
-    // console.log("I'm here in FileCheck v" + CHECKER_VERSION_STRING);
+    console.log("I'm here in FileCheck v" + CHECKER_VERSION_STRING);
     // consoleLogObject("props", props);
     // consoleLogObject("repo", repo);
     /* Has fields: id:number, owner:object, name, full_name, description,
@@ -48,6 +49,12 @@ function FileCheck(props) {
         </>);
 
     if (file) { // the file is loaded now and the content is now available to use
+        // console.log("Got "+file.name);
+        // setResultValue(<>
+        //     <b>Checking {file.name}</b> from {repo.full_name}…
+        // </>);
+        // console.log("Updated!");
+
         let givenLocation = props['location'] ? props['location'] : "";
         if (givenLocation && givenLocation[0] != " ") givenLocation = ` ${givenLocation}`;
         givenLocation = ` in ${repo.full_name} repo${givenLocation}`;
@@ -58,13 +65,13 @@ function FileCheck(props) {
         // Or this allows the parameters to be specified as a FileCheck property
         if (props.extractLength) checkingOptions.extractLength = parseInt(props.extractLength);
 
-        let preliminaryResult = checkFile(file.name, file.content, givenLocation, checkingOptions);
-        // console.log("FileCheck got initial results with " + preliminaryResult.successList.length + " success message(s) and " + preliminaryResult.noticeList.length + " notice(s)");
+        let rawResult = checkFile(file.name, file.content, givenLocation, checkingOptions);
+        // console.log("FileCheck got initial results with " + rawResult.successList.length + " success message(s) and " + rawResult.noticeList.length + " notice(s)");
 
-        // Add some extra fields to our preliminaryResult object in case we need this information again later
-        preliminaryResult.checkType = 'File';
-        preliminaryResult.repoFullname = repo.full_name;
-        preliminaryResult.checkingOptions = checkingOptions;
+        // Add some extra fields to our rawResult object in case we need this information again later
+        rawResult.checkType = 'File';
+        rawResult.repoFullname = repo.full_name;
+        rawResult.checkingOptions = checkingOptions;
 
         // Now do our final handling of the result
         let processOptions = { // Uncomment any of these to test them
@@ -80,7 +87,7 @@ function FileCheck(props) {
         if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = parseInt(props.cutoffPriorityLevel);
         if (props.sortBy) processOptions.sortBy = props.sortBy;
         // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
-        const processedResult = processNotices(preliminaryResult, processOptions);
+        const processedResult = processNotices(rawResult, processOptions);
         // console.log("FileCheck got processed results with " + processedResult.successList.length.toLocaleString() + " success message(s), " + processedResult.errorList.length.toLocaleString() + " error(s) and " + processedResult.warningList.length.toLocaleString() + " warning(s)\n"
         //     + "  numIgnoredNotices=" + processedResult.numIgnoredNotices.toLocaleString(), "numSuppressedErrors=" + processedResult.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + processedResult.numSuppressedWarnings.toLocaleString());
 

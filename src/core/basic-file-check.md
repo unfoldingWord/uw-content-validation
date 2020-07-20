@@ -25,9 +25,9 @@ const textB = `{ Peace  on Earth,,
 const chosenName = "textB";
 const chosenText = textB;
 
-let preliminaryResult = doBasicFileChecks('Sample', chosenText, 'in '+chosenName+' that was supplied');
-preliminaryResult.successList = ["Done basic file checks"];
-const processedResult = processNotices(preliminaryResult);
+let rawResult = doBasicFileChecks('Sample', chosenText, 'in '+chosenName+' that was supplied');
+rawResult.successList = ["Done basic file checks"];
+const processedResult = processNotices(rawResult);
 
 <>
 <b>Check</b> "{chosenText}"<br/><br/>

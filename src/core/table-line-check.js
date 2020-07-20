@@ -208,7 +208,7 @@ function checkTN_TSVDataRow(BBB, line, rowLocation, optionalCheckingOptions) {
         }
 
     } else
-        addNotice(868, "Found " + fields.length + " field" + (fields.length == 1 ? '' : 's') + " instead of " + NUM_EXPECTED_TSV_FIELDS, -1, "", rowLocation);
+        addNotice(861, "Found " + fields.length + " field" + (fields.length == 1 ? '' : 's') + " instead of " + NUM_EXPECTED_TSV_FIELDS, -1, "", rowLocation);
 
     return result;
 }

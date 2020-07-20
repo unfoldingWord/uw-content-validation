@@ -1,13 +1,13 @@
-## USFM Text Check Sandbox
+## Bridgeconn USFM Grammar Check Sandbox
 
-This function checks the given USFM text for typical formatting errors.
+This function simply packages the [Bridgeconn USFM Grammar Check](https://www.npmjs.com/package/usfm-grammar) and runs it on the given USFM snippet just for our convenient testing.
 
-It returns a list of success messages and a list of prioritised notice components.
+Our packaged function returns a list of success messages and a list of (prioritised) notice components.
 
 The notices are then processed into a list of errors and a list of warnings for display.
 
 ```js
-import checkUSFMText from './usfm-text-check.js';
+import checkUSFMGrammar from './BCS-usfm-grammar-check.js';
 import processNotices from './notice-handling-functions';
 import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
 
@@ -21,6 +21,7 @@ const textS = `\\id GEN Short test
 \\p
 \\v 1 This is the first and last verse
 `;
+
 const textG = `\\id GEN EN_ULT en_English_ltr unfoldingWord Literal Text Thu Jul 25 2019 09:33:56 GMT-0400 (EDT) tc
 \\usfm 3.0
 \\ide UTF-8
@@ -46,6 +47,7 @@ const textG = `\\id GEN EN_ULT en_English_ltr unfoldingWord Literal Text Thu Jul
 \\v 7 God made the expanse and divided the waters which were under the expanse from the waters which were above the expanse. It was so.
 \\v 8 God called the expanse “sky.” This was evening and morning, the second day.
 `;
+
 const textH = `\\id RUT unfoldingWord® Hebrew Bible
 \\usfm 3.0
 \\ide UTF-8
@@ -100,6 +102,7 @@ const textH = `\\id RUT unfoldingWord® Hebrew Bible
 \\w שְׂדֵי|lemma="שָׂדֶה" strong="H7704b" x-morph="He,Ncmpc"\\w*־\\w מוֹאָ֖ב|lemma="מוֹאָב" strong="H4124" x-morph="He,Np" x-tw="rc://*/tw/dict/bible/names/moab"\\w*
 \\w וַיִּהְיוּ|lemma="הָיָה" strong="c:H1961" x-morph="He,C:Vqw3mp"\\w*־\\w שָׁם|lemma="שָׁם" strong="H8033" x-morph="He,D"\\w*׃
 `;
+
 const textULT = `\\id RUT EN_ULT en_English_ltr Tue Mar 03 2020 16:27:33 GMT+0200 (SAST) tc
 \\usfm 3.0
 \\ide UTF-8
@@ -157,6 +160,7 @@ const textULT = `\\id RUT EN_ULT en_English_ltr Tue Mar 03 2020 16:27:33 GMT+020
 \\zaln-s | x-strong="c:H8147" x-lemma="שְׁנַיִם" x-morph="He,C:Acmdc" x-occurrence="1" x-occurrences="1" x-content="וּשְׁנֵ֥י"\\*\\w two|x-occurrence="1" x-occurrences="1"\\w*\\zaln-e\\*
 \\zaln-s | x-strong="H1121a" x-lemma="בֵּן" x-morph="He,Ncmpc:Sp3ms" x-occurrence="1" x-occurrences="1" x-content="בָנָֽיו"\\*\\w sons|x-occurrence="1" x-occurrences="1"\\w*\\zaln-e\\*.
 `;
+
 const textB = `\\id GEN Bad USFM test
 \\usfm 4.0
 \\h Genesis
@@ -173,11 +177,13 @@ const textB = `\\id GEN Bad USFM test
 
 // You can choose any of the above texts here
 //  (to demonstrate differing results)
+const chosenName = 'textH';
 const chosenText = textH;
 
-// Second (unused) parameter is filename
-let rawResult = checkUSFMText('GEN', '', chosenText, 'that was supplied');
-rawResult.successList = ["Done USFM text checks"];
+// Choose 'strict' or 'relaxed'
+const strictness = 'strict';
+
+let rawResult = checkUSFMGrammar(strictness, chosenName, chosenText, 'that was supplied');
 const processedResult = processNotices(rawResult);
 
 <>

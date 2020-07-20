@@ -2,7 +2,9 @@
 
 This function checks the given manifest.yaml for typical formatting errors.
 
-It returns a list of errors and a list of warnings.
+It returns a list of success messages and a list of prioritised notice components.
+
+The notices are then processed into a list of errors and a list of warnings for display.
 
 ```js
 import checkManifestText from './manifest-text-check.js';
@@ -214,9 +216,9 @@ projects:
 const chosenText = textG2;
 const chosenName = 'textG2';
 
-let preliminaryResult = checkManifestText(chosenName, chosenText, 'in manifest data that was supplied');
-preliminaryResult.successList = ["Done manifest text checks"];
-const processedResult = processNotices(preliminaryResult);
+let rawResult = checkManifestText(chosenName, chosenText, 'in manifest data that was supplied');
+rawResult.successList = ["Done manifest text checks"];
+const processedResult = processNotices(rawResult);
 
 <>
 <b>Manifest contents</b> <RenderLines text={chosenText} />

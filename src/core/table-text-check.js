@@ -14,7 +14,7 @@ function checkTN_TSVText(BBB, tableText, location, optionalCheckingOptions) {
 
       It also has the advantage of being able to compare one row with the previous one.
 
-     Returns a result object containing a successList and a warningList
+     Returns a result object containing a successList and a noticeList
      */
     // console.log("checkTN_TSVText(" + BBB + ", " + tableText.length + ", " + location + ","+JSON.stringify(optionalCheckingOptions)+")…");
 
@@ -25,17 +25,17 @@ function checkTN_TSVText(BBB, tableText, location, optionalCheckingOptions) {
         result.successList.push(successString);
     }
     function addNotice(priority, message, index, extract, location) {
-        // console.log("checkTN_TSVText notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        console.assert(typeof priority==='number', "TSV addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"': "+priority);
+        console.log("checkTN_TSVText notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
         console.assert(priority!==undefined, "TSV addNotice: 'priority' parameter should be defined");
-        console.assert(typeof message==='string', "TSV addNotice: 'message' parameter should be a string not a '"+(typeof message)+"': "+message);
+        console.assert(typeof priority==='number', "TSV addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"': "+priority);
         console.assert(message!==undefined, "TSV addNotice: 'message' parameter should be defined");
-        console.assert(typeof index==='number', "TSV addNotice: 'index' parameter should be a number not a '"+(typeof index)+"': "+index);
+        console.assert(typeof message==='string', "TSV addNotice: 'message' parameter should be a string not a '"+(typeof message)+"': "+message);
         console.assert(index!==undefined, "TSV addNotice: 'index' parameter should be defined");
-        console.assert(typeof extract==='string', "TSV addNotice: 'extract' parameter should be a string not a '"+(typeof extract)+"': "+extract);
+        console.assert(typeof index==='number', "TSV addNotice: 'index' parameter should be a number not a '"+(typeof index)+"': "+index);
         console.assert(extract!==undefined, "TSV addNotice: 'extract' parameter should be defined");
-        console.assert(typeof location==='string', "TSV addNotice: 'location' parameter should be a string not a '"+(typeof location)+"': "+location);
+        console.assert(typeof extract==='string', "TSV addNotice: 'extract' parameter should be a string not a '"+(typeof extract)+"': "+extract);
         console.assert(location!==undefined, "TSV addNotice: 'location' parameter should be defined");
+        console.assert(typeof location==='string', "TSV addNotice: 'location' parameter should be a string not a '"+(typeof location)+"': "+location);
         result.noticeList.push([priority, message, index, extract, location]);
     }
 
@@ -100,10 +100,10 @@ function checkTN_TSVText(BBB, tableText, location, optionalCheckingOptions) {
                 // So here we only have to check against the previous and next fields for out-of-order problems
                 if (B) {
                     if (B != BBB)
-                        addNotice(745, "Wrong '" + B + "' book code (expected '" + BBB + "')", CV_withString);
+                        addNotice(745, "Wrong '" + B + "' book code (expected '" + BBB + "')", -1, "", CV_withString);
                 }
                 else
-                    addNotice(744, "Missing book code", " at" + CV_withString);
+                    addNotice(744, "Missing book code", -1, "", " at" + CV_withString);
 
                 if (C) {
                     if (C==='front') { }
@@ -112,51 +112,51 @@ function checkTN_TSVText(BBB, tableText, location, optionalCheckingOptions) {
                         if (C != lastC)
                             numVersesThisChapter = books.versesInChapter(bbb, intC);
                         if (intC == 0)
-                            addNotice(551, "Invalid zero '" + C + "' chapter number", atString);
+                            addNotice(551, "Invalid zero '" + C + "' chapter number", -1, "", atString);
                         if (intC > numChaptersThisBook)
-                            addNotice(737, "Invalid large '" + C + "' chapter number", atString);
+                            addNotice(737, "Invalid large '" + C + "' chapter number", -1, "", atString);
                         if (/^\d+$/.test(lastC)) {
                             let lastintC = Number(lastC);
                             if (intC < lastintC)
-                                addNotice(736, "Receding '" + C + "' chapter number after '" + lastC + "'", atString);
+                                addNotice(736, "Receding '" + C + "' chapter number after '" + lastC + "'", -1, "", atString);
                             else if (intC > lastintC + 1)
-                                addNotice(735, "Advancing '" + C + "' chapter number after '" + lastC + "'", atString);
+                                addNotice(735, "Advancing '" + C + "' chapter number after '" + lastC + "'", -1, "", atString);
                         }
                     }
                     else
-                        addNotice(734, "Bad chapter number", " with" + CV_withString);
+                        addNotice(734, "Bad chapter number", -1, "", " with" + CV_withString);
                 }
                 else
-                    addNotice(739, "Missing chapter number", " after " + lastC + ':' + V + withString);
+                    addNotice(739, "Missing chapter number", -1, "", " after " + lastC + ':' + V + withString);
 
                 if (V) {
                     if (V==='intro') { }
                     else if (/^\d+$/.test(V)) {
                         let intV = Number(V);
                         if (intV == 0)
-                            addNotice(552, "Invalid zero '" + V + "' verse number", atString);
+                            addNotice(552, "Invalid zero '" + V + "' verse number", -1, "", atString);
                         if (intV > numVersesThisChapter)
-                            addNotice(734, "Invalid large '" + V + "' verse number for chapter " + C, atString);
+                            addNotice(734, "Invalid large '" + V + "' verse number for chapter " + C, -1, "", atString);
                         if (/^\d+$/.test(lastV)) {
                             let lastintV = Number(lastV);
                             if (intV < lastintV)
-                                addNotice(733, "Receding '" + V + "' verse number after '" + lastV + "'", atString);
+                                addNotice(733, "Receding '" + V + "' verse number after '" + lastV + "'", -1, "", atString);
                             // else if (intV > lastintV + 1)
                             //   addNotice(556, "Skipped verses with '" + V + "' verse number after '" + lastV + "'" + atString);
                         }
                     }
                     else
-                        addNotice(738, "Bad verse number", atString);
+                        addNotice(738, "Bad verse number", -1, "", atString);
 
                 }
                 else
-                    addNotice(790, "Missing verse number", " after " + C + ':' + lastV + withString);
+                    addNotice(790, "Missing verse number", -1, "", " after " + C + ':' + lastV + withString);
 
                 if (fieldID) {
                     if (fieldID_list.indexOf(fieldID) >= 0)
                         addNotice(729, "Duplicate '" + fieldID + "' ID", atString);
                 } else
-                    addNotice(730, "Missing ID", -1, '', atString);
+                    addNotice(730, "Missing ID", -1, "", atString);
 
 
                 if (B != lastB || C != lastC || V != lastV) {

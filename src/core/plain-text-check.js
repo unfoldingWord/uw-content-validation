@@ -10,7 +10,7 @@ const DEFAULT_EXTRACT_LENGTH = 10;
 function checkPlainText(textName, markdownText, location, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
-     Returns a result object containing a successList and a warningList
+     Returns a result object containing a successList and a noticeList
      */
     // console.log("checkPlainText(" + textName + ", " + markdownText.length + ", " + location + ")…");
     if (location[0] != ' ') location = ' ' + location;

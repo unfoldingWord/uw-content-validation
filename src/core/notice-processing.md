@@ -40,8 +40,8 @@ const chosenName = "textB";
 const chosenText = textB;
 
 // The third parameter is "linksAllowed"
-let preliminaryResult = doBasicTextChecks('Sample', chosenText, false, 'in '+chosenName+' that was supplied');
-preliminaryResult.successList = ["Done basic text checks"];
+let rawResult = doBasicTextChecks('Sample', chosenText, false, 'in '+chosenName+' that was supplied');
+rawResult.successList = ["Done basic text checks"];
 const processOptions = {
     // Uncomment any of these to test them
     // 'maximumSimilarMessages': 3, // default is 2
@@ -50,11 +50,11 @@ const processOptions = {
     // 'sortBy': 'ByPriority', // default is 'AsFound'
     // 'ignorePriorityNumberList': [123, 202], // default is []
 };
-const processedResult = processNotices(preliminaryResult, processOptions);
+const processedResult = processNotices(rawResult, processOptions);
 
 <>
 <b>Check</b> "{chosenText}"<br/><br/>
-<RenderRawNotices results={preliminaryResult} />
+<RenderRawNotices results={rawResult} />
 <p>Which after processing{Object.keys(processOptions).length? <> using <b>processOptions</b><RenderSettings settings={processOptions} /></>:''} then becomes:</p>
 <RenderSuccessesErrorsWarnings results={processedResult} />
 </>
