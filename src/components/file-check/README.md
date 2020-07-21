@@ -21,32 +21,34 @@ const [filepath, setFilepath] = React.useState();
 
 <AuthenticationContextProvider>
   <RepositoryContextProvider
-    // full_name="content-validation-rcl/file-check" // seems unnecessary???
     repository={repository}
     onRepository={setRepository}
     config={ {
-      server: "https://bg.door43.org",
-      // server: "https://develop.door43.org",
+      server: "https://git.door43.org",
       tokenid: "PlaygroundTesting",
     }}
-    full_name='unfoldingWord/hbo_uhb' // OT books only
+
+    // full_name='unfoldingWord/hbo_uhb' // OT books only
     // full_name='unfoldingWord/el-x-koine_ugnt' // NT books only
-    // full_name='unfoldingWord/en_ult' // Can use ult or ust here
-    // full_name='unfoldingWord/en_tn'
+    // full_name='unfoldingWord/en_ust' // Can use ult or ust here
+    full_name='unfoldingWord/en_tn' // Translation notes (TSV tables)
+
     // If we don't put the branch here, the default branch is used
     // branch='master'
   >
     <FileContextProvider
       // If we don't put the filepath here, the user can select from a list <- DOESN'T WORK !!!
       // filepath= '01-GEN.usfm' // e.g., for UHB, ULT, or UST
-      filepath= '08-RUT.usfm' // e.g., for UHB, ULT, or UST
+      // filepath= '08-RUT.usfm' // e.g., for UHB, ULT, or UST
       // filepath= '41-MAT.usfm' // e.g., for UGNT, ULT, or UST
       // filepath= '42-MRK.usfm' // e.g., for UGNT, ULT, or UST
+      // filepath= '45-ACT.usfm' // e.g., for UGNT, ULT, or UST
       // filepath= '48-2CO.usfm' // e.g., for UGNT, ULT, or UST
       // filepath= '50-EPH.usfm' // e.g., for UGNT, ULT, or UST
       // filepath= '65-3JN.usfm' // e.g., for UGNT, ULT, or UST
       // filepath= 'en_tn_01-GEN.tsv' // for TN
       // filepath= 'en_tn_17-EST.tsv' // for TN
+      filepath= 'en_tn_50-EPH.tsv' // for TN
       // filepath= 'en_tn_65-3JN.tsv' // for TN
       onFilepath={setFilepath}
       // file={file}

@@ -3,8 +3,8 @@
 This function is for checking text fields that are links, or that contain links.
 
 ```js
-import doBasicLinkChecks from './link-checks.js';
-import processNotices from './notice-handling-functions';
+import doBasicLinkChecks from './link-checks';
+import processNotices from './notice-processing-functions';
 import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
 
 // Empty, space, link, RC, good, and bad text samples

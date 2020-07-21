@@ -18,15 +18,15 @@ GH Pages: https://unfoldingword.github.io/content-validation-rcl/
 
 This code is designed to thoroughly check various types of Bible-related content data files. This includes:
 
-1. Unified Standard Format Marker (USFM) Bible content files, including aligned Bibles
+1. Unified Standard Format Marker (USFM) Bible content files, including original language Bibles and Bible translations aligned by word/phrase to the original words/phrases
 1. Translation Notes (TN) tables in Tab-Separated Values (TSV) files
 1. Markdown files (and markdown fields in TSV files)
 1. Plain-text files
-1. Metadata (manifest) JSON files (not implemented yet)
+1. Metadata (manifest) JSON files
 
 Note: There is also a separate function for checking individual TN/TSV lines which is intended to be able to provide instant user feedback if built into a TSV editor.
 
-The higher-level checking functions provide:
+The top-level checking functions provide:
 
 1. A list of things that were checked (successList)
 1. A list of (higher-priority) errors
@@ -41,15 +41,24 @@ However, the lower-level checking functions provide only one list of `notices` (
 1. A string indicating the context of the notice, e.g., `in line 17 of 'someBook.usfm'`.
 
 
-Keeping our notices in this format, rather than the simplicity of just saving an array of single strings, allows the above *notice components* to be processed at a higher level. The default is to funnel them all through the supplied `processNotices` function (in core/notice-handling-functions.fs) which does the following:
+Keeping our notices in this format, rather than the simplicity of just saving an array of single strings, allows the above *notice components* to be processed at a higher level. The default is to funnel them all through the supplied `processNotices` function (in core/notice-processing-functions.fs) which does the following:
 
 1. Removes excess repeated errors. For example, if there's a systematic error in a file, say with unneeded leading spaces in every field, rather than returning with hundreds of errors, only the first several errors will be returned, followed by an "errors suppressed" message. (The number of each error displayed is settable as an option -- zero means display all errors with no suppression.)
 1. Separates notices into error and warning lists based on the priority number. (The switch-over point is settable as an option.)
-1. ~~Combines all the notice components into a single string~~.
+1. Optionally drops the lowest priority notices.
 
 However, the user is, of course, free to create their own alternative version of this function. This is possibly also the place to consider localisation of all the notices into different interface languages???
 
 Note that the original structure of these components were taken from https://github.com/unfoldingWord/uw-word-count (which can be played with at https://unfoldingword.github.io/uw-word-count/.)
+
+Still unfinished:
+
+1. Checking of markdown repos (e.g., translation questions)
+1. Checking of links
+1. Getting error messages from BCS Grammar Check (once they adjust the code)
+1. Testing and fine-tuning of error messages (e.g., comparing with tX)
+1. Write unit tests and get them passing
+1. Remove all debug code and console logging
 
 ## Functionality and Limitations
 

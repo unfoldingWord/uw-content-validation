@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import * as books from '../../core/books/books.js';
-import checkBookPackage from './checkBookPackage.js';
-import processNotices from '../../core/notice-handling-functions.js';
+import * as books from '../../core/books/books';
+import checkBookPackage from './checkBookPackage';
+import processNotices from '../../core/notice-processing-functions';
 import { RenderSuccessesErrorsWarnings } from '../RenderProcessedResults';
-// import { consoleLogObject } from '../../core/utilities.js';
+import { ourParseInt, consoleLogObject } from '../../core/utilities';
 
 const CHECKER_VERSION_STRING = '0.0.2';
 
@@ -31,7 +31,7 @@ function BookPackageCheck(/*username, language_code, bookCode,*/ props) {
         // 'extractLength': 25,
         };
     // Or this allows the parameters to be specified as a BookPackageCheck property
-    if (props.extractLength) checkingOptions.extractLength = parseInt(props.extractLength);
+    if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
 
     useEffect(() => {
         // Use an IIFE (Immediately Invoked Function Expression)
@@ -62,9 +62,9 @@ function BookPackageCheck(/*username, language_code, bookCode,*/ props) {
                 // 'ignorePriorityNumberList': [123, 202], // default is []
             };
             // Or this allows the parameters to be specified as a BookPackageCheck property
-            if (props.maximumSimilarMessages) processOptions.maximumSimilarMessages = parseInt(props.maximumSimilarMessages);
-            if (props.errorPriorityLevel) processOptions.errorPriorityLevel = parseInt(props.errorPriorityLevel);
-            if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = parseInt(props.cutoffPriorityLevel);
+            if (props.maximumSimilarMessages) processOptions.maximumSimilarMessages = ourParseInt(props.maximumSimilarMessages);
+            if (props.errorPriorityLevel) processOptions.errorPriorityLevel = ourParseInt(props.errorPriorityLevel);
+            if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
             if (props.sortBy) processOptions.sortBy = props.sortBy;
             // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
             const processedResult = processNotices(rawResult, processOptions);
@@ -77,7 +77,7 @@ function BookPackageCheck(/*username, language_code, bookCode,*/ props) {
                 return (<>
                 <p>Checked <b>{username} {language_code} {bookCode}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
                 <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResult.checkedFileCount} file{processedResult.checkedFileCount==1?'':'s'} from {processedResult.checkedRepoNames.join(', ')}
-                <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResult.checkedFilenameExtensions.length} file type{processedResult.checkedFilenameExtensions.size == 1 ? '' : 's'}: {processedResult.checkedFilenameExtensions.join(', ')}.</p>
+                <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResult.checkedFilenameExtensions.length} file type{processedResult.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResult.checkedFilenameExtensions.join(', ')}.</p>
                 </>);
             }
 

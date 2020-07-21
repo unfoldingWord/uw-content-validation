@@ -13,13 +13,13 @@ function checkMarkdownText(textName, markdownText, location, optionalCheckingOpt
      Returns a result object containing a successList and a noticeList
      */
     // console.log("checkMarkdownText(" + textName + ", " + markdownText.length + ", " + location + ")…");
-    if (location[0] != ' ') location = ' ' + location;
+    if (location[0] !== ' ') location = ' ' + location;
 
     let extractLength;
     try {
         extractLength = optionalCheckingOptions.extractLength;
     } catch (e) {}
-    if (typeof extractLength != 'number' || isNaN(extractLength)) {
+    if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
         // console.log("Using default extractLength=" + extractLength);
     }
@@ -138,7 +138,7 @@ function checkMarkdownText(textName, markdownText, location, optionalCheckingOpt
         lastNumLeadingSpaces = numLeadingSpaces;
     }
 
-    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line(s) in '${location}'.`);
+    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'} in '${location}'.`);
     if (result.noticeList)
         addSuccessMessage(`checkMarkdownText v${checkerVersionString} finished with ${result.noticeList.length.toLocaleString()} notice(s)`);
     else

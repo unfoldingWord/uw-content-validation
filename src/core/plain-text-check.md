@@ -7,8 +7,8 @@ It returns a list of success messages and a list of prioritised notice component
 The notices are then processed into a list of errors and a list of warnings for display.
 
 ```js
-import checkPlainText from './plain-text-check.js';
-import processNotices from './notice-handling-functions';
+import checkPlainText from './plain-text-check';
+import processNotices from './notice-processing-functions';
 import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
 
 // Plain text samples

@@ -82,13 +82,13 @@ function doBasicLinkChecks(fieldName, fieldText, linkOptions, optionalFieldLocat
     // Create our more detailed location string by prepending the fieldName
     let ourAtString = " in '" + fieldName + "'";
     if (optionalFieldLocation) {
-        if (optionalFieldLocation[0] != ' ') ourAtString += ' ';
+        if (optionalFieldLocation[0] !== ' ') ourAtString += ' ';
         ourAtString += optionalFieldLocation;
     }
 
     if (!fieldText) { // Nothing to check
         if (linkOptions.expectedCount > 0)
-            addNotice(438, "Blank field / missing link (expected " + linkOptions.expectedCount + " link" + (linkOptions.expectedCount == 1 ? "" : "s") + ")", -1, "", ourAtString);
+            addNotice(438, "Blank field / missing link (expected " + linkOptions.expectedCount + " link" + (linkOptions.expectedCount === 1 ? "" : "s") + ")", -1, "", ourAtString);
         return result;
     }
 
@@ -130,11 +130,11 @@ function doBasicLinkChecks(fieldName, fieldText, linkOptions, optionalFieldLocat
     // console.log("doBasicLinkChecks regexResultsArray", regexResultsArray.length, JSON.stringify(regexResultsArray));
 
     if (regexResultsArray.length < linkOptions.expectedCount)
-        addNotice(287, "Not enough links (expected " + linkOptions.expectedCount + " link" + (linkOptions.expectedCount == 1 ? "" : "s") + ")", -1, "", " (only found " + regexResultsArray.length + ")" + ourAtString);
+        addNotice(287, "Not enough links (expected " + linkOptions.expectedCount + " link" + (linkOptions.expectedCount === 1 ? "" : "s") + ")", -1, "", " (only found " + regexResultsArray.length + ")" + ourAtString);
 
     if (linkOptions.checkTargets && linkOptions.callbackFunction && regexResultsArray) {
         startLiveLinksCheck(regexResultsArray, result.noticeList.slice(0), linkOptions.callbackFunction);
-        addNotice(600, regexResultsArray.length + " link target" + (regexResultsArray.length == 1 ? ' is' : 's are') + " still being checked…", -1, "", "");
+        addNotice(600, regexResultsArray.length + " link target" + (regexResultsArray.length === 1 ? ' is' : 's are') + " still being checked…", -1, "", "");
         console.log("doBasicLinkChecks now returning initial result…");
     }
 

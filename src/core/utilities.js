@@ -14,7 +14,7 @@ export function consoleLogObject(clTitle, clObject) {
             thisPropertyContents = "(" + thisPropertyContents.length + ") " + thisPropertyContents.substring(0, 50) + "…";
         let oType = typeof clObject[clPropertyName];
         // From https://stackoverflow.com/questions/12996871/why-does-typeof-array-with-objects-return-object-and-not-array#12996879
-        if (oType == "object" && Object.prototype.toString.call(clObject[clPropertyName]) == "[object Array]")
+        if (oType === "object" && Object.prototype.toString.call(clObject[clPropertyName]) === "[object Array]")
             oType = "array";
         clOutput += "  " + clPropertyName + " (type=" + oType + ")";
         let oLength;
@@ -28,13 +28,40 @@ export function consoleLogObject(clTitle, clObject) {
 // end of consoleLogObject function
 
 
-export function displayPropertyNames(given_title, givenObject) {
-    let output = "dPN: " + given_title + " " + (typeof givenObject) + ":\n";
+export function displayPropertyNames(givenTitle, givenObject) {
+    let output = "dPN: " + givenTitle + " " + (typeof givenObject) + ":\n";
     for (let propertyName in givenObject)
         output += "  " + propertyName + " (type=" + typeof givenObject[propertyName] + ")\n";
     console.log(output);
 }
 // end of displayPropertyNames function
+
+
+export function ourParseInt(givenString) {
+    /*
+    The regular parseInt() function is too forgiving
+
+    See https://stackoverflow.com/questions/1133770/how-to-convert-a-string-to-an-integer-in-javascript
+
+    This one throws an error if the entire field doesn't give an integer.
+    */
+
+    /* First attempt
+    const int1 = parseInt(givenString, 10); // Don't let the function guess the base (if the string has a leading zero)
+    const int2 = givenString * 1; // This one is less forgiving it seems
+    if (int1!==int2) console.log(`From '${givenString}' we got ${int1} (${typeof int1}) and ${int2} (${typeof int2})`)
+    if (isNaN(int2) || isNaN(int1)
+    || int2===undefined || int1==undefined
+    || int2!==int1)
+        throw "String is not a simple integer";
+    return int1;
+    */
+
+    // Optimised version
+    const int = givenString * 1; // This one is less forgiving it seems
+    if (isNaN(int)) throw "String is not a simple integer";
+    return int;
+}
 
 
 /*

@@ -3,7 +3,7 @@ import { consoleLogObject } from "../../core/utilities";
 import { fetchRepo, getBlobContent } from "./helpers"
 import checkFile from "../file-check/checkFile";
 
-const CHECKER_VERSION_STRING = '0.0.2';
+const CHECKER_VERSION_STRING = '0.0.3';
 
 
 async function checkRepo(repoObject, givenLocation, setResultValue, checkingOptions) {
@@ -77,7 +77,7 @@ async function checkRepo(repoObject, givenLocation, setResultValue, checkingOpti
 
     // Main code for checkRepo()
     let ourLocation = givenLocation;
-    if (ourLocation[0] != ' ')
+    if (ourLocation[0] !== ' ')
         ourLocation = ' ' + ourLocation;
     if (ourLocation.indexOf(repoObject.full_name)<0)
         ourLocation = " in " + repoObject.full_name + givenLocation
@@ -92,15 +92,17 @@ async function checkRepo(repoObject, givenLocation, setResultValue, checkingOpti
         repoType = 'Bible_text';
     else if (repoObject.name.endsWith('_tn') || repoObject.name.endsWith('_utn'))
         repoType = 'Bible_notes';
-    console.log("deduced repoType="+repoType, "from", repoObject.name);
+    else if (repoObject.name.endsWith('_tq') || repoObject.name.endsWith('_utq'))
+        repoType = 'Bible_questions';
+    console.log(`Deduced repoType=${repoType} from ${repoObject.name}`);
 
     // Now we need to fetch the list of files from the repo
-    console.log("About to fetch", repoObject.html_url);
+    console.log("checkRepo about to fetch", repoObject.html_url);
     const fetchedRepoTreemap = await fetchRepo({url: repoObject.html_url});
-    console.log("fetchedRepoTreemap", fetchedRepoTreemap);
-    consoleLogObject("fetchedRepoTreemap", fetchedRepoTreemap);
+    console.log("  fetchedRepoTreemap", fetchedRepoTreemap);
+    consoleLogObject("  fetchedRepoTreemap", fetchedRepoTreemap);
 
-    // So now we want to work through checking all the files in this repo:
+    // So now we want to work through checking all the files in this repo
     let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0;
     for (const [thisFilename, detailObject] of fetchedRepoTreemap.entries()) {
         // console.log("Processing", thisFilename);
@@ -111,20 +113,25 @@ async function checkRepo(repoObject, givenLocation, setResultValue, checkingOpti
         const thisFilenameExtension = thisFilename.split('.').pop();
 
         let bookOrFileCode = thisFilename; // default to the filename
-        if (thisFilename.endsWith('.usfm')) {
+        if (thisFilenameExtension === 'usfm') {
             const filenameMain = thisFilename.substring(0, thisFilename.length - 5); // drop .usfm
             // console.log("Have USFM filenameMain=" + filenameMain);
             const BBB = filenameMain.substring(filenameMain.length - 3);
             // console.log("Have USFM bookcode=" + BBB);
             bookOrFileCode = BBB;
-            // if (checkedFileCount>3)
-            //     continue; // Temp most skip USFM files for now TEMP TEMP ................ XXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        } else
+        if (thisFilenameExtension === 'tsv') {
+            const filenameMain = thisFilename.substring(0, thisFilename.length - 4); // drop .tsv
+            // console.log("Have TSV filenameMain=" + filenameMain);
+            const BBB = filenameMain.substring(filenameMain.length - 3);
+            // console.log("Have TSV bookcode=" + BBB);
+            bookOrFileCode = BBB;
+        }
 
         // Update our "waiting" message
         setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for <b>{repoObject.full_name}</b> repo: checked {checkedFileCount} file{checkedFileCount==1?'':'s'}…</p>);
-        }
 
-        // console.log("Fetching and checking", thisFilename);
+        console.log("checkRepo fetching and checking", thisFilename);
         const file_content = await getBlobContent(thisFilename, detailObject);
         // console.log("Got", file_content.length, file_content.substring(0, 19));
         doOurCheckFile(bookOrFileCode, thisFilename, file_content, ourLocation, checkingOptions);

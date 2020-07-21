@@ -8,7 +8,7 @@ import {
   RepositoryContextProvider,
   RepositoryContext,
 } from 'gitea-react-toolkit';
-import BookPackageCheck from './BookPackageCheck.js';
+import BookPackageCheck from './BookPackageCheck';
 
 function Component() {
   const { state: auth, component: authComponent } = useContext(AuthenticationContext);
@@ -25,7 +25,7 @@ const [repository, setRepository] = React.useState();
     repository={repository}
     onRepository={setRepository}
     config={ {
-      server: "https://bg.door43.org",
+      server: "https://git.door43.org",
       tokenid: "PlaygroundTesting",
     }}>
 

@@ -10,7 +10,7 @@ import {
   RepositoryContextProvider,
   RepositoryContext,
 } from 'gitea-react-toolkit';
-import RepoCheck from './RepoCheck.js';
+import RepoCheck from './RepoCheck';
 
 /* Seems unnecessary
   function Component() {
@@ -26,17 +26,20 @@ const [repository, setRepository] = React.useState();
 
 <AuthenticationContextProvider>
   <RepositoryContextProvider
-    // full_name="repo-checker/Rob's playground"
     repository={repository}
     onRepository={setRepository}
     config={ {
-      server: "https://bg.door43.org",
+      server: "https://git.door43.org",
       tokenid: "PlaygroundTesting",
     }}
+
     // full_name='unfoldingWord/hbo_uhb' // OT books only
-    full_name='unfoldingWord/el-x-koine_ugnt' // NT books only
+    // full_name='unfoldingWord/el-x-koine_ugnt' // NT books only
     // full_name='unfoldingWord/en_ult' // Can use ult or ust here
-    // full_name='unfoldingWord/en_tn'
+    // full_name='unfoldingWord/en_tn' // Translation notes (TSV tables)
+    // full_name='unfoldingWord/en_tq' // Translation questions (markdown files)
+    full_name='unfoldingWord/fr_ulb' // No alignment so smaller files (faster)
+
     // If we don't put the branch here, the default branch is used
     // branch='master'
   >
@@ -47,7 +50,7 @@ const [repository, setRepository] = React.useState();
     // The location field appears in check messages to help the user locate the issue
     extractLength="13"
     maximumSimilarMessages="2"
-    location="from repo-check/README.md"
+    location="as specified in repo-check/README.md"
   />
 
   </RepositoryContextProvider>

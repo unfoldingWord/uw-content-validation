@@ -4,10 +4,10 @@ import React, { useContext, useState } from 'react';
 // import { Paper, Button } from '@material-ui/core';
 import { RepositoryContext, FileContext } from 'gitea-react-toolkit';
 import { withStyles } from '@material-ui/core/styles';
-import checkFile from './checkFile.js';
-import processNotices from '../../core/notice-handling-functions.js';
+import checkFile from './checkFile';
+import processNotices from '../../core/notice-processing-functions';
 import { RenderSuccessesErrorsWarnings } from '../RenderProcessedResults';
-// import { consoleLogObject } from '../../core/utilities.js';
+import { ourParseInt, consoleLogObject } from '../../core/utilities';
 
 
 const CHECKER_VERSION_STRING = '0.0.4';
@@ -19,7 +19,7 @@ function FileCheck(props) {
 
     console.log("I'm here in FileCheck v" + CHECKER_VERSION_STRING);
     // consoleLogObject("props", props);
-    // consoleLogObject("repo", repo);
+    // if (repo) consoleLogObject("repo", repo);
     /* Has fields: id:number, owner:object, name, full_name, description,
         empty, private, fork, parent, mirror, size,
         html_url, ssh_url, clone_url, website,
@@ -28,7 +28,7 @@ function FileCheck(props) {
         has_issues, has_wiki, has_pull_requests, ignore_whitespace_conflicts,
         allow_merge_commits, allow_rebase, allow_rebase_explicit, allow_squash_merge,
         avatar_url, branch, tree_url */
-    // consoleLogObject("file", file);
+    // if (file) consoleLogObject("file", file);
     /* Has fields: name, path, sha, type=file,
       size, encoding=base64, content,
       html_url, git_url, download_url,
@@ -56,14 +56,14 @@ function FileCheck(props) {
         // console.log("Updated!");
 
         let givenLocation = props['location'] ? props['location'] : "";
-        if (givenLocation && givenLocation[0] != " ") givenLocation = ` ${givenLocation}`;
+        if (givenLocation && givenLocation[0] !== " ") givenLocation = ` ${givenLocation}`;
         givenLocation = ` in ${repo.full_name} repo${givenLocation}`;
 
         let checkingOptions = { // Uncomment any of these to test them
             // 'extractLength': 25,
         };
         // Or this allows the parameters to be specified as a FileCheck property
-        if (props.extractLength) checkingOptions.extractLength = parseInt(props.extractLength);
+        if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
 
         let rawResult = checkFile(file.name, file.content, givenLocation, checkingOptions);
         // console.log("FileCheck got initial results with " + rawResult.successList.length + " success message(s) and " + rawResult.noticeList.length + " notice(s)");
@@ -82,9 +82,9 @@ function FileCheck(props) {
             // 'ignorePriorityNumberList': [123, 202], // default is []
         };
         // Or this allows the parameters to be specified as a FileCheck property
-        if (props.maximumSimilarMessages) processOptions.maximumSimilarMessages = parseInt(props.maximumSimilarMessages);
-        if (props.errorPriorityLevel) processOptions.errorPriorityLevel = parseInt(props.errorPriorityLevel);
-        if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = parseInt(props.cutoffPriorityLevel);
+        if (props.maximumSimilarMessages) processOptions.maximumSimilarMessages = ourParseInt(props.maximumSimilarMessages);
+        if (props.errorPriorityLevel) processOptions.errorPriorityLevel = ourParseInt(props.errorPriorityLevel);
+        if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
         if (props.sortBy) processOptions.sortBy = props.sortBy;
         // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
         const processedResult = processNotices(rawResult, processOptions);

@@ -8,7 +8,7 @@ This demonstration doesn't display the raw notices, but rather displays the proc
 
 ```js
 import doBasicTextChecks from './basic-text-check';
-import processNotices from './notice-handling-functions';
+import processNotices from './notice-processing-functions';
 import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
 
 // Empty, space, good, and bad, link, and RC text samples

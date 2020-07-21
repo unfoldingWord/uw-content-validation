@@ -55,7 +55,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     // Create our more detailed location string by prepending the fieldName
     let ourAtString = " in '" + fieldName + "'";
     if (optionalFieldLocation) {
-        if (optionalFieldLocation[0] != ' ') ourAtString += ' ';
+        if (optionalFieldLocation[0] !== ' ') ourAtString += ' ';
         ourAtString += optionalFieldLocation;
     }
 
@@ -68,7 +68,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     try {
         extractLength = optionalCheckingOptions.extractLength;
     } catch (e) { }
-    if (typeof extractLength != 'number' || isNaN(extractLength)) {
+    if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
         // console.log("Using default extractLength=" + extractLength);
     }
@@ -188,20 +188,20 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
         const leftChar = punctSet[0], rightChar = punctSet[1];
         const lCount = countOccurrences(fieldText, leftChar);
         const rCount = countOccurrences(fieldText, rightChar);
-        if (lCount != rCount)
+        if (lCount !== rCount)
             addNotice(663, "Mismatched " + leftChar+rightChar + " characters", -1, "(left=" + lCount.toLocaleString() + ", right=" + rCount.toLocaleString() + ")", ourAtString);
     }
 
     if (!allowedLinks) {
         // Simple check that there aren't any
         ix = fieldText.indexOf('://');
-        if (ix == -1) ix = fieldText.indexOf('http');
-        if (ix == -1) ix = fieldText.indexOf('ftp');
+        if (ix === -1) ix = fieldText.indexOf('http');
+        if (ix === -1) ix = fieldText.indexOf('ftp');
         // The following might have to be removed if text fields can contain email addresses
-        if (ix == -1) ix = fieldText.indexOf('.org');
-        if (ix == -1) ix = fieldText.indexOf('.com');
-        if (ix == -1) ix = fieldText.indexOf('.info');
-        if (ix == -1) ix = fieldText.indexOf('.bible');
+        if (ix === -1) ix = fieldText.indexOf('.org');
+        if (ix === -1) ix = fieldText.indexOf('.com');
+        if (ix === -1) ix = fieldText.indexOf('.info');
+        if (ix === -1) ix = fieldText.indexOf('.bible');
         if (ix >= 0) {
             let extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
             addNotice(765, "Unexpected link", ix, extract, ourAtString);

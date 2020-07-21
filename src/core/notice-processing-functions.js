@@ -1,6 +1,7 @@
 import { displayPropertyNames, consoleLogObject } from "./utilities";
+import { result } from "lodash";
 
-const PROCESSOR_VERSION_STRING = '0.0.5';
+const PROCESSOR_VERSION_STRING = '0.0.6';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -48,21 +49,22 @@ export function processNotices(givenNoticeObject, optionalProcessingOptions) {
     //     + "  Given " + givenNoticeObject.successList.length.toLocaleString() + " success string(s) plus " + givenNoticeObject.noticeList.length.toLocaleString() + " notice(s)");
 
     // Check that notice priority numbers are unique (to detect programming errors)
-    if (1) { // May be commented out of production code
+    if (true) { // May be commented out of production code
         let numberStore = {}, errorList = [];
         for (let thisGivenNotice of givenNoticeObject.noticeList) {
             const thisPriority = thisGivenNotice[0], thisMsg = thisGivenNotice[1];
             const oldMsg = numberStore[thisPriority];
-            if (oldMsg && oldMsg != thisMsg && givenNoticeObject.noticeList.indexOf(thisPriority) < 0
+            if (oldMsg && oldMsg !== thisMsg && givenNoticeObject.noticeList.indexOf(thisPriority) < 0
                 // Some of the messages include the troubling character in the message
                 //    so we expect them to differ slightly
                 && !thisMsg.startsWith('Mismatched ')
                 && !thisMsg.startsWith('Unexpected doubled ')
                 && !thisMsg.startsWith('Unexpected space after ')
+                && !thisMsg.startsWith('Unexpected content after \\')
                 && !thisMsg.endsWith(' character after space')
                 && !thisMsg.endsWith(' marker at start of line')
             ) {
-                console.log("PROGRAMMING ERROR:", thisPriority, "has at least two messages: '" + oldMsg + "' and '" + thisMsg + "'");
+                console.log(`PROGRAMMING ERROR: priority ${thisPriority} has at least two different messages: '${oldMsg}' and '${thisMsg}'`);
                 errorList.push(thisPriority); // so that we only give the error once
             }
             numberStore[thisPriority] = thisMsg;
@@ -74,9 +76,9 @@ export function processNotices(givenNoticeObject, optionalProcessingOptions) {
         numIgnoredNotices: 0, numSuppressedErrors: 0, numSuppressedWarnings: 0,
         processingOptions: optionalProcessingOptions, // Just helpfully includes what we were given (may be undefined)
     };
-    // Copy across all the other properties including the successList
+    // Copy across all the other properties that we aren't interested in
     for (let gnoPropertyName in givenNoticeObject)
-        if (gnoPropertyName != 'noticeList')
+        if (gnoPropertyName !== 'successList' && gnoPropertyName !== 'noticeList')
             resultObject[gnoPropertyName] = givenNoticeObject[gnoPropertyName];
 
     // Fetch our processing parameters
@@ -122,20 +124,51 @@ export function processNotices(givenNoticeObject, optionalProcessingOptions) {
     try {
         maximumSimilarMessages = optionalProcessingOptions.maximumSimilarMessages;
     } catch (e) { }
-    if (typeof maximumSimilarMessages != 'number' || isNaN(maximumSimilarMessages)) {
+    if (typeof maximumSimilarMessages !== 'number' || isNaN(maximumSimilarMessages)) {
         maximumSimilarMessages = DEFAULT_MAXIMUM_SIMILAR_MESSAGES;
         // console.log("Using default maximumSimilarMessages=" + maximumSimilarMessages);
     } else
         console.log("Using supplied maximumSimilarMessages=" + maximumSimilarMessages, "cf. default=" + DEFAULT_MAXIMUM_SIMILAR_MESSAGES);
 
+
+    // Handle the successList
+    if (givenNoticeObject.successList.length < 5)
+        resultObject.successList = givenNoticeObject.successList;
+    else { // successList is fairly long -- maybe we can shorten it by combining multiple similar messages
+        const BibleRegex = /\d\d-(\w\w\w).usfm/; // "Checked JUD file: 66-JUD.usfm"
+        const NotesRegex = /\d\d-(\w\w\w).tsv/; // "Checked EN_TN_01-GEN.TSV file: en_tn_01-GEN.tsv"
+        resultObject.successList = [];
+        let bookList = [], notesList = [];
+        for (let thisParticularSuccessMessage of givenNoticeObject.successList) {
+            console.log("thisParticularSuccessMessage", thisParticularSuccessMessage);
+            let regexResult;
+            if ((regexResult = BibleRegex.exec(thisParticularSuccessMessage)) !== null) {
+                // console.log("regexResult", JSON.stringify(regexResult));
+                bookList.push(regexResult[1]);
+            }
+            else if ((regexResult = NotesRegex.exec(thisParticularSuccessMessage)) !== null) {
+                // console.log("regexResult", JSON.stringify(regexResult));
+                notesList.push(regexResult[1]);
+            }
+            else
+                resultObject.successList.push(thisParticularSuccessMessage); // Just copy it across
+        }
+        // Put summary messages at the beginning of the list
+        if (bookList.length)
+            resultObject.successList.unshift(`Checked ${bookList.length} USFM Bible files: ${bookList.join(', ')}`);
+        else if (notesList.length)
+            resultObject.successList.unshift(`Checked ${notesList.length} TSV notes files: ${notesList.join(', ')}`);
+    }
+
+
     // Specialised processing
     // If have s5 marker warnings, add one error
     // consoleLogObject('givenNoticeObject', givenNoticeObject);
     for (let thisParticularNotice of givenNoticeObject.noticeList) {
-        // console.log("thisParticularNotice", thisParticularNotice)
+        // console.log("thisParticularNotice", thisParticularNotice);
         if (thisParticularNotice[1].indexOf('\\s5') >= 0) {
             let thisthisParticularNoticeArray = [errorPriorityLevel + 1, "\\s5 fields should be coded as \\ts\\* milestones", -1, '', " in " + givenNoticeObject.checkType];
-            if (thisParticularNotice.length == 6) thisParticularNotice.push(thisParticularNotice[5]); // Sometime we have an additional file identifier
+            if (thisParticularNotice.length === 6) thisParticularNotice.push(thisParticularNotice[5]); // Sometime we have an additional file identifier
             givenNoticeObject.noticeList.push(thisParticularNotice);
             break;
         }
@@ -160,13 +193,13 @@ export function processNotices(givenNoticeObject, optionalProcessingOptions) {
     // Sort the remainingNoticeList as required
     if (sortBy === 'ByPriority')
         remainingNoticeList.sort(function (a, b) { return b[0] - a[0] });
-    else if (sortBy != 'AsFound')
+    else if (sortBy !== 'AsFound')
         console.log("ERROR: Sorting '" + sortBy + "' is not implemented yet!!!");
 
     // Add in extra location info if it's there
     // Default is to prepend it to the msg
     //  This prevents errors/warnings from different repos or books from being combined
-    if (remainingNoticeList.length && remainingNoticeList[0].length == 6) { // normally it's 5
+    if (remainingNoticeList.length && remainingNoticeList[0].length === 6) { // normally it's 5
         // console.log("We need to add the extra location, e.g. '" + remainingNoticeList[0][5] + "': will prepend it to the messages");
         let newNoticeList = [];
         for (let thisNotice of remainingNoticeList)
@@ -189,14 +222,14 @@ export function processNotices(givenNoticeObject, optionalProcessingOptions) {
         else counter[thisID]++;
         if (thisPriority < cutoffPriorityLevel)
             resultObject.numSuppressedWarnings++;
-        else if (maximumSimilarMessages > 0 && counter[thisID] == maximumSimilarMessages + 1) {
+        else if (maximumSimilarMessages > 0 && counter[thisID] === maximumSimilarMessages + 1) {
             if (thisPriority >= errorPriorityLevel) {
                 const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
-                resultObject.errorList.push([-1, thisMsg, -1, '', " ◄ " + numSuppressed.toLocaleString() + " MORE SIMILAR ERROR" + (numSuppressed == 1 ? '' : 'S') + " SUPPRESSED"]);
+                resultObject.errorList.push([-1, thisMsg, -1, '', " ◄ " + numSuppressed.toLocaleString() + " MORE SIMILAR ERROR" + (numSuppressed === 1 ? '' : 'S') + " SUPPRESSED"]);
                 resultObject.numSuppressedErrors++;
             } else {
                 const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
-                resultObject.warningList.push([-1, thisMsg, -1, '', " ◄ " + numSuppressed.toLocaleString() + " MORE SIMILAR WARNING" + (numSuppressed == 1 ? '' : 'S') + " SUPPRESSED"]);
+                resultObject.warningList.push([-1, thisMsg, -1, '', " ◄ " + numSuppressed.toLocaleString() + " MORE SIMILAR WARNING" + (numSuppressed === 1 ? '' : 'S') + " SUPPRESSED"]);
                 resultObject.numSuppressedWarnings++;
             }
         } else if (maximumSimilarMessages > 0 && counter[thisID] > maximumSimilarMessages + 1) {

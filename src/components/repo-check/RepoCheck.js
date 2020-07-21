@@ -26,10 +26,10 @@ import { withStyles } from '@material-ui/core/styles';
 // import ViewColumn from '@material-ui/icons/ViewColumn';
 // import MaterialTable from 'material-table';
 // import { fetchRepo } from './helpers';
-import checkRepo from './checkRepo.js';
-import processNotices from '../../core/notice-handling-functions.js';
+import checkRepo from './checkRepo';
+import processNotices from '../../core/notice-processing-functions';
 import { RenderSuccessesErrorsWarnings } from '../RenderProcessedResults';
-import { consoleLogObject } from '../../core/utilities.js';
+import { ourParseInt, consoleLogObject } from '../../core/utilities';
 
 // const tableIcons = {
 //   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -101,7 +101,7 @@ function RepoCheck(/*username, language_code,*/ props) {
                 // 'extractLength': 25,
             };
             // Or this allows the parameters to be specified as a RepoCheck property
-            if (props.extractLength) checkingOptions.extractLength = parseInt(props.extractLength);
+            if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
 
             let rawResult = await checkRepo(repo, "in "+repo.full_name, setResultValue, checkingOptions);
             // console.log("checkRepo() returned", typeof rawResult); //, JSON.stringify(rawResult));
@@ -122,9 +122,9 @@ function RepoCheck(/*username, language_code,*/ props) {
                 // 'ignorePriorityNumberList': [123, 202], // default is []
             };
             // Or this allows the parameters to be specified as a RepoCheck property
-            if (props.maximumSimilarMessages) processOptions.maximumSimilarMessages = parseInt(props.maximumSimilarMessages);
-            if (props.errorPriorityLevel) processOptions.errorPriorityLevel = parseInt(props.errorPriorityLevel);
-            if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = parseInt(props.cutoffPriorityLevel);
+            if (props.maximumSimilarMessages) processOptions.maximumSimilarMessages = ourParseInt(props.maximumSimilarMessages);
+            if (props.errorPriorityLevel) processOptions.errorPriorityLevel = ourParseInt(props.errorPriorityLevel);
+            if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
             if (props.sortBy) processOptions.sortBy = props.sortBy;
             // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
             const processedResult = processNotices(rawResult, processOptions);
@@ -140,8 +140,8 @@ function RepoCheck(/*username, language_code,*/ props) {
             function renderSummary() {
                 return (<>
                 <p>Checked <b>{username} {language_code}</b> (from <i>{repo.branch === undefined ? 'DEFAULT' : repo.branch}</i> branches)</p>
-                <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResult.checkedFileCount} file{processedResult.checkedFileCount == 1 ? '' : 's'} from {repo.full_name}: {processedResult.checkedFilenames.join(', ')}
-                <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResult.checkedFilenameExtensions.length} file type{processedResult.checkedFilenameExtensions.size == 1 ? '' : 's'}: {processedResult.checkedFilenameExtensions.join(', ')}.</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResult.checkedFileCount} file{processedResult.checkedFileCount === 1 ? '' : 's'} from {repo.full_name}: {processedResult.checkedFilenames.join(', ')}
+                <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResult.checkedFilenameExtensions.length} file type{processedResult.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResult.checkedFilenameExtensions.join(', ')}.</p>
                 </>);
             }
 

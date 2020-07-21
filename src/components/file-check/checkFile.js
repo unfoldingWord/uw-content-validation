@@ -15,7 +15,7 @@ function checkFile(filename, fileContent, givenLocation, checkingOptions) {
     console.log("  with " + filename + ", " + fileContent.length + " chars, " + givenLocation + ", " + JSON.stringify(checkingOptions));
 
     const ourLocation = givenLocation;
-    if (ourLocation[0] != ' ') ourLocation = ' ' + ourLocation;
+    if (ourLocation[0] !== ' ') ourLocation = ' ' + ourLocation;
 
     let checkFileResult;
     if (filename.toLowerCase().endsWith('.tsv')) {

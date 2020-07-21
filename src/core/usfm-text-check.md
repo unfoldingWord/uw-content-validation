@@ -6,9 +6,15 @@ It returns a list of success messages and a list of prioritised notice component
 
 The notices are then processed into a list of errors and a list of warnings for display.
 
+Note that unfoldingWord has three distinct forms of USFM files (and these functions have been designed to properly handle all three):
+
+1. Our original language files (UHB and UGNT) have each word parsed with morphological information, and also have some key terms marked. Each original language word is usually placed on a separate line in the file.
+1. Our ULT and UST have many books that contain alignment information, i.e., the translated words or phrases are aligned/connected to specific original languages words or phrases. Each word is usually placed on a separate line in the file.
+1. Some of our USFM Bible books simply contain the (normal) Bible text. (Of course, these files are much smaller and quicker to validate.)
+
 ```js
-import checkUSFMText from './usfm-text-check.js';
-import processNotices from './notice-handling-functions';
+import checkUSFMText from './usfm-text-check';
+import processNotices from './notice-processing-functions';
 import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
 
 // USFM samples

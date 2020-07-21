@@ -9,8 +9,8 @@ Our packaged function returns a list of success messages and a list of (prioriti
 The notices are then processed into a list of errors and a list of warnings for display.
 
 ```js
-import checkUSFMToJSON from './usfm-js-check.js';
-import processNotices from './notice-handling-functions';
+import checkUSFMToJSON from './usfm-js-check';
+import processNotices from './notice-processing-functions';
 import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
 
 // USFM samples

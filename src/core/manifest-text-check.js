@@ -14,13 +14,13 @@ function checkManifestText(textName, manifestText, location, optionalCheckingOpt
      Returns a result object containing a successList and a noticeList
      */
     console.log("checkManifestText(" + textName + ", " + manifestText.length + ", " + location + ")…");
-    if (location[0] != ' ') location = ' ' + location;
+    if (location[0] !== ' ') location = ' ' + location;
 
     let extractLength;
     try {
         extractLength = optionalCheckingOptions.extractLength;
     } catch (e) {}
-    if (typeof extractLength != 'number' || isNaN(extractLength)) {
+    if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
         // console.log("Using default extractLength=" + extractLength);
     }
@@ -69,10 +69,10 @@ function checkManifestText(textName, manifestText, location, optionalCheckingOpt
         // Process results line by line
         //  suppressing undesired errors
         for (let noticeEntry of resultObject.noticeList)
-            if (noticeEntry[0] != 591
-              && noticeEntry[1] != "Unexpected ' character after space"
-              && noticeEntry[1] != "Unexpected space after ' character"
-              && noticeEntry[1] != "Unexpected space after [ character"
+            if (noticeEntry[0] !== 591
+              && noticeEntry[1] !== "Unexpected ' character after space"
+              && noticeEntry[1] !== "Unexpected space after ' character"
+              && noticeEntry[1] !== "Unexpected space after [ character"
               )
                 addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
     }
@@ -103,7 +103,7 @@ function checkManifestText(textName, manifestText, location, optionalCheckingOpt
 
     // Main code for checkManifestText function
     let ourLocation = location;
-    if (ourLocation[0] != ' ') ourLocation = ' ' + ourLocation;
+    if (ourLocation[0] !== ' ') ourLocation = ' ' + ourLocation;
 
     const lines = manifestText.split('\n');
     // console.log("  '" + location + "' has " + lines.length.toLocaleString() + " total lines");
@@ -140,7 +140,7 @@ function checkManifestText(textName, manifestText, location, optionalCheckingOpt
         // lastNumLeadingSpaces = numLeadingSpaces;
     }
 
-    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line(s) in '${ourLocation}'.`);
+    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'} in '${ourLocation}'.`);
     if (result.noticeList)
         addSuccessMessage(`checkManifestText v${checkerVersionString} finished with ${result.noticeList.length.toLocaleString()} notice(s)`);
     else

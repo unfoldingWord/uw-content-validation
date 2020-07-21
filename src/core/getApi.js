@@ -219,13 +219,14 @@ async function getFileFromZip({username, repository, path, branch}) {
   return file;
 };
 
+
 function zipUri({username, repository, branch='master'}) {
   const zipPath = Path.join(username, repository, 'archive', `${branch}.zip`);
   const zipUri = baseURL + zipPath;
   return zipUri;
 };
 
-// http://bg.door43.org/api/v1/repos/unfoldingword/en_ugl/git/trees/master
+
 export async function fetchTree({username, repository, sha='master'}) {
   try {
     const uri = Path.join('api/v1/repos', username, repository, 'git/trees', sha);
@@ -236,6 +237,7 @@ export async function fetchTree({username, repository, sha='master'}) {
     return null;
   }
 };
+
 
 export async function recursiveTree({username, repository, path, sha}) {
   console.log("recurse tree args:",username,repository,path,sha)

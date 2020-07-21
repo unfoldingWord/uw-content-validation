@@ -156,7 +156,7 @@ async function treeRecursion(owner, repo, sha, filterpath, filetype, traversalpa
         let tpath = tree[i].path;
 
         // Ignore standard git metadata and similar files/folders
-        if (tpath == '.github' || tpath == '.gitattributes' || tpath == '.gitignore') {
+        if (tpath === '.github' || tpath === '.gitattributes' || tpath === '.gitignore') {
             console.log("  Ignoring", tpath)
             continue;
         }

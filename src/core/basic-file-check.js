@@ -55,7 +55,7 @@ export function doBasicFileChecks(filename, fileText, optionalFileLocation, opti
     // Create our more detailed location string by prepending the filename
     let ourAtString = " in '" + filename + "'";
     if (optionalFileLocation) {
-        if (optionalFileLocation[0] != ' ') ourAtString += ' ';
+        if (optionalFileLocation[0] !== ' ') ourAtString += ' ';
         ourAtString += optionalFileLocation;
     }
 
@@ -68,7 +68,7 @@ export function doBasicFileChecks(filename, fileText, optionalFileLocation, opti
     try {
         extractLength = optionalCheckingOptions.extractLength;
     } catch (e) {}
-    if (typeof extractLength != 'number' || isNaN(extractLength)) {
+    if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
         // console.log("Using default extractLength=" + extractLength);
     }
@@ -107,20 +107,20 @@ export function doBasicFileChecks(filename, fileText, optionalFileLocation, opti
         const leftChar = punctSet[0], rightChar = punctSet[1];
         const lCount = countOccurrences(fileText, leftChar);
         const rCount = countOccurrences(fileText, rightChar);
-        if (lCount != rCount)
+        if (lCount !== rCount)
             addNotice(163, "Mismatched " + leftChar+rightChar + " characters", -1, "(left=" + lCount.toLocaleString() + ", right=" + rCount.toLocaleString() + ")", ourAtString);
     }
 
     // if (!allowedLinks) {
     //     // Simple check that there aren't any
     //     ix = fileText.indexOf('://');
-    //     if (ix == -1) ix = fileText.indexOf('http');
-    //     if (ix == -1) ix = fileText.indexOf('ftp');
+    //     if (ix === -1) ix = fileText.indexOf('http');
+    //     if (ix === -1) ix = fileText.indexOf('ftp');
     //     // The following might have to be removed if text fields can contain email addresses
-    //     if (ix == -1) ix = fileText.indexOf('.org');
-    //     if (ix == -1) ix = fileText.indexOf('.com');
-    //     if (ix == -1) ix = fileText.indexOf('.info');
-    //     if (ix == -1) ix = fileText.indexOf('.bible');
+    //     if (ix === -1) ix = fileText.indexOf('.org');
+    //     if (ix === -1) ix = fileText.indexOf('.com');
+    //     if (ix === -1) ix = fileText.indexOf('.info');
+    //     if (ix === -1) ix = fileText.indexOf('.bible');
     //     if (ix >= 0) {
     //         let extract = (ix>halfLength ? '…' : '') + fileText.substring(ix-halfLength, ix+halfLengthPlus) + (ix+halfLengthPlus < fileText.length ? '…' : '')
     //         addNotice(765, "Unexpected link", ix, extract, ourAtString);

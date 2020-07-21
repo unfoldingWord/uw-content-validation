@@ -83,28 +83,28 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
     // So now we want to work through checking this one specified Bible book in various repos:
     //  UHB/UGNT, ULT, UST, UTN, UTW, UTQ
     let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0, checkedRepoNames = [];
-    for (let repoCode of [(whichTestament == 'old' ? 'UHB' : 'UGNT'), 'ULT', 'UST', 'TN', 'TQ']) {
+    for (let repoCode of [(whichTestament === 'old' ? 'UHB' : 'UGNT'), 'ULT', 'UST', 'TN', 'TQ']) {
         // console.log("Let's try", repoCode, "(", language_code, bookCode, "from", username, ")");
         const repoLocation = " in " + repoCode.toUpperCase() + generalLocation;
 
         let repo_language_code = language_code;
-        if (repoCode == 'UHB') repo_language_code = 'hbo';
-        else if (repoCode == 'UGNT') repo_language_code = 'el-x-koine';
+        if (repoCode === 'UHB') repo_language_code = 'hbo';
+        else if (repoCode === 'UGNT') repo_language_code = 'el-x-koine';
         const repoName = repo_language_code + '_' + repoCode.toLowerCase();
 
         const fullRepoName = username + '/' + repoName;
         // console.log("Let's try1", bookCode, "from", fullRepoName);
 
         let filename;
-        if (repoCode == 'UHB' || repoCode == 'UGNT' || repoCode == 'ULT' || repoCode == 'UST') {
+        if (repoCode === 'UHB' || repoCode === 'UGNT' || repoCode === 'ULT' || repoCode === 'UST') {
             filename = bookNumberAndName + '.usfm';
             checkedFilenameExtensions.add('usfm');
         }
-        else if (repoCode == 'TN') {
+        else if (repoCode === 'TN') {
             filename = language_code + '_tn_' + bookNumberAndName + '.tsv';
             checkedFilenameExtensions.add('tsv');
         }
-        else if (repoCode == 'TQ') {
+        else if (repoCode === 'TQ') {
             // How are we going to handle all these folders of .md files ???
             // This resource will eventually be converted to TSV tables
             filename = bookCode.toLowerCase() + '/01/02.md';

@@ -25,17 +25,17 @@ function checkTN_TSVText(BBB, tableText, location, optionalCheckingOptions) {
         result.successList.push(successString);
     }
     function addNotice(priority, message, index, extract, location) {
-        console.log("checkTN_TSVText notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        console.assert(priority!==undefined, "TSV addNotice: 'priority' parameter should be defined");
-        console.assert(typeof priority==='number', "TSV addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"': "+priority);
-        console.assert(message!==undefined, "TSV addNotice: 'message' parameter should be defined");
-        console.assert(typeof message==='string', "TSV addNotice: 'message' parameter should be a string not a '"+(typeof message)+"': "+message);
-        console.assert(index!==undefined, "TSV addNotice: 'index' parameter should be defined");
-        console.assert(typeof index==='number', "TSV addNotice: 'index' parameter should be a number not a '"+(typeof index)+"': "+index);
-        console.assert(extract!==undefined, "TSV addNotice: 'extract' parameter should be defined");
-        console.assert(typeof extract==='string', "TSV addNotice: 'extract' parameter should be a string not a '"+(typeof extract)+"': "+extract);
-        console.assert(location!==undefined, "TSV addNotice: 'location' parameter should be defined");
-        console.assert(typeof location==='string', "TSV addNotice: 'location' parameter should be a string not a '"+(typeof location)+"': "+location);
+        console.log("checkTN_TSVText notice: (priority=" + priority + ") " + message + (index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
+        console.assert(priority !== undefined, "TSV addNotice: 'priority' parameter should be defined");
+        console.assert(typeof priority === 'number', "TSV addNotice: 'priority' parameter should be a number not a '" + (typeof priority) + "': " + priority);
+        console.assert(message !== undefined, "TSV addNotice: 'message' parameter should be defined");
+        console.assert(typeof message === 'string', "TSV addNotice: 'message' parameter should be a string not a '" + (typeof message) + "': " + message);
+        console.assert(index !== undefined, "TSV addNotice: 'index' parameter should be defined");
+        console.assert(typeof index === 'number', "TSV addNotice: 'index' parameter should be a number not a '" + (typeof index) + "': " + index);
+        console.assert(extract !== undefined, "TSV addNotice: 'extract' parameter should be defined");
+        console.assert(typeof extract === 'string', "TSV addNotice: 'extract' parameter should be a string not a '" + (typeof extract) + "': " + extract);
+        console.assert(location !== undefined, "TSV addNotice: 'location' parameter should be defined");
+        console.assert(typeof location === 'string', "TSV addNotice: 'location' parameter should be a string not a '" + (typeof location) + "': " + location);
         result.noticeList.push([priority, message, index, extract, location]);
     }
 
@@ -43,15 +43,15 @@ function checkTN_TSVText(BBB, tableText, location, optionalCheckingOptions) {
     let extractLength;
     try {
         extractLength = optionalCheckingOptions.extractLength;
-    } catch (e) {}
-    if (typeof extractLength != 'number' || isNaN(extractLength)) {
+    } catch (e) { }
+    if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
         // console.log("Using default extractLength=" + extractLength);
     }
     // else
     //     console.log("Using supplied extractLength=" + extractLength, "cf. default="+DEFAULT_EXTRACT_LENGTH);
     const halfLength = Math.floor(extractLength / 2); // rounded down
-    const halfLengthPlus = Math.floor((extractLength+1) / 2); // rounded up
+    const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
     // console.log("Using halfLength=" + halfLength, "halfLengthPlus="+halfLengthPlus);
 
     let bbb = BBB.toLowerCase();
@@ -72,8 +72,8 @@ function checkTN_TSVText(BBB, tableText, location, optionalCheckingOptions) {
     for (let n = 0; n < lines.length; n++) {
         // console.log("checkTN_TSVText checking line " + n + ": " + JSON.stringify(lines[n]));
         let inString = " in line " + n.toLocaleString() + location;
-        if (n == 0) {
-            if (lines[0] == EXPECTED_TN_HEADING_LINE)
+        if (n === 0) {
+            if (lines[0] === EXPECTED_TN_HEADING_LINE)
                 addSuccessMessage("Checked TSV header " + location);
             else
                 addNotice(746, "Bad TSV header", -1, "", location + ": '" + lines[0] + "'");
@@ -81,11 +81,11 @@ function checkTN_TSVText(BBB, tableText, location, optionalCheckingOptions) {
         else // not the header
         {
             let fields = lines[n].split('\t');
-            if (fields.length == NUM_EXPECTED_TN_FIELDS) {
+            if (fields.length === NUM_EXPECTED_TN_FIELDS) {
                 let [B, C, V, fieldID, support_reference, orig_quote, occurrence, GL_quote, occurrenceNote] = fields;
-                let withString = " with '" + fieldID + "'" + inString;
-                let CV_withString = ' ' + C + ':' + V + withString;
-                let atString = " at " + B + ' ' + C + ':' + V + " (" + fieldID + ")" + inString;
+                let withString = ` with '${fieldID}'${inString}`;
+                let CV_withString = ` ${C}:${V}${withString}`;
+                let atString = ` at ${B} ${C}:${V} (${fieldID})${inString}`;
 
                 // Use the row check to do most basic checks
                 const firstResult = checkTN_TSVDataRow(BBB, lines[n], atString, optionalCheckingOptions);
@@ -99,19 +99,19 @@ function checkTN_TSVText(BBB, tableText, location, optionalCheckingOptions) {
 
                 // So here we only have to check against the previous and next fields for out-of-order problems
                 if (B) {
-                    if (B != BBB)
-                        addNotice(745, "Wrong '" + B + "' book code (expected '" + BBB + "')", -1, "", CV_withString);
+                    if (B !== BBB)
+                        addNotice(745, `Wrong '${B}' book code (expected '${BBB}')`, -1, "", CV_withString);
                 }
                 else
-                    addNotice(744, "Missing book code", -1, "", " at" + CV_withString);
+                    addNotice(744, "Missing book code", -1, "", ` at${CV_withString}`);
 
                 if (C) {
-                    if (C==='front') { }
+                    if (C === 'front') { }
                     else if (/^\d+$/.test(C)) {
                         let intC = Number(C);
-                        if (C != lastC)
+                        if (C !== lastC)
                             numVersesThisChapter = books.versesInChapter(bbb, intC);
-                        if (intC == 0)
+                        if (intC === 0)
                             addNotice(551, "Invalid zero '" + C + "' chapter number", -1, "", atString);
                         if (intC > numChaptersThisBook)
                             addNotice(737, "Invalid large '" + C + "' chapter number", -1, "", atString);
@@ -130,10 +130,10 @@ function checkTN_TSVText(BBB, tableText, location, optionalCheckingOptions) {
                     addNotice(739, "Missing chapter number", -1, "", " after " + lastC + ':' + V + withString);
 
                 if (V) {
-                    if (V==='intro') { }
+                    if (V === 'intro') { }
                     else if (/^\d+$/.test(V)) {
                         let intV = Number(V);
-                        if (intV == 0)
+                        if (intV === 0)
                             addNotice(552, "Invalid zero '" + V + "' verse number", -1, "", atString);
                         if (intV > numVersesThisChapter)
                             addNotice(734, "Invalid large '" + V + "' verse number for chapter " + C, -1, "", atString);
@@ -159,19 +159,19 @@ function checkTN_TSVText(BBB, tableText, location, optionalCheckingOptions) {
                     addNotice(730, "Missing ID", -1, "", atString);
 
 
-                if (B != lastB || C != lastC || V != lastV) {
+                if (B !== lastB || C !== lastC || V !== lastV) {
                     fieldID_list = []; // ID's only need to be unique within each verse
                     lastB = B; lastC = C; lastV = V;
                 }
 
             } else
-                if (n==lines.length-1) // it's the last line
-                    console.log("  Line " + n + ": Has " + fields.length + " field(s) instead of " +NUM_EXPECTED_TN_FIELDS+": "+ EXPECTED_TN_HEADING_LINE.replace(/\t/g,', '));
+                if (n == lines.length - 1) // it's the last line
+                    console.log("  Line " + n + ": Has " + fields.length + " field(s) instead of " + NUM_EXPECTED_TN_FIELDS + ": " + EXPECTED_TN_HEADING_LINE.replace(/\t/g, ', '));
                 else
                     addNotice(888, "Wrong number of tabbed fields", -1, '', inString)
         }
     }
-    addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line(s) in '${location}'.`);
+    addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 == 1 ? '' : 's'} in '${location}'.`);
     if (result.noticeList)
         addSuccessMessage(`checkTN_TSVText v${checkerVersionString} finished with ${result.noticeList.length.toLocaleString()} notice(s)`);
     else
