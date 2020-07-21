@@ -173,7 +173,7 @@ function checkTN_TSVText(BBB, tableText, location, optionalCheckingOptions) {
     }
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 == 1 ? '' : 's'} in '${location}'.`);
     if (result.noticeList)
-        addSuccessMessage(`checkTN_TSVText v${checkerVersionString} finished with ${result.noticeList.length.toLocaleString()} notice(s)`);
+        addSuccessMessage(`checkTN_TSVText v${checkerVersionString} finished with ${result.noticeList.length.toLocaleString()} notice${result.noticeList.length == 1 ? '' : 's'}`);
     else
         addSuccessMessage("No errors or warnings found by checkTN_TSVText v" + checkerVersionString)
     // console.log(`  checkTN_TSVText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);

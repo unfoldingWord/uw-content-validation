@@ -108,7 +108,7 @@ function checkPlainText(textName, markdownText, location, optionalCheckingOption
 
     addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'} in '${location}'.`);
     if (result.noticeList)
-        addSuccessMessage(`checkPlainText v${checkerVersionString} finished with ${result.noticeList.length.toLocaleString()} notice(s)`);
+        addSuccessMessage(`checkPlainText v${checkerVersionString} finished with ${result.noticeList.length.toLocaleString()} notice${result.noticeList.length == 1 ? '' : 's'}`);
     else
         addSuccessMessage("No errors or warnings found by checkPlainText v" + checkerVersionString)
     // console.log(`  checkPlainText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);

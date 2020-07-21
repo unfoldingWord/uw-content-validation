@@ -129,7 +129,6 @@ async function getBlobs(treeMap) {
             throw new Error(err);
         }
     }
-    // console.log("getBlobs finished with", data);
 }
 
 async function treeRecursion(owner, repo, sha, filterpath, filetype, traversalpath, treeMap) {

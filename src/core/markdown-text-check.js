@@ -140,7 +140,7 @@ function checkMarkdownText(textName, markdownText, location, optionalCheckingOpt
 
     addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'} in '${location}'.`);
     if (result.noticeList)
-        addSuccessMessage(`checkMarkdownText v${checkerVersionString} finished with ${result.noticeList.length.toLocaleString()} notice(s)`);
+        addSuccessMessage(`checkMarkdownText v${checkerVersionString} finished with ${result.noticeList.length.toLocaleString()} notice${result.noticeList.length == 1 ? '' : 's'}`);
     else
         addSuccessMessage("No errors or warnings found by checkMarkdownText v" + checkerVersionString)
     // console.log(`  checkMarkdownText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
