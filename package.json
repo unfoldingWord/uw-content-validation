@@ -1,7 +1,7 @@
 {
   "name": "content-validation-rcl",
   "description": "Components for Checking uW Content/Resources.",
-  "version": "0.0.18",
+  "version": "0.1.0",
   "private": false,
   "homepage": "https://unfoldingword.github.io/content-validation-rcl/",
   "repository": {
@@ -41,6 +41,7 @@
     "prop-types": "^15.7.2",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
+    "react-bootstrap": "^1.2.2",
     "react-markdown": "^4.0.6",
     "react-styleguidist": "^9.1.14",
     "usfm-grammar": "^2.0.0-beta.2",

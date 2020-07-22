@@ -30,6 +30,7 @@ import checkRepo from './checkRepo';
 import processNotices from '../../core/notice-processing-functions';
 import { RenderSuccessesErrorsWarnings } from '../RenderProcessedResults';
 import { ourParseInt, consoleLogObject } from '../../core/utilities';
+import { autoClearCache } from './helpers';
 
 // const tableIcons = {
 //   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -71,7 +72,7 @@ function RepoCheck(/*username, language_code,*/ props) {
 
     if (!repo) {
         return( <>
-            <b style={{ color: 'purple' }}>Attempting to load a repo…</b>
+            <b style={{ color: 'purple' }}>Attempting to load repo details…</b>
             </>);
     }
 
@@ -86,6 +87,10 @@ function RepoCheck(/*username, language_code,*/ props) {
         allow_merge_commits, allow_rebase, allow_rebase_explicit, allow_squash_merge,
         avatar_url, branch, tree_url */
     // consoleLogObject("repo owner", repo.owner);
+
+     // Clear cached files if we've changed repo
+    autoClearCache(repo.full_name); // This technique avoids the complications of needing a button
+
 
     const [result, setResultValue] = useState("Waiting-checkRepo");
     useEffect(() => {
@@ -103,7 +108,13 @@ function RepoCheck(/*username, language_code,*/ props) {
             // Or this allows the parameters to be specified as a RepoCheck property
             if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
 
-            let rawResult = await checkRepo(repo, "in "+repo.full_name, setResultValue, checkingOptions);
+            let rawResult = {};
+            try {
+                rawResult = await checkRepo(repo, "in "+repo.full_name, setResultValue, checkingOptions);
+            } catch(e) {
+                rawResult = { noticeList: [] };
+                rawResult.noticeList.push([999, "checkRepo function FAILED", -1, e, repo.full_name]);
+            }
             // console.log("checkRepo() returned", typeof rawResult); //, JSON.stringify(rawResult));
 
             // Add some extra fields to our rawResult object in case we need this information again later
@@ -133,13 +144,13 @@ function RepoCheck(/*username, language_code,*/ props) {
 
             // console.log("Here now in rendering bit!");
             let username = repo.owner.username;
-            console.log("username='"+ username+"'");
+            // console.log("username='"+ username+"'");
             let language_code = repo.name.split('_', 1)[0];
-            console.log("language_code='"+ language_code+"'");
+            // console.log("language_code='"+ language_code+"'");
 
             function renderSummary() {
                 return (<>
-                <p>Checked <b>{username} {language_code}</b> (from <i>{repo.branch === undefined ? 'DEFAULT' : repo.branch}</i> branches)</p>
+                <p>Checked <b>{username} {repo.name}</b> (from <i>{repo.branch === undefined ? 'DEFAULT' : repo.branch}</i> branch)</p>
                 <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResult.checkedFileCount} file{processedResult.checkedFileCount === 1 ? '' : 's'} from {repo.full_name}: {processedResult.checkedFilenames.join(', ')}
                 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResult.checkedFilenameExtensions.length} file type{processedResult.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResult.checkedFilenameExtensions.join(', ')}.</p>
                 </>);

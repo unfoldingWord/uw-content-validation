@@ -7,13 +7,15 @@ const checkerVersionString = '0.0.1';
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-function checkPlainText(textName, markdownText, location, optionalCheckingOptions) {
+function checkPlainText(textName, markdownText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
      Returns a result object containing a successList and a noticeList
      */
     // console.log("checkPlainText(" + textName + ", " + markdownText.length + ", " + location + ")…");
-    if (location[0] !== ' ') location = ' ' + location;
+    let ourLocation = givenLocation;
+    if (ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    if (textName) ourLocation = ` in ${textName}${ourLocation}`;
 
     let extractLength;
     try {
@@ -94,11 +96,11 @@ function checkPlainText(textName, markdownText, location, optionalCheckingOption
     let lastNumLeadingSpaces = 0;
     let lastLineContents;
     for (let n = 1; n <= lines.length; n++) {
-        const atString = " in line "+n.toLocaleString()+location;
+        const atString = " in line "+n.toLocaleString()+ourLocation;
 
         const line = lines[n - 1];
         if (line) {
-            checkPlainLineContents("line "+n.toLocaleString(), line, location);
+            checkPlainLineContents("line "+n.toLocaleString(), line, ourLocation);
         } else {
             // This is a blank line
         }
@@ -106,7 +108,7 @@ function checkPlainText(textName, markdownText, location, optionalCheckingOption
         lastLineContents = line;
     }
 
-    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'} in '${location}'.`);
+    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'}'${ourLocation}'.`);
     if (result.noticeList)
         addSuccessMessage(`checkPlainText v${checkerVersionString} finished with ${result.noticeList.length.toLocaleString()} notice${result.noticeList.length == 1 ? '' : 's'}`);
     else

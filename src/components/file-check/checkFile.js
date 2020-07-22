@@ -11,8 +11,8 @@ const CHECKER_VERSION_STRING = '0.0.2';
 function checkFile(filename, fileContent, givenLocation, checkingOptions) {
     // Determine the file type from the filename extension
     //  and return the results of checking that kind of file
-    console.log("I'm here in checkFile v" + CHECKER_VERSION_STRING);
-    console.log("  with " + filename + ", " + fileContent.length + " chars, " + givenLocation + ", " + JSON.stringify(checkingOptions));
+//     console.log(`I'm here in checkFile v${CHECKER_VERSION_STRING`
+//   with ${filename}, ${fileContent.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)}`}`);
 
     const ourLocation = givenLocation;
     if (ourLocation[0] !== ' ') ourLocation = ' ' + ourLocation;

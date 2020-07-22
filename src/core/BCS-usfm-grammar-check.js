@@ -31,7 +31,7 @@ export function runBCSGrammarCheck(strictnessString, fileText) {
 // end of runBCSGrammarCheck function
 
 
-export function checkUSFMGrammar(strictnessString, filename, givenText, location, optionalCheckingOptions) {
+export function checkUSFMGrammar(strictnessString, filename, givenText, givenLocation, optionalCheckingOptions) {
     /*
     This function is only used for the demonstration pages -- not for the core!
 
@@ -42,7 +42,7 @@ export function checkUSFMGrammar(strictnessString, filename, givenText, location
     // console.log("checkUSFMGrammar(" + givenText.length.toLocaleString() + " chars, '" + location + "')…");
     console.assert(strictnessString === 'strict' || strictnessString === 'relaxed');
 
-    let ourLocation = location;
+    let ourLocation = givenLocation;
     if (ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     if (filename) ourLocation = ` in ${filename}${ourLocation}`;
 

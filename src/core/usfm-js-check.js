@@ -9,7 +9,7 @@ export function runUsfmJsCheck(fileText, convertOptions) {
     const jsonResult = toJSON(fileText, convertOptions);
     const jsonKeys = Object.keys(jsonResult); // Expect 'headers', 'chapters'
     const numJSONkeys = jsonKeys.length;
-    console.log(`  Finished USFM-JS converter check with ${numJSONkeys} json key(s)`);
+    // console.log(`  Finished USFM-JS converter check with ${numJSONkeys} json key(s)`);
     // console.log(`  jsonResult: ${JSON.stringify(jsonResult)}`)
     // NOTE: We don't know how to get the errors out yet
 
@@ -18,7 +18,7 @@ export function runUsfmJsCheck(fileText, convertOptions) {
 // end of runUsfmJsCheck function
 
 
-export function checkUSFMToJSON(filename, givenText, location, optionalCheckingOptions) {
+export function checkUSFMToJSON(filename, givenText, givenLocation, optionalCheckingOptions) {
     /*
     This function is only used for the demonstration pages -- not for the core!
 
@@ -28,7 +28,7 @@ export function checkUSFMToJSON(filename, givenText, location, optionalCheckingO
      */
     // console.log("checkUSFMToJSON(" + givenText.length.toLocaleString() + " chars, '" + location + "')…");
 
-    let ourLocation = location;
+    let ourLocation = givenLocation;
     if (ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     if (filename) ourLocation = ` in ${filename}${ourLocation}`;
 

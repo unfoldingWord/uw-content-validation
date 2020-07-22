@@ -8,13 +8,15 @@ const checkerVersionString = '0.0.1';
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-function checkManifestText(textName, manifestText, location, optionalCheckingOptions) {
+function checkManifestText(textName, manifestText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
      Returns a result object containing a successList and a noticeList
      */
-    console.log("checkManifestText(" + textName + ", " + manifestText.length + ", " + location + ")…");
-    if (location[0] !== ' ') location = ' ' + location;
+    console.log(`checkManifestText(${textName}, ${manifestText.length}, ${givenLocation})…`);
+    let ourLocation = givenLocation;
+    if (ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    if (textName) ourLocation = ` in ${textName}${ourLocation}`;
 
     let extractLength;
     try {
@@ -102,9 +104,6 @@ function checkManifestText(textName, manifestText, location, optionalCheckingOpt
 
 
     // Main code for checkManifestText function
-    let ourLocation = location;
-    if (ourLocation[0] !== ' ') ourLocation = ' ' + ourLocation;
-
     const lines = manifestText.split('\n');
     // console.log("  '" + location + "' has " + lines.length.toLocaleString() + " total lines");
     let formData;
@@ -140,7 +139,7 @@ function checkManifestText(textName, manifestText, location, optionalCheckingOpt
         // lastNumLeadingSpaces = numLeadingSpaces;
     }
 
-    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'} in '${ourLocation}'.`);
+    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'}'${ourLocation}'.`);
     if (result.noticeList)
         addSuccessMessage(`checkManifestText v${checkerVersionString} finished with ${result.noticeList.length.toLocaleString()} notice${result.noticeList.length == 1 ? '' : 's'}`);
     else

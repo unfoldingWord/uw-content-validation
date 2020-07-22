@@ -4,12 +4,12 @@ import checkFile from '../file-check/checkFile';
 import { getFile } from '../../core/getApi';
 // import { consoleLogObject } from '../../core/utilities';
 
-const CHECKER_VERSION_STRING = '0.0.2';
+const CHECKER_VERSION_STRING = '0.0.3';
 
 
 async function checkBookPackage(username, language_code, bookCode, setResultValue, checkingOptions) {
-    // console.log("I'm here in checkBookPackage v" + CHECKER_VERSION_STRING + "\n"
-    //           + "  with " + username + ", " + language_code + ", " + bookCode + ", " + JSON.stringify(checkingOptions));
+//     console.log(`I'm here in checkBookPackage v${CHECKER_VERSION_STRING}
+//   with ${username}, ${language_code}, ${bookCode}, ${JSON.stringify(checkingOptions)}`);
 
     let checkBookPackageResult = { successList: [], noticeList: [] };
 
@@ -20,18 +20,18 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
 
     function addNotice(priority, message, index, extract, location, extra) {
         // console.log("checkBookPackage Notice: (priority=" + priority + ") " + message + (index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        console.assert(typeof priority === 'number', "cBP addNotice: 'priority' parameter should be a number not a '" + (typeof priority) + "'");
         console.assert(priority !== undefined, "cBP addNotice: 'priority' parameter should be defined");
-        console.assert(typeof message === 'string', "cBP addNotice: 'message' parameter should be a string not a '" + (typeof message) + "'");
+        console.assert(typeof priority === 'number', "cBP addNotice: 'priority' parameter should be a number not a '" + (typeof priority) + "'");
         console.assert(message !== undefined, "cBP addNotice: 'message' parameter should be defined");
-        console.assert(typeof index === 'number', "cBP addNotice: 'index' parameter should be a number not a '" + (typeof index) + "'");
+        console.assert(typeof message === 'string', "cBP addNotice: 'message' parameter should be a string not a '" + (typeof message) + "'");
         console.assert(index !== undefined, "cBP addNotice: 'index' parameter should be defined");
-        console.assert(typeof extract === 'string', "cBP addNotice: 'extract' parameter should be a string not a '" + (typeof extract) + "'");
+        console.assert(typeof index === 'number', "cBP addNotice: 'index' parameter should be a number not a '" + (typeof index) + "'");
         console.assert(extract !== undefined, "cBP addNotice: 'extract' parameter should be defined");
-        console.assert(typeof location === 'string', "cBP addNotice: 'location' parameter should be a string not a '" + (typeof location) + "'");
+        console.assert(typeof extract === 'string', "cBP addNotice: 'extract' parameter should be a string not a '" + (typeof extract) + "'");
         console.assert(location !== undefined, "cBP addNotice: 'location' parameter should be defined");
-        console.assert(typeof extra === 'string', "cBP addNotice: 'extra' parameter should be a string not a '" + (typeof extra) + "'");
+        console.assert(typeof location === 'string', "cBP addNotice: 'location' parameter should be a string not a '" + (typeof location) + "'");
         console.assert(extra !== undefined, "cBP addNotice: 'extra' parameter should be defined");
+        console.assert(typeof extra === 'string', "cBP addNotice: 'extra' parameter should be a string not a '" + (typeof extra) + "'");
         checkBookPackageResult.noticeList.push([priority, message, index, extract, location, extra]);
     }
 
@@ -40,20 +40,18 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
         console.log("checkBookPackage doOurCheckFile(" + filename + ")");
 
         // Updates the global list of notices
-        console.assert(typeof repoCode === 'string', "doOurCheckFile: 'repoCode' parameter should be a string not a '" + (typeof repoCode) + "'");
         console.assert(repoCode !== undefined, "doOurCheckFile: 'repoCode' parameter should be defined");
-        console.assert(typeof filename === 'string', "doOurCheckFile: 'filename' parameter should be a string not a '" + (typeof filename) + "'");
+        console.assert(typeof repoCode === 'string', "doOurCheckFile: 'repoCode' parameter should be a string not a '" + (typeof repoCode) + "'");
         console.assert(filename !== undefined, "doOurCheckFile: 'filename' parameter should be defined");
-        console.assert(typeof file_content === 'string', "doOurCheckFile: 'file_content' parameter should be a string not a '" + (typeof file_content) + "'");
+        console.assert(typeof filename === 'string', "doOurCheckFile: 'filename' parameter should be a string not a '" + (typeof filename) + "'");
         console.assert(file_content !== undefined, "doOurCheckFile: 'file_content' parameter should be defined");
-        console.assert(typeof fileLocation === 'string', "doOurCheckFile: 'fileLocation' parameter should be a string not a '" + (typeof fileLocation) + "'");
+        console.assert(typeof file_content === 'string', "doOurCheckFile: 'file_content' parameter should be a string not a '" + (typeof file_content) + "'");
         console.assert(fileLocation !== undefined, "doOurCheckFile: 'fileLocation' parameter should be defined");
+        console.assert(typeof fileLocation === 'string', "doOurCheckFile: 'fileLocation' parameter should be a string not a '" + (typeof fileLocation) + "'");
 
         const resultObject = checkFile(filename, file_content, fileLocation, optionalCheckingOptions);
         // console.log("checkFile() returned", resultObject.successList.length, "success message(s) and", resultObject.noticeList.length, "notice(s)");
-
-        for (let successEntry of resultObject.successList)
-            console.log("  ", successEntry);
+        // for (let successEntry of resultObject.successList) console.log("  doOurCheckFile:", successEntry);
 
         // Process results line by line,  appending the repoCode as an extra field as we go
         for (let noticeEntry of resultObject.noticeList)
@@ -107,7 +105,7 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
         else if (repoCode === 'TQ') {
             // How are we going to handle all these folders of .md files ???
             // This resource will eventually be converted to TSV tables
-            filename = bookCode.toLowerCase() + '/01/02.md';
+            filename = bookCode.toLowerCase() + '/01/01.md';
             checkedFilenameExtensions.add('md');
     }
         // console.log("Need to load", filename, "from", fullRepoName, generalLocation);

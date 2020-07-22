@@ -32,7 +32,7 @@ const [repository, setRepository] = React.useState();
   <BookPackageCheck
     username="unfoldingWord"
     language_code='en'
-    bookCode='HAB'
+    bookCode='EPH'
   />
 
   </RepositoryContextProvider>

@@ -1,15 +1,44 @@
 import * as gitApi from '../../core/getApi';
-import { consoleLogObject } from '../../core/utilities';
 import Path from 'path';
 import localforage from 'localforage';
+import { consoleLogObject } from '../../core/utilities';
 
 const baseURL = 'https://git.door43.org/';
 const testURL = 'https://bg.door43.org/';
 
-const rcStore = localforage.createInstance({
+const cvRepoStore = localforage.createInstance({
     driver: [localforage.INDEXEDDB],
-    name: 'rc-store',
+    name: 'cv-store',
 });
+
+
+async function clearCache() {
+    console.log("Clearing localforage.INDEXEDDB cache");
+    cvRepoStore.clear();
+}
+
+
+export async function autoClearCache(repoName) {
+    // console.log(`autoClearCache(${repoName})`);
+    let lastRepoName;
+    try {
+        lastRepoName = await cvRepoStore.getItem('cvRepoName');
+    } catch (error) {
+        const err = `cvRepoStore.getItem() Error: ${error}`;
+        throw new Error(err);
+    }
+    if (repoName !== lastRepoName) { // we've changed repos
+        console.log(`Changed repos from '${lastRepoName}' to '${repoName}'`)
+        await clearCache();
+        // Now save the new repo details
+        try {
+            await cvRepoStore.setItem('cvRepoName', repoName);
+        } catch (error) {
+            const err = `cvRepoStore.setItem() Error: ${error}`;
+            throw new Error(err);
+        }
+    }
+}
 
 
 export async function getBlobContent(k, v) {
@@ -18,9 +47,9 @@ export async function getBlobContent(k, v) {
     //let uri = v.url;
     let blob;
     try {
-        blob = await rcStore.getItem(sha);
+        blob = await cvRepoStore.getItem(sha);
     } catch (error) {
-        const err = "rcStore.getItem() Error:" + error;
+        const err = `cvRepoStore.getItem() Error: ${error}`;
         throw new Error(err);
     }
     blob = JSON.parse(blob);
@@ -28,72 +57,12 @@ export async function getBlobContent(k, v) {
     try {
         content = atob(blob.content);
     } catch (error) {
-        const err = "atob() Error on:" + k + " is:" + error;
+        const err = `atob() Error on:${k} is: ${error}`;
         throw new Error(err);
     }
     // console.log("getBlobContent returning", content.length.toLocaleString());
     return content;
 }
-
-
-/*
-async function getCheckResults(treeMap) {
-    console.log("getCheckResults", treeMap);
-    let allWords = [];
-    let allL1Counts = 0;
-    for (const [k, v] of treeMap.entries()) {
-        let sha = v.sha;
-        //let uri = v.url;
-        let blob;
-        try {
-            blob = await rcStore.getItem(sha);
-        } catch (error) {
-            const err = "rcStore.getItem() Error:" + error;
-            throw new Error(err);
-        }
-        blob = JSON.parse(blob);
-        let content;
-        try {
-            content = atob(blob.content);
-        } catch (error) {
-            const err = "atob() Error on:" + k + " is:" + error;
-            throw new Error(err);
-        }
-        let ext = k.split('.').pop();
-        let format = "string";
-        if (ext === "md") {
-            format = "markdown";
-        } else if (ext === "tsv") {
-            format = "utn";
-        } else if (ext === "usfm") {
-            format = "usfm";
-        }
-        let results = wordCount(content, format);
-        for (let i = 0; i < results.allWords.length; i++) {
-            allWords.push(results.allWords[i])
-        }
-        allL1Counts += results.l1count;
-        // now update the blob with word count results
-        blob.path = k;
-        blob.total = results.total;
-        blob.distinct = results.distinct;
-        blob.l1count = results.l1count;
-        blob.allWords = results.allWords;
-        blob.wordFrequency = results.wordFrequency;
-        try {
-            await rcStore.setItem(sha, JSON.stringify(blob));
-        } catch (error) {
-            const err = "rcStore.setItem() Error:" + error;
-            throw new Error(err);
-        }
-        //console.log(k," Totals:",results.total)
-    }
-    let results = wordCount(allWords.join('\n'), "string");
-    results.l1count = allL1Counts;
-    console.log("getCheckResults returning", results);
-    return results;
-}
-*/
 
 
 async function getBlobs(treeMap) {
@@ -107,25 +76,26 @@ async function getBlobs(treeMap) {
         // test for already fetched
         let x;
         try {
-            x = await rcStore.getItem(sha);
+            x = await cvRepoStore.getItem(sha);
         } catch (error) {
-            const err = "rcStore.getItem() Error:" + error;
+            const err = `cvRepoStore.getItem() Error: ${error}`;
             throw new Error(err);
         }
-        if (x !== null) {
-            // already have it - no need to fetch
+        if (x !== null) { // already have it - no need to fetch
+            console.log(`  getBlobs already had ${k}`);
             continue;
         }
         try {
+            console.log(`  getBlobs is fetching ${uri}`);
             data = await gitApi.getURL({ uri });
         } catch (error) {
-            const err = "getBlob() Error on:" + k + " is:" + error;
+            const err = `getBlob() Error on:${k} is: ${error}`;
             throw new Error(err);
         }
         try {
-            await rcStore.setItem(sha, JSON.stringify(data));
+            await cvRepoStore.setItem(sha, JSON.stringify(data));
         } catch (error) {
-            const err = "rcStore.setItem() Error:" + error;
+            const err = `cvRepoStore.setItem() Error: ${error}`;
             throw new Error(err);
         }
     }
@@ -156,7 +126,7 @@ async function treeRecursion(owner, repo, sha, filterpath, filetype, traversalpa
 
         // Ignore standard git metadata and similar files/folders
         if (tpath === '.github' || tpath === '.gitattributes' || tpath === '.gitignore') {
-            console.log("  Ignoring", tpath)
+            // console.log("  Ignoring", tpath)
             continue;
         }
 

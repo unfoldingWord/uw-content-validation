@@ -140,13 +140,17 @@ export function processNotices(givenNoticeObject, optionalProcessingOptions) {
         resultObject.successList = [];
         let bookList = [], notesList = [];
         for (let thisParticularSuccessMessage of givenNoticeObject.successList) {
-            console.log("thisParticularSuccessMessage", thisParticularSuccessMessage);
+            // console.log("thisParticularSuccessMessage", thisParticularSuccessMessage);
             let regexResult;
-            if ((regexResult = BibleRegex.exec(thisParticularSuccessMessage)) !== null) {
+            if ((regexResult = BibleRegex.exec(thisParticularSuccessMessage)) !== null
+            // but don't do it for Book Package checks (in different repos)
+            && thisParticularSuccessMessage.startsWith(`Checked ${regexResult[1]} file`)) {
                 // console.log("regexResult", JSON.stringify(regexResult));
                 bookList.push(regexResult[1]);
             }
-            else if ((regexResult = NotesRegex.exec(thisParticularSuccessMessage)) !== null) {
+            else if ((regexResult = NotesRegex.exec(thisParticularSuccessMessage)) !== null
+            // but don't do it for Book Package checks (in different repos)
+            && thisParticularSuccessMessage.startsWith(`Checked ${regexResult[1]} file`)) {
                 // console.log("regexResult", JSON.stringify(regexResult));
                 notesList.push(regexResult[1]);
             }

@@ -9,7 +9,7 @@ const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOr
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
-function checkTN_TSVText(BBB, tableText, location, optionalCheckingOptions) {
+function checkTN_TSVText(BBB, tableText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all rows.
 
       It also has the advantage of being able to compare one row with the previous one.
@@ -17,6 +17,9 @@ function checkTN_TSVText(BBB, tableText, location, optionalCheckingOptions) {
      Returns a result object containing a successList and a noticeList
      */
     // console.log("checkTN_TSVText(" + BBB + ", " + tableText.length + ", " + location + ","+JSON.stringify(optionalCheckingOptions)+")…");
+    let ourLocation = givenLocation;
+    if (ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    // if (BBB) ourLocation = ` in ${BBB}${ourLocation}`;
 
     let result = { successList: [], noticeList: [] };
 
@@ -60,7 +63,7 @@ function checkTN_TSVText(BBB, tableText, location, optionalCheckingOptions) {
         numChaptersThisBook = books.chaptersInBook(bbb).length;
     }
     catch {
-        addNotice(747, "Bad function call: should be given a valid book abbreviation", -1, BBB, " (not '" + BBB + "')" + location);
+        addNotice(747, "Bad function call: should be given a valid book abbreviation", -1, BBB, " (not '" + BBB + "')" + ourLocation);
     }
 
     let lines = tableText.split('\n');
@@ -71,12 +74,12 @@ function checkTN_TSVText(BBB, tableText, location, optionalCheckingOptions) {
     let numVersesThisChapter = 0;
     for (let n = 0; n < lines.length; n++) {
         // console.log("checkTN_TSVText checking line " + n + ": " + JSON.stringify(lines[n]));
-        let inString = " in line " + n.toLocaleString() + location;
+        let inString = " in line " + n.toLocaleString() + ourLocation;
         if (n === 0) {
             if (lines[0] === EXPECTED_TN_HEADING_LINE)
-                addSuccessMessage("Checked TSV header " + location);
+                addSuccessMessage("Checked TSV header " + ourLocation);
             else
-                addNotice(746, "Bad TSV header", -1, "", location + ": '" + lines[0] + "'");
+                addNotice(746, "Bad TSV header", -1, "", ourLocation + ": '" + lines[0] + "'");
         }
         else // not the header
         {
@@ -171,7 +174,7 @@ function checkTN_TSVText(BBB, tableText, location, optionalCheckingOptions) {
                     addNotice(888, "Wrong number of tabbed fields", -1, '', inString)
         }
     }
-    addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 == 1 ? '' : 's'} in '${location}'.`);
+    addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 == 1 ? '' : 's'}'${ourLocation}'.`);
     if (result.noticeList)
         addSuccessMessage(`checkTN_TSVText v${checkerVersionString} finished with ${result.noticeList.length.toLocaleString()} notice${result.noticeList.length == 1 ? '' : 's'}`);
     else

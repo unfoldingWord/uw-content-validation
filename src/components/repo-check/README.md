@@ -1,26 +1,19 @@
 ## Repo Check - Readme
 
-The code below requests some info and then checks a Door43 repository.
+The code below requests some info and then checks a Door43 repository.You can enter the `full_name`, i.e., the `username/repoName` in the code below. (Unfortunately if you refresh the page from the browser controls, it will return to the default setting. If you want to restart the test without returning to the default repo, just change one letter in a `//` comment line below.)
 
-**Warning**: Some repos contain many files, and downloading and checking them all might slow-down your browser.
+**Warning**: Some repos contain many files and/or very large files, and downloading them all and then checking them might slow down your browser.
+
+**Note**: This demo software caches/saves the files when it fetches them. So if it reruns (e.g., if you change something in a `//` comment), it should be considerably faster the second time. But the disadvantage is that even if the files are updated on Door43.org, the old version of the file is still used. If you want to reload all the files, you should change the `full_name` in the code below to a different repo, wait until that repo name appears in bright purple, then change it back to the repo name that you want. This name change will cause the cache to be emptied and the newer files will be now fetched.
 
 ```js
+import Button from 'react-bootstrap/Button';
 import {
   AuthenticationContextProvider,
   RepositoryContextProvider,
   RepositoryContext,
 } from 'gitea-react-toolkit';
 import RepoCheck from './RepoCheck';
-
-/* Seems unnecessary
-  function Component() {
-  //const { state: auth, component: authComponent } = useContext(AuthenticationContext);
-  const { state: repo, component: repoComponent } = useContext(RepositoryContext);
-  const { state: file, component: fileComponent } = useContext(FileContext);
-
-  return //(!auth && authComponent) ||
-    (!repo && repoComponent) || fileComponent;
-};*/
 
 const [repository, setRepository] = React.useState();
 
@@ -35,7 +28,7 @@ const [repository, setRepository] = React.useState();
 
     // full_name='unfoldingWord/hbo_uhb' // OT books only
     // full_name='unfoldingWord/el-x-koine_ugnt' // NT books only
-    // full_name='unfoldingWord/en_ult' // Can use ult or ust here
+    // full_name='unfoldingWord/en_ust' // Can use ult or ust here
     // full_name='unfoldingWord/en_tn' // Translation notes (TSV tables)
     // full_name='unfoldingWord/en_tq' // Translation questions (markdown files)
     full_name='unfoldingWord/fr_ulb' // No alignment so smaller files (faster)

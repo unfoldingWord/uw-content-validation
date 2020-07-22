@@ -520,7 +520,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
         // Do overall global checks of the entire text
         checkUSFMFileContents(filename, givenText, location) // Do this last so the results are lower in the lists
 
-        addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length === 1 ? '' : 's'} in '${location}'`)
+        addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length === 1 ? '' : 's'}'${location}'`)
     }
 
     /*function runSlowTask(which) {

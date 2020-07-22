@@ -7,8 +7,8 @@ const CHECKER_VERSION_STRING = '0.0.3';
 
 
 async function checkRepo(repoObject, givenLocation, setResultValue, checkingOptions) {
-    // console.log("I'm here in checkRepo v" + CHECKER_VERSION_STRING + "\n"
-    //           + "  with " + repoObject.full_name + ", " + givenLocation + ", " + JSON.stringify(checkingOptions));
+    //     console.log(`I'm here in checkRepo v${CHECKER_VERSION_STRING}
+    //   with ${repoObject.full_name}, ${givenLocation}, ${JSON.stringify(checkingOptions)}`);
 
     // consoleLogObject("repoObject", repoObject);
     /* Has fields: id:number, owner:object, name, full_name, description,
@@ -31,18 +31,18 @@ async function checkRepo(repoObject, givenLocation, setResultValue, checkingOpti
     function addNotice(priority, message, index, extract, location, extra) {
         // Adds the notices to the result that we will later return
         // console.log("checkRepo Notice: (priority=" + priority + ") " + message + (index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        console.assert(typeof priority === 'number', "cR addNotice: 'priority' parameter should be a number not a '" + (typeof priority) + "'");
         console.assert(priority !== undefined, "cR addNotice: 'priority' parameter should be defined");
-        console.assert(typeof message === 'string', "cR addNotice: 'message' parameter should be a string not a '" + (typeof message) + "'");
+        console.assert(typeof priority === 'number', "cR addNotice: 'priority' parameter should be a number not a '" + (typeof priority) + "'");
         console.assert(message !== undefined, "cR addNotice: 'message' parameter should be defined");
-        console.assert(typeof index === 'number', "cR addNotice: 'index' parameter should be a number not a '" + (typeof index) + "'");
+        console.assert(typeof message === 'string', "cR addNotice: 'message' parameter should be a string not a '" + (typeof message) + "'");
         console.assert(index !== undefined, "cR addNotice: 'index' parameter should be defined");
-        console.assert(typeof extract === 'string', "cR addNotice: 'extract' parameter should be a string not a '" + (typeof extract) + "'");
+        console.assert(typeof index === 'number', "cR addNotice: 'index' parameter should be a number not a '" + (typeof index) + "'");
         console.assert(extract !== undefined, "cR addNotice: 'extract' parameter should be defined");
-        console.assert(typeof location === 'string', "cR addNotice: 'location' parameter should be a string not a '" + (typeof location) + "'");
+        console.assert(typeof extract === 'string', "cR addNotice: 'extract' parameter should be a string not a '" + (typeof extract) + "'");
         console.assert(location !== undefined, "cR addNotice: 'location' parameter should be defined");
-        console.assert(typeof extra === 'string', "cR addNotice: 'extra' parameter should be a string not a '" + (typeof extra) + "'");
+        console.assert(typeof location === 'string', "cR addNotice: 'location' parameter should be a string not a '" + (typeof location) + "'");
         console.assert(extra !== undefined, "cR addNotice: 'extra' parameter should be defined");
+        console.assert(typeof extra === 'string', "cR addNotice: 'extra' parameter should be a string not a '" + (typeof extra) + "'");
         checkRepoResult.noticeList.push([priority, message, index, extract, location, extra]);
     }
 
@@ -51,20 +51,19 @@ async function checkRepo(repoObject, givenLocation, setResultValue, checkingOpti
         console.log("checkRepo doOurCheckFile(" + filename + ")");
 
         // Updates the global list of notices
-        console.assert(typeof bookOrFileCode === 'string', "doOurCheckFile: 'bookOrFileCode' parameter should be a string not a '" + (typeof bookOrFileCode) + "'");
         console.assert(bookOrFileCode !== undefined, "doOurCheckFile: 'bookOrFileCode' parameter should be defined");
-        console.assert(typeof filename === 'string', "doOurCheckFile: 'filename' parameter should be a string not a '" + (typeof filename) + "'");
+        console.assert(typeof bookOrFileCode === 'string', "doOurCheckFile: 'bookOrFileCode' parameter should be a string not a '" + (typeof bookOrFileCode) + "'");
         console.assert(filename !== undefined, "doOurCheckFile: 'filename' parameter should be defined");
-        console.assert(typeof file_content === 'string', "doOurCheckFile: 'file_content' parameter should be a string not a '" + (typeof file_content) + "'");
+        console.assert(typeof filename === 'string', "doOurCheckFile: 'filename' parameter should be a string not a '" + (typeof filename) + "'");
         console.assert(file_content !== undefined, "doOurCheckFile: 'file_content' parameter should be defined");
-        console.assert(typeof fileLocation === 'string', "doOurCheckFile: 'fileLocation' parameter should be a string not a '" + (typeof fileLocation) + "'");
+        console.assert(typeof file_content === 'string', "doOurCheckFile: 'file_content' parameter should be a string not a '" + (typeof file_content) + "'");
         console.assert(fileLocation !== undefined, "doOurCheckFile: 'fileLocation' parameter should be defined");
+        console.assert(typeof fileLocation === 'string', "doOurCheckFile: 'fileLocation' parameter should be a string not a '" + (typeof fileLocation) + "'");
 
         const resultObject = checkFile(filename, file_content, fileLocation, optionalCheckingOptions);
         // console.log("checkFile() returned", resultObject.successList.length, "success message(s) and", resultObject.noticeList.length, "notice(s)");
-
-        for (let successEntry of resultObject.successList)
-            console.log("  ", successEntry);
+        // for (let successEntry of resultObject.successList)
+        //     console.log("  ", successEntry);
 
         // Process results line by line,  appending the bookOrFileCode as an extra field as we go
         for (let noticeEntry of resultObject.noticeList)
@@ -78,9 +77,9 @@ async function checkRepo(repoObject, givenLocation, setResultValue, checkingOpti
     // Main code for checkRepo()
     let ourLocation = givenLocation;
     if (ourLocation[0] !== ' ')
-        ourLocation = ' ' + ourLocation;
-    if (ourLocation.indexOf(repoObject.full_name)<0)
-        ourLocation = " in " + repoObject.full_name + givenLocation
+        ourLocation = ` ${ourLocation}`;
+    if (ourLocation.indexOf(repoObject.full_name) < 0)
+        ourLocation = ` in ${repoObject.full_name}${givenLocation}`
 
     // Determine the repo type
     //  Unfortunately the "subject" field is not in the repoObject
@@ -94,13 +93,13 @@ async function checkRepo(repoObject, givenLocation, setResultValue, checkingOpti
         repoType = 'Bible_notes';
     else if (repoObject.name.endsWith('_tq') || repoObject.name.endsWith('_utq'))
         repoType = 'Bible_questions';
-    console.log(`Deduced repoType=${repoType} from ${repoObject.name}`);
+    // console.log(`Deduced repoType=${repoType} from ${repoObject.name}`);
 
     // Now we need to fetch the list of files from the repo
-    console.log("checkRepo about to fetch", repoObject.html_url);
-    const fetchedRepoTreemap = await fetchRepo({url: repoObject.html_url});
-    console.log("  fetchedRepoTreemap", fetchedRepoTreemap);
-    consoleLogObject("  fetchedRepoTreemap", fetchedRepoTreemap);
+    // console.log("checkRepo about to fetch", repoObject.html_url);
+    const fetchedRepoTreemap = await fetchRepo({ url: repoObject.html_url });
+    // console.log("  fetchedRepoTreemap", JSON.stringify(fetchedRepoTreemap));
+    // consoleLogObject("  fetchedRepoTreemap", fetchedRepoTreemap);
 
     // So now we want to work through checking all the files in this repo
     let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0;
@@ -120,16 +119,16 @@ async function checkRepo(repoObject, givenLocation, setResultValue, checkingOpti
             // console.log("Have USFM bookcode=" + BBB);
             bookOrFileCode = BBB;
         } else
-        if (thisFilenameExtension === 'tsv') {
-            const filenameMain = thisFilename.substring(0, thisFilename.length - 4); // drop .tsv
-            // console.log("Have TSV filenameMain=" + filenameMain);
-            const BBB = filenameMain.substring(filenameMain.length - 3);
-            // console.log("Have TSV bookcode=" + BBB);
-            bookOrFileCode = BBB;
-        }
+            if (thisFilenameExtension === 'tsv') {
+                const filenameMain = thisFilename.substring(0, thisFilename.length - 4); // drop .tsv
+                // console.log("Have TSV filenameMain=" + filenameMain);
+                const BBB = filenameMain.substring(filenameMain.length - 3);
+                // console.log("Have TSV bookcode=" + BBB);
+                bookOrFileCode = BBB;
+            }
 
         // Update our "waiting" message
-        setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for <b>{repoObject.full_name}</b> repo: checked {checkedFileCount} file{checkedFileCount==1?'':'s'}…</p>);
+        setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for <b>{repoObject.full_name}</b> repo: checked {checkedFileCount} file{checkedFileCount == 1 ? '' : 's'}…</p>);
 
         console.log("checkRepo fetching and checking", thisFilename);
         const file_content = await getBlobContent(thisFilename, detailObject);
@@ -142,9 +141,9 @@ async function checkRepo(repoObject, givenLocation, setResultValue, checkingOpti
         totalCheckedSize += file_content.length;
     }
     // Check for a license and a manifest
-    if (checkedFilenames.indexOf('LICENSE.md')<0)
+    if (checkedFilenames.indexOf('LICENSE.md') < 0)
         addNotice(946, "Missing LICENSE.md", -1, "", ourLocation, 'LICENSE');
-    if (checkedFilenames.indexOf('manifest.yaml')<0)
+    if (checkedFilenames.indexOf('manifest.yaml') < 0)
         addNotice(947, "Missing manifest.yaml", -1, "", ourLocation, 'MANIFEST');
 
     // Add some extra fields to our checkFileResult object
