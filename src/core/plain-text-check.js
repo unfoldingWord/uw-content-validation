@@ -2,7 +2,7 @@ import { isWhitespace, countOccurrences } from './text-handling-functions'
 import doBasicTextChecks from './basic-text-check';
 
 
-const checkerVersionString = '0.0.1';
+const PLAIN_TEXT_VALIDATOR_VERSION = '0.0.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -110,9 +110,9 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
 
     addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'}'${ourLocation}'.`);
     if (result.noticeList)
-        addSuccessMessage(`checkPlainText v${checkerVersionString} finished with ${result.noticeList.length.toLocaleString()} notice${result.noticeList.length == 1 ? '' : 's'}`);
+        addSuccessMessage(`checkPlainText v${PLAIN_TEXT_VALIDATOR_VERSION} finished with ${result.noticeList.length.toLocaleString()} notice${result.noticeList.length == 1 ? '' : 's'}`);
     else
-        addSuccessMessage("No errors or warnings found by checkPlainText v" + checkerVersionString)
+        addSuccessMessage("No errors or warnings found by checkPlainText v" + PLAIN_TEXT_VALIDATOR_VERSION)
     // console.log(`  checkPlainText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
     // console.log("checkPlainText result is", JSON.stringify(result));
     return result;

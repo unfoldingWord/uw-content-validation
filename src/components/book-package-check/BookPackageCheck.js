@@ -5,6 +5,8 @@ import checkBookPackage from './checkBookPackage';
 import processNotices from '../../core/notice-processing-functions';
 import { RenderSuccessesErrorsWarnings } from '../RenderProcessedResults';
 import { ourParseInt, consoleLogObject } from '../../core/utilities';
+// import { autoClearCache } from '../helpers';
+
 
 const CHECKER_VERSION_STRING = '0.0.2';
 
@@ -27,7 +29,10 @@ function BookPackageCheck(/*username, language_code, bookCode,*/ props) {
     if (!books.isValidBookCode(bookCode))
         return (<p>Please enter a valid USFM book code. ('{bookCode}' is not valid.)</p>);
 
-    let checkingOptions = { // Uncomment any of these to test them
+     // Clear cached files if we've changed repo
+    //  autoClearCache(bookCode); // This technique avoids the complications of needing a button
+
+     let checkingOptions = { // Uncomment any of these to test them
         // 'extractLength': 25,
         };
     // Or this allows the parameters to be specified as a BookPackageCheck property

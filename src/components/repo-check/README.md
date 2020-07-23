@@ -4,7 +4,7 @@ The code below requests some info and then checks a Door43 repository.You can en
 
 **Warning**: Some repos contain many files and/or very large files, and downloading them all and then checking them might slow down your browser.
 
-**Note**: This demo software caches/saves the files when it fetches them. So if it reruns (e.g., if you change something in a `//` comment), it should be considerably faster the second time. But the disadvantage is that even if the files are updated on Door43.org, the old version of the file is still used. If you want to reload all the files, you should change the `full_name` in the code below to a different repo, wait until that repo name appears in bright purple, then change it back to the repo name that you want. This name change will cause the cache to be emptied and the newer files will be now fetched.
+**Note**: This demo software caches/saves the files when it fetches them. So if it reruns (e.g., if you change something in a `//` comment below), it should be considerably faster the second time. But the disadvantage is that even if the files are updated on Door43.org, the old version of the file is still used. If you want to reload all the files, you should change the `full_name` in the code below to a different repo, wait until that repo name appears in bright purple, then change it back to the repo name that you want. This name change will cause the cache to be emptied and the newer files will be now fetched.
 
 ```js
 import Button from 'react-bootstrap/Button';

@@ -37,7 +37,7 @@ async function checkBookPackages(username, language_code, bookCodeList, setResul
 
 
     // Main code for checkBookPackages()
-    let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0, checkedRepoNames = new Set();
+     let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0, checkedRepoNames = new Set();
     for (let bookCode of bookCodeList) {
         console.log(`bookCode: ${bookCode}`);
 
@@ -50,7 +50,7 @@ async function checkBookPackages(username, language_code, bookCodeList, setResul
             addNotice(900, "Bad parameter: should be given a valid book abbreviation", -1, bookCodeList, ` (not '${bookCodeList}')${location}`);
             return checkBookPackagesResult;
         }
-        console.log(`book_number_name='${bookNumberAndName}' (${whichTestament} testament)`);
+        // console.log(`bookNumberAndName='${bookNumberAndName}' (${whichTestament} testament)`);
 
         // We use the generalLocation here (does not include repo name)
         //  so that we can adjust the returned strings ourselves
@@ -65,7 +65,7 @@ async function checkBookPackages(username, language_code, bookCodeList, setResul
         //     // console.log("  doOurCheckBookPackage:", successEntry);
         //     addSuccessMessage(successEntry);
         // }
-        
+
         // Concat is faster if we don't need to process each notice individually
         checkBookPackagesResult.noticeList = checkBookPackagesResult.noticeList.concat(cbpResultObject.noticeList);
         // for (let noticeEntry of cbpResultObject.noticeList)
@@ -74,7 +74,7 @@ async function checkBookPackages(username, language_code, bookCodeList, setResul
         //     addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5]);
 
         checkedFileCount += cbpResultObject.checkedFileCount;
-        checkedFilenames = checkedFilenames.concat(cbpResultObject.checkedFilenames);
+        checkedFilenames = [...checkedFilenames, ...cbpResultObject.checkedFilenames];
         checkedFilenameExtensions = new Set([...checkedFilenameExtensions, ...cbpResultObject.checkedFilenameExtensions]);
         totalCheckedSize += cbpResultObject.checkedFilesizes;
         checkedRepoNames = new Set([...checkedRepoNames, ...cbpResultObject.checkedRepoNames]);

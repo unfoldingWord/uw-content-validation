@@ -2,7 +2,7 @@ import * as books from '../core';
 import checkTN_TSVDataRow from './table-line-check';
 
 
-const checkerVersionString = '0.0.5';
+const TABLE_TEXT_VALIDATOR_VERSION = '0.0.5';
 
 const NUM_EXPECTED_TN_FIELDS = 9;
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -176,9 +176,9 @@ function checkTN_TSVText(BBB, tableText, givenLocation, optionalCheckingOptions)
     }
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 == 1 ? '' : 's'}'${ourLocation}'.`);
     if (result.noticeList)
-        addSuccessMessage(`checkTN_TSVText v${checkerVersionString} finished with ${result.noticeList.length.toLocaleString()} notice${result.noticeList.length == 1 ? '' : 's'}`);
+        addSuccessMessage(`checkTN_TSVText v${TABLE_TEXT_VALIDATOR_VERSION} finished with ${result.noticeList.length.toLocaleString()} notice${result.noticeList.length == 1 ? '' : 's'}`);
     else
-        addSuccessMessage("No errors or warnings found by checkTN_TSVText v" + checkerVersionString)
+        addSuccessMessage("No errors or warnings found by checkTN_TSVText v" + TABLE_TEXT_VALIDATOR_VERSION)
     // console.log(`  checkTN_TSVText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
     // console.log("checkTN_TSVText result is", JSON.stringify(result));
     return result;

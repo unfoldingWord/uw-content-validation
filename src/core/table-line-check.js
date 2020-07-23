@@ -1,6 +1,9 @@
 import * as books from '../core';
 import doBasicTextChecks from './basic-text-check';
+import checkMarkdownText from './markdown-text-check';
 
+
+const TABLE_LINE_VALIDATOR_VERSION = '0.2.1';
 
 const NUM_EXPECTED_TSV_FIELDS = 9;
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -44,6 +47,34 @@ function checkTN_TSVDataRow(BBB, line, rowLocation, optionalCheckingOptions) {
         result.noticeList.push([priority, message, index, extract, location]);
     }
 
+    function doOurMarkdownTextChecks(fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions) {
+        // Does markdown checks for small errors like leading/trailing spaces, etc.
+
+        // We assume that checking for compulsory fields is done elsewhere
+
+        // Updates the global list of notices
+
+        // We don't currently use the allowedLinks parameter
+
+        // console.log(`cTSVrow doOurBasicTextChecks(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${fieldLocation}, …)`);
+        console.assert(fieldName !== undefined, "cTSVrow doOurMarkdownTextChecks: 'fieldName' parameter should be defined");
+        console.assert(typeof fieldName === 'string', `cTSVrow doOurMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        console.assert(fieldText !== undefined, "cTSVrow doOurMarkdownTextChecks: 'fieldText' parameter should be defined");
+        console.assert(typeof fieldText === 'string', `cTSVrow doOurMarkdownTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+        console.assert(allowedLinks === true || allowedLinks === false, "cTSVrow doOurMarkdownTextChecks: allowedLinks parameter must be either true or false");
+
+        const cmtResultObject = checkMarkdownText(fieldName, fieldText, rowLocation, optionalCheckingOptions);
+
+        // Choose only ONE of the following
+        // This is the fast way of append the results from this field
+        result.noticeList = result.noticeList.concat(cmtResultObject.noticeList);
+        // If we need to put everything through addNotice, e.g., for debugging or filtering
+        //  process results line by line
+        // for (let noticeEntry of cmtResultObject.noticeList)
+        //     addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+    }
+    // end of doOurMarkdownTextChecks function
+
     function doOurBasicTextChecks(fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions) {
         // Does basic checks for small errors like leading/trailing spaces, etc.
 
@@ -57,14 +88,14 @@ function checkTN_TSVDataRow(BBB, line, rowLocation, optionalCheckingOptions) {
         console.assert(typeof fieldText === 'string', `cTSVrow doOurBasicTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         console.assert(allowedLinks === true || allowedLinks === false, "cTSVrow doOurBasicTextChecks: allowedLinks parameter must be either true or false");
 
-        const resultObject = doBasicTextChecks(fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions);
+        const dbtcResultObject = doBasicTextChecks(fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
-        result.noticeList = result.noticeList.concat(resultObject.noticeList);
+        result.noticeList = result.noticeList.concat(dbtcResultObject.noticeList);
         // If we need to put everything through addNotice, e.g., for debugging or filtering
         //  process results line by line
-        // for (let noticeEntry of resultObject.noticeList)
+        // for (let noticeEntry of dbtcResultObject.noticeList)
         //     addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
     }
     // end of doOurBasicTextChecks function
@@ -196,8 +227,10 @@ function checkTN_TSVDataRow(BBB, line, rowLocation, optionalCheckingOptions) {
                 // if (V !== 'intro')
                 //     addNotice(500, "Invalid zero occurrence field", -1, "", rowLocation);
             }
+            else if (occurrence === '-1') // TODO check the special conditions when this can occur???
+                ;
             else if ('123456789'.indexOf(occurrence) < 0) // it's not one of these integers
-                addNotice(592, `Invalid '${occurrence}' occurrence field`, -1, "", ourRowLocation);
+                addNotice(792, `Invalid '${occurrence}' occurrence field`, -1, "", ourRowLocation);
         }
 
         if (GL_quote.length) { // need to check UTN against ULT
@@ -205,7 +238,7 @@ function checkTN_TSVDataRow(BBB, line, rowLocation, optionalCheckingOptions) {
         }
 
         if (occurrenceNote.length) {
-            doOurBasicTextChecks('OccurrenceNote', occurrenceNote, true, ourRowLocation, optionalCheckingOptions);
+            doOurMarkdownTextChecks('OccurrenceNote', occurrenceNote, true, ourRowLocation, optionalCheckingOptions);
         }
 
     } else

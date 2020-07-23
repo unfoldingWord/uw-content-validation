@@ -72,7 +72,7 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
         addNotice(900, "Bad function call: should be given a valid book abbreviation", -1, bookCode, ` (not '${bookCode}')${location}`);
         return checkBookPackageResult;
     }
-    console.log(`book_number_name='${bookNumberAndName}' (${whichTestament} testament)`);
+    console.log(`bookNumberAndName='${bookNumberAndName}' (${whichTestament} testament)`);
 
     // No point in passing the branch through as a parameter
     //  coz if it's not 'master', it's unlikely to be common for all the repos
@@ -81,7 +81,7 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
     // So now we want to work through checking this one specified Bible book in various repos:
     //  UHB/UGNT, ULT, UST, UTN, UTW, UTQ
     let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0, checkedRepoNames = [];
-    for (let repoCode of [(whichTestament === 'old' ? 'UHB' : 'UGNT'), 'ULT', 'UST', 'TN', 'TQ']) {
+    for (let repoCode of [(whichTestament === 'old' ? 'UHB' : 'UGNT'), 'ULT', 'UST', 'TN']) { // , 'TQ' removed XXXXX ....................... temp
         // console.log("Let's try", repoCode, "(", language_code, bookCode, "from", username, ")");
         const repoLocation = ` in ${repoCode.toUpperCase()}${generalLocation}`;
 

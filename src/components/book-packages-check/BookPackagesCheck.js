@@ -5,6 +5,8 @@ import checkBookPackages from './checkBookPackages';
 import processNotices from '../../core/notice-processing-functions';
 import { RenderSuccessesErrorsWarnings } from '../RenderProcessedResults';
 import { ourParseInt, consoleLogObject } from '../../core/utilities';
+// import { autoClearCache } from './helpers';
+
 
 const CHECKER_VERSION_STRING = '0.0.1';
 
@@ -23,6 +25,9 @@ function BookPackagesCheck(/*username, language_code, bookCodes,*/ props) {
     let bookCodes = props.bookCodes;
     // console.log(`bookCodes='${bookCodes}'`);
     let branch = 'master'; // TEMP should be undefined ???? TEMP
+
+     // Clear cached files if we've changed repo
+    //  autoClearCache(bookCodes); // This technique avoids the complications of needing a button
 
     let bookCodeList = [];
     for (let bookCode of bookCodes.split(',')) {

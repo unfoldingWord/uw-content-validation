@@ -7,7 +7,7 @@ import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
 import { ourParseInt, consoleLogObject } from './utilities';
 
 
-const USFM_VALIDATOR_VERSION = '0.2.0';
+const USFM_VALIDATOR_VERSION = '0.2.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -60,7 +60,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
 
      Returns a result object containing a successList and a noticeList
      */
-    // console.log("checkUSFMText(" + BBB + ", " + givenText.length.toLocaleString() + " chars, '" + location + "')…");
+    // console.log(`checkUSFMText(${BBB}, ${givenText.length.toLocaleString()} chars, '${location}')…`);
     let ourLocation = givenLocation;
     if (ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     if (filename) ourLocation = ` in ${filename}${ourLocation}`;
@@ -111,8 +111,8 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
         // console.log(`  Finished our BCS USFM grammar check with ${grammarCheckResult.isValidUSFM} and ${grammarCheckResult.warnings.length} warnings.`);
         addSuccessMessage(`Checked USFM Grammar (strict mode) ${grammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN'T validate)"}`);
 
-        if (!grammarCheckResult.isValidUSFM)
-            addNotice(944, `USFM3 Grammar Check (strict mode) doesn't pass`, -1, "", fileLocation);
+        if (!grammarCheckResult.isValidUSFM) // TEMP DEGRADE TO WARNING 994 -> 544 ................XXXXXXXXXXXXXXXXXXXXXX
+            addNotice(544, `USFM3 Grammar Check (strict mode) doesn't pass`, -1, "", fileLocation);
 
         // console.log("  Warnings:", JSON.stringify(grammarCheckResult.warnings));
         // Display these warnings but with a lower priority
@@ -267,14 +267,15 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
         console.assert(typeof fieldText === 'string', "cUSFM doOurBasicTextChecks: 'fieldText' parameter should be a string not a '" + (typeof fieldText) + "'");
         console.assert(allowedLinks === true || allowedLinks === false, "cUSFM doOurBasicTextChecks: allowedLinks parameter must be either true or false");
 
-        const resultObject = doBasicTextChecks(fieldName, fieldText, allowedLinks, fieldLocation, optionalCheckingOptions);
+        const dbtcResultObject = doBasicTextChecks(fieldName, fieldText, allowedLinks, fieldLocation, optionalCheckingOptions);
 
         // Process results line by line to filter out potential false positives
         //  for this particular kind of text field
-        for (let noticeEntry of resultObject.noticeList)
+        for (let noticeEntry of dbtcResultObject.noticeList)
             if (!noticeEntry[1].startsWith("Mismatched () characters") // 663 Mismatched left/right chars -- suppress these misleading warnings coz open quote can occur in one verse and close in another
                 && !noticeEntry[1].startsWith("Mismatched [] characters")
                 && !noticeEntry[1].startsWith("Mismatched “” characters")
+                && !noticeEntry[1].startsWith("Unexpected | character after space")
                 && (!noticeEntry[1].startsWith("Unexpected doubled , characters") || fieldText.indexOf('x-morph') < 0) // inside \w fields
                 && (!noticeEntry[1].startsWith('Unexpected doubled " characters') || fieldText.indexOf('x-morph') < 0) // inside \w fields
             )
@@ -440,14 +441,20 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
             } else { // Line didn't start with a backslash
                 // NOTE: Some unfoldingWord USFM Bibles commonly have this
                 //          so it's not necessarily either an error or a warning
-                if (`(‘`.indexOf(line[0]) < 0) { // These are the often expected characters
+                rest = line;
+                if (`(“‘`.indexOf(line[0]) < 0) { // These are the often expected characters
                     addNotice(980, "Expected line to start with backslash", 0, line[0], atString);
-                    marker = 'rem'; // to try to avoid consequential errors, but the rest of the line won't be checked
+                    if (line[1]==='\\') { // Let's drop the leading punctuation and try to check the rest of the line
+                        marker = line.substring(2).split(' ', 1)[0];
+                        rest = line.substring(marker.length + 2 + 1); // Skip leading character, backslash, marker, and space after marker
+                        console.log(`USFM after ${line[0]} got '${marker}': '${rest}'`);
+                    }
+                    else
+                        marker = 'rem'; // to try to avoid consequential errors, but the rest of the line won't be checked
                 } else { // How do we handle an allowed line that doesn't start with a backslash?
                     // Can't use 'rem' because we want the rest of the line checked
                     marker = 'SPECIAL1'; // Handle as a special case
                 }
-                rest = line;
             }
 
             // Handle C/V numbers including verse bridges

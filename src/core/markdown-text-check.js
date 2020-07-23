@@ -2,7 +2,7 @@ import { isWhitespace, countOccurrences } from './text-handling-functions'
 import doBasicTextChecks from './basic-text-check';
 
 
-const checkerVersionString = '0.0.1';
+const MARKDOWN_VALIDATOR_VERSION = '0.2.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -65,17 +65,21 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
         console.assert(typeof fieldText==='string', "cMdT doOurBasicTextChecks: 'fieldText' parameter should be a string not a '"+(typeof fieldText)+"'");
         console.assert( allowedLinks===true || allowedLinks===false, "cMdT doOurBasicTextChecks: allowedLinks parameter must be either true or false");
 
-        const resultObject = doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
+        const dbtcResultObject = doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
-        result.noticeList = result.noticeList.concat(resultObject.noticeList);
+        // result.noticeList = result.noticeList.concat(dbtcResultObject.noticeList);
         // If we need to put everything through addNotice, e.g., for debugging or filtering
         //  process results line by line
-        // for (let noticeEntry of resultObject.noticeList)
-        //     addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+        for (let noticeEntry of dbtcResultObject.noticeList)
+            if (!noticeEntry[1].startsWith("Unexpected doubled * characters") // 577 Markdown allows this
+            && !noticeEntry[1].startsWith("Unexpected * character after space") // 591
+            )
+                addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
     }
     // end of doOurBasicTextChecks function
+
 
     function checkMarkdownLineContents(lineName, lineText, lineLocation) {
 
@@ -99,7 +103,7 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
         // console.log("After removing more leading spaces have '"+thisText+"'");
 
         if (thisText)
-            doOurBasicTextChecks(lineName, thisText, false, lineLocation, optionalCheckingOptions);
+            doOurBasicTextChecks(lineName, thisText, true, lineLocation, optionalCheckingOptions);
     }
     // end of checkMarkdownLine function
 
@@ -142,9 +146,9 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
 
     addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'}'${ourLocation}'.`);
     if (result.noticeList)
-        addSuccessMessage(`checkMarkdownText v${checkerVersionString} finished with ${result.noticeList.length.toLocaleString()} notice${result.noticeList.length == 1 ? '' : 's'}`);
+        addSuccessMessage(`checkMarkdownText v${MARKDOWN_VALIDATOR_VERSION} finished with ${result.noticeList.length.toLocaleString()} notice${result.noticeList.length == 1 ? '' : 's'}`);
     else
-        addSuccessMessage("No errors or warnings found by checkMarkdownText v" + checkerVersionString)
+        addSuccessMessage("No errors or warnings found by checkMarkdownText v" + MARKDOWN_VALIDATOR_VERSION)
     // console.log(`  checkMarkdownText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
     // console.log("checkMarkdownText result is", JSON.stringify(result));
     return result;

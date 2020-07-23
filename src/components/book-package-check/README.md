@@ -2,6 +2,10 @@
 
 The code below requests some info and then checks the single specified Bible book in several repos. This is convenient to see all these check results collected into one place.
 
+`Book Package Check` calls `checkBookPackage()` which then calls `checkFile()` for the book file in each repo.
+
+**Warning**: Some repos contain many files and/or very large files, and downloading them all and then checking them might slow down your browser.
+
 ```js
 import BookPackageCheck from './BookPackageCheck';
 
