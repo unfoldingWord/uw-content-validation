@@ -1,14 +1,15 @@
-## Book Package Check - Readme
+## Book Packages Check - Readme
 
-The code below requests some info and then checks the single specified Bible book in several repos. This is convenient to see all these check results collected into one place.
+The code below requests some info and then checks the given Bible books across several repos. This is convenient to see all these check results collected into one place.
 
 ```js
-import BookPackageCheck from './BookPackageCheck';
+import BookPackagesCheck from './BookPackagesCheck';
 
-<BookPackageCheck
+<BookPackagesCheck
   username='unfoldingWord'
   language_code='en'
-  bookCode='EPH'
+  // Enter a string containing UPPERCASE USFM book codes separated by commas
+  bookCodes='RUT,JON,EPH,TIT,3JN'
 />
 ```
 
