@@ -4,7 +4,7 @@ The code below requests some info and then checks the given Bible books across s
 
 `Book Packages Check` calls `checkBookPackages()` which then calls `checkBookPackage()` for each book code, which in turn calls `checkFile()` for the book file in each repo.
 
-**Warning**: Some repos contain many files and/or very large files, and downloading them all and then checking them might slow down your browser.
+**Warning**: Some book packages contain many files and/or very large files, and downloading them all and then checking them might slow down your browser.
 
 ```js
 import BookPackagesCheck from './BookPackagesCheck';
@@ -13,7 +13,8 @@ import BookPackagesCheck from './BookPackagesCheck';
   username='unfoldingWord'
   language_code='en'
   // Enter a string containing UPPERCASE USFM book codes separated by commas
-  bookCodes='RUT,JON,EPH,TIT,3JN'
+  // bookCodes='RUT,NEH,JON,EPH,TIT,3JN,OBS'
+  bookCodes='3JN,OBS'
 />
 ```
 

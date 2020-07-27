@@ -8,8 +8,8 @@ const CHECKER_VERSION_STRING = '0.0.1';
 
 
 async function checkBookPackages(username, language_code, bookCodeList, setResultValue, checkingOptions) {
-//     console.log(`I'm here in checkBookPackages v${CHECKER_VERSION_STRING}
-//   with ${username}, ${language_code}, ${bookCodeList}, ${JSON.stringify(checkingOptions)}`);
+    //     console.log(`I'm here in checkBookPackages v${CHECKER_VERSION_STRING}
+    //   with ${username}, ${language_code}, ${bookCodeList}, ${JSON.stringify(checkingOptions)}`);
 
     let checkBookPackagesResult = { successList: [], noticeList: [] };
 
@@ -37,24 +37,25 @@ async function checkBookPackages(username, language_code, bookCodeList, setResul
 
 
     // Main code for checkBookPackages()
-     let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0, checkedRepoNames = new Set();
+    let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0, checkedRepoNames = new Set();
     for (let bookCode of bookCodeList) {
         console.log(`bookCode: ${bookCode}`);
 
         // const generalLocation = ` ${language_code} ${bookCode} book packages from ${username}`;
-        let bookNumberAndName, whichTestament;
-        try {
-            bookNumberAndName = books.usfmNumberName(bookCode);
-            whichTestament = books.testament(bookCode);
-        } catch (e) {
-            addNotice(900, "Bad parameter: should be given a valid book abbreviation", -1, bookCodeList, ` (not '${bookCodeList}')${location}`);
-            return checkBookPackagesResult;
+        if (bookCode !== 'OBS') {
+            let bookNumberAndName, whichTestament;
+            try {
+                bookNumberAndName = books.usfmNumberName(bookCode);
+                whichTestament = books.testament(bookCode);
+            } catch (e) {
+                addNotice(900, "Bad parameter: should be given a valid book abbreviation", -1, bookCodeList, ` (not '${bookCodeList}')${location}`);
+                return checkBookPackagesResult;
+            }
+            // console.log(`bookNumberAndName='${bookNumberAndName}' (${whichTestament} testament)`);
         }
-        // console.log(`bookNumberAndName='${bookNumberAndName}' (${whichTestament} testament)`);
 
         // We use the generalLocation here (does not include repo name)
         //  so that we can adjust the returned strings ourselves
-
         const cbpResultObject = await checkBookPackage(username, language_code, bookCode, setResultValue, checkingOptions);
         console.log("checkBookPackage() returned", cbpResultObject.successList.length, "success message(s) and", cbpResultObject.noticeList.length, "notice(s)");
 

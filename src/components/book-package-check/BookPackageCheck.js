@@ -5,10 +5,9 @@ import checkBookPackage from './checkBookPackage';
 import processNotices from '../../core/notice-processing-functions';
 import { RenderSuccessesErrorsWarnings } from '../RenderProcessedResults';
 import { ourParseInt, consoleLogObject } from '../../core/utilities';
-// import { autoClearCache } from '../helpers';
 
 
-const CHECKER_VERSION_STRING = '0.0.2';
+const CHECKER_VERSION_STRING = '0.1.1';
 
 
 function BookPackageCheck(/*username, language_code, bookCode,*/ props) {
@@ -18,6 +17,7 @@ function BookPackageCheck(/*username, language_code, bookCode,*/ props) {
     // console.log(`I'm here in BookPackageCheck v${CHECKER_VERSION_STRING}`);
     // consoleLogObject("props", props);
     // consoleLogObject("props.classes", props.classes);
+
     let username = props.username;
     // console.log("username='"+ username+"'");
     let language_code = props.language_code;
@@ -26,7 +26,7 @@ function BookPackageCheck(/*username, language_code, bookCode,*/ props) {
     // console.log("bookCode='"+ bookCode+"'");
     let branch = 'master'; // TEMP should be undefined ???? TEMP
 
-    if (!books.isValidBookCode(bookCode))
+    if (bookCode!=='OBS' && !books.isValidBookCode(bookCode))
         return (<p>Please enter a valid USFM book code. ('{bookCode}' is not valid.)</p>);
 
      // Clear cached files if we've changed repo
@@ -57,7 +57,7 @@ function BookPackageCheck(/*username, language_code, bookCode,*/ props) {
             rawResult.bookCode = bookCode;
             rawResult.checkedOptions = checkingOptions;
 
-            console.log("Here with rawResult", typeof rawResult);
+            console.log("Here with CBP rawResult", typeof rawResult);
             // Now do our final handling of the result -- we have some options available
             let processOptions = { // Uncomment any of these to test them
                 // 'maximumSimilarMessages': 3, // default is 2

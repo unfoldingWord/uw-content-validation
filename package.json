@@ -1,7 +1,7 @@
 {
   "name": "content-validation-rcl",
   "description": "Components for Checking uW Content/Resources.",
-  "version": "0.2.1",
+  "version": "0.3.1",
   "private": false,
   "homepage": "https://unfoldingword.github.io/content-validation-rcl/",
   "repository": {
@@ -32,7 +32,6 @@
     "@material-ui/icons": "^4.5.1",
     "axios-cache-adapter": "^2.2.1",
     "cypress": "3.8.3",
-    "gitea-react-toolkit": "^1.1.0-rc.2",
     "js-yaml-parser": "^1.0.0",
     "jszip": "^3.2.0",
     "localforage": "^1.7.3",

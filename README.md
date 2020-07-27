@@ -54,10 +54,10 @@ Note that the original structure of these components were taken from https://git
 Still unfinished:
 
 1. Checking of markdown repos (e.g., TQ)
+1. Clean-up various different file fetches and caches (incl. using zips)
 1. Checking of links
-1. Checking of OBS
 1. Checking of UTA
-1. Checking of current UTW
+1. Checking of current UTW (is it worth it???)
 1. Getting error messages from BCS Grammar Check (once they adjust the code)
 1. Testing and fine-tuning of error messages (e.g., comparing with tX)
 1. Write unit tests and get them passing

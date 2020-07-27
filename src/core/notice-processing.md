@@ -41,7 +41,7 @@ const chosenText = textB;
 
 // The third parameter is "linksAllowed"
 let rawResult = doBasicTextChecks('Sample', chosenText, false, 'in '+chosenName+' that was supplied');
-rawResult.successList = ["Done basic text checks"];
+if (!rawResult.successList.length) rawResult.successList = ["Done basic text checks"];
 const processOptions = {
     // Uncomment any of these to test them
     // 'maximumSimilarMessages': 3, // default is 2

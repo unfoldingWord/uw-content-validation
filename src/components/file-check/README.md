@@ -3,70 +3,38 @@
 The code below requests some info to select an online repository
 and then validates the content of one file selected from the repo.
 
-This uses gitea-react-toolkit (https://github.com/unfoldingWord/gitea-react-toolkit and
-explorable at https://gitea-react-toolkit.netlify.com/) to fetch the file.
-
 ```js
-// import { useContext } from 'react';
-// import { Paper } from '@material-ui/core';
-import {
-  AuthenticationContextProvider,
-  RepositoryContextProvider, RepositoryContext,
-  FileContextProvider, FileContext,
-} from 'gitea-react-toolkit';
+<FileCheck
+    username='unfoldingWord'
 
-const [repository, setRepository] = React.useState();
-const [filepath, setFilepath] = React.useState();
-// const [file, setFile] = React.useState();
-
-<AuthenticationContextProvider>
-  <RepositoryContextProvider
-    repository={repository}
-    onRepository={setRepository}
-    config={ {
-      server: "https://git.door43.org",
-      tokenid: "PlaygroundTesting",
-    }}
-
-    // full_name='unfoldingWord/hbo_uhb' // OT books only
-    // full_name='unfoldingWord/el-x-koine_ugnt' // NT books only
-    // full_name='unfoldingWord/en_ust' // Can use ult or ust here
-    full_name='unfoldingWord/en_tn' // Translation notes (TSV tables)
+    // repoName='hbo_uhb' // OT books only
+    // repoName='el-x-koine_ugnt' // NT books only
+    // repoName='en_ust' // Can use ult or ust here
+    repoName='en_tn'
 
     // If we don't put the branch here, the default branch is used
     // branch='master'
-  >
-    <FileContextProvider
-      // If we don't put the filepath here, the user can select from a list <- DOESN'T WORK !!!
-      // filepath= '01-GEN.usfm' // e.g., for UHB, ULT, or UST
-      // filepath= '08-RUT.usfm' // e.g., for UHB, ULT, or UST
-      // filepath= '41-MAT.usfm' // e.g., for UGNT, ULT, or UST
-      // filepath= '42-MRK.usfm' // e.g., for UGNT, ULT, or UST
-      // filepath= '45-ACT.usfm' // e.g., for UGNT, ULT, or UST
-      // filepath= '48-2CO.usfm' // e.g., for UGNT, ULT, or UST
-      // filepath= '50-EPH.usfm' // e.g., for UGNT, ULT, or UST
-      // filepath= '65-3JN.usfm' // e.g., for UGNT, ULT, or UST
-      // filepath= 'en_tn_01-GEN.tsv' // for TN
-      // filepath= 'en_tn_17-EST.tsv' // for TN
-      filepath= 'en_tn_50-EPH.tsv' // for TN
-      // filepath= 'en_tn_65-3JN.tsv' // for TN
-      onFilepath={setFilepath}
-      // file={file}
-      // onFile={setFile}
-    >
 
-      <FileCheck
-        // Specifying extractLength and maximumSimilarMessages is just to show off options
-        //  -- those fields are not necessary (or normal) here
-        extractLength="13" // Default is 10
-        maximumSimilarMessages="2"
-        // The location field appears in check messages to help the user locate the issue
-        location="as specified in file-check/README.md"
-      />
+    // filename= '01-GEN.usfm' // e.g., for UHB, ULT, or UST
+    // filename= '08-RUT.usfm' // e.g., for UHB, ULT, or UST
+    // filename= '41-MAT.usfm' // e.g., for UGNT, ULT, or UST
+    // filename= '42-MRK.usfm' // e.g., for UGNT, ULT, or UST
+    // filename= '45-ACT.usfm' // e.g., for UGNT, ULT, or UST
+    // filename= '48-2CO.usfm' // e.g., for UGNT, ULT, or UST
+    // filename= '50-EPH.usfm' // e.g., for UGNT, ULT, or UST
+    // filename= '65-3JN.usfm' // e.g., for UGNT, ULT, or UST
+    // filename= 'en_tn_01-GEN.tsv' // for TN
+    // filename= 'en_tn_17-EST.tsv' // for TN
+    filename= 'en_tn_50-EPH.tsv' // for TN
+    // filename= 'en_tn_65-3JN.tsv' // for TN
 
-    </FileContextProvider>
-  </RepositoryContextProvider>
-</AuthenticationContextProvider>
+    // Specifying extractLength and maximumSimilarMessages is just to show off options
+    //  -- those fields are not necessary (or normal) here
+    extractLength='13' // Default is 10
+    maximumSimilarMessages='2'
+    // The location field appears in check messages to help the user locate the issue
+    location="as specified in file-check/README.md"
+    />
 ```
 
 <!-- ## Component Description

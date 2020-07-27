@@ -5,7 +5,6 @@ import checkBookPackages from './checkBookPackages';
 import processNotices from '../../core/notice-processing-functions';
 import { RenderSuccessesErrorsWarnings } from '../RenderProcessedResults';
 import { ourParseInt, consoleLogObject } from '../../core/utilities';
-// import { autoClearCache } from './helpers';
 
 
 const CHECKER_VERSION_STRING = '0.0.1';
@@ -18,6 +17,7 @@ function BookPackagesCheck(/*username, language_code, bookCodes,*/ props) {
     // console.log(`I'm here in BookPackagesCheck v${CHECKER_VERSION_STRING}`);
     // consoleLogObject("props", props);
     // consoleLogObject("props.classes", props.classes);
+
     let username = props.username;
     // console.log(`username='${username}'`);
     let language_code = props.language_code;
@@ -32,7 +32,7 @@ function BookPackagesCheck(/*username, language_code, bookCodes,*/ props) {
     let bookCodeList = [];
     for (let bookCode of bookCodes.split(',')) {
         bookCode = bookCode.trim();
-        if (!books.isValidBookCode(bookCode))
+        if (!books.isValidBookCode(bookCode) && bookCode!=='OBS')
             return (<p>Please enter only valid USFM book codes separated by commas. ('{bookCode}' is not valid.)</p>);
         bookCodeList.push(bookCode);
     }
@@ -64,7 +64,7 @@ function BookPackagesCheck(/*username, language_code, bookCodes,*/ props) {
             rawResult.bookCodeList = bookCodeList;
             rawResult.checkedOptions = checkingOptions;
 
-            console.log("Here with rawResult", typeof rawResult);
+            console.log("Here with CBPs rawResult", typeof rawResult);
             // Now do our final handling of the result -- we have some options available
             let processOptions = { // Uncomment any of these to test them
                 // 'maximumSimilarMessages': 3, // default is 2

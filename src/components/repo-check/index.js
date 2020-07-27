@@ -1,2 +1,2 @@
-export {default} from './checkRepo';
+export {checkRepoGRT, checkRepo} from './checkRepo';
 export {default} from './RepoCheck';

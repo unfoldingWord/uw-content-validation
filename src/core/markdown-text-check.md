@@ -41,7 +41,7 @@ const chosenText = textSB;
 const chosenName = 'textSB';
 
 let rawResult = checkMarkdownText(chosenName, chosenText, 'that was supplied');
-rawResult.successList = ["Done markdown text checks"];
+if (!rawResult.successList.length) rawResult.successList = ["Done markdown text checks"];
 const processedResult = processNotices(rawResult);
 
 <>

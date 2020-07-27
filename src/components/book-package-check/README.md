@@ -2,9 +2,11 @@
 
 The code below requests some info and then checks the single specified Bible book in several repos. This is convenient to see all these check results collected into one place.
 
-`Book Package Check` calls `checkBookPackage()` which then calls `checkFile()` for the book file in each repo.
+Note that `OBS` can also be entered here as a *pseudo book code* in order to check an **Open Bible Stories** repo.
 
-**Warning**: Some repos contain many files and/or very large files, and downloading them all and then checking them might slow down your browser.
+`Book Package Check` calls `checkBookPackage()` which then calls `checkFile()` for the book file in each repo (or calls `checkRepo()` for **OBS**).
+
+**Warning**: Some book packages contain many files and/or very large files, and downloading them all and then checking them might slow down your browser.
 
 ```js
 import BookPackageCheck from './BookPackageCheck';
@@ -12,7 +14,7 @@ import BookPackageCheck from './BookPackageCheck';
 <BookPackageCheck
   username='unfoldingWord'
   language_code='en'
-  bookCode='EPH'
+  bookCode='OBS'
 />
 ```
 

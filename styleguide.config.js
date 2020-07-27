@@ -124,6 +124,11 @@ let sections = [
 				// description: ''
 			},
 			{
+				name: 'YAML check',
+				content: 'src/core/yaml-text-check.md',
+				// description: ''
+			},
+			{
 				name: 'Manifest check',
 				content: 'src/core/manifest-text-check.md',
 				// description: ''

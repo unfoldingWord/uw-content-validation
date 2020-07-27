@@ -183,7 +183,7 @@ const chosenText = textH;
 
 // Second (unused) parameter is filename
 let rawResult = checkUSFMText('GEN', '', chosenText, 'that was supplied');
-rawResult.successList = ["Done USFM text checks"];
+if (!rawResult.successList.length) rawResult.successList = ["Done USFM text checks"];
 const processedResult = processNotices(rawResult);
 
 <>

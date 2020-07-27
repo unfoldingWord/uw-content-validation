@@ -1,18 +1,19 @@
 import checkUSFMText from '../../core/usfm-text-check';
 import checkMarkdownText from '../../core/markdown-text-check';
 import checkPlainText from '../../core/plain-text-check';
+import checkYAMLText from '../../core/yaml-text-check';
 import checkManifestText from '../../core/manifest-text-check';
 import checkTN_TSVText from '../../core/table-text-check';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-const CHECKER_VERSION_STRING = '0.0.2';
+const CHECKER_VERSION_STRING = '0.1.1';
 
 function checkFile(filename, fileContent, givenLocation, checkingOptions) {
     // Determine the file type from the filename extension
     //  and return the results of checking that kind of file
-//     console.log(`I'm here in checkFile v${CHECKER_VERSION_STRING`
-//   with ${filename}, ${fileContent.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)}`}`);
+    //     console.log(`I'm here in checkFile v${CHECKER_VERSION_STRING`
+    //   with ${filename}, ${fileContent.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)}`}`);
 
     const ourLocation = givenLocation;
     if (ourLocation[0] !== ' ') ourLocation = ' ' + ourLocation;
@@ -35,8 +36,10 @@ function checkFile(filename, fileContent, givenLocation, checkingOptions) {
         checkFileResult = checkMarkdownText(filename, fileContent, ourLocation, checkingOptions);
     else if (filename.toLowerCase().endsWith('.txt'))
         checkFileResult = checkPlainText(filename, fileContent, ourLocation, checkingOptions);
-    else if (filename.toLowerCase().startsWith('manifest.'))
+    else if (filename.toLowerCase() === 'manifest.yaml')
         checkFileResult = checkManifestText(filename, fileContent, ourLocation, checkingOptions);
+    else if (filename.toLowerCase().endsWith('.yaml'))
+        checkFileResult = checkYAMLText(filename, fileContent, ourLocation, checkingOptions);
     else {
         checkFileResult = checkPlainText(filename, fileContent, ourLocation, checkingOptions);
         checkFileResult.noticeList.unshift([995, "File extension is not recognized, so treated as plain text.", -1, '', filename]);

@@ -18,7 +18,7 @@ const zipStore = localforage.createInstance({
 });
 
 
-const api = setup({
+const Door43Api = setup({
   baseURL: baseURL,
   cache: {
     store: cacheStore,
@@ -34,7 +34,18 @@ const api = setup({
 });
 
 
-export const resourceRepositories = ({languageId}) => {
+export async function clearCaches() {
+  console.log("Clearing localforage.INDEXEDDB zipStore and cacheStore caches…");
+  const tasks = [zipStore, cacheStore].map(clear);
+  const results = await Promise.all(tasks);
+  results.forEach(x => console.log("Done it", x));
+  // await zipStore.clear();
+  // await cacheStore.clear();
+}
+
+
+/*
+const resourceRepositories = ({languageId}) => {
   return {
     obs: languageId + '_obs',
     'obs-tn': languageId + '_obs-tn',
@@ -55,8 +66,10 @@ export const resourceRepositories = ({languageId}) => {
     uhal: languageId + '_uhal',
   };
 };
+*/
 
-export async function fetchResourceManifests({username, languageId}) {
+/*
+async function fetchResourceManifests({username, languageId}) {
   let manifests = {};
   const _resourceRepositories = resourceRepositories({languageId});
   const resourceIds = Object.keys(_resourceRepositories);
@@ -73,16 +86,17 @@ export async function fetchResourceManifests({username, languageId}) {
 };
 
 
-export async function fetchManifest({username, repository}) {
-  //console.log("uname=",username," repo=",repository)
+async function fetchManifest({username, repository}) {
+  console.log(`fetchManifest(${username}, ${repository})…`);
   const yaml = await getFile({username, repository, path: 'manifest.yaml'});
   const json = (yaml) ? YAML.safeLoad(yaml) : null;
   return json;
 };
+*/
 
 // https://git.door43.org/unfoldingword/en_ult/raw/branch/master/manifest.yaml
 export async function fetchFileFromServer({username, repository, path, branch='master'}) {
-  //console.log("repo=",repository, " path=",path);
+  console.log(`fetchFileFromServer(${username}, ${repository}, ${path}, ${branch})…`);
   const repoExists = await repositoryExists({username, repository});
   if (repoExists) {
     const uri = Path.join(username, repository, 'raw/branch', branch, path);
@@ -101,10 +115,7 @@ export async function fetchFileFromServer({username, repository, path, branch='m
 };
 
 export async function getFile({username, repository, path, branch}) {
-  // console.log("getFile", username, repository, path, branch);
-  if (repository === "en_ta") {
-    //console.log("getFile(): path=",path," branch=",branch);
-  }
+  console.log(`getFile(${username}, ${repository}, ${path}, ${branch})…`);
   let file;
   file = await getFileFromZip({username, repository, path, branch});
   if (!file) {
@@ -113,34 +124,44 @@ export async function getFile({username, repository, path, branch}) {
   return file;
 }
 
-export async function getUID({username}) {
+
+async function getUID({username}) {
+  console.log(`getUID(${username})…`);
   const uri = Path.join(apiPath, 'users', username);
   const user = await get({uri});
   const {id: uid} = user;
+  console.log(`  returning: ${uid}`);
   return uid;
 }
-export async function repositoryExists({username, repository}) {
+async function repositoryExists({username, repository}) {
+  console.log(`repositoryExists(${username}, ${repository})…`);
   const uid = await getUID({username});
   const params = { q: repository, uid };
   const uri = Path.join(apiPath, 'repos', `search`);
   const {data: repos} = await get({uri, params});
   const repo = repos.filter(repo => repo.name === repository)[0];
+  console.log(`  returning: ${!!repo}`);
   return !!repo;
 };
 
+
 export async function get({uri, params}) {
-  // console.log("get() uri,params:",uri,params);
-  const {data} = await api.get(baseURL+uri, { params });
+  console.log(`get(${uri}, ${params})…`);
+  const {data} = await Door43Api.get(baseURL+uri, { params });
+  // console.log(`  returning: ${data}`);
   return data;
 };
 
 export async function getURL({uri, params}) {
-  console.log("getURL() uri,params:",uri,params);
-  const {data} = await api.get(uri, { params });
+  console.log(`getURL(${uri}, ${params})…`);
+  const {data} = await Door43Api.get(uri, { params });
+  // console.log(`  returning: ${data}`);
   return data;
 };
 
-export async function fetchRepositoriesZipFiles({username, languageId, branch}) {
+
+/*
+function fetchRepositoriesZipFiles({username, languageId, branch}) {
   const repositories = resourceRepositories({languageId});
   const promises = Object.values(repositories).map(repository => {
     return fetchRepositoryZipFile({username, repository, branch});
@@ -148,9 +169,11 @@ export async function fetchRepositoriesZipFiles({username, languageId, branch}) 
   const zipArray = await Promise.all(promises);
   return zipArray;
 };
+*/
 
+/*
 // https://git.door43.org/unfoldingWord/en_ult/archive/master.zip
-async function fetchRepositoryZipFile({username, repository, branch}) {
+function fetchRepositoryZipFile({username, repository, branch}) {
   const repoExists = await repositoryExists({username, repository});
   if (!repoExists) {
     return null;
@@ -165,18 +188,24 @@ async function fetchRepositoryZipFile({username, repository, branch}) {
     return false;
   }
 };
+*/
 
 async function getFileFromZip({username, repository, path, branch}) {
+  console.log(`getFileFromZip(${username}, ${repository}, ${path}, ${branch})…`);
   let file;
   const uri = zipUri({username, repository, branch});
   const zipBlob = await zipStore.getItem(uri);
   try {
     if (zipBlob) {
+      console.log("  Got zipBlob");
       const zip = await JSZip.loadAsync(zipBlob);
       const zipPath = Path.join(repository.toLowerCase(), path);
-      file = await zip.file(zipPath).async("string");
+      file = await zip.file(zipPath).async('string');
+      console.log(`    Got zipBlob ${file}`);
     }
+    else console.log("  No zipBlob");
   } catch(error) {
+    console.log(`  Nope: ${error}`);
     file = null;
   }
   return file;
@@ -184,6 +213,7 @@ async function getFileFromZip({username, repository, path, branch}) {
 
 
 function zipUri({username, repository, branch='master'}) {
+  console.log(`zipUri(${username}, ${repository}, ${branch})…`);
   const zipPath = Path.join(username, repository, 'archive', `${branch}.zip`);
   const zipUri = baseURL + zipPath;
   return zipUri;
@@ -191,18 +221,26 @@ function zipUri({username, repository, branch='master'}) {
 
 
 export async function fetchTree({username, repository, sha='master'}) {
+  console.log(`fetchTree(${username}, ${repository}, ${sha})…`);
   try {
     const uri = Path.join('api/v1/repos', username, repository, 'git/trees', sha);
+    console.log(`  uri='${uri}'`);
     const data = await get({uri});
-    const tree = JSON.parse(data);
+    console.log(`  data (${typeof data})`);
+    return data;
+    const tree = JSON.parse(data); // RJH: Why was this here???
+    console.log(`  tree (${typeof tree})`);
     return tree;
   } catch(error) {
+    console.log(`fetchTree ERROR: ${error}`);
+    console.log(`  Data was: ${JSON.stringify(data)}`);
     return null;
   }
 };
 
 
-export async function recursiveTree({username, repository, path, sha}) {
+/*
+async function recursiveTree({username, repository, path, sha}) {
   console.log("recurse tree args:",username,repository,path,sha)
   let tree = {};
   const pathArray = path.split();
@@ -219,8 +257,9 @@ export async function recursiveTree({username, repository, path, sha}) {
   }
 };
 
-export async function fileExists({username, repository, path, branch}) {
+async function fileExists({username, repository, path, branch}) {
   // get root listing
   recursiveTree()
   // get recursive path listing
 }
+*/

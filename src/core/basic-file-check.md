@@ -26,7 +26,7 @@ const chosenName = "textB";
 const chosenText = textB;
 
 let rawResult = doBasicFileChecks('Sample', chosenText, 'in '+chosenName+' that was supplied');
-rawResult.successList = ["Done basic file checks"];
+if (!rawResult.successList.length) rawResult.successList = ["Done basic file checks"];
 const processedResult = processNotices(rawResult);
 
 <>

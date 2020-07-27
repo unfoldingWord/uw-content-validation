@@ -1,19 +1,21 @@
-## Manifest Text Check Sandbox
+## YAML Text Check Sandbox
 
-This function checks the given manifest.yaml for typical formatting errors.
+This function checks the given yaml file for typical formatting errors.
 
 It returns a list of success messages and a list of prioritised notice components.
 
 The notices are then processed into a list of errors and a list of warnings for display.
 
+Note that we have a more specialised function for checking `manifest.yaml` files.
+
 ```js
-import checkManifestText from './manifest-text-check';
+import checkYAMLText from './yaml-text-check';
 import processNotices from './notice-processing-functions';
 import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
 
-// Manifest empty, good and bad text samples
+// YAML empty, good and bad text samples
 const textE = '';
-const textG = `dublin_core:
+const textG1 = `dublin_core:
   conformsto: 'rc0.2'
   contributor:
     - 'Jesse Griffin, BA Biblical Studies, MA Biblical Languages'
@@ -116,7 +118,7 @@ projects:
     path: './67-REV.usfm'
     categories: [ 'bible-nt' ]
 `;
-const textB1 = `dublin_core:
+const textB = `dublin_core:
   conformsto: 'rc0.2'
   contributor:
     - 'Jesse Griffin, BA Biblical Studies, MA Biblical Languages'
@@ -180,7 +182,7 @@ projects:
     categories: [ 'bible-nt' ]
 `;
 // This is an extract from a media.yaml file:
-const textB2 = `resource:
+const textG2 = `resource:
   version: '{latest}'
   media:
     -
@@ -213,14 +215,14 @@ projects:
 
 // You can choose any of the above texts here
 //  (to demonstrate differing results)
-const chosenText = textG;
-const chosenName = 'textG';
+const chosenText = textG2;
+const chosenName = 'textG2';
 
-let rawResult = checkManifestText(chosenName, chosenText, 'in manifest data that was supplied');
+let rawResult = checkYAMLText(chosenName, chosenText, 'in YAML data that was supplied');
 const processedResult = processNotices(rawResult);
 
 <>
-<b>Manifest contents</b> <RenderLines text={chosenText} />
+<b>YAML contents</b> <RenderLines text={chosenText} />
 <RenderSuccessesErrorsWarnings results={processedResult} />
 </>
 ```

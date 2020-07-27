@@ -41,7 +41,7 @@ const chosenText = textSB;
 const chosenName = 'textSB';
 
 let rawResult = checkPlainText(chosenName, chosenText, 'that was supplied');
-rawResult.successList = ["Done plain text checks"];
+if (!rawResult.successList.length) rawResult.successList = ["Done plain text checks"];
 const processedResult = processNotices(rawResult);
 
 <>
