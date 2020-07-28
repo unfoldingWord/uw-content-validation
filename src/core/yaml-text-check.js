@@ -34,11 +34,11 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
     const halfLengthPlus = Math.floor((extractLength+1) / 2); // rounded up
     // console.log("Using halfLength=" + halfLength, "halfLengthPlus="+halfLengthPlus);
 
-    let result = { successList: [], noticeList: [] };
+    let cytResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
         // console.log("checkYAMLText success: " + successString);
-        result.successList.push(successString);
+        cytResult.successList.push(successString);
     }
     function addNotice(priority, message, index, extract, location) {
         // console.log("checkYAMLText Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
@@ -52,7 +52,7 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
         console.assert(typeof extract==='string', "cManT addNotice: 'extract' parameter should be a string not a '"+(typeof extract)+"': "+extract);
         console.assert(location!==undefined, "cYt addNotice: 'location' parameter should be defined");
         console.assert(typeof location==='string', "cYt addNotice: 'location' parameter should be a string not a '"+(typeof location)+"': "+location);
-        result.noticeList.push([priority, message, index, extract, location]);
+        cytResult.noticeList.push([priority, message, index, extract, location]);
     }
 
     function doOurBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
@@ -113,13 +113,14 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
     let formData;
     try {
         formData = yaml.parse(YAMLText);
-        // console.log("Got formData", JSON.stringify(formData));
+        console.log("yaml.parse(YAMLText) got formData", JSON.stringify(formData));
     }
     catch(e) {
+        console.log("yaml parse error:", e.message);
         addNotice(916, e.message, -1, "", ourLocation)
     }
     // Add the parsed YAML to our result
-    result.formData = formData;
+    cytResult.formData = formData;
 
     let lastNumLeadingSpaces = 0;
     let lastLineContents;
@@ -145,13 +146,13 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
     }
 
     addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'}'${ourLocation}'.`);
-    if (result.noticeList)
-        addSuccessMessage(`checkYAMLText v${YAML_VALIDATOR_VERSION} finished with ${result.noticeList.length?result.noticeList.length.toLocaleString():"zero"} notice${result.noticeList.length == 1 ? '' : 's'}`);
+    if (cytResult.noticeList)
+        addSuccessMessage(`checkYAMLText v${YAML_VALIDATOR_VERSION} finished with ${cytResult.noticeList.length?cytResult.noticeList.length.toLocaleString():"zero"} notice${cytResult.noticeList.length == 1 ? '' : 's'}`);
     else
         addSuccessMessage(`No errors or warnings found by checkYAMLText v${YAML_VALIDATOR_VERSION}`)
-    // console.log(`  checkYAMLText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
+    // console.log(`  checkYAMLText returning with ${cytResult.successList.length.toLocaleString()} success(es), ${cytResult.noticeList.length.toLocaleString()} notice(s).`);
     // console.log("checkYAMLText result is", JSON.stringify(result));
-    return result;
+    return cytResult;
 }
 // end of checkYAMLText function
 

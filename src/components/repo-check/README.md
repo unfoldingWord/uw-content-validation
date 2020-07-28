@@ -6,8 +6,6 @@ The code below requests some info and then checks a Door43 repository.You can en
 
 **Note**: This demo software caches/saves the files when it fetches them. So if it reruns (e.g., if you change something in a `//` comment below), it should be considerably faster the second time. But the disadvantage is that even if the files are updated on Door43.org, the old version of the file is still used.
 
-XXXXXIf you want to reload all the files, you should change the `repoName` in the code below to a different repo, wait until that repo name appears in bright purple, then change it back to the repo name that you want. This name change will cause the cache to be emptied and the newer files will be now fetched.
-
 ```js
 import RepoCheck from './RepoCheck';
 
@@ -18,9 +16,9 @@ import RepoCheck from './RepoCheck';
     // repoName='el-x-koine_ugnt' // NT books only
     // repoName='en_ust' // Can use ult or ust here
     // repoName='en_tn' // Translation notes (TSV tables)
-    // repoName='en_tq' // Translation questions (markdown files)
+    repoName='en_tq' // Translation questions (markdown files)
     // repoName='en_obs' // Open Bible Stories (markdown files)
-    repoName='fr_ulb' // No alignment so smaller files (faster)
+    // repoName='fr_ulb' // No alignment so smaller files (faster)
 
     // If we don't put the branch here, the default branch is used
     // branch='master'

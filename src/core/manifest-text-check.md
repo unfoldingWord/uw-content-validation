@@ -1,6 +1,6 @@
 ## Manifest Text Check Sandbox
 
-This function checks the given manifest.yaml for typical formatting errors.
+This function checks the given manifest.yaml for typical formatting errors. See https://resource-container.readthedocs.io/en/latest/manifest.html for the manifest specification.
 
 It returns a list of success messages and a list of prioritised notice components.
 

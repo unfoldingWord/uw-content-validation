@@ -41,7 +41,8 @@ const lineA9 = "GEN\t1\t9\tha33\t\t\t0\tIt was so\t“It happened like that” o
 const chosenLine = lineA9;
 
 let rawResult = checkTN_TSVDataRow('GEN', chosenLine, 'that was supplied');
-if (!rawResult.successList.length) rawResult.successList = ["Done TSV table line checks"];
+if (!rawResult.successList || !rawResult.successList.length)
+    rawResult.successList = ["Done TSV table line checks"];
 const processedResult = processNotices(rawResult);
 
 <>

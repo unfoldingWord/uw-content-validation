@@ -1,6 +1,3 @@
-// import { isWhitespace, countOccurrences } from './text-handling-functions'
-// import yaml from 'yaml';
-// import doBasicTextChecks from './basic-text-check';
 import checkYAMLText from './yaml-text-check';
 
 
@@ -12,9 +9,11 @@ const DEFAULT_EXTRACT_LENGTH = 10;
 function checkManifestText(textName, manifestText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
-     Returns a result object containing a successList and a noticeList
-     */
-    console.log(`checkManifestText(${textName}, ${manifestText.length}, ${givenLocation})…`);
+    See the specification at https://resource-container.readthedocs.io/en/latest/manifest.html.
+
+    Returns a result object containing a successList and a noticeList
+    */
+    // console.log(`checkManifestText(${textName}, ${manifestText.length}, ${givenLocation})…`);
     let ourLocation = givenLocation;
     if (ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     if (textName) ourLocation = ` in ${textName}${ourLocation}`;
@@ -33,11 +32,11 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
     // console.log("Using halfLength=" + halfLength, "halfLengthPlus="+halfLengthPlus);
 
-    let result = { successList: [], noticeList: [] };
+    let cmtResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
         // console.log("checkManifestText success: " + successString);
-        result.successList.push(successString);
+        cmtResult.successList.push(successString);
     }
     function addNotice(priority, message, index, extract, location) {
         // console.log("checkManifestText Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
@@ -51,7 +50,7 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
         console.assert(typeof extract === 'string', "cManT addNotice: 'extract' parameter should be a string not a '" + (typeof extract) + "': " + extract);
         console.assert(location !== undefined, "cManT addNotice: 'location' parameter should be defined");
         console.assert(typeof location === 'string', "cManT addNotice: 'location' parameter should be a string not a '" + (typeof location) + "': " + location);
-        result.noticeList.push([priority, message, index, extract, location]);
+        cmtResult.noticeList.push([priority, message, index, extract, location]);
     }
 
 
@@ -71,8 +70,8 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
         const cYtResultObject = checkYAMLText(textName, manifestText, givenLocation, optionalCheckingOptions);
 
         // Concat is faster if we don't need to process each notice individually
-        result.successList = result.successList.concat(cYtResultObject.successList);
-        result.noticeList = result.noticeList.concat(cYtResultObject.noticeList);
+        cmtResult.successList = cmtResult.successList.concat(cYtResultObject.successList);
+        cmtResult.noticeList = cmtResult.noticeList.concat(cYtResultObject.noticeList);
         /* // Process results line by line
         //  suppressing undesired errors
         for (let noticeEntry of cYtResultObject.noticeList)
@@ -136,40 +135,42 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
         // let numLeadingSpaces;
         // if (line) {
         //     numLeadingSpaces = line.match(/^ *//*)[0].length;
-    //     // console.log("Got numLeadingSpaces="+ numLeadingSpaces + " for "+line+atString);
-    //     if (numLeadingSpaces && lastNumLeadingSpaces && numLeadingSpaces!=lastNumLeadingSpaces)
-    //         addNotice(472, "Nesting seems confused", 0, '', atString);
+//     // console.log("Got numLeadingSpaces="+ numLeadingSpaces + " for "+line+atString);
+//     if (numLeadingSpaces && lastNumLeadingSpaces && numLeadingSpaces!=lastNumLeadingSpaces)
+//         addNotice(472, "Nesting seems confused", 0, '', atString);
 
-        checkManifestLineContents("line "+n.toLocaleString(), line, ourLocation);
-    // } else {
-    //     // This is a blank line
-    //     numLeadingSpaces = 0;
-    // }
+checkManifestLineContents("line "+n.toLocaleString(), line, ourLocation);
+// } else {
+//     // This is a blank line
+//     numLeadingSpaces = 0;
+// }
 
-    // lastLineContents = line;
-    // lastNumLeadingSpaces = numLeadingSpaces;
+// lastLineContents = line;
+// lastNumLeadingSpaces = numLeadingSpaces;
 }
 */
     const formData = doOurYAMLTextChecks(textName, manifestText, ourLocation, optionalCheckingOptions);
-    // console.log("formData", JSON.stringify(formData));
-    const formDataKeys = Object.keys(formData);
-    // console.log("formData keys", JSON.stringify(formDataKeys));
+    if (formData) {
+        // console.log("formData", JSON.stringify(formData));
+        const formDataKeys = Object.keys(formData);
+        // console.log("formData keys", JSON.stringify(formDataKeys));
 
-    if (formDataKeys.indexOf('dublin_core') < 0)
-        addNotice(928, "'dublin_core' key is missing", -1, "", ourLocation);
-    if (formDataKeys.indexOf('projects') < 0)
-        addNotice(929, "'projects' key is missing", -1, "", ourLocation);
-    if (formDataKeys.indexOf('checking') < 0)
-        addNotice(148, "'checking' key is missing", -1, "", ourLocation);
+        if (formDataKeys.indexOf('dublin_core') < 0)
+            addNotice(928, "'dublin_core' key is missing", -1, "", ourLocation);
+        if (formDataKeys.indexOf('projects') < 0)
+            addNotice(929, "'projects' key is missing", -1, "", ourLocation);
+        if (formDataKeys.indexOf('checking') < 0)
+            addNotice(148, "'checking' key is missing", -1, "", ourLocation);
+    }
 
     // addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'}'${ourLocation}'.`);
-    if (result.noticeList)
-        addSuccessMessage(`checkManifestText v${MANIFEST_VALIDATOR_VERSION} finished with ${result.noticeList.length ? result.noticeList.length.toLocaleString() : "zero"} notice${result.noticeList.length == 1 ? '' : 's'}`);
+    if (cmtResult.noticeList)
+        addSuccessMessage(`checkManifestText v${MANIFEST_VALIDATOR_VERSION} finished with ${cmtResult.noticeList.length ? cmtResult.noticeList.length.toLocaleString() : "zero"} notice${cmtResult.noticeList.length == 1 ? '' : 's'}`);
     else
         addSuccessMessage("No errors or warnings found by checkManifestText v" + MANIFEST_VALIDATOR_VERSION)
-    // console.log(`  checkManifestText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
+    // console.log(`  checkManifestText returning with ${cmtResult.successList.length.toLocaleString()} success(es), ${cmtResult.noticeList.length.toLocaleString()} notice(s).`);
     // console.log("checkManifestText result is", JSON.stringify(result));
-    return result;
+    return cmtResult;
 }
 // end of checkManifestText function
 

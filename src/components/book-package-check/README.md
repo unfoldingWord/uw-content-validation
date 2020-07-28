@@ -14,7 +14,9 @@ import BookPackageCheck from './BookPackageCheck';
 <BookPackageCheck
   username='unfoldingWord'
   language_code='en'
-  bookCode='OBS'
+  // bookCode can be a USFM bookCode, e.g., GEN, MAT, 3JN
+  //  and can also be OBS (for Open Bible Stories)
+  bookCode='3JN'
 />
 ```
 

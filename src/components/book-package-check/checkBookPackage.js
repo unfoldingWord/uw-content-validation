@@ -179,7 +179,7 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
             addSuccessMessage(`Checked ${repoCode.toUpperCase()} file: ${filename}`);
 
             // Update our "waiting" message {checkedFileCount==1?'':'s'}
-            setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {language_code} <b>{bookCode}</b> book package: checked <b>{checkedFileCount}</b>/5 repos…</p>);
+            setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {language_code} <b>{bookCode}</b> book package: checked <b>{checkedFileCount.toLocaleString()}</b>/5 repos…</p>);
         }
 
         // Add some extra fields to our checkFileResult object

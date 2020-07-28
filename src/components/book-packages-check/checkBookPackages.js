@@ -57,7 +57,7 @@ async function checkBookPackages(username, language_code, bookCodeList, setResul
         // We use the generalLocation here (does not include repo name)
         //  so that we can adjust the returned strings ourselves
         const cbpResultObject = await checkBookPackage(username, language_code, bookCode, setResultValue, checkingOptions);
-        console.log("checkBookPackage() returned", cbpResultObject.successList.length, "success message(s) and", cbpResultObject.noticeList.length, "notice(s)");
+        console.log(`checkBookPackage() returned ${cbpResultObject.successList.length} success message(s) and ${cbpResultObject.noticeList.length} notice(s)`);
 
         // Concat is faster if we don't need to process each success message individually
         checkBookPackagesResult.successList = checkBookPackagesResult.successList.concat(cbpResultObject.successList);
@@ -83,7 +83,7 @@ async function checkBookPackages(username, language_code, bookCodeList, setResul
         // addSuccessMessage(`${checkedFileCount}/ Checked ${bookCode} book package`);
 
         // Update our "waiting" message {checkedFileCount==1?'':'s'}
-        // setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {language_code} <b>{bookCodeList}</b> book package: checked <b>{checkedFileCount}</b>/5 repos…</p>);
+        // setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {language_code} <b>{bookCodeList}</b> book package: checked <b>{checkedFileCount.toLocaleString()}</b>/5 repos…</p>);
     }
 
     // Add some extra fields to our checkFileResult object

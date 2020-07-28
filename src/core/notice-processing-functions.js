@@ -45,7 +45,7 @@ export function processNotices(givenNoticeObject, optionalProcessingOptions) {
 
         Returns an object with:
     */
-    console.log("processNotices v" + PROCESSOR_VERSION_STRING, `with options=${JSON.stringify(optionalProcessingOptions)}
+    console.log(`processNotices v${PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
   Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
 
     // Check that notice priority numbers are unique (to detect programming errors)
@@ -247,8 +247,8 @@ export function processNotices(givenNoticeObject, optionalProcessingOptions) {
             resultObject.warningList.push(thisNotice);
     }
 
-    console.log(`processNotices is returning ${resultObject.successList.length} successes, ${resultObject.errorList.length}`, "errors, and", resultObject.warningList.length, "warnings");
-    console.log(`  numIgnoredNotices=${resultObject.numIgnoredNotices}`, `numSuppressedErrors=${resultObject.numSuppressedErrors}`, "numSuppressedWarnings="+resultObject.numSuppressedWarnings);
+//     console.log(`processNotices is returning ${resultObject.successList.length} successes, ${resultObject.errorList.length} errors, and ${resultObject.warningList.length} warnings
+//   numIgnoredNotices=${resultObject.numIgnoredNotices}`, `numSuppressedErrors=${resultObject.numSuppressedErrors} numSuppressedWarnings=${resultObject.numSuppressedWarnings}`);
     return resultObject;
 }
 // end of processNotices function

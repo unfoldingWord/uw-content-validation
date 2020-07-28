@@ -7,7 +7,7 @@ import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
 import { ourParseInt, consoleLogObject } from './utilities';
 
 
-const USFM_VALIDATOR_VERSION = '0.2.1';
+const USFM_VALIDATOR_VERSION = '0.2.2';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -275,6 +275,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
             if (!noticeEntry[1].startsWith("Mismatched () characters") // 663 Mismatched left/right chars -- suppress these misleading warnings coz open quote can occur in one verse and close in another
                 && !noticeEntry[1].startsWith("Mismatched [] characters")
                 && !noticeEntry[1].startsWith("Mismatched “” characters")
+                && !noticeEntry[1].startsWith("Mismatched «» characters")
                 && (!noticeEntry[1].startsWith("Unexpected | character after space") || fieldText.indexOf('x-lemma') < 0) // inside \zaln-s fields
                 && (!noticeEntry[1].startsWith("Unexpected doubled , characters") || fieldText.indexOf('x-morph') < 0) // inside \w fields
                 && (!noticeEntry[1].startsWith('Unexpected doubled " characters') || fieldText.indexOf('x-morph') < 0) // inside \w fields

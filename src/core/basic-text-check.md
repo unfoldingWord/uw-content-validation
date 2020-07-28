@@ -26,7 +26,8 @@ const chosenText = textB;
 
 // The third parameter is "linksAllowed"
 let rawResult = doBasicTextChecks('Sample', chosenText, false, 'in '+chosenName+' that was supplied');
-if (!rawResult.successList.length) rawResult.successList = ["Done basic text checks"];
+if (!rawResult.successList || !rawResult.successList.length)
+    rawResult.successList = ["Done basic text checks"];
 const processedResult = processNotices(rawResult);
 
 <>

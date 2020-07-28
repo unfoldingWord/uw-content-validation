@@ -13,8 +13,8 @@ import BookPackagesCheck from './BookPackagesCheck';
   username='unfoldingWord'
   language_code='en'
   // Enter a string containing UPPERCASE USFM book codes separated by commas
-  // bookCodes='RUT,NEH,JON,EPH,TIT,3JN,OBS'
-  bookCodes='3JN,OBS'
+  //  and can also include OBS (for Open Bible Stories)
+  bookCodes='RUT,EST,JON,EPH,TIT,3JN,OBS'
 />
 ```
 

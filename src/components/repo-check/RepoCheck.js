@@ -152,18 +152,23 @@ const styles = theme => ({
 
 
 function RepoCheck(/*username, language_code,*/ props) {
-    // Check an entire repository
+    /*
+    Check an entire repository
 
-    console.log(`I'm here in RepoCheck v${CHECKER_VERSION_STRING}`);
+    Loads the zip file and the repo tree
+        and then checks all the individual files
+    */
+
+    // console.log(`I'm here in RepoCheck v${CHECKER_VERSION_STRING}`);
     // consoleLogObject("props", props);
     // consoleLogObject("props.classes", props.classes);
 
     let username = props.username;
-    console.log(`username='${username}'`);
+    // console.log(`username='${username}'`);
     let repoName = props.repoName;
-    console.log(`repoName='${repoName}'`);
+    // console.log(`repoName='${repoName}'`);
     let branch = props.branch;
-    console.log(`branch='${branch}'`);
+    // console.log(`branch='${branch}'`);
     if (branch===undefined) branch = 'master';
 
     let checkingOptions = { // Uncomment any of these to test them
@@ -197,7 +202,7 @@ function RepoCheck(/*username, language_code,*/ props) {
             rawResult.language_code = language_code;
             rawResult.checkedOptions = checkingOptions;
 
-            console.log("Here with RC rawResult", typeof rawResult);
+            // console.log("Here with RC rawResult", typeof rawResult);
             // Now do our final handling of the result -- we have some options available
             let processOptions = { // Uncomment any of these to test them
                 // 'maximumSimilarMessages': 3, // default is 2
@@ -213,8 +218,8 @@ function RepoCheck(/*username, language_code,*/ props) {
             if (props.sortBy) processOptions.sortBy = props.sortBy;
             // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
             const processedResult = processNotices(rawResult, processOptions);
-            console.log(`RepoCheck got back processedResult with ${processedResult.successList.length.toLocaleString()} success message(s), ${processedResult.errorList.length.toLocaleString()} error(s) and ${processedResult.warningList.length.toLocaleString()} warning(s)
-  numIgnoredNotices=${processedResult.numIgnoredNotices.toLocaleString()}`, "numSuppressedErrors=" + processedResult.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + processedResult.numSuppressedWarnings.toLocaleString());
+//             console.log(`RepoCheck got back processedResult with ${processedResult.successList.length.toLocaleString()} success message(s), ${processedResult.errorList.length.toLocaleString()} error(s) and ${processedResult.warningList.length.toLocaleString()} warning(s)
+//   numIgnoredNotices=${processedResult.numIgnoredNotices.toLocaleString()}`, "numSuppressedErrors=" + processedResult.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + processedResult.numSuppressedWarnings.toLocaleString());
 
             // console.log("Here now in rendering bit!");
             let language_code = repoName.split('_', 1)[0];

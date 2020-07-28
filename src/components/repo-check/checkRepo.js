@@ -1,7 +1,7 @@
 import React from 'react';
 import checkFile from "../file-check/checkFile";
 // import { fetchRepo, getBlobContent } from "./helpers"
-import { fetchTree, getFile, getURL } from '../../core/getApi';
+import { fetchTree, fetchRepositoryZipFile, getFile, getURL } from '../../core/getApi';
 import { consoleLogObject } from "../../core/utilities";
 
 const CHECKER_VERSION_STRING = '0.1.1';
@@ -210,9 +210,10 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
         checkRepoResult.noticeList.push([priority, message, index, extract, location, extra]);
     }
 
+
     function doOurCheckFile(bookOrFileCode, filename, file_content, fileLocation, optionalCheckingOptions) {
         // We assume that checking for compulsory fields is done elsewhere
-        console.log("checkRepo doOurCheckFile(" + filename + ")");
+        // console.log(`checkRepo doOurCheckFile(${filename})…`);
 
         // Updates the global list of notices
         console.assert(bookOrFileCode !== undefined, "doOurCheckFile: 'bookOrFileCode' parameter should be defined");
@@ -244,6 +245,7 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
     // if (ourLocation.indexOf(username) < 0)
     ourLocation = ` in ${username} ${repoName} ${givenLocation}`
 
+    /*
     // Determine the repo type
     //  Unfortunately we don't have the "subject" field
     let repoType = 'unknown';
@@ -257,28 +259,42 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
     else if (repoName.endsWith('_tq') || repoName.endsWith('_utq'))
         repoType = 'Bible_questions';
     // console.log(`Deduced repoType=${repoType} from ${repoName}`);
+    */
+
+    // Update our "waiting" message
+    setResultValue(<p style={{ color: 'magenta' }}>Fetching zipped files from <b>{username}/{repoName}</b> repository…</p>);
+
+    // Let's fetch the zipped repo since it should be much more efficient than individual fetches
+    console.log(`checkRepo: fetch zip file for ${repoName}…`);
+    const zipFetchResult = await fetchRepositoryZipFile({ username: username, repository: repoName, sha: branch });
+    console.log(`checkRepo: fetched zip file for repo with ${zipFetchResult}`);
+    // Note: We don't stop for failure coz the code below will still work (fetching each file individually)
 
     // Now we need to fetch the list of files from the repo
-    console.log("checkRepo about to fetch", username, repoName, branch);
-    let fetchedRepoTreemap = await fetchTree({ username: username, repository: repoName, sha: branch });
-    fetchedRepoTreemap = fetchedRepoTreemap.tree;
-    console.log("  fetchedRepoTreemap", JSON.stringify(fetchedRepoTreemap));
-    console.log("  fetchedRepoTreemap keys", JSON.stringify(Object.keys(fetchedRepoTreemap)));
+    console.log("checkRepo about to fetch tree for", username, repoName, branch);
+    const fetchedRepoTreemap = await fetchTree({ username: username, repository: repoName, sha: branch });
+    // fetchedRepoTreemap = fetchedRepoTreemap.tree;
+    // console.log("  fetchedRepoTreemap", JSON.stringify(fetchedRepoTreemap));
+    // console.log("  fetchedRepoTreemap keys", JSON.stringify(Object.keys(fetchedRepoTreemap)));
     // consoleLogObject("  fetchedRepoTreemap", fetchedRepoTreemap);
 
-    // So now we want to work through checking all the files in this repo
-    let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0;
+    // Let's make a list of paths so we know how many there will be for a progress bar
+    setResultValue(<p style={{ color: 'magenta' }}>Preprocessing file list from <b>{username}/{repoName}</b> repository…</p>);
+    let pathList = [];
 
-    async function recurseTree(tree, pathPrefix) {
-        console.log(`About to loop with '${pathPrefix}'…`);
-        for (const [_number, detailObject] of tree.entries()) {
+    async function walkTree(givenTree, pathPrefix) {
+        /*
+        Load all the filenames by means of the tree
+            so this function is called recursively for subfolders
+        */
+        for (const [_number, detailObject] of givenTree.tree.entries()) {
             // console.log("checkRepo processing", thisFilename);
             // console.log("  thisFilename="+thisFilename, "detailObject="+detailObject);
-            consoleLogObject("detailObject", detailObject);
+            // consoleLogObject("detailObject", detailObject);
             // detailObject has fields: path, mode, type, size, sha, url
 
             const thisFilename = detailObject.path;
-            console.log(`thisFilename=${thisFilename}`);
+            // console.log(`thisFilename=${thisFilename}`);
 
             // Ignore standard git metadata and similar files/folders
             if (thisFilename === '.github'
@@ -291,71 +307,82 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
             }
 
             const thisType = detailObject.type;
-            console.log(`thisType=${thisType}`);
+            // console.log(`thisType=${thisType}`);
             if (thisType === 'blob') {
-                const thisFilenameExtension = thisFilename.split('.').pop();
-                console.log(`thisFilenameExtension=${thisFilenameExtension}`);
-
-                let bookOrFileCode = thisFilename; // default to the filename
-                if (thisFilenameExtension === 'usfm') {
-                    const filenameMain = thisFilename.substring(0, thisFilename.length - 5); // drop .usfm
-                    console.log(`Have USFM filenameMain=${filenameMain}`);
-                    const BBB = filenameMain.substring(filenameMain.length - 3);
-                    console.log(`Have USFM bookcode=${BBB}`);
-                    bookOrFileCode = BBB;
-                }
-                else if (thisFilenameExtension === 'tsv') {
-                    const filenameMain = thisFilename.substring(0, thisFilename.length - 4); // drop .tsv
-                    console.log(`Have TSV filenameMain=${filenameMain}`);
-                    const BBB = filenameMain.substring(filenameMain.length - 3);
-                    console.log(`Have TSV bookcode=${BBB}`);
-                    bookOrFileCode = BBB;
-                }
-
-                // Update our "waiting" message
-                setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for <b>{username}/{repoName}</b> repo: checked {checkedFileCount} file{checkedFileCount == 1 ? '' : 's'}…</p>);
-
-                const thisPath = pathPrefix? `${pathPrefix}/${thisFilename}` : thisFilename;
-                console.log(`thisPath=${thisPath}`);
-
-                console.log("checkRepo: Try to load", username, repoName, thisPath, branch);
-                try {
-                    const fileContent = await getFile({ username, repository: repoName, path: thisPath, branch });
-                    console.log("Fetched file_content for", repoName, thisPath, typeof fileContent, fileContent.length);
-                    checkedFilenames.push(thisPath);
-                    totalCheckedSize += fileContent.length;
-                } catch (e) {
-                    console.log("Failed to load", username, repoName, thisPath, branch, e + '');
-                    addNotice(996, "Failed to load", -1, "", `${generalLocation} ${thisPath}: ${e}`, repoCode);
-                    return;
-                }
-                // console.log("checkRepo fetching and checking", thisFilename);
-                // const fileContent = await getBlobContent(thisFilename, detailObject);
-                // console.log("Got", fileContent.length, file_content.substring(0, 19));
-                doOurCheckFile(bookOrFileCode, thisFilename, fileContent, ourLocation, checkingOptions);
-                addSuccessMessage(`Checked ${bookOrFileCode.toUpperCase()} file: ${thisFilename}`);
-                checkedFileCount += 1;
-                checkedFilenames.push(thisFilename);
-                checkedFilenameExtensions.add(thisFilenameExtension);
-                totalCheckedSize += fileContent.length;
+                // const thisPath = pathPrefix? `${pathPrefix}/${thisFilename}` : thisFilename;
+                // console.log(`thisPath=${thisPath}`);
+                pathList.push(pathPrefix ? `${pathPrefix}/${thisFilename}` : thisFilename);
             } else if (thisType === 'tree') {
-                console.log("GOT A TREE!!!", detailObject.path);
                 const treeURI = detailObject.url;
-                console.log(`treeURI=${treeURI}`);
+                // console.log(`treeURI=${treeURI}`);
                 let fetchedSubRepoTreemap = await getURL({ uri: treeURI });
-                fetchedSubRepoTreemap = fetchedSubRepoTreemap.tree;
-                console.log("  fetchedSubRepoTreemap", JSON.stringify(fetchedSubRepoTreemap));
-                console.log("  fetchedSubRepoTreemap keys", JSON.stringify(Object.keys(fetchedSubRepoTreemap)));
+                // fetchedSubRepoTreemap = fetchedSubRepoTreemap.tree;
+                // console.log("  fetchedSubRepoTreemap", JSON.stringify(fetchedSubRepoTreemap));
+                // console.log("  fetchedSubRepoTreemap keys", JSON.stringify(Object.keys(fetchedSubRepoTreemap)));
                 // consoleLogObject("  fetchedSubRepoTreemap", fetchedSubRepoTreemap);
-                const newPath = pathPrefix? `${pathPrefix}/${detailObject.path}`:detailObject.path;
-                console.log(`newPath=${newPath}`);
-                await recurseTree(fetchedSubRepoTreemap, newPath);
-            }
-            else
+                const newPath = pathPrefix ? `${pathPrefix}/${detailObject.path}` : detailObject.path;
+                // console.log(`newPath=${newPath}`);
+                await walkTree(fetchedSubRepoTreemap, newPath);
+            } else
                 console.log(`What is thisType=${thisType}`);
         }
     }
-    await recurseTree(fetchedRepoTreemap, '');
+    await walkTree(fetchedRepoTreemap, '');
+
+
+    // So now we want to work through checking all the files in this repo
+    const countString = `${pathList.length.toLocaleString()} file${pathList.length == 1 ? '' : 's'}`;
+    let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0;
+    for (const thisFilepath of pathList) {
+        // console.log(`thisFilepath=${thisFilepath}`);
+        const thisFilename = thisFilepath.split('/').pop();
+        // console.log(`thisFilename=${thisFilename}`);
+        const thisFilenameExtension = thisFilename.split('.').pop();
+        // console.log(`thisFilenameExtension=${thisFilenameExtension}`);
+
+        // Default to the main filename without the extensions
+        let bookOrFileCode = thisFilename.substring(0, thisFilename.length - thisFilenameExtension.length - 1);
+        if (thisFilenameExtension === 'usfm') {
+            // const filenameMain = thisFilename.substring(0, thisFilename.length - 5); // drop .usfm
+            // console.log(`Have USFM filenameMain=${bookOrFileCode}`);
+            const BBB = bookOrFileCode.substring(bookOrFileCode.length - 3);
+            // console.log(`Have USFM bookcode=${BBB}`);
+            bookOrFileCode = BBB;
+        }
+        else if (thisFilenameExtension === 'tsv') {
+            // const filenameMain = thisFilename.substring(0, thisFilename.length - 4); // drop .tsv
+            // console.log(`Have TSV filenameMain=${bookOrFileCode}`);
+            const BBB = bookOrFileCode.substring(bookOrFileCode.length - 3);
+            // console.log(`Have TSV bookcode=${BBB}`);
+            bookOrFileCode = BBB;
+        }
+
+        // console.log("checkRepo: Try to load", username, repoName, thisPath, branch);
+        let fileContent;
+        try {
+            fileContent = await getFile({ username, repository: repoName, path: thisFilepath, branch });
+            // console.log("Fetched file_content for", repoName, thisPath, typeof fileContent, fileContent.length);
+        } catch (e) {
+            console.log("Failed to load", username, repoName, thisFilepath, branch, e + '');
+            addNotice(996, "Failed to load", -1, "", `${generalLocation} ${thisFilepath}: ${e}`, repoCode);
+            return;
+        }
+        // console.log("checkRepo fetching and checking", thisFilename);
+        // const fileContent = await getBlobContent(thisFilename, detailObject);
+        // console.log("Got", fileContent.length, file_content.substring(0, 19));
+        if (fileContent) {
+            await doOurCheckFile(bookOrFileCode, thisFilename, fileContent, ourLocation, checkingOptions);
+            checkedFileCount += 1;
+            checkedFilenames.push(thisFilename);
+            checkedFilenameExtensions.add(thisFilenameExtension);
+            totalCheckedSize += fileContent.length;
+            if (thisFilenameExtension !== 'md') // There's often far, far too many of these
+                addSuccessMessage(`Checked ${bookOrFileCode.toUpperCase()} file: ${thisFilename}`);
+        }
+        // Update our "waiting" message
+        setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for <b>{username}/{repoName}</b> repo: checked {checkedFileCount.toLocaleString()}/{countString}…</p>);
+    }
+    // console.log("Finished checkRepo loop");
 
     // Check that we processed a license and a manifest
     if (checkedFilenames.indexOf('LICENSE.md') < 0)
@@ -372,7 +399,7 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
     checkRepoResult.checkedRepoNames = [`${username}/${repoName}`];
     // checkRepoResult.checkedOptions = checkingOptions; // This is done at the caller level
 
-    addSuccessMessage(`Checked ${username} ${repoName} repo`);
+    addSuccessMessage(`Checked ${username} repo: ${repoName}`);
     // console.log(`checkRepo() is returning ${checkRepoResult.successList.length.toLocaleString()} success message(s) and ${checkRepoResult.noticeList.length.toLocaleString()} notice(s)`);
     return checkRepoResult;
 };

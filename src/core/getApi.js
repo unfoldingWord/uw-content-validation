@@ -95,7 +95,7 @@ async function fetchManifest({username, repository}) {
 */
 
 // https://git.door43.org/unfoldingword/en_ult/raw/branch/master/manifest.yaml
-export async function fetchFileFromServer({username, repository, path, branch='master'}) {
+async function fetchFileFromServer({username, repository, path, branch='master'}) {
   console.log(`fetchFileFromServer(${username}, ${repository}, ${path}, ${branch})…`);
   const repoExists = await repositoryExists({username, repository});
   if (repoExists) {
@@ -114,8 +114,9 @@ export async function fetchFileFromServer({username, repository, path, branch='m
   }
 };
 
+// This is the function that we call the most from the outside
 export async function getFile({username, repository, path, branch}) {
-  console.log(`getFile(${username}, ${repository}, ${path}, ${branch})…`);
+  // console.log(`getFile(${username}, ${repository}, ${path}, ${branch})…`);
   let file;
   file = await getFileFromZip({username, repository, path, branch});
   if (!file) {
@@ -126,34 +127,34 @@ export async function getFile({username, repository, path, branch}) {
 
 
 async function getUID({username}) {
-  console.log(`getUID(${username})…`);
+  // console.log(`getUID(${username})…`);
   const uri = Path.join(apiPath, 'users', username);
   const user = await get({uri});
   const {id: uid} = user;
-  console.log(`  returning: ${uid}`);
+  // console.log(`  returning: ${uid}`);
   return uid;
 }
 async function repositoryExists({username, repository}) {
-  console.log(`repositoryExists(${username}, ${repository})…`);
+  // console.log(`repositoryExists(${username}, ${repository})…`);
   const uid = await getUID({username});
   const params = { q: repository, uid };
   const uri = Path.join(apiPath, 'repos', `search`);
   const {data: repos} = await get({uri, params});
   const repo = repos.filter(repo => repo.name === repository)[0];
-  console.log(`  returning: ${!!repo}`);
+  // console.log(`  returning: ${!!repo}`);
   return !!repo;
 };
 
 
-export async function get({uri, params}) {
-  console.log(`get(${uri}, ${params})…`);
+async function get({uri, params}) {
+  // console.log(`get(${uri}, ${params})…`);
   const {data} = await Door43Api.get(baseURL+uri, { params });
   // console.log(`  returning: ${data}`);
   return data;
 };
 
 export async function getURL({uri, params}) {
-  console.log(`getURL(${uri}, ${params})…`);
+  // console.log(`getURL(${uri}, ${params})…`);
   const {data} = await Door43Api.get(uri, { params });
   // console.log(`  returning: ${data}`);
   return data;
@@ -171,9 +172,10 @@ function fetchRepositoriesZipFiles({username, languageId, branch}) {
 };
 */
 
-/*
-// https://git.door43.org/unfoldingWord/en_ult/archive/master.zip
-function fetchRepositoryZipFile({username, repository, branch}) {
+
+// https://git.door43.org/{username}/{repository}/archive/{branch}.zip
+export async function fetchRepositoryZipFile({username, repository, branch}) {
+  console.log(`fetchRepositoryZipFile(${username}, ${repository}, ${branch})…`);
   const repoExists = await repositoryExists({username, repository});
   if (!repoExists) {
     return null;
@@ -188,22 +190,22 @@ function fetchRepositoryZipFile({username, repository, branch}) {
     return false;
   }
 };
-*/
+
 
 async function getFileFromZip({username, repository, path, branch}) {
-  console.log(`getFileFromZip(${username}, ${repository}, ${path}, ${branch})…`);
+  // console.log(`getFileFromZip(${username}, ${repository}, ${path}, ${branch})…`);
   let file;
   const uri = zipUri({username, repository, branch});
   const zipBlob = await zipStore.getItem(uri);
   try {
     if (zipBlob) {
-      console.log("  Got zipBlob");
+      // console.log("  Got zipBlob");
       const zip = await JSZip.loadAsync(zipBlob);
       const zipPath = Path.join(repository.toLowerCase(), path);
       file = await zip.file(zipPath).async('string');
-      console.log(`    Got zipBlob ${file}`);
+      // console.log(`    Got zipBlob ${file}`);
     }
-    else console.log("  No zipBlob");
+    // else console.log("  No zipBlob");
   } catch(error) {
     console.log(`  Nope: ${error}`);
     file = null;
@@ -213,7 +215,7 @@ async function getFileFromZip({username, repository, path, branch}) {
 
 
 function zipUri({username, repository, branch='master'}) {
-  console.log(`zipUri(${username}, ${repository}, ${branch})…`);
+  // console.log(`zipUri(${username}, ${repository}, ${branch})…`);
   const zipPath = Path.join(username, repository, 'archive', `${branch}.zip`);
   const zipUri = baseURL + zipPath;
   return zipUri;

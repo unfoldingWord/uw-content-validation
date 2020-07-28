@@ -46,7 +46,8 @@ const linkOptions = {
 // This function returns the results of the fast checks
 //  and if specified in linkOptions, the callback will update result later with results of slower checks
 const rawResult = doBasicLinkChecks('Sample', chosenText, linkOptions, 'that was supplied');
-if (!rawResult.successList.length) rawResult.successList = ["Done basic text checks"];
+if (!rawResult.successList || !rawResult.successList.length)
+    rawResult.successList = ["Done basic text checks"];
 result = processNotices(rawResult);
 
 <>
