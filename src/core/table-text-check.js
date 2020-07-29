@@ -72,7 +72,7 @@ function checkTN_TSVText(BBB, tableText, givenLocation, optionalCheckingOptions)
     let lastB = '', lastC = '', lastV = '';
     let fieldID_list = [];
     let numVersesThisChapter = 0;
-    for (let n = 0; n < lines.length; n++) {
+    for (let n= 0; n < lines.length; n++) {
         // console.log("checkTN_TSVText checking line " + n + ": " + JSON.stringify(lines[n]));
         let inString = " in line " + n.toLocaleString() + ourLocation;
         if (n === 0) {
@@ -97,7 +97,7 @@ function checkTN_TSVText(BBB, tableText, givenLocation, optionalCheckingOptions)
                 result.noticeList = result.noticeList.concat(firstResult.noticeList);
                 // If we need to put everything through addNotice, e.g., for debugging or filtering
                 //  process results line by line
-                // for (let noticeEntry of firstResult.noticeList)
+                // for (const noticeEntry of firstResult.noticeList)
                 //     addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
 
                 // So here we only have to check against the previous and next fields for out-of-order problems
@@ -168,15 +168,16 @@ function checkTN_TSVText(BBB, tableText, givenLocation, optionalCheckingOptions)
                 }
 
             } else
-                if (n == lines.length - 1) // it's the last line
-                    console.log("  Line " + n + ": Has " + fields.length + " field(s) instead of " + NUM_EXPECTED_TN_FIELDS + ": " + EXPECTED_TN_HEADING_LINE.replace(/\t/g, ', '));
-                else
+                // if (n === lines.length - 1) // it's the last line
+                //     console.log(`  Line ${n}: Has ${fields.length} field(s) instead of ${NUM_EXPECTED_TN_FIELDS}: ${EXPECTED_TN_HEADING_LINE.replace(/\t/g, ', ')}`);
+                // else
+                if (n !== lines.length - 1) // it's not the last line
                     addNotice(888, "Wrong number of tabbed fields", -1, '', inString)
         }
     }
-    addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 == 1 ? '' : 's'}'${ourLocation}'.`);
+    addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}'${ourLocation}'.`);
     if (result.noticeList)
-        addSuccessMessage(`checkTN_TSVText v${TABLE_TEXT_VALIDATOR_VERSION} finished with ${result.noticeList.length?result.noticeList.length.toLocaleString():"zero"} notice${result.noticeList.length == 1 ? '' : 's'}`);
+        addSuccessMessage(`checkTN_TSVText v${TABLE_TEXT_VALIDATOR_VERSION} finished with ${result.noticeList.length?result.noticeList.length.toLocaleString():"zero"} notice${result.noticeList.length === 1 ? '' : 's'}`);
     else
         addSuccessMessage("No errors or warnings found by checkTN_TSVText v" + TABLE_TEXT_VALIDATOR_VERSION)
     // console.log(`  checkTN_TSVText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);

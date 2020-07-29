@@ -4,7 +4,7 @@ import { toJSON } from 'usfm-js';
 export function runUsfmJsCheck(fileText, convertOptions) {
     // Runs the USFM-JS converter as a check
     //  which can be quite time-consuming on large, complex USFM files
-    console.log("Running USFM-JS converter check (can take quite a while for a large book)…");
+    // console.log("Running USFM-JS converter check (can take quite a while for a large book)…");
 
     const jsonResult = toJSON(fileText, convertOptions);
     const jsonKeys = Object.keys(jsonResult); // Expect 'headers', 'chapters'

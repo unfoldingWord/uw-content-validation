@@ -36,11 +36,11 @@ const Door43Api = setup({
 
 export async function clearCaches() {
   console.log("Clearing localforage.INDEXEDDB zipStore and cacheStore caches…");
-  const tasks = [zipStore, cacheStore].map(clear);
-  const results = await Promise.all(tasks);
-  results.forEach(x => console.log("Done it", x));
-  // await zipStore.clear();
-  // await cacheStore.clear();
+  // const tasks = [zipStore, cacheStore].map(localforage.clear);
+  // const results = await Promise.all(tasks);
+  // results.forEach(x => console.log("Done it", x));
+  await zipStore.clear();
+  await cacheStore.clear();
 }
 
 
@@ -96,20 +96,21 @@ async function fetchManifest({username, repository}) {
 
 // https://git.door43.org/unfoldingword/en_ult/raw/branch/master/manifest.yaml
 async function fetchFileFromServer({username, repository, path, branch='master'}) {
-  console.log(`fetchFileFromServer(${username}, ${repository}, ${path}, ${branch})…`);
+  // console.log(`fetchFileFromServer(${username}, ${repository}, ${path}, ${branch})…`);
   const repoExists = await repositoryExists({username, repository});
   if (repoExists) {
     const uri = Path.join(username, repository, 'raw/branch', branch, path);
     try {
-      //console.log("URI=",uri);
+      // console.log("URI=",uri);
       const data = await get({uri});
+      // console.log("Got data", data);
       return data;
     }
     catch(error) {
       return null;
     }
   } else {
-    //console.log("REPO does not exist!", repository)
+    console.log("ERROR: Repo does not exist!", repository)
     return null;
   }
 };
@@ -129,27 +130,37 @@ export async function getFile({username, repository, path, branch}) {
 async function getUID({username}) {
   // console.log(`getUID(${username})…`);
   const uri = Path.join(apiPath, 'users', username);
+  // console.log(`getUID uri=${uri}`);
   const user = await get({uri});
+  // console.log(`getUID user=${user}`);
   const {id: uid} = user;
-  // console.log(`  returning: ${uid}`);
+  // console.log(`  getUID returning: ${uid}`);
   return uid;
 }
 async function repositoryExists({username, repository}) {
   // console.log(`repositoryExists(${username}, ${repository})…`);
   const uid = await getUID({username});
-  const params = { q: repository, uid };
+  // console.log(`repositoryExists uid=${uid}`);
+  // Default limit is 10 -- way too small
+  const params = { q: repository, limit: 500, uid }; // Documentation says limit is 50, but larger numbers seem to work ok
+  // console.log(`repositoryExists params=${JSON.stringify(params)}`);
   const uri = Path.join(apiPath, 'repos', `search`);
+  // console.log(`repositoryExists uri=${uri}`);
   const {data: repos} = await get({uri, params});
+  // console.log(`repositoryExists repos (${repos.length})=${repos}`);
+  // for (const thisRepo of repos) console.log(`  thisRepo (${JSON.stringify(Object.keys(thisRepo))}) =${JSON.stringify(thisRepo.name)}`);
   const repo = repos.filter(repo => repo.name === repository)[0];
-  // console.log(`  returning: ${!!repo}`);
+  // console.log(`repositoryExists repo=${repo}`);
+  // console.log(`  repositoryExists returning: ${!!repo}`);
   return !!repo;
 };
 
 
 async function get({uri, params}) {
-  // console.log(`get(${uri}, ${params})…`);
+  // console.log(`get(${uri}, ${JSON.stringify(params)})…`);
+  // console.log(`  get querying: ${baseURL+uri}`);
   const {data} = await Door43Api.get(baseURL+uri, { params });
-  // console.log(`  returning: ${data}`);
+  // console.log(`  get returning: ${JSON.stringify(data)}`);
   return data;
 };
 
@@ -187,6 +198,7 @@ export async function fetchRepositoryZipFile({username, repository, branch}) {
     await zipStore.setItem(uri, zipArrayBuffer);
     return true;
   } else {
+    console.log(`ERROR: fetchRepositoryZipFile got response status: ${response.status}`);
     return false;
   }
 };
@@ -207,7 +219,7 @@ async function getFileFromZip({username, repository, path, branch}) {
     }
     // else console.log("  No zipBlob");
   } catch(error) {
-    console.log(`  Nope: ${error}`);
+    console.log(`ERROR: getFileFromZip got: ${error.message}`);
     file = null;
   }
   return file;
@@ -223,18 +235,18 @@ function zipUri({username, repository, branch='master'}) {
 
 
 export async function fetchTree({username, repository, sha='master'}) {
-  console.log(`fetchTree(${username}, ${repository}, ${sha})…`);
+  // console.log(`fetchTree(${username}, ${repository}, ${sha})…`);
   try {
     const uri = Path.join('api/v1/repos', username, repository, 'git/trees', sha);
-    console.log(`  uri='${uri}'`);
+    // console.log(`  uri='${uri}'`);
     const data = await get({uri});
-    console.log(`  data (${typeof data})`);
+    // console.log(`  data (${typeof data})`);
     return data;
-    const tree = JSON.parse(data); // RJH: Why was this here???
-    console.log(`  tree (${typeof tree})`);
-    return tree;
+    // const tree = JSON.parse(data); // RJH: Why was this here???
+    // console.log(`  tree (${typeof tree})`);
+    // return tree;
   } catch(error) {
-    console.log(`fetchTree ERROR: ${error}`);
+    console.log(`ERROR: fetchTree got: ${error.message}`);
     console.log(`  Data was: ${JSON.stringify(data)}`);
     return null;
   }

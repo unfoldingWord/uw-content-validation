@@ -4,7 +4,7 @@ import checkBookPackage from '../book-package-check/checkBookPackage';
 import { getFile } from '../../core/getApi';
 // import { consoleLogObject } from '../../core/utilities';
 
-const CHECKER_VERSION_STRING = '0.0.1';
+const CHECKER_VERSION_STRING = '0.1.0';
 
 
 async function checkBookPackages(username, language_code, bookCodeList, setResultValue, checkingOptions) {
@@ -38,8 +38,8 @@ async function checkBookPackages(username, language_code, bookCodeList, setResul
 
     // Main code for checkBookPackages()
     let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0, checkedRepoNames = new Set();
-    for (let bookCode of bookCodeList) {
-        console.log(`bookCode: ${bookCode}`);
+    for (const bookCode of bookCodeList) {
+        // console.log(`checkBookPackages bookCode: ${bookCode}`);
 
         // const generalLocation = ` ${language_code} ${bookCode} book packages from ${username}`;
         if (bookCode !== 'OBS') {
@@ -62,14 +62,14 @@ async function checkBookPackages(username, language_code, bookCodeList, setResul
         // Concat is faster if we don't need to process each success message individually
         checkBookPackagesResult.successList = checkBookPackagesResult.successList.concat(cbpResultObject.successList);
         // Process results line by line,  appending the repoCode/bookCode as an extra field as we go
-        // for (let successEntry of cbpResultObject.successList) {
+        // for (const successEntry of cbpResultObject.successList) {
         //     // console.log("  doOurCheckBookPackage:", successEntry);
         //     addSuccessMessage(successEntry);
         // }
 
         // Concat is faster if we don't need to process each notice individually
         checkBookPackagesResult.noticeList = checkBookPackagesResult.noticeList.concat(cbpResultObject.noticeList);
-        // for (let noticeEntry of cbpResultObject.noticeList)
+        // for (const noticeEntry of cbpResultObject.noticeList)
         //     // noticeEntry is an array of five fields: 1=priority, 2=msg, 3=index, 4=extract, 5=location
         //     // The extra value from checkBookPackage is the repo name
         //     addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5]);
@@ -80,7 +80,7 @@ async function checkBookPackages(username, language_code, bookCodeList, setResul
         totalCheckedSize += cbpResultObject.checkedFilesizes;
         checkedRepoNames = new Set([...checkedRepoNames, ...cbpResultObject.checkedRepoNames]);
 
-        // addSuccessMessage(`${checkedFileCount}/ Checked ${bookCode} book package`);
+        // addSuccessMessage(`${checkedFileCount.toLocaleString()}/ Checked ${bookCode} book package`);
 
         // Update our "waiting" message {checkedFileCount==1?'':'s'}
         // setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {language_code} <b>{bookCodeList}</b> book package: checked <b>{checkedFileCount.toLocaleString()}</b>/5 repos…</p>);
@@ -92,10 +92,13 @@ async function checkBookPackages(username, language_code, bookCodeList, setResul
     checkBookPackagesResult.checkedFilenames = checkedFilenames;
     checkBookPackagesResult.checkedFilenameExtensions = [...checkedFilenameExtensions]; // convert Set to Array
     checkBookPackagesResult.checkedFilesizes = totalCheckedSize;
-    checkBookPackagesResult.checkedRepoNames = [...checkedRepoNames]; // Convert set to Array
+    checkedRepoNames = [...checkedRepoNames]; // Convert set to Array
+    const index = checkedRepoNames.indexOf(`${username}/${language_code}_obs`);
+    if (index !== -1) checkedRepoNames[index] = 'OBS'; // Looks tidier here
+    checkBookPackagesResult.checkedRepoNames = checkedRepoNames;
     // checkBookPackagesResult.checkedOptions = checkingOptions; // This is done at the caller level
 
-    console.log("checkBookPackages() is returning", checkBookPackagesResult.successList.length.toLocaleString(), "success message(s) and", checkBookPackagesResult.noticeList.length.toLocaleString(), "notice(s)");
+    // console.log("checkBookPackages() is returning", checkBookPackagesResult.successList.length.toLocaleString(), "success message(s) and", checkBookPackagesResult.noticeList.length.toLocaleString(), "notice(s)");
     return checkBookPackagesResult;
 };
 // end of checkBookPackages()

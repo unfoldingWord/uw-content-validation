@@ -53,7 +53,7 @@ export const testament = (bookId) => {
 
 // export const newTestament = () => {
 //   let list[] = [];
-//   for (let i=0; i < data.length; i++) {
+//   for (const i=0; i < data.length; i++) {
 //     if ( data[i].testament === "new" ) {
 //       list.push( data[i].title )
 //     }
@@ -63,7 +63,7 @@ export const testament = (bookId) => {
 
 // export const oldTestament = () => {
 //   let list[] = [];
-//   for (let i=0; i < data.length; i++) {
+//   for (const i=0; i < data.length; i++) {
 //     if ( data[i].testament === "old" ) {
 //       list.push( data[i].title )
 //     }
@@ -73,7 +73,7 @@ export const testament = (bookId) => {
 
 // export const bookDataTitles = () => {
 //   let list[] = [];
-//   for (let i=0; i < data.length; i++) {
+//   for (const i=0; i < data.length; i++) {
 //       list.push( data[i].title )
 //   }
 //   return list;
@@ -87,7 +87,7 @@ export const testament = (bookId) => {
 // }
 
 // export const bookIdByTitle = (title) => {
-//   for (let i=0; i < data.length; i++) {
+//   for (const i=0; i < data.length; i++) {
 //     if ( data[i].title === title ) {
 //       return data[i].id;
 //     }
@@ -96,7 +96,7 @@ export const testament = (bookId) => {
 // }
 
 // export const bookTitleById = (id) => {
-//   for (let i=0; i < data.length; i++) {
+//   for (const i=0; i < data.length; i++) {
 //     if ( data[i].id === id ) {
 //       return data[i].title;
 //     }

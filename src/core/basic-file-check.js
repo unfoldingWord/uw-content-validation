@@ -100,7 +100,7 @@ export function doBasicFileChecks(filename, fileText, optionalFileLocation, opti
     }
 
     // Check matched pairs
-    for (let punctSet of [['[',']'], ['(',')'], ['{','}'],
+    for (const punctSet of [['[',']'], ['(',')'], ['{','}'],
                           ['<','>'], ['⟨','⟩'], ['“','”'],
                           ['‹','›'], ['«','»'], ['**_','_**']]) {
         // Can't check '‘’' coz they might be used as apostrophe

@@ -53,20 +53,17 @@ Note that the original structure of these components were taken from https://git
 
 Still unfinished:
 
-1. Checking of markdown repos (e.g., TQ)
-1. Clean-up various different file fetches and caches (incl. using zips)
 1. Checking of links
-1. Checking of UTA
-1. Checking of current UTW (is it worth it???)
-1. Getting error messages from BCS Grammar Check (once they adjust the code)
 1. Testing and fine-tuning of error messages (e.g., comparing with tX)
+1. Optimise various different file and tree fetches and caches (incl. using zips)
+1. Get error messages from BCS Grammar Check (once they adjust the code)
 1. Write unit tests and get them passing
 1. Check for and remove left-over (but unused) code from the copied source projects
 1. Remove all debug code and console logging
 
 Possible future improvements include:
 
-1. Would it be better to include B,C,V fields separately in the notice/error/warning lists? (This could allow a GUI to narrow down to displaying/filtering only errors for one book for example.)
+1. Would it be better to include B,C,V fields separately in the notice/error/warning lists? (This could allow a GUI to narrow down to displaying/filtering only errors for one book or chapter for example.)
 
 ## Functionality and Limitations
 

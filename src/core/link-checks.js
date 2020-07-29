@@ -29,7 +29,7 @@ async function startLiveLinksCheck(linksList, existingNoticeList, callbackFuncti
     }
 
     // Now try fetching each link in turn
-    for (let linkEntry of linksList) {
+    for (const linkEntry of linksList) {
         console.log("startLiveLinksCheck linkEntry", JSON.stringify(linkEntry));
         const fetchLink = linkEntry[1]? linkEntry[1]: linkEntry[2]; // Why ??? !!!
         console.log("startLiveLinksCheck attempting to fetch", fetchLink, '…');
@@ -105,7 +105,7 @@ function doBasicLinkChecks(fieldName, fieldText, linkOptions, optionalFieldLocat
     let linkRegexParts;
     if (linkOptions.linkTypesAllowed) {
         linkRegexParts = [];
-        for (let linkType of linkOptions.linkTypesAllowed) {
+        for (const linkType of linkOptions.linkTypesAllowed) {
             // console.log("doBasicLinkChecks linkType", linkType);
             if (linkType==='RC')
                 linkRegexParts.push('(rc://[^ ]+)');

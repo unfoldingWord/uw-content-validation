@@ -19,12 +19,13 @@ function BookPackageCheck(/*username, language_code, bookCode,*/ props) {
     // consoleLogObject("props.classes", props.classes);
 
     let username = props.username;
-    // console.log("username='"+ username+"'");
+    // console.log(`username='${username}'`);
     let language_code = props.language_code;
-    // console.log("language_code='"+ language_code+"'");
+    // console.log(`language_code='${language_code}'`);
     let bookCode = props.bookCode;
-    // console.log("bookCode='"+ bookCode+"'");
-    let branch = 'master'; // TEMP should be undefined ???? TEMP
+    // console.log(`bookCode='${bookCode}'`);
+    let branch = props.branch;
+    // console.log(`branch='${branch}'`);
 
     if (bookCode!=='OBS' && !books.isValidBookCode(bookCode))
         return (<p>Please enter a valid USFM book code. ('{bookCode}' is not valid.)</p>);
@@ -57,7 +58,7 @@ function BookPackageCheck(/*username, language_code, bookCode,*/ props) {
             rawResult.bookCode = bookCode;
             rawResult.checkedOptions = checkingOptions;
 
-            console.log("Here with CBP rawResult", typeof rawResult);
+            // console.log("Here with CBP rawResult", typeof rawResult);
             // Now do our final handling of the result -- we have some options available
             let processOptions = { // Uncomment any of these to test them
                 // 'maximumSimilarMessages': 3, // default is 2
@@ -73,15 +74,15 @@ function BookPackageCheck(/*username, language_code, bookCode,*/ props) {
             if (props.sortBy) processOptions.sortBy = props.sortBy;
             // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
             const processedResult = processNotices(rawResult, processOptions);
-            console.log(`BookPackageCheck got back processedResult with ${processedResult.successList.length.toLocaleString()} success message(s), ${processedResult.errorList.length.toLocaleString()} error(s) and ${processedResult.warningList.length.toLocaleString()} warning(s)
-  numIgnoredNotices=${processedResult.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResult.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResult.numSuppressedWarnings.toLocaleString()}`);
+//             console.log(`BookPackageCheck got back processedResult with ${processedResult.successList.length.toLocaleString()} success message(s), ${processedResult.errorList.length.toLocaleString()} error(s) and ${processedResult.warningList.length.toLocaleString()} warning(s)
+//   numIgnoredNotices=${processedResult.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResult.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResult.numSuppressedWarnings.toLocaleString()}`);
 
             // console.log("Here now in rendering bit!");
 
             function renderSummary() {
                 return (<>
                 <p>Checked <b>{username} {language_code} {bookCode}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
-                <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResult.checkedFileCount} file{processedResult.checkedFileCount==1?'':'s'} from {processedResult.checkedRepoNames.join(', ')}
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResult.checkedFileCount.toLocaleString()} file{processedResult.checkedFileCount==1?'':'s'} from {processedResult.checkedRepoNames.join(', ')}
                 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResult.checkedFilenameExtensions.length} file type{processedResult.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResult.checkedFilenameExtensions.join(', ')}.</p>
                 </>);
             }

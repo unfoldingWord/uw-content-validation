@@ -72,7 +72,7 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
 
         // Process results line by line
         //  suppressing undesired errors
-        for (let noticeEntry of resultObject.noticeList)
+        for (const noticeEntry of resultObject.noticeList)
             if (noticeEntry[0] !== 591
               && noticeEntry[1] !== "Unexpected ' character after space"
               && noticeEntry[1] !== "Unexpected space after ' character"
@@ -90,15 +90,15 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
 
         // Remove leading spaces
         thisText = thisText.replace(/^ +/g,'')
-        // console.log("After removing leading spaces have '"+thisText+"'");
+        // console.log(`After removing leading spaces have '${thisText}'`);
 
         // Remove leading hyphens
         thisText = thisText.replace(/^\-/g,'')
-        // console.log("After removing hyphens have '"+thisText+"'");
+        // console.log(`After removing hyphens have '${thisText}'`);
 
         // Remove leading spaces again now
         thisText = thisText.replace(/^ +/g,'')
-        // console.log("After removing more leading spaces have '"+thisText+"'");
+        // console.log(`After removing more leading spaces have '${thisText}'`);
 
         const allowedLinksInLine = thisText.startsWith('url:') || thisText.startsWith('chapter_url:');
         if (thisText)
@@ -109,14 +109,14 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
 
     // Main code for checkYAMLText function
     const lines = YAMLText.split('\n');
-    // console.log("  '" + location + "' has " + lines.length.toLocaleString() + " total lines");
+    // console.log(`  '${location}' has ${lines.length.toLocaleString()} total lines`);
     let formData;
     try {
         formData = yaml.parse(YAMLText);
-        console.log("yaml.parse(YAMLText) got formData", JSON.stringify(formData));
+        // console.log("yaml.parse(YAMLText) got formData", JSON.stringify(formData));
     }
     catch(e) {
-        console.log("yaml parse error:", e.message);
+        console.log("ERROR: yaml parse error:", e.message);
         addNotice(916, e.message, -1, "", ourLocation)
     }
     // Add the parsed YAML to our result
@@ -124,7 +124,7 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
 
     let lastNumLeadingSpaces = 0;
     let lastLineContents;
-    for (let n = 1; n <= lines.length; n++) {
+    for (let n= 1; n <= lines.length; n++) {
         const atString = " in line "+n.toLocaleString()+ourLocation;
 
         const line = lines[n - 1];
@@ -147,7 +147,7 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
 
     addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'}'${ourLocation}'.`);
     if (cytResult.noticeList)
-        addSuccessMessage(`checkYAMLText v${YAML_VALIDATOR_VERSION} finished with ${cytResult.noticeList.length?cytResult.noticeList.length.toLocaleString():"zero"} notice${cytResult.noticeList.length == 1 ? '' : 's'}`);
+        addSuccessMessage(`checkYAMLText v${YAML_VALIDATOR_VERSION} finished with ${cytResult.noticeList.length?cytResult.noticeList.length.toLocaleString():"zero"} notice${cytResult.noticeList.length === 1 ? '' : 's'}`);
     else
         addSuccessMessage(`No errors or warnings found by checkYAMLText v${YAML_VALIDATOR_VERSION}`)
     // console.log(`  checkYAMLText returning with ${cytResult.successList.length.toLocaleString()} success(es), ${cytResult.noticeList.length.toLocaleString()} notice(s).`);

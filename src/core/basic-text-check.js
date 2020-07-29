@@ -155,7 +155,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     //  or doubled # coz that occurs in markdown
     let checkList = '’\'({}<>⟨⟩:,،、‒–—―…!‹›«»‐-?‘’“”\'";⁄·&*@•^†‡°¡¿※№÷×ºª%‰+−=‱¶′″‴§~_|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥';
     if (!allowedLinks) checkList += '[].)' // Double square brackets can be part of markdown links, double periods can be part of a path
-    for (let punctChar of checkList) {
+    for (const punctChar of checkList) {
         ix = fieldText.indexOf(punctChar + punctChar);
         if (ix >= 0) {
             let extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
@@ -163,7 +163,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
         }
     }
     // Check for punctuation chars following space
-    for (let punctChar of '.\')}>⟩:,،、‒–—―…!.‹›«»‐-?’”\'";/⁄·*@•^†‡°¡¿※#№÷×ºª%‰‱¶′″‴§~_|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥') {
+    for (const punctChar of '.\')}>⟩:,،、‒–—―…!.‹›«»‐-?’”\'";/⁄·*@•^†‡°¡¿※#№÷×ºª%‰‱¶′″‴§~_|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥') {
         ix = fieldText.indexOf(' ' + punctChar);
         if (ix >= 0) {
             let extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
@@ -171,7 +171,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
         }
     }
     // Check for punctuation chars before space
-    for (let punctChar of '\'[({<⟨،、‒–—―‹«‐‘“/⁄·@\•^†‡°¡¿※№×ºª%‰‱¶′″‴§~_|‖¦©℗℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥') {
+    for (const punctChar of '\'[({<⟨،、‒–—―‹«‐‘“/⁄·@\•^†‡°¡¿※№×ºª%‰‱¶′″‴§~_|‖¦©℗℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥') {
         ix = fieldText.indexOf(punctChar + ' ');
         if (ix >= 0) {
             let extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
@@ -180,8 +180,8 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     }
 
     // Check matched pairs
-    // for (let punctSet of ['[]', '()', '{}', '<>', '⟨⟩', '“”', '‹›', '«»']) {
-    for (let punctSet of [['[', ']'], ['(', ')'], ['{', '}'],
+    // for (const punctSet of ['[]', '()', '{}', '<>', '⟨⟩', '“”', '‹›', '«»']) {
+    for (const punctSet of [['[', ']'], ['(', ')'], ['{', '}'],
                             ['<', '>'], ['⟨', '⟩'], ['“', '”'],
                             ['‹', '›'], ['«', '»'], ['**_', '_**']]) {
         // Can't check '‘’' coz they might be used as apostrophe

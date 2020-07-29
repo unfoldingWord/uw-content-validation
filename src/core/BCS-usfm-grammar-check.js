@@ -19,7 +19,7 @@ export function runBCSGrammarCheck(strictnessString, fileText) {
     //  Remove trailing spaces and periods
     // console.log("  Warnings:", JSON.stringify(ourUsfmParser.warnings));
     let ourWarnings = [];
-    for (let warningString of ourUsfmParser.warnings) {
+    for (const warningString of ourUsfmParser.warnings) {
         // console.log(`warningString: '${warningString}'`);
         let adjustedString = warningString.trim(); // Removes the trailing space
         if (adjustedString.endsWith('.')) adjustedString = adjustedString.substring(0, adjustedString.length-1);
@@ -76,7 +76,7 @@ export function checkUSFMGrammar(strictnessString, filename, givenText, givenLoc
         addNotice(944, `USFM3 Grammar Check (${strictnessString} mode) doesn't pass`, -1, "", ourLocation);
 
     // Display these warnings but with a lowish priority
-    for (let warningString of grammarCheckResult.warnings)
+    for (const warningString of grammarCheckResult.warnings)
         addNotice(100, "USFMGrammar found: " + warningString, -1, "", ourLocation);
 
     addSuccessMessage(`Checked USFM Grammar (${strictnessString} mode) ${grammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN'T validate)"}`);

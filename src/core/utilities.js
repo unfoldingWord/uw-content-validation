@@ -1,13 +1,13 @@
 // utilities
 
-// import { isUndefined } from "lodash";
+// import { isUndefined } from 'lodash';
 
 
 export function consoleLogObject(clTitle, clObject) {
     // Print an object's componenets to the console
     // Note: the following line succeeds even if length and/or size are undefined
     let clOutput = `cLO: ${clTitle} ${typeof clObject} (length=${clObject.length}) (size=${clObject.size}):\n`;
-    for (let clPropertyName in clObject) {
+    for (const clPropertyName in clObject) {
         // console.log("   ", clTitle, clPropertyName); // for debugging only!
         let thisPropertyContents = "" + clObject[clPropertyName];
         if (thisPropertyContents.length > 50)
@@ -30,7 +30,7 @@ export function consoleLogObject(clTitle, clObject) {
 
 export function displayPropertyNames(givenTitle, givenObject) {
     let output = "dPN: " + givenTitle + " " + (typeof givenObject) + ":\n";
-    for (let propertyName in givenObject)
+    for (const propertyName in givenObject)
         output += "  " + propertyName + " (type=" + typeof givenObject[propertyName] + ")\n";
     console.log(output);
 }

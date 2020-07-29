@@ -70,7 +70,7 @@ function checkTN_TSVDataRow(BBB, line, rowLocation, optionalCheckingOptions) {
         result.noticeList = result.noticeList.concat(cmtResultObject.noticeList);
         // If we need to put everything through addNotice, e.g., for debugging or filtering
         //  process results line by line
-        // for (let noticeEntry of cmtResultObject.noticeList)
+        // for (const noticeEntry of cmtResultObject.noticeList)
         //     addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
     }
     // end of doOurMarkdownTextChecks function
@@ -95,7 +95,7 @@ function checkTN_TSVDataRow(BBB, line, rowLocation, optionalCheckingOptions) {
         result.noticeList = result.noticeList.concat(dbtcResultObject.noticeList);
         // If we need to put everything through addNotice, e.g., for debugging or filtering
         //  process results line by line
-        // for (let noticeEntry of dbtcResultObject.noticeList)
+        // for (const noticeEntry of dbtcResultObject.noticeList)
         //     addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
     }
     // end of doOurBasicTextChecks function

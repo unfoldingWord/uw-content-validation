@@ -10,6 +10,18 @@ let sections = [
 		content: 'README.md',
 	},
 	{
+		name: 'Clear Cache',
+		components: () => {
+			const componentNames = [
+				'clear-cache',
+			];
+			return componentNames.map(componentName => {
+				const filename = upperFirst(camelCase(componentName));
+				return path.resolve(__dirname, `src/components/${componentName}`, `${filename}.js`)
+			});
+		}
+	},
+	{
 		name: 'Book Packages Checker',
 		components: () => {
 			const componentNames = [

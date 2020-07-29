@@ -8,6 +8,8 @@ Note that `OBS` can also be entered here as a *pseudo book code* in order to che
 
 **Warning**: Some book packages contain many files and/or very large files, and downloading them all and then checking them might slow down your browser.
 
+**Note**: This component uses cached values of files stored inside the local browser. This makes reruns of the checks much faster, but it won't notice if you have updated the files on Door43. If you want to clear the local caches, use the `Clear Cache` function.
+
 ```js
 import BookPackageCheck from './BookPackageCheck';
 

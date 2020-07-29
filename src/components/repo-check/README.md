@@ -4,7 +4,7 @@ The code below requests some info and then checks a Door43 repository.You can en
 
 **Warning**: Some repos contain many files and/or very large files, and downloading them all and then checking them might slow down your browser.
 
-**Note**: This demo software caches/saves the files when it fetches them. So if it reruns (e.g., if you change something in a `//` comment below), it should be considerably faster the second time. But the disadvantage is that even if the files are updated on Door43.org, the old version of the file is still used.
+**Note**: This component uses cached values of files stored inside the local browser. This makes reruns of the checks much faster, but it won't notice if you have updated the files on Door43. If you want to clear the local caches, use the `Clear Cache` function.
 
 ```js
 import RepoCheck from './RepoCheck';
@@ -14,9 +14,11 @@ import RepoCheck from './RepoCheck';
 
     // repoName='hbo_uhb' // OT books only
     // repoName='el-x-koine_ugnt' // NT books only
-    // repoName='en_ust' // Can use ult or ust here
-    // repoName='en_tn' // Translation notes (TSV tables)
-    repoName='en_tq' // Translation questions (markdown files)
+    // repoName='en_ult' // Can use ult or ust here
+    // repoName='en_tn' // Translation Notes (TSV tables)
+    // repoName='en_tq' // Translation Questions (markdown files)
+    repoName='en_ta' // Translation Academy (markdown files)
+    // repoName='en_tw' // Translation Words (markdown files)
     // repoName='en_obs' // Open Bible Stories (markdown files)
     // repoName='fr_ulb' // No alignment so smaller files (faster)
 

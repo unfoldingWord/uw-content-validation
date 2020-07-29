@@ -32,7 +32,7 @@ export function RenderRawNotices(props) {
     // consoleLogObject('RenderRawNotices props', props);
 
     let propertyList = [];
-    for (let propertyName in props.results) {
+    for (const propertyName in props.results) {
         if (propertyName !== 'noticeList')
             propertyList.push(<p>{propertyName} = {props.results[propertyName]}</p>);
     }
@@ -158,7 +158,7 @@ export function RenderSuccessesErrorsWarnings(props) {
     else successCount = props.results.successList.length.toLocaleString();
 
     return <>
-        <b style={{ color: haveErrorsOrWarnings? 'limegreen':'green' }}>{successCount} check{props.results.successList.length === 1 ? '' : 's'} completed</b>{props.results.successList.length ? ':' : ''}
+        <b style={{ color: haveErrorsOrWarnings? 'limegreen':'green' }}>{successCount.toLocaleString()} check{props.results.successList.length === 1 ? '' : 's'} completed</b>{props.results.successList.length ? ':' : ''}
         <RenderProcessedArray results={props.results} arrayType='s' />
         {haveErrorsOrWarnings?<RenderErrorsAndWarnings results={props.results} />:""}
     </>;

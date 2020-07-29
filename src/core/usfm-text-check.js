@@ -104,7 +104,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
     function ourRunBCSGrammarCheck(fileText, fileLocation) {
         // Runs the BCS USFM Grammar checker
         //  which can be quite time-consuming on large, complex USFM files
-        console.log("Running our BCS USFM grammar check (can take quite a while for a large book)…");
+        // console.log("Running our BCS USFM grammar check (can take quite a while for a large book)…");
 
         const grammarCheckResult = runBCSGrammarCheck('strict', fileText);
         // NOTE: We haven't figured out how to get ERRORS out of this parser yet
@@ -116,7 +116,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
 
         // console.log("  Warnings:", JSON.stringify(grammarCheckResult.warnings));
         // Display these warnings but with a lower priority
-        for (let warningString of grammarCheckResult.warnings)
+        for (const warningString of grammarCheckResult.warnings)
             if (!warningString.startsWith("Empty lines present") // we allow empty lines in our USFM
                 && !warningString.startsWith("Trailing spaces present at line end") // we find these ourselves
             )
@@ -142,18 +142,18 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
         Note that this code below does NOT check for chapters and verses
             being in the correct order. That's done elsewhere.
         */
-        console.log("Running CVCheck() using USFM-JS (can take quite a while for a large book)…");
+        // console.log("Running CVCheck() using USFM-JS (can take quite a while for a large book)…");
 
 
         function hasText(verseObjects) {
-            for (let someObject of verseObjects) {
+            for (const someObject of verseObjects) {
                 // console.log("someObject", JSON.stringify(someObject));
                 if (someObject['type'] === 'text' && someObject['text'].length > 5)
                     return true;
                 if (someObject['type'] === 'word' && someObject['text'].length > 2)
                     return true;
                 if (someObject['type'] === 'milestone')
-                    for (let someSubobject of someObject['children']) {
+                    for (const someSubobject of someObject['children']) {
                         // console.log("someSubobject", JSON.stringify(someSubobject));
                         if (someSubobject['type'] === 'text' && someSubobject['text'].length > 5)
                             return true;
@@ -181,7 +181,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
         // console.log("Got a JSON result", JSON.stringify(result1));
         // console.log("Got a JSON headers result", JSON.stringify(result1.returnedJSON.headers));
         // console.log("Got a JSON chapters result", JSON.stringify(result1.returnedJSON.chapters));
-        for (let chapterNumberString in result1.returnedJSON.chapters) {
+        for (const chapterNumberString in result1.returnedJSON.chapters) {
             // console.log("chapterNumberString", JSON.stringify(chapterNumberString));
             // console.log("chapter", JSON.stringify(result1.returnedJSON.chapters[chapterNumberString]));
             let chapterInt;
@@ -195,7 +195,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
             else {
                 let discoveredVerseList = [], discoveredVerseWithTextList = [];
                 // console.log(`Chapter ${chapterNumberString} verses ${Object.keys(result1.returnedJSON.chapters[chapterNumberString])}`);
-                for (let verseNumberString in result1.returnedJSON.chapters[chapterNumberString]) {
+                for (const verseNumberString in result1.returnedJSON.chapters[chapterNumberString]) {
                     if (verseNumberString === 'front') continue; // skip the rest here
                     // console.log("verseNumberString", JSON.stringify(verseNumberString));
                     // console.log("verse", JSON.stringify(result1.returnedJSON.chapters[chapterNumberString][verseNumberString]));
@@ -208,7 +208,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
                         try {
                             intFirstV = ourParseInt(firstVString);
                             intSecondV = ourParseInt(secondVString);
-                            for (let v = intFirstV; v <= intSecondV; v++) {
+                            for (let v= intFirstV; v <= intSecondV; v++) {
                                 discoveredVerseList.push(v);
                                 if (verseHasText)
                                     discoveredVerseWithTextList.push(v);
@@ -234,7 +234,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
                 }
 
                 // Check that expected verses numbers were actually all there
-                for (let v = 1; v <= expectedVersesPerChapterList[chapterInt - 1]; v++) {
+                for (let v= 1; v <= expectedVersesPerChapterList[chapterInt - 1]; v++) {
                     if (discoveredVerseList.indexOf(v) < 0)
                         if (books.isOftenMissing(BBB, chapterInt, v))
                             addNotice(67, "Verse appears to be left out", -1, `${BBB} ${chapterNumberString}:${v}`, location);
@@ -271,7 +271,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
 
         // Process results line by line to filter out potential false positives
         //  for this particular kind of text field
-        for (let noticeEntry of dbtcResultObject.noticeList)
+        for (const noticeEntry of dbtcResultObject.noticeList)
             if (!noticeEntry[1].startsWith("Mismatched () characters") // 663 Mismatched left/right chars -- suppress these misleading warnings coz open quote can occur in one verse and close in another
                 && !noticeEntry[1].startsWith("Mismatched [] characters")
                 && !noticeEntry[1].startsWith("Mismatched “” characters")
@@ -303,7 +303,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
         result.noticeList = result.noticeList.concat(resultObject.noticeList);
         // If we need to put everything through addNotice, e.g., for debugging or filtering
         //  process results line by line
-        // for (let noticeEntry of resultObject.noticeList)
+        // for (const noticeEntry of resultObject.noticeList)
         //     addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
     }
     // end of doOurBasicFileChecks function
@@ -311,7 +311,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
 
     function checkUSFMCharacterFields(filename, fileText, fileLocation) {
         // Check matched pairs
-        for (let punctSet of [
+        for (const punctSet of [
             // Character formatting
             ['\\add ', '\\add*'], ['\\addpn ', '\\addpn*'],
             ['\\bd ', '\\bd*'], ['\\bdit ', '\\bdit*'],
@@ -405,7 +405,8 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
 
 
     function mainUSFMCheck(BBB, filename, givenText, location) {
-        console.log("Running mainUSFMCheck() (can take quite a while for a large book)…");
+        // console.log("Running mainUSFMCheck() (can take quite a while for a large book)…");
+
         let bbb = BBB.toLowerCase();
         let numChaptersThisBook = 0;
         try {
@@ -422,7 +423,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
         let lastIntC = 0, lastIntV = 0;
         let numVersesThisChapter = 0;
         let lastMarker = '', lastRest = '';
-        for (let n = 1; n <= lines.length; n++) {
+        for (let n= 1; n <= lines.length; n++) {
             let line = lines[n - 1];
             if (C === '0') V = n.toString();
             let atString = " at " + BBB + " " + C + ":" + V + " on line " + n.toLocaleString() + location;
@@ -549,7 +550,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
         addNotice(944, "USFM Grammar check fails", -1, "", location);
     console.log("  Warnings:", JSON.stringify(allResults[1].warnings));
     // Display these warnings but with a lower priority
-    for (let warningString of allResults[1].warnings)
+    for (const warningString of allResults[1].warnings)
         addNotice(100, "USFMGrammar found: " + warningString.trim(), -1, "", location);
     */
 
@@ -565,10 +566,10 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
     //     addNotice(944, "USFM Grammar check fails", -1, "", location);
     // console.log("  Warnings:", JSON.stringify(allResults[1].warnings));
     // // Display these warnings but with a lower priority
-    // for (let warningString of allResults[1].warnings)
+    // for (const warningString of allResults[1].warnings)
     //     addNotice(100, "USFMGrammar found: " + warningString.trim(), -1, "", location);
 
-    console.log(`  checkUSFMText returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
+    // console.log(`  checkUSFMText returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
     // console.log(`checkUSFMText result is ${JSON.stringify(result)}`);
     return result;
 }

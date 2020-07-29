@@ -74,7 +74,7 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
         cmtResult.noticeList = cmtResult.noticeList.concat(cYtResultObject.noticeList);
         /* // Process results line by line
         //  suppressing undesired errors
-        for (let noticeEntry of cYtResultObject.noticeList)
+        for (const noticeEntry of cYtResultObject.noticeList)
             if (noticeEntry[0] !== 591
               && noticeEntry[1] !== "Unexpected ' character after space"
               && noticeEntry[1] !== "Unexpected space after ' character"
@@ -128,7 +128,7 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
 
     let lastNumLeadingSpaces = 0;
     let lastLineContents;
-    for (let n = 1; n <= lines.length; n++) {
+    for (let n= 1; n <= lines.length; n++) {
         const atString = " in line "+n.toLocaleString()+ourLocation;
 
         const line = lines[n - 1];
@@ -165,7 +165,7 @@ checkManifestLineContents("line "+n.toLocaleString(), line, ourLocation);
 
     // addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'}'${ourLocation}'.`);
     if (cmtResult.noticeList)
-        addSuccessMessage(`checkManifestText v${MANIFEST_VALIDATOR_VERSION} finished with ${cmtResult.noticeList.length ? cmtResult.noticeList.length.toLocaleString() : "zero"} notice${cmtResult.noticeList.length == 1 ? '' : 's'}`);
+        addSuccessMessage(`checkManifestText v${MANIFEST_VALIDATOR_VERSION} finished with ${cmtResult.noticeList.length ? cmtResult.noticeList.length.toLocaleString() : "zero"} notice${cmtResult.noticeList.length === 1 ? '' : 's'}`);
     else
         addSuccessMessage("No errors or warnings found by checkManifestText v" + MANIFEST_VALIDATOR_VERSION)
     // console.log(`  checkManifestText returning with ${cmtResult.successList.length.toLocaleString()} success(es), ${cmtResult.noticeList.length.toLocaleString()} notice(s).`);

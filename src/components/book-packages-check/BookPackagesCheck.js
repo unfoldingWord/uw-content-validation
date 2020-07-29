@@ -24,7 +24,8 @@ function BookPackagesCheck(/*username, language_code, bookCodes,*/ props) {
     // console.log(`language_code='${language_code}'`);
     let bookCodes = props.bookCodes;
     // console.log(`bookCodes='${bookCodes}'`);
-    let branch = 'master'; // TEMP should be undefined ???? TEMP
+    let branch = props.branch;
+    // console.log(`branch='${branch}'`);
 
      // Clear cached files if we've changed repo
     //  autoClearCache(bookCodes); // This technique avoids the complications of needing a button
@@ -36,7 +37,7 @@ function BookPackagesCheck(/*username, language_code, bookCodes,*/ props) {
             return (<p>Please enter only valid USFM book codes separated by commas. ('{bookCode}' is not valid.)</p>);
         bookCodeList.push(bookCode);
     }
-    console.log(`bookCodeList (${bookCodeList.length}) = ${bookCodeList.join(', ')}`);
+    // console.log(`bookCodeList (${bookCodeList.length}) = ${bookCodeList.join(', ')}`);
 
     let checkingOptions = { // Uncomment any of these to test them
         // 'extractLength': 25,
@@ -88,7 +89,7 @@ function BookPackagesCheck(/*username, language_code, bookCodes,*/ props) {
             function renderSummary() {
                 return (<>
                 <p>Checked <b>{username} {language_code} {bookCodeList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
-                <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResult.checkedFileCount} file{processedResult.checkedFileCount==1?'':'s'} from {processedResult.checkedRepoNames.join(', ')}
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResult.checkedFileCount.toLocaleString()} file{processedResult.checkedFileCount==1?'':'s'} from {username} {processedResult.checkedRepoNames.join(', ')}
                 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResult.checkedFilenameExtensions.length} file type{processedResult.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResult.checkedFilenameExtensions.join(', ')}.</p>
                 </>);
             }

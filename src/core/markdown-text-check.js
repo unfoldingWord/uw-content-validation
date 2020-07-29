@@ -72,7 +72,7 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
         // result.noticeList = result.noticeList.concat(dbtcResultObject.noticeList);
         // If we need to put everything through addNotice, e.g., for debugging or filtering
         //  process results line by line
-        for (let noticeEntry of dbtcResultObject.noticeList)
+        for (const noticeEntry of dbtcResultObject.noticeList)
             if (!noticeEntry[1].startsWith("Unexpected doubled * characters") // 577 Markdown allows this
             && !noticeEntry[1].startsWith("Unexpected * character after space") // 591
             )
@@ -115,7 +115,7 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
     let headerLevel = 0;
     let lastNumLeadingSpaces = 0;
     let lastLineContents;
-    for (let n = 1; n <= lines.length; n++) {
+    for (let n= 1; n <= lines.length; n++) {
         const atString = " in line "+n.toLocaleString()+ourLocation;
 
         const line = lines[n - 1];
@@ -146,7 +146,7 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
 
     addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'}'${ourLocation}'.`);
     if (result.noticeList)
-        addSuccessMessage(`checkMarkdownText v${MARKDOWN_VALIDATOR_VERSION} finished with ${result.noticeList.length?result.noticeList.length.toLocaleString():"zero"} notice${result.noticeList.length == 1 ? '' : 's'}`);
+        addSuccessMessage(`checkMarkdownText v${MARKDOWN_VALIDATOR_VERSION} finished with ${result.noticeList.length?result.noticeList.length.toLocaleString():"zero"} notice${result.noticeList.length === 1 ? '' : 's'}`);
     else
         addSuccessMessage("No errors or warnings found by checkMarkdownText v" + MARKDOWN_VALIDATOR_VERSION)
     // console.log(`  checkMarkdownText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);

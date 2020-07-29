@@ -72,7 +72,7 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
         result.noticeList = result.noticeList.concat(resultObject.noticeList);
         // If we need to put everything through addNotice, e.g., for debugging or filtering
         //  process results line by line
-        // for (let noticeEntry of resultObject.noticeList)
+        // for (const noticeEntry of resultObject.noticeList)
         //     addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
     }
     // end of doOurBasicTextChecks function
@@ -95,7 +95,7 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
     let headerLevel = 0;
     let lastNumLeadingSpaces = 0;
     let lastLineContents;
-    for (let n = 1; n <= lines.length; n++) {
+    for (let n= 1; n <= lines.length; n++) {
         const atString = " in line "+n.toLocaleString()+ourLocation;
 
         const line = lines[n - 1];
@@ -110,7 +110,7 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
 
     addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'}'${ourLocation}'.`);
     if (result.noticeList)
-        addSuccessMessage(`checkPlainText v${PLAIN_TEXT_VALIDATOR_VERSION} finished with ${result.noticeList.length?result.noticeList.length.toLocaleString():"zero"} notice${result.noticeList.length == 1 ? '' : 's'}`);
+        addSuccessMessage(`checkPlainText v${PLAIN_TEXT_VALIDATOR_VERSION} finished with ${result.noticeList.length?result.noticeList.length.toLocaleString():"zero"} notice${result.noticeList.length === 1 ? '' : 's'}`);
     else
         addSuccessMessage("No errors or warnings found by checkPlainText v" + PLAIN_TEXT_VALIDATOR_VERSION)
     // console.log(`  checkPlainText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);

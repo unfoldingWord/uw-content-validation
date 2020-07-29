@@ -1,5 +1,5 @@
-import { displayPropertyNames, consoleLogObject } from "./utilities";
-import { result } from "lodash";
+import { displayPropertyNames, consoleLogObject } from './utilities';
+
 
 const PROCESSOR_VERSION_STRING = '0.0.6';
 
@@ -9,11 +9,12 @@ const DEFAULT_ERROR_PRIORITY_LEVEL = 700; // This level or higher becomes an err
 const DEFAULT_CUTOFF_PRIORITY_LEVEL = 0; // This level or lower gets excluded from the lists
 const DEFAULT_IGNORE_PRIORITY_NUMBER_LIST = [];
 
+
 export function processNotices(givenNoticeObject, optionalProcessingOptions) {
     /*
         Expects to get an object with:
             successList: a list of strings describing what has been checked
-            noticeList: a list of 5 compulsory components to notices, being:
+            noticeList: a list of five compulsory components to notices, being:
                 1/ A notice priority number in the range 1-1000.
                     Each different type of warning/error has a unique number
                       (but not each instance of those warnings/errors).
@@ -33,7 +34,7 @@ export function processNotices(givenNoticeObject, optionalProcessingOptions) {
                         e.g., `in line 17 of 'someBook.usfm'.
                 There is also an optional 6th notice component (where multiple files/repos are checked)
                 6/ A string indicating an extra location component, e.g., repoCode or bookCode
-                    This will need to be added to the location string (#5 above) but is left
+                    This will need to be added to the message string (#2 above) but is left
                         to now in order to allow the most display flexibility
 
         Available options are:
@@ -44,6 +45,13 @@ export function processNotices(givenNoticeObject, optionalProcessingOptions) {
             ignorePriorityNumberList (list of integers, default is empty list, list of notice priority numbers to be ignored)
 
         Returns an object with:
+            successList: a list of strings describing what has been checked
+            errorList
+            warningList
+            numIgnoredNotices, numSuppressedErrors, numSuppressedWarnings
+            processingOptions: just helpfully passes on what we were given (may be undefined)
+        Also, any other parameters are just passed through,
+            although filenameList might be abbreviated for 100s of .md files.
     */
     console.log(`processNotices v${PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
   Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
@@ -51,7 +59,7 @@ export function processNotices(givenNoticeObject, optionalProcessingOptions) {
     // Check that notice priority numbers are unique (to detect programming errors)
     if (true) { // May be commented out of production code
         let numberStore = {}, errorList = [];
-        for (let thisGivenNotice of givenNoticeObject.noticeList) {
+        for (const thisGivenNotice of givenNoticeObject.noticeList) {
             const thisPriority = thisGivenNotice[0], thisMsg = thisGivenNotice[1];
             const oldMsg = numberStore[thisPriority];
             if (oldMsg && oldMsg !== thisMsg && givenNoticeObject.noticeList.indexOf(thisPriority) < 0
@@ -77,7 +85,7 @@ export function processNotices(givenNoticeObject, optionalProcessingOptions) {
         processingOptions: optionalProcessingOptions, // Just helpfully includes what we were given (may be undefined)
     };
     // Copy across all the other properties that we aren't interested in
-    for (let gnoPropertyName in givenNoticeObject)
+    for (const gnoPropertyName in givenNoticeObject)
         if (gnoPropertyName !== 'successList' && gnoPropertyName !== 'noticeList')
             resultObject[gnoPropertyName] = givenNoticeObject[gnoPropertyName];
 
@@ -139,18 +147,18 @@ export function processNotices(givenNoticeObject, optionalProcessingOptions) {
         const NotesRegex = /\d\d-(\w\w\w).tsv/; // "Checked EN_TN_01-GEN.TSV file: en_tn_01-GEN.tsv"
         resultObject.successList = [];
         let bookList = [], notesList = [];
-        for (let thisParticularSuccessMessage of givenNoticeObject.successList) {
+        for (const thisParticularSuccessMessage of givenNoticeObject.successList) {
             // console.log("thisParticularSuccessMessage", thisParticularSuccessMessage);
             let regexResult;
             if ((regexResult = BibleRegex.exec(thisParticularSuccessMessage)) !== null
-            // but don't do it for Book Package checks (in different repos)
-            && thisParticularSuccessMessage.startsWith(`Checked ${regexResult[1]} file`)) {
+                // but don't do it for Book Package checks (in different repos)
+                && thisParticularSuccessMessage.startsWith(`Checked ${regexResult[1]} file`)) {
                 // console.log("regexResult", JSON.stringify(regexResult));
                 bookList.push(regexResult[1]);
             }
             else if ((regexResult = NotesRegex.exec(thisParticularSuccessMessage)) !== null
-            // but don't do it for Book Package checks (in different repos)
-            && thisParticularSuccessMessage.startsWith(`Checked ${regexResult[1]} file`)) {
+                // but don't do it for Book Package checks (in different repos)
+                && thisParticularSuccessMessage.startsWith(`Checked ${regexResult[1]} file`)) {
                 // console.log("regexResult", JSON.stringify(regexResult));
                 notesList.push(regexResult[1]);
             }
@@ -165,10 +173,19 @@ export function processNotices(givenNoticeObject, optionalProcessingOptions) {
     }
 
 
+    // Handle the checkedFilenames list
+    //  which might have 100s or 1,000s of .md filenames
+    if (resultObject.checkedFilenames && resultObject.checkedFilenames.length > 10) {
+        // console.log(`Have ${resultObject.checkedFilenames.length} checkedFilenames`);
+        resultObject.checkedFilenames = [...new Set(resultObject.checkedFilenames)]; // Only keep unique ones
+        // console.log(`Now have ${resultObject.checkedFilenames.length} checkedFilenames`);
+        // console.log(JSON.stringify(resultObject.checkedFilenames));
+    }
+
     // Specialised processing
     // If have s5 marker warnings, add one error
     // consoleLogObject('givenNoticeObject', givenNoticeObject);
-    for (let thisParticularNotice of givenNoticeObject.noticeList) {
+    for (const thisParticularNotice of givenNoticeObject.noticeList) {
         // console.log("thisParticularNotice", thisParticularNotice);
         if (thisParticularNotice[1].indexOf('\\s5') >= 0) {
             let thisthisParticularNoticeArray = [errorPriorityLevel + 1, "\\s5 fields should be coded as \\ts\\* milestones", -1, '', " in " + givenNoticeObject.checkType];
@@ -183,7 +200,7 @@ export function processNotices(givenNoticeObject, optionalProcessingOptions) {
     if (ignorePriorityNumberList.length) {
         // console.log("Doing ignore of", ignorePriorityNumberList.length,"value(s)");
         remainingNoticeList = [];
-        for (let thisNotice of givenNoticeObject.noticeList) {
+        for (const thisNotice of givenNoticeObject.noticeList) {
             if (ignorePriorityNumberList.indexOf(thisNotice[0]) >= 0)
                 resultObject.numIgnoredNotices++;
             else
@@ -206,20 +223,20 @@ export function processNotices(givenNoticeObject, optionalProcessingOptions) {
     if (remainingNoticeList.length && remainingNoticeList[0].length === 6) { // normally it's 5
         // console.log("We need to add the extra location, e.g. '" + remainingNoticeList[0][5] + "': will prepend it to the messages");
         let newNoticeList = [];
-        for (let thisNotice of remainingNoticeList)
+        for (const thisNotice of remainingNoticeList)
             newNoticeList.push([thisNotice[0], thisNotice[5] + ' ' + thisNotice[1], thisNotice[2], thisNotice[3], thisNotice[4]]);
         remainingNoticeList = newNoticeList;
     }
     // Count the number of occurrences of each message
     let allTotals = {};
-    for (let thisNotice of remainingNoticeList)
+    for (const thisNotice of remainingNoticeList)
         if (isNaN(allTotals[thisNotice[0]])) allTotals[thisNotice[0]] = 1;
         else allTotals[thisNotice[0]]++;
 
     // Check for repeated notices that should be compressed
     //  while simultaneously separating into error and warning lists
     let counter = {};
-    for (let thisNotice of remainingNoticeList) {
+    for (const thisNotice of remainingNoticeList) {
         const thisPriority = thisNotice[0], thisMsg = thisNotice[1];
         const thisID = thisPriority + thisMsg; // Could have identical worded messages but with different priorities
         if (isNaN(counter[thisID])) counter[thisID] = 1;
@@ -247,8 +264,8 @@ export function processNotices(givenNoticeObject, optionalProcessingOptions) {
             resultObject.warningList.push(thisNotice);
     }
 
-//     console.log(`processNotices is returning ${resultObject.successList.length} successes, ${resultObject.errorList.length} errors, and ${resultObject.warningList.length} warnings
-//   numIgnoredNotices=${resultObject.numIgnoredNotices}`, `numSuppressedErrors=${resultObject.numSuppressedErrors} numSuppressedWarnings=${resultObject.numSuppressedWarnings}`);
+    //     console.log(`processNotices is returning ${resultObject.successList.length} successes, ${resultObject.errorList.length} errors, and ${resultObject.warningList.length} warnings
+    //   numIgnoredNotices=${resultObject.numIgnoredNotices}`, `numSuppressedErrors=${resultObject.numSuppressedErrors} numSuppressedWarnings=${resultObject.numSuppressedWarnings}`);
     return resultObject;
 }
 // end of processNotices function
