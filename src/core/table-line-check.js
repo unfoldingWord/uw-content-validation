@@ -3,14 +3,14 @@ import doBasicTextChecks from './basic-text-check';
 import checkMarkdownText from './markdown-text-check';
 
 
-const TABLE_LINE_VALIDATOR_VERSION = '0.2.1';
+const TABLE_LINE_VALIDATOR_VERSION = '0.3.1';
 
 const NUM_EXPECTED_TSV_FIELDS = 9;
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
-function checkTN_TSVDataRow(BBB, line, rowLocation, optionalCheckingOptions) {
+function checkTN_TSVDataRow(line, BBB, C, V, rowLocation, optionalCheckingOptions) {
     /* This function is only for checking one data row
           and doesn't assume that it has any previous context.
 
@@ -32,19 +32,20 @@ function checkTN_TSVDataRow(BBB, line, rowLocation, optionalCheckingOptions) {
 
     let result = { noticeList: [] };
 
-    function addNotice(priority, message, index, extract, location) {
-        console.log(`TSV Line Notice: (priority=${priority}) ${message}, ${index}, ${extract}, ${location}`);
-        console.assert(priority !== undefined, "cTSVrow addNotice: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', `cTSVrow addNotice: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        console.assert(message !== undefined, "cTSVrow addNotice: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', `cTSVrow addNotice: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        console.assert(index !== undefined, "cTSVrow addNotice: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', `cTSVrow addNotice: 'index' parameter should be a number not a '${typeof index}': ${index}`);
-        console.assert(extract !== undefined, "cTSVrow addNotice: 'extract' parameter should be defined");
-        console.assert(typeof extract === 'string', `cTSVrow addNotice: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
-        console.assert(location !== undefined, "cTSVrow addNotice: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', `cTSVrow addNotice: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push([priority, message, index, extract, location]);
+    function addNotice5to8(priority, message, index, extract, location) {
+        // console.log(`TSV Line Notice: (priority=${priority}) ${message}, ${index}, ${extract}, ${location}`);
+        console.assert(priority !== undefined, "cTSVrow addNotice5to8: 'priority' parameter should be defined");
+        console.assert(typeof priority === 'number', `cTSVrow addNotice5to8: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
+        console.assert(message !== undefined, "cTSVrow addNotice5to8: 'message' parameter should be defined");
+        console.assert(typeof message === 'string', `cTSVrow addNotice5to8: 'message' parameter should be a string not a '${typeof message}': ${message}`);
+        console.assert(index !== undefined, "cTSVrow addNotice5to8: 'index' parameter should be defined");
+        console.assert(typeof index === 'number', `cTSVrow addNotice5to8: 'index' parameter should be a number not a '${typeof index}': ${index}`);
+        console.assert(extract !== undefined, "cTSVrow addNotice5to8: 'extract' parameter should be defined");
+        console.assert(typeof extract === 'string', `cTSVrow addNotice5to8: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
+        console.assert(location !== undefined, "cTSVrow addNotice5to8: 'location' parameter should be defined");
+        console.assert(typeof location === 'string', `cTSVrow addNotice5to8: 'location' parameter should be a string not a '${typeof location}': ${location}`);
+        // Also uses the given BBB,C,V, parameters from the main function call
+        result.noticeList.push([priority, BBB, C, V, message, index, extract, location]);
     }
 
     function doOurMarkdownTextChecks(fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions) {
@@ -67,11 +68,13 @@ function checkTN_TSVDataRow(BBB, line, rowLocation, optionalCheckingOptions) {
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
-        result.noticeList = result.noticeList.concat(cmtResultObject.noticeList);
-        // If we need to put everything through addNotice, e.g., for debugging or filtering
+        // result.noticeList = result.noticeList.concat(cmtResultObject.noticeList);
+        // If we need to put everything through addNotice5to8, e.g., for debugging or filtering
         //  process results line by line
-        // for (const noticeEntry of cmtResultObject.noticeList)
-        //     addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+        for (const noticeEntry of cmtResultObject.noticeList) {
+            console.assert(noticeEntry.length == 5);
+            addNotice5to8(noticeEntry[0], BBB, C, V, noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+        }
     }
     // end of doOurMarkdownTextChecks function
 
@@ -92,11 +95,13 @@ function checkTN_TSVDataRow(BBB, line, rowLocation, optionalCheckingOptions) {
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
-        result.noticeList = result.noticeList.concat(dbtcResultObject.noticeList);
-        // If we need to put everything through addNotice, e.g., for debugging or filtering
+        // result.noticeList = result.noticeList.concat(dbtcResultObject.noticeList);
+        // If we need to put everything through addNotice5to8, e.g., for debugging or filtering
         //  process results line by line
-        // for (const noticeEntry of dbtcResultObject.noticeList)
-        //     addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+        for (const noticeEntry of dbtcResultObject.noticeList) {
+            console.assert(noticeEntry.length == 5);
+            addNotice5to8(noticeEntry[0], BBB, C, V, noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+        }
     }
     // end of doOurBasicTextChecks function
 
@@ -123,7 +128,7 @@ function checkTN_TSVDataRow(BBB, line, rowLocation, optionalCheckingOptions) {
     try {
         numChaptersThisBook = books.chaptersInBook(bbb).length;
     } catch (e) {
-        addNotice(979, "Invalid book code passed to checkTN_TSVDataRow", -1, "", ` '${BBB}' in first parameter: ${e}`);
+        addNotice5to8(979, "Invalid book code passed to checkTN_TSVDataRow", -1, "", ` '${BBB}' in first parameter: ${e}`);
     }
     const haveGoodBookCode = numChaptersThisBook !== undefined;
 
@@ -141,10 +146,10 @@ function checkTN_TSVDataRow(BBB, line, rowLocation, optionalCheckingOptions) {
         // Check the fields one-by-one
         if (B.length) {
             if (B !== BBB)
-                addNotice(978, `Wrong '${B}' book code`, -1, "", ` (expected '${BBB}')${ourRowLocation}`);
+                addNotice5to8(978, `Wrong '${B}' book code`, -1, "", ` (expected '${BBB}')${ourRowLocation}`);
         }
         else
-            addNotice(977, "Missing book code", 0, "", ourRowLocation);
+            addNotice5to8(977, "Missing book code", 0, "", ourRowLocation);
 
         let numVersesThisChapter, haveGoodChapterNumber;
         if (C.length) {
@@ -152,12 +157,12 @@ function checkTN_TSVDataRow(BBB, line, rowLocation, optionalCheckingOptions) {
             else if (/^\d+$/.test(C)) {
                 let intC = Number(C);
                 if (intC === 0) {
-                    addNotice(824, `Invalid zero '${C}' chapter number`, -1, "", ourRowLocation);
+                    addNotice5to8(824, `Invalid zero '${C}' chapter number`, -1, "", ourRowLocation);
                     haveGoodChapterNumber = false;
                 }
                 // TODO: Does this next section need rewriting (see verse check below)???
                 else if (intC > numChaptersThisBook) {
-                    addNotice(823, `Invalid large '${C}' chapter number`, -1, "", ourRowLocation);
+                    addNotice5to8(823, `Invalid large '${C}' chapter number`, -1, "", ourRowLocation);
                     haveGoodChapterNumber = false;
                 }
                 try {
@@ -165,84 +170,95 @@ function checkTN_TSVDataRow(BBB, line, rowLocation, optionalCheckingOptions) {
                     haveGoodChapterNumber = true;
                 } catch (e) {
                     if (!haveGoodBookCode)
-                        // addNotice(500, "Invalid chapter number", rowLocation);
+                        // addNotice5to8(500, "Invalid chapter number", rowLocation);
                         // else
-                        addNotice(822, "Unable to check chapter number", -1, "", ` '${C}'${ourRowLocation}`);
+                        addNotice5to8(822, "Unable to check chapter number", -1, "", ` '${C}'${ourRowLocation}`);
                     haveGoodChapterNumber = false;
                 }
             }
             else
-                addNotice(821, "Bad chapter number", -1, "", ` '${C}' with${ourRowLocation}`);
+                addNotice5to8(821, "Bad chapter number", -1, "", ` '${C}' with${ourRowLocation}`);
         }
         else
-            addNotice(820, "Missing chapter number", -1, "", ` ?:${V}${ourRowLocation}`);
+            addNotice5to8(820, "Missing chapter number", -1, "", ` ?:${V}${ourRowLocation}`);
 
         if (V.length) {
             if (V === 'intro') { }
             else if (/^\d+$/.test(V)) {
                 let intV = Number(V);
                 if (intV === 0)
-                    addNotice(814, `Invalid zero '${V}' verse number`, -1, "", ourRowLocation);
+                    addNotice5to8(814, `Invalid zero '${V}' verse number`, -1, "", ourRowLocation);
                 else {
                     if (haveGoodChapterNumber) {
                         if (intV > numVersesThisChapter)
-                            addNotice(813, `Invalid large '${V}' verse number`, ` for chapter ${C}${ourRowLocation}`);
+                            addNotice5to8(813, `Invalid large '${V}' verse number`, ` for chapter ${C}${ourRowLocation}`);
                     } else
-                        addNotice(812, "Unable to check verse number", -1, "", ` '${V}'${ourRowLocation}`);
+                        addNotice5to8(812, "Unable to check verse number", -1, "", ` '${V}'${ourRowLocation}`);
                 }
             }
             else
-                addNotice(811, "Bad verse number", -1, "", ` '${V}'${ourRowLocation}`);
+                addNotice5to8(811, "Bad verse number", -1, "", ` '${V}'${ourRowLocation}`);
         }
         else
-            addNotice(810, "Missing verse number", -1, "", ` after ${C}:?${ourRowLocation}`);
+            addNotice5to8(810, "Missing verse number", -1, "", ` after ${C}:?${ourRowLocation}`);
 
         if (!fieldID.length)
-            addNotice(779, "Missing ID field", ourRowLocation);
+            addNotice5to8(779, "Missing ID field", -1, "", ourRowLocation);
         else {
             if (fieldID.length !== 4)
-                addNotice(778, "ID should be exactly 4 characters", -1, "", ` (not ${fieldID.length})${ourRowLocation}`)
+                addNotice5to8(778, "ID should be exactly 4 characters", -1, "", ` (not ${fieldID.length})${ourRowLocation}`)
             else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(fieldID[0]) < 0)
-                addNotice(176, "ID should start with a lowercase letter or digit", 0, "", ` (not '${fieldID[0]}')${ourRowLocation}`)
+                addNotice5to8(176, "ID should start with a lowercase letter or digit", 0, "", ` (not '${fieldID[0]}')${ourRowLocation}`)
             else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(fieldID[3]) < 0)
-                addNotice(175, "ID should end with a lowercase letter or digit", 3, "", ` (not '${fieldID[3]}')${ourRowLocation}`)
+                addNotice5to8(175, "ID should end with a lowercase letter or digit", 3, "", ` (not '${fieldID[3]}')${ourRowLocation}`)
             else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(fieldID[1]) < 0)
-                addNotice(174, "ID characters should only be lowercase letters, digits, or hypen", 1, "", ` (not '${fieldID[1]}')${ourRowLocation}`)
+                addNotice5to8(174, "ID characters should only be lowercase letters, digits, or hypen", 1, "", ` (not '${fieldID[1]}')${ourRowLocation}`)
             else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(fieldID[2]) < 0)
-                addNotice(173, "ID characters should only be lowercase letters, digits, or hypen", 2, "", ` (not '${fieldID[2]}')${ourRowLocation}`)
+                addNotice5to8(173, "ID characters should only be lowercase letters, digits, or hypen", 2, "", ` (not '${fieldID[2]}')${ourRowLocation}`)
         }
 
         if (support_reference.length) { // need to check UTN against UTA
             doOurBasicTextChecks('SupportReference', support_reference, true, ourRowLocation, optionalCheckingOptions);
         }
+        // else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
+        //     addNotice5to8(277, "Missing SupportReference field", -1, "", ourRowLocation);
 
         if (orig_quote.length) { // need to check UTN against UHB and UGNT
             doOurBasicTextChecks('OrigQuote', orig_quote, false, ourRowLocation, optionalCheckingOptions);
         }
+        else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
+            if (V !== 'intro')
+                addNotice5to8(276, "Missing OrigQuote field", -1, "", ourRowLocation);
 
         if (occurrence.length) { // This should usually be a digit
             if (occurrence === '0') { // zero means that it doesn't occur
                 if (orig_quote.length)
-                    addNotice(550, "Invalid zero occurrence field when we have an original quote", -1, "", ourRowLocation);
+                    addNotice5to8(550, "Invalid zero occurrence field when we have an original quote", -1, "", ourRowLocation);
                 // if (V !== 'intro')
-                //     addNotice(500, "Invalid zero occurrence field", -1, "", rowLocation);
+                //     addNotice5to8(500, "Invalid zero occurrence field", -1, "", rowLocation);
             }
             else if (occurrence === '-1') // TODO check the special conditions when this can occur???
                 ;
             else if ('123456789'.indexOf(occurrence) < 0) // it's not one of these integers
-                addNotice(792, `Invalid '${occurrence}' occurrence field`, -1, "", ourRowLocation);
+                addNotice5to8(792, `Invalid '${occurrence}' occurrence field`, -1, "", ourRowLocation);
         }
 
-        if (GL_quote.length) { // need to check UTN against ULT
-            doOurBasicTextChecks('GLQuote', GL_quote, false, ourRowLocation, optionalCheckingOptions);
+        if (GL_quote.length) { // TODO: need to check UTN against ULT
+            if (V !== 'intro')
+                doOurBasicTextChecks('GLQuote', GL_quote, false, ourRowLocation, optionalCheckingOptions);
         }
+        else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
+            if (V !== 'intro')
+                addNotice5to8(275, "Missing GLQuote field", -1, "", ourRowLocation);
 
         if (occurrenceNote.length) {
             doOurMarkdownTextChecks('OccurrenceNote', occurrenceNote, true, ourRowLocation, optionalCheckingOptions);
         }
+        else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
+            addNotice5to8(274, "Missing OccurrenceNote field", -1, "", ourRowLocation);
 
     } else
-        addNotice(861, `Found ${fields.length} field${fields.length === 1 ? '' : 's'} instead of ${NUM_EXPECTED_TSV_FIELDS}`, -1, "", ourRowLocation);
+        addNotice5to8(861, `Found ${fields.length} field${fields.length === 1 ? '' : 's'} instead of ${NUM_EXPECTED_TSV_FIELDS}`, -1, "", ourRowLocation);
 
     return result; // object with noticeList only
 }

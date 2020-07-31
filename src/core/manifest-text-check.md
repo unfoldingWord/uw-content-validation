@@ -8,7 +8,7 @@ The notices are then processed into a list of errors and a list of warnings for 
 
 ```js
 import checkManifestText from './manifest-text-check';
-import processNotices from './notice-processing-functions';
+import processNoticesToErrorsWarnings from './notice-processing-functions';
 import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
 
 // Manifest empty, good and bad text samples
@@ -216,8 +216,8 @@ projects:
 const chosenText = textG;
 const chosenName = 'textG';
 
-let rawResult = checkManifestText(chosenName, chosenText, 'in manifest data that was supplied');
-const processedResult = processNotices(rawResult);
+const rawResult = checkManifestText(chosenName, chosenText, 'in manifest data that was supplied');
+const processedResult = processNoticesToErrorsWarnings(rawResult);
 
 <>
 <b>Manifest contents</b> <RenderLines text={chosenText} />

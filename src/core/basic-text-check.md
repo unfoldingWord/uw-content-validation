@@ -8,7 +8,7 @@ This demonstration doesn't display the raw notices, but rather displays the proc
 
 ```js
 import doBasicTextChecks from './basic-text-check';
-import processNotices from './notice-processing-functions';
+import processNoticesToErrorsWarnings from './notice-processing-functions';
 import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
 
 // Empty, space, good, and bad, link, and RC text samples
@@ -25,10 +25,10 @@ const chosenName = "textB";
 const chosenText = textB;
 
 // The third parameter is "linksAllowed"
-let rawResult = doBasicTextChecks('Sample', chosenText, false, 'in '+chosenName+' that was supplied');
+const rawResult = doBasicTextChecks('Sample', chosenText, false, 'in '+chosenName+' that was supplied');
 if (!rawResult.successList || !rawResult.successList.length)
     rawResult.successList = ["Done basic text checks"];
-const processedResult = processNotices(rawResult);
+const processedResult = processNoticesToErrorsWarnings(rawResult);
 
 <>
 <b>Check</b> "{chosenText}"<br/><br/>

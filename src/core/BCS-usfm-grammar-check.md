@@ -8,7 +8,7 @@ The notices are then processed into a list of errors and a list of warnings for 
 
 ```js
 import checkUSFMGrammar from './BCS-usfm-grammar-check';
-import processNotices from './notice-processing-functions';
+import processNoticesToErrorsWarnings from './notice-processing-functions';
 import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
 
 // USFM samples
@@ -179,12 +179,13 @@ const textB = `\\id GEN Bad USFM test
 //  (to demonstrate differing results)
 const chosenName = 'textH';
 const chosenText = textH;
+const BBB = 'RUT';
 
 // Choose 'strict' or 'relaxed'
 const strictness = 'strict';
 
-let rawResult = checkUSFMGrammar(strictness, chosenName, chosenText, 'that was supplied');
-const processedResult = processNotices(rawResult);
+const rawResult = checkUSFMGrammar(BBB, strictness, chosenName, chosenText, 'that was supplied');
+const processedResult = processNoticesToErrorsWarnings(rawResult);
 
 <>
 <b>Check</b><RenderLines text={chosenText} />

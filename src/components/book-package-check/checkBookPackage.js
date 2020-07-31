@@ -15,14 +15,14 @@ async function checkTQbook(username, repoName, branch, bookCode, checkingOptions
     const repoCode = 'TQ';
     const generalLocation = `in ${username} ${repoName} (${branch})`;
 
-    let ctqResult = { successList: [], noticeList: [] };
+    const ctqResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
         // console.log(`checkBookPackage success: ${successString}`);
         ctqResult.successList.push(successString);
     }
 
-    function addNotice(priority, message, index, extract, location, extra) {
+    function addNotice(priority, BBB,C,V, message, index, extract, location, extra) {
         // console.log(`checkBookPackage Notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cTQ addNotice: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cTQ addNotice: 'priority' parameter should be a number not a '${typeof priority}'`);
@@ -36,7 +36,7 @@ async function checkTQbook(username, repoName, branch, bookCode, checkingOptions
         console.assert(typeof location === 'string', `cTQ addNotice: 'location' parameter should be a string not a '${typeof location}'`);
         console.assert(extra !== undefined, "cTQ addNotice: 'extra' parameter should be defined");
         console.assert(typeof extra === 'string', `cTQ addNotice: 'extra' parameter should be a string not a '${typeof extra}'`);
-        ctqResult.noticeList.push([priority, message, index, extract, location, extra]);
+        ctqResult.noticeList.push([priority, BBB,C,V, message, index, extract, location, extra]);
     }
 
 
@@ -59,9 +59,9 @@ async function checkTQbook(username, repoName, branch, bookCode, checkingOptions
 
         // Process results line by line,  appending the repoCode as an extra field as we go
         for (const noticeEntry of cfResultObject.noticeList)
-            // noticeEntry is an array of five fields: 1=priority, 2=msg, 3=index, 4=extract, 5=location
+            // noticeEntry is an array of eight fields: 1=priority, 2=BBB, 3=C, 4=V, 5=msg, 6=index, 7=extract, 8=location
             // We add the repoCode as an extra value
-            addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], repoCode);
+            addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7], repoCode);
     }
     // end of doOurCheckFile function
 
@@ -79,7 +79,7 @@ async function checkTQbook(username, repoName, branch, bookCode, checkingOptions
             totalCheckedSize += fileContent.length;
         } catch (e) {
             console.log("Failed to load", username, repoName, thisPath, branch, e + '');
-            addNotice(996, "Failed to load", -1, "", `${generalLocation} ${thisPath}: ${e}`, repoCode);
+            addNotice(996, bookCode,"","", "Failed to load", -1,"", `${generalLocation} ${thisPath}: ${e}`, repoCode);
             continue;
         }
 
@@ -107,14 +107,14 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
     //     console.log(`I'm here in checkBookPackage v${CHECKER_VERSION_STRING}
     //   with ${username}, ${language_code}, ${bookCode}, ${JSON.stringify(checkingOptions)}`);
 
-    let checkBookPackageResult = { successList: [], noticeList: [] };
+    const checkBookPackageResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
         // console.log(`checkBookPackage success: ${successString}`);
         checkBookPackageResult.successList.push(successString);
     }
 
-    function addNotice(priority, message, index, extract, location, extra) {
+    function addNotice(priority, BBB,C,V, message, index, extract, location, extra) {
         // console.log(`checkBookPackage Notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cBP addNotice: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cBP addNotice: 'priority' parameter should be a number not a '${typeof priority}'`);
@@ -128,7 +128,7 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
         console.assert(typeof location === 'string', `cBP addNotice: 'location' parameter should be a string not a '${typeof location}'`);
         console.assert(extra !== undefined, "cBP addNotice: 'extra' parameter should be defined");
         console.assert(typeof extra === 'string', `cBP addNotice: 'extra' parameter should be a string not a '${typeof extra}'`);
-        checkBookPackageResult.noticeList.push([priority, message, index, extract, location, extra]);
+        checkBookPackageResult.noticeList.push([priority, BBB,C,V, message, index, extract, location, extra]);
     }
 
 
@@ -151,9 +151,9 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
 
         // Process results line by line,  appending the repoCode as an extra field as we go
         for (const noticeEntry of cfResultObject.noticeList)
-            // noticeEntry is an array of five fields: 1=priority, 2=msg, 3=index, 4=extract, 5=location
+            // noticeEntry is an array of eight fields: 1=priority, 2=BBB, 3=C, 4=V, 5=msg, 6=index, 7=extract, 8=location
             // We add the repoCode as an extra value
-            addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], repoCode);
+            addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7], repoCode);
     }
     // end of doOurCheckFile function
 
@@ -178,9 +178,9 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
         checkBookPackageResult.noticeList = checkBookPackageResult.noticeList.concat(crResultObject.noticeList);
         // Process results line by line
         // for (const noticeEntry of crResultObject.noticeList)
-        // noticeEntry is an array of five fields: 1=priority, 2=msg, 3=index, 4=extract, 5=location
+        // noticeEntry is an array of eight fields: 1=priority, 2=BBB, 3=C, 4=V, 5=msg, 6=index, 7=extract, 8=location
         // We add the repoCode as an extra value
-        // addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+        // addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
         // console.log(`doOurCheckRepo() finished.`)
         return crResultObject;
     }
@@ -214,7 +214,7 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
             bookNumberAndName = books.usfmNumberName(bookCode);
             whichTestament = books.testament(bookCode);
         } catch (e) {
-            addNotice(900, "Bad function call: should be given a valid book abbreviation", -1, bookCode, ` (not '${bookCode}')${location}`);
+            addNotice(900, "","","", "Bad function call: should be given a valid book abbreviation", -1,bookCode, ` (not '${bookCode}')${location}`);
             return checkBookPackageResult;
         }
         // console.log(`bookNumberAndName='${bookNumberAndName}' (${whichTestament} testament)`);
@@ -271,7 +271,7 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
                     checkedRepoNames.push(repoCode);
                 } catch (e) {
                     console.log("ERROR: Failed to load", username, repoName, filename, branch, e + '');
-                    addNotice(996, "Failed to load", -1, "", `${generalLocation} ${filename}: ${e}`, repoCode);
+                    addNotice(996, bookCode,"","", "Failed to load", -1,"", `${generalLocation} ${filename}: ${e}`, repoCode);
                     continue;
                 }
 

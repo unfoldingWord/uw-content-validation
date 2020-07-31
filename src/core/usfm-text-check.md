@@ -14,7 +14,7 @@ Note that unfoldingWord has three distinct forms of USFM files (and these functi
 
 ```js
 import checkUSFMText from './usfm-text-check';
-import processNotices from './notice-processing-functions';
+import processNoticesToErrorsWarnings from './notice-processing-functions';
 import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
 
 // USFM samples
@@ -182,10 +182,10 @@ const textB = `\\id GEN Bad USFM test
 const chosenText = textH;
 
 // Second (unused) parameter is filename
-let rawResult = checkUSFMText('GEN', '', chosenText, 'that was supplied');
+const rawResult = checkUSFMText('GEN', '', chosenText, 'that was supplied');
 if (!rawResult.successList || !rawResult.successList.length)
     rawResult.successList = ["Done USFM text checks"];
-const processedResult = processNotices(rawResult);
+const processedResult = processNoticesToErrorsWarnings(rawResult);
 
 <>
 <b>Check</b><RenderLines text={chosenText} />

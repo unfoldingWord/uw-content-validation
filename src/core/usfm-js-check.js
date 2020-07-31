@@ -18,7 +18,7 @@ export function runUsfmJsCheck(fileText, convertOptions) {
 // end of runUsfmJsCheck function
 
 
-export function checkUSFMToJSON(filename, givenText, givenLocation, optionalCheckingOptions) {
+export function checkUSFMToJSON(BBB, filename, givenText, givenLocation, optionalCheckingOptions) {
     /*
     This function is only used for the demonstration pages -- not for the core!
 
@@ -33,25 +33,25 @@ export function checkUSFMToJSON(filename, givenText, givenLocation, optionalChec
     if (filename) ourLocation = ` in ${filename}${ourLocation}`;
 
 
-    let result = { successList: [], noticeList: [] };
+    const result = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
         // console.log("checkUSFMToJSON success: " + successString);
         result.successList.push(successString);
     }
-    function addNotice(priority, message, index, extract, location) {
+    function addNotice5to8(priority, message, index, extract, location) {
         // console.log("checkUSFMToJSON notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        console.assert(priority !== undefined, "cUSFMjs addNotice: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', "cUSFMjs addNotice: 'priority' parameter should be a number not a '" + (typeof priority) + "': " + priority);
-        console.assert(message !== undefined, "cUSFMjs addNotice: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', "cUSFMjs addNotice: 'message' parameter should be a string not a '" + (typeof message) + "': " + message);
-        console.assert(index !== undefined, "cUSFMjs addNotice: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', "cUSFMjs addNotice: 'index' parameter should be a number not a '" + (typeof index) + "': " + index);
-        console.assert(extract !== undefined, "cUSFMjs addNotice: 'extract' parameter should be defined");
-        console.assert(typeof extract === 'string', "cUSFMjs addNotice: 'extract' parameter should be a string not a '" + (typeof extract) + "': " + extract);
-        console.assert(location !== undefined, "cUSFMjs addNotice: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', "cUSFMjs addNotice: 'location' parameter should be a string not a '" + (typeof location) + "': " + location);
-        result.noticeList.push([priority, message, index, extract, location]);
+        console.assert(priority !== undefined, "cUSFMjs addNotice5to8: 'priority' parameter should be defined");
+        console.assert(typeof priority === 'number', "cUSFMjs addNotice5to8: 'priority' parameter should be a number not a '" + (typeof priority) + "': " + priority);
+        console.assert(message !== undefined, "cUSFMjs addNotice5to8: 'message' parameter should be defined");
+        console.assert(typeof message === 'string', "cUSFMjs addNotice5to8: 'message' parameter should be a string not a '" + (typeof message) + "': " + message);
+        console.assert(index !== undefined, "cUSFMjs addNotice5to8: 'index' parameter should be defined");
+        console.assert(typeof index === 'number', "cUSFMjs addNotice5to8: 'index' parameter should be a number not a '" + (typeof index) + "': " + index);
+        console.assert(extract !== undefined, "cUSFMjs addNotice5to8: 'extract' parameter should be defined");
+        console.assert(typeof extract === 'string', "cUSFMjs addNotice5to8: 'extract' parameter should be a string not a '" + (typeof extract) + "': " + extract);
+        console.assert(location !== undefined, "cUSFMjs addNotice5to8: 'location' parameter should be defined");
+        console.assert(typeof location === 'string', "cUSFMjs addNotice5to8: 'location' parameter should be a string not a '" + (typeof location) + "': " + location);
+        result.noticeList.push([priority, BBB,"","", message, index, extract, location]);
     }
 
 
@@ -65,7 +65,7 @@ export function checkUSFMToJSON(filename, givenText, givenLocation, optionalChec
     // NOTE: We haven't figured out how to get ERRORS out of this parser yet
 
     if (!convertCheckResult.isValidUSFM)
-        addNotice(944, `USFM3 toJSON Check doesn't pass`, -1, "", ourLocation);
+        addNotice5to8(944, `USFM3 toJSON Check doesn't pass`, -1, "", ourLocation);
 
     addSuccessMessage(`Checked USFM-JS`);
     console.log(`  checkUSFMToJSON returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);

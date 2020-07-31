@@ -24,7 +24,7 @@ const chosenName = "textB";
 const chosenText = textB;
 
 // The third parameter is "linksAllowed"
-let rawResult = doBasicTextChecks('Sample', chosenText, false, 'in '+chosenName+' that was supplied');
+const rawResult = doBasicTextChecks('Sample', chosenText, false, 'in '+chosenName+' that was supplied');
 if (!rawResult.successList || !rawResult.successList.length)
     rawResult.successList = ["Done basic text checks"];
 

@@ -32,13 +32,13 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
     // console.log("Using halfLength=" + halfLength, "halfLengthPlus="+halfLengthPlus);
 
-    let cmtResult = { successList: [], noticeList: [] };
+    const cmtResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
         // console.log("checkManifestText success: " + successString);
         cmtResult.successList.push(successString);
     }
-    function addNotice(priority, message, index, extract, location) {
+    function addNotice(priority, BBB,C,V, message, index, extract, location) {
         // console.log("checkManifestText Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
         console.assert(priority !== undefined, "cManT addNotice: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', "cManT addNotice: 'priority' parameter should be a number not a '" + (typeof priority) + "': " + priority);
@@ -50,7 +50,7 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
         console.assert(typeof extract === 'string', "cManT addNotice: 'extract' parameter should be a string not a '" + (typeof extract) + "': " + extract);
         console.assert(location !== undefined, "cManT addNotice: 'location' parameter should be defined");
         console.assert(typeof location === 'string', "cManT addNotice: 'location' parameter should be a string not a '" + (typeof location) + "': " + location);
-        cmtResult.noticeList.push([priority, message, index, extract, location]);
+        cmtResult.noticeList.push([priority, BBB,C,V, message, index, extract, location]);
     }
 
 
@@ -80,7 +80,7 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
               && noticeEntry[1] !== "Unexpected space after ' character"
               && noticeEntry[1] !== "Unexpected space after [ character"
               )
-                addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+                addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
         */
         return cYtResultObject.formData;
     }
@@ -163,7 +163,7 @@ checkManifestLineContents("line "+n.toLocaleString(), line, ourLocation);
             addNotice(148, "'checking' key is missing", -1, "", ourLocation);
     }
 
-    // addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'}'${ourLocation}'.`);
+    // addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'}${ourLocation}.`);
     if (cmtResult.noticeList)
         addSuccessMessage(`checkManifestText v${MANIFEST_VALIDATOR_VERSION} finished with ${cmtResult.noticeList.length ? cmtResult.noticeList.length.toLocaleString() : "zero"} notice${cmtResult.noticeList.length === 1 ? '' : 's'}`);
     else

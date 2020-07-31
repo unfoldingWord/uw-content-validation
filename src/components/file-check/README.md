@@ -27,15 +27,17 @@ and then validates the content of one file selected from the repo.
     // filename= '65-3JN.usfm' // e.g., for UGNT, ULT, or UST
     // filename= 'en_tn_01-GEN.tsv' // for TN
     // filename= 'en_tn_17-EST.tsv' // for TN
-    filename= 'en_tn_50-EPH.tsv' // for TN
+    // filename= 'en_tn_50-EPH.tsv' // for TN
+    filename= 'en_tn_58-PHM.tsv' // for TN
     // filename= 'en_tn_65-3JN.tsv' // for TN
+
+    // The location field appears in check messages to help the user locate the issue
+    location="as specified in file-check/README.md"
 
     // Specifying extractLength and maximumSimilarMessages is just to show off options
     //  -- those fields are not necessary (or normal) here
     extractLength='13' // Default is 10
     maximumSimilarMessages='2'
-    // The location field appears in check messages to help the user locate the issue
-    location="as specified in file-check/README.md"
     />
 ```
 

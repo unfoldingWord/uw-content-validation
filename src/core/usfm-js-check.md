@@ -10,7 +10,7 @@ The notices are then processed into a list of errors and a list of warnings for 
 
 ```js
 import checkUSFMToJSON from './usfm-js-check';
-import processNotices from './notice-processing-functions';
+import processNoticesToErrorsWarnings from './notice-processing-functions';
 import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
 
 // USFM samples
@@ -182,8 +182,8 @@ const textB = `\\id GEN Bad USFM test
 const chosenName = 'textH';
 const chosenText = textH;
 
-let rawResult = checkUSFMToJSON(chosenName, chosenText, 'that was supplied');
-const processedResult = processNotices(rawResult);
+const rawResult = checkUSFMToJSON(chosenName, chosenText, 'that was supplied');
+const processedResult = processNoticesToErrorsWarnings(rawResult);
 
 <>
 <b>Check</b><RenderLines text={chosenText} />

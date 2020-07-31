@@ -26,30 +26,33 @@ This code is designed to thoroughly check various types of Bible-related content
 
 Note: There is also a separate function for checking individual TN/TSV lines which is intended to be able to provide instant user feedback if built into a TSV editor.
 
-The top-level checking functions provide:
+The top-level checking components display:
 
 1. A list of things that were checked (successList)
 1. A list of (higher-priority) errors
 1. A list of (lower-priority) warnings
 
-However, the lower-level checking functions provide only one list of `notices` (i.e., warnings/errors combined) consisting of the following five fields:
+However, the lower-level checking functions provide only the list of success message strings and one list of `notices` (i.e., warnings/errors combined) typically consisting of the following eight fields:
 
 1. A notice priority number in the range 1-1000. Each different type of warning/error has a unique number (but not each instance of those warnings/errors). By default, notice priority numbers 700 and over are considered `errors` and 0-699 are considered `warnings`.
+1. The 3-character UPPERCASE book code or OBS (if relevant)
+1. The chapter number or story number (if relevant)
+1. The verse number of frame number
 1. The actual general description text of the notice
 1. A zero-based integer index which indicates the position of the error in the given text (line or file). -1 indicates that this index does not contain any useful information, e.g., for a global error.
 1. An extract of the checked text which indicates the area containing the problem. Where helpful, some character substitutions have already been made, for example, if the notice is about spaces, it is generally helpful to display spaces as a visible character in an attempt to best highlight the issue to the user. (The length of the extract is settable as an option.)
 1. A string indicating the context of the notice, e.g., `in line 17 of 'someBook.usfm'`.
 
 
-Keeping our notices in this format, rather than the simplicity of just saving an array of single strings, allows the above *notice components* to be processed at a higher level. The default is to funnel them all through the supplied `processNotices` function (in core/notice-processing-functions.fs) which does the following:
+Keeping our notices in this format, rather than the simplicity of just saving an array of single strings, allows the above *notice components* to be processed at a higher level. The default is to funnel them all through the supplied `processNoticesToErrorsWarnings` function (in core/notice-processing-functions.fs) which does the following:
 
 1. Removes excess repeated errors. For example, if there's a systematic error in a file, say with unneeded leading spaces in every field, rather than returning with hundreds of errors, only the first several errors will be returned, followed by an "errors suppressed" message. (The number of each error displayed is settable as an option -- zero means display all errors with no suppression.)
 1. Separates notices into error and warning lists based on the priority number. (The switch-over point is settable as an option.)
 1. Optionally drops the lowest priority notices.
 
-However, the user is, of course, free to create their own alternative version of this function. This is possibly also the place to consider localisation of all the notices into different interface languages???
+There is a second version of the function which splits into `Severe`, `Medium`, and `Low` priority lists instead. And a third version that leaves them as notices, but allows for a Red...Yellow colour gradient instead.
 
-Note that the original structure of these components were taken from https://github.com/unfoldingWord/uw-word-count (which can be played with at https://unfoldingword.github.io/uw-word-count/.)
+However, the user is, of course, free to create their own alternative version of these functions. This is possibly also the place to consider localisation of all the notices into different interface languages???
 
 Still unfinished:
 
@@ -60,10 +63,6 @@ Still unfinished:
 1. Write unit tests and get them passing
 1. Check for and remove left-over (but unused) code from the copied source projects
 1. Remove all debug code and console logging
-
-Possible future improvements include:
-
-1. Would it be better to include B,C,V fields separately in the notice/error/warning lists? (This could allow a GUI to narrow down to displaying/filtering only errors for one book or chapter for example.)
 
 ## Functionality and Limitations
 

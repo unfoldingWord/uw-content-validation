@@ -4,7 +4,7 @@ This function is for checking text fields that are links, or that contain links.
 
 ```js
 import doBasicLinkChecks from './link-checks';
-import processNotices from './notice-processing-functions';
+import processNoticesToErrorsWarnings from './notice-processing-functions';
 import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
 
 // Empty, space, link, RC, good, and bad text samples
@@ -48,7 +48,7 @@ const linkOptions = {
 const rawResult = doBasicLinkChecks('Sample', chosenText, linkOptions, 'that was supplied');
 if (!rawResult.successList || !rawResult.successList.length)
     rawResult.successList = ["Done basic text checks"];
-result = processNotices(rawResult);
+result = processNoticesToErrorsWarnings(rawResult);
 
 <>
 <b>Check</b> "{chosenText}"<br/><br/>

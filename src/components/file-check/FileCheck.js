@@ -6,7 +6,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { getFile } from '../../core/getApi';
 import checkFile from './checkFile';
-import processNotices from '../../core/notice-processing-functions';
+import processNoticesToErrorsWarnings from '../../core/notice-processing-functions';
 import { RenderSuccessesErrorsWarnings } from '../RenderProcessedResults';
 import { ourParseInt, consoleLogObject } from '../../core/utilities';
 
@@ -67,7 +67,7 @@ if (file) { // the file is loaded now and the content is now available to use
   // Or this allows the parameters to be specified as a FileCheck property
   if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
 
-  let rawResult = checkFile(file.name, file.content, givenLocation, checkingOptions);
+  const rawResult = checkFile(file.name, file.content, givenLocation, checkingOptions);
   // console.log("FileCheck got initial results with " + rawResult.successList.length + " success message(s) and " + rawResult.noticeList.length + " notice(s)");
 
   // Add some extra fields to our rawResult object in case we need this information again later
@@ -89,7 +89,7 @@ if (file) { // the file is loaded now and the content is now available to use
   if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
   if (props.sortBy) processOptions.sortBy = props.sortBy;
   // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
-  const processedResult = processNotices(rawResult, processOptions);
+  const processedResult = processNoticesToErrorsWarnings(rawResult, processOptions);
   // console.log("FileCheck got processed results with " + processedResult.successList.length.toLocaleString() + " success message(s), " + processedResult.errorList.length.toLocaleString() + " error(s) and " + processedResult.warningList.length.toLocaleString() + " warning(s)\n"
   //     + "  numIgnoredNotices=" + processedResult.numIgnoredNotices.toLocaleString(), "numSuppressedErrors=" + processedResult.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + processedResult.numSuppressedWarnings.toLocaleString());
 
@@ -156,7 +156,7 @@ function FileCheck(props) {
             setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for <b>{filename}</b>…</p>);
             // console.log(`About to call getFile(${username}, ${repoName}, ${filename}, ${branch})…`);
             const fileContent = await getFile({ username: username, repository: repoName, path: filename, branch: branch });
-            let rawResult = checkFile(filename, fileContent, givenLocation, checkingOptions);
+            const rawResult = checkFile(filename, fileContent, givenLocation, checkingOptions);
             // console.log("FileCheck got initial results with " + rawResult.successList.length + " success message(s) and " + rawResult.noticeList.length + " notice(s)");
 
             // Add some extra fields to our rawResult object in case we need this information again later
@@ -181,7 +181,7 @@ function FileCheck(props) {
             if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
             if (props.sortBy) processOptions.sortBy = props.sortBy;
             // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
-            const processedResult = processNotices(rawResult, processOptions);
+            const processedResult = processNoticesToErrorsWarnings(rawResult, processOptions);
             // console.log("FileCheck got processed results with " + processedResult.successList.length.toLocaleString() + " success message(s), " + processedResult.errorList.length.toLocaleString() + " error(s) and " + processedResult.warningList.length.toLocaleString() + " warning(s)\n"
             //     + "  numIgnoredNotices=" + processedResult.numIgnoredNotices.toLocaleString(), "numSuppressedErrors=" + processedResult.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + processedResult.numSuppressedWarnings.toLocaleString());
 

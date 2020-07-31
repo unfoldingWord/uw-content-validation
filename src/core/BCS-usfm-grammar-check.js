@@ -31,7 +31,7 @@ export function runBCSGrammarCheck(strictnessString, fileText) {
 // end of runBCSGrammarCheck function
 
 
-export function checkUSFMGrammar(strictnessString, filename, givenText, givenLocation, optionalCheckingOptions) {
+export function checkUSFMGrammar(BBB, strictnessString, filename, givenText, givenLocation, optionalCheckingOptions) {
     /*
     This function is only used for the demonstration pages -- not for the core!
 
@@ -47,25 +47,25 @@ export function checkUSFMGrammar(strictnessString, filename, givenText, givenLoc
     if (filename) ourLocation = ` in ${filename}${ourLocation}`;
 
 
-    let result = { successList: [], noticeList: [] };
+    const result = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
         // console.log("checkUSFMGrammar success: " + successString);
         result.successList.push(successString);
     }
-    function addNotice(priority, message, index, extract, location) {
+    function addNotice5to8(priority, message, index, extract, location) {
         // console.log("checkUSFMGrammar notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        console.assert(priority !== undefined, "cUSFMgr addNotice: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', "cUSFMgr addNotice: 'priority' parameter should be a number not a '" + (typeof priority) + "': " + priority);
-        console.assert(message !== undefined, "cUSFMgr addNotice: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', "cUSFMgr addNotice: 'message' parameter should be a string not a '" + (typeof message) + "': " + message);
-        console.assert(index !== undefined, "cUSFMgr addNotice: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', "cUSFMgr addNotice: 'index' parameter should be a number not a '" + (typeof index) + "': " + index);
-        console.assert(extract !== undefined, "cUSFMgr addNotice: 'extract' parameter should be defined");
-        console.assert(typeof extract === 'string', "cUSFMgr addNotice: 'extract' parameter should be a string not a '" + (typeof extract) + "': " + extract);
-        console.assert(location !== undefined, "cUSFMgr addNotice: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', "cUSFMgr addNotice: 'location' parameter should be a string not a '" + (typeof location) + "': " + location);
-        result.noticeList.push([priority, message, index, extract, location]);
+        console.assert(priority !== undefined, "cUSFMgr addNotice5to8: 'priority' parameter should be defined");
+        console.assert(typeof priority === 'number', "cUSFMgr addNotice5to8: 'priority' parameter should be a number not a '" + (typeof priority) + "': " + priority);
+        console.assert(message !== undefined, "cUSFMgr addNotice5to8: 'message' parameter should be defined");
+        console.assert(typeof message === 'string', "cUSFMgr addNotice5to8: 'message' parameter should be a string not a '" + (typeof message) + "': " + message);
+        console.assert(index !== undefined, "cUSFMgr addNotice5to8: 'index' parameter should be defined");
+        console.assert(typeof index === 'number', "cUSFMgr addNotice5to8: 'index' parameter should be a number not a '" + (typeof index) + "': " + index);
+        console.assert(extract !== undefined, "cUSFMgr addNotice5to8: 'extract' parameter should be defined");
+        console.assert(typeof extract === 'string', "cUSFMgr addNotice5to8: 'extract' parameter should be a string not a '" + (typeof extract) + "': " + extract);
+        console.assert(location !== undefined, "cUSFMgr addNotice5to8: 'location' parameter should be defined");
+        console.assert(typeof location === 'string', "cUSFMgr addNotice5to8: 'location' parameter should be a string not a '" + (typeof location) + "': " + location);
+        result.noticeList.push([priority, BBB,"","", message, index, extract, location]);
     }
 
 
@@ -73,11 +73,11 @@ export function checkUSFMGrammar(strictnessString, filename, givenText, givenLoc
     // NOTE: We haven't figured out how to get ERRORS out of this parser yet
 
     if (!grammarCheckResult.isValidUSFM)
-        addNotice(944, `USFM3 Grammar Check (${strictnessString} mode) doesn't pass`, -1, "", ourLocation);
+        addNotice5to8(944, `USFM3 Grammar Check (${strictnessString} mode) doesn't pass`, -1, "", ourLocation);
 
     // Display these warnings but with a lowish priority
     for (const warningString of grammarCheckResult.warnings)
-        addNotice(100, "USFMGrammar found: " + warningString, -1, "", ourLocation);
+        addNotice5to8(100, "USFMGrammar found: " + warningString, -1, "", ourLocation);
 
     addSuccessMessage(`Checked USFM Grammar (${strictnessString} mode) ${grammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN'T validate)"}`);
     console.log(`  checkUSFMGrammar returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);

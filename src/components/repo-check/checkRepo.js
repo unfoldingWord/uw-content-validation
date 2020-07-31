@@ -33,29 +33,29 @@ allow_merge_commits, allow_rebase, allow_rebase_explicit, allow_squash_merge,
 avatar_url, branch, tree_url *//*
 // consoleLogObject("repoObject owner", repoObject.owner);
 
-let checkRepoResult = { successList: [], noticeList: [] };
+const checkRepoResult = { successList: [], noticeList: [] };
 
 function addSuccessMessage(successString) {
 // Adds the message to the result that we will later return
 // console.log("checkRepoGRT success: " + successString);
 checkRepoResult.successList.push(successString);
 }
-function addNotice(priority, message, index, extract, location, extra) {
+function addBBBNotice(priority, BBB,C,V, message, index, extract, location, extra) {
 // Adds the notices to the result that we will later return
 // console.log("checkRepoGRT Notice: (priority=" + priority + ") " + message + (index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-console.assert(priority !== undefined, "cRgrt addNotice: 'priority' parameter should be defined");
-console.assert(typeof priority === 'number', "cRgrt addNotice: 'priority' parameter should be a number not a '" + (typeof priority) + "'");
-console.assert(message !== undefined, "cRgrt addNotice: 'message' parameter should be defined");
-console.assert(typeof message === 'string', "cRgrt addNotice: 'message' parameter should be a string not a '" + (typeof message) + "'");
-console.assert(index !== undefined, "cRgrt addNotice: 'index' parameter should be defined");
-console.assert(typeof index === 'number', "cRgrt addNotice: 'index' parameter should be a number not a '" + (typeof index) + "'");
-console.assert(extract !== undefined, "cRgrt addNotice: 'extract' parameter should be defined");
-console.assert(typeof extract === 'string', "cRgrt addNotice: 'extract' parameter should be a string not a '" + (typeof extract) + "'");
-console.assert(location !== undefined, "cRgrt addNotice: 'location' parameter should be defined");
-console.assert(typeof location === 'string', "cRgrt addNotice: 'location' parameter should be a string not a '" + (typeof location) + "'");
-console.assert(extra !== undefined, "cRgrt addNotice: 'extra' parameter should be defined");
-console.assert(typeof extra === 'string', "cRgrt addNotice: 'extra' parameter should be a string not a '" + (typeof extra) + "'");
-checkRepoResult.noticeList.push([priority, message, index, extract, location, extra]);
+console.assert(priority !== undefined, "cRgrt addBBBNotice: 'priority' parameter should be defined");
+console.assert(typeof priority === 'number', "cRgrt addBBBNotice: 'priority' parameter should be a number not a '" + (typeof priority) + "'");
+console.assert(message !== undefined, "cRgrt addBBBNotice: 'message' parameter should be defined");
+console.assert(typeof message === 'string', "cRgrt addBBBNotice: 'message' parameter should be a string not a '" + (typeof message) + "'");
+console.assert(index !== undefined, "cRgrt addBBBNotice: 'index' parameter should be defined");
+console.assert(typeof index === 'number', "cRgrt addBBBNotice: 'index' parameter should be a number not a '" + (typeof index) + "'");
+console.assert(extract !== undefined, "cRgrt addBBBNotice: 'extract' parameter should be defined");
+console.assert(typeof extract === 'string', "cRgrt addBBBNotice: 'extract' parameter should be a string not a '" + (typeof extract) + "'");
+console.assert(location !== undefined, "cRgrt addBBBNotice: 'location' parameter should be defined");
+console.assert(typeof location === 'string', "cRgrt addBBBNotice: 'location' parameter should be a string not a '" + (typeof location) + "'");
+console.assert(extra !== undefined, "cRgrt addBBBNotice: 'extra' parameter should be defined");
+console.assert(typeof extra === 'string', "cRgrt addBBBNotice: 'extra' parameter should be a string not a '" + (typeof extra) + "'");
+checkRepoResult.noticeList.push([priority, BBB,C,V, message, index, extract, location, extra]);
 }
 
 function doOurCheckFile(bookOrFileCode, filename, file_content, fileLocation, optionalCheckingOptions) {
@@ -79,9 +79,9 @@ const resultObject = checkFile(filename, file_content, fileLocation, optionalChe
 
 // Process results line by line,  appending the bookOrFileCode as an extra field as we go
 for (const noticeEntry of resultObject.noticeList)
-// noticeEntry is an array of five fields: 1=priority, 2=msg, 3=index, 4=extract, 5=location
+// noticeEntry is an array of eight fields: 1=priority, 2=BBB, 3=C, 4=V, 5=msg, 6=index, 7=extract, 8=location
 // We add the bookOrFileCode as an extra value
-addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], bookOrFileCode);
+addBBBNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7], bookOrFileCode);
 }
 // end of doOurCheckFile function
 
@@ -154,9 +154,9 @@ totalCheckedSize += file_content.length;
 }
 // Check that we processed a license and a manifest
 if (checkedFilenames.indexOf('LICENSE.md') < 0)
-addNotice(946, "Missing LICENSE.md", -1, "", ourLocation, 'LICENSE');
+addBBBNotice(946, "Missing LICENSE.md", -1, "", ourLocation, 'LICENSE');
 if (checkedFilenames.indexOf('manifest.yaml') < 0)
-addNotice(947, "Missing manifest.yaml", -1, "", ourLocation, 'MANIFEST');
+addBBBNotice(947, "Missing manifest.yaml", -1, "", ourLocation, 'MANIFEST');
 
 // Add some extra fields to our checkRepoResult object
 //  in case we need this information again later
@@ -196,32 +196,36 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
         // console.log("checkRepo success: " + successString);
         checkRepoResult.successList.push(successString);
     }
-    function addNotice(priority, message, index, extract, location, extra) {
+    function addBBBNotice(priority, BBB, message, index, extract, location, extra) {
         // Adds the notices to the result that we will later return
-        // console.log("checkRepo Notice: (priority=" + priority + ") " + message + (index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        console.assert(priority !== undefined, "cR addNotice: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', "cR addNotice: 'priority' parameter should be a number not a '" + (typeof priority) + "'");
-        console.assert(message !== undefined, "cR addNotice: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', "cR addNotice: 'message' parameter should be a string not a '" + (typeof message) + "'");
-        console.assert(index !== undefined, "cR addNotice: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', "cR addNotice: 'index' parameter should be a number not a '" + (typeof index) + "'");
-        console.assert(extract !== undefined, "cR addNotice: 'extract' parameter should be defined");
-        console.assert(typeof extract === 'string', "cR addNotice: 'extract' parameter should be a string not a '" + (typeof extract) + "'");
-        console.assert(location !== undefined, "cR addNotice: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', "cR addNotice: 'location' parameter should be a string not a '" + (typeof location) + "'");
-        console.assert(extra !== undefined, "cR addNotice: 'extra' parameter should be defined");
-        console.assert(typeof extra === 'string', "cR addNotice: 'extra' parameter should be a string not a '" + (typeof extra) + "'");
-        checkRepoResult.noticeList.push([priority, message, index, extract, location, extra]);
+        console.log(`checkRepo addBBBNotice: (priority=${priority}) ${message}${index > 0 ? " (at character " + index + 1 + ")" : ""}${extract ? " " + extract : ""}${location}`);
+        console.assert(priority !== undefined, "cR addBBBNotice: 'priority' parameter should be defined");
+        console.assert(typeof priority === 'number', "cR addBBBNotice: 'priority' parameter should be a number not a '" + (typeof priority) + "'");
+        console.assert(BBB !== undefined, "cR addBBBNotice: 'BBB' parameter should be defined");
+        console.assert(typeof BBB === 'string', "cR addBBBNotice: 'BBB' parameter should be a string not a '" + (typeof BBB) + "'");
+        console.assert(message !== undefined, "cR addBBBNotice: 'message' parameter should be defined");
+        console.assert(typeof message === 'string', "cR addBBBNotice: 'message' parameter should be a string not a '" + (typeof message) + "'");
+        console.assert(index !== undefined, "cR addBBBNotice: 'index' parameter should be defined");
+        console.assert(typeof index === 'number', "cR addBBBNotice: 'index' parameter should be a number not a '" + (typeof index) + "'");
+        console.assert(extract !== undefined, "cR addBBBNotice: 'extract' parameter should be defined");
+        console.assert(typeof extract === 'string', "cR addBBBNotice: 'extract' parameter should be a string not a '" + (typeof extract) + "'");
+        console.assert(location !== undefined, "cR addBBBNotice: 'location' parameter should be defined");
+        console.assert(typeof location === 'string', "cR addBBBNotice: 'location' parameter should be a string not a '" + (typeof location) + "'");
+        console.assert(extra !== undefined, "cR addBBBNotice: 'extra' parameter should be defined");
+        console.assert(typeof extra === 'string', "cR addBBBNotice: 'extra' parameter should be a string not a '" + (typeof extra) + "'");
+        checkRepoResult.noticeList.push([priority, BBB,'','', message, index, extract, location, extra]);
     }
 
 
-    function doOurCheckFile(bookOrFileCode, filename, file_content, fileLocation, optionalCheckingOptions) {
+    function doOurCheckFile(bookOrFileCode, BBBid, filename, file_content, fileLocation, optionalCheckingOptions) {
         // We assume that checking for compulsory fields is done elsewhere
         // console.log(`checkRepo doOurCheckFile(${filename})…`);
 
         // Updates the global list of notices
         console.assert(bookOrFileCode !== undefined, "doOurCheckFile: 'bookOrFileCode' parameter should be defined");
         console.assert(typeof bookOrFileCode === 'string', "doOurCheckFile: 'bookOrFileCode' parameter should be a string not a '" + (typeof bookOrFileCode) + "'");
+        console.assert(BBBid !== undefined, "doOurCheckFile: 'BBBid' parameter should be defined");
+        console.assert(typeof BBBid === 'string', "doOurCheckFile: 'BBBid' parameter should be a string not a '" + (typeof BBBid) + "'");
         console.assert(filename !== undefined, "doOurCheckFile: 'filename' parameter should be defined");
         console.assert(typeof filename === 'string', "doOurCheckFile: 'filename' parameter should be a string not a '" + (typeof filename) + "'");
         console.assert(file_content !== undefined, "doOurCheckFile: 'file_content' parameter should be defined");
@@ -236,9 +240,12 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
 
         // Process results line by line,  appending the bookOrFileCode as an extra field as we go
         for (const noticeEntry of resultObject.noticeList)
-            // noticeEntry is an array of five fields: 1=priority, 2=msg, 3=index, 4=extract, 5=location
+            {
+                console.assert(noticeEntry.length===5);
+            // noticeEntry is an array of eight fields: 1=priority, 2=BBB, 3=C, 4=V, 5=msg, 6=index, 7=extract, 8=location
             // We add the bookOrFileCode as an extra value
-            addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], bookOrFileCode);
+            addBBBNotice(noticeEntry[0], BBBid, noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], bookOrFileCode);
+    }
     }
     // end of doOurCheckFile function
 
@@ -278,12 +285,14 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
 
             // Default to the main filename without the extensions
             let bookOrFileCode = thisFilename.substring(0, thisFilename.length - thisFilenameExtension.length - 1);
+            let BBBid = "";
             if (thisFilenameExtension === 'usfm') {
                 // const filenameMain = thisFilename.substring(0, thisFilename.length - 5); // drop .usfm
                 // console.log(`Have USFM filenameMain=${bookOrFileCode}`);
                 const BBB = bookOrFileCode.substring(bookOrFileCode.length - 3);
                 // console.log(`Have USFM bookcode=${BBB}`);
                 bookOrFileCode = BBB;
+                BBBid = BBB;
             }
             else if (thisFilenameExtension === 'tsv') {
                 // const filenameMain = thisFilename.substring(0, thisFilename.length - 4); // drop .tsv
@@ -291,6 +300,7 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
                 const BBB = bookOrFileCode.substring(bookOrFileCode.length - 3);
                 // console.log(`Have TSV bookcode=${BBB}`);
                 bookOrFileCode = BBB;
+                BBBid = BBB;
             }
 
             // console.log("checkRepo: Try to load", username, repoName, thisPath, branch);
@@ -300,14 +310,14 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
                 // console.log("Fetched file_content for", repoName, thisPath, typeof fileContent, fileContent.length);
             } catch (e) {
                 console.log("Failed to load", username, repoName, thisFilepath, branch, e + '');
-                addNotice(996, "Failed to load", -1, "", `${generalLocation} ${thisFilepath}: ${e}`, repoCode);
+                addBBBNotice(996, BBBid, "Failed to load", -1,"", `${generalLocation} ${thisFilepath}: ${e}`, repoCode);
                 return;
             }
             // console.log("checkRepo fetching and checking", thisFilename);
             // const fileContent = await getBlobContent(thisFilename, detailObject);
             // console.log("Got", fileContent.length, file_content.substring(0, 19));
             if (fileContent) {
-                doOurCheckFile(bookOrFileCode, thisFilename, fileContent, ourLocation, checkingOptions);
+                doOurCheckFile(bookOrFileCode, BBBid, thisFilename, fileContent, ourLocation, checkingOptions);
                 checkedFileCount += 1;
                 checkedFilenames.push(thisFilename);
                 checkedFilenameExtensions.add(thisFilenameExtension);
@@ -322,9 +332,9 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
 
         // Check that we processed a license and a manifest
         if (checkedFilenames.indexOf('LICENSE.md') < 0)
-            addNotice(946, "Missing LICENSE.md", -1, "", ourLocation, 'LICENSE');
+            addBBBNotice(946, BBBid, "Missing LICENSE.md", -1,"", ourLocation, 'LICENSE');
         if (checkedFilenames.indexOf('manifest.yaml') < 0)
-            addNotice(947, "Missing manifest.yaml", -1, "", ourLocation, 'MANIFEST');
+            addBBBNotice(947, BBBid, "Missing manifest.yaml", -1,"", ourLocation, 'MANIFEST');
 
         // Add some extra fields to our checkRepoResult object
         //  in case we need this information again later

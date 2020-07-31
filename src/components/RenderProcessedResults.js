@@ -28,6 +28,10 @@ export function RenderSettings(props) {
 
 
 export function RenderRawNotices(props) {
+    // This function is flexible enough to handle notice entries of different lengths:
+    //      including BBB,C,V or not
+    //      including extra at end or not
+
     // console.log("In RenderRawNotices");
     // consoleLogObject('RenderRawNotices props', props);
 
@@ -45,24 +49,48 @@ export function RenderRawNotices(props) {
         </>;
 
     // If we get here, we have notices.
-    let headerData = [{ title: 'Priority', field: 'priority', type: 'numeric' },
-    { title: 'Message', field: 'message' },
-    { title: 'Index', field: 'index', type: 'numeric' },
-    { title: 'Extract', field: 'extract' },
-    { title: 'Location', field: 'location' }];
     let formattedData = [];
+    let haveExtras = false;
+    props.results.noticeList.map(function (noticeEntry) {
+        if (props.results.noticeList[0].length === 9) {
+            formattedData.push({
+                priority: noticeEntry[0], book: noticeEntry[1], chapter: noticeEntry[2], verse: noticeEntry[3],
+                message: noticeEntry[4], index: noticeEntry[5], extract: noticeEntry[6], location: noticeEntry[7], extra: noticeEntry[8]
+            });
+            haveExtras = true;
+        } else if (props.results.noticeList[0].length === 8) {
+            formattedData.push({
+                priority: noticeEntry[0], book: noticeEntry[1], chapter: noticeEntry[2], verse: noticeEntry[3],
+                message: noticeEntry[4], index: noticeEntry[5], extract: noticeEntry[6], location: noticeEntry[7], extra: ""
+            });
+        } else if (props.results.noticeList[0].length === 6) {
+            formattedData.push({
+                priority: noticeEntry[0], book: "", chapter: "", verse: "",
+                message: noticeEntry[1], index: noticeEntry[2], extract: noticeEntry[3], location: noticeEntry[4], extra: ""
+            });
+            haveExtras = true;
+        } else if (props.results.noticeList[0].length === 5) {
+            formattedData.push({
+                priority: noticeEntry[0], book: "", chapter: "", verse: "",
+                message: noticeEntry[1], index: noticeEntry[2], extract: noticeEntry[3], location: noticeEntry[4], extra: noticeEntry[5]
+            });
+        } else
+            console.log(`ERROR: Unexpected notice entry length`);
+    });
 
-    if (props.results.noticeList[0].length === 6) {
-        headerData.push({ title: 'Extra', field: 'extra' });
-        props.results.noticeList.map(function (noticeEntry) {
-            formattedData.push({ priority: noticeEntry[0], message: noticeEntry[1], index: noticeEntry[2], extract: noticeEntry[3], location: noticeEntry[4], extra: noticeEntry[5] });
-        });
-    } else { // it's the standard 5-part notice
-        props.results.noticeList.map(function (noticeEntry) {
-            formattedData.push({ priority: noticeEntry[0], message: noticeEntry[1], index: noticeEntry[2], extract: noticeEntry[3], location: noticeEntry[4] });
-        });
-    }
-    return <>
+    let headerData = [
+        { title: 'Priority', field: 'priority', type: 'numeric' },
+        { title: 'Book', field: 'BBB' },
+        { title: 'Chapter', field: 'C' },
+        { title: 'Verse', field: 'V' },
+        { title: 'Message', field: 'message' },
+        { title: 'Index', field: 'index', type: 'numeric' },
+        { title: 'Extract', field: 'extract' },
+        { title: 'Location', field: 'location' }
+    ];
+    if (haveExtras) headerData.push({ title: 'Extra', field: 'extra' });
+
+return <>
         {propertyList}
         <MaterialTable
             //icons={tableIcons}
@@ -74,6 +102,18 @@ export function RenderRawNotices(props) {
     </>;
 }
 
+
+function RenderBCV({BBB,C,V}) {
+    // These are all optional parameters
+    //  They may be blank if irrelevant
+    if (!BBB && !C && !V) return '';
+    let result;
+    if (BBB.length) result = BBB;
+    if (C.length) result = `${result}${result.length?' ':''}${C}`;
+    if (V.length) result = `${result}${result.length?':':''}${V}`;
+    if (result.length) return ` ${V.length? 'at':'in'} ${result}`;
+    return '';
+}
 
 export function RenderProcessedArray(props) {
     // Display our array of 5-part lists in a nicer format
@@ -89,7 +129,7 @@ export function RenderProcessedArray(props) {
         return <ul>
             {props.results.successList.map(function (listEntry) {
                 return <li key={listEntry.id}>
-                    <b style={{ color: props.results.errorList.length || props.results.warningList.length?'limegreen':'green' }}>{listEntry}</b>
+                    <b style={{ color: props.results.errorList.length || props.results.warningList.length ? 'limegreen' : 'green' }}>{listEntry}</b>
                 </li>;
             })}
         </ul>;
@@ -98,10 +138,11 @@ export function RenderProcessedArray(props) {
         return <ul>
             {myList.map(function (listEntry) {
                 return <li key={listEntry.id}>
-                    <b style={{ color: props.arrayType === 'e' ? 'red' : 'orange' }}>{listEntry[1]}</b>
-                    {listEntry[2] > 0 ? " (at character " + (listEntry[2] + 1) + " of line)" : ""}
-                    <span style={{ color: 'DimGray' }}>{listEntry[3] ? " around '" + listEntry[3] + "'" : ""}</span>
-                    {listEntry[4]}
+                    <b style={{ color: props.arrayType === 'e' ? 'red' : 'orange' }}>{listEntry[4]}</b>
+                    <RenderBCV BBB={listEntry[1]} C={listEntry[2]} V={listEntry[3]} />
+                    {listEntry[5] > 0 ? " (at character " + (listEntry[5] + 1) + " of line)" : ""}
+                    <span style={{ color: 'DimGray' }}>{listEntry[6] ? " around '" + listEntry[6] + "'" : ""}</span>
+                    {listEntry[7]}
                     <small style={{ color: 'Gray' }}>{listEntry[0] >= 0 ? " (Priority " + listEntry[0] + ")" : ""}</small>
                 </li>;
             })}
@@ -158,8 +199,8 @@ export function RenderSuccessesErrorsWarnings(props) {
     else successCount = props.results.successList.length.toLocaleString();
 
     return <>
-        <b style={{ color: haveErrorsOrWarnings? 'limegreen':'green' }}>{successCount.toLocaleString()} check{props.results.successList.length === 1 ? '' : 's'} completed</b>{props.results.successList.length ? ':' : ''}
+        <b style={{ color: haveErrorsOrWarnings ? 'limegreen' : 'green' }}>{successCount.toLocaleString()} check{props.results.successList.length === 1 ? '' : 's'} completed</b>{props.results.successList.length ? ':' : ''}
         <RenderProcessedArray results={props.results} arrayType='s' />
-        {haveErrorsOrWarnings?<RenderErrorsAndWarnings results={props.results} />:""}
+        {haveErrorsOrWarnings ? <RenderErrorsAndWarnings results={props.results} /> : ""}
     </>;
 }

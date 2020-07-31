@@ -32,18 +32,18 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
 
     let result = { noticeList: [] };
 
-    function addNotice(priority, message, index, extract, location) {
+    function addNotice5(priority, message, index, extract, location) {
         // console.log("dBTC Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        console.assert(priority !== undefined, "dBTCs addNotice: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', "dBTCs addNotice: 'priority' parameter should be a number not a '" + (typeof priority) + "': " + priority);
-        console.assert(message !== undefined, "dBTCs addNotice: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', "dBTCs addNotice: 'message' parameter should be a string not a '" + (typeof message) + "': " + message);
-        console.assert(index !== undefined, "dBTCs addNotice: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', "dBTCs addNotice: 'index' parameter should be a number not a '" + (typeof index) + "': " + index);
-        console.assert(extract !== undefined, "dBTCs addNotice: 'extract' parameter should be defined");
-        console.assert(typeof extract === 'string', "dBTCs addNotice: 'extract' parameter should be a string not a '" + (typeof extract) + "': " + extract);
-        console.assert(location !== undefined, "dBTCs addNotice: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', "dBTCs addNotice: 'location' parameter should be a string not a '" + (typeof location) + "': " + location);
+        console.assert(priority !== undefined, "dBTCs addNotice5: 'priority' parameter should be defined");
+        console.assert(typeof priority === 'number', "dBTCs addNotice5: 'priority' parameter should be a number not a '" + (typeof priority) + "': " + priority);
+        console.assert(message !== undefined, "dBTCs addNotice5: 'message' parameter should be defined");
+        console.assert(typeof message === 'string', "dBTCs addNotice5: 'message' parameter should be a string not a '" + (typeof message) + "': " + message);
+        console.assert(index !== undefined, "dBTCs addNotice5: 'index' parameter should be defined");
+        console.assert(typeof index === 'number', "dBTCs addNotice5: 'index' parameter should be a number not a '" + (typeof index) + "': " + index);
+        console.assert(extract !== undefined, "dBTCs addNotice5: 'extract' parameter should be defined");
+        console.assert(typeof extract === 'string', "dBTCs addNotice5: 'extract' parameter should be a string not a '" + (typeof extract) + "': " + extract);
+        console.assert(location !== undefined, "dBTCs addNotice5: 'location' parameter should be defined");
+        console.assert(typeof location === 'string', "dBTCs addNotice5: 'location' parameter should be a string not a '" + (typeof location) + "': " + location);
         result.noticeList.push([priority, message, index, extract, location]);
     }
 
@@ -60,7 +60,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     }
 
     if (isWhitespace(fieldText)) {
-        addNotice(638, "Only found whitespace", -1, "", ourAtString);
+        addNotice5(638, "Only found whitespace", -1, "", ourAtString);
         return result;
     }
 
@@ -82,73 +82,73 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     if (ix >= 0) {
         let iy = ix + halfLength; // Want extract to focus more on what follows
         const extract = (iy > halfLength ? '…' : '') + fieldText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < fieldText.length ? '…' : '')
-        addNotice(993, "Unresolved GIT conflict", ix, extract, ourAtString);
+        addNotice5(993, "Unresolved GIT conflict", ix, extract, ourAtString);
     } else {
         ix = fieldText.indexOf('=======');
         if (ix >= 0) {
             let iy = ix + halfLength; // Want extract to focus more on what follows
             const extract = (iy > halfLength ? '…' : '') + fieldText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < fieldText.length ? '…' : '')
-            addNotice(992, "Unresolved GIT conflict", ix, extract, ourAtString);
+            addNotice5(992, "Unresolved GIT conflict", ix, extract, ourAtString);
         } else {
             ix = fieldText.indexOf('>>>>>>>>');
             if (ix >= 0) {
                 let iy = ix + halfLength; // Want extract to focus more on what follows
                 const extract = (iy > halfLength ? '…' : '') + fieldText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < fieldText.length ? '…' : '')
-                addNotice(991, "Unresolved GIT conflict", ix, extract, ourAtString);
+                addNotice5(991, "Unresolved GIT conflict", ix, extract, ourAtString);
             }
         }
     }
 
     if (fieldText[0] === ' ') {
         const extract = fieldText.substring(0, 10).replace(/ /g, '␣') + (fieldText.length > extractLength ? '…' : '');
-        addNotice(203, "Unexpected leading space" + (fieldText[1] === ' ' ? "s" : ""), 0, extract, ourAtString);
+        addNotice5(203, "Unexpected leading space" + (fieldText[1] === ' ' ? "s" : ""), 0, extract, ourAtString);
     }
     if (fieldText.substring(0, 4) === '<br>' || fieldText.substring(0, 5) === '<br/>' || fieldText.substring(0, 6) === '<br />') {
         const extract = fieldText.substring(0, 10) + (fieldText.length > extractLength ? '…' : '');
-        addNotice(205, "Unexpected leading break", 0, extract, ourAtString);
+        addNotice5(205, "Unexpected leading break", 0, extract, ourAtString);
     }
     if (fieldText[fieldText.length - 1] === ' ') {
         const extract = (fieldText.length > extractLength ? '…' : '') + fieldText.substring(fieldText.length - 10).replace(/ /g, '␣');
-        addNotice(202, "Unexpected trailing space(s)", fieldText.length - 1, extract, ourAtString);
+        addNotice5(202, "Unexpected trailing space(s)", fieldText.length - 1, extract, ourAtString);
     }
     if (fieldText.substring(fieldText.length - 4) === '<br>' || fieldText.substring(fieldText.length - 5) === '<br/>' || fieldText.substring(fieldText.length - 6) === '<br />') {
         const extract = (fieldText.length > extractLength ? '…' : '') + fieldText.substring(fieldText.length - 10);
-        addNotice(204, "Unexpected trailing break", fieldText.length - 1, extract, ourAtString);
+        addNotice5(204, "Unexpected trailing break", fieldText.length - 1, extract, ourAtString);
     }
     ix = fieldText.indexOf('  ');
     if (ix >= 0) {
         const extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus).replace(/ /g, '␣') + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-        addNotice(194, "Unexpected double spaces", ix, extract, ourAtString);
+        addNotice5(194, "Unexpected double spaces", ix, extract, ourAtString);
     }
     ix = fieldText.indexOf('\n');
     if (ix >= 0) {
         const extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-        addNotice(583, "Unexpected newLine character", ix, extract, ourAtString);
+        addNotice5(583, "Unexpected newLine character", ix, extract, ourAtString);
     }
     ix = fieldText.indexOf('\r');
     if (ix >= 0) {
         const extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-        addNotice(582, "Unexpected carriageReturn character", ix, extract, ourAtString);
+        addNotice5(582, "Unexpected carriageReturn character", ix, extract, ourAtString);
     }
     ix = fieldText.indexOf('\xA0'); // non-break space
     if (ix >= 0) {
         const extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus).replace(/\xA0/g, '⍽') + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-        addNotice(581, "Unexpected non-break space character", ix, extract, ourAtString);
+        addNotice5(581, "Unexpected non-break space character", ix, extract, ourAtString);
     }
     ix = fieldText.indexOf('\u202F'); // narrow non-break space
     if (ix >= 0) {
         const extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus).replace(/\u202F/g, '⍽') + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-        addNotice(580, "Unexpected narrow non-break space character", ix, extract, ourAtString);
+        addNotice5(580, "Unexpected narrow non-break space character", ix, extract, ourAtString);
     }
     ix = fieldText.indexOf(' …');
     if (ix >= 0) {
         const extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-        addNotice(579, "Unexpected space before ellipse character", ix, extract, ourAtString);
+        addNotice5(579, "Unexpected space before ellipse character", ix, extract, ourAtString);
     }
     ix = fieldText.indexOf('… ');
     if (ix >= 0) {
         const extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-        addNotice(578, "Unexpected space after ellipse character", ix, extract, ourAtString);
+        addNotice5(578, "Unexpected space after ellipse character", ix, extract, ourAtString);
     }
     // Check for doubled punctuation chars (international)
     // Doesn't check for doubled forward slash coz that might occur in a link, e.g., https://etc…
@@ -159,7 +159,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
         ix = fieldText.indexOf(punctChar + punctChar);
         if (ix >= 0) {
             let extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-            addNotice(577, "Unexpected doubled " + punctChar + " characters", ix, extract, ourAtString);
+            addNotice5(577, "Unexpected doubled " + punctChar + " characters", ix, extract, ourAtString);
         }
     }
     // Check for punctuation chars following space
@@ -167,7 +167,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
         ix = fieldText.indexOf(' ' + punctChar);
         if (ix >= 0) {
             let extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-            addNotice(591, "Unexpected " + punctChar + " character after space", ix, extract, ourAtString);
+            addNotice5(591, "Unexpected " + punctChar + " character after space", ix, extract, ourAtString);
         }
     }
     // Check for punctuation chars before space
@@ -175,21 +175,21 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
         ix = fieldText.indexOf(punctChar + ' ');
         if (ix >= 0) {
             let extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-            addNotice(592, "Unexpected space after " + punctChar + " character", ix, extract, ourAtString);
+            addNotice5(592, "Unexpected space after " + punctChar + " character", ix, extract, ourAtString);
         }
     }
 
     // Check matched pairs
     // for (const punctSet of ['[]', '()', '{}', '<>', '⟨⟩', '“”', '‹›', '«»']) {
     for (const punctSet of [['[', ']'], ['(', ')'], ['{', '}'],
-                            ['<', '>'], ['⟨', '⟩'], ['“', '”'],
-                            ['‹', '›'], ['«', '»'], ['**_', '_**']]) {
+    ['<', '>'], ['⟨', '⟩'], ['“', '”'],
+    ['‹', '›'], ['«', '»'], ['**_', '_**']]) {
         // Can't check '‘’' coz they might be used as apostrophe
         const leftChar = punctSet[0], rightChar = punctSet[1];
         const lCount = countOccurrences(fieldText, leftChar);
         const rCount = countOccurrences(fieldText, rightChar);
         if (lCount !== rCount)
-            addNotice(663, "Mismatched " + leftChar+rightChar + " characters", -1, "(left=" + lCount.toLocaleString() + ", right=" + rCount.toLocaleString() + ")", ourAtString);
+            addNotice5(663, "Mismatched " + leftChar + rightChar + " characters", -1, "(left=" + lCount.toLocaleString() + ", right=" + rCount.toLocaleString() + ")", ourAtString);
     }
 
     if (!allowedLinks) {
@@ -204,7 +204,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
         if (ix === -1) ix = fieldText.indexOf('.bible');
         if (ix >= 0) {
             let extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-            addNotice(765, "Unexpected link", ix, extract, ourAtString);
+            addNotice5(765, "Unexpected link", ix, extract, ourAtString);
         }
     }
     return result;

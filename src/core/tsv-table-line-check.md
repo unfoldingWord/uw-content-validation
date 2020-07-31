@@ -8,7 +8,7 @@ The notices are then processed into a list of errors and a list of warnings for 
 
 ```js
 import checkTN_TSVDataRow from './table-line-check';
-import processNotices from './notice-processing-functions';
+import processNoticesToErrorsWarnings from './notice-processing-functions';
 import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
 
 // Empty, Header, Nonsense, Good, Bad, Very bad, and Actual line samples
@@ -40,10 +40,10 @@ const lineA9 = "GEN\t1\t9\tha33\t\t\t0\tIt was so\t“It happened like that” o
 //  (to demonstrate differing results)
 const chosenLine = lineA9;
 
-let rawResult = checkTN_TSVDataRow('GEN', chosenLine, 'that was supplied');
+const rawResult = checkTN_TSVDataRow(chosenLine, 'GEN','1','2', 'that was supplied');
 if (!rawResult.successList || !rawResult.successList.length)
     rawResult.successList = ["Done TSV table line checks"];
-const processedResult = processNotices(rawResult);
+const processedResult = processNoticesToErrorsWarnings(rawResult);
 
 <>
 <b>Check</b> "{chosenLine}"<br/><br/>

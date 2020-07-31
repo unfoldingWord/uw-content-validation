@@ -81,8 +81,18 @@ let sections = [
 				// description: ''
 			},
 			{
-				name: 'Notice processing',
-				content: 'src/core/notice-processing.md',
+				name: 'Process notices -> Errors/Warnings',
+				content: 'src/core/notice-processing1.md',
+				// description: ''
+			},
+			{
+				name: 'Process notices -> Severe/Medium/Low',
+				content: 'src/core/notice-processing2.md',
+				// description: ''
+			},
+			{
+				name: 'Process notices -> colour gradient',
+				content: 'src/core/notice-processing3.md',
 				// description: ''
 			},
 			{

@@ -2,6 +2,8 @@
 
 The code below requests some info and then checks the single specified Bible book in several repos. This is convenient to see all these check results collected into one place.
 
+See a list of valid book codes [here](http://ubsicap.github.io/usfm/identification/books.html), although only `GEN` to `REV` are useful here.
+
 Note that `OBS` can also be entered here as a *pseudo book code* in order to check an **Open Bible Stories** repo.
 
 `Book Package Check` calls `checkBookPackage()` which then calls `checkFile()` for the book file in each repo (or calls `checkRepo()` for **OBS**).

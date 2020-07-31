@@ -9,7 +9,7 @@ The notices are then processed into a list of errors and a list of warnings for 
 ```js
 import Markdown from 'react-markdown'
 import checkMarkdownText from './markdown-text-check';
-import processNotices from './notice-processing-functions';
+import processNoticesToErrorsWarnings from './notice-processing-functions';
 import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
 
 // Markdown text samples
@@ -40,10 +40,10 @@ Another  paragraph.
 const chosenText = textSB;
 const chosenName = 'textSB';
 
-let rawResult = checkMarkdownText(chosenName, chosenText, 'that was supplied');
+const rawResult = checkMarkdownText(chosenName, chosenText, 'that was supplied');
 if (!rawResult.successList || !rawResult.successList.length)
   rawResult.successList = ["Done markdown text checks"];
-const processedResult = processNotices(rawResult);
+const processedResult = processNoticesToErrorsWarnings(rawResult);
 
 <>
 <b>Raw Markdown (but normalized)</b> <RenderLines text={chosenText} />

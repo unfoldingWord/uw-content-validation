@@ -8,7 +8,7 @@ The notices are then processed into a list of errors and a list of warnings for 
 
 ```js
 import checkPlainText from './plain-text-check';
-import processNotices from './notice-processing-functions';
+import processNoticesToErrorsWarnings from './notice-processing-functions';
 import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
 
 // Plain text samples
@@ -40,10 +40,10 @@ Another  paragraph.
 const chosenText = textSB;
 const chosenName = 'textSB';
 
-let rawResult = checkPlainText(chosenName, chosenText, 'that was supplied');
+const rawResult = checkPlainText(chosenName, chosenText, 'that was supplied');
 if (!rawResult.successList || !rawResult.successList.length)
   rawResult.successList = ["Done plain text checks"];
-const processedResult = processNotices(rawResult);
+const processedResult = processNoticesToErrorsWarnings(rawResult);
 
 <>
 <b>Source (normalized)</b> <RenderLines text={chosenText} />

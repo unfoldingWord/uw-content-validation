@@ -11,14 +11,14 @@ async function checkBookPackages(username, language_code, bookCodeList, setResul
     //     console.log(`I'm here in checkBookPackages v${CHECKER_VERSION_STRING}
     //   with ${username}, ${language_code}, ${bookCodeList}, ${JSON.stringify(checkingOptions)}`);
 
-    let checkBookPackagesResult = { successList: [], noticeList: [] };
+    const checkBookPackagesResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
         // console.log(`checkBookPackages success: ${successString}`);
         checkBookPackagesResult.successList.push(successString);
     }
 
-    function addNotice(priority, message, index, extract, location, extra) {
+    function addNotice(priority, BBB,C,V, message, index, extract, location, extra) {
         // console.log(`checkBookPackages Notice: (priority=${priority}) ${extra} ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cBPs addNotice: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cBPs addNotice: 'priority' parameter should be a number not a '${typeof priority}'`);
@@ -32,7 +32,7 @@ async function checkBookPackages(username, language_code, bookCodeList, setResul
         console.assert(typeof location === 'string', `cBPs addNotice: 'location' parameter should be a string not a '${typeof location}'`);
         console.assert(extra !== undefined, "cBPs addNotice: 'extra' parameter should be defined");
         console.assert(typeof extra === 'string', `cBPs addNotice: 'extra' parameter should be a string not a '${typeof extra}'`);
-        checkBookPackagesResult.noticeList.push([priority, message, index, extract, location, extra]);
+        checkBookPackagesResult.noticeList.push([priority, BBB,C,V, message, index, extract, location, extra]);
     }
 
 
@@ -48,7 +48,7 @@ async function checkBookPackages(username, language_code, bookCodeList, setResul
                 bookNumberAndName = books.usfmNumberName(bookCode);
                 whichTestament = books.testament(bookCode);
             } catch (e) {
-                addNotice(900, "Bad parameter: should be given a valid book abbreviation", -1, bookCodeList, ` (not '${bookCodeList}')${location}`);
+                addNotice(900, "","","", "Bad parameter: should be given a valid book abbreviation", -1,bookCodeList, ` (not '${bookCodeList}')${location}`);
                 return checkBookPackagesResult;
             }
             // console.log(`bookNumberAndName='${bookNumberAndName}' (${whichTestament} testament)`);
@@ -70,9 +70,9 @@ async function checkBookPackages(username, language_code, bookCodeList, setResul
         // Concat is faster if we don't need to process each notice individually
         checkBookPackagesResult.noticeList = checkBookPackagesResult.noticeList.concat(cbpResultObject.noticeList);
         // for (const noticeEntry of cbpResultObject.noticeList)
-        //     // noticeEntry is an array of five fields: 1=priority, 2=msg, 3=index, 4=extract, 5=location
+        //     // noticeEntry is an array of eight fields: 1=priority, 2=BBB, 3=C, 4=V, 5=msg, 6=index, 7=extract, 8=location
         //     // The extra value from checkBookPackage is the repo name
-        //     addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5]);
+        //     addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7], noticeEntry[5]);
 
         checkedFileCount += cbpResultObject.checkedFileCount;
         checkedFilenames = [...checkedFilenames, ...cbpResultObject.checkedFilenames];

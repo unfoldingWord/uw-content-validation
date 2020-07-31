@@ -32,18 +32,18 @@ export function doBasicFileChecks(filename, fileText, optionalFileLocation, opti
 
     let result = { noticeList: [] };
 
-    function addNotice(priority, message, index, extract, location) {
+    function addNotice5(priority, message, index, extract, location) {
         // console.log("dBTC Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        console.assert(priority!==undefined, "dBTCs addNotice: 'priority' parameter should be defined");
-        console.assert(typeof priority==='number', "dBTCs addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"': "+priority);
-        console.assert(message!==undefined, "dBTCs addNotice: 'message' parameter should be defined");
-        console.assert(typeof message==='string', "dBTCs addNotice: 'message' parameter should be a string not a '"+(typeof message)+"': "+message);
-        console.assert(index!==undefined, "dBTCs addNotice: 'index' parameter should be defined");
-        console.assert(typeof index==='number', "dBTCs addNotice: 'index' parameter should be a number not a '"+(typeof index)+"': "+index);
-        console.assert(extract!==undefined, "dBTCs addNotice: 'extract' parameter should be defined");
-        console.assert(typeof extract==='string', "dBTCs addNotice: 'extract' parameter should be a string not a '"+(typeof extract)+"': "+extract);
-        console.assert(location!==undefined, "dBTCs addNotice: 'location' parameter should be defined");
-        console.assert(typeof location==='string', "dBTCs addNotice: 'location' parameter should be a string not a '"+(typeof location)+"': "+location);
+        console.assert(priority!==undefined, "dBTCs addNotice5: 'priority' parameter should be defined");
+        console.assert(typeof priority==='number', "dBTCs addNotice5: 'priority' parameter should be a number not a '"+(typeof priority)+"': "+priority);
+        console.assert(message!==undefined, "dBTCs addNotice5: 'message' parameter should be defined");
+        console.assert(typeof message==='string', "dBTCs addNotice5: 'message' parameter should be a string not a '"+(typeof message)+"': "+message);
+        console.assert(index!==undefined, "dBTCs addNotice5: 'index' parameter should be defined");
+        console.assert(typeof index==='number', "dBTCs addNotice5: 'index' parameter should be a number not a '"+(typeof index)+"': "+index);
+        console.assert(extract!==undefined, "dBTCs addNotice5: 'extract' parameter should be defined");
+        console.assert(typeof extract==='string', "dBTCs addNotice5: 'extract' parameter should be a string not a '"+(typeof extract)+"': "+extract);
+        console.assert(location!==undefined, "dBTCs addNotice5: 'location' parameter should be defined");
+        console.assert(typeof location==='string', "dBTCs addNotice5: 'location' parameter should be a string not a '"+(typeof location)+"': "+location);
         result.noticeList.push([priority, message, index, extract, location]);
     }
 
@@ -60,7 +60,7 @@ export function doBasicFileChecks(filename, fileText, optionalFileLocation, opti
     }
 
     if (isWhitespace(fileText)) {
-        addNotice(638, "Only found whitespace", -1, "", ourAtString);
+        addNotice5(638, "Only found whitespace", -1,"", ourAtString);
         return result;
     }
 
@@ -82,19 +82,19 @@ export function doBasicFileChecks(filename, fileText, optionalFileLocation, opti
     if (ix >= 0) {
         let iy = ix+halfLength; // Want extract to focus more on what follows
         const extract = (iy>halfLength ? '…' : '') + fileText.substring(iy-halfLength, iy+halfLengthPlus).replace(/ /g, '␣') + (iy+halfLengthPlus < fileText.length ? '…' : '')
-        addNotice(993, "Unresolved GIT conflict", ix, extract, ourAtString);
+        addNotice5(993, "Unresolved GIT conflict", ix,extract, ourAtString);
     } else {
         ix = fileText.indexOf('=======');
         if (ix >= 0) {
             let iy = ix+halfLength; // Want extract to focus more on what follows
             const extract = (iy>halfLength ? '…' : '') + fileText.substring(iy-halfLength, iy+halfLengthPlus).replace(/ /g, '␣') + (iy+halfLengthPlus < fileText.length ? '…' : '')
-            addNotice(992, "Unresolved GIT conflict", ix, extract, ourAtString);
+            addNotice5(992, "Unresolved GIT conflict", ix,extract, ourAtString);
         } else {
             ix = fileText.indexOf('>>>>>>>>');
             if (ix >= 0) {
                 let iy = ix+halfLength; // Want extract to focus more on what follows
                 const extract = (iy>halfLength ? '…' : '') + fileText.substring(iy-halfLength, iy+halfLengthPlus).replace(/ /g, '␣') + (iy+halfLengthPlus < fileText.length ? '…' : '')
-                addNotice(991, "Unresolved GIT conflict", ix, extract, ourAtString);
+                addNotice5(991, "Unresolved GIT conflict", ix,extract, ourAtString);
             }
         }
     }
@@ -108,7 +108,7 @@ export function doBasicFileChecks(filename, fileText, optionalFileLocation, opti
         const lCount = countOccurrences(fileText, leftChar);
         const rCount = countOccurrences(fileText, rightChar);
         if (lCount !== rCount)
-            addNotice(163, "Mismatched " + leftChar+rightChar + " characters", -1, "(left=" + lCount.toLocaleString() + ", right=" + rCount.toLocaleString() + ")", ourAtString);
+            addNotice5(163, "Mismatched " + leftChar+rightChar + " characters", -1,"(left=" + lCount.toLocaleString() + ", right=" + rCount.toLocaleString() + ")", ourAtString);
     }
 
     // if (!allowedLinks) {
@@ -123,7 +123,7 @@ export function doBasicFileChecks(filename, fileText, optionalFileLocation, opti
     //     if (ix === -1) ix = fileText.indexOf('.bible');
     //     if (ix >= 0) {
     //         let extract = (ix>halfLength ? '…' : '') + fileText.substring(ix-halfLength, ix+halfLengthPlus) + (ix+halfLengthPlus < fileText.length ? '…' : '')
-    //         addNotice(765, "Unexpected link", ix, extract, ourAtString);
+    //         addNotice5(765, "Unexpected link", ix,extract, ourAtString);
     //     }
     // }
     return result;

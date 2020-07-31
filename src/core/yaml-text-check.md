@@ -10,7 +10,7 @@ Note that we have a more specialised function for checking `manifest.yaml` files
 
 ```js
 import checkYAMLText from './yaml-text-check';
-import processNotices from './notice-processing-functions';
+import processNoticesToErrorsWarnings from './notice-processing-functions';
 import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
 
 // YAML empty, good and bad text samples
@@ -218,8 +218,8 @@ projects:
 const chosenText = textG2;
 const chosenName = 'textG2';
 
-let rawResult = checkYAMLText(chosenName, chosenText, 'in YAML data that was supplied');
-const processedResult = processNotices(rawResult);
+const rawResult = checkYAMLText(chosenName, chosenText, 'in YAML data that was supplied');
+const processedResult = processNoticesToErrorsWarnings(rawResult);
 
 <>
 <b>YAML contents</b> <RenderLines text={chosenText} />

@@ -31,13 +31,13 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
     const halfLengthPlus = Math.floor((extractLength+1) / 2); // rounded up
     // console.log("Using halfLength=" + halfLength, "halfLengthPlus="+halfLengthPlus);
 
-    let result = { successList: [], noticeList: [] };
+    const result = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
         // console.log("checkPlainText success: " + successString);
         result.successList.push(successString);
     }
-    function addNotice(priority, message, index, extract, location) {
+    function addNotice(priority, BBB,C,V, message, index, extract, location) {
         // console.log("checkPlainText notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
         console.assert(priority!==undefined, "cPT addNotice: 'priority' parameter should be defined");
         console.assert(typeof priority==='number', "cPT addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"': "+priority);
@@ -49,7 +49,7 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
         console.assert(typeof extract==='string', "cPT addNotice: 'extract' parameter should be a string not a '"+(typeof extract)+"': "+extract);
         console.assert(location!==undefined, "cPT addNotice: 'location' parameter should be defined");
         console.assert(typeof location==='string', "cPT addNotice: 'location' parameter should be a string not a '"+(typeof location)+"': "+location);
-        result.noticeList.push([priority, message, index, extract, location]);
+        result.noticeList.push([priority, BBB,C,V, message, index, extract, location]);
     }
 
     function doOurBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
@@ -73,7 +73,7 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
         // If we need to put everything through addNotice, e.g., for debugging or filtering
         //  process results line by line
         // for (const noticeEntry of resultObject.noticeList)
-        //     addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+        //     addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
     }
     // end of doOurBasicTextChecks function
 
@@ -108,7 +108,7 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
         lastLineContents = line;
     }
 
-    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'}'${ourLocation}'.`);
+    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'}${ourLocation}.`);
     if (result.noticeList)
         addSuccessMessage(`checkPlainText v${PLAIN_TEXT_VALIDATOR_VERSION} finished with ${result.noticeList.length?result.noticeList.length.toLocaleString():"zero"} notice${result.noticeList.length === 1 ? '' : 's'}`);
     else

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import checkRepo from './checkRepo';
-import processNotices from '../../core/notice-processing-functions';
+import processNoticesToErrorsWarnings from '../../core/notice-processing-functions';
 import { RenderSuccessesErrorsWarnings } from '../RenderProcessedResults';
 import { ourParseInt, consoleLogObject } from '../../core/utilities';
 
@@ -63,7 +63,7 @@ useEffect(() => {
     // Or this allows the parameters to be specified as a RepoCheckGRT property
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
 
-    let rawResult = {};
+    const rawResult = {};
     try {
         rawResult = await checkRepoGRT(repo, "in "+repo.full_name, setResultValue, checkingOptions);
     } catch(e) {
@@ -93,7 +93,7 @@ useEffect(() => {
     if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
     if (props.sortBy) processOptions.sortBy = props.sortBy;
     // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
-    const processedResult = processNotices(rawResult, processOptions);
+    const processedResult = processNoticesToErrorsWarnings(rawResult, processOptions);
     console.log(`RepoCheckGRT got back processedResult with ${processedResult.successList.length.toLocaleString()} success message(s), ${processedResult.errorList.length.toLocaleString()} error(s) and ${processedResult.warningList.length.toLocaleString()} warning(s)
 numIgnoredNotices=${processedResult.numIgnoredNotices.toLocaleString()}`, "numSuppressedErrors=" + processedResult.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + processedResult.numSuppressedWarnings.toLocaleString());
 
@@ -219,7 +219,7 @@ function RepoCheck(/*username, language_code,*/ props) {
                 if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
                 if (props.sortBy) processOptions.sortBy = props.sortBy;
                 // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
-                const processedResult = processNotices(rawCRResult, processOptions);
+                const processedResult = processNoticesToErrorsWarnings(rawCRResult, processOptions);
                 //             console.log(`RepoCheck got back processedResult with ${processedResult.successList.length.toLocaleString()} success message(s), ${processedResult.errorList.length.toLocaleString()} error(s) and ${processedResult.warningList.length.toLocaleString()} warning(s)
                 //   numIgnoredNotices=${processedResult.numIgnoredNotices.toLocaleString()}`, "numSuppressedErrors=" + processedResult.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + processedResult.numSuppressedWarnings.toLocaleString());
 
