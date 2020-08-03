@@ -8,7 +8,7 @@ The notices are then processed into a list of errors and a list of warnings for 
 
 ```js
 import checkPlainText from './plain-text-check';
-import processNoticesToErrorsWarnings from './notice-processing-functions';
+import { processNoticesToErrorsWarnings } from './notice-processing-functions';
 import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
 
 // Plain text samples

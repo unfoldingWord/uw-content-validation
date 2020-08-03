@@ -74,7 +74,7 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
         // If we need to put everything through addNotice5, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of dbtcResultObject.noticeList) {
-            console.assert(noticeEntry.length === 5);
+            console.assert(noticeEntry.length === 5, `MD doOurBasicTextChecks notice length=${noticeEntry.length}`);
             if (!noticeEntry[1].startsWith("Unexpected doubled * characters") // 577 Markdown allows this
                 && !noticeEntry[1].startsWith("Unexpected * character after space") // 591
             )

@@ -72,7 +72,8 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
 
         // Process results line by line
         //  suppressing undesired errors
-        for (const noticeEntry of resultObject.noticeList)
+        for (const noticeEntry of resultObject.noticeList) {
+            console.assert(noticeEntry.length === 5, `YAML doOurBasicTextChecks notice length=${noticeEntry.length}`);
             if (noticeEntry[0] !== 591
               && noticeEntry[1] !== "Unexpected ' character after space"
               && noticeEntry[1] !== "Unexpected space after ' character"
@@ -81,6 +82,7 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
               )
                 addNotice5(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
     }
+}
     // end of doOurBasicTextChecks function
 
     function checkYAMLLineContents(lineName, lineText, lineLocation) {

@@ -10,7 +10,7 @@ Note that we have a more specialised function for checking `manifest.yaml` files
 
 ```js
 import checkYAMLText from './yaml-text-check';
-import processNoticesToErrorsWarnings from './notice-processing-functions';
+import { processNoticesToErrorsWarnings } from './notice-processing-functions';
 import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
 
 // YAML empty, good and bad text samples

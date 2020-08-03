@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import * as books from '../../core/books/books';
 import checkBookPackage from './checkBookPackage';
-import processNoticesToErrorsWarnings from '../../core/notice-processing-functions';
+import { processNoticesToErrorsWarnings } from '../../core/notice-processing-functions';
 import { RenderSuccessesErrorsWarnings } from '../RenderProcessedResults';
 import { ourParseInt, consoleLogObject } from '../../core/utilities';
 

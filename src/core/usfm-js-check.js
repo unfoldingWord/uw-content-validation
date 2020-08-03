@@ -26,7 +26,7 @@ export function checkUSFMToJSON(BBB, filename, givenText, givenLocation, optiona
 
      Returns a result object containing a successList and a noticeList
      */
-    // console.log("checkUSFMToJSON(" + givenText.length.toLocaleString() + " chars, '" + location + "')…");
+    console.log(`checkUSFMToJSON(${givenText.length.toLocaleString()} chars, '${givenLocation}')…`);
 
     let ourLocation = givenLocation;
     if (ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -58,7 +58,7 @@ export function checkUSFMToJSON(BBB, filename, givenText, givenLocation, optiona
     // Set your options here -- change values or comment out lines
     const convertOptions = {
         'chunk': true,
-        'content-source': 'ourLocation',
+        'content-source': ourLocation,
         'convertToInt': []
         };
     const convertCheckResult = runUsfmJsCheck(givenText, ourLocation, convertOptions);

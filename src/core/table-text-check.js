@@ -29,7 +29,7 @@ function checkTN_TSVText(BBB, tableText, givenLocation, optionalCheckingOptions)
         result.successList.push(successString);
     }
     function addCVNotice(priority, C,V, message, index, extract, location) {
-        console.log("checkTN_TSVText notice: (priority=" + priority + ") " + message + (index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
+        // console.log("checkTN_TSVText notice: (priority=" + priority + ") " + message + (index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
         console.assert(priority !== undefined, "TSV addCVNotice: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', "TSV addCVNotice: 'priority' parameter should be a number not a '" + (typeof priority) + "': " + priority);
         console.assert(C !== undefined, "TSV addCVNotice: 'C' parameter should be defined");

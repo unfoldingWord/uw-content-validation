@@ -8,7 +8,7 @@ The notices are then processed into a list of errors and a list of warnings for 
 
 ```js
 import checkTN_TSVDataRow from './table-line-check';
-import processNoticesToErrorsWarnings from './notice-processing-functions';
+import { processNoticesToErrorsWarnings } from './notice-processing-functions';
 import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
 
 // Empty, Header, Nonsense, Good, Bad, Very bad, and Actual line samples

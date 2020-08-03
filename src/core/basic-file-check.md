@@ -10,7 +10,7 @@ This demonstration doesn't display the raw notices, but rather displays the proc
 
 ```js
 import doBasicFileChecks from './basic-file-check';
-import processNoticesToErrorsWarnings from './notice-processing-functions';
+import { processNoticesToErrorsWarnings } from './notice-processing-functions';
 import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
 
 // Empty, space, good, and bad samples

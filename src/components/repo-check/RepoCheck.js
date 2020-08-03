@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import checkRepo from './checkRepo';
-import processNoticesToErrorsWarnings from '../../core/notice-processing-functions';
+import { processNoticesToErrorsWarnings } from '../../core/notice-processing-functions';
 import { RenderSuccessesErrorsWarnings } from '../RenderProcessedResults';
 import { ourParseInt, consoleLogObject } from '../../core/utilities';
 

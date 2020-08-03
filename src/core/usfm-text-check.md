@@ -14,7 +14,7 @@ Note that unfoldingWord has three distinct forms of USFM files (and these functi
 
 ```js
 import checkUSFMText from './usfm-text-check';
-import processNoticesToErrorsWarnings from './notice-processing-functions';
+import { processNoticesToErrorsWarnings } from './notice-processing-functions';
 import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
 
 // USFM samples

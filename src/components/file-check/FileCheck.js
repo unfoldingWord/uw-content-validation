@@ -6,7 +6,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { getFile } from '../../core/getApi';
 import checkFile from './checkFile';
-import processNoticesToErrorsWarnings from '../../core/notice-processing-functions';
+import { processNoticesToErrorsWarnings } from '../../core/notice-processing-functions';
 import { RenderSuccessesErrorsWarnings } from '../RenderProcessedResults';
 import { ourParseInt, consoleLogObject } from '../../core/utilities';
 

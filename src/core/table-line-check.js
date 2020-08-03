@@ -72,8 +72,8 @@ function checkTN_TSVDataRow(line, BBB, C, V, rowLocation, optionalCheckingOption
         // If we need to put everything through addNotice5to8, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of cmtResultObject.noticeList) {
-            console.assert(noticeEntry.length == 5);
-            addNotice5to8(noticeEntry[0], BBB, C, V, noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+            console.assert(noticeEntry.length === 5, `TL doOurMarkdownTextChecks notice length=${noticeEntry.length}`);
+            addNotice5to8(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
         }
     }
     // end of doOurMarkdownTextChecks function
@@ -99,8 +99,8 @@ function checkTN_TSVDataRow(line, BBB, C, V, rowLocation, optionalCheckingOption
         // If we need to put everything through addNotice5to8, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of dbtcResultObject.noticeList) {
-            console.assert(noticeEntry.length == 5);
-            addNotice5to8(noticeEntry[0], BBB, C, V, noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+            console.assert(noticeEntry.length === 5, `MD doOurBasicTextChecks notice length=${noticeEntry.length}`);
+            addNotice5to8(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
         }
     }
     // end of doOurBasicTextChecks function

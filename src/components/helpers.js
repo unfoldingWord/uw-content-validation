@@ -2,14 +2,25 @@ import { fetchTree, fetchRepositoryZipFile, getFile, getURL } from '../core/getA
 import { consoleLogObject } from '../core/utilities';
 
 
-const HELPERS_VERSION_STRING = '0.0.1';
+const HELPERS_VERSION_STRING = '0.2.1';
 
 
-export async function getFilelist(username, repoName, branch, givenPath) {
+export async function getFilelistFromZip(fetchZipArchive) {
+    console.log(`getFilelist v${HELPERS_VERSION_STRING} …`);
+
+    // Now we need to fetch the list of files from the repo
+    const pathList = [];
+
+   console.log(`getFilelistFromZip is returning (${pathList.length}) ${pathList}`);
+   return pathList;
+}
+
+
+export async function getFilelistFromFetchedTreemaps(username, repoName, branch, givenPath) {
     // console.log(`getFilelist v${HELPERS_VERSION_STRING} with ${username}, ${repoName}, ${branch}, ${givenPath}…`);
 
     // Now we need to fetch the list of files from the repo
-    // console.log("getFilelist about to fetch tree for", username, repoName, branch, givenPath);
+    // console.log("getFilelistFromFetchedTreemaps about to fetch tree for", username, repoName, branch, givenPath);
     let fetchedRepoTreemap = await fetchTree({ username: username, repository: repoName, sha: branch });
     if (givenPath) { // Note that we only support one level here, i.e., no / in givenPath
         let found = false;
@@ -41,7 +52,7 @@ export async function getFilelist(username, repoName, branch, givenPath) {
     // console.log("  fetchedRepoTreemap.tree", JSON.stringify(fetchedRepoTreemap.tree));
     // consoleLogObject("  fetchedRepoTreemap", fetchedRepoTreemap);
 
-    let pathList = [];
+    const pathList = [];
 
     async function walkTree(givenTree, pathPrefix) {
         /*
@@ -52,7 +63,7 @@ export async function getFilelist(username, repoName, branch, givenPath) {
         // console.log("tree2 type =", typeof givenTree.tree); // == Object
         // consoleLogObject("givenTree.tree", givenTree.tree);
         for (const [_number, detailObject] of givenTree.tree.entries()) {
-            // console.log("getFilelist processing", thisFilename);
+            // console.log("getFilelistFromFetchedTreemaps processing", thisFilename);
             // console.log("  thisFilename="+thisFilename, "detailObject="+detailObject);
             // consoleLogObject("detailObject", detailObject);
             // detailObject has fields: path, mode, type, size, sha, url
@@ -94,6 +105,6 @@ export async function getFilelist(username, repoName, branch, givenPath) {
     }
     await walkTree(fetchedRepoTreemap, '');
 
-    // console.log(`getFileList is returning (${pathList.length}) ${pathList}`);
+    // console.log(`getFilelistFromFetchedTreemaps is returning (${pathList.length}) ${pathList}`);
     return pathList;
 }

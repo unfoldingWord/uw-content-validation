@@ -4,7 +4,7 @@ This function is for checking text fields that are links, or that contain links.
 
 ```js
 import doBasicLinkChecks from './link-checks';
-import processNoticesToErrorsWarnings from './notice-processing-functions';
+import { processNoticesToErrorsWarnings } from './notice-processing-functions';
 import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
 
 // Empty, space, link, RC, good, and bad text samples
