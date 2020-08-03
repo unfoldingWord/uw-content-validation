@@ -4,12 +4,11 @@ This function checks the given block of TSV table lines for typical formatting e
 
 It returns a list of success messages and a list of prioritised notice components.
 
-The notices are then processed into a list of errors and a list of warnings for display.
+The notices can then be further processed into a list of errors and a list of warnings as desired.
 
 ```js
 import checkTN_TSVText from './table-text-check';
-import { processNoticesToErrorsWarnings } from './notice-processing-functions';
-import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
+import { RenderLines, RenderRawResults } from '../components/RenderProcessedResults';
 
 // Text samples
 const textA = `Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote
@@ -37,13 +36,12 @@ const lineA9 = "GEN\t1\t9\tha33\t\t\t0\tIt was so\t“It happened like that” o
 //  (to demonstrate differing results)
 const chosenText = textA;
 
-const rawResult = checkTN_TSVText('GEN', chosenText, 'that was supplied');
-if (!rawResult.successList || !rawResult.successList.length)
-    rawResult.successList = ["Done TSV table checks"];
-const processedResult = processNoticesToErrorsWarnings(rawResult);
+const rawResults = checkTN_TSVText('GEN', chosenText, 'that was supplied');
+if (!rawResults.successList || !rawResults.successList.length)
+    rawResults.successList = ["Done TSV table checks"];
 
 <>
-<b>Check</b> <RenderLines text={chosenText} />
-<RenderSuccessesErrorsWarnings results={processedResult} />
+<b>TSV Lines</b>: <RenderLines text={chosenText} />
+<RenderRawResults results={rawResults} />
 </>
 ```

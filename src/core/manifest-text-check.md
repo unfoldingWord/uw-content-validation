@@ -4,12 +4,11 @@ This function checks the given manifest.yaml for typical formatting errors. See 
 
 It returns a list of success messages and a list of prioritised notice components.
 
-The notices are then processed into a list of errors and a list of warnings for display.
+The notices can then be further processed into a list of errors and a list of warnings as desired.
 
 ```js
 import checkManifestText from './manifest-text-check';
-import { processNoticesToErrorsWarnings } from './notice-processing-functions';
-import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
+import { RenderLines, RenderRawResults } from '../components/RenderProcessedResults';
 
 // Manifest empty, good and bad text samples
 const textE = '';
@@ -216,11 +215,10 @@ projects:
 const chosenText = textG;
 const chosenName = 'textG';
 
-const rawResult = checkManifestText(chosenName, chosenText, 'in manifest data that was supplied');
-const processedResult = processNoticesToErrorsWarnings(rawResult);
+const rawResults = checkManifestText(chosenName, chosenText, 'in manifest data that was supplied');
 
 <>
-<b>Manifest contents</b> <RenderLines text={chosenText} />
-<RenderSuccessesErrorsWarnings results={processedResult} />
+<b>Manifest contents</b>: <RenderLines text={chosenText} />
+<RenderRawResults results={rawResults} />
 </>
 ```

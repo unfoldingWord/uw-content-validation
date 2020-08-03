@@ -2,7 +2,7 @@ import { displayPropertyNames, consoleLogObject } from './utilities';
 import { result } from 'lodash';
 
 
-const PROCESSOR_VERSION_STRING = '0.2.1';
+const PROCESSOR_VERSION_STRING = '0.2.2';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -17,7 +17,6 @@ const DEFAULT_SEVERE_PRIORITY_LEVEL = 800; // This level or higher becomes a sev
 const DEFAULT_MEDIUM_PRIORITY_LEVEL = 600; // This level or higher becomes a medium error
 
 // For processNoticesToSingleList
-// const DEFAULT_ERROR_PRIORITY_LEVEL = 700; // This level or higher becomes an error (cf. warnings)
 
 
 function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
@@ -272,7 +271,9 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
 
     const [remainingNoticeList, allTotals, resultObject] = processNoticesCommon(givenNoticeObject, optionalProcessingOptions);
 
+    // Add the fields that we need here to the existing resultObject
     resultObject.errorList = []; resultObject.warningList = [];
+    resultObject.numSuppressedErrors = 0; resultObject.numSuppressedWarnings = 0;
 
     let maximumSimilarMessages;
     try {
@@ -351,7 +352,9 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
 
     const [remainingNoticeList, allTotals, resultObject] = processNoticesCommon(givenNoticeObject, optionalProcessingOptions);
 
+    // Add the fields that we need here to the existing resultObject
     resultObject.severeList = []; resultObject.mediumList = []; resultObject.lowList = [];
+    resultObject.numSevereSuppressed = 0; resultObject.numMediumSuppressed = 0; resultObject.numLowSuppressed = 0;
 
     let maximumSimilarMessages;
     try {
@@ -445,7 +448,8 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
 
     const [remainingNoticeList, allTotals, resultObject] = processNoticesCommon(givenNoticeObject, optionalProcessingOptions);
 
-    resultObject.warningList = [];
+    // Add the fields that we need here to the existing resultObject
+    resultObject.warningList = []; resultObject.numSuppressedWarnings = 0;
 
     let maximumSimilarMessages;
     try {

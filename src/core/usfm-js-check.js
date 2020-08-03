@@ -26,10 +26,10 @@ export function checkUSFMToJSON(BBB, filename, givenText, givenLocation, optiona
 
      Returns a result object containing a successList and a noticeList
      */
-    console.log(`checkUSFMToJSON(${givenText.length.toLocaleString()} chars, '${givenLocation}')…`);
+    // console.log(`checkUSFMToJSON(${givenText.length.toLocaleString()} chars, '${givenLocation}')…`);
 
     let ourLocation = givenLocation;
-    if (ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     if (filename) ourLocation = ` in ${filename}${ourLocation}`;
 
 
@@ -68,7 +68,7 @@ export function checkUSFMToJSON(BBB, filename, givenText, givenLocation, optiona
         addNotice5to8(944, `USFM3 toJSON Check doesn't pass`, -1, "", ourLocation);
 
     addSuccessMessage(`Checked USFM-JS`);
-    console.log(`  checkUSFMToJSON returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
+    // console.log(`  checkUSFMToJSON returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
     // console.log(`checkUSFMToJSON result is ${JSON.stringify(result)}`);
     return result;
 }

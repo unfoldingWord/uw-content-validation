@@ -22,7 +22,7 @@ Although this demonstration here formats and colour the warning list, it's expec
 ```js
 import doBasicTextChecks from './basic-text-check';
 import { processNoticesToSingleList } from './notice-processing-functions';
-import { RenderRawNotices, RenderSettings, RenderSuccessesWarningsGradient } from '../components/RenderProcessedResults';
+import { RenderRawResults, RenderSettings, RenderSuccessesWarningsGradient } from '../components/RenderProcessedResults';
 
 // Empty, space, good, and bad, link, and RC text samples
 const textE = "";
@@ -38,9 +38,9 @@ const chosenName = "textB";
 const chosenText = textB;
 
 // The third parameter is "linksAllowed"
-const rawResult = doBasicTextChecks('Sample', chosenText, false, 'in '+chosenName+' that was supplied');
-if (!rawResult.successList || !rawResult.successList.length)
-    rawResult.successList = ["Done basic text checks"];
+const rawResults = doBasicTextChecks('Sample', chosenText, false, 'in '+chosenName+' that was supplied');
+if (!rawResults.successList || !rawResults.successList.length)
+    rawResults.successList = ["Done basic text checks"];
 const processOptions = {
     // Uncomment any of these to test them
     // 'maximumSimilarMessages': 3, // default is 2
@@ -48,11 +48,11 @@ const processOptions = {
     // 'sortBy': 'ByPriority', // default is 'AsFound'
     // 'ignorePriorityNumberList': [123, 202], // default is []
 };
-const processedResult = processNoticesToSingleList(rawResult, processOptions);
+const processedResult = processNoticesToSingleList(rawResults, processOptions);
 
 <>
 <b>Check</b> "{chosenText}"<br/><br/>
-<RenderRawNotices results={rawResult} />
+<RenderRawResults results={rawResults} />
 <p>Which after processing{Object.keys(processOptions).length? <> using <b>processOptions</b><RenderSettings settings={processOptions} /></>:''} then becomes:</p>
 <RenderSuccessesWarningsGradient results={processedResult} />
 </>

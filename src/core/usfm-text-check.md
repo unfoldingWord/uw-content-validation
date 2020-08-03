@@ -4,7 +4,7 @@ This function checks the given USFM text for typical formatting errors.
 
 It returns a list of success messages and a list of prioritised notice components.
 
-The notices are then processed into a list of errors and a list of warnings for display.
+The notices can then be further processed into a list of errors and a list of warnings as desired.
 
 Note that unfoldingWord has three distinct forms of USFM files (and these functions have been designed to properly handle all three):
 
@@ -14,8 +14,7 @@ Note that unfoldingWord has three distinct forms of USFM files (and these functi
 
 ```js
 import checkUSFMText from './usfm-text-check';
-import { processNoticesToErrorsWarnings } from './notice-processing-functions';
-import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
+import { RenderLines, RenderRawResults } from '../components/RenderProcessedResults';
 
 // USFM samples
 const textS = `\\id GEN Short test
@@ -182,13 +181,12 @@ const textB = `\\id GEN Bad USFM test
 const chosenText = textH;
 
 // Second (unused) parameter is filename
-const rawResult = checkUSFMText('GEN', '', chosenText, 'that was supplied');
-if (!rawResult.successList || !rawResult.successList.length)
-    rawResult.successList = ["Done USFM text checks"];
-const processedResult = processNoticesToErrorsWarnings(rawResult);
+const rawResults = checkUSFMText('GEN', '', chosenText, 'that was supplied');
+if (!rawResults.successList || !rawResults.successList.length)
+    rawResults.successList = ["Done USFM text checks"];
 
 <>
 <b>Check</b><RenderLines text={chosenText} />
-<RenderSuccessesErrorsWarnings results={processedResult} />
+<RenderRawResults results={rawResults} />
 </>
 ```

@@ -62,7 +62,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
      */
     // console.log(`checkUSFMText(${BBB}, ${givenText.length.toLocaleString()} chars, '${location}')…`);
     let ourLocation = givenLocation;
-    if (ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     if (filename.length) ourLocation = ` in ${filename}${ourLocation}`;
 
     let extractLength;

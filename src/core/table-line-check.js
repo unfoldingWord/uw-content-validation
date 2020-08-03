@@ -10,7 +10,7 @@ const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOr
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
-function checkTN_TSVDataRow(line, BBB, C, V, rowLocation, optionalCheckingOptions) {
+function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalCheckingOptions) {
     /* This function is only for checking one data row
           and doesn't assume that it has any previous context.
 
@@ -18,16 +18,16 @@ function checkTN_TSVDataRow(line, BBB, C, V, rowLocation, optionalCheckingOption
 
   Returns noticeList
  */
-    // console.log(`checkTN_TSVDataRow(${BBB}, ${line}, ${rowLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
+    // console.log(`checkTN_TSVDataRow(${BBB}, ${line}, ${givenRowLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
     console.assert(BBB !== undefined, "checkTN_TSVDataRow: 'BBB' parameter should be defined");
     console.assert(typeof BBB === 'string', `checkTN_TSVDataRow: 'BBB' parameter should be a string not a '${typeof BBB}'`);
     console.assert(BBB.length === 3, "checkTN_TSVDataRow: 'BBB' parameter should be three characters long not " + BBB.length);
     console.assert(line !== undefined, "checkTN_TSVDataRow: 'line' parameter should be defined");
     console.assert(typeof line === 'string', `checkTN_TSVDataRow: 'line' parameter should be a string not a '${typeof line}'`);
-    console.assert(rowLocation !== undefined, "checkTN_TSVDataRow: 'rowLocation' parameter should be defined");
-    console.assert(typeof rowLocation === 'string', `checkTN_TSVDataRow: 'rowLocation' parameter should be a string not a '${typeof rowLocation}'`);
+    console.assert(givenRowLocation !== undefined, "checkTN_TSVDataRow: 'givenRowLocation' parameter should be defined");
+    console.assert(typeof givenRowLocation === 'string', `checkTN_TSVDataRow: 'givenRowLocation' parameter should be a string not a '${typeof givenRowLocation}'`);
 
-    let ourRowLocation = rowLocation;
+    let ourRowLocation = givenRowLocation;
     if (ourRowLocation && ourRowLocation[0] !== ' ') ourRowLocation = ` ${ourRowLocation}`;
 
     let result = { noticeList: [] };

@@ -43,7 +43,7 @@ export function checkUSFMGrammar(BBB, strictnessString, filename, givenText, giv
     console.assert(strictnessString === 'strict' || strictnessString === 'relaxed');
 
     let ourLocation = givenLocation;
-    if (ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     if (filename) ourLocation = ` in ${filename}${ourLocation}`;
 
 
@@ -80,7 +80,7 @@ export function checkUSFMGrammar(BBB, strictnessString, filename, givenText, giv
         addNotice5to8(100, "USFMGrammar found: " + warningString, -1, "", ourLocation);
 
     addSuccessMessage(`Checked USFM Grammar (${strictnessString} mode) ${grammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN'T validate)"}`);
-    console.log(`  checkUSFMGrammar returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
+    // console.log(`  checkUSFMGrammar returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
     // console.log(`checkUSFMGrammar result is ${JSON.stringify(result)}`);
     return result;
 }

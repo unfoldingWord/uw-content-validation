@@ -4,14 +4,13 @@ This function checks the given yaml file for typical formatting errors.
 
 It returns a list of success messages and a list of prioritised notice components.
 
-The notices are then processed into a list of errors and a list of warnings for display.
+The notices can then be further processed into a list of errors and a list of warnings as desired.
 
 Note that we have a more specialised function for checking `manifest.yaml` files.
 
 ```js
 import checkYAMLText from './yaml-text-check';
-import { processNoticesToErrorsWarnings } from './notice-processing-functions';
-import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
+import { RenderLines, RenderRawResults } from '../components/RenderProcessedResults';
 
 // YAML empty, good and bad text samples
 const textE = '';
@@ -218,11 +217,10 @@ projects:
 const chosenText = textG2;
 const chosenName = 'textG2';
 
-const rawResult = checkYAMLText(chosenName, chosenText, 'in YAML data that was supplied');
-const processedResult = processNoticesToErrorsWarnings(rawResult);
+const rawResults = checkYAMLText(chosenName, chosenText, 'in YAML data that was supplied');
 
 <>
-<b>YAML contents</b> <RenderLines text={chosenText} />
-<RenderSuccessesErrorsWarnings results={processedResult} />
+<b>YAML contents</b>: <RenderLines text={chosenText} />
+<RenderRawResults results={rawResults} />
 </>
 ```

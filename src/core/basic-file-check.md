@@ -10,8 +10,7 @@ This demonstration doesn't display the raw notices, but rather displays the proc
 
 ```js
 import doBasicFileChecks from './basic-file-check';
-import { processNoticesToErrorsWarnings } from './notice-processing-functions';
-import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
+import { RenderLines, RenderRawResults } from '../components/RenderProcessedResults';
 
 // Empty, space, good, and bad samples
 const textE = "";
@@ -25,13 +24,12 @@ const textB = `{ Peace  on Earth,,
 const chosenName = "textB";
 const chosenText = textB;
 
-const rawResult = doBasicFileChecks('Sample', chosenText, 'in '+chosenName+' that was supplied');
-if (!rawResult.successList || !rawResult.successList.length)
-    rawResult.successList = ["Done basic file checks"];
-const processedResult = processNoticesToErrorsWarnings(rawResult);
+const rawResults = doBasicFileChecks('Sample', chosenText, 'in '+chosenName+' that was supplied');
+if (!rawResults.successList || !rawResults.successList.length)
+    rawResults.successList = ["Done basic file checks"];
 
 <>
 <b>Check</b> "{chosenText}"<br/><br/>
-<RenderSuccessesErrorsWarnings results={processedResult} />
+<RenderRawResults results={rawResults} />
 </>
 ```

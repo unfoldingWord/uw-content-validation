@@ -15,7 +15,7 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
     */
     // console.log(`checkManifestText(${textName}, ${manifestText.length}, ${givenLocation})…`);
     let ourLocation = givenLocation;
-    if (ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     if (textName) ourLocation = ` in ${textName}${ourLocation}`;
 
     let extractLength;

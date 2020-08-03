@@ -17,7 +17,7 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
      */
     // console.log(`checkYAMLText(${textName}, ${YAMLText.length}, ${givenLocation})…`);
     let ourLocation = givenLocation;
-    if (ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     if (textName) ourLocation = ` in ${textName}${ourLocation}`;
 
     let extractLength;

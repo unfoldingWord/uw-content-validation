@@ -88,7 +88,7 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
     // Put all this in a try/catch block coz otherwise it's difficult to debug/view errors
     try {
         let ourLocation = givenLocation;
-        if (ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+        if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
         // if (ourLocation.indexOf(username) < 0)
         ourLocation = ` in ${username} ${repoName} ${givenLocation}`
 

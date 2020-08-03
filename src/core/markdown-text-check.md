@@ -4,13 +4,12 @@ This function checks the given markdown-formatted text for typical formatting er
 
 It returns a list of success messages and a list of prioritised notice components.
 
-The notices are then processed into a list of errors and a list of warnings for display.
+The notices can then be further processed into a list of errors and a list of warnings as desired.
 
 ```js
 import Markdown from 'react-markdown'
 import checkMarkdownText from './markdown-text-check';
-import { processNoticesToErrorsWarnings } from './notice-processing-functions';
-import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
+import { RenderLines, RenderRawResults } from '../components/RenderProcessedResults';
 
 // Markdown text samples
 const textSG = `# Short Good Markdown Test
@@ -40,14 +39,13 @@ Another  paragraph.
 const chosenText = textSB;
 const chosenName = 'textSB';
 
-const rawResult = checkMarkdownText(chosenName, chosenText, 'that was supplied');
-if (!rawResult.successList || !rawResult.successList.length)
-  rawResult.successList = ["Done markdown text checks"];
-const processedResult = processNoticesToErrorsWarnings(rawResult);
+const rawResults = checkMarkdownText(chosenName, chosenText, 'that was supplied');
+if (!rawResults.successList || !rawResults.successList.length)
+  rawResults.successList = ["Done markdown text checks"];
 
 <>
-<b>Raw Markdown (but normalized)</b> <RenderLines text={chosenText} />
-<b>Formatted Text</b> <Markdown source={chosenText} />
-<RenderSuccessesErrorsWarnings results={processedResult} />
+<b>Raw Markdown (but normalized)</b>: <RenderLines text={chosenText} />
+<b>Formatted Text</b>: <Markdown source={chosenText} />
+<RenderRawResults results={rawResults} />
 </>
 ```

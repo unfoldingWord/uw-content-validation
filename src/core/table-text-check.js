@@ -19,7 +19,7 @@ function checkTN_TSVText(BBB, tableText, givenLocation, optionalCheckingOptions)
      */
     // console.log("checkTN_TSVText(" + BBB + ", " + tableText.length + ", " + location + ","+JSON.stringify(optionalCheckingOptions)+")…");
     let ourLocation = givenLocation;
-    if (ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     // if (BBB) ourLocation = ` in ${BBB}${ourLocation}`;
 
     const result = { successList: [], noticeList: [] };

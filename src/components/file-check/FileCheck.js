@@ -67,13 +67,13 @@ if (file) { // the file is loaded now and the content is now available to use
   // Or this allows the parameters to be specified as a FileCheck property
   if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
 
-  const rawResult = checkFile(file.name, file.content, givenLocation, checkingOptions);
-  // console.log("FileCheck got initial results with " + rawResult.successList.length + " success message(s) and " + rawResult.noticeList.length + " notice(s)");
+  const rawResults = checkFile(file.name, file.content, givenLocation, checkingOptions);
+  // console.log("FileCheck got initial results with " + rawResults.successList.length + " success message(s) and " + rawResults.noticeList.length + " notice(s)");
 
-  // Add some extra fields to our rawResult object in case we need this information again later
-  rawResult.checkType = 'File';
-  rawResult.repoFullname = repo.full_name;
-  rawResult.checkingOptions = checkingOptions;
+  // Add some extra fields to our rawResults object in case we need this information again later
+  rawResults.checkType = 'File';
+  rawResults.repoFullname = repo.full_name;
+  rawResults.checkingOptions = checkingOptions;
 
   // Now do our final handling of the result
   let processOptions = { // Uncomment any of these to test them
@@ -89,7 +89,7 @@ if (file) { // the file is loaded now and the content is now available to use
   if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
   if (props.sortBy) processOptions.sortBy = props.sortBy;
   // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
-  const processedResult = processNoticesToErrorsWarnings(rawResult, processOptions);
+  const processedResult = processNoticesToErrorsWarnings(rawResults, processOptions);
   // console.log("FileCheck got processed results with " + processedResult.successList.length.toLocaleString() + " success message(s), " + processedResult.errorList.length.toLocaleString() + " error(s) and " + processedResult.warningList.length.toLocaleString() + " warning(s)\n"
   //     + "  numIgnoredNotices=" + processedResult.numIgnoredNotices.toLocaleString(), "numSuppressedErrors=" + processedResult.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + processedResult.numSuppressedWarnings.toLocaleString());
 
@@ -156,16 +156,16 @@ function FileCheck(props) {
             setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for <b>{filename}</b>…</p>);
             // console.log(`About to call getFile(${username}, ${repoName}, ${filename}, ${branch})…`);
             const fileContent = await getFile({ username: username, repository: repoName, path: filename, branch: branch });
-            const rawResult = checkFile(filename, fileContent, givenLocation, checkingOptions);
-            // console.log("FileCheck got initial results with " + rawResult.successList.length + " success message(s) and " + rawResult.noticeList.length + " notice(s)");
+            const rawResults = checkFile(filename, fileContent, givenLocation, checkingOptions);
+            // console.log("FileCheck got initial results with " + rawResults.successList.length + " success message(s) and " + rawResults.noticeList.length + " notice(s)");
 
-            // Add some extra fields to our rawResult object in case we need this information again later
-            rawResult.checkType = 'File';
-            rawResult.username = username;
-            rawResult.repoName = repoName;
-            rawResult.branch = props.branch;
-            rawResult.filename = filename;
-            rawResult.checkingOptions = checkingOptions;
+            // Add some extra fields to our rawResults object in case we need this information again later
+            rawResults.checkType = 'File';
+            rawResults.username = username;
+            rawResults.repoName = repoName;
+            rawResults.branch = props.branch;
+            rawResults.filename = filename;
+            rawResults.checkingOptions = checkingOptions;
 
             // Now do our final handling of the result
             let processOptions = { // Uncomment any of these to test them
@@ -181,7 +181,7 @@ function FileCheck(props) {
             if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
             if (props.sortBy) processOptions.sortBy = props.sortBy;
             // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
-            const processedResult = processNoticesToErrorsWarnings(rawResult, processOptions);
+            const processedResult = processNoticesToErrorsWarnings(rawResults, processOptions);
             // console.log("FileCheck got processed results with " + processedResult.successList.length.toLocaleString() + " success message(s), " + processedResult.errorList.length.toLocaleString() + " error(s) and " + processedResult.warningList.length.toLocaleString() + " warning(s)\n"
             //     + "  numIgnoredNotices=" + processedResult.numIgnoredNotices.toLocaleString(), "numSuppressedErrors=" + processedResult.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + processedResult.numSuppressedWarnings.toLocaleString());
 

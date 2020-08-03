@@ -63,22 +63,22 @@ useEffect(() => {
     // Or this allows the parameters to be specified as a RepoCheckGRT property
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
 
-    const rawResult = {};
+    const rawResults = {};
     try {
-        rawResult = await checkRepoGRT(repo, "in "+repo.full_name, setResultValue, checkingOptions);
+        rawResults = await checkRepoGRT(repo, "in "+repo.full_name, setResultValue, checkingOptions);
     } catch(e) {
-        rawResult = { noticeList: [] };
-        rawResult.noticeList.push([999, "checkRepoGRT function FAILED", -1, e, repo.full_name]);
+        rawResults = { noticeList: [] };
+        rawResults.noticeList.push([999, "checkRepoGRT function FAILED", -1, e, repo.full_name]);
     }
-    // console.log("checkRepoGRT() returned", typeof rawResult); //, JSON.stringify(rawResult));
+    // console.log("checkRepoGRT() returned", typeof rawResults); //, JSON.stringify(rawResults));
 
-    // Add some extra fields to our rawResult object in case we need this information again later
-    rawResult.checkType = 'Repo';
-    rawResult.username = username;
-    rawResult.language_code = language_code;
-    rawResult.checkedOptions = checkingOptions;
+    // Add some extra fields to our rawResults object in case we need this information again later
+    rawResults.checkType = 'Repo';
+    rawResults.username = username;
+    rawResults.language_code = language_code;
+    rawResults.checkedOptions = checkingOptions;
 
-    console.log("Here with RC rawResult", typeof rawResult);
+    console.log("Here with RC rawResults", typeof rawResults);
     // Now do our final handling of the result -- we have some options available
     let processOptions = { // Uncomment any of these to test them
         // 'maximumSimilarMessages': 3, // default is 2
@@ -93,7 +93,7 @@ useEffect(() => {
     if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
     if (props.sortBy) processOptions.sortBy = props.sortBy;
     // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
-    const processedResult = processNoticesToErrorsWarnings(rawResult, processOptions);
+    const processedResult = processNoticesToErrorsWarnings(rawResults, processOptions);
     console.log(`RepoCheckGRT got back processedResult with ${processedResult.successList.length.toLocaleString()} success message(s), ${processedResult.errorList.length.toLocaleString()} error(s) and ${processedResult.warningList.length.toLocaleString()} warning(s)
 numIgnoredNotices=${processedResult.numIgnoredNotices.toLocaleString()}`, "numSuppressedErrors=" + processedResult.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + processedResult.numSuppressedWarnings.toLocaleString());
 
@@ -198,7 +198,7 @@ function RepoCheck(/*username, language_code,*/ props) {
                 }
                 // console.log("checkRepo() returned", typeof rawCRResult); //, JSON.stringify(rawCRResult));
 
-                // Add some extra fields to our rawResult object in case we need this information again later
+                // Add some extra fields to our rawResults object in case we need this information again later
                 rawCRResult.checkType = 'Repo';
                 rawCRResult.username = username;
                 rawCRResult.language_code = language_code;
@@ -237,14 +237,14 @@ function RepoCheck(/*username, language_code,*/ props) {
 
             if (processedResult.errorList.length || processedResult.warningList.length)
                 setResultValue(<>
-                    <p>{renderSummary()}
-                        {processedResult.numIgnoredNotices ? ` (but ${processedResult.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</p>
+                    <div>{renderSummary()}
+                        {processedResult.numIgnoredNotices ? ` (but ${processedResult.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
                     <RenderSuccessesErrorsWarnings results={processedResult} />
                 </>);
             else // no errors or warnings
                 setResultValue(<>
-                    <p>{renderSummary()}
-                        {processedResult.numIgnoredNotices ? ` (with a total of ${processedResult.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</p>
+                    <div>{renderSummary()}
+                        {processedResult.numIgnoredNotices ? ` (with a total of ${processedResult.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
                     <RenderSuccessesErrorsWarnings results={processedResult} />
                 </>);
 

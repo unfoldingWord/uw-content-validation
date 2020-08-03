@@ -10,19 +10,7 @@ let sections = [
 		content: 'README.md',
 	},
 	{
-		name: 'Clear Cache',
-		components: () => {
-			const componentNames = [
-				'clear-cache',
-			];
-			return componentNames.map(componentName => {
-				const filename = upperFirst(camelCase(componentName));
-				return path.resolve(__dirname, `src/components/${componentName}`, `${filename}.js`)
-			});
-		}
-	},
-	{
-		name: 'Book Packages Checker',
+		name: 'Book Packages Checker Demo',
 		components: () => {
 			const componentNames = [
 				'book-packages-check',
@@ -34,7 +22,7 @@ let sections = [
 		}
 	},
 	{
-		name: 'Book Package Checker',
+		name: 'Book Package Checker Demo',
 		components: () => {
 			const componentNames = [
 				'book-package-check',
@@ -46,7 +34,7 @@ let sections = [
 		}
 	},
 	{
-		name: 'Repo Checker',
+		name: 'Repo Checker Demo',
 		components: () => {
 			const componentNames = [
 				'repo-check',
@@ -58,7 +46,7 @@ let sections = [
 		}
 	},
 	{
-		name: 'File Checker',
+		name: 'File Checker Demo',
 		components: () => {
 			const componentNames = [
 				'file-check',
@@ -70,16 +58,23 @@ let sections = [
 		}
 	},
 	{
+		name: 'Clear Stored Cache',
+		components: () => {
+			const componentNames = [
+				'clear-cache',
+			];
+			return componentNames.map(componentName => {
+				const filename = upperFirst(camelCase(componentName));
+				return path.resolve(__dirname, `src/components/${componentName}`, `${filename}.js`)
+			});
+		}
+	},
+	{
 		// The difficulty with displaying core functions this way
 		//	is that they all appear and run on a SINGLE web-page.
-		name: 'Core functions',
+		name: 'Sample Notice Processing Functions',
 		content: 'src/core/README.md',
 		sections: [
-			{
-				name: 'Raw text check',
-				content: 'src/core/raw-text-check.md',
-				// description: ''
-			},
 			{
 				name: 'Process notices -> Errors/Warnings',
 				content: 'src/core/notice-processing1.md',
@@ -94,37 +89,15 @@ let sections = [
 				name: 'Process notices -> colour gradient',
 				content: 'src/core/notice-processing3.md',
 				// description: ''
-			},
-			{
-				name: 'Basic text field check',
-				content: 'src/core/basic-text-check.md',
-				// description: ''
-			},
-			{
-				name: 'Basic link check',
-				content: 'src/core/basic-link-check.md',
-				// description: ''
-			},
-			{
-				name: 'Basic file check',
-				content: 'src/core/basic-file-check.md',
-				// description: ''
-			},
-			{
-				name: 'Plain text check',
-				content: 'src/core/plain-text-check.md',
-				// description: ''
-			},
-			{
-				name: 'Markdown text check',
-				content: 'src/core/markdown-text-check.md',
-				// description: ''
-			},
-			{
-				name: 'TSV table line check',
-				content: 'src/core/tsv-table-line-check.md',
-				// description: ''
-			},
+			}
+		]
+	},
+	{
+		// The difficulty with displaying core functions this way
+		//	is that they all appear and run on a SINGLE web-page.
+		name: 'Core Filetype Checking Functions',
+		// content: 'src/core/README.md',
+		sections: [
 			{
 				name: 'TSV table check',
 				content: 'src/core/tsv-table-text-check.md',
@@ -146,13 +119,51 @@ let sections = [
 				// description: ''
 			},
 			{
+				name: 'Manifest check',
+				content: 'src/core/manifest-text-check.md',
+				// description: ''
+			},
+			{
 				name: 'YAML check',
 				content: 'src/core/yaml-text-check.md',
 				// description: ''
 			},
 			{
-				name: 'Manifest check',
-				content: 'src/core/manifest-text-check.md',
+				name: 'Markdown text check',
+				content: 'src/core/markdown-text-check.md',
+				// description: ''
+			},
+			{
+				name: 'Plain text check',
+				content: 'src/core/plain-text-check.md',
+				// description: ''
+			},
+		]
+	},
+	{
+		// The difficulty with displaying core functions this way
+		//	is that they all appear and run on a SINGLE web-page.
+		name: 'Core Checking Functions',
+		// content: 'src/core/README.md',
+		sections: [
+			{
+				name: 'Basic text field check',
+				content: 'src/core/basic-text-check.md',
+				// description: ''
+			},
+			{
+				name: 'Basic link check',
+				content: 'src/core/basic-link-check.md',
+				// description: ''
+			},
+			{
+				name: 'Basic whole text check',
+				content: 'src/core/basic-file-check.md',
+				// description: ''
+			},
+			{
+				name: 'TSV table line check',
+				content: 'src/core/tsv-table-line-check.md',
 				// description: ''
 			},
 		]

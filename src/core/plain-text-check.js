@@ -14,7 +14,7 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
      */
     // console.log("checkPlainText(" + textName + ", " + markdownText.length + ", " + location + ")…");
     let ourLocation = givenLocation;
-    if (ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     if (textName) ourLocation = ` in ${textName}${ourLocation}`;
 
     let extractLength;

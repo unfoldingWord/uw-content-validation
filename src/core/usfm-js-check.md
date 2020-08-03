@@ -6,12 +6,11 @@ This might be removed again if it's not at all helpful.
 
 Our packaged function returns a list of success messages and a list of (prioritised) notice components.
 
-The notices are then processed into a list of errors and a list of warnings for display.
+The notices can then be further processed into a list of errors and a list of warnings as desired.
 
 ```js
 import checkUSFMToJSON from './usfm-js-check';
-import { processNoticesToErrorsWarnings } from './notice-processing-functions';
-import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
+import { RenderLines, RenderRawResults } from '../components/RenderProcessedResults';
 
 // USFM samples
 const textS = `\\id GEN Short test
@@ -182,11 +181,10 @@ const textB = `\\id GEN Bad USFM test
 const chosenName = 'textH';
 const chosenText = textH;
 
-const rawResult = checkUSFMToJSON(chosenName, chosenText, 'that was supplied');
-const processedResult = processNoticesToErrorsWarnings(rawResult);
+const rawResults = checkUSFMToJSON(chosenName, chosenText, 'that was supplied');
 
 <>
 <b>Check</b><RenderLines text={chosenText} />
-<RenderSuccessesErrorsWarnings results={processedResult} />
+<RenderRawResults results={rawResults} />
 </>
 ```

@@ -4,12 +4,11 @@ This function checks one tab-separated line for typical formatting errors.
 
 It returns a list of success messages and a list of prioritised notice components.
 
-The notices are then processed into a list of errors and a list of warnings for display.
+The notices can then be further processed into a list of errors and a list of warnings as desired.
 
 ```js
 import checkTN_TSVDataRow from './table-line-check';
-import { processNoticesToErrorsWarnings } from './notice-processing-functions';
-import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
+import { RenderLines, RenderRawResults } from '../components/RenderProcessedResults';
 
 // Empty, Header, Nonsense, Good, Bad, Very bad, and Actual line samples
 const lineE = "";
@@ -40,13 +39,12 @@ const lineA9 = "GEN\t1\t9\tha33\t\t\t0\tIt was so\t“It happened like that” o
 //  (to demonstrate differing results)
 const chosenLine = lineA9;
 
-const rawResult = checkTN_TSVDataRow(chosenLine, 'GEN','1','2', 'that was supplied');
-if (!rawResult.successList || !rawResult.successList.length)
-    rawResult.successList = ["Done TSV table line checks"];
-const processedResult = processNoticesToErrorsWarnings(rawResult);
+const rawResults = checkTN_TSVDataRow(chosenLine, 'GEN','1','2', 'that was supplied');
+if (!rawResults.successList || !rawResults.successList.length)
+    rawResults.successList = ["Done TSV table line checks"];
 
 <>
 <b>Check</b> "{chosenLine}"<br/><br/>
-<RenderSuccessesErrorsWarnings results={processedResult} />
+<RenderRawResults results={rawResults} />
 </>
 ```

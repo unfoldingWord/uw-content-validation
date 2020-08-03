@@ -4,12 +4,11 @@ This function simply packages the [Bridgeconn USFM Grammar Check](https://www.np
 
 Our packaged function returns a list of success messages and a list of (prioritised) notice components.
 
-The notices are then processed into a list of errors and a list of warnings for display.
+The notices can then be further processed into a list of errors and a list of warnings as desired.
 
 ```js
 import checkUSFMGrammar from './BCS-usfm-grammar-check';
-import { processNoticesToErrorsWarnings } from './notice-processing-functions';
-import { RenderLines, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
+import { RenderLines, RenderRawResults } from '../components/RenderProcessedResults';
 
 // USFM samples
 const textS = `\\id GEN Short test
@@ -184,11 +183,10 @@ const BBB = 'RUT';
 // Choose 'strict' or 'relaxed'
 const strictness = 'strict';
 
-const rawResult = checkUSFMGrammar(BBB, strictness, chosenName, chosenText, 'that was supplied');
-const processedResult = processNoticesToErrorsWarnings(rawResult);
+const rawResults = checkUSFMGrammar(BBB, strictness, chosenName, chosenText, 'that was supplied');
 
 <>
 <b>Check</b><RenderLines text={chosenText} />
-<RenderSuccessesErrorsWarnings results={processedResult} />
+<RenderRawResults results={rawResults} />
 </>
 ```

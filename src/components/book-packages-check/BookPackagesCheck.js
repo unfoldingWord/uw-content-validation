@@ -54,18 +54,18 @@ function BookPackagesCheck(/*username, language_code, bookCodes,*/ props) {
             // Display our "waiting" message
             setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {language_code} <b>{bookCodeList.join(', ')}</b> book packages…</p>);
 
-            const rawResult = await checkBookPackages(username, language_code, bookCodeList, setResultValue, checkingOptions);
-            // console.log("checkBookPackage() returned", typeof rawResult); //, JSON.stringify(rawResult));
+            const rawResults = await checkBookPackages(username, language_code, bookCodeList, setResultValue, checkingOptions);
+            // console.log("checkBookPackage() returned", typeof rawResults); //, JSON.stringify(rawResults));
 
-            // Add some extra fields to our rawResult object in case we need this information again later
-            rawResult.checkType = 'BookPackages';
-            rawResult.username = username;
-            rawResult.language_code = language_code;
-            rawResult.bookCodes = bookCodes;
-            rawResult.bookCodeList = bookCodeList;
-            rawResult.checkedOptions = checkingOptions;
+            // Add some extra fields to our rawResults object in case we need this information again later
+            rawResults.checkType = 'BookPackages';
+            rawResults.username = username;
+            rawResults.language_code = language_code;
+            rawResults.bookCodes = bookCodes;
+            rawResults.bookCodeList = bookCodeList;
+            rawResults.checkedOptions = checkingOptions;
 
-            console.log("Here with CBPs rawResult", typeof rawResult);
+            console.log("Here with CBPs rawResults", typeof rawResults);
             // Now do our final handling of the result -- we have some options available
             let processOptions = { // Uncomment any of these to test them
                 // 'maximumSimilarMessages': 3, // default is 2
@@ -80,7 +80,7 @@ function BookPackagesCheck(/*username, language_code, bookCodes,*/ props) {
             if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
             if (props.sortBy) processOptions.sortBy = props.sortBy;
             // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
-            const processedResult = processNoticesToErrorsWarnings(rawResult, processOptions);
+            const processedResult = processNoticesToErrorsWarnings(rawResults, processOptions);
             console.log(`BookPackagesCheck got back processedResult with ${processedResult.successList.length.toLocaleString()} success message(s), ${processedResult.errorList.length.toLocaleString()} error(s) and ${processedResult.warningList.length.toLocaleString()} warning(s)
   numIgnoredNotices=${processedResult.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResult.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResult.numSuppressedWarnings.toLocaleString()}`);
 
