@@ -2,15 +2,15 @@ import React from 'react';
 import * as books from '../../core/books/books';
 import checkFile from '../file-check/checkFile';
 import checkRepo from '../repo-check/checkRepo';
-import { getFile } from '../../core/getApi';
-import { getFilelistFromFetchedTreemaps } from '../helpers';
-// import { consoleLogObject } from '../../core/utilities';
+import { getFilelistFromZip, getFile } from '../../core/getApi';
+import { consoleLogObject } from '../../core/utilities';
 
 
 const CHECKER_VERSION_STRING = '0.2.1';
 
 
 async function checkTQbook(username, repoName, branch, bookCode, checkingOptions) {
+    // console.log(`checkTQbook(${username}, ${repoName}, ${branch}, ${bookCode}, …)…`);
 
     const repoCode = 'TQ';
     const generalLocation = `in ${username} ${repoName} (${branch})`;
@@ -71,9 +71,9 @@ async function checkTQbook(username, repoName, branch, bookCode, checkingOptions
     // Main code for checkTQbook
     // We need to find an check all the markdown folders/files for this book
     let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(['md']), totalCheckedSize = 0;
-    const pathList = await getFilelistFromFetchedTreemaps(username, repoName, branch, bookCode.toLowerCase());
+    const pathList = await getFilelistFromZip({username, repository:repoName, branch, optionalPrefix:`${bookCode.toLowerCase()}/`});
     for (const thisPath of pathList) {
-        // console.log("Try to load", username, repoName, thisPath, branch);
+        // console.log("checkTQbook: Try to load", username, repoName, thisPath, branch);
         try {
             const fileContent = await getFile({ username, repository: repoName, path: thisPath, branch });
             // console.log("Fetched file_content for", repoName, thisPath, typeof fileContent, fileContent.length);
@@ -108,6 +108,7 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
     */
     //     console.log(`I'm here in checkBookPackage v${CHECKER_VERSION_STRING}
     //   with ${username}, ${language_code}, ${bookCode}, ${JSON.stringify(checkingOptions)}`);
+    const startTime = new Date();
 
     const checkBookPackageResult = { successList: [], noticeList: [] };
 
@@ -231,7 +232,7 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
         //  UHB/UGNT, ULT, UST, TN, TQ
         let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0, checkedRepoNames = [];
         for (const repoCode of [(whichTestament === 'old' ? 'UHB' : 'UGNT'), 'ULT', 'UST', 'TN', 'TQ']) {
-            // console.log("Let's try", repoCode, "(", language_code, bookCode, "from", username, ")");
+            // console.log(`Let's try ${repoCode} (${language_code} ${bookCode} from ${username})`);
             const repoLocation = ` in ${repoCode.toUpperCase()}${generalLocation}`;
 
             let repo_language_code = language_code;
@@ -305,6 +306,7 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
     }
 
     // console.log("checkBookPackage() is returning", checkBookPackageResult.successList.length.toLocaleString(), "success message(s) and", checkBookPackageResult.noticeList.length.toLocaleString(), "notice(s)");
+    checkBookPackageResult.elapsedTime = (new Date() - startTime) / 1000; // seconds
     return checkBookPackageResult;
 };
 // end of checkBookPackage()

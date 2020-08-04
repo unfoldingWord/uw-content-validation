@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import * as books from '../../core/books/books';
 import checkBookPackage from './checkBookPackage';
 import { processNoticesToErrorsWarnings } from '../../core/notice-processing-functions';
-import { RenderSuccessesErrorsWarnings } from '../RenderProcessedResults';
+import { RenderSuccessesErrorsWarnings, RenderElapsedTime } from '../RenderProcessedResults';
 import { ourParseInt, consoleLogObject } from '../../core/utilities';
 
 
@@ -82,8 +82,9 @@ function BookPackageCheck(/*username, language_code, bookCode,*/ props) {
             function renderSummary() {
                 return (<>
                 <p>Checked <b>{username} {language_code} {bookCode}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
-                <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResult.checkedFileCount.toLocaleString()} file{processedResult.checkedFileCount==1?'':'s'} from {processedResult.checkedRepoNames.join(', ')}
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResult.checkedFileCount.toLocaleString()} file{processedResult.checkedFileCount==1?'':'s'} from {processedResult.checkedRepoNames.length} repo{processedResult.checkedRepoNames.length==1?'':'s'}: <b>{processedResult.checkedRepoNames.join(', ')}</b>
                 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResult.checkedFilenameExtensions.length} file type{processedResult.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResult.checkedFilenameExtensions.join(', ')}.</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedTime={processedResult.elapsedTime} />.</p>
                 </>);
             }
 

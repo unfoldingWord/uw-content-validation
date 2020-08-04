@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import checkRepo from './checkRepo';
 import { processNoticesToErrorsWarnings } from '../../core/notice-processing-functions';
-import { RenderSuccessesErrorsWarnings } from '../RenderProcessedResults';
+import { RenderSuccessesErrorsWarnings, RenderElapsedTime } from '../RenderProcessedResults';
 import { ourParseInt, consoleLogObject } from '../../core/utilities';
 
 
@@ -232,6 +232,7 @@ function RepoCheck(/*username, language_code,*/ props) {
                     <p>Checked <b>{username} {repoName}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)</p>
                     <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResult.checkedFileCount.toLocaleString()} file{processedResult.checkedFileCount === 1 ? '' : 's'} from {repoName}: {processedResult.checkedFilenames.join(', ')}
                         <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResult.checkedFilenameExtensions.length} file type{processedResult.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResult.checkedFilenameExtensions.join(', ')}.</p>
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedTime={processedResult.elapsedTime} />.</p>
                 </>);
             }
 

@@ -382,3 +382,13 @@ export function RenderSuccessesWarningsGradient(props) {
         {props.results.warningList.length ? <RenderWarningsGradient results={props.results} /> : ""}
     </>;
 }
+
+
+export function RenderElapsedTime(props) {
+    const seconds = Math.round(props.elapsedTime % 60);
+    let remainingTime = Math.floor(props.elapsedTime / 60);
+    const minutes = Math.round(remainingTime % 60);
+    remainingTime = Math.floor(remainingTime / 60);
+    console.assert(remainingTime === 0);
+    return minutes? <>{minutes} minutes, {seconds} seconds</> : <>{seconds} seconds</>;
+}

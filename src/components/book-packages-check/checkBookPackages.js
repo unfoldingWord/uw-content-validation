@@ -10,6 +10,7 @@ const CHECKER_VERSION_STRING = '0.1.0';
 async function checkBookPackages(username, language_code, bookCodeList, setResultValue, checkingOptions) {
     //     console.log(`I'm here in checkBookPackages v${CHECKER_VERSION_STRING}
     //   with ${username}, ${language_code}, ${bookCodeList}, ${JSON.stringify(checkingOptions)}`);
+    const startTime = new Date();
 
     const checkBookPackagesResult = { successList: [], noticeList: [] };
 
@@ -99,6 +100,7 @@ async function checkBookPackages(username, language_code, bookCodeList, setResul
     // checkBookPackagesResult.checkedOptions = checkingOptions; // This is done at the caller level
 
     // console.log("checkBookPackages() is returning", checkBookPackagesResult.successList.length.toLocaleString(), "success message(s) and", checkBookPackagesResult.noticeList.length.toLocaleString(), "notice(s)");
+    checkBookPackagesResult.elapsedTime = (new Date() - startTime) / 1000; // seconds
     return checkBookPackagesResult;
 };
 // end of checkBookPackages()

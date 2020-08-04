@@ -58,7 +58,7 @@ Still unfinished:
 
 1. Checking of links
 1. Testing and fine-tuning of error messages (e.g., comparing with tX)
-1. Optimise various different file and tree fetches and caches (incl. using zips)
+1. Optimise various different file fetches and caches (incl. using zips)
 1. Get error messages from BCS Grammar Check (once they adjust the code)
 1. Write unit tests and get them passing
 1. Check for and remove left-over (but unused) code from the copied source projects

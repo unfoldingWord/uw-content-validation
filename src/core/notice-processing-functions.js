@@ -266,8 +266,8 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
     */
-    console.log(`processNoticesToErrorsWarnings v${PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
-   Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
+//     console.log(`processNoticesToErrorsWarnings v${PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
+//    Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
 
     const [remainingNoticeList, allTotals, resultObject] = processNoticesCommon(givenNoticeObject, optionalProcessingOptions);
 
@@ -347,8 +347,8 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
     */
-    console.log(`processNoticesToSevereMediumLow v${PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
-   Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
+//     console.log(`processNoticesToSevereMediumLow v${PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
+//    Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
 
     const [remainingNoticeList, allTotals, resultObject] = processNoticesCommon(givenNoticeObject, optionalProcessingOptions);
 
@@ -443,8 +443,8 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
     */
-    console.log(`processNoticesToSingleList v${PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
-   Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
+//     console.log(`processNoticesToSingleList v${PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
+//    Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
 
     const [remainingNoticeList, allTotals, resultObject] = processNoticesCommon(givenNoticeObject, optionalProcessingOptions);
 

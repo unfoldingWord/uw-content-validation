@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import * as books from '../../core/books/books';
 import checkBookPackages from './checkBookPackages';
 import { processNoticesToErrorsWarnings } from '../../core/notice-processing-functions';
-import { RenderSuccessesErrorsWarnings } from '../RenderProcessedResults';
+import { RenderSuccessesErrorsWarnings, RenderElapsedTime } from '../RenderProcessedResults';
 import { ourParseInt, consoleLogObject } from '../../core/utilities';
 
 
@@ -91,6 +91,7 @@ function BookPackagesCheck(/*username, language_code, bookCodes,*/ props) {
                 <p>Checked <b>{username} {language_code} {bookCodeList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
                 <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResult.checkedFileCount.toLocaleString()} file{processedResult.checkedFileCount==1?'':'s'} from {username} {processedResult.checkedRepoNames.join(', ')}
                 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResult.checkedFilenameExtensions.length} file type{processedResult.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResult.checkedFilenameExtensions.join(', ')}.</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedTime={processedResult.elapsedTime} />.</p>
                 </>);
             }
 

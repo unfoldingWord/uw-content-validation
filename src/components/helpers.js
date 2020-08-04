@@ -1,21 +1,13 @@
-import { fetchTree, fetchRepositoryZipFile, getFile, getURL } from '../core/getApi';
+import { fetchTree, getFilelistFromZip, fetchRepositoryZipFile, getFile, getURL } from '../core/getApi';
+import JSZip from 'jszip';
 import { consoleLogObject } from '../core/utilities';
 
 
 const HELPERS_VERSION_STRING = '0.2.1';
 
 
-export async function getFilelistFromZip(fetchZipArchive) {
-    console.log(`getFilelist v${HELPERS_VERSION_STRING} …`);
-
-    // Now we need to fetch the list of files from the repo
-    const pathList = [];
-
-   console.log(`getFilelistFromZip is returning (${pathList.length}) ${pathList}`);
-   return pathList;
-}
-
-
+/*
+// This function was EXTREMELY SLOW!!!
 export async function getFilelistFromFetchedTreemaps(username, repoName, branch, givenPath) {
     // console.log(`getFilelist v${HELPERS_VERSION_STRING} with ${username}, ${repoName}, ${branch}, ${givenPath}…`);
 
@@ -58,7 +50,7 @@ export async function getFilelistFromFetchedTreemaps(username, repoName, branch,
         /*
         Load all the filenames by means of the tree
             so this function is called recursively for subfolders
-        */
+        *//*
         // console.log("tree1 type =", typeof givenTree); // == Object
         // console.log("tree2 type =", typeof givenTree.tree); // == Object
         // consoleLogObject("givenTree.tree", givenTree.tree);
@@ -108,3 +100,4 @@ export async function getFilelistFromFetchedTreemaps(username, repoName, branch,
     // console.log(`getFilelistFromFetchedTreemaps is returning (${pathList.length}) ${pathList}`);
     return pathList;
 }
+*/
