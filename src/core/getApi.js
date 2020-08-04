@@ -98,7 +98,7 @@ async function fetchManifest({username, repository}) {
 
 // https://git.door43.org/unfoldingword/en_ult/raw/branch/master/manifest.yaml
 async function fetchFileFromServer({ username, repository, path, branch = 'master' }) {
-  // console.log(`fetchFileFromServer(${username}, ${repository}, ${path}, ${branch})…`);
+  console.log(`fetchFileFromServer(${username}, ${repository}, ${path}, ${branch})…`);
   const repoExists = await repositoryExists({ username, repository });
   if (repoExists) {
     const uri = Path.join(username, repository, 'raw/branch', branch, path);
