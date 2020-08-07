@@ -1,0 +1,87 @@
+robert Fri Aug 07 14:20 /mnt/SSD/uW/Software/GitHub/content-validation-rcl$ ./makeNoticeList.py                                   
+
+Got 84 notices:                                                                                                                   
+
+  996, bookCode, '', '', "Failed to load", -1, "", `${generalLocation} ${filename}: ${e}`, repoCode                               
+  996, bookCode, "", "", "Failed to load", -1, "", `${generalLocation} ${thisPath}: ${e}`, repoCode                               
+  996, BBBid,'','', "Failed to load", -1, "", `${generalLocation} ${thisFilepath}: ${e}`, repoCode                                
+  996, "Failed to load", -1, "", `${generalLocation} ${filename}: ${e}`, repoCode                                                 
+  996, "Failed to load", -1, "", `${generalLocation} ${filename}: ${e}`, repoCode                                                 
+  993, "Unresolved GIT conflict", ix, extract                                                                                     
+  993, "Unresolved GIT conflict", ix, extract                                                                                     
+  992, "Unresolved GIT conflict", ix, extract                                                                                     
+  992, "Unresolved GIT conflict", ix, extract                                                                                     
+  991, "Unresolved GIT conflict", ix, extract                                                                                     
+  991, "Unresolved GIT conflict", ix, extract                                                                                     
+  979, "Invalid book code passed to checkTN_TSVDataRow", -1, "", ` '${BBB}' in first parameter: ${e}`                             
+  978, `Wrong '${B}' book code`, -1, "", ` (expected '${BBB}')`                                                                   
+  977, "Missing book code", 0, ""                                                                                                 
+  947, BBBid,'','', "Missing manifest.yaml", -1, "", 'MANIFEST'                                                                   
+  946, BBBid,'','', "Missing LICENSE.md", -1, "", 'LICENSE'                                                                       
+  944, `USFM3 toJSON Check doesn't pass`, -1, ""                                                                                  
+  944, `USFM3 Grammar Check (${strictnessString} mode) doesn't pass`, -1, ""                                                      
+  929, "'projects' key is missing", -1, ""                                                                                        
+  928, "'dublin_core' key is missing", -1, ""                                                                                     
+  916, yamlError.message, -1, "")                                                                                                         
+  900, '', '', '', "Bad function call: should be given a valid book abbreviation", -1, bookCode, ` (not '${bookCode}')${location}`, ''                                                                                                                              
+  900, "","","", "Bad parameter: should be given a valid book abbreviation", -1,bookCodeList, ` (not '${bookCodeList}')${location}`                                                                                                                                 
+  861, `Found ${fields.length} field${fields.length === 1 ? '' : 's'} instead of ${NUM_EXPECTED_TSV_FIELDS}`, -1, ""              
+  851, "Unable to load original language verse text", -1, ""                                                                      
+  824, `Invalid zero '${C}' chapter number`, -1, ""                                                                               
+  823, `Invalid large '${C}' chapter number`, -1, ""                                                                              
+  822, "Unable to check chapter number", -1, "", ` '${C}'`                                                                        
+  821, "Bad chapter number", -1, "", ` '${C}' with`                                                                               
+  820, "Missing chapter number", -1, "", ` ?:${V}`                                                                                
+  814, `Invalid zero '${V}' verse number`, -1, ""                                                                                 
+  813, `Invalid large '${V}' verse number`, ` for chapter ${C}`                                                                   
+  812, "Unable to check verse number", -1, "", ` '${V}'`
+  811, "Bad verse number", -1, "", ` '${V}'`
+  810, "Missing verse number", -1, "", ` after ${C}:?`
+  792, `Invalid '${occurrence}' occurrence field`, -1, ""
+  779, "Missing ID field", -1, ""
+  778, "ID should be exactly 4 characters", -1, "", ` (not ${fieldID.length})`)
+  765, "Unexpected link", ix, extract
+  721, "Unable to find original language quote in verse text", -1, ""
+  721, "Unable to find original language quote in verse text", -1, ""
+  663, "Mismatched " + leftChar + rightChar + " characters", -1, "(left=" + lCount.toLocaleString() + ", right=" + rCount.toLocaleString() + ")"
+  638, "Only found whitespace", -1, ""
+  638, "Only found whitespace", -1, ""
+  621, "Seems original language quote might not finish at the end of a word", -1, ""
+  620, "Seems original language quote might not start at the beginning of a word", -1, ""
+  600, `${regexResultsArray.length} link target${regexResultsArray.length === 1 ? ' is' : 's are'} still being checked…`, -1, "", ""
+  583, "Unexpected newLine character", ix, extract
+  582, "Unexpected carriageReturn character", ix, extract
+  581, "Unexpected non-break space character", ix, extract
+  580, "Unexpected narrow non-break space character", ix, extract
+  550, "Invalid zero occurrence field when we have an original quote", -1, ""
+  472, "Nesting seems confused", 0, ''
+  441, `Unknown linkType parameter`, -1, linkType, ""
+  439, "Error fetching link", -1, "", ` ${fetchLink}`
+  438, `Blank field / missing link (expected ${linkOptions.expectedCount} link${linkOptions.expectedCount === 1 ? "" : "s"})`, -1, ""
+  375, "Ellipsis without surrounding snippet", -1, ""
+  287, `Not enough links (expected ${linkOptions.expectedCount} link${linkOptions.expectedCount === 1 ? "" : "s"})`, -1, "", ` (only found ${regexResultsArray.length})${ourAtString}`
+  276, "Missing OrigQuote field", -1, ""
+  275, "Missing GLQuote field", -1, ""
+  274, "Missing OccurrenceNote field", -1, ""
+  194, "Unexpected double spaces", ix, extract
+  192, "Unexpected space after " + punctChar + " character", ix, extract
+  191, "Unexpected " + punctChar + " character after space", ix, extract
+  179, "Unexpected space before ellipse character", ix, extract
+  178, "Unexpected space after ellipse character", ix, extract
+  177, "Unexpected doubled " + punctChar + " characters", ix, extract
+  176, "ID should start with a lowercase letter or digit", 0, "", ` (not '${fieldID[0]}')`)
+  175, "ID should end with a lowercase letter or digit", 3, "", ` (not '${fieldID[3]}')`)
+  174, "ID characters should only be lowercase letters, digits, or hypen", 1, "", ` (not '${fieldID[1]}')`)
+  173, "ID characters should only be lowercase letters, digits, or hypen", 2, "", ` (not '${fieldID[2]}')`)
+  172, "Header levels should only increment by one", 0, ''
+  163, "Mismatched " + leftChar + rightChar + " characters", -1, "(left=" + lCount.toLocaleString() + ", right=" + rCount.toLocaleString() + ")"
+  159, "Should use proper ellipse character (not periods)", ix, extract
+  158, "Unexpected space(s) beside ellipse characters", ix, extract
+  158, "Unexpected space(s) beside ellipse character", ix, extract
+  148, "'checking' key is missing", -1, ""
+  111, `Bad options for doBasicLinkChecks: expectedCount=${linkOptions.expectedCount} but allowedCount=${linkOptions.allowedCount}`, -1, "", ""
+  107, "Unexpected leading break", 0, extract
+  106, "Unexpected leading space" + (fieldText[1] === ' ' ? "s" : ""), 0, extract
+  105, "Unexpected trailing space(s)", fieldText.length - 1, extract
+  104, "Unexpected trailing break", fieldText.length - 1, extract
+  101, "USFMGrammar found: " + warningString, -1, ""

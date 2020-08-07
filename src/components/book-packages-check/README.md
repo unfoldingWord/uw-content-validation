@@ -21,6 +21,10 @@ import BookPackagesCheck from './BookPackagesCheck';
   // Enter a string containing UPPERCASE USFM book codes separated by commas
   //  and can also include OBS (for Open Bible Stories)
   bookCodes='RUT,EST,JON,EPH,TIT,3JN,OBS'
+
+  // Default displayType is 'ErrorsWarnings'
+  //  Alternatives are `SevereMediumLow', 'SingleList'
+  displayType='SevereMediumLow'
 />
 ```
 

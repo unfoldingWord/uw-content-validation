@@ -80,19 +80,19 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
 
     let ix = fieldText.indexOf('<<<<<<<');
     if (ix >= 0) {
-        let iy = ix + halfLength; // Want extract to focus more on what follows
+        const iy = ix + halfLength; // Want extract to focus more on what follows
         const extract = (iy > halfLength ? '…' : '') + fieldText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < fieldText.length ? '…' : '')
         addNotice5(993, "Unresolved GIT conflict", ix, extract, ourAtString);
     } else {
         ix = fieldText.indexOf('=======');
         if (ix >= 0) {
-            let iy = ix + halfLength; // Want extract to focus more on what follows
+            const iy = ix + halfLength; // Want extract to focus more on what follows
             const extract = (iy > halfLength ? '…' : '') + fieldText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < fieldText.length ? '…' : '')
             addNotice5(992, "Unresolved GIT conflict", ix, extract, ourAtString);
         } else {
             ix = fieldText.indexOf('>>>>>>>>');
             if (ix >= 0) {
-                let iy = ix + halfLength; // Want extract to focus more on what follows
+                const iy = ix + halfLength; // Want extract to focus more on what follows
                 const extract = (iy > halfLength ? '…' : '') + fieldText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < fieldText.length ? '…' : '')
                 addNotice5(991, "Unresolved GIT conflict", ix, extract, ourAtString);
             }
@@ -101,54 +101,47 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
 
     if (fieldText[0] === ' ') {
         const extract = fieldText.substring(0, 10).replace(/ /g, '␣') + (fieldText.length > extractLength ? '…' : '');
-        addNotice5(203, "Unexpected leading space" + (fieldText[1] === ' ' ? "s" : ""), 0, extract, ourAtString);
+        addNotice5(106, "Unexpected leading space" + (fieldText[1] === ' ' ? "s" : ""), 0, extract, ourAtString);
     }
     if (fieldText.substring(0, 4) === '<br>' || fieldText.substring(0, 5) === '<br/>' || fieldText.substring(0, 6) === '<br />') {
         const extract = fieldText.substring(0, 10) + (fieldText.length > extractLength ? '…' : '');
-        addNotice5(205, "Unexpected leading break", 0, extract, ourAtString);
+        addNotice5(107, "Unexpected leading break", 0, extract, ourAtString);
     }
     if (fieldText[fieldText.length - 1] === ' ') {
         const extract = (fieldText.length > extractLength ? '…' : '') + fieldText.substring(fieldText.length - 10).replace(/ /g, '␣');
-        addNotice5(202, "Unexpected trailing space(s)", fieldText.length - 1, extract, ourAtString);
+        addNotice5(105, "Unexpected trailing space(s)", fieldText.length - 1, extract, ourAtString);
     }
     if (fieldText.substring(fieldText.length - 4) === '<br>' || fieldText.substring(fieldText.length - 5) === '<br/>' || fieldText.substring(fieldText.length - 6) === '<br />') {
         const extract = (fieldText.length > extractLength ? '…' : '') + fieldText.substring(fieldText.length - 10);
-        addNotice5(204, "Unexpected trailing break", fieldText.length - 1, extract, ourAtString);
+        addNotice5(104, "Unexpected trailing break", fieldText.length - 1, extract, ourAtString);
     }
-    ix = fieldText.indexOf('  ');
-    if (ix >= 0) {
+    if ((ix= fieldText.indexOf('  ')) >= 0) {
         const extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus).replace(/ /g, '␣') + (ix + halfLengthPlus < fieldText.length ? '…' : '')
         addNotice5(194, "Unexpected double spaces", ix, extract, ourAtString);
     }
-    ix = fieldText.indexOf('\n');
-    if (ix >= 0) {
+    if ((ix = fieldText.indexOf('\n')) >= 0) {
         const extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
         addNotice5(583, "Unexpected newLine character", ix, extract, ourAtString);
     }
-    ix = fieldText.indexOf('\r');
-    if (ix >= 0) {
+    if ((ix = fieldText.indexOf('\r')) >= 0) {
         const extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
         addNotice5(582, "Unexpected carriageReturn character", ix, extract, ourAtString);
     }
-    ix = fieldText.indexOf('\xA0'); // non-break space
-    if (ix >= 0) {
+    if ((ix = fieldText.indexOf('\xA0')) >= 0) { // non-break space
         const extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus).replace(/\xA0/g, '⍽') + (ix + halfLengthPlus < fieldText.length ? '…' : '')
         addNotice5(581, "Unexpected non-break space character", ix, extract, ourAtString);
     }
-    ix = fieldText.indexOf('\u202F'); // narrow non-break space
-    if (ix >= 0) {
+    if ((ix = fieldText.indexOf('\u202F')) >= 0) { // narrow non-break space
         const extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus).replace(/\u202F/g, '⍽') + (ix + halfLengthPlus < fieldText.length ? '…' : '')
         addNotice5(580, "Unexpected narrow non-break space character", ix, extract, ourAtString);
     }
-    ix = fieldText.indexOf(' …');
-    if (ix >= 0) {
+    if ((ix= fieldText.indexOf(' …')) >= 0) {
         const extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-        addNotice5(579, "Unexpected space before ellipse character", ix, extract, ourAtString);
+        addNotice5(179, "Unexpected space before ellipse character", ix, extract, ourAtString);
     }
-    ix = fieldText.indexOf('… ');
-    if (ix >= 0) {
+    if ((ix= fieldText.indexOf('… ')) >= 0) {
         const extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-        addNotice5(578, "Unexpected space after ellipse character", ix, extract, ourAtString);
+        addNotice5(178, "Unexpected space after ellipse character", ix, extract, ourAtString);
     }
     // Check for doubled punctuation chars (international)
     // Doesn't check for doubled forward slash coz that might occur in a link, e.g., https://etc…
@@ -159,7 +152,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
         ix = fieldText.indexOf(punctChar + punctChar);
         if (ix >= 0) {
             let extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-            addNotice5(577, "Unexpected doubled " + punctChar + " characters", ix, extract, ourAtString);
+            addNotice5(177, "Unexpected doubled " + punctChar + " characters", ix, extract, ourAtString);
         }
     }
     // Check for punctuation chars following space
@@ -167,7 +160,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
         ix = fieldText.indexOf(' ' + punctChar);
         if (ix >= 0) {
             let extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-            addNotice5(591, "Unexpected " + punctChar + " character after space", ix, extract, ourAtString);
+            addNotice5(191, "Unexpected " + punctChar + " character after space", ix, extract, ourAtString);
         }
     }
     // Check for punctuation chars before space
@@ -175,7 +168,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
         ix = fieldText.indexOf(punctChar + ' ');
         if (ix >= 0) {
             let extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-            addNotice5(592, "Unexpected space after " + punctChar + " character", ix, extract, ourAtString);
+            addNotice5(192, "Unexpected space after " + punctChar + " character", ix, extract, ourAtString);
         }
     }
 

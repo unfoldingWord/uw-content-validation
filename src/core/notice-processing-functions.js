@@ -2,7 +2,7 @@ import { displayPropertyNames, consoleLogObject } from './utilities';
 import { result } from 'lodash';
 
 
-const PROCESSOR_VERSION_STRING = '0.2.2';
+const PROCESSOR_VERSION_STRING = '0.3.1';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -60,43 +60,45 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
     */
-//     console.log(`processNoticesCommon v${PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
-//   Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
+    //     console.log(`processNoticesCommon v${PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
+    //   Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
 
     // Add in any missing BBB,C,V fields
     const standardisedNoticeList = [];
-    for (const thisGivenNotice of givenNoticeObject.noticeList) {
-        if (thisGivenNotice.length === 6)
-            standardisedNoticeList.push([thisGivenNotice[0], '', '', '', thisGivenNotice[1], thisGivenNotice[2], thisGivenNotice[3], thisGivenNotice[4], thisGivenNotice[5]]);
-        else if (thisGivenNotice.length === 5)
-            standardisedNoticeList.push([thisGivenNotice[0], '', '', '', thisGivenNotice[1], thisGivenNotice[2], thisGivenNotice[3], thisGivenNotice[4]]);
-        else { // pass through as is
-            console.assert(thisGivenNotice.length === 9 || thisGivenNotice.length === 8);
-            standardisedNoticeList.push(thisGivenNotice);
-        }
-    }
-    // At this point, all noticeList entries should be eight or nine fields wide (no longer five or six)
-
-    // Check that notice priority numbers are unique (to detect programming errors)
-    if (true) { // May be commented out of production code
-        const numberStore = {}, duplicatePriorityList = [];
-        for (const thisGivenNotice of standardisedNoticeList) {
-            const thisPriority = thisGivenNotice[0], thisMsg = thisGivenNotice[4];
-            const oldMsg = numberStore[thisPriority];
-            if (oldMsg && oldMsg !== thisMsg && duplicatePriorityList.indexOf(thisPriority) < 0
-                // Some of the messages include the troubling character in the message
-                //    so we expect them to differ slightly
-                && !thisMsg.startsWith('Mismatched ')
-                && !thisMsg.startsWith('Unexpected doubled ')
-                && !thisMsg.startsWith('Unexpected space after ')
-                && !thisMsg.startsWith('Unexpected content after \\')
-                && !thisMsg.endsWith(' character after space')
-                && !thisMsg.endsWith(' marker at start of line')
-            ) {
-                console.log(`PROGRAMMING ERROR: priority ${thisPriority} has at least two different messages: '${oldMsg}' and '${thisMsg}'`);
-                duplicatePriorityList.push(thisPriority); // so that we only give the error once
+    if (givenNoticeObject.noticeList && givenNoticeObject.noticeList.length) {
+        for (const thisGivenNotice of givenNoticeObject.noticeList) {
+            if (thisGivenNotice.length === 6)
+                standardisedNoticeList.push([thisGivenNotice[0], '', '', '', thisGivenNotice[1], thisGivenNotice[2], thisGivenNotice[3], thisGivenNotice[4], thisGivenNotice[5]]);
+            else if (thisGivenNotice.length === 5)
+                standardisedNoticeList.push([thisGivenNotice[0], '', '', '', thisGivenNotice[1], thisGivenNotice[2], thisGivenNotice[3], thisGivenNotice[4]]);
+            else { // pass through as is
+                console.assert(thisGivenNotice.length === 9 || thisGivenNotice.length === 8);
+                standardisedNoticeList.push(thisGivenNotice);
             }
-            numberStore[thisPriority] = thisMsg;
+        }
+        // At this point, all noticeList entries should be eight or nine fields wide (no longer five or six)
+
+        // Check that notice priority numbers are unique (to detect programming errors)
+        if (true) { // May be commented out of production code
+            const numberStore = {}, duplicatePriorityList = [];
+            for (const thisGivenNotice of standardisedNoticeList) {
+                const thisPriority = thisGivenNotice[0], thisMsg = thisGivenNotice[4];
+                const oldMsg = numberStore[thisPriority];
+                if (oldMsg && oldMsg !== thisMsg && duplicatePriorityList.indexOf(thisPriority) < 0
+                    // Some of the messages include the troubling character in the message
+                    //    so we expect them to differ slightly
+                    && !thisMsg.startsWith('Mismatched ')
+                    && !thisMsg.startsWith('Unexpected doubled ')
+                    && !thisMsg.startsWith('Unexpected space after ')
+                    && !thisMsg.startsWith('Unexpected content after \\')
+                    && !thisMsg.endsWith(' character after space')
+                    && !thisMsg.endsWith(' marker at start of line')
+                ) {
+                    console.log(`PROGRAMMING ERROR: priority ${thisPriority} has at least two different messages: '${oldMsg}' and '${thisMsg}'`);
+                    duplicatePriorityList.push(thisPriority); // so that we only give the error once
+                }
+                numberStore[thisPriority] = thisMsg;
+            }
         }
     }
 
@@ -141,38 +143,40 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     // resultObject.errorList.push([999, "Cutoff level must not be higher than error level", -1, `(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
 
 
-    // Handle the successList
-    if (givenNoticeObject.successList.length < 5)
-        resultObject.successList = givenNoticeObject.successList;
-    else { // successList is fairly long -- maybe we can shorten it by combining multiple similar messages
-        const BibleRegex = /\d\d-(\w\w\w).usfm/; // "Checked JUD file: 66-JUD.usfm"
-        const NotesRegex = /\d\d-(\w\w\w).tsv/; // "Checked EN_TN_01-GEN.TSV file: en_tn_01-GEN.tsv"
-        resultObject.successList = [];
-        const bookList = [], notesList = [];
-        for (const thisParticularSuccessMessage of givenNoticeObject.successList) {
-            // console.log("thisParticularSuccessMessage", thisParticularSuccessMessage);
-            let regexResult;
-            if ((regexResult = BibleRegex.exec(thisParticularSuccessMessage)) !== null
-                // but don't do it for Book Package checks (in different repos)
-                && thisParticularSuccessMessage.startsWith(`Checked ${regexResult[1]} file`)) {
-                // console.log("regexResult", JSON.stringify(regexResult));
-                bookList.push(regexResult[1]);
+    if (givenNoticeObject.successList)
+        // Handle the successList
+        if (givenNoticeObject.successList.length < 5)
+            resultObject.successList = givenNoticeObject.successList;
+        else { // successList is fairly long -- maybe we can shorten it by combining multiple similar messages
+            const BibleRegex = /\d\d-(\w\w\w).usfm/; // "Checked JUD file: 66-JUD.usfm"
+            const NotesRegex = /\d\d-(\w\w\w).tsv/; // "Checked EN_TN_01-GEN.TSV file: en_tn_01-GEN.tsv"
+            resultObject.successList = [];
+            const bookList = [], notesList = [];
+            for (const thisParticularSuccessMessage of givenNoticeObject.successList) {
+                // console.log("thisParticularSuccessMessage", thisParticularSuccessMessage);
+                let regexResult;
+                if ((regexResult = BibleRegex.exec(thisParticularSuccessMessage)) !== null
+                    // but don't do it for Book Package checks (in different repos)
+                    && thisParticularSuccessMessage.startsWith(`Checked ${regexResult[1]} file`)) {
+                    // console.log("regexResult", JSON.stringify(regexResult));
+                    bookList.push(regexResult[1]);
+                }
+                else if ((regexResult = NotesRegex.exec(thisParticularSuccessMessage)) !== null
+                    // but don't do it for Book Package checks (in different repos)
+                    && thisParticularSuccessMessage.startsWith(`Checked ${regexResult[1]} file`)) {
+                    // console.log("regexResult", JSON.stringify(regexResult));
+                    notesList.push(regexResult[1]);
+                }
+                else
+                    resultObject.successList.push(thisParticularSuccessMessage); // Just copy it across
             }
-            else if ((regexResult = NotesRegex.exec(thisParticularSuccessMessage)) !== null
-                // but don't do it for Book Package checks (in different repos)
-                && thisParticularSuccessMessage.startsWith(`Checked ${regexResult[1]} file`)) {
-                // console.log("regexResult", JSON.stringify(regexResult));
-                notesList.push(regexResult[1]);
-            }
-            else
-                resultObject.successList.push(thisParticularSuccessMessage); // Just copy it across
+            // Put summary messages at the beginning of the list
+            if (bookList.length)
+                resultObject.successList.unshift(`Checked ${bookList.length} USFM Bible files: ${bookList.join(', ')}`);
+            else if (notesList.length)
+                resultObject.successList.unshift(`Checked ${notesList.length} TSV notes files: ${notesList.join(', ')}`);
         }
-        // Put summary messages at the beginning of the list
-        if (bookList.length)
-            resultObject.successList.unshift(`Checked ${bookList.length} USFM Bible files: ${bookList.join(', ')}`);
-        else if (notesList.length)
-            resultObject.successList.unshift(`Checked ${notesList.length} TSV notes files: ${notesList.join(', ')}`);
-    }
+    else resultObject.successList = [];
 
     // Handle the checkedFilenames list
     //  which might have 100s or 1,000s of .md filenames
@@ -266,8 +270,8 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
     */
-//     console.log(`processNoticesToErrorsWarnings v${PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
-//    Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
+    //     console.log(`processNoticesToErrorsWarnings v${PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
+    //    Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
 
     const [remainingNoticeList, allTotals, resultObject] = processNoticesCommon(givenNoticeObject, optionalProcessingOptions);
 
@@ -347,8 +351,8 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
     */
-//     console.log(`processNoticesToSevereMediumLow v${PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
-//    Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
+    //     console.log(`processNoticesToSevereMediumLow v${PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
+    //    Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
 
     const [remainingNoticeList, allTotals, resultObject] = processNoticesCommon(givenNoticeObject, optionalProcessingOptions);
 
@@ -443,8 +447,16 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
     */
-//     console.log(`processNoticesToSingleList v${PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
-//    Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
+    //     console.log(`processNoticesToSingleList v${PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
+    //    Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
+
+    // We default to sorting ByPriority unless something else was specified
+    let sortBy;
+    try {
+        sortBy = optionalProcessingOptions.sortBy;
+    } catch (e) { }
+    if (sortBy === undefined)
+        optionalProcessingOptions.sortBy = 'ByPriority';
 
     const [remainingNoticeList, allTotals, resultObject] = processNoticesCommon(givenNoticeObject, optionalProcessingOptions);
 
@@ -471,7 +483,7 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
         else counter[thisID]++;
         if (maximumSimilarMessages > 0 && counter[thisID] === maximumSimilarMessages + 1) {
             const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
-            resultObject.warningList.push([-1, '', '', '', thisMsg, -1, '', ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`]);
+            resultObject.warningList.push([thisPriority, '', '', '', thisMsg, -1, '', ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`]);
             resultObject.numSuppressedWarnings++;
         } else if (maximumSimilarMessages > 0 && counter[thisID] > maximumSimilarMessages + 1) {
             resultObject.numSuppressedWarnings++;

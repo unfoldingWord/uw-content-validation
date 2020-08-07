@@ -49,12 +49,12 @@ const processOptions = {
     // 'sortBy': 'ByPriority', // default is 'AsFound'
     // 'ignorePriorityNumberList': [123, 202], // default is []
 };
-const processedResult = processNoticesToErrorsWarnings(rawResults, processOptions);
+const processedResults = processNoticesToErrorsWarnings(rawResults, processOptions);
 
 <>
 <b>Check</b> "{chosenText}"<br/><br/>
 <RenderRawResults results={rawResults} />
 <p>Which after processing{Object.keys(processOptions).length? <> using <b>processOptions</b><RenderSettings settings={processOptions} /></>:''} then becomes:</p>
-<RenderSuccessesErrorsWarnings results={processedResult} />
+<RenderSuccessesErrorsWarnings results={processedResults} />
 </>
 ```

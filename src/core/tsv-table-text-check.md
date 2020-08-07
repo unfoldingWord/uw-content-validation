@@ -36,7 +36,7 @@ const lineA9 = "GEN\t1\t9\tha33\t\t\t0\tIt was so\t“It happened like that” o
 //  (to demonstrate differing results)
 const chosenText = textA;
 
-const rawResults = checkTN_TSVText('GEN', chosenText, 'that was supplied');
+const rawResults = await checkTN_TSVText('GEN', chosenText, 'that was supplied');
 if (!rawResults.successList || !rawResults.successList.length)
     rawResults.successList = ["Done TSV table checks"];
 

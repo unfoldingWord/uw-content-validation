@@ -60,6 +60,8 @@ Still unfinished:
 1. Testing and fine-tuning of error messages (e.g., comparing with tX)
 1. Optimise various different file fetches and caches (incl. using zips)
 1. Get error messages from BCS Grammar Check (once they adjust the code)
+1. Standardise parameters according to best practise (i.e., dereferencing, etc.)
+1. Understand and standardise React stuff, e.g., e.g., withStyles, etc.
 1. Write unit tests and get them passing
 1. Check for and remove left-over (but unused) code from the copied source projects
 1. Remove all debug code and console logging

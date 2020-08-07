@@ -38,18 +38,25 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
         // console.log("checkManifestText success: " + successString);
         cmtResult.successList.push(successString);
     }
-    function addNotice(priority, BBB,C,V, message, index, extract, location) {
+    function addNotice8(priority, BBB,C,V, message, index, extract, location) {
         // console.log("checkManifestText Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        console.assert(priority !== undefined, "cManT addNotice: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', "cManT addNotice: 'priority' parameter should be a number not a '" + (typeof priority) + "': " + priority);
-        console.assert(message !== undefined, "cManT addNotice: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', "cManT addNotice: 'message' parameter should be a string not a '" + (typeof message) + "': " + message);
-        console.assert(index !== undefined, "cManT addNotice: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', "cManT addNotice: 'index' parameter should be a number not a '" + (typeof index) + "': " + index);
-        console.assert(extract !== undefined, "cManT addNotice: 'extract' parameter should be defined");
-        console.assert(typeof extract === 'string', "cManT addNotice: 'extract' parameter should be a string not a '" + (typeof extract) + "': " + extract);
-        console.assert(location !== undefined, "cManT addNotice: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', "cManT addNotice: 'location' parameter should be a string not a '" + (typeof location) + "': " + location);
+        console.assert(priority !== undefined, "cManT addNotice8: 'priority' parameter should be defined");
+        console.assert(typeof priority === 'number', "cManT addNotice8: 'priority' parameter should be a number not a '" + (typeof priority) + "': " + priority);
+        console.assert(BBB !== undefined, "cManT addNotice9: 'BBB' parameter should be defined");
+        console.assert(typeof BBB === 'string', "cManT addNotice9: 'BBB' parameter should be a string not a '" + (typeof BBB) + "'");
+        console.assert(BBB.length === 3, `cManT addNotice9: 'BBB' parameter should be three characters long not ${BBB.length}`);
+        console.assert(C !== undefined, "cManT addNotice9: 'C' parameter should be defined");
+        console.assert(typeof C === 'string', "cManT addNotice9: 'C' parameter should be a string not a '" + (typeof C) + "'");
+        console.assert(V !== undefined, "cManT addNotice9: 'V' parameter should be defined");
+        console.assert(typeof V === 'string', "cManT addNotice9: 'V' parameter should be a string not a '" + (typeof V) + "'");
+        console.assert(message !== undefined, "cManT addNotice8: 'message' parameter should be defined");
+        console.assert(typeof message === 'string', "cManT addNotice8: 'message' parameter should be a string not a '" + (typeof message) + "': " + message);
+        console.assert(index !== undefined, "cManT addNotice8: 'index' parameter should be defined");
+        console.assert(typeof index === 'number', "cManT addNotice8: 'index' parameter should be a number not a '" + (typeof index) + "': " + index);
+        console.assert(extract !== undefined, "cManT addNotice8: 'extract' parameter should be defined");
+        console.assert(typeof extract === 'string', "cManT addNotice8: 'extract' parameter should be a string not a '" + (typeof extract) + "': " + extract);
+        console.assert(location !== undefined, "cManT addNotice8: 'location' parameter should be defined");
+        console.assert(typeof location === 'string', "cManT addNotice8: 'location' parameter should be a string not a '" + (typeof location) + "': " + location);
         cmtResult.noticeList.push([priority, BBB,C,V, message, index, extract, location]);
     }
 
@@ -80,75 +87,14 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
               && noticeEntry[1] !== "Unexpected space after ' character"
               && noticeEntry[1] !== "Unexpected space after [ character"
               )
-                addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
+                addNotice8(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
         */
         return cYtResultObject.formData;
     }
     // end of doOurYAMLTextChecks function
 
-    /*
-    function checkManifestLineContents(lineName, lineText, lineLocation) {
-
-        return;
-        // console.log(`checkManifestLineContents for '${lineName} ${lineText}' at${lineLocation}`);
-        let thisText = lineText
-
-        // Remove leading spaces
-        thisText = thisText.replace(/^ +/g,'')
-        // console.log("After removing leading spaces have '"+thisText+"'");
-
-        // Remove leading hyphens
-        thisText = thisText.replace(/^\-/g,'')
-        // console.log("After removing hyphens have '"+thisText+"'");
-
-        // Remove leading spaces again now
-        thisText = thisText.replace(/^ +/g,'')
-        // console.log("After removing more leading spaces have '"+thisText+"'");
-
-        if (thisText)
-            doOurYAMLTextChecks(lineName, thisText, thisText.startsWith('url:'), lineLocation, optionalCheckingOptions);
-    }
-    // end of checkManifestLine function
-    */
-
 
     // Main code for checkManifestText function
-    /*
-    const lines = manifestText.split('\n');
-    // console.log("  '" + location + "' has " + lines.length.toLocaleString() + " total lines");
-    let formData;
-    try {
-        formData = yaml.parse(manifestText);
-        // console.log("Got formData", JSON.stringify(formData));
-    }
-    catch(e) {
-        addNotice(916, e.message, -1, "", ourLocation)
-    }
-
-
-    let lastNumLeadingSpaces = 0;
-    let lastLineContents;
-    for (let n= 1; n <= lines.length; n++) {
-        const atString = " in line "+n.toLocaleString()+ourLocation;
-
-        const line = lines[n - 1];
-        // let numLeadingSpaces;
-        // if (line) {
-        //     numLeadingSpaces = line.match(/^ *//*)[0].length;
-//     // console.log("Got numLeadingSpaces="+ numLeadingSpaces + " for "+line+atString);
-//     if (numLeadingSpaces && lastNumLeadingSpaces && numLeadingSpaces!=lastNumLeadingSpaces)
-//         addNotice(472, "Nesting seems confused", 0, '', atString);
-
-checkManifestLineContents("line "+n.toLocaleString(), line, ourLocation);
-// } else {
-//     // This is a blank line
-//     numLeadingSpaces = 0;
-// }
-
-// lastLineContents = line;
-// lastNumLeadingSpaces = numLeadingSpaces;
-}
-*/
     const formData = doOurYAMLTextChecks(textName, manifestText, ourLocation, optionalCheckingOptions);
     if (formData) {
         // console.log("formData", JSON.stringify(formData));
@@ -156,11 +102,11 @@ checkManifestLineContents("line "+n.toLocaleString(), line, ourLocation);
         // console.log("formData keys", JSON.stringify(formDataKeys));
 
         if (formDataKeys.indexOf('dublin_core') < 0)
-            addNotice(928, "'dublin_core' key is missing", -1, "", ourLocation);
+            addNotice8(928, "'dublin_core' key is missing", -1, "", ourLocation);
         if (formDataKeys.indexOf('projects') < 0)
-            addNotice(929, "'projects' key is missing", -1, "", ourLocation);
+            addNotice8(929, "'projects' key is missing", -1, "", ourLocation);
         if (formDataKeys.indexOf('checking') < 0)
-            addNotice(148, "'checking' key is missing", -1, "", ourLocation);
+            addNotice8(148, "'checking' key is missing", -1, "", ourLocation);
     }
 
     // addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'}${ourLocation}.`);

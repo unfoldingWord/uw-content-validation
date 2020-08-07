@@ -1,157 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import checkRepo from './checkRepo';
-import { processNoticesToErrorsWarnings } from '../../core/notice-processing-functions';
-import { RenderSuccessesErrorsWarnings, RenderElapsedTime } from '../RenderProcessedResults';
-import { ourParseInt, consoleLogObject } from '../../core/utilities';
+import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../../core/notice-processing-functions';
+import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
+import { ourParseInt, consoleLogObject, displayPropertyNames } from '../../core/utilities';
 
 
-const CHECKER_VERSION_STRING = '0.1.1';
+const CHECKER_VERSION_STRING = '0.1.2';
 
 
-/*
-function RepoCheckGRT(/*username, language_code,*//* props) {
-    // Check a single Bible book across many repositories
-    const { state: repo, component: repoComponent } = useContext(RepositoryContext);
-
-    //   console.log("BPC repo", typeof repo, JSON.stringify(repo));
-    //   console.log("BPC repoComponent", typeof repoComponent);
-    //   console.log("BPC repository", typeof repository, JSON.stringify(repository));
-    //   console.log("BPC setRepository", typeof setRepository);
-    //   console.log("BPC file", typeof file, JSON.stringify(file));
-    //   console.log("BPC fileComponent", typeof fileComponent);
-
-    // console.log("I'm here in RepoCheckGRT v" + CHECKER_VERSION_STRING);
-    // consoleLogObject("props", props);
-    // consoleLogObject("props.classes", props.classes);
-
-    if (!repo) {
-        return( <>
-            <b style={{ color: 'purple' }}>Attempting to load repo details…</b>
-            </>);
-    }
-
-    // We have got our requested repo now
-    // consoleLogObject("repo", repo);
-    /* Has fields: id:number, owner:object, name, full_name, description,
-        empty, private, fork, parent, mirror, size,
-        html_url, ssh_url, clone_url, website,
-        stars_count, forks_count, watchers_count, open_issues_count,
-        default_branch, archived, created_at, updated_at, permissions:object,
-        has_issues, has_wiki, has_pull_requests, ignore_whitespace_conflicts,
-        allow_merge_commits, allow_rebase, allow_rebase_explicit, allow_squash_merge,
-        avatar_url, branch, tree_url *//*
-// consoleLogObject("repo owner", repo.owner);
-
-// Clear cached files if we've changed repo
-autoClearCache(repo.full_name); // This technique avoids the complications of needing a button
-
-
-const [result, setResultValue] = useState("Waiting-checkRepo");
-useEffect(() => {
-// Use an IIFE (Immediately Invoked Function Expression)
-//  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
-(async () => {
-    // console.log("Started unnamedFunction()");
-
-    // Display our "waiting" message
-    setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for <b>{repo.full_name}</b> repo…</p>);
-
-    let checkingOptions = { // Uncomment any of these to test them
-        // 'extractLength': 25,
-    };
-    // Or this allows the parameters to be specified as a RepoCheckGRT property
-    if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
-
-    const rawResults = {};
-    try {
-        rawResults = await checkRepoGRT(repo, "in "+repo.full_name, setResultValue, checkingOptions);
-    } catch(e) {
-        rawResults = { noticeList: [] };
-        rawResults.noticeList.push([999, "checkRepoGRT function FAILED", -1, e, repo.full_name]);
-    }
-    // console.log("checkRepoGRT() returned", typeof rawResults); //, JSON.stringify(rawResults));
-
-    // Add some extra fields to our rawResults object in case we need this information again later
-    rawResults.checkType = 'Repo';
-    rawResults.username = username;
-    rawResults.language_code = language_code;
-    rawResults.checkedOptions = checkingOptions;
-
-    console.log("Here with RC rawResults", typeof rawResults);
-    // Now do our final handling of the result -- we have some options available
-    let processOptions = { // Uncomment any of these to test them
-        // 'maximumSimilarMessages': 3, // default is 2
-        // 'errorPriorityLevel': 800, // default is 700
-        // 'cutoffPriorityLevel': 100, // default is 0
-        // 'sortBy': 'ByPriority', // default is 'AsFound'
-        // 'ignorePriorityNumberList': [123, 202], // default is []
-    };
-    // Or this allows the parameters to be specified as a RepoCheckGRT property
-    if (props.maximumSimilarMessages) processOptions.maximumSimilarMessages = ourParseInt(props.maximumSimilarMessages);
-    if (props.errorPriorityLevel) processOptions.errorPriorityLevel = ourParseInt(props.errorPriorityLevel);
-    if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
-    if (props.sortBy) processOptions.sortBy = props.sortBy;
-    // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
-    const processedResult = processNoticesToErrorsWarnings(rawResults, processOptions);
-    console.log(`RepoCheckGRT got back processedResult with ${processedResult.successList.length.toLocaleString()} success message(s), ${processedResult.errorList.length.toLocaleString()} error(s) and ${processedResult.warningList.length.toLocaleString()} warning(s)
-numIgnoredNotices=${processedResult.numIgnoredNotices.toLocaleString()}`, "numSuppressedErrors=" + processedResult.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + processedResult.numSuppressedWarnings.toLocaleString());
-
-    // console.log("Here now in rendering bit!");
-    let username = repo.owner.username;
-    // console.log("username='"+ username+"'");
-    let language_code = repo.name.split('_', 1)[0];
-    // console.log("language_code='"+ language_code+"'");
-
-    function renderSummary() {
-        return (<>
-        <p>Checked <b>{username} {repo.name}</b> (from <i>{repo.branch === undefined ? 'DEFAULT' : repo.branch}</i> branch)</p>
-        <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResult.checkedFileCount.toLocaleString()} file{processedResult.checkedFileCount === 1 ? '' : 's'} from {repo.full_name}: {processedResult.checkedFilenames.join(', ')}
-        <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResult.checkedFilenameExtensions.length} file type{processedResult.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResult.checkedFilenameExtensions.join(', ')}.</p>
-        </>);
-    }
-
-    if (processedResult.errorList.length || processedResult.warningList.length)
-        setResultValue(<>
-            <p>{renderSummary()}
-            {processedResult.numIgnoredNotices ? ` (but ${processedResult.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</p>
-            <RenderSuccessesErrorsWarnings results={processedResult} />
-        </>);
-    else // no errors or warnings
-        setResultValue(<>
-            <p>{renderSummary()}
-                {processedResult.numIgnoredNotices ? ` (with a total of ${processedResult.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</p>
-        <RenderSuccessesErrorsWarnings results={processedResult} />
-        </>);
-
-    // console.log("Finished rendering bit.");
-})(); // end of async part in unnamedFunction
-}, []); // end of useEffect part
-
-// {/* <div className={classes.root}> *//*}
-return (
-    <div className="Fred">
-        {result}
-    </div>
-);
-}
-
-// RepoCheckGRT.propTypes = {
-//   /** @ignore *//*
-//   username: PropTypes.object.isRequired,
-//   /** @ignore *//*
-//   language_code: PropTypes.object.isRequired,
-//   props: PropTypes.object,
-// };
-
-const styles = theme => ({
-    root: {
-    },
-});
-*/
-
-
-function RepoCheck(/*username, language_code,*/ props) {
+function RepoCheck(/*username, languageCode,*/ props) {
     /*
     Check an entire repository
 
@@ -163,15 +21,18 @@ function RepoCheck(/*username, language_code,*/ props) {
     // consoleLogObject("props", props);
     // consoleLogObject("props.classes", props.classes);
 
-    let username = props.username;
+    const username = props.username;
     // console.log(`username='${username}'`);
-    let repoName = props.repoName;
+    const repoName = props.repoName;
     // console.log(`repoName='${repoName}'`);
     let branch = props.branch;
     // console.log(`branch='${branch}'`);
     if (branch === undefined) branch = 'master';
 
-    let checkingOptions = { // Uncomment any of these to test them
+    const languageCode = repoName.split('_', 1)[0];
+    // console.log("languageCode='"+ languageCode+"'");
+
+    const checkingOptions = { // Uncomment any of these to test them
         // 'extractLength': 25,
     };
     // Or this allows the parameters to be specified as a RepoCheck property
@@ -189,22 +50,22 @@ function RepoCheck(/*username, language_code,*/ props) {
 
             // Put all this in a try/catch block coz otherwise it's difficult to debug/view errors
             try {
-                let rawCRResult = {};
+                let rawCRResults = {};
                 try {
-                    rawCRResult = await checkRepo(username, repoName, branch, "", setResultValue, checkingOptions);
+                    rawCRResults = await checkRepo(username, repoName, branch, "", setResultValue, checkingOptions);
                 } catch (e) {
-                    rawCRResult = { successList: [], noticeList: [] };
-                    rawCRResult.noticeList.push([999, "checkRepo function FAILED", -1, e, repoName]);
+                    rawCRResults = { successList: [], noticeList: [] };
+                    rawCRResults.noticeList.push([999, "checkRepo function FAILED", -1, e, repoName]);
                 }
-                // console.log("checkRepo() returned", typeof rawCRResult); //, JSON.stringify(rawCRResult));
+                // console.log("checkRepo() returned", typeof rawCRResults); //, JSON.stringify(rawCRResults));
 
-                // Add some extra fields to our rawResults object in case we need this information again later
-                rawCRResult.checkType = 'Repo';
-                rawCRResult.username = username;
-                rawCRResult.language_code = language_code;
-                rawCRResult.checkedOptions = checkingOptions;
+                // Add some extra fields to our rawCRResults object in case we need this information again later
+                rawCRResults.checkType = 'Repo';
+                rawCRResults.username = username;
+                rawCRResults.languageCode = languageCode;
+                rawCRResults.checkedOptions = checkingOptions;
 
-                // console.log("Here with RC rawCRResult", typeof rawCRResult);
+                // console.log("Here with RC rawCRResults", typeof rawCRResults);
                 // Now do our final handling of the result -- we have some options available
                 let processOptions = { // Uncomment any of these to test them
                     // 'maximumSimilarMessages': 3, // default is 2
@@ -219,44 +80,83 @@ function RepoCheck(/*username, language_code,*/ props) {
                 if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
                 if (props.sortBy) processOptions.sortBy = props.sortBy;
                 // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
-                const processedResult = processNoticesToErrorsWarnings(rawCRResult, processOptions);
-                //             console.log(`RepoCheck got back processedResult with ${processedResult.successList.length.toLocaleString()} success message(s), ${processedResult.errorList.length.toLocaleString()} error(s) and ${processedResult.warningList.length.toLocaleString()} warning(s)
-                //   numIgnoredNotices=${processedResult.numIgnoredNotices.toLocaleString()}`, "numSuppressedErrors=" + processedResult.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + processedResult.numSuppressedWarnings.toLocaleString());
 
-                // console.log("Here now in rendering bit!");
-                let language_code = repoName.split('_', 1)[0];
-                // console.log("language_code='"+ language_code+"'");
+                let displayType = 'ErrorsWarnings'; // default
+                if (props.displayType) displayType = props.displayType;
 
-            function renderSummary() {
-                return (<>
-                    <p>Checked <b>{username} {repoName}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)</p>
-                    <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResult.checkedFileCount.toLocaleString()} file{processedResult.checkedFileCount === 1 ? '' : 's'} from {repoName}: {processedResult.checkedFilenames.join(', ')}
-                        <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResult.checkedFilenameExtensions.length} file type{processedResult.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResult.checkedFilenameExtensions.join(', ')}.</p>
-                    <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedTime={processedResult.elapsedTime} />.</p>
+                function renderSummary(processedResults) {
+                    return (<>
+                        <p>Checked <b>{username} {repoName}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)</p>
+                        <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount === 1 ? '' : 's'} from {repoName}: {processedResults.checkedFilenames.join(', ')}
+                            <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>
+                        <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedTime={processedResults.elapsedTime} />.</p>
+                    </>);
+                }
+
+                if (displayType === 'ErrorsWarnings') {
+                    const processedResults = processNoticesToErrorsWarnings(rawCRResults, processOptions);
+                    displayPropertyNames("RC processedResults", processedResults);
+                    //             console.log(`RepoCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
+                    //   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()}`, "numSuppressedErrors=" + processedResults.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + processedResults.numSuppressedWarnings.toLocaleString());
+
+                    // console.log("Here now in rendering bit!");
+
+                    if (processedResults.errorList.length || processedResults.warningList.length)
+                        setResultValue(<>
+                            <div>{renderSummary(processedResults)}
+                                {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
+                            <RenderSuccessesErrorsWarnings results={processedResults} />
+                        </>);
+                    else // no errors or warnings
+                        setResultValue(<>
+                            <div>{renderSummary(processedResults)}
+                                {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
+                            <RenderSuccessesErrorsWarnings results={processedResults} />
+                        </>);
+                } else if (displayType === 'SevereMediumLow') {
+                    const processedResults = processNoticesToSevereMediumLow(rawCRResults, processOptions);
+                    //             console.log(`RepoCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
+                    //   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()}`, "numSuppressedErrors=" + processedResults.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + processedResults.numSuppressedWarnings.toLocaleString());
+
+                    if (processedResults.severeList.length || processedResults.mediumList.length || processedResults.lowList.length)
+                        setResultValue(<>
+                            <div>{renderSummary(processedResults)}
+                                {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
+                            <RenderSuccessesSevereMediumLow results={processedResults} />
+                        </>);
+                    else // no severe, medium, or low notices
+                        setResultValue(<>
+                            <div>{renderSummary(processedResults)}
+                                {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
+                            <RenderSuccessesSevereMediumLow results={processedResults} />
+                        </>);
+                } else if (displayType === 'SingleList') {
+                    const processedResults = processNoticesToSingleList(rawCRResults, processOptions);
+                    //             console.log(`RepoCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
+                    //   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()}`, "numSuppressedErrors=" + processedResults.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + processedResults.numSuppressedWarnings.toLocaleString());
+
+                    if (processedResults.warningList.length)
+                        setResultValue(<>
+                            <div>{renderSummary(processedResults)}
+                                {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
+                            <RenderSuccessesWarningsGradient results={processedResults} />
+                        </>);
+                    else // no warnings
+                        setResultValue(<>
+                            <div>{renderSummary(processedResults)}
+                                {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
+                            <RenderSuccessesWarningsGradient results={processedResults} />
+                        </>);
+                } else setResultValue(<b style={{ color: 'red' }}>Invalid displayType='{displayType}'</b>)
+
+                // console.log("Finished rendering bit.");
+            } catch (e) {
+                console.log(`RepoCheck main code block got error: ${e.message}`);
+                setResultValue(<>
+                    <p style={{ color: 'Red' }}>RepoCheck main code block got error: <b>{e.message}</b></p>
                 </>);
             }
-
-            if (processedResult.errorList.length || processedResult.warningList.length)
-                setResultValue(<>
-                    <div>{renderSummary()}
-                        {processedResult.numIgnoredNotices ? ` (but ${processedResult.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
-                    <RenderSuccessesErrorsWarnings results={processedResult} />
-                </>);
-            else // no errors or warnings
-                setResultValue(<>
-                    <div>{renderSummary()}
-                        {processedResult.numIgnoredNotices ? ` (with a total of ${processedResult.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
-                    <RenderSuccessesErrorsWarnings results={processedResult} />
-                </>);
-
-            // console.log("Finished rendering bit.");
-        } catch (e) {
-            console.log(`RepoCheck main code block got error: ${e.message}`);
-            setResultValue(<>
-                <p style={{ color: 'Red' }}>RepoCheck main code block got error: <b>{e.message}</b></p>
-            </>);
-        }
-    })(); // end of async part in unnamedFunction
+        })(); // end of async part in unnamedFunction
     }, []); // end of useEffect part
 
     // {/* <div className={classes.root}> */}
@@ -271,7 +171,7 @@ function RepoCheck(/*username, language_code,*/ props) {
 //   /** @ignore */
 //   username: PropTypes.object.isRequired,
 //   /** @ignore */
-//   language_code: PropTypes.object.isRequired,
+//   languageCode: PropTypes.object.isRequired,
 //   props: PropTypes.object,
 // };
 

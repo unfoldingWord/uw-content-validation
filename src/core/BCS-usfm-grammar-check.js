@@ -77,7 +77,7 @@ export function checkUSFMGrammar(BBB, strictnessString, filename, givenText, giv
 
     // Display these warnings but with a lowish priority
     for (const warningString of grammarCheckResult.warnings)
-        addNotice5to8(100, "USFMGrammar found: " + warningString, -1, "", ourLocation);
+        addNotice5to8(101, "USFMGrammar found: " + warningString, -1, "", ourLocation);
 
     addSuccessMessage(`Checked USFM Grammar (${strictnessString} mode) ${grammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN'T validate)"}`);
     // console.log(`  checkUSFMGrammar returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);

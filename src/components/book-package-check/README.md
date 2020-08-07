@@ -21,6 +21,10 @@ import BookPackageCheck from './BookPackageCheck';
   // bookCode can be a USFM bookCode, e.g., GEN, MAT, 3JN
   //  and can also be OBS (for Open Bible Stories)
   bookCode='3JN'
+
+  // Default displayType is 'ErrorsWarnings'
+  //  Alternatives are `SevereMediumLow', 'SingleList'
+  displayType='SevereMediumLow'
 />
 ```
 

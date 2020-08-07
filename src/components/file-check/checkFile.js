@@ -9,11 +9,12 @@ import checkTN_TSVText from '../../core/table-text-check';
 
 const CHECKER_VERSION_STRING = '0.1.2';
 
-function checkFile(filename, fileContent, givenLocation, checkingOptions) {
+async function checkFile(filename, fileContent, givenLocation, checkingOptions) {
     // Determine the file type from the filename extension
     //  and return the results of checking that kind of file
     //     console.log(`I'm here in checkFile v${CHECKER_VERSION_STRING`
     //   with ${filename}, ${fileContent.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)}`}`);
+    const startTime = new Date();
 
     let ourCFLocation = givenLocation;
     if (ourCFLocation[0] !== ' ') ourCFLocation = ' ' + ourCFLocation;
@@ -24,7 +25,7 @@ function checkFile(filename, fileContent, givenLocation, checkingOptions) {
         // console.log(`Have TSV filenameMain=${filenameMain}`);
         const BBB = filenameMain.substring(filenameMain.length - 3);
         // console.log(`Have TSV bookcode=${BBB}`);
-        checkFileResult = checkTN_TSVText(BBB, fileContent, ourCFLocation, checkingOptions);
+        checkFileResult = await checkTN_TSVText(BBB, fileContent, ourCFLocation, checkingOptions);
     }
     else if (filename.toLowerCase().endsWith('.usfm')) {
         const filenameMain = filename.substring(0, filename.length - 5); // drop .usfm
@@ -53,6 +54,7 @@ function checkFile(filename, fileContent, givenLocation, checkingOptions) {
     checkFileResult.checkedFilesize = fileContent.length;
     checkFileResult.checkedOptions = checkingOptions;
 
+    checkFileResult.elapsedTime = (new Date() - startTime) / 1000; // seconds
     return checkFileResult;
 };
 // end of checkFile()

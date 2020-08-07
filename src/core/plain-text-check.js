@@ -37,18 +37,25 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
         // console.log("checkPlainText success: " + successString);
         result.successList.push(successString);
     }
-    function addNotice(priority, BBB,C,V, message, index, extract, location) {
+    function addNotice8(priority, BBB,C,V, message, index, extract, location) {
         // console.log("checkPlainText notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        console.assert(priority!==undefined, "cPT addNotice: 'priority' parameter should be defined");
-        console.assert(typeof priority==='number', "cPT addNotice: 'priority' parameter should be a number not a '"+(typeof priority)+"': "+priority);
-        console.assert(message!==undefined, "cPT addNotice: 'message' parameter should be defined");
-        console.assert(typeof message==='string', "cPT addNotice: 'message' parameter should be a string not a '"+(typeof message)+"': "+message);
-        console.assert(index!==undefined, "cPT addNotice: 'index' parameter should be defined");
-        console.assert(typeof index==='number', "cPT addNotice: 'index' parameter should be a number not a '"+(typeof index)+"': "+index);
-        console.assert(extract!==undefined, "cPT addNotice: 'extract' parameter should be defined");
-        console.assert(typeof extract==='string', "cPT addNotice: 'extract' parameter should be a string not a '"+(typeof extract)+"': "+extract);
-        console.assert(location!==undefined, "cPT addNotice: 'location' parameter should be defined");
-        console.assert(typeof location==='string', "cPT addNotice: 'location' parameter should be a string not a '"+(typeof location)+"': "+location);
+        console.assert(priority!==undefined, "cPT addNotice8: 'priority' parameter should be defined");
+        console.assert(typeof priority==='number', "cPT addNotice8: 'priority' parameter should be a number not a '"+(typeof priority)+"': "+priority);
+        console.assert(BBB !== undefined, "cPT addNotice9: 'BBB' parameter should be defined");
+        console.assert(typeof BBB === 'string', "cPT addNotice9: 'BBB' parameter should be a string not a '" + (typeof BBB) + "'");
+        console.assert(BBB.length === 3, `cTQ addNotice9: 'BBB' parameter should be three characters long not ${BBB.length}`);
+        console.assert(C !== undefined, "cPT addNotice9: 'C' parameter should be defined");
+        console.assert(typeof C === 'string', "cPT addNotice9: 'C' parameter should be a string not a '" + (typeof C) + "'");
+        console.assert(V !== undefined, "cPT addNotice9: 'V' parameter should be defined");
+        console.assert(typeof V === 'string', "cPT addNotice9: 'V' parameter should be a string not a '" + (typeof V) + "'");
+        console.assert(message!==undefined, "cPT addNotice8: 'message' parameter should be defined");
+        console.assert(typeof message==='string', "cPT addNotice8: 'message' parameter should be a string not a '"+(typeof message)+"': "+message);
+        console.assert(index!==undefined, "cPT addNotice8: 'index' parameter should be defined");
+        console.assert(typeof index==='number', "cPT addNotice8: 'index' parameter should be a number not a '"+(typeof index)+"': "+index);
+        console.assert(extract!==undefined, "cPT addNotice8: 'extract' parameter should be defined");
+        console.assert(typeof extract==='string', "cPT addNotice8: 'extract' parameter should be a string not a '"+(typeof extract)+"': "+extract);
+        console.assert(location!==undefined, "cPT addNotice8: 'location' parameter should be defined");
+        console.assert(typeof location==='string', "cPT addNotice8: 'location' parameter should be a string not a '"+(typeof location)+"': "+location);
         result.noticeList.push([priority, BBB,C,V, message, index, extract, location]);
     }
 
@@ -70,10 +77,10 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
         result.noticeList = result.noticeList.concat(resultObject.noticeList);
-        // If we need to put everything through addNotice, e.g., for debugging or filtering
+        // If we need to put everything through addNotice8, e.g., for debugging or filtering
         //  process results line by line
         // for (const noticeEntry of resultObject.noticeList)
-        //     addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
+        //     addNotice8(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
     }
     // end of doOurBasicTextChecks function
 

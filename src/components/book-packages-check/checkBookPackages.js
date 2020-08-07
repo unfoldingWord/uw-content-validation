@@ -19,20 +19,27 @@ async function checkBookPackages(username, language_code, bookCodeList, setResul
         checkBookPackagesResult.successList.push(successString);
     }
 
-    function addNotice(priority, BBB,C,V, message, index, extract, location, extra) {
+    function addNotice9(priority, BBB,C,V, message, index, extract, location, extra) {
         // console.log(`checkBookPackages Notice: (priority=${priority}) ${extra} ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(priority !== undefined, "cBPs addNotice: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', `cBPs addNotice: 'priority' parameter should be a number not a '${typeof priority}'`);
-        console.assert(message !== undefined, "cBPs addNotice: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', `cBPs addNotice: 'message' parameter should be a string not a '${typeof message}'`);
-        console.assert(index !== undefined, "cBPs addNotice: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', `cBPs addNotice: 'index' parameter should be a number not a '${typeof index}'`);
-        console.assert(extract !== undefined, "cBPs addNotice: 'extract' parameter should be defined");
-        console.assert(typeof extract === 'string', `cBPs addNotice: 'extract' parameter should be a string not a '${typeof extract}'`);
-        console.assert(location !== undefined, "cBPs addNotice: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', `cBPs addNotice: 'location' parameter should be a string not a '${typeof location}'`);
-        console.assert(extra !== undefined, "cBPs addNotice: 'extra' parameter should be defined");
-        console.assert(typeof extra === 'string', `cBPs addNotice: 'extra' parameter should be a string not a '${typeof extra}'`);
+        console.assert(priority !== undefined, "cBPs addNotice9: 'priority' parameter should be defined");
+        console.assert(typeof priority === 'number', `cBPs addNotice9: 'priority' parameter should be a number not a '${typeof priority}'`);
+        console.assert(BBB !== undefined, "cBPs addNotice9: 'BBB' parameter should be defined");
+        console.assert(typeof BBB === 'string', "cBPs addNotice9: 'BBB' parameter should be a string not a '" + (typeof BBB) + "'");
+        console.assert(BBB.length === 3, `cBPs addNotice9: 'BBB' parameter should be three characters long not ${BBB.length}`);
+        console.assert(C !== undefined, "cBPs addNotice9: 'C' parameter should be defined");
+        console.assert(typeof C === 'string', "cBPs addNotice9: 'C' parameter should be a string not a '" + (typeof C) + "'");
+        console.assert(V !== undefined, "cBPs addNotice9: 'V' parameter should be defined");
+        console.assert(typeof V === 'string', "cBPs addNotice9: 'V' parameter should be a string not a '" + (typeof V) + "'");
+        console.assert(message !== undefined, "cBPs addNotice9: 'message' parameter should be defined");
+        console.assert(typeof message === 'string', `cBPs addNotice9: 'message' parameter should be a string not a '${typeof message}'`);
+        console.assert(index !== undefined, "cBPs addNotice9: 'index' parameter should be defined");
+        console.assert(typeof index === 'number', `cBPs addNotice9: 'index' parameter should be a number not a '${typeof index}'`);
+        console.assert(extract !== undefined, "cBPs addNotice9: 'extract' parameter should be defined");
+        console.assert(typeof extract === 'string', `cBPs addNotice9: 'extract' parameter should be a string not a '${typeof extract}'`);
+        console.assert(location !== undefined, "cBPs addNotice9: 'location' parameter should be defined");
+        console.assert(typeof location === 'string', `cBPs addNotice9: 'location' parameter should be a string not a '${typeof location}'`);
+        console.assert(extra !== undefined, "cBPs addNotice9: 'extra' parameter should be defined");
+        console.assert(typeof extra === 'string', `cBPs addNotice9: 'extra' parameter should be a string not a '${typeof extra}'`);
         checkBookPackagesResult.noticeList.push([priority, BBB,C,V, message, index, extract, location, extra]);
     }
 
@@ -44,12 +51,12 @@ async function checkBookPackages(username, language_code, bookCodeList, setResul
 
         // const generalLocation = ` ${language_code} ${bookCode} book packages from ${username}`;
         if (bookCode !== 'OBS') {
-            let bookNumberAndName, whichTestament;
+            let bookNumberAndName; //, whichTestament;
             try {
                 bookNumberAndName = books.usfmNumberName(bookCode);
-                whichTestament = books.testament(bookCode);
+                // whichTestament = books.testament(bookCode); // returns 'old' or 'new'
             } catch (e) {
-                addNotice(900, "","","", "Bad parameter: should be given a valid book abbreviation", -1,bookCodeList, ` (not '${bookCodeList}')${location}`);
+                addNotice9(900, '','','', "Bad parameter: should be given a valid book abbreviation", -1,bookCodeList, ` (not '${bookCodeList}')${location}`);
                 return checkBookPackagesResult;
             }
             // console.log(`bookNumberAndName='${bookNumberAndName}' (${whichTestament} testament)`);
@@ -73,7 +80,7 @@ async function checkBookPackages(username, language_code, bookCodeList, setResul
         // for (const noticeEntry of cbpResultObject.noticeList)
         //     // noticeEntry is an array of eight fields: 1=priority, 2=BBB, 3=C, 4=V, 5=msg, 6=index, 7=extract, 8=location
         //     // The extra value from checkBookPackage is the repo name
-        //     addNotice(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7], noticeEntry[5]);
+        //     addNotice9(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7], noticeEntry[5]);
 
         checkedFileCount += cbpResultObject.checkedFileCount;
         checkedFilenames = [...checkedFilenames, ...cbpResultObject.checkedFilenames];

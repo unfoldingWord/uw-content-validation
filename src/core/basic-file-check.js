@@ -24,26 +24,26 @@ export function doBasicFileChecks(filename, fileText, optionalFileLocation, opti
     //      5/ the detailed location string
     //  (Returned in this way for more intelligent processing at a higher level)
     // console.log("doBasicFileChecks(" + filename + ", " + fileText.length.toLocaleString() + " chars, " +allowedLinks +", '"+ optionalFileLocation + "')…");
-    console.assert(filename!==undefined, "doBasicFileChecks: 'filename' parameter should be defined");
-    console.assert(typeof filename==='string', "doBasicFileChecks: 'filename' parameter should be a number not a '"+(typeof filename)+"': "+filename);
-    console.assert(fileText!==undefined, "doBasicFileChecks: 'fileText' parameter should be defined");
-    console.assert(typeof fileText==='string', "doBasicFileChecks: 'fileText' parameter should be a number not a '"+(typeof fileText)+"': "+fileText);
+    console.assert(filename !== undefined, "doBasicFileChecks: 'filename' parameter should be defined");
+    console.assert(typeof filename === 'string', "doBasicFileChecks: 'filename' parameter should be a number not a '" + (typeof filename) + "': " + filename);
+    console.assert(fileText !== undefined, "doBasicFileChecks: 'fileText' parameter should be defined");
+    console.assert(typeof fileText === 'string', "doBasicFileChecks: 'fileText' parameter should be a number not a '" + (typeof fileText) + "': " + fileText);
     // console.assert( allowedLinks===true || allowedLinks===false, "doBasicFileChecks: allowedLinks parameter must be either true or false");
 
     let result = { noticeList: [] };
 
     function addNotice5(priority, message, index, extract, location) {
         // console.log("dBTC Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
-        console.assert(priority!==undefined, "dBTCs addNotice5: 'priority' parameter should be defined");
-        console.assert(typeof priority==='number', "dBTCs addNotice5: 'priority' parameter should be a number not a '"+(typeof priority)+"': "+priority);
-        console.assert(message!==undefined, "dBTCs addNotice5: 'message' parameter should be defined");
-        console.assert(typeof message==='string', "dBTCs addNotice5: 'message' parameter should be a string not a '"+(typeof message)+"': "+message);
-        console.assert(index!==undefined, "dBTCs addNotice5: 'index' parameter should be defined");
-        console.assert(typeof index==='number', "dBTCs addNotice5: 'index' parameter should be a number not a '"+(typeof index)+"': "+index);
-        console.assert(extract!==undefined, "dBTCs addNotice5: 'extract' parameter should be defined");
-        console.assert(typeof extract==='string', "dBTCs addNotice5: 'extract' parameter should be a string not a '"+(typeof extract)+"': "+extract);
-        console.assert(location!==undefined, "dBTCs addNotice5: 'location' parameter should be defined");
-        console.assert(typeof location==='string', "dBTCs addNotice5: 'location' parameter should be a string not a '"+(typeof location)+"': "+location);
+        console.assert(priority !== undefined, "dBTCs addNotice5: 'priority' parameter should be defined");
+        console.assert(typeof priority === 'number', "dBTCs addNotice5: 'priority' parameter should be a number not a '" + (typeof priority) + "': " + priority);
+        console.assert(message !== undefined, "dBTCs addNotice5: 'message' parameter should be defined");
+        console.assert(typeof message === 'string', "dBTCs addNotice5: 'message' parameter should be a string not a '" + (typeof message) + "': " + message);
+        console.assert(index !== undefined, "dBTCs addNotice5: 'index' parameter should be defined");
+        console.assert(typeof index === 'number', "dBTCs addNotice5: 'index' parameter should be a number not a '" + (typeof index) + "': " + index);
+        console.assert(extract !== undefined, "dBTCs addNotice5: 'extract' parameter should be defined");
+        console.assert(typeof extract === 'string', "dBTCs addNotice5: 'extract' parameter should be a string not a '" + (typeof extract) + "': " + extract);
+        console.assert(location !== undefined, "dBTCs addNotice5: 'location' parameter should be defined");
+        console.assert(typeof location === 'string', "dBTCs addNotice5: 'location' parameter should be a string not a '" + (typeof location) + "': " + location);
         result.noticeList.push([priority, message, index, extract, location]);
     }
 
@@ -60,14 +60,14 @@ export function doBasicFileChecks(filename, fileText, optionalFileLocation, opti
     }
 
     if (isWhitespace(fileText)) {
-        addNotice5(638, "Only found whitespace", -1,"", ourAtString);
+        addNotice5(638, "Only found whitespace", -1, "", ourAtString);
         return result;
     }
 
     let extractLength;
     try {
         extractLength = optionalCheckingOptions.extractLength;
-    } catch (e) {}
+    } catch (e) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
         // console.log("Using default extractLength=" + extractLength);
@@ -75,40 +75,34 @@ export function doBasicFileChecks(filename, fileText, optionalFileLocation, opti
     // else
     //     console.log("Using supplied extractLength=" + extractLength, "cf. default="+DEFAULT_EXTRACT_LENGTH);
     const halfLength = Math.floor(extractLength / 2); // rounded down
-    const halfLengthPlus = Math.floor((extractLength+1) / 2); // rounded up
+    const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
     // console.log("Using halfLength=" + halfLength, "halfLengthPlus="+halfLengthPlus);
 
-    let ix = fileText.indexOf('<<<<<<<');
-    if (ix >= 0) {
-        let iy = ix+halfLength; // Want extract to focus more on what follows
-        const extract = (iy>halfLength ? '…' : '') + fileText.substring(iy-halfLength, iy+halfLengthPlus).replace(/ /g, '␣') + (iy+halfLengthPlus < fileText.length ? '…' : '')
-        addNotice5(993, "Unresolved GIT conflict", ix,extract, ourAtString);
-    } else {
-        ix = fileText.indexOf('=======');
-        if (ix >= 0) {
-            let iy = ix+halfLength; // Want extract to focus more on what follows
-            const extract = (iy>halfLength ? '…' : '') + fileText.substring(iy-halfLength, iy+halfLengthPlus).replace(/ /g, '␣') + (iy+halfLengthPlus < fileText.length ? '…' : '')
-            addNotice5(992, "Unresolved GIT conflict", ix,extract, ourAtString);
-        } else {
-            ix = fileText.indexOf('>>>>>>>>');
-            if (ix >= 0) {
-                let iy = ix+halfLength; // Want extract to focus more on what follows
-                const extract = (iy>halfLength ? '…' : '') + fileText.substring(iy-halfLength, iy+halfLengthPlus).replace(/ /g, '␣') + (iy+halfLengthPlus < fileText.length ? '…' : '')
-                addNotice5(991, "Unresolved GIT conflict", ix,extract, ourAtString);
-            }
-        }
+    let ix;
+    if ((ix = fileText.indexOf('<<<<<<<')) >= 0) {
+        const iy = ix + halfLength; // Want extract to focus more on what follows
+        const extract = (iy > halfLength ? '…' : '') + fileText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < fileText.length ? '…' : '')
+        addNotice5(993, "Unresolved GIT conflict", ix, extract, ourAtString);
+    } else if ((ix = fileText.indexOf('=======')) >= 0) {
+        const iy = ix + halfLength; // Want extract to focus more on what follows
+        const extract = (iy > halfLength ? '…' : '') + fileText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < fileText.length ? '…' : '')
+        addNotice5(992, "Unresolved GIT conflict", ix, extract, ourAtString);
+    } else if ((ix = fileText.indexOf('>>>>>>>>')) >= 0) {
+        const iy = ix + halfLength; // Want extract to focus more on what follows
+        const extract = (iy > halfLength ? '…' : '') + fileText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < fileText.length ? '…' : '')
+        addNotice5(991, "Unresolved GIT conflict", ix, extract, ourAtString);
     }
 
     // Check matched pairs
-    for (const punctSet of [['[',']'], ['(',')'], ['{','}'],
-                          ['<','>'], ['⟨','⟩'], ['“','”'],
-                          ['‹','›'], ['«','»'], ['**_','_**']]) {
+    for (const punctSet of [['[', ']'], ['(', ')'], ['{', '}'],
+    ['<', '>'], ['⟨', '⟩'], ['“', '”'],
+    ['‹', '›'], ['«', '»'], ['**_', '_**']]) {
         // Can't check '‘’' coz they might be used as apostrophe
         const leftChar = punctSet[0], rightChar = punctSet[1];
         const lCount = countOccurrences(fileText, leftChar);
         const rCount = countOccurrences(fileText, rightChar);
         if (lCount !== rCount)
-            addNotice5(163, "Mismatched " + leftChar+rightChar + " characters", -1,"(left=" + lCount.toLocaleString() + ", right=" + rCount.toLocaleString() + ")", ourAtString);
+            addNotice5(163, `Mismatched ${leftChar}${rightChar} characters`, -1, `(left=${lCount.toLocaleString()}, right=${rCount.toLocaleString()})`, ourAtString);
     }
 
     // if (!allowedLinks) {

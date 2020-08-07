@@ -18,6 +18,7 @@ const textMD2 = " Look at [[https://unfoldingWord.org]] ";
 const textMD3 = "Now  look at [[http://door43.org]] ";
 
 // Easy for user to change text used in next line (to demonstrate differing results)
+const chosenName = "textMD3";
 const chosenText = textMD3;
 
 let result;
@@ -26,8 +27,8 @@ let result;
 function acceptUpdatedResult(newResult){
     // Update the results with later results
     console.log("acceptUpdatedResult callback function is updating result now with "+newResult.errorList.length+" errors and "+newResult.warningList.length+" warnings.");
-    processedResult.errorList = newResult.errorList;
-    processedResult.warningList = newResult.warningList;
+    processedResults.errorList = newResult.errorList;
+    processedResults.warningList = newResult.warningList;
     // Now how can we tell Styleguidist to refresh???
 }
 
@@ -45,10 +46,9 @@ const linkOptions = {
 
 // This function returns the results of the fast checks
 //  and if specified in linkOptions, the callback will update result later with results of slower checks
-const rawResults = doBasicLinkChecks('Sample', chosenText, linkOptions, 'that was supplied');
+const rawResults = doBasicLinkChecks(chosenName, chosenText, linkOptions, 'that was supplied');
 if (!rawResults.successList || !rawResults.successList.length)
-    rawResults.successList = ["Done basic text checks"];
-// result = processNoticesToErrorsWarnings(rawResults);
+    rawResults.successList = ["Done basic link checks"];
 
 <>
 <b>Check</b> "{chosenText}"<br/><br/>

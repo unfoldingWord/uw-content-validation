@@ -50,12 +50,12 @@ const processOptions = {
     // 'sortBy': 'ByPriority', // default is 'AsFound'
     // 'ignorePriorityNumberList': [123, 202], // default is []
 };
-const processedResult = processNoticesToSevereMediumLow(rawResults, processOptions);
+const processedResults = processNoticesToSevereMediumLow(rawResults, processOptions);
 
 <>
 <b>Check</b> "{chosenText}"<br/><br/>
 <RenderRawResults results={rawResults} />
 <p>Which after processing{Object.keys(processOptions).length? <> using <b>processOptions</b><RenderSettings settings={processOptions} /></>:''} then becomes:</p>
-<RenderSuccessesSevereMediumLow results={processedResult} />
+<RenderSuccessesSevereMediumLow results={processedResults} />
 </>
 ```

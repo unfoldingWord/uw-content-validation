@@ -7,7 +7,7 @@ import { fetchRepositoryZipFile, getFilelistFromZip, getFile } from '../../core/
 import { consoleLogObject } from '../../core/utilities';
 
 
-const CHECKER_VERSION_STRING = '0.3.1';
+const CHECKER_VERSION_STRING = '0.3.2';
 
 
 async function checkRepo(username, repoName, branch, givenLocation, setResultValue, checkingOptions) {
@@ -26,7 +26,7 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
 
     let checkRepoResult = {
         successList: [], noticeList: [],
-        checkedFilenames: [], checkedFilenameExtensions: []
+        checkedFileCount:0, checkedFilenames: [], checkedFilenameExtensions: []
     };
 
     function addSuccessMessage(successString) {
@@ -36,11 +36,13 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
     }
     function addNotice9(priority, BBB, C, V, message, index, extract, location, extra) {
         // Adds the notices to the result that we will later return
-        // console.log(`checkRepo addNotice9: (priority=${priority}) '${BBB}' ${message}${index > 0 ? " (at character " + index + 1 + ")" : ""}${extract ? " " + extract : ""}${location}`);
+        // Note that BBB,C,V might all be empty strings (as some repos don't have BCV)
+        // console.log(`checkRepo addNotice9: (priority=${priority}) ${BBB} ${C}:${V} ${message}${index > 0 ? " (at character " + index + 1 + ")" : ""}${extract ? " " + extract : ""}${location}`);
         console.assert(priority !== undefined, "cR addNotice9: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', "cR addNotice9: 'priority' parameter should be a number not a '" + (typeof priority) + "'");
         console.assert(BBB !== undefined, "cR addNotice9: 'BBB' parameter should be defined");
         console.assert(typeof BBB === 'string', "cR addNotice9: 'BBB' parameter should be a string not a '" + (typeof BBB) + "'");
+        // console.assert(BBB.length === 3, `cR addNotice9: 'BBB' parameter should be three characters long not ${BBB.length}`);
         console.assert(C !== undefined, "cR addNotice9: 'C' parameter should be defined");
         console.assert(typeof C === 'string', "cR addNotice9: 'C' parameter should be a string not a '" + (typeof C) + "'");
         console.assert(V !== undefined, "cR addNotice9: 'V' parameter should be defined");
@@ -59,7 +61,7 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
     }
 
 
-    function doOurCheckFile(bookOrFileCode, BBBid, filename, file_content, fileLocation, optionalCheckingOptions) {
+    async function doOurCheckFile(bookOrFileCode, BBBid, filename, file_content, fileLocation, optionalCheckingOptions) {
         // We assume that checking for compulsory fields is done elsewhere
         // console.log(`checkRepo doOurCheckFile(${filename})…`);
 
@@ -75,7 +77,7 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
         console.assert(fileLocation !== undefined, "doOurCheckFile: 'fileLocation' parameter should be defined");
         console.assert(typeof fileLocation === 'string', "doOurCheckFile: 'fileLocation' parameter should be a string not a '" + (typeof fileLocation) + "'");
 
-        const resultObject = checkFile(filename, file_content, fileLocation, optionalCheckingOptions);
+        const resultObject = await checkFile(filename, file_content, fileLocation, optionalCheckingOptions);
         // console.log("checkFile() returned", resultObject.successList.length, "success message(s) and", resultObject.noticeList.length, "notice(s)");
         // for (const successEntry of resultObject.successList)
         //     console.log("  ", successEntry);
@@ -125,7 +127,11 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
         const countString = `${pathList.length.toLocaleString()} file${pathList.length === 1 ? '' : 's'}`;
         let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0;
         for (const thisFilepath of pathList) {
-            // console.log(`thisFilepath=${thisFilepath}`);
+            // console.log(`At top of loop: thisFilepath='${thisFilepath}'`);
+
+            // Update our "waiting" message
+            setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for <b>{username}/{repoName}</b> repo: checked {checkedFileCount.toLocaleString()}/{countString}…</p>);
+
             const thisFilename = thisFilepath.split('/').pop();
             // console.log(`thisFilename=${thisFilename}`);
             const thisFilenameExtension = thisFilename.split('.').pop();
@@ -151,38 +157,34 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
                 BBBid = BBB;
             }
 
-            // console.log("checkRepo: Try to load", username, repoName, thisPath, branch);
-            let fileContent;
+            // console.log("checkRepo: Try to load", username, repoName, thisFilepath, branch);
+            let repoFileContent;
             try {
-                fileContent = await getFile({ username, repository: repoName, path: thisFilepath, branch });
-                // console.log("Fetched file_content for", repoName, thisPath, typeof fileContent, fileContent.length);
+                repoFileContent = await getFile({ username, repository: repoName, path: thisFilepath, branch });
+                // console.log("Fetched file_content for", repoName, thisPath, typeof repoFileContent, repoFileContent.length);
             } catch (e) {
                 console.log("Failed to load", username, repoName, thisFilepath, branch, e + '');
                 addNotice9(996, BBBid,'','', "Failed to load", -1, "", `${generalLocation} ${thisFilepath}: ${e}`, repoCode);
                 return;
             }
-            // console.log("checkRepo fetching and checking", thisFilename);
-            // const fileContent = await getBlobContent(thisFilename, detailObject);
-            // console.log("Got", fileContent.length, file_content.substring(0, 19));
-            if (fileContent) {
-                doOurCheckFile(bookOrFileCode, BBBid, thisFilename, fileContent, ourLocation, checkingOptions);
+            if (repoFileContent) {
+                // console.log(`checkRepo checking ${thisFilename}`);
+                await doOurCheckFile(bookOrFileCode, BBBid, thisFilename, repoFileContent, ourLocation, checkingOptions);
                 checkedFileCount += 1;
                 checkedFilenames.push(thisFilename);
                 checkedFilenameExtensions.add(thisFilenameExtension);
-                totalCheckedSize += fileContent.length;
+                totalCheckedSize += repoFileContent.length;
+                // console.log(`checkRepo checked ${thisFilename}`);
                 if (thisFilenameExtension !== 'md') // There's often far, far too many of these
                     addSuccessMessage(`Checked ${bookOrFileCode.toUpperCase()} file: ${thisFilename}`);
             }
-            // Update our "waiting" message
-            setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for <b>{username}/{repoName}</b> repo: checked {checkedFileCount.toLocaleString()}/{countString}…</p>);
         }
-        // console.log("Finished checkRepo loop");
 
         // Check that we processed a license and a manifest
         if (checkedFilenames.indexOf('LICENSE.md') < 0)
-            addNotice9(946, '','','', "Missing LICENSE.md", -1, "", ourLocation, 'LICENSE');
+            addNotice9(946, BBBid,'','', "Missing LICENSE.md", -1, "", ourLocation, 'LICENSE');
         if (checkedFilenames.indexOf('manifest.yaml') < 0)
-            addNotice9(947, '','','', "Missing manifest.yaml", -1, "", ourLocation, 'MANIFEST');
+            addNotice9(947, BBBid,'','', "Missing manifest.yaml", -1, "", ourLocation, 'MANIFEST');
 
         // Add some extra fields to our checkRepoResult object
         //  in case we need this information again later

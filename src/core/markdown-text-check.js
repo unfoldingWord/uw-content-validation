@@ -134,7 +134,7 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
 
             numLeadingSpaces = line.match(/^ */)[0].length;
             // console.log("Got numLeadingSpaces="+ numLeadingSpaces + " for "+line+atString);
-            if (numLeadingSpaces && lastNumLeadingSpaces && numLeadingSpaces != lastNumLeadingSpaces)
+            if (numLeadingSpaces && lastNumLeadingSpaces && numLeadingSpaces !== lastNumLeadingSpaces)
                 addNotice5(472, "Nesting seems confused", 0, '', atString);
 
             checkMarkdownLineContents(`line ${n.toLocaleString()}`, line, ourLocation);
@@ -147,7 +147,7 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
         lastNumLeadingSpaces = numLeadingSpaces;
     }
 
-    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length == 1 ? '' : 's'}${ourLocation}.`);
+    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length === 1 ? '' : 's'}${ourLocation}.`);
     if (result.noticeList)
         addSuccessMessage(`checkMarkdownText v${MARKDOWN_VALIDATOR_VERSION} finished with ${result.noticeList.length ? result.noticeList.length.toLocaleString() : "zero"} notice${result.noticeList.length === 1 ? '' : 's'}`);
     else
