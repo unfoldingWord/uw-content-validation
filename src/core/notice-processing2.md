@@ -55,7 +55,7 @@ const processedResults = processNoticesToSevereMediumLow(rawResults, processOpti
 <>
 <b>Check</b> "{chosenText}"<br/><br/>
 <RenderRawResults results={rawResults} />
-<p>Which after processing{Object.keys(processOptions).length? <> using <b>processOptions</b><RenderSettings settings={processOptions} /></>:''} then becomes:</p>
+<br/>Which after processing{Object.keys(processOptions).length? <> using <b>processOptions</b><RenderSettings settings={processOptions} /></>:''} then becomes:<br/><br/>
 <RenderSuccessesSevereMediumLow results={processedResults} />
 </>
 ```

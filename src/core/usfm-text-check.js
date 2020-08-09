@@ -68,7 +68,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
     let extractLength;
     try {
         extractLength = optionalCheckingOptions.extractLength;
-    } catch (e) { }
+    } catch (usfmELerror) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
         // console.log(`Using default extractLength=${extractLength}`);
@@ -199,8 +199,8 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
             let chapterInt;
             try {
                 chapterInt = ourParseInt(chapterNumberString);
-            } catch (e) {
-                console.log(`CVCheck couldn't convert ${BBB} chapter '${chapterNumberString}': ${e}`);
+            } catch (usfmCIerror) {
+                console.log(`CVCheck couldn't convert ${BBB} chapter '${chapterNumberString}': ${usfmCIerror}`);
             }
             if (chapterInt < 1 || chapterInt > expectedVersesPerChapterList.length)
                 addCVNotice7(869, chapterNumberString, "", "Chapter number out of range", -1, `${BBB} ${chapterNumberString}`, CVlocation);
@@ -225,16 +225,16 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
                                 if (verseHasText)
                                     discoveredVerseWithTextList.push(v);
                             }
-                        } catch (e) {
-                            addCVNotice7(762, chapterNumberString, verseNumberString, "Unable to convert verse bridge numbers to integers", 3, verseNumberString, `${CVlocation} with ${e}`);
+                        } catch (usfmVIerror) {
+                            addCVNotice7(762, chapterNumberString, verseNumberString, "Unable to convert verse bridge numbers to integers", 3, verseNumberString, `${CVlocation} with ${usfmVIerror}`);
                         }
                     } else { // It's NOT a verse bridge
                         let verseInt;
                         try {
                             verseInt = ourParseInt(verseNumberString);
                             discoveredVerseList.push(verseInt);
-                        } catch (e) {
-                            console.log(`We couldn't convert ${BBB} ${chapterNumberString} verse '${verseNumberString}': ${e}`);
+                        } catch (usfmPIerror) {
+                            console.log(`We couldn't convert ${BBB} ${chapterNumberString} verse '${verseNumberString}': ${usfmPIerror}`);
                         }
 
                         if (verseInt < 1 || verseInt > expectedVersesPerChapterList[chapterInt - 1])
@@ -483,7 +483,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
                 C = rest; V = '0';
                 try {
                     intC = ourParseInt(C);
-                } catch (e) {
+                } catch (usfmICerror) {
                     addCVNotice7(724, C, V, "Unable to convert chapter number to integer", 3, rest.substring(0, 5), atString);
                     intC = -999; // Used to prevent consequential errors
                 }
@@ -496,7 +496,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
                 if (V.indexOf('-') < 0) { // no hyphen -> no verse bridge
                     try {
                         intV = ourParseInt(V);
-                    } catch (e) {
+                    } catch (usfmIVerror) {
                         addCVNotice7(723, C, V, "Unable to convert verse number to integer", 3, rest.substring(0, 5), atString);
                         intV = -999; // Used to prevent consequential errors
                     }
@@ -510,7 +510,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
                     try {
                         intFirstV = ourParseInt(firstV);
                         intSecondV = ourParseInt(secondV);
-                    } catch (e) {
+                    } catch (usfmV12error) {
                         addCVNotice7(762, C, V, "Unable to convert verse bridge numbers to integers", 3, rest.substring(0, Math.max(9, extractLength)), atString);
                         intFirstV = -999; intSecondV = -998; // Used to prevent consequential errors
                     }

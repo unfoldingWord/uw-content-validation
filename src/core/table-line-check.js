@@ -17,10 +17,10 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
     /* This function is only for checking one data row
           and doesn't assume that it has any previous context.
 
-          It's designed to be able to quickly show errors for a single row being displayed/edited.
+        It's designed to be able to quickly show errors for a single row being displayed/edited.
 
-  Returns noticeList
- */
+        Returns noticeList
+    */
     // console.log(`checkTN_TSVDataRow(${BBB}, ${line}, ${givenRowLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
     console.assert(line !== undefined, "checkTN_TSVDataRow: 'line' parameter should be defined");
     console.assert(typeof line === 'string', `checkTN_TSVDataRow: 'line' parameter should be a string not a '${typeof line}'`);
@@ -173,7 +173,7 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
     let extractLength;
     try {
         extractLength = optionalCheckingOptions.extractLength;
-    } catch (e) { }
+    } catch (tlcELerror) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
         // console.log("Using default extractLength=" + extractLength);
@@ -188,8 +188,8 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
     let numChaptersThisBook;
     try {
         numChaptersThisBook = books.chaptersInBook(bbb).length;
-    } catch (e) {
-        addNotice5to8(979, "Invalid book code passed to checkTN_TSVDataRow", -1, "", ` '${BBB}' in first parameter: ${e}`);
+    } catch (tlcNCerror) {
+        addNotice5to8(979, "Invalid book code passed to checkTN_TSVDataRow", -1, "", ` '${BBB}' in first parameter: ${tlcNCerror}`);
     }
     const haveGoodBookCode = numChaptersThisBook !== undefined;
 
@@ -229,7 +229,7 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
                 try {
                     numVersesThisChapter = books.versesInChapter(bbb, intC);
                     haveGoodChapterNumber = true;
-                } catch (e) {
+                } catch (tlcNVerror) {
                     if (!haveGoodBookCode)
                         // addNotice5to8(500, "Invalid chapter number", rowLocation);
                         // else
@@ -316,6 +316,7 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
 
         if (occurrenceNote.length) {
             doOurMarkdownTextChecks('OccurrenceNote', occurrenceNote, true, ourRowLocation, optionalCheckingOptions);
+            // TODO: We need to check links, e.g., to TA [[rc://en/ta/man/translate/figs-rquestion]]
         }
         else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             addNotice5to8(274, "Missing OccurrenceNote field", -1, "", ourRowLocation);

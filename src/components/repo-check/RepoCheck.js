@@ -53,9 +53,9 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 let rawCRResults = {};
                 try {
                     rawCRResults = await checkRepo(username, repoName, branch, "", setResultValue, checkingOptions);
-                } catch (e) {
+                } catch (checkRepoError) {
                     rawCRResults = { successList: [], noticeList: [] };
-                    rawCRResults.noticeList.push([999, "checkRepo function FAILED", -1, e, repoName]);
+                    rawCRResults.noticeList.push([999, "checkRepo function FAILED", -1, checkRepoError, repoName]);
                 }
                 // console.log("checkRepo() returned", typeof rawCRResults); //, JSON.stringify(rawCRResults));
 
@@ -150,10 +150,10 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 } else setResultValue(<b style={{ color: 'red' }}>Invalid displayType='{displayType}'</b>)
 
                 // console.log("Finished rendering bit.");
-            } catch (e) {
-                console.log(`RepoCheck main code block got error: ${e.message}`);
+            } catch (rcError) {
+                console.log(`RepoCheck main code block got error: ${rcError.message}`);
                 setResultValue(<>
-                    <p style={{ color: 'Red' }}>RepoCheck main code block got error: <b>{e.message}</b></p>
+                    <p style={{ color: 'Red' }}>RepoCheck main code block got error: <b>{rcError.message}</b></p>
                 </>);
             }
         })(); // end of async part in unnamedFunction

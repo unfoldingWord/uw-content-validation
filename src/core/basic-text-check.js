@@ -67,7 +67,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     let extractLength;
     try {
         extractLength = optionalCheckingOptions.extractLength;
-    } catch (e) { }
+    } catch (btcError) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
         // console.log("Using default extractLength=" + extractLength);

@@ -162,9 +162,9 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
             try {
                 repoFileContent = await getFile({ username, repository: repoName, path: thisFilepath, branch });
                 // console.log("Fetched file_content for", repoName, thisPath, typeof repoFileContent, repoFileContent.length);
-            } catch (e) {
-                console.log("Failed to load", username, repoName, thisFilepath, branch, e + '');
-                addNotice9(996, BBBid,'','', "Failed to load", -1, "", `${generalLocation} ${thisFilepath}: ${e}`, repoCode);
+            } catch (cRgfError) {
+                console.log("Failed to load", username, repoName, thisFilepath, branch, cRgfError + '');
+                addNotice9(996, BBBid,'','', "Failed to load", -1, "", `${generalLocation} ${thisFilepath}: ${cRgfError}`, repoCode);
                 return;
             }
             if (repoFileContent) {
@@ -197,10 +197,10 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
 
         addSuccessMessage(`Checked ${username} repo: ${repoName}`);
         // console.log(`checkRepo() is returning ${checkRepoResult.successList.length.toLocaleString()} success message(s) and ${checkRepoResult.noticeList.length.toLocaleString()} notice(s)`);
-    } catch (e) {
-        console.log(`checkRepo main code block got error: ${e.message}`);
+    } catch (cRerror) {
+        console.log(`checkRepo main code block got error: ${cRerror.message}`);
         setResultValue(<>
-            <p style={{ color: 'Red' }}>checkRepo main code block got error: <b>{e.message}</b></p>
+            <p style={{ color: 'Red' }}>checkRepo main code block got error: <b>{cRerror.message}</b></p>
         </>);
 
     }

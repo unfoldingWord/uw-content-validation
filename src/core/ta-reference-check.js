@@ -54,7 +54,7 @@ async function checkTAReference(fieldName, fieldText, givenLocation, optionalChe
     let extractLength;
     try {
         extractLength = optionalCheckingOptions.extractLength;
-    } catch (e) { }
+    } catch (trcELerror) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
         // console.log("Using default extractLength=" + extractLength);
@@ -69,22 +69,22 @@ async function checkTAReference(fieldName, fieldText, givenLocation, optionalChe
     let username;
     try {
         username = optionalCheckingOptions.taRepoUsername;
-    } catch (e) { }
+    } catch (trcUNerror) { }
     if (!username) username = 'unfoldingWord'; // or Door43-Catalog ???
     let branch;
     try {
         branch = optionalCheckingOptions.taRepoBranch;
-    } catch (e) { }
+    } catch (trcBRerror) { }
     if (!branch) branch = 'master';
     let languageCode;
     try {
         languageCode = optionalCheckingOptions.taRepoLanguageCode;
-    } catch (e) { }
+    } catch (trcLCerror) { }
     if (!languageCode) languageCode = 'en';
     let sectionName;
     try {
         sectionName = optionalCheckingOptions.taRepoSectionName;
-    } catch (e) { }
+    } catch (trcSNerror) { }
     if (!sectionName) sectionName = 'translation';
     const taRepoName = `${languageCode}_ta`;
     const filepath = `${sectionName}/${fieldText}/01.md`; // Other files are title.md, sub-title.md
@@ -94,9 +94,9 @@ async function checkTAReference(fieldName, fieldText, givenLocation, optionalChe
     try {
         taFileContent = await getFile({ username, repository: taRepoName, path: filepath, branch });
         // console.log("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
-    } catch (e) {
-        console.log("ERROR: Failed to load", username, taRepoName, filepath, branch, e.message);
-        addNotice5(886, "Error loading TA link", -1, fieldText, `${ourLocation} ${filepath}: ${e}`);
+    } catch (trcGCerror) {
+        console.log("ERROR: Failed to load", username, taRepoName, filepath, branch, trcGCerror.message);
+        addNotice5(886, "Error loading TA link", -1, fieldText, `${ourLocation} ${filepath}: ${trcGCerror}`);
     }
     if (!taFileContent)
         addNotice5(887, "Unable to find TA link", -1, fieldText, `${ourLocation} ${filepath}`);

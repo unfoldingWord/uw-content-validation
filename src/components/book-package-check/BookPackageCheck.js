@@ -95,14 +95,14 @@ function BookPackageCheck(/*username, language_code, bookCode,*/ props) {
 
             if (processedResults.errorList.length || processedResults.warningList.length)
                 setResultValue(<>
-                    <p>{renderSummary(processedResults)}
-                        {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</p>
+                    {renderSummary(processedResults)}
+                        {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}
                     <RenderSuccessesErrorsWarnings results={processedResults} />
                 </>);
             else // no errors or warnings
                 setResultValue(<>
-                    <p>{renderSummary(processedResults)}
-                    {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</p>
+                    {renderSummary(processedResults)}
+                    {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}
                     <RenderSuccessesErrorsWarnings results={processedResults} />
                 </>);
             } else if (displayType === 'SevereMediumLow') {
@@ -112,14 +112,14 @@ function BookPackageCheck(/*username, language_code, bookCode,*/ props) {
 
                 if (processedResults.severeList.length || processedResults.mediumList.length || processedResults.lowList.length)
                 setResultValue(<>
-                    <p>{renderSummary(processedResults)}
-                        {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</p>
+                    {renderSummary(processedResults)}
+                        {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}
                         <RenderSuccessesSevereMediumLow results={processedResults} />
                     </>);
                 else // no severe, medium, or low notices
                 setResultValue(<>
-                    <p>{renderSummary(processedResults)}
-                    {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</p>
+                    {renderSummary(processedResults)}
+                    {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}
                         <RenderSuccessesSevereMediumLow results={processedResults} />
                     </>);
             } else if (displayType === 'SingleList') {
@@ -129,14 +129,14 @@ function BookPackageCheck(/*username, language_code, bookCode,*/ props) {
 
                 if (processedResults.warningList.length)
                 setResultValue(<>
-                    <p>{renderSummary(processedResults)}
-                        {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</p>
+                    {renderSummary(processedResults)}
+                        {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}
                         <RenderSuccessesWarningsGradient results={processedResults} />
                     </>);
                 else // no warnings
                 setResultValue(<>
-                    <p>{renderSummary(processedResults)}
-                    {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</p>
+                    {renderSummary(processedResults)}
+                    {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}
                         <RenderSuccessesWarningsGradient results={processedResults} />
                     </>);
             } else setResultValue(<b style={{ color: 'red' }}>Invalid displayType='{displayType}'</b>)

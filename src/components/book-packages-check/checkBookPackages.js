@@ -55,7 +55,7 @@ async function checkBookPackages(username, language_code, bookCodeList, setResul
             try {
                 bookNumberAndName = books.usfmNumberName(bookCode);
                 // whichTestament = books.testament(bookCode); // returns 'old' or 'new'
-            } catch (e) {
+            } catch (CBPsError) {
                 addNotice9(900, '','','', "Bad parameter: should be given a valid book abbreviation", -1,bookCodeList, ` (not '${bookCodeList}')${location}`);
                 return checkBookPackagesResult;
             }

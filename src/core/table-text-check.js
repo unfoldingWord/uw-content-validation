@@ -17,7 +17,7 @@ async function checkTN_TSVText(BBB, tableText, givenLocation, optionalCheckingOp
 
      Returns a result object containing a successList and a noticeList
      */
-    // console.log("checkTN_TSVText(" + BBB + ", " + tableText.length + ", " + location + ","+JSON.stringify(optionalCheckingOptions)+")…");
+    // console.log(`checkTN_TSVText(${BBB}, ${tableText.length}, ${location},${JSON.stringify(optionalCheckingOptions)})…`);
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     // if (BBB) ourLocation = ` in ${BBB}${ourLocation}`;
@@ -29,7 +29,7 @@ async function checkTN_TSVText(BBB, tableText, givenLocation, optionalCheckingOp
         result.successList.push(successString);
     }
     function addCVNotice7(priority, C,V, message, index, extract, location) {
-        // console.log("checkTN_TSVText notice: (priority=" + priority + ") " + message + (index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
+        // console.log(`checkTN_TSVText notice: (priority=${priority}) ${message}${index > 0 ? " (at character " + index + 1 + ")" : ""}${extract ? " " + extract : ""}${location}`);
         console.assert(priority !== undefined, "TSV addCVNotice7: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', "TSV addCVNotice7: 'priority' parameter should be a number not a '" + (typeof priority) + "': " + priority);
         console.assert(C !== undefined, "TSV addCVNotice7: 'C' parameter should be defined");
@@ -51,7 +51,7 @@ async function checkTN_TSVText(BBB, tableText, givenLocation, optionalCheckingOp
     let extractLength;
     try {
         extractLength = optionalCheckingOptions.extractLength;
-    } catch (e) { }
+    } catch (ttcError) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
         // console.log("Using default extractLength=" + extractLength);

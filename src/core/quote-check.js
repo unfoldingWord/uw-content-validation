@@ -65,12 +65,12 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, given
         let username;
         try {
             username = optionalCheckingOptions.originalLanguageRepoUsername;
-        } catch (e) { }
+        } catch (qcoError) { }
         if (!username) username = 'unfoldingWord'; // or Door43-Catalog ???
         let branch;
         try {
             branch = optionalCheckingOptions.originalLanguageRepoBranch;
-        } catch (e) { }
+        } catch (qcunError) { }
         if (!branch) branch = 'master';
 
         let originalUSFM;
@@ -79,17 +79,17 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, given
             try {
                 originalUSFM = await getFile({ username, repository: originalLanguageRepoName, path: filename, branch });
                 // console.log("Fetched file_content for", repoName, filename, typeof originalUSFM, originalUSFM.length);
-            } catch (e) {
-                console.log("ERROR: Failed to load", username, originalLanguageRepoCode, filename, branch, e.message);
-                addNotice5(996, "Failed to load", -1, "", `${generalLocation} ${filename}: ${e}`, repoCode);
+            } catch (gcUHBerror) {
+                console.log("ERROR: Failed to load", username, originalLanguageRepoCode, filename, branch, gcUHBerror.message);
+                addNotice5(996, "Failed to load", -1, "", `${generalLocation} ${filename}: ${gcUHBerror}`, repoCode);
             }
         } else if (originalLanguageRepoCode === 'UGNT') {
             try {
                 originalUSFM = await getFile({ username, repository: originalLanguageRepoName, path: filename, branch });
                 // console.log("Fetched file_content for", repoName, filename, typeof originalUSFM, originalUSFM.length);
-            } catch (e) {
-                console.log("ERROR: Failed to load", username, originalLanguageRepoCode, filename, branch, e.message);
-                addNotice5(996, "Failed to load", -1, "", `${generalLocation} ${filename}: ${e}`, repoCode);
+            } catch (gcUGNTerror) {
+                console.log("ERROR: Failed to load", username, originalLanguageRepoCode, filename, branch, gcUGNTerror.message);
+                addNotice5(996, "Failed to load", -1, "", `${generalLocation} ${filename}: ${gcUGNTerror}`, repoCode);
             }
         }
 
@@ -149,7 +149,7 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, given
     let extractLength;
     try {
         extractLength = optionalCheckingOptions.extractLength;
-    } catch (e) { }
+    } catch (gcELerror) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
         // console.log("Using default extractLength=" + extractLength);
@@ -196,7 +196,7 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, given
     let verseText;
     try {
         verseText = optionalCheckingOptions.originalLanguageVerseText;
-    } catch (e) { }
+    } catch (gcVTerror) { }
     if (!verseText) // not supplied, so then we need to get it ourselves
         verseText = await getPassage(BBB, C, V, optionalCheckingOptions);
     if (!verseText) {

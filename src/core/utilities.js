@@ -19,7 +19,7 @@ export function consoleLogObject(clTitle, clObject) {
         clOutput += "  " + clPropertyName + " (type=" + oType + ")";
         let oLength;
         try { oLength = clObject[clPropertyName].length; }
-        catch (e) { oLength = "null" }
+        catch (olError) { oLength = "null" }
         if (oLength !== undefined) clOutput += " (length=" + oLength + ")";
         if (thisPropertyContents !== undefined) clOutput += ": " + thisPropertyContents + "\n";
     }

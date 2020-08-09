@@ -147,13 +147,8 @@ let sections = [
 		// content: 'src/core/README.md',
 		sections: [
 			{
-				name: 'Basic text field check',
-				content: 'src/core/basic-text-check.md',
-				// description: ''
-			},
-			{
-				name: 'Basic link check',
-				content: 'src/core/basic-link-check.md',
+				name: 'TSV table line check',
+				content: 'src/core/tsv-table-line-check.md',
 				// description: ''
 			},
 			{
@@ -162,8 +157,13 @@ let sections = [
 				// description: ''
 			},
 			{
-				name: 'TSV table line check',
-				content: 'src/core/tsv-table-line-check.md',
+				name: 'Basic link check',
+				content: 'src/core/basic-link-check.md',
+				// description: ''
+			},
+			{
+				name: 'Basic text field check',
+				content: 'src/core/basic-text-check.md',
 				// description: ''
 			},
 		]

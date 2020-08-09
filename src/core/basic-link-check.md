@@ -21,14 +21,13 @@ const textMD3 = "Now  look at [[http://door43.org]] ";
 const chosenName = "textMD3";
 const chosenText = textMD3;
 
-let result;
+let rawResults;
 
 // Define our callback function
-function acceptUpdatedResult(newResult){
+function acceptUpdatedResult(newLinkResult){
     // Update the results with later results
-    console.log("acceptUpdatedResult callback function is updating result now with "+newResult.errorList.length+" errors and "+newResult.warningList.length+" warnings.");
-    processedResults.errorList = newResult.errorList;
-    processedResults.warningList = newResult.warningList;
+    console.log(`acceptUpdatedResult callback function is updating result now with ${newLinkResult.noticeList.length} notices.`);
+    rawResults.noticeList = newLinkResult.noticeList;
     // Now how can we tell Styleguidist to refresh???
 }
 
@@ -46,7 +45,7 @@ const linkOptions = {
 
 // This function returns the results of the fast checks
 //  and if specified in linkOptions, the callback will update result later with results of slower checks
-const rawResults = doBasicLinkChecks(chosenName, chosenText, linkOptions, 'that was supplied');
+rawResults = doBasicLinkChecks(chosenName, chosenText, linkOptions, 'that was supplied');
 if (!rawResults.successList || !rawResults.successList.length)
     rawResults.successList = ["Done basic link checks"];
 

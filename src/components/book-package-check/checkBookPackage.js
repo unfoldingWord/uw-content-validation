@@ -87,9 +87,9 @@ async function checkTQbook(username, repoName, branch, bookCode, checkingOptions
             // console.log("Fetched file_content for", repoName, thisPath, typeof tqFileContent, tqFileContent.length);
             checkedFilenames.push(thisPath);
             totalCheckedSize += tqFileContent.length;
-        } catch (e) {
-            console.log("Failed to load", username, repoName, thisPath, branch, e + '');
-            addNotice9(996, bookCode, "", "", "Failed to load", -1, "", `${generalLocation} ${thisPath}: ${e}`, repoCode);
+        } catch (tQerror) {
+            console.log("Failed to load", username, repoName, thisPath, branch, tQerror + '');
+            addNotice9(996, bookCode, "", "", "Failed to load", -1, "", `${generalLocation} ${thisPath}: ${tQerror}`, repoCode);
             continue;
         }
 
@@ -237,7 +237,7 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
         try {
             bookNumberAndName = books.usfmNumberName(bookCode);
             whichTestament = books.testament(bookCode); // returns 'old' or 'new'
-        } catch (e) {
+        } catch (bNNerror) {
             addNotice9(900, '', '', '', "Bad function call: should be given a valid book abbreviation", -1, bookCode, ` (not '${bookCode}')${location}`, '');
             return checkBookPackageResult;
         }
@@ -294,9 +294,9 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
                     checkedFilenames.push(filename);
                     totalCheckedSize += repoFileContent.length;
                     checkedRepoNames.push(repoCode);
-                } catch (e) {
-                    console.log("ERROR: Failed to load", username, repoName, filename, branch, e + '');
-                    addNotice9(996, bookCode, '', '', "Failed to load", -1, "", `${generalLocation} ${filename}: ${e}`, repoCode);
+                } catch (cBPgfError) {
+                    console.log("ERROR: Failed to load", username, repoName, filename, branch, cBPgfError + '');
+                    addNotice9(996, bookCode, '', '', "Failed to load", -1, "", `${generalLocation} ${filename}: ${cBPgfError}`, repoCode);
                     continue;
                 }
 

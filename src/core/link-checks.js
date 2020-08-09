@@ -40,8 +40,8 @@ async function startLiveLinksCheck(linksList, existingNoticeList, callbackFuncti
             let response = await getURL(fetchLink);
             const reponseText = response.text();
             console.log("startLiveLinksCheck got response: ", reponseText.length, reponseText);
-        } catch (e) {
-            console.log(`startLiveLinksCheck had an error fetching '${fetchLink}': ${e}`);
+        } catch (lcError) {
+            console.log(`startLiveLinksCheck had an error fetching '${fetchLink}': ${lcError}`);
             addNotice5(439, "Error fetching link", -1, "", ` ${fetchLink}`);
         }
     }

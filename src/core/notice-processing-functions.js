@@ -115,7 +115,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     let ignorePriorityNumberList;
     try {
         ignorePriorityNumberList = optionalProcessingOptions.ignorePriorityNumberList;
-    } catch (e) { }
+    } catch (npfIPNLerror) { }
     if (ignorePriorityNumberList === undefined) {
         ignorePriorityNumberList = DEFAULT_IGNORE_PRIORITY_NUMBER_LIST;
         // console.log(`Using default ignorePriorityNumberList=${ignorePriorityNumberList}`);
@@ -124,7 +124,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     let sortBy;
     try {
         sortBy = optionalProcessingOptions.sortBy;
-    } catch (e) { }
+    } catch (npfSBerror) { }
     if (sortBy === undefined) {
         sortBy = 'AsFound';
         // console.log(`Using default sortBy='${sortBy}'`);
@@ -133,7 +133,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     let cutoffPriorityLevel;
     try {
         cutoffPriorityLevel = optionalProcessingOptions.cutoffPriorityLevel;
-    } catch (e) { }
+    } catch (npfCPLerror) { }
     if (cutoffPriorityLevel === undefined) {
         cutoffPriorityLevel = DEFAULT_CUTOFF_PRIORITY_LEVEL;
         // console.log(`Using default cutoffPriorityLevel=${cutoffPriorityLevel}`);
@@ -282,7 +282,7 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
     let maximumSimilarMessages;
     try {
         maximumSimilarMessages = optionalProcessingOptions.maximumSimilarMessages;
-    } catch (e) { }
+    } catch (npfMSMerror) { }
     if (typeof maximumSimilarMessages !== 'number' || isNaN(maximumSimilarMessages)) {
         maximumSimilarMessages = DEFAULT_MAXIMUM_SIMILAR_MESSAGES;
         // console.log(`Using default maximumSimilarMessages=${maximumSimilarMessages}`);
@@ -291,7 +291,7 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
     let errorPriorityLevel;
     try {
         errorPriorityLevel = optionalProcessingOptions.errorPriorityLevel;
-    } catch (e) { }
+    } catch (npfEPLerror) { }
     if (errorPriorityLevel === undefined) {
         errorPriorityLevel = DEFAULT_ERROR_PRIORITY_LEVEL;
         // console.log(`Using default errorPriorityLevel=${errorPriorityLevel}`);
@@ -363,7 +363,7 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
     let maximumSimilarMessages;
     try {
         maximumSimilarMessages = optionalProcessingOptions.maximumSimilarMessages;
-    } catch (e) { }
+    } catch (npfMSMerror) { }
     if (typeof maximumSimilarMessages !== 'number' || isNaN(maximumSimilarMessages)) {
         maximumSimilarMessages = DEFAULT_MAXIMUM_SIMILAR_MESSAGES;
         // console.log(`Using default maximumSimilarMessages=${maximumSimilarMessages}`);
@@ -372,7 +372,7 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
     let severePriorityLevel;
     try {
         severePriorityLevel = optionalProcessingOptions.severePriorityLevel;
-    } catch (e) { }
+    } catch (npfSPLerror) { }
     if (severePriorityLevel === undefined) {
         severePriorityLevel = DEFAULT_SEVERE_PRIORITY_LEVEL;
         // console.log(`Using default severePriorityLevel=${severePriorityLevel}`);
@@ -381,7 +381,7 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
     let mediumPriorityLevel;
     try {
         mediumPriorityLevel = optionalProcessingOptions.mediumPriorityLevel;
-    } catch (e) { }
+    } catch (nfpMPLerror) { }
     if (mediumPriorityLevel === undefined) {
         mediumPriorityLevel = DEFAULT_MEDIUM_PRIORITY_LEVEL;
         // console.log(`Using default mediumPriorityLevel=${mediumPriorityLevel}`);
@@ -454,7 +454,7 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
     let sortBy;
     try {
         sortBy = optionalProcessingOptions.sortBy;
-    } catch (e) { }
+    } catch (npfSBerror) { }
     if (sortBy === undefined)
         optionalProcessingOptions.sortBy = 'ByPriority';
 
@@ -466,7 +466,7 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
     let maximumSimilarMessages;
     try {
         maximumSimilarMessages = optionalProcessingOptions.maximumSimilarMessages;
-    } catch (e) { }
+    } catch (npfMSMerror) { }
     if (typeof maximumSimilarMessages !== 'number' || isNaN(maximumSimilarMessages)) {
         maximumSimilarMessages = DEFAULT_MAXIMUM_SIMILAR_MESSAGES;
         // console.log(`Using default maximumSimilarMessages=${maximumSimilarMessages}`);

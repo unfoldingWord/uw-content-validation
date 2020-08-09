@@ -1,6 +1,6 @@
 import React from 'react';
 import MaterialTable from 'material-table';
-import { consoleLogObject } from '../core/utilities';
+// import { consoleLogObject } from '../core/utilities';
 
 
 export function RenderLines(props) {
@@ -45,7 +45,7 @@ export function RenderRawResults(props) {
         }
     // consoleLogObject('propertyList', propertyList);
 
-    if (!props.results.noticeList.length)
+    if (!props.results.noticeList || !props.results.noticeList.length)
         return <>
             <p><b>No notices were produced</b>:</p>
             <RenderSettings settings={props.results} />
@@ -389,6 +389,8 @@ export function RenderElapsedTime(props) {
     let remainingTime = Math.floor(props.elapsedTime / 60);
     const minutes = Math.round(remainingTime % 60);
     remainingTime = Math.floor(remainingTime / 60);
-    console.assert(remainingTime === 0);
-    return minutes? <>{minutes} minutes, {seconds} seconds</> : <>{seconds} seconds</>;
+    const hours = Math.round(remainingTime % 24);
+    remainingTime = Math.floor(remainingTime / 24);
+    console.assert(remainingTime === 0, `Elapsed time also contains ${remainingTime} days`);
+    return <>{hours? `${hours} hours, `:''}{minutes? `${minutes} minutes, `:''}{seconds} seconds</>;
 }
