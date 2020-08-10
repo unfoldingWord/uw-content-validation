@@ -8,7 +8,9 @@ const DEFAULT_EXTRACT_LENGTH = 10;
 
 
 function checkMarkdownText(textName, markdownText, givenLocation, optionalCheckingOptions) {
-    /* This function is optimised for checking the entire file, i.e., all lines.
+    /* This function is optimised for checking the entire markdown file, i.e., all lines.
+
+    Note: This function does not check that any link targets in the markdown are valid links.
 
      Returns a result object containing a successList and a noticeList
      */
@@ -76,7 +78,7 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
         for (const noticeEntry of dbtcResultObject.noticeList) {
             console.assert(noticeEntry.length === 5, `MD doOurBasicTextChecks notice length=${noticeEntry.length}`);
             if (!noticeEntry[1].startsWith("Unexpected doubled * characters") // 577 Markdown allows this
-                && !noticeEntry[1].startsWith("Unexpected * character after space") // 591
+                && !noticeEntry[1].startsWith("Unexpected * character after space") // 191
             )
                 addNotice5(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
         }

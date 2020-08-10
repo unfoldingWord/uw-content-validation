@@ -3,7 +3,7 @@ import checkFile from '../file-check/checkFile';
 // import { getFilelistFromFetchedTreemaps, getFilelistFromFetchedZip } from '../helpers';
 // import { fetchRepo, getBlobContent } from './helpers'
 import { fetchRepositoryZipFile, getFilelistFromZip, getFile } from '../../core/getApi';
-// import { fetchTree, fetchRepositoryZipFile, getFile, getURL } from '../../core/getApi';
+// import { fetchTree, fetchRepositoryZipFile, getFile, cachedGetURL } from '../../core/getApi';
 import { consoleLogObject } from '../../core/utilities';
 
 

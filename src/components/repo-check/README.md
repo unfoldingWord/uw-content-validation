@@ -15,12 +15,12 @@ import RepoCheck from './RepoCheck';
     // repoName='hbo_uhb' // OT books only
     // repoName='el-x-koine_ugnt' // NT books only
     // repoName='en_ult' // Can use ult or ust here
-    // repoName='en_tn' // Translation Notes (TSV tables)
+    repoName='en_tn' // Translation Notes (TSV tables)
     // repoName='en_tq' // Translation Questions (markdown files)
     // repoName='en_ta' // Translation Academy (markdown files)
     // repoName='en_tw' // Translation Words (markdown files)
     // repoName='en_obs' // Open Bible Stories (markdown files)
-    repoName='fr_ulb' // No alignment so smaller files (faster)
+    // repoName='fr_ulb' // No alignment so smaller files (faster)
 
     // If we don't put the branch here, the default branch is used
     // branch='master'

@@ -377,7 +377,7 @@ export function RenderSuccessesWarningsGradient(props) {
     return <>
         <b style={{ color: props.results.warningList.length ? 'limegreen' : 'green' }}>{successCount.toLocaleString()} check{props.results.successList.length === 1 ? '' : 's'} completed</b>{props.results.successList.length ? ':' : ''}
         <RenderSuccessesColoured results={props.results} />
-        <b style={{ color: props.results.warningList.length ? 'orange' : 'green' }}>{props.results.warningList.length.toLocaleString()} warning{props.results.warningList.length === 1 ? '' : 's'}</b>{props.results.warningList.length ? ':' : ''}
+        <b style={{ color: props.results.warningList.length ? 'orange' : 'green' }}>{props.results.warningList.length.toLocaleString()} warning notice{props.results.warningList.length === 1 ? '' : 's'}</b>{props.results.warningList.length ? ':' : ''}
         <small style={{ color: 'Gray' }}>{props.results.numSuppressedWarnings ? " (" + props.results.numSuppressedWarnings.toLocaleString() + " similar one" + (props.results.numSuppressedWarnings === 1 ? '' : 's') + " suppressed)" : ''}</small>
         {props.results.warningList.length ? <RenderWarningsGradient results={props.results} /> : ""}
     </>;

@@ -100,11 +100,11 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     }
 
     if (fieldText[0] === ' ') {
-        const extract = fieldText.substring(0, 10).replace(/ /g, '␣') + (fieldText.length > extractLength ? '…' : '');
+        const extract = fieldText.substring(0, extractLength).replace(/ /g, '␣') + (fieldText.length > extractLength ? '…' : '');
         addNotice5(106, "Unexpected leading space" + (fieldText[1] === ' ' ? "s" : ""), 0, extract, ourAtString);
     }
     if (fieldText.substring(0, 4) === '<br>' || fieldText.substring(0, 5) === '<br/>' || fieldText.substring(0, 6) === '<br />') {
-        const extract = fieldText.substring(0, 10) + (fieldText.length > extractLength ? '…' : '');
+        const extract = fieldText.substring(0, extractLength) + (fieldText.length > extractLength ? '…' : '');
         addNotice5(107, "Unexpected leading break", 0, extract, ourAtString);
     }
     if (fieldText[fieldText.length - 1] === ' ') {

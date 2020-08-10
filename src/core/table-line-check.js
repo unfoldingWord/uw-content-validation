@@ -2,6 +2,7 @@ import * as books from '../core/books/books';
 import doBasicTextChecks from './basic-text-check';
 import checkMarkdownText from './markdown-text-check';
 import checkTAReference from './ta-reference-check';
+import checkTNLinks from './tn-links-check';
 import checkOriginalLanguageQuote from './quote-check';
 
 
@@ -165,6 +166,31 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
     }
     // end of ourCheckTNOriginalLanguageQuote function
 
+    async function ourCheckTNLinks(fieldName, taLinkText, rowLocation, optionalCheckingOptions) {
+        // Checks that the TA reference can be found
+
+        // Updates the global list of notices
+
+        // console.log(`cTSVrow ourCheckTNLinks(${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
+        console.assert(fieldName !== undefined, "cTSVrow ourCheckTNLinks: 'fieldName' parameter should be defined");
+        console.assert(typeof fieldName === 'string', `cTSVrow ourCheckTNLinks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        console.assert(taLinkText !== undefined, "cTSVrow ourCheckTNLinks: 'taLinkText' parameter should be defined");
+        console.assert(typeof taLinkText === 'string', `cTSVrow ourCheckTNLinks: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
+
+        const coqResultObject = await checkTNLinks(BBB, fieldName, taLinkText, rowLocation, optionalCheckingOptions);
+
+        // Choose only ONE of the following
+        // This is the fast way of append the results from this field
+        // result.noticeList = result.noticeList.concat(coqResultObject.noticeList);
+        // If we need to put everything through addNotice5to8, e.g., for debugging or filtering
+        //  process results line by line
+        for (const noticeEntry of coqResultObject.noticeList) {
+            console.assert(noticeEntry.length === 5, `TL ourCheckTNLinks notice length=${noticeEntry.length}`);
+            addNotice5to8(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+        }
+    }
+    // end of ourCheckTNLinks function
+
 
     // Main code for checkTN_TSVDataRow function
     if (line === EXPECTED_TN_HEADING_LINE) // Assume it must be ok
@@ -199,7 +225,7 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
 
     let fields = line.split('\t');
     if (fields.length === NUM_EXPECTED_TSV_FIELDS) {
-        let [B, C, V, fieldID, support_reference, orig_quote, occurrence, GL_quote, occurrenceNote] = fields;
+        let [B, C, V, fieldID, supportReference, origQuote, occurrence, GLQuote, occurrenceNote] = fields;
         // let withString = " with '" + fieldID + "'" + inString;
         // let CV_withString = ' ' + C + ':' + V + withString;
         // let atString = " at " + B + ' ' + C + ':' + V + " (" + fieldID + ")" + inString;
@@ -218,12 +244,12 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
             else if (/^\d+$/.test(C)) {
                 let intC = Number(C);
                 if (intC === 0) {
-                    addNotice5to8(824, `Invalid zero '${C}' chapter number`, -1, "", ourRowLocation);
+                    addNotice5to8(824, `Invalid zero chapter number`, -1, C, ourRowLocation);
                     haveGoodChapterNumber = false;
                 }
                 // TODO: Does this next section need rewriting (see verse check below)???
                 else if (intC > numChaptersThisBook) {
-                    addNotice5to8(823, `Invalid large '${C}' chapter number`, -1, "", ourRowLocation);
+                    addNotice5to8(823, `Invalid large chapter number`, -1, C, ourRowLocation);
                     haveGoodChapterNumber = false;
                 }
                 try {
@@ -278,16 +304,16 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
                 addNotice5to8(173, "ID characters should only be lowercase letters, digits, or hypen", 2, "", ` (not '${fieldID[2]}')${ourRowLocation}`)
         }
 
-        if (support_reference.length) { // need to check UTN against UTA
-            doOurBasicTextChecks('SupportReference', support_reference, true, ourRowLocation, optionalCheckingOptions);
-            await ourCheckTAReference('SupportReference', support_reference, ourRowLocation, optionalCheckingOptions);
+        if (supportReference.length) { // need to check UTN against UTA
+            doOurBasicTextChecks('SupportReference', supportReference, true, ourRowLocation, optionalCheckingOptions);
+            await ourCheckTAReference('SupportReference', supportReference, ourRowLocation, optionalCheckingOptions);
         }
         // else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
         //     addNotice5to8(277, "Missing SupportReference field", -1, "", ourRowLocation);
 
-        if (orig_quote.length) { // need to check UTN against UHB and UGNT
-            doOurBasicTextChecks('OrigQuote', orig_quote, false, ourRowLocation, optionalCheckingOptions);
-            await ourCheckTNOriginalLanguageQuote('OrigQuote', orig_quote, ourRowLocation, optionalCheckingOptions);
+        if (origQuote.length) { // need to check UTN against UHB and UGNT
+            doOurBasicTextChecks('OrigQuote', origQuote, false, ourRowLocation, optionalCheckingOptions);
+            await ourCheckTNOriginalLanguageQuote('OrigQuote', origQuote, ourRowLocation, optionalCheckingOptions);
         }
         else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             if (V !== 'intro')
@@ -295,7 +321,7 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
 
         if (occurrence.length) { // This should usually be a digit
             if (occurrence === '0') { // zero means that it doesn't occur
-                if (orig_quote.length)
+                if (origQuote.length)
                     addNotice5to8(550, "Invalid zero occurrence field when we have an original quote", -1, "", ourRowLocation);
                 // if (V !== 'intro')
                 //     addNotice5to8(500, "Invalid zero occurrence field", -1, "", rowLocation);
@@ -306,9 +332,9 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
                 addNotice5to8(792, `Invalid '${occurrence}' occurrence field`, -1, "", ourRowLocation);
         }
 
-        if (GL_quote.length) { // TODO: need to check UTN against ULT
+        if (GLQuote.length) { // TODO: need to check UTN against ULT
             if (V !== 'intro')
-                doOurBasicTextChecks('GLQuote', GL_quote, false, ourRowLocation, optionalCheckingOptions);
+                doOurBasicTextChecks('GLQuote', GLQuote, false, ourRowLocation, optionalCheckingOptions);
         }
         else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             if (V !== 'intro')
@@ -316,7 +342,7 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
 
         if (occurrenceNote.length) {
             doOurMarkdownTextChecks('OccurrenceNote', occurrenceNote, true, ourRowLocation, optionalCheckingOptions);
-            // TODO: We need to check links, e.g., to TA [[rc://en/ta/man/translate/figs-rquestion]]
+            await ourCheckTNLinks('OccurrenceNote', occurrenceNote, ourRowLocation, optionalCheckingOptions);
         }
         else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             addNotice5to8(274, "Missing OccurrenceNote field", -1, "", ourRowLocation);

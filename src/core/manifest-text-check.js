@@ -82,7 +82,7 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
         /* // Process results line by line
         //  suppressing undesired errors
         for (const noticeEntry of cYtResultObject.noticeList)
-            if (noticeEntry[0] !== 591
+            if (noticeEntry[0] !== 191 // "Unexpected XXX character after space"
               && noticeEntry[1] !== "Unexpected ' character after space"
               && noticeEntry[1] !== "Unexpected space after ' character"
               && noticeEntry[1] !== "Unexpected space after [ character"

@@ -1,5 +1,5 @@
 import { doBasicTextChecks } from './basic-text-check'
-import { getURL } from './getApi';
+import { cachedGetURL } from './getApi';
 
 
 const LINK_VALIDATOR_VERSION = '0.2.1';
@@ -37,7 +37,7 @@ async function startLiveLinksCheck(linksList, existingNoticeList, callbackFuncti
         const fetchLink = linkEntry[1]? linkEntry[1]: linkEntry[2]; // Why ??? !!!
         console.log("startLiveLinksCheck attempting to fetch", fetchLink, '…');
         try {
-            let response = await getURL(fetchLink);
+            let response = await cachedGetURL(fetchLink);
             const reponseText = response.text();
             console.log("startLiveLinksCheck got response: ", reponseText.length, reponseText);
         } catch (lcError) {

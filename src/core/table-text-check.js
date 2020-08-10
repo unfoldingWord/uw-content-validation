@@ -91,7 +91,7 @@ async function checkTN_TSVText(BBB, tableText, givenLocation, optionalCheckingOp
             let fields = lines[n].split('\t');
             if (fields.length === NUM_EXPECTED_TN_FIELDS) {
                 let [B, C, V, fieldID, _support_reference, _orig_quote, _occurrence, _GL_quote, _occurrenceNote] = fields;
-                let withString = ` with '${fieldID}'${inString}`;
+                let withString = ` with ID '${fieldID}'${inString}`;
                 // let CV_withString = ` ${C}:${V}${withString}`;
                 // let atString = ` at ${B} ${C}:${V} (${fieldID})${inString}`;
 

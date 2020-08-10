@@ -3,16 +3,17 @@ import { getFile } from '../core/getApi';
 // import { consoleLogObject } from '../core/utilities';
 
 
-const TA_REFERENCE_VALIDATOR_VERSION = '0.1.0';
+const TA_REFERENCE_VALIDATOR_VERSION = '0.1.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
 async function checkTAReference(fieldName, fieldText, givenLocation, optionalCheckingOptions) {
-    // Checks that the Hebrew/Greek quote can be found in the original texts
+    // This is for the case of the full SupportReference field being the article link
+    //  which is assumed to be in the translate part of the TA manual.
 
-    // Note that the original language verse text can be passed in as optionalCheckingOptions.taVerseText.
-    // Alternatively, we can fetch it from Door43 -- you can control this with:
+    // We fetch the TA link from Door43 to test that it's really there
+    //  -- you can control this with:
     //      optionalCheckingOptions.taRepoUsername
     //      optionalCheckingOptions.taRepoBranch (or tag)
     //      optionalCheckingOptions.taRepoLanguageCode
@@ -29,7 +30,7 @@ async function checkTAReference(fieldName, fieldText, givenLocation, optionalChe
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
-    ourLocation = ` in ${fieldName}${ourLocation}`;
+    if (fieldName) ourLocation = ` in ${fieldName}${ourLocation}`;
 
     const ctarResult = { noticeList: [] };
 
@@ -85,7 +86,7 @@ async function checkTAReference(fieldName, fieldText, givenLocation, optionalChe
     try {
         sectionName = optionalCheckingOptions.taRepoSectionName;
     } catch (trcSNerror) { }
-    if (!sectionName) sectionName = 'translation';
+    if (!sectionName) sectionName = 'translate';
     const taRepoName = `${languageCode}_ta`;
     const filepath = `${sectionName}/${fieldText}/01.md`; // Other files are title.md, sub-title.md
 

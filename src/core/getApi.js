@@ -9,16 +9,18 @@ import { consoleLogObject } from '../core/utilities';
 const baseURL = 'https://git.door43.org/';
 const apiPath = 'api/v1';
 
-const cacheStore = localforage.createInstance({
-  driver: [localforage.INDEXEDDB],
-  name: 'web-cache',
-});
+
+const failedLinkList = [];
 
 const zipStore = localforage.createInstance({
   driver: [localforage.INDEXEDDB],
   name: 'zip-store',
 });
 
+const cacheStore = localforage.createInstance({
+  driver: [localforage.INDEXEDDB],
+  name: 'web-cache',
+});
 
 const Door43Api = setup({
   baseURL: baseURL,
@@ -41,6 +43,7 @@ export async function clearCaches() {
   // const tasks = [zipStore, cacheStore].map(localforage.clear);
   // const results = await Promise.all(tasks);
   // results.forEach(x => console.log("Done it", x));
+  failedLinkList.clear();
   await zipStore.clear();
   await cacheStore.clear();
 }
@@ -98,22 +101,29 @@ async function fetchManifest({username, repository}) {
 
 // https://git.door43.org/unfoldingword/en_ult/raw/branch/master/manifest.yaml
 async function fetchFileFromServer({ username, repository, path, branch = 'master' }) {
-  console.log(`fetchFileFromServer(${username}, ${repository}, ${path}, ${branch})…`);
+  // console.log(`fetchFileFromServer(${username}, ${repository}, ${path}, ${branch})…`);
   const repoExists = await repositoryExists({ username, repository });
   if (repoExists) {
     const uri = Path.join(username, repository, 'raw/branch', branch, path);
+    if (failedLinkList.indexOf(uri) >= 0) {
+      // console.log(`Failed previously for ${uri}`);
+      return null;
+    }
     try {
       // console.log("URI=",uri);
-      const data = await get({ uri });
+      const data = await cachedGet({ uri });
       // console.log("Got data", data);
       return data;
     }
-    catch (error) {
+    catch (fffsError) {
+      console.log(`ERROR: Could not fetch ${path}: ${fffsError}`)
+      failedLinkList.push(uri);
       return null;
     }
   } else {
-    console.log("ERROR: Repo does not exist!", repository)
-    return null;
+    console.log(`ERROR: Repo '${repository}' does not exist!`);
+      failedLinkList.push(uri);
+      return null;
   }
 };
 
@@ -133,7 +143,7 @@ async function getUID({ username }) {
   // console.log(`getUID(${username})…`);
   const uri = Path.join(apiPath, 'users', username);
   // console.log(`getUID uri=${uri}`);
-  const user = await get({ uri });
+  const user = await cachedGet({ uri });
   // console.log(`getUID user=${user}`);
   const { id: uid } = user;
   // console.log(`  getUID returning: ${uid}`);
@@ -148,7 +158,7 @@ async function repositoryExists({ username, repository }) {
   // console.log(`repositoryExists params=${JSON.stringify(params)}`);
   const uri = Path.join(apiPath, 'repos', `search`);
   // console.log(`repositoryExists uri=${uri}`);
-  const { data: repos } = await get({ uri, params });
+  const { data: repos } = await cachedGet({ uri, params });
   // console.log(`repositoryExists repos (${repos.length})=${repos}`);
   // for (const thisRepo of repos) console.log(`  thisRepo (${JSON.stringify(Object.keys(thisRepo))}) =${JSON.stringify(thisRepo.name)}`);
   const repo = repos.filter(repo => repo.name === repository)[0];
@@ -158,18 +168,18 @@ async function repositoryExists({ username, repository }) {
 };
 
 
-async function get({ uri, params }) {
-  // console.log(`get(${uri}, ${JSON.stringify(params)})…`);
+async function cachedGet({ uri, params }) {
+  // console.log(`cachedGet(${uri}, ${JSON.stringify(params)})…`);
   // console.log(`  get querying: ${baseURL+uri}`);
   const { data } = await Door43Api.get(baseURL + uri, { params });
-  // console.log(`  get returning: ${JSON.stringify(data)}`);
+  // console.log(`  cachedGet returning: ${JSON.stringify(data)}`);
   return data;
 };
 
-export async function getURL({ uri, params }) {
-  // console.log(`getURL(${uri}, ${params})…`);
+export async function cachedGetURL({ uri, params }) {
+  // console.log(`cachedGetURL(${uri}, ${params})…`);
   const { data } = await Door43Api.get(uri, { params });
-  // console.log(`  returning: ${data}`);
+  // console.log(`  cachedGetURL returning: ${data}`);
   return data;
 };
 
@@ -281,7 +291,7 @@ export async function fetchTree({ username, repository, sha = 'master' }) {
   try {
     const uri = Path.join('api/v1/repos', username, repository, 'git/trees', sha);
     // console.log(`  uri='${uri}'`);
-    const data = await get({ uri });
+    const data = await cachedGet({ uri });
     // console.log(`  data (${typeof data})`);
     return data;
     // const tree = JSON.parse(data); // RJH: Why was this here???

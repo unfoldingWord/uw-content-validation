@@ -95,7 +95,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
 
                 if (displayType === 'ErrorsWarnings') {
                     const processedResults = processNoticesToErrorsWarnings(rawCRResults, processOptions);
-                    displayPropertyNames("RC processedResults", processedResults);
+                    // displayPropertyNames("RC processedResults", processedResults);
                     //             console.log(`RepoCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
                     //   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()}`, "numSuppressedErrors=" + processedResults.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + processedResults.numSuppressedWarnings.toLocaleString());
 
