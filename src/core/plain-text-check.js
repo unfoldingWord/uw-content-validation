@@ -2,7 +2,7 @@ import { isWhitespace, countOccurrences } from './text-handling-functions'
 import doBasicTextChecks from './basic-text-check';
 
 
-const PLAIN_TEXT_VALIDATOR_VERSION = '0.0.1';
+const PLAIN_TEXT_VALIDATOR_VERSION = '0.0.2';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -43,7 +43,7 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
         console.assert(typeof priority==='number', "cPT addNotice8: 'priority' parameter should be a number not a '"+(typeof priority)+"': "+priority);
         console.assert(BBB !== undefined, "cPT addNotice9: 'BBB' parameter should be defined");
         console.assert(typeof BBB === 'string', "cPT addNotice9: 'BBB' parameter should be a string not a '" + (typeof BBB) + "'");
-        console.assert(BBB.length === 3, `cTQ addNotice9: 'BBB' parameter should be three characters long not ${BBB.length}`);
+        console.assert(BBB.length === 3, `cPT addNotice9: 'BBB' parameter should be three characters long not ${BBB.length}`);
         console.assert(C !== undefined, "cPT addNotice9: 'C' parameter should be defined");
         console.assert(typeof C === 'string', "cPT addNotice9: 'C' parameter should be a string not a '" + (typeof C) + "'");
         console.assert(V !== undefined, "cPT addNotice9: 'V' parameter should be defined");

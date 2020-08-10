@@ -43,7 +43,7 @@ export async function clearCaches() {
   // const tasks = [zipStore, cacheStore].map(localforage.clear);
   // const results = await Promise.all(tasks);
   // results.forEach(x => console.log("Done it", x));
-  failedLinkList.clear();
+  failedLinkList.length = 0;
   await zipStore.clear();
   await cacheStore.clear();
 }
@@ -122,8 +122,8 @@ async function fetchFileFromServer({ username, repository, path, branch = 'maste
     }
   } else {
     console.log(`ERROR: Repo '${repository}' does not exist!`);
-      failedLinkList.push(uri);
-      return null;
+    failedLinkList.push(uri);
+    return null;
   }
 };
 
@@ -220,7 +220,18 @@ export async function getFilelistFromZip({ username, repository, branch, optiona
   // console.log(`getFilelistFromZip(${username}, ${repository}, ${branch}, ${optionalPrefix})…`);
 
   const uri = zipUri({ username, repository, branch });
-  const zipBlob = await zipStore.getItem(uri);
+  let zipBlob = await zipStore.getItem(uri);
+
+  if (!zipBlob) { // Seems that we need to load the zip file first
+    const response = await fetch(uri);
+    if (response.status === 200 || response.status === 0) {
+      const zipArrayBuffer = await response.arrayBuffer(); // blob storage not supported on mobile
+      zipBlob = await zipStore.setItem(uri, zipArrayBuffer);
+    } else {
+      console.log(`ERROR: getFilelistFromZip got response status: ${response.status}`);
+      return [];
+    }
+  }
 
   const pathList = [];
   try {
@@ -245,12 +256,12 @@ export async function getFilelistFromZip({ username, repository, branch, optiona
         }
       })
     }
-    // else console.log("  No zipBlob");
+    // else console.log("  getFilelistFromZip: No zipBlob");
   } catch (error) {
     console.log(`ERROR: getFilelistFromZip got: ${error.message}`);
   }
 
-  // console.log(`getFilelistFromZip is returning (${pathList.length}) ${pathList}`);
+  // console.log(`getFilelistFromZip is returning (${pathList.length}) entries: ${pathList}`);
   return pathList;
 }
 

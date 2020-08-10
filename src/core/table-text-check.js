@@ -177,7 +177,7 @@ async function checkTN_TSVText(BBB, tableText, givenLocation, optionalCheckingOp
                 //     console.log(`  Line ${n}: Has ${fields.length} field(s) instead of ${NUM_EXPECTED_TN_FIELDS}: ${EXPECTED_TN_HEADING_LINE.replace(/\t/g, ', ')}`);
                 // else
                 if (n !== lines.length - 1) // it's not the last line
-                    addCVNotice7(988, "","", "Wrong number of tabbed fields", -1, '', inString)
+                    addCVNotice7(988, "","", `Wrong number of tabbed fields (expected ${NUM_EXPECTED_TN_FIELDS})`, -1, `Found ${fields.length} fields`, inString)
         }
     }
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}.`);

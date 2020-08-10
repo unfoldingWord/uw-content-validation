@@ -3,7 +3,7 @@ import { getFile } from '../core/getApi';
 // import { consoleLogObject } from '../core/utilities';
 
 
-const QUOTE_VALIDATOR_VERSION = '0.1.2';
+const QUOTE_VALIDATOR_VERSION = '0.2.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -95,6 +95,12 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, given
             }
         }
 
+        // Do global fixes
+        originalUSFM = originalUSFM.replace(/\\k-e\\\*/g, ''); // Remove \k-e self-closed milestones
+        originalUSFM = originalUSFM.replace(/\\k-s.+?\\\*/g, ''); // Remove \k-s self-closed milestones
+
+
+        // Now find the desired C:V
         let foundChapter = false, foundVerse = false;
         let verseText = '';
         for (const bookLine of originalUSFM.split('\n')) {
@@ -113,7 +119,7 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, given
                 verseText += (bookLine.startsWith('\\f ') ? '' : ' ') + bookLine;
             }
         }
-        verseText = verseText.replace('\\p', '').trim().replace('  ', ' ')
+        verseText = verseText.replace(/\\p/g, '').trim().replace(/  /g, ' ')
         // console.log(`Got verse text1: '${verseText}'`);
 
         // Remove \w fields (just leaving the actual Bible text words)
@@ -127,7 +133,7 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, given
                 verseText = verseText.substring(0, ixW) + adjusted_field + verseText.substring(ixEnd + 3);
             } else {
                 console.log(`Missing \\w* in ${B} ${C}:${V} verseText: '${verseText}'`);
-                verseText = verseText.replace('\\w ', '', 1); // Attempt to limp on
+                verseText = verseText.replace(/\\w /g, '', 1); // Attempt to limp on
             }
             ixW = verseText.indexOf('\\w ', ixW + 1); // Might be another one
         }
@@ -140,7 +146,10 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, given
         // print(`Got verse text3: '{verseText}'")
 
         // Final clean-up (shouldn't be necessary, but just in case)
-        verseText = verseText.replace('  ', ' ');
+        verseText = verseText.replace(/  /g, ' ');
+        console.assert(verseText.indexOf('\\w') === -1, `getPassage: Should be no \\w in ${BBB} ${C}:${V} '${verseText}'`);
+        console.assert(verseText.indexOf('\\k') === -1, `getPassage: Should be no \\k in ${BBB} ${C}:${V} '${verseText}'`);
+        console.assert(verseText.indexOf('x-') === -1, `getPassage: Should be no x- in ${BBB} ${C}:${V} '${verseText}'`);
         // console.log(`  getPassage(${BBB} ${C}:${V}) is returning '${verseText}'`);
         return verseText;
     }
@@ -234,7 +243,7 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, given
             if (remainingBits.length > 2) // Join the extra bits back up
                 remainingBits = [remainingBits[0], remainingBits.slice(1).join('…')];
             console.assert(remainingBits.length === 2, `remaining bits are ${remainingBits.length}`);
-            if (remainingBits[0] && remainingBits[0].slice(-1).search(/[^A-Za-z\s*]/) !== -1) {
+            if (remainingBits[0] && remainingBits[0].slice(-1).search(/[^A-Za-z\s*\(]/) !== -1) {
                 const badChar = remainingBits[0].slice(-1);
                 const badCharString = ` by '{badChar}' {unicodedata.name(badChar)}={hex(ord(badChar))}`;
                 // console.log(`Seems '${fieldText}' might not start at the beginning of a word—it's preceded ${badCharString} in '${verseText}'`);
@@ -242,7 +251,7 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, given
                 addNotice5(620, "Seems original language quote might not start at the beginning of a word", 0, extract, ourLocation);
             }
             // Note: There's some Hebrew (RTL) characters at the beginning of the following regex
-            if (remainingBits[1] && remainingBits[1][0].search(/[^׃־A-Za-z\s.,:;?!–]/) !== -1) {
+            if (remainingBits[1] && remainingBits[1][0].search(/[^׃־A-Za-z\s.,:;?!–)]/) !== -1) {
                 const badChar = remainingBits[1][0];
                 const badCharString = ` by '${badChar}' {unicodedata.name(badChar)}={hex(ord(badChar))}`;
                 // console.log(`Seems '${fieldText}' might not finish at the end of a word—it's followed ${badCharString} in '${verseText}'`);
@@ -252,8 +261,10 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, given
         } else { // can't find the given text
             // console.log(`Unable to find '${fieldText}' in '${verseText}'`);
             const extraText = fieldText.indexOf('\u00A0') >= 0 ? " (contains No-Break Space shown as '⍽')" : "";
-            if (extraText) fieldText = fieldText.replace('\u00A0', '⍽');
+            if (extraText) fieldText = fieldText.replace(/\u00A0/g, '⍽');
             const extract = fieldText.substring(0, halfLength) + (fieldText.length > 2*halfLength? '…':'') + fieldText.substring(fieldText.length-halfLength, fieldText.length);
+            console.log(`722 fieldText='${fieldText}'${extraText}`);
+            console.log(`722 verseText='${verseText}'`);
             addNotice5(722, "Unable to find original language quote in verse text", -1, extract, ourLocation);
 
         }

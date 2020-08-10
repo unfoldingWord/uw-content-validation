@@ -6,11 +6,11 @@ import { getFilelistFromZip, getFile } from '../../core/getApi';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-const CHECKER_VERSION_STRING = '0.2.1';
+const CHECKER_VERSION_STRING = '0.2.2';
 
 
-async function checkTQbook(username, repoName, branch, bookCode, checkingOptions) {
-    // console.log(`checkTQbook(${username}, ${repoName}, ${branch}, ${bookCode}, …)…`);
+async function checkTQbook(username, repoName, branch, BBB, checkingOptions) {
+    // console.log(`checkTQbook(${username}, ${repoName}, ${branch}, ${BBB}, …)…`);
 
     const repoCode = 'TQ';
     const generalLocation = `in ${username} ${repoName} (${branch})`;
@@ -23,7 +23,7 @@ async function checkTQbook(username, repoName, branch, bookCode, checkingOptions
     }
 
     function addNotice9(priority, BBB, C, V, message, index, extract, location, extra) {
-        // console.log(`checkTQbook addNotice9: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // console.log(`checkTQbook addNotice9: (priority=${priority}) ${BBB} ${C}:${V} ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cTQ addNotice9: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cTQ addNotice9: 'priority' parameter should be a number not a '${typeof priority}'`);
         console.assert(BBB !== undefined, "cTQ addNotice9: 'BBB' parameter should be defined");
@@ -47,7 +47,7 @@ async function checkTQbook(username, repoName, branch, bookCode, checkingOptions
     }
 
 
-    async function doOurCheckFile(repoCode, filename, file_content, fileLocation, optionalCheckingOptions) {
+    async function doOurCheckFile(repoCode, BBB, C, V, filename, file_content, fileLocation, optionalCheckingOptions) {
         // console.log(`checkBookPackage doOurCheckFile(${filename})`);
 
         // Updates the global list of notices
@@ -69,7 +69,7 @@ async function checkTQbook(username, repoName, branch, bookCode, checkingOptions
             // noticeEntry is an array of eight fields: 1=priority, 2=BBB, 3=C, 4=V, 5=msg, 6=index, 7=extract, 8=location
             console.assert(noticeEntry.length === 5, `cTQ doOurCheckFile notice length=${noticeEntry.length}`);
             // We add the repoCode as an extra value
-            addNotice9(noticeEntry[0], '', '', '', noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], repoCode);
+            addNotice9(noticeEntry[0], BBB, C, V, noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], repoCode);
         }
     }
     // end of doOurCheckFile function
@@ -78,9 +78,16 @@ async function checkTQbook(username, repoName, branch, bookCode, checkingOptions
     // Main code for checkTQbook
     // We need to find an check all the markdown folders/files for this book
     let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(['md']), totalCheckedSize = 0;
-    const pathList = await getFilelistFromZip({ username, repository: repoName, branch, optionalPrefix: `${bookCode.toLowerCase()}/` });
+    const pathList = await getFilelistFromZip({ username, repository: repoName, branch, optionalPrefix: `${BBB.toLowerCase()}/` });
+    // console.log(`  Got ${pathList.length} pathList entries`)
     for (const thisPath of pathList) {
         // console.log("checkTQbook: Try to load", username, repoName, thisPath, branch);
+
+        console.assert(thisPath.endsWith('.md'), `Expected ${thisPath} to end with .md`);
+        const pathParts = thisPath.slice(0,-3).split('/');
+        const C = pathParts[pathParts.length-2].replace(/^0+(?=\d)/, '');
+        const V = pathParts[pathParts.length-1].replace(/^0+(?=\d)/, '');
+
         let tqFileContent;
         try {
             tqFileContent = await getFile({ username, repository: repoName, path: thisPath, branch });
@@ -88,14 +95,14 @@ async function checkTQbook(username, repoName, branch, bookCode, checkingOptions
             checkedFilenames.push(thisPath);
             totalCheckedSize += tqFileContent.length;
         } catch (tQerror) {
-            console.log("Failed to load", username, repoName, thisPath, branch, tQerror + '');
-            addNotice9(996, bookCode, "", "", "Failed to load", -1, "", `${generalLocation} ${thisPath}: ${tQerror}`, repoCode);
+            console.log("checkTQbook failed to load", username, repoName, thisPath, branch, tQerror + '');
+            addNotice9(996, BBB, C, V, "Failed to load", -1, "", `${generalLocation} ${thisPath}: ${tQerror}`, repoCode);
             continue;
         }
 
         // We use the generalLocation here (does not include repo name)
         //  so that we can adjust the returned strings ourselves
-        await doOurCheckFile(repoCode, thisPath, tqFileContent, generalLocation, checkingOptions); // Adds the notices to checkBookPackageResult
+        await doOurCheckFile(repoCode, BBB, C, V, thisPath, tqFileContent, generalLocation, checkingOptions); // Adds the notices to checkBookPackageResult
         checkedFileCount += 1;
         // addSuccessMessage(`Checked ${repoCode.toUpperCase()} file: ${thisPath}`);
     }
@@ -105,6 +112,7 @@ async function checkTQbook(username, repoName, branch, bookCode, checkingOptions
     ctqResult.checkedFilenames = checkedFilenames;
     ctqResult.checkedFilenameExtensions = [...checkedFilenameExtensions]; // convert Set to Array
     ctqResult.checkedFilesizes = totalCheckedSize;
+    // console.log(`  checkTQbook returning ${JSON.stringify(ctqResult)}`);
     return ctqResult;
 }
 // end of checkTQbook function
@@ -267,13 +275,6 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
                 filename = `${language_code}_tn_${bookNumberAndName}.tsv`;
                 checkedFilenameExtensions.add('tsv');
             }
-            /*
-            else if (repoCode === 'TQ') {
-                // How are we going to handle all these folders of .md files ???
-                // This resource will eventually be converted to TSV tables
-                filename = bookCode.toLowerCase() + '/01/01.md';
-                checkedFilenameExtensions.add('md');
-            } */
 
             if (repoCode === 'TQ') {
                 // This resource might eventually be converted to TSV tables
