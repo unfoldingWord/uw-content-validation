@@ -113,12 +113,12 @@ async function checkTNLinks(BBB, fieldName, fieldText, givenLocation, optionalCh
             // console.log("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
         } catch (trcGCerror) {
             console.log("ERROR: Failed to load", username, taRepoName, filepath, branch, trcGCerror.message);
-            addNotice5(886, "Error loading TA link", -1, fieldText, `${ourLocation} ${filepath}: ${trcGCerror}`);
+            addNotice5(885, `Error loading ${fieldName} TA link`, -1, resultArray[0], `${ourLocation} ${filepath}: ${trcGCerror}`);
         }
         if (!taFileContent)
-            addNotice5(887, "Unable to find TA link", -1, fieldText, `${ourLocation} ${filepath}`);
+            addNotice5(886, `Unable to find ${fieldName} TA link`, -1, resultArray[0], `${ourLocation} ${filepath}`);
         else if (taFileContent.length < 10)
-            addNotice5(885, "Linked TA article seems empty", -1, fieldText, `${ourLocation} ${filepath}`);
+            addNotice5(884, `Linked ${fieldName} TA article seems empty`, -1, resultArray[0], `${ourLocation} ${filepath}`);
     }
 
     // Check TW links like [[rc://en/tw/dict/bible/other/death]]
@@ -141,12 +141,12 @@ async function checkTNLinks(BBB, fieldName, fieldText, givenLocation, optionalCh
             // console.log("Fetched fileContent for", twRepoName, filepath, typeof fileContent, fileContent.length);
         } catch (trcGCerror) {
             console.log("ERROR: Failed to load", username, twRepoName, filepath, branch, trcGCerror.message);
-            addNotice5(886, "Error loading TA link", -1, fieldText, `${ourLocation} ${filepath}: ${trcGCerror}`);
+            addNotice5(882, `Error loading ${fieldName} TW link`, -1, resultArray[0], `${ourLocation} ${filepath}: ${trcGCerror}`);
         }
         if (!taFileContent)
-            addNotice5(887, "Unable to find TA link", -1, fieldText, `${ourLocation} ${filepath}`);
+            addNotice5(883, `Unable to find ${fieldName} TW link`, -1, resultArray[0], `${ourLocation} ${filepath}`);
         else if (taFileContent.length < 10)
-            addNotice5(885, "Linked TA article seems empty", -1, fieldText, `${ourLocation} ${filepath}`);
+            addNotice5(881, `Linked ${fieldName} TW article seems empty`, -1, resultArray[0], `${ourLocation} ${filepath}`);
     }
 
     // Check Bible links like [Revelation 3:11](../03/11.md)

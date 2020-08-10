@@ -97,12 +97,12 @@ async function checkTAReference(fieldName, fieldText, givenLocation, optionalChe
         // console.log("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
     } catch (trcGCerror) {
         console.log("ERROR: Failed to load", username, taRepoName, filepath, branch, trcGCerror.message);
-        addNotice5(886, "Error loading TA link", -1, fieldText, `${ourLocation} ${filepath}: ${trcGCerror}`);
+        addNotice5(888, `Error loading ${fieldName} TA link`, -1, fieldText, `${ourLocation} ${filepath}: ${trcGCerror}`);
     }
     if (!taFileContent)
-        addNotice5(887, "Unable to find TA link", -1, fieldText, `${ourLocation} ${filepath}`);
+        addNotice5(889, `Unable to find ${fieldName} TA link`, -1, fieldText, `${ourLocation} ${filepath}`);
     else if ( taFileContent.length < 10)
-        addNotice5(885, "Linked TA article seems empty", -1, fieldText, `${ourLocation} ${filepath}`);
+        addNotice5(887, `Linked ${fieldName} TA article seems empty`, -1, fieldText, `${ourLocation} ${filepath}`);
 
     // console.log(`checkTAReference is returning ${JSON.stringify(ctarResult)}`);
     return ctarResult;
