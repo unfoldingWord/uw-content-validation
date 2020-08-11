@@ -11,11 +11,13 @@ import RepoCheck from './RepoCheck';
 
 <RepoCheck
   username = 'unfoldingWord'
+  username = 'Biblica'
+  repoName='vi-vcb15' // Translation Notes (TSV tables)
 
   // repoName='hbo_uhb' // OT books only
   // repoName='el-x-koine_ugnt' // NT books only
   // repoName='en_ult' // Can use ult or ust here
-  repoName='en_tn' // Translation Notes (TSV tables)
+  // repoName='en_tn' // Translation Notes (TSV tables)
   // repoName='en_tq' // Translation Questions (markdown files)
   // repoName='en_ta' // Translation Academy (markdown files)
   // repoName='en_tw' // Translation Words (markdown files)

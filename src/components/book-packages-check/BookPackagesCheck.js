@@ -7,7 +7,7 @@ import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSu
 import { ourParseInt, consoleLogObject } from '../../core/utilities';
 
 
-const CHECKER_VERSION_STRING = '0.0.2';
+const CHECKER_VERSION_STRING = '0.0.3';
 
 
 function BookPackagesCheck(/*username, language_code, bookCodes,*/ props) {
@@ -119,13 +119,13 @@ function BookPackagesCheck(/*username, language_code, bookCodes,*/ props) {
 
                 if (processedResults.severeList.length || processedResults.mediumList.length || processedResults.lowList.length)
                     setResultValue(<>
-                        <p>Checked <b>{filename}</b> (from {username} {repoName} <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)
+                        <p>Checked <b>{username} {language_code} {bookCodeList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
                         {processedResults.numIgnoredNotices ? " (but " + processedResults.numIgnoredNotices.toLocaleString() + " ignored errors/warnings)" : ""}</p>
                         <RenderSuccessesSevereMediumLow results={processedResults} />
                     </>);
                 else // no severe, medium, or low notices
                     setResultValue(<>
-                        <p>Checked <b>{filename}</b> (from {username} {repoName} <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)
+                        <p>Checked <b>{username} {language_code} {bookCodeList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
                         {processedResults.numIgnoredNotices ? " (with a total of " + processedResults.numIgnoredNotices.toLocaleString() + " notices ignored)" : ""}</p>
                         <RenderSuccessesSevereMediumLow results={processedResults} />
                     </>);
@@ -136,13 +136,13 @@ function BookPackagesCheck(/*username, language_code, bookCodes,*/ props) {
 
                 if (processedResults.warningList.length)
                     setResultValue(<>
-                        <p>Checked <b>{filename}</b> (from {username} {repoName} <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)
+                        <p>Checked <b>{username} {language_code} {bookCodeList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
                         {processedResults.numIgnoredNotices ? " (but " + processedResults.numIgnoredNotices.toLocaleString() + " ignored errors/warnings)" : ""}</p>
                         <RenderSuccessesWarningsGradient results={processedResults} />
                     </>);
                 else // no warnings
                     setResultValue(<>
-                        <p>Checked <b>{filename}</b> (from {username} {repoName} <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)
+                        <p>Checked <b>{username} {language_code} {bookCodeList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
                         {processedResults.numIgnoredNotices ? " (with a total of " + processedResults.numIgnoredNotices.toLocaleString() + " notices ignored)" : ""}</p>
                         <RenderSuccessesWarningsGradient results={processedResults} />
                     </>);

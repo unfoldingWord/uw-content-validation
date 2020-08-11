@@ -463,8 +463,11 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
                     // addCVNotice7(103, "Unexpected blank line", 0, '', atString);
                     continue;
                 }
-                if (line.indexOf('\r') >= 0)
-                    addCVNotice7(703, C, V, "Unexpected carriageReturn character", atString);
+                let index;
+                if ((index = line.indexOf('\r')) >= 0) {
+                    const extract = ``; // TODO xxxxxxxxxxxxxxxxxxx................................
+                    addCVNotice7(703, C, V, "Unexpected CarriageReturn character", index, extract, atString);
+                }
 
                 let marker, rest;
                 if (line[0] === '\\') {
@@ -552,7 +555,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
 
                 if (marker === 'id' && !rest.startsWith(BBB)) {
                     const thisLength = Math.max(4, extractLength);
-                    let extract = `${rest.substring(0, thisLength)}${rest.length > thisLength ? '…' : ''}`;
+                    const extract = `${rest.substring(0, thisLength)}${rest.length > thisLength ? '…' : ''}`;
                     addCVNotice7(987, C, V, "Expected \\id line to start with book code", 4, extract, atString);
                 }
                 // Check the order of markers

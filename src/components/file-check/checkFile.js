@@ -7,7 +7,7 @@ import checkTN_TSVText from '../../core/table-text-check';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-const CHECKER_VERSION_STRING = '0.1.2';
+const CHECKER_VERSION_STRING = '0.1.3';
 
 async function checkFile(filename, fileContent, givenLocation, checkingOptions) {
     // Determine the file type from the filename extension
@@ -32,6 +32,12 @@ async function checkFile(filename, fileContent, givenLocation, checkingOptions) 
         // console.log(`Have USFM filenameMain=${filenameMain}`);
         const BBB = filenameMain.substring(filenameMain.length - 3);
         // console.log(`Have USFM bookcode=${BBB}`);
+        checkFileResult = checkUSFMText(BBB, filename, fileContent, ourCFLocation, checkingOptions);
+    } else if (filename.toLowerCase().endsWith('.sfm')) {
+        const filenameMain = filename.substring(0, filename.length - 4); // drop .sfm
+        console.log(`Have SFM filenameMain=${filenameMain}`);
+        const BBB = filenameMain.substring(2, 5);
+        console.log(`Have SFM bookcode=${BBB}`);
         checkFileResult = checkUSFMText(BBB, filename, fileContent, ourCFLocation, checkingOptions);
     } else if (filename.toLowerCase().endsWith('.md'))
         checkFileResult = checkMarkdownText(filename, fileContent, ourCFLocation, checkingOptions);

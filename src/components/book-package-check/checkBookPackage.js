@@ -6,7 +6,7 @@ import { getFilelistFromZip, getFile } from '../../core/getApi';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-const CHECKER_VERSION_STRING = '0.2.2';
+const CHECKER_VERSION_STRING = '0.2.3';
 
 
 async function checkTQbook(username, repoName, branch, BBB, checkingOptions) {
@@ -47,20 +47,20 @@ async function checkTQbook(username, repoName, branch, BBB, checkingOptions) {
     }
 
 
-    async function doOurCheckFile(repoCode, BBB, C, V, filename, file_content, fileLocation, optionalCheckingOptions) {
-        // console.log(`checkBookPackage doOurCheckFile(${filename})`);
+    async function doOurCheckFile(repoCode, BBB, C, V, cfFilename, file_content, fileLocation, optionalCheckingOptions) {
+        // console.log(`checkBookPackage doOurCheckFile(${cfFilename})`);
 
         // Updates the global list of notices
         console.assert(repoCode !== undefined, "cTQ doOurCheckFile: 'repoCode' parameter should be defined");
         console.assert(typeof repoCode === 'string', `cTQ doOurCheckFile: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
-        console.assert(filename !== undefined, "cTQ doOurCheckFile: 'filename' parameter should be defined");
-        console.assert(typeof filename === 'string', `cTQ doOurCheckFile: 'filename' parameter should be a string not a '${typeof filename}'`);
+        console.assert(cfFilename !== undefined, "cTQ doOurCheckFile: 'cfFilename' parameter should be defined");
+        console.assert(typeof cfFilename === 'string', `cTQ doOurCheckFile: 'cfFilename' parameter should be a string not a '${typeof cfFilename}'`);
         console.assert(file_content !== undefined, "cTQ doOurCheckFile: 'file_content' parameter should be defined");
         console.assert(typeof file_content === 'string', `cTQ doOurCheckFile: 'file_content' parameter should be a string not a '${typeof file_content}'`);
         console.assert(fileLocation !== undefined, "cTQ doOurCheckFile: 'fileLocation' parameter should be defined");
         console.assert(typeof fileLocation === 'string', `cTQ doOurCheckFile: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
 
-        const cfResultObject = await checkFile(filename, file_content, fileLocation, optionalCheckingOptions);
+        const cfResultObject = await checkFile(cfFilename, file_content, fileLocation, optionalCheckingOptions);
         // console.log("checkFile() returned", cfResultObject.successList.length, "success message(s) and", cfResultObject.noticeList.length, "notice(s)");
         // for (const successEntry of cfResultObject.successList) console.log("  doOurCheckFile:", successEntry);
 
@@ -126,7 +126,7 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
     //   with ${username}, ${language_code}, ${bookCode}, ${JSON.stringify(checkingOptions)}`);
     const startTime = new Date();
 
-    const checkBookPackageResult = { successList: [], noticeList: [] };
+    let checkBookPackageResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
         // console.log(`checkBookPackage success: ${successString}`);
@@ -158,20 +158,20 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
     }
 
 
-    async function doOurCheckFile(repoCode, filename, file_content, fileLocation, optionalCheckingOptions) {
-        // console.log(`checkBookPackage doOurCheckFile(${filename})`);
+    async function doOurCheckFile(repoCode, cfFilename, file_content, fileLocation, optionalCheckingOptions) {
+        // console.log(`checkBookPackage doOurCheckFile(${cfFilename})`);
 
         // Updates the global list of notices
         console.assert(repoCode !== undefined, "cBP doOurCheckFile: 'repoCode' parameter should be defined");
         console.assert(typeof repoCode === 'string', `cBP doOurCheckFile: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
-        console.assert(filename !== undefined, "cBP doOurCheckFile: 'filename' parameter should be defined");
-        console.assert(typeof filename === 'string', `cBP doOurCheckFile: 'filename' parameter should be a string not a '${typeof filename}'`);
+        console.assert(cfFilename !== undefined, "cBP doOurCheckFile: 'cfFilename' parameter should be defined");
+        console.assert(typeof cfFilename === 'string', `cBP doOurCheckFile: 'cfFilename' parameter should be a string not a '${typeof cfFilename}'`);
         console.assert(file_content !== undefined, "cBP doOurCheckFile: 'file_content' parameter should be defined");
         console.assert(typeof file_content === 'string', `cBP doOurCheckFile: 'file_content' parameter should be a string not a '${typeof file_content}'`);
         console.assert(fileLocation !== undefined, "cBP doOurCheckFile: 'fileLocation' parameter should be defined");
         console.assert(typeof fileLocation === 'string', `cBP doOurCheckFile: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
 
-        const cfResultObject = await checkFile(filename, file_content, fileLocation, optionalCheckingOptions);
+        const cfResultObject = await checkFile(cfFilename, file_content, fileLocation, optionalCheckingOptions);
         // console.log("checkFile() returned", cfResultObject.successList.length, "success message(s) and", cfResultObject.noticeList.length, "notice(s)");
         // for (const successEntry of cfResultObject.successList) console.log("  doOurCheckFile:", successEntry);
 
