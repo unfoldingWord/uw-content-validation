@@ -119,8 +119,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     if (ignorePriorityNumberList === undefined) {
         ignorePriorityNumberList = DEFAULT_IGNORE_PRIORITY_NUMBER_LIST;
         // console.log(`Using default ignorePriorityNumberList=${ignorePriorityNumberList}`);
-    } else
-        console.log(`Using supplied ignorePriorityNumberList=${ignorePriorityNumberList} cf. default=${DEFAULT_IGNORE_PRIORITY_NUMBER_LIST}`);
+    }
+    else console.log(`Using supplied ignorePriorityNumberList=${ignorePriorityNumberList} cf. default=${DEFAULT_IGNORE_PRIORITY_NUMBER_LIST}`);
     let sortBy;
     try {
         sortBy = optionalProcessingOptions.sortBy;
@@ -128,8 +128,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     if (sortBy === undefined) {
         sortBy = 'AsFound';
         // console.log(`Using default sortBy='${sortBy}'`);
-    } else
-        console.log(`Using supplied sortBy='${sortBy}' cf. default='AsFound'`);
+    }
+    else console.log(`Using supplied sortBy='${sortBy}' cf. default='AsFound'`);
     let cutoffPriorityLevel;
     try {
         cutoffPriorityLevel = optionalProcessingOptions.cutoffPriorityLevel;
@@ -137,8 +137,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     if (cutoffPriorityLevel === undefined) {
         cutoffPriorityLevel = DEFAULT_CUTOFF_PRIORITY_LEVEL;
         // console.log(`Using default cutoffPriorityLevel=${cutoffPriorityLevel}`);
-    } else
-        console.log(`Using supplied cutoffPriorityLevel=${cutoffPriorityLevel} cf. default=${DEFAULT_CUTOFF_PRIORITY_LEVEL}`);
+    }
+    else console.log(`Using supplied cutoffPriorityLevel=${cutoffPriorityLevel} cf. default=${DEFAULT_CUTOFF_PRIORITY_LEVEL}`);
     // if (cutoffPriorityLevel > errorPriorityLevel)
     // resultObject.errorList.push([999, "Cutoff level must not be higher than error level", -1, `(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
 
@@ -286,8 +286,8 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
     if (typeof maximumSimilarMessages !== 'number' || isNaN(maximumSimilarMessages)) {
         maximumSimilarMessages = DEFAULT_MAXIMUM_SIMILAR_MESSAGES;
         // console.log(`Using default maximumSimilarMessages=${maximumSimilarMessages}`);
-    } else
-        console.log(`Using supplied maximumSimilarMessages=${maximumSimilarMessages} cf. default=${DEFAULT_MAXIMUM_SIMILAR_MESSAGES}`);
+    }
+    else console.log(`Using supplied maximumSimilarMessages=${maximumSimilarMessages} cf. default=${DEFAULT_MAXIMUM_SIMILAR_MESSAGES}`);
     let errorPriorityLevel;
     try {
         errorPriorityLevel = optionalProcessingOptions.errorPriorityLevel;
@@ -295,8 +295,8 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
     if (errorPriorityLevel === undefined) {
         errorPriorityLevel = DEFAULT_ERROR_PRIORITY_LEVEL;
         // console.log(`Using default errorPriorityLevel=${errorPriorityLevel}`);
-    } else
-        console.log(`Using supplied errorPriorityLevel=${errorPriorityLevel} cf. default=${DEFAULT_ERROR_PRIORITY_LEVEL}`);
+    }
+    else console.log(`Using supplied errorPriorityLevel=${errorPriorityLevel} cf. default=${DEFAULT_ERROR_PRIORITY_LEVEL}`);
 
     // Check for repeated notices that should be compressed
     //  while simultaneously separating into error and warning lists
@@ -367,8 +367,8 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
     if (typeof maximumSimilarMessages !== 'number' || isNaN(maximumSimilarMessages)) {
         maximumSimilarMessages = DEFAULT_MAXIMUM_SIMILAR_MESSAGES;
         // console.log(`Using default maximumSimilarMessages=${maximumSimilarMessages}`);
-    } else
-        console.log(`Using supplied maximumSimilarMessages=${maximumSimilarMessages} cf. default=${DEFAULT_MAXIMUM_SIMILAR_MESSAGES}`);
+    }
+    else console.log(`Using supplied maximumSimilarMessages=${maximumSimilarMessages} cf. default=${DEFAULT_MAXIMUM_SIMILAR_MESSAGES}`);
     let severePriorityLevel;
     try {
         severePriorityLevel = optionalProcessingOptions.severePriorityLevel;
@@ -376,8 +376,8 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
     if (severePriorityLevel === undefined) {
         severePriorityLevel = DEFAULT_SEVERE_PRIORITY_LEVEL;
         // console.log(`Using default severePriorityLevel=${severePriorityLevel}`);
-    } else
-        console.log(`Using supplied severePriorityLevel=${severePriorityLevel} cf. default=${DEFAULT_SEVERE_PRIORITY_LEVEL}`);
+    }
+    else console.log(`Using supplied severePriorityLevel=${severePriorityLevel} cf. default=${DEFAULT_SEVERE_PRIORITY_LEVEL}`);
     let mediumPriorityLevel;
     try {
         mediumPriorityLevel = optionalProcessingOptions.mediumPriorityLevel;
@@ -385,8 +385,8 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
     if (mediumPriorityLevel === undefined) {
         mediumPriorityLevel = DEFAULT_MEDIUM_PRIORITY_LEVEL;
         // console.log(`Using default mediumPriorityLevel=${mediumPriorityLevel}`);
-    } else
-        console.log(`Using supplied mediumPriorityLevel=${mediumPriorityLevel} cf. default=${DEFAULT_MEDIUM_PRIORITY_LEVEL}`);
+    }
+    else console.log(`Using supplied mediumPriorityLevel=${mediumPriorityLevel} cf. default=${DEFAULT_MEDIUM_PRIORITY_LEVEL}`);
 
     // Check for repeated notices that should be compressed
     //  while simultaneously separating into error and warning lists
@@ -470,8 +470,8 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
     if (typeof maximumSimilarMessages !== 'number' || isNaN(maximumSimilarMessages)) {
         maximumSimilarMessages = DEFAULT_MAXIMUM_SIMILAR_MESSAGES;
         // console.log(`Using default maximumSimilarMessages=${maximumSimilarMessages}`);
-    } else
-        console.log(`Using supplied maximumSimilarMessages=${maximumSimilarMessages} cf. default=${DEFAULT_MAXIMUM_SIMILAR_MESSAGES}`);
+    }
+    // else console.log(`Using supplied maximumSimilarMessages=${maximumSimilarMessages} cf. default=${DEFAULT_MAXIMUM_SIMILAR_MESSAGES}`);
 
     // Check for repeated notices that should be compressed
     //  while simultaneously creating warning list

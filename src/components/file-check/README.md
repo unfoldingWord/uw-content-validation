@@ -11,7 +11,7 @@ and then validates the content of one file selected from the repo.
 
     // repoName='hbo_uhb' // OT books only
     // repoName='el-x-koine_ugnt' // NT books only
-    // repoName='en_ult' // Can use ult or ust here
+    // repoName='en_ust' // Can use ult or ust here
     repoName='en_tn'
 
     // If we don't put the branch here, the default branch is used
@@ -43,10 +43,10 @@ and then validates the content of one file selected from the repo.
     //  Alternatives are `SevereMediumLow', 'SingleList'
     displayType='SingleList'
 
-    // Specifying extractLength and maximumSimilarMessages is just to show off options
+    // Specifying maximumSimilarMessages and extractLength is just to show off options
     //  -- those fields are not necessary (or normal) here
-    extractLength='13' // Default is 10
-    maximumSimilarMessages='2'
+    maximumSimilarMessages='4'
+    extractLength='12' // Default is 10
     />
 ```
 

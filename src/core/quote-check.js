@@ -140,16 +140,18 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, given
         // console.log(`Got verse text2: '${verseText}'`);
 
         // Remove footnotes
-        // verseText = re.sub(r'\\f (.+?)\\f\*', '', verseText)
+        verseText = verseText.replace(/\\f (.+?)\\f\*/g, '');
         // Remove alternative versifications
-        // verseText = re.sub(r'\\va (.+?)\\va\*', '', verseText)
-        // print(`Got verse text3: '{verseText}'")
+        verseText = verseText.replace(/\\va (.+?)\\va\*/g, '');
+        // console.log(`Got verse text3: '${verseText}'`);
 
         // Final clean-up (shouldn't be necessary, but just in case)
         verseText = verseText.replace(/  /g, ' ');
         console.assert(verseText.indexOf('\\w') === -1, `getPassage: Should be no \\w in ${BBB} ${C}:${V} '${verseText}'`);
         console.assert(verseText.indexOf('\\k') === -1, `getPassage: Should be no \\k in ${BBB} ${C}:${V} '${verseText}'`);
         console.assert(verseText.indexOf('x-') === -1, `getPassage: Should be no x- in ${BBB} ${C}:${V} '${verseText}'`);
+        console.assert(verseText.indexOf('\\f') === -1, `getPassage: Should be no \\f in ${BBB} ${C}:${V} '${verseText}'`);
+        console.assert(verseText.indexOf('\\x') === -1, `getPassage: Should be no \\x in ${BBB} ${C}:${V} '${verseText}'`);
         // console.log(`  getPassage(${BBB} ${C}:${V}) is returning '${verseText}'`);
         return verseText;
     }
@@ -263,8 +265,8 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, given
             const extraText = fieldText.indexOf('\u00A0') >= 0 ? " (contains No-Break Space shown as '⍽')" : "";
             if (extraText) fieldText = fieldText.replace(/\u00A0/g, '⍽');
             const extract = fieldText.substring(0, halfLength) + (fieldText.length > 2*halfLength? '…':'') + fieldText.substring(fieldText.length-halfLength, fieldText.length);
-            console.log(`722 fieldText='${fieldText}'${extraText}`);
-            console.log(`722 verseText='${verseText}'`);
+            // console.log(`722 fieldText='${fieldText}'${extraText}`);
+            // console.log(`722 verseText='${verseText}'`);
             addNotice5(722, "Unable to find original language quote in verse text", -1, extract, ourLocation);
 
         }

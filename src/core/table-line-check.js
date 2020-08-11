@@ -6,7 +6,7 @@ import checkTNLinks from './tn-links-check';
 import checkOriginalLanguageQuote from './quote-check';
 
 
-const TABLE_LINE_VALIDATOR_VERSION = '0.3.1';
+const TABLE_LINE_VALIDATOR_VERSION = '0.3.2';
 
 const NUM_EXPECTED_TSV_FIELDS = 9;
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -328,7 +328,7 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
             }
             else if (occurrence === '-1') // TODO check the special conditions when this can occur???
                 ;
-            else if ('123456789'.indexOf(occurrence) < 0) // it's not one of these integers
+            else if ('12345'.indexOf(occurrence) < 0) // it's not one of these integers
                 addNotice5to8(792, `Invalid '${occurrence}' occurrence field`, -1, "", ourRowLocation);
         }
 

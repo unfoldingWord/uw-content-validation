@@ -25,7 +25,12 @@ import BookPackagesCheck from './BookPackagesCheck';
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'
   displayType='SevereMediumLow'
-/>
+
+  // Specifying maximumSimilarMessages and extractLength is just to show off options
+  //  -- those fields are not necessary (or normal) here
+  maximumSimilarMessages='2'
+  // extractLength='13' // Default is 10
+  />
 ```
 
 <!-- ## Component Description

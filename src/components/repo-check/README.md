@@ -9,33 +9,33 @@ The code below requests some info and then checks a Door43 repository.You can en
 ```js
 import RepoCheck from './RepoCheck';
 
-  <RepoCheck
-    username = 'unfoldingWord'
+<RepoCheck
+  username = 'unfoldingWord'
 
-    // repoName='hbo_uhb' // OT books only
-    // repoName='el-x-koine_ugnt' // NT books only
-    // repoName='en_ult' // Can use ult or ust here
-    repoName='en_tn' // Translation Notes (TSV tables)
-    // repoName='en_tq' // Translation Questions (markdown files)
-    // repoName='en_ta' // Translation Academy (markdown files)
-    // repoName='en_tw' // Translation Words (markdown files)
-    // repoName='en_obs' // Open Bible Stories (markdown files)
-    // repoName='fr_ulb' // No alignment so smaller files (faster)
+  // repoName='hbo_uhb' // OT books only
+  // repoName='el-x-koine_ugnt' // NT books only
+  // repoName='en_ult' // Can use ult or ust here
+  repoName='en_tn' // Translation Notes (TSV tables)
+  // repoName='en_tq' // Translation Questions (markdown files)
+  // repoName='en_ta' // Translation Academy (markdown files)
+  // repoName='en_tw' // Translation Words (markdown files)
+  // repoName='en_obs' // Open Bible Stories (markdown files)
+  // repoName='fr_ulb' // No alignment so smaller files (faster)
 
-    // If we don't put the branch here, the default branch is used
-    // branch='master'
+  // If we don't put the branch here, the default branch is used
+  // branch='master'
 
-    // Default displayType is 'ErrorsWarnings'
-    //  Alternatives are `SevereMediumLow', 'SingleList'
-    //displayType='SevereMediumLow'
+  // Default displayType is 'ErrorsWarnings'
+  //  Alternatives are `SevereMediumLow', 'SingleList'
+  //displayType='SevereMediumLow'
 
-    // Specifying extractLength and maximumSimilarMessages is just to show off options
-    //  -- those fields are not necessary (or normal) here
-    // The location field appears in check messages to help the user locate the issue
-    extractLength='13'
-    maximumSimilarMessages='2'
-    location="as specified in repo-check/README.md"
-  />
+  // Specifying maximumSimilarMessages and extractLength is just to show off options
+  //  -- those fields are not necessary (or normal) here
+  // The location field appears in check messages to help the user locate the issue
+  maximumSimilarMessages='2'
+  // extractLength='13' // Default is 10
+  location="as specified in repo-check/README.md"
+/>
 ```
 
 <!-- ## Component Description

@@ -392,5 +392,5 @@ export function RenderElapsedTime(props) {
     const hours = Math.round(remainingTime % 24);
     remainingTime = Math.floor(remainingTime / 24);
     console.assert(remainingTime === 0, `Elapsed time also contains ${remainingTime} days`);
-return <>{hours? `${hours} hour, `:''}{hours && hours!==1?'s':''}{minutes? `${minutes} minute, `:''}{minutes && minutes!==1?'s':''}{seconds} second{seconds===1?'':'s'}</>;
+return <>{hours? `${hours} hour`:''}{hours && hours!==1?'s':''}{hours?', ':''}{minutes? `${minutes} minute`:''}{minutes && minutes!==1?'s':''}{minutes?', ':''}{seconds} second{seconds===1?'':'s'}</>;
 }

@@ -10,7 +10,10 @@ const baseURL = 'https://git.door43.org/';
 const apiPath = 'api/v1';
 
 
-const failedLinkList = [];
+const failedStore = localforage.createInstance({
+  driver: [localforage.INDEXEDDB],
+  name: 'failed-store',
+});
 
 const zipStore = localforage.createInstance({
   driver: [localforage.INDEXEDDB],
@@ -43,7 +46,7 @@ export async function clearCaches() {
   // const tasks = [zipStore, cacheStore].map(localforage.clear);
   // const results = await Promise.all(tasks);
   // results.forEach(x => console.log("Done it", x));
-  failedLinkList.length = 0;
+  await failedStore.clear();
   await zipStore.clear();
   await cacheStore.clear();
 }
@@ -105,8 +108,9 @@ async function fetchFileFromServer({ username, repository, path, branch = 'maste
   const repoExists = await repositoryExists({ username, repository });
   if (repoExists) {
     const uri = Path.join(username, repository, 'raw/branch', branch, path);
-    if (failedLinkList.indexOf(uri) >= 0) {
-      // console.log(`Failed previously for ${uri}`);
+    const failMessage = await failedStore.getItem(uri);
+    if (failMessage) {
+      // console.log(`fetchFileFromServer failed previously for ${uri}: ${failMessage}`);
       return null;
     }
     try {
@@ -116,13 +120,13 @@ async function fetchFileFromServer({ username, repository, path, branch = 'maste
       return data;
     }
     catch (fffsError) {
-      console.log(`ERROR: Could not fetch ${path}: ${fffsError}`)
-      failedLinkList.push(uri);
+      // console.log(`ERROR: fetchFileFromServer could not fetch ${path}: ${fffsError}`)
+      /* await */ failedStore.setItem(uri, fffsError.message);
       return null;
     }
   } else {
-    console.log(`ERROR: Repo '${repository}' does not exist!`);
-    failedLinkList.push(uri);
+    // console.log(`ERROR: fetchFileFromServer repo '${repository}' does not exist!`);
+    /* await */ failedStore.setItem(uri, `Repo '${repository}' does not exist!`);
     return null;
   }
 };
