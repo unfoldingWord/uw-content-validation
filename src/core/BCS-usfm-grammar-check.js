@@ -1,4 +1,5 @@
 import grammar from 'usfm-grammar';
+import * as books from '../core/books/books';
 
 
 export function runBCSGrammarCheck(strictnessString, fileText) {
@@ -47,11 +48,11 @@ export function checkUSFMGrammar(BBB, strictnessString, filename, givenText, giv
     if (filename) ourLocation = ` in ${filename}${ourLocation}`;
 
 
-    const result = { successList: [], noticeList: [] };
+    const cugResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
         // console.log("checkUSFMGrammar success: " + successString);
-        result.successList.push(successString);
+        cugResult.successList.push(successString);
     }
     function addNotice5to8(priority, message, index, extract, location) {
         // console.log("checkUSFMGrammar notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
@@ -65,9 +66,13 @@ export function checkUSFMGrammar(BBB, strictnessString, filename, givenText, giv
         console.assert(typeof extract === 'string', "cUSFMgr addNotice5to8: 'extract' parameter should be a string not a '" + (typeof extract) + "': " + extract);
         console.assert(location !== undefined, "cUSFMgr addNotice5to8: 'location' parameter should be defined");
         console.assert(typeof location === 'string', "cUSFMgr addNotice5to8: 'location' parameter should be a string not a '" + (typeof location) + "': " + location);
-        result.noticeList.push([priority, BBB,"","", message, index, extract, location]);
+        cugResult.noticeList.push([priority, BBB,"","", message, index, extract, location]);
     }
 
+
+    // Main code for checkUSFMGrammar function
+    if (books.isExtraBookCode(BBB)) // doesn't work for these
+        return cugResult;
 
     const grammarCheckResult = runBCSGrammarCheck(strictnessString, givenText, ourLocation);
     // NOTE: We haven't figured out how to get ERRORS out of this parser yet
@@ -82,7 +87,7 @@ export function checkUSFMGrammar(BBB, strictnessString, filename, givenText, giv
     addSuccessMessage(`Checked USFM Grammar (${strictnessString} mode) ${grammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN'T validate)"}`);
     // console.log(`  checkUSFMGrammar returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
     // console.log(`checkUSFMGrammar result is ${JSON.stringify(result)}`);
-    return result;
+    return cugResult;
 }
 // end of checkUSFMGrammar function
 

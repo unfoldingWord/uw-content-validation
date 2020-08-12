@@ -28,6 +28,7 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
     console.assert(BBB !== undefined, "checkTN_TSVDataRow: 'BBB' parameter should be defined");
     console.assert(typeof BBB === 'string', `checkTN_TSVDataRow: 'BBB' parameter should be a string not a '${typeof BBB}'`);
     console.assert(BBB.length === 3, `checkTN_TSVDataRow: 'BBB' parameter should be three characters long not ${BBB.length}`);
+    console.assert(books.isValidBookCode(BBB), `checkTN_TSVDataRow: '${BBB}' is not a valid USFM book code`);
     console.assert(C !== undefined, "checkTN_TSVDataRow: 'C' parameter should be defined");
     console.assert(typeof C === 'string', `checkTN_TSVDataRow: 'C' parameter should be a string not a '${typeof C}'`);
     console.assert(V !== undefined, "checkTN_TSVDataRow: 'V' parameter should be defined");

@@ -287,7 +287,7 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
         maximumSimilarMessages = DEFAULT_MAXIMUM_SIMILAR_MESSAGES;
         // console.log(`Using default maximumSimilarMessages=${maximumSimilarMessages}`);
     }
-    else console.log(`Using supplied maximumSimilarMessages=${maximumSimilarMessages} cf. default=${DEFAULT_MAXIMUM_SIMILAR_MESSAGES}`);
+    // else console.log(`Using supplied maximumSimilarMessages=${maximumSimilarMessages} cf. default=${DEFAULT_MAXIMUM_SIMILAR_MESSAGES}`);
     let errorPriorityLevel;
     try {
         errorPriorityLevel = optionalProcessingOptions.errorPriorityLevel;
@@ -368,7 +368,7 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
         maximumSimilarMessages = DEFAULT_MAXIMUM_SIMILAR_MESSAGES;
         // console.log(`Using default maximumSimilarMessages=${maximumSimilarMessages}`);
     }
-    else console.log(`Using supplied maximumSimilarMessages=${maximumSimilarMessages} cf. default=${DEFAULT_MAXIMUM_SIMILAR_MESSAGES}`);
+    // else console.log(`Using supplied maximumSimilarMessages=${maximumSimilarMessages} cf. default=${DEFAULT_MAXIMUM_SIMILAR_MESSAGES}`);
     let severePriorityLevel;
     try {
         severePriorityLevel = optionalProcessingOptions.severePriorityLevel;

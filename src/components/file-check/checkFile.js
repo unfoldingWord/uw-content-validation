@@ -1,3 +1,4 @@
+import * as books from '../../core/books/books';
 import checkUSFMText from '../../core/usfm-text-check';
 import checkMarkdownText from '../../core/markdown-text-check';
 import checkPlainText from '../../core/plain-text-check';
@@ -7,7 +8,7 @@ import checkTN_TSVText from '../../core/table-text-check';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-const CHECKER_VERSION_STRING = '0.1.3';
+const CHECKER_VERSION_STRING = '0.1.4';
 
 async function checkFile(filename, fileContent, givenLocation, checkingOptions) {
     // Determine the file type from the filename extension
@@ -25,6 +26,7 @@ async function checkFile(filename, fileContent, givenLocation, checkingOptions) 
         // console.log(`Have TSV filenameMain=${filenameMain}`);
         const BBB = filenameMain.substring(filenameMain.length - 3);
         // console.log(`Have TSV bookcode=${BBB}`);
+        console.assert(books.isValidBookCode(BBB), `checkFile: '${BBB}' is not a valid USFM book code`);
         checkFileResult = await checkTN_TSVText(BBB, fileContent, ourCFLocation, checkingOptions);
     }
     else if (filename.toLowerCase().endsWith('.usfm')) {
@@ -32,12 +34,14 @@ async function checkFile(filename, fileContent, givenLocation, checkingOptions) 
         // console.log(`Have USFM filenameMain=${filenameMain}`);
         const BBB = filenameMain.substring(filenameMain.length - 3);
         // console.log(`Have USFM bookcode=${BBB}`);
+        console.assert(books.isValidBookCode(BBB), `checkFile: '${BBB}' is not a valid USFM book code`);
         checkFileResult = checkUSFMText(BBB, filename, fileContent, ourCFLocation, checkingOptions);
     } else if (filename.toLowerCase().endsWith('.sfm')) {
         const filenameMain = filename.substring(0, filename.length - 4); // drop .sfm
         console.log(`Have SFM filenameMain=${filenameMain}`);
         const BBB = filenameMain.substring(2, 5);
         console.log(`Have SFM bookcode=${BBB}`);
+        console.assert(books.isValidBookCode(BBB), `checkFile: '${BBB}' is not a valid USFM book code`);
         checkFileResult = checkUSFMText(BBB, filename, fileContent, ourCFLocation, checkingOptions);
     } else if (filename.toLowerCase().endsWith('.md'))
         checkFileResult = checkMarkdownText(filename, fileContent, ourCFLocation, checkingOptions);

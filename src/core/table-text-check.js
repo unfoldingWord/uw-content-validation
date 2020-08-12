@@ -2,7 +2,7 @@ import * as books from '../core/books/books';
 import checkTN_TSVDataRow from './table-line-check';
 
 
-const TABLE_TEXT_VALIDATOR_VERSION = '0.1.2';
+const TABLE_TEXT_VALIDATOR_VERSION = '0.1.3';
 
 const NUM_EXPECTED_TN_FIELDS = 9;
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -68,7 +68,8 @@ async function checkTN_TSVText(BBB, tableText, givenLocation, optionalCheckingOp
         numChaptersThisBook = books.chaptersInBook(bbb).length;
     }
     catch {
-        addCVNotice7(747, "","", "Bad function call: should be given a valid book abbreviation", -1, BBB, " (not '" + BBB + "')" + ourLocation);
+        if (!books.isValidBookCode(BBB)) // must not be in FRT, BAK, etc.
+            addCVNotice7(747, "","", "Bad function call: should be given a valid book abbreviation", -1, BBB, " (not '" + BBB + "')" + ourLocation);
     }
 
     let lines = tableText.split('\n');

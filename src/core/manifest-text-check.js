@@ -45,6 +45,7 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
         console.assert(BBB !== undefined, "cManT addNotice9: 'BBB' parameter should be defined");
         console.assert(typeof BBB === 'string', "cManT addNotice9: 'BBB' parameter should be a string not a '" + (typeof BBB) + "'");
         console.assert(BBB.length === 3, `cManT addNotice9: 'BBB' parameter should be three characters long not ${BBB.length}`);
+        console.assert(books.isValidBookCode(BBB), `cManT addNotice9: '${BBB}' is not a valid USFM book code`);
         console.assert(C !== undefined, "cManT addNotice9: 'C' parameter should be defined");
         console.assert(typeof C === 'string', "cManT addNotice9: 'C' parameter should be a string not a '" + (typeof C) + "'");
         console.assert(V !== undefined, "cManT addNotice9: 'V' parameter should be defined");

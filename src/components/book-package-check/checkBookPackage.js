@@ -6,7 +6,7 @@ import { getFilelistFromZip, getFile } from '../../core/getApi';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-const CHECKER_VERSION_STRING = '0.2.3';
+const CHECKER_VERSION_STRING = '0.2.4';
 
 
 async function checkTQbook(username, repoName, branch, BBB, checkingOptions) {
@@ -29,6 +29,7 @@ async function checkTQbook(username, repoName, branch, BBB, checkingOptions) {
         console.assert(BBB !== undefined, "cTQ addNotice9: 'BBB' parameter should be defined");
         console.assert(typeof BBB === 'string', "cTQ addNotice9: 'BBB' parameter should be a string not a '" + (typeof BBB) + "'");
         console.assert(BBB.length === 3, `cTQ addNotice9: 'BBB' parameter should be three characters long not ${BBB.length}`);
+        console.assert(books.isValidBookCode(BBB), `cTQ addNotice9: '${BBB}' is not a valid USFM book code`);
         console.assert(C !== undefined, "cTQ addNotice9: 'C' parameter should be defined");
         console.assert(typeof C === 'string', "cTQ addNotice9: 'C' parameter should be a string not a '" + (typeof C) + "'");
         console.assert(V !== undefined, "cTQ addNotice9: 'V' parameter should be defined");
@@ -140,6 +141,7 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
         console.assert(BBB !== undefined, "cBP addNotice9: 'BBB' parameter should be defined");
         console.assert(typeof BBB === 'string', "cBP addNotice9: 'BBB' parameter should be a string not a '" + (typeof BBB) + "'");
         console.assert(BBB.length === 3, `cBP addNotice9: 'BBB' parameter should be three characters long not ${BBB.length}`);
+        console.assert(books.isValidBookCode(BBB), `cBP addNotice9: '${BBB}' is not a valid USFM book code`);
         console.assert(C !== undefined, "cBP addNotice9: 'C' parameter should be defined");
         console.assert(typeof C === 'string', "cBP addNotice9: 'C' parameter should be a string not a '" + (typeof C) + "'");
         console.assert(V !== undefined, "cBP addNotice9: 'V' parameter should be defined");
@@ -246,8 +248,12 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
             bookNumberAndName = books.usfmNumberName(bookCode);
             whichTestament = books.testament(bookCode); // returns 'old' or 'new'
         } catch (bNNerror) {
-            addNotice9(900, '', '', '', "Bad function call: should be given a valid book abbreviation", -1, bookCode, ` (not '${bookCode}')${location}`, '');
-            return checkBookPackageResult;
+            if (books.isValidBookCode(bookCode)) // must be in FRT, BAK, etc.
+                whichTestament = 'other'
+            else {
+                addNotice9(900, '', '', '', "Bad function call: should be given a valid book abbreviation", -1, bookCode, ` (not '${bookCode}')${location}`, '');
+                return checkBookPackageResult;
+            }
         }
         // console.log(`bookNumberAndName='${bookNumberAndName}' (${whichTestament} testament)`);
 

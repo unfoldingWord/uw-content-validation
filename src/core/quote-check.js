@@ -26,6 +26,7 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, given
     console.assert(BBB !== undefined, "checkOriginalLanguageQuote: 'fieldText' parameter should be defined");
     console.assert(typeof BBB === 'string', `checkOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof BBB}'`);
     console.assert(BBB.length === 3, `checkOriginalLanguageQuote: 'BBB' parameter should be three characters long not ${BBB.length}`);
+    console.assert(books.isValidBookCode(BBB), `checkOriginalLanguageQuote: '${BBB}' is not a valid USFM book code`);
     console.assert(C !== undefined, "checkOriginalLanguageQuote: 'fieldText' parameter should be defined");
     console.assert(typeof C === 'string', `checkOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof C}'`);
     console.assert(V !== undefined, "checkOriginalLanguageQuote: 'fieldText' parameter should be defined");

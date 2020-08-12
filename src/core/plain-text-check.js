@@ -44,6 +44,7 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
         console.assert(BBB !== undefined, "cPT addNotice9: 'BBB' parameter should be defined");
         console.assert(typeof BBB === 'string', "cPT addNotice9: 'BBB' parameter should be a string not a '" + (typeof BBB) + "'");
         console.assert(BBB.length === 3, `cPT addNotice9: 'BBB' parameter should be three characters long not ${BBB.length}`);
+        console.assert(books.isValidBookCode(BBB), `cPT addNotice9: '${BBB}' is not a valid USFM book code`);
         console.assert(C !== undefined, "cPT addNotice9: 'C' parameter should be defined");
         console.assert(typeof C === 'string', "cPT addNotice9: 'C' parameter should be a string not a '" + (typeof C) + "'");
         console.assert(V !== undefined, "cPT addNotice9: 'V' parameter should be defined");

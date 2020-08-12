@@ -65,7 +65,7 @@ export function checkUSFMToJSON(BBB, filename, givenText, givenLocation, optiona
     // NOTE: We haven't figured out how to get ERRORS out of this parser yet
 
     if (!convertCheckResult.isValidUSFM)
-        addNotice5to8(944, `USFM3 toJSON Check doesn't pass`, -1, "", ourLocation);
+        addNotice5to8(943, `USFM3 toJSON Check doesn't pass`, -1, "", ourLocation);
 
     addSuccessMessage(`Checked USFM-JS`);
     // console.log(`  checkUSFMToJSON returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);

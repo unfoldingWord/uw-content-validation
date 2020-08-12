@@ -11,9 +11,17 @@ import data from './books.json';
 //   "chapters": number[];
 // }
 
+const extraBookList = ['FRT','BAK'];
 export const isValidBookCode = (bookId) => {
-  return bookId.toLowerCase() in data;
+  return bookId.toLowerCase() in data || extraBookList.indexOf(bookId) >= 0;
 }
+export const isOptionalValidBookCode = (bookId) => {
+  return !bookId || bookId.toLowerCase() in data || extraBookList.indexOf(bookId) >= 0;
+}
+export const isExtraBookCode = (bookId) => {
+  return extraBookList.indexOf(bookId) >= 0;
+}
+
 
 export const usfmNumberName = (bookId) => {
   try {return data[bookId.toLowerCase()].usfm;}

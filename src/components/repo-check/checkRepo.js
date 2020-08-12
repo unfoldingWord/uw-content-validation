@@ -1,4 +1,5 @@
 import React from 'react';
+import * as books from '../../core/books/books';
 import checkFile from '../file-check/checkFile';
 // import { getFilelistFromFetchedTreemaps, getFilelistFromFetchedZip } from '../helpers';
 // import { fetchRepo, getBlobContent } from './helpers'
@@ -43,6 +44,7 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
         console.assert(BBB !== undefined, "cR addNotice9: 'BBB' parameter should be defined");
         console.assert(typeof BBB === 'string', "cR addNotice9: 'BBB' parameter should be a string not a '" + (typeof BBB) + "'");
         // console.assert(BBB.length === 3, `cR addNotice9: 'BBB' parameter should be three characters long not ${BBB.length}`);
+        console.assert(books.isOptionalValidBookCode(BBB), `cR addNotice9: '${BBB}' is not a valid USFM book code`);
         console.assert(C !== undefined, "cR addNotice9: 'C' parameter should be defined");
         console.assert(typeof C === 'string', "cR addNotice9: 'C' parameter should be a string not a '" + (typeof C) + "'");
         console.assert(V !== undefined, "cR addNotice9: 'V' parameter should be defined");
@@ -61,15 +63,15 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
     }
 
 
-    async function doOurCheckFile(bookOrFileCode, BBBid, filename, file_content, fileLocation, optionalCheckingOptions) {
+    async function doOurCheckFile(bookOrFileCode, cfBBBid, filename, file_content, fileLocation, optionalCheckingOptions) {
         // We assume that checking for compulsory fields is done elsewhere
         // console.log(`checkRepo doOurCheckFile(${filename})…`);
 
         // Updates the global list of notices
         console.assert(bookOrFileCode !== undefined, "doOurCheckFile: 'bookOrFileCode' parameter should be defined");
         console.assert(typeof bookOrFileCode === 'string', "doOurCheckFile: 'bookOrFileCode' parameter should be a string not a '" + (typeof bookOrFileCode) + "'");
-        console.assert(BBBid !== undefined, "doOurCheckFile: 'BBBid' parameter should be defined");
-        console.assert(typeof BBBid === 'string', "doOurCheckFile: 'BBBid' parameter should be a string not a '" + (typeof BBBid) + "'");
+        console.assert(cfBBBid !== undefined, "doOurCheckFile: 'cfBBBid' parameter should be defined");
+        console.assert(typeof cfBBBid === 'string', "doOurCheckFile: 'cfBBBid' parameter should be a string not a '" + (typeof cfBBBid) + "'");
         console.assert(filename !== undefined, "doOurCheckFile: 'filename' parameter should be defined");
         console.assert(typeof filename === 'string', "doOurCheckFile: 'filename' parameter should be a string not a '" + (typeof filename) + "'");
         console.assert(file_content !== undefined, "doOurCheckFile: 'file_content' parameter should be defined");
@@ -87,7 +89,7 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
             // We add the bookOrFileCode as an extra value
             if (noticeEntry.length === 5)
                 // noticeEntry is an array of five fields: 1=priority, 2=msg, 3=index, 4=extract, 5=location
-            addNotice9(noticeEntry[0], BBBid, '', '', noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], bookOrFileCode);
+            addNotice9(noticeEntry[0], cfBBBid, '', '', noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], bookOrFileCode);
             else if (noticeEntry.length === 8)
                 // noticeEntry is an array of eight fields: 1=priority, 2=BBB, 3=C, 4=V, 5=msg, 6=index, 7=extract, 8=location
                 addNotice9(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7], bookOrFileCode);
@@ -111,7 +113,7 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
 
         // Let's fetch the zipped repo since it should be much more efficient than individual fetches
         // console.log(`checkRepo: fetch zip file for ${repoName}…`);
-        const zipFetchSucceeded = await fetchRepositoryZipFile({ username: username, repository: repoName, sha: branch });
+        const zipFetchSucceeded = await fetchRepositoryZipFile({ username, repository: repoName, branch });
         if (!zipFetchSucceeded)
             console.log(`checkRepo: misfetched zip file for repo with ${zipFetchSucceeded}`);
         if (!zipFetchSucceeded) return checkRepoResult;
@@ -120,7 +122,7 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
         // Now we need to fetch the list of files from the repo
         setResultValue(<p style={{ color: 'magenta' }}>Preprocessing file list from <b>{username}/{repoName}</b> repository…</p>);
         // const pathList = await getFilelistFromFetchedTreemaps(username, repoName, branch);
-        const pathList = await getFilelistFromZip({ username: username, repository: repoName, sha: branch });
+        const pathList = await getFilelistFromZip({ username, repository: repoName, branch });
         // console.log(`Got pathlist (${pathList.length}) = ${pathList}`);
 
         // So now we want to work through checking all the files in this repo
@@ -145,6 +147,7 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
                 // console.log(`Have USFM filenameMain=${bookOrFileCode}`);
                 const BBB = bookOrFileCode.substring(bookOrFileCode.length - 3);
                 // console.log(`Have USFM bookcode=${BBB}`);
+                console.assert(books.isValidBookCode(BBB), `checkRepo: '${BBB}' is not a valid USFM book code`);
                 bookOrFileCode = BBB;
                 BBBid = BBB;
             }
@@ -153,6 +156,7 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
                 // console.log(`Have TSV filenameMain=${bookOrFileCode}`);
                 const BBB = bookOrFileCode.substring(bookOrFileCode.length - 3);
                 // console.log(`Have TSV bookcode=${BBB}`);
+                console.assert(books.isValidBookCode(BBB), `checkRepo: '${BBB}' is not a valid USFM book code`);
                 bookOrFileCode = BBB;
                 BBBid = BBB;
             }
@@ -182,9 +186,9 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
 
         // Check that we processed a license and a manifest
         if (checkedFilenames.indexOf('LICENSE.md') < 0)
-            addNotice9(946, BBBid,'','', "Missing LICENSE.md", -1, "", ourLocation, 'LICENSE');
+            addNotice9(946, '','','', "Missing LICENSE.md", -1, "", ourLocation, 'LICENSE');
         if (checkedFilenames.indexOf('manifest.yaml') < 0)
-            addNotice9(947, BBBid,'','', "Missing manifest.yaml", -1, "", ourLocation, 'MANIFEST');
+            addNotice9(947, '','','', "Missing manifest.yaml", -1, "", ourLocation, 'MANIFEST');
 
         // Add some extra fields to our checkRepoResult object
         //  in case we need this information again later

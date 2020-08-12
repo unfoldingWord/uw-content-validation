@@ -28,6 +28,7 @@ async function checkTNLinks(BBB, fieldName, fieldText, givenLocation, optionalCh
     console.assert(BBB !== undefined, "checkTNLinks: 'BBB' parameter should be defined");
     console.assert(typeof BBB === 'string', "checkTNLinks: 'BBB' parameter should be a string not a '" + (typeof BBB) + "'");
     console.assert(BBB.length === 3, `checkTNLinks: 'BBB' parameter should be three characters long not ${BBB.length}`);
+    console.assert(books.isValidBookCode(BBB), `checkTNLinks: '${BBB}' is not a valid USFM book code`);
     console.assert(fieldName !== undefined, "checkTNLinks: 'fieldText' parameter should be defined");
     console.assert(typeof fieldName === 'string', `checkTNLinks: 'fieldText' parameter should be a string not a '${typeof fieldName}'`);
     console.assert(fieldText !== undefined, "checkTNLinks: 'fieldText' parameter should be defined");

@@ -11,8 +11,6 @@ import RepoCheck from './RepoCheck';
 
 <RepoCheck
   username = 'unfoldingWord'
-  username = 'Biblica'
-  repoName='vi-vcb15' // Translation Notes (TSV tables)
 
   // repoName='hbo_uhb' // OT books only
   // repoName='el-x-koine_ugnt' // NT books only
@@ -22,14 +20,14 @@ import RepoCheck from './RepoCheck';
   // repoName='en_ta' // Translation Academy (markdown files)
   // repoName='en_tw' // Translation Words (markdown files)
   // repoName='en_obs' // Open Bible Stories (markdown files)
-  // repoName='fr_ulb' // No alignment so smaller files (faster)
+  repoName='fr_ulb' // No alignment so smaller files (faster)
 
   // If we don't put the branch here, the default branch is used
   // branch='master'
 
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'
-  //displayType='SevereMediumLow'
+  displayType='SingleList'
 
   // Specifying maximumSimilarMessages and extractLength is just to show off options
   //  -- those fields are not necessary (or normal) here
