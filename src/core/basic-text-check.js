@@ -152,7 +152,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
         ix = fieldText.indexOf(punctChar + punctChar);
         if (ix >= 0) {
             let extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-            addNotice5(177, "Unexpected doubled " + punctChar + " characters", ix, extract, ourAtString);
+            addNotice5(177, `Unexpected doubled ${punctChar} characters`, ix, extract, ourAtString);
         }
     }
     // Check for punctuation chars following space
@@ -160,15 +160,16 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
         ix = fieldText.indexOf(' ' + punctChar);
         if (ix >= 0) {
             let extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-            addNotice5(191, "Unexpected " + punctChar + " character after space", ix, extract, ourAtString);
+            addNotice5(191, `Unexpected ${punctChar} character after space`, ix, extract, ourAtString);
         }
     }
     // Check for punctuation chars before space
-    for (const punctChar of '\'[({<⟨،、‒–—―‹«‐‘“/⁄·@\•^†‡°¡¿※№×ºª%‰‱¶′″‴§~_|‖¦©℗℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥') {
+    //  Removed ' (can be normal, e.g., Jesus' cloak)
+    for (const punctChar of '[({<⟨،、‒–—―‹«‐‘“/⁄·@\•^†‡°¡¿※№×ºª%‰‱¶′″‴§~_|‖¦©℗℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥') {
         ix = fieldText.indexOf(punctChar + ' ');
         if (ix >= 0) {
             let extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-            addNotice5(192, "Unexpected space after " + punctChar + " character", ix, extract, ourAtString);
+            addNotice5(192, `Unexpected space after ${punctChar} character`, ix, extract, ourAtString);
         }
     }
 
@@ -182,7 +183,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
         const lCount = countOccurrences(fieldText, leftChar);
         const rCount = countOccurrences(fieldText, rightChar);
         if (lCount !== rCount)
-            addNotice5(663, "Mismatched " + leftChar + rightChar + " characters", -1, "(left=" + lCount.toLocaleString() + ", right=" + rCount.toLocaleString() + ")", ourAtString);
+            addNotice5(663, "Mismatched " + leftChar + rightChar + " characters", -1, `(left=${lCount.toLocaleString()}, right=${rCount.toLocaleString()})`, ourAtString);
     }
 
     if (!allowedLinks) {
