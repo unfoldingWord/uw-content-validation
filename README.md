@@ -18,11 +18,12 @@ There are three sample notice processing functions that show how to:
 1. Divide the noticeList into a list of severe, medium, and low priority warnings,
 1. Convert the noticeList into a list of warnings sorted by priority,
 
-In addition, there are Styleguidist pages viewable at https://unfoldingword.github.io/content-validation/ which show how these core functions may be used, effectively producing a primitive app that checks Door43 files, repositories (repos), book packages, etc.
+In addition, there are Styleguidist pages viewable at https://unfoldingword.github.io/content-validation/ which show how these core functions may be used, effectively producing a primitive app that checks Door43 files, repositories (repos), book packages, etc. as well as demonstrating the basic functions.
 
 ## The Stack
 
-- Javascript + React (functional components & hooks).
+- Javascript for primary functions.
+- React (functional components & hooks) for demonstration applets.
 - MaterialUI for UI/UX baseline design components.
 - Styleguidist for Playground Documentation.
 - Yarn for dependencies, publishing, and deploying.

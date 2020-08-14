@@ -206,10 +206,10 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
         // console.log("Using default extractLength=" + extractLength);
     }
     // else
-    //     console.log("Using supplied extractLength=" + extractLength, "cf. default="+DEFAULT_EXTRACT_LENGTH);
+        // console.log(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
     const halfLength = Math.floor(extractLength / 2); // rounded down
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
-    // console.log("Using halfLength=" + halfLength, "halfLengthPlus="+halfLengthPlus);
+    // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     const bbb = BBB.toLowerCase();
     let numChaptersThisBook;

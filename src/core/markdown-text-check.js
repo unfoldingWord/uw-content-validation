@@ -28,10 +28,10 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
         // console.log("Using default extractLength=" + extractLength);
     }
     // else
-    //     console.log("Using supplied extractLength=" + extractLength, "cf. default="+DEFAULT_EXTRACT_LENGTH);
+        // console.log("Using supplied extractLength=" + extractLength, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
     const halfLength = Math.floor(extractLength / 2); // rounded down
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
-    // console.log("Using halfLength=" + halfLength, "halfLengthPlus="+halfLengthPlus);
+    // console.log("Using halfLength=" + halfLength, `halfLengthPlus=${halfLengthPlus}`);
 
     const result = { successList: [], noticeList: [] };
 
@@ -42,15 +42,15 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
     function addNotice5(priority, message, index, extract, location) {
         // console.log(`checkMarkdownText addNotice5: (priority=${priority}) ${message}${index > 0 ? " (at character " + index + 1 + ")" : ""}${extract ? " " + extract : ""}${location}`);
         console.assert(priority !== undefined, "cMdT addNotice5: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', "cMdT addNotice5: 'priority' parameter should be a number not a '" + (typeof priority) + "': " + priority);
+        console.assert(typeof priority === 'number', `cMdT addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message !== undefined, "cMdT addNotice5: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', "cMdT addNotice5: 'message' parameter should be a string not a '" + (typeof message) + "': " + message);
+        console.assert(typeof message === 'string', `cMdT addNotice5: 'message' parameter should be a string not a '${typeof message}': ${message}`);
         console.assert(index !== undefined, "cMdT addNotice5: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', "cMdT addNotice5: 'index' parameter should be a number not a '" + (typeof index) + "': " + index);
+        console.assert(typeof index === 'number', `cMdT addNotice5: 'index' parameter should be a number not a '${typeof index}': ${index}`);
         console.assert(extract !== undefined, "cMdT addNotice5: 'extract' parameter should be defined");
-        console.assert(typeof extract === 'string', "cMdT addNotice5: 'extract' parameter should be a string not a '" + (typeof extract) + "': " + extract);
+        console.assert(typeof extract === 'string', `cMdT addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cMdT addNotice5: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', "cMdT addNotice5: 'location' parameter should be a string not a '" + (typeof location) + "': " + location);
+        console.assert(typeof location === 'string', `cMdT addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
         result.noticeList.push([priority, message, index, extract, location]);
     }
     // end of addNotice5 function
@@ -63,9 +63,9 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
         // Updates the global list of notices
         // console.log(`cMdT doOurBasicTextChecks(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${optionalFieldLocation}, …)`);
         console.assert(fieldName !== undefined, "cMdT doOurBasicTextChecks: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName === 'string', "cMdT doOurBasicTextChecks: 'fieldName' parameter should be a string not a '" + (typeof fieldName) + "'");
+        console.assert(typeof fieldName === 'string', `cMdT doOurBasicTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
         console.assert(fieldText !== undefined, "cMdT doOurBasicTextChecks: 'fieldText' parameter should be defined");
-        console.assert(typeof fieldText === 'string', "cMdT doOurBasicTextChecks: 'fieldText' parameter should be a string not a '" + (typeof fieldText) + "'");
+        console.assert(typeof fieldText === 'string', `cMdT doOurBasicTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         console.assert(allowedLinks === true || allowedLinks === false, "cMdT doOurBasicTextChecks: allowedLinks parameter must be either true or false");
 
         const dbtcResultObject = doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
@@ -93,19 +93,19 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
 
         // Remove leading and trailing hash signs
         thisText = thisText.replace(/^#+|#$/g, '')
-        // console.log("After removing hashes have '"+thisText+"'");
+        // console.log(`After removing hashes have '${thisText}'`);
 
         // Remove leading spaces
         thisText = thisText.replace(/^ +/g, '')
-        // console.log("After removing leading spaces have '"+thisText+"'");
+        // console.log(`After removing leading spaces have '${thisText}'`);
 
         // // Remove leading asterisks
         // thisText = thisText.replace(/^\*/g,'')
-        // console.log("After removing asterisks have '"+thisText+"'");
+        // console.log(`After removing asterisks have '${thisText}'`);
 
         // // Remove leading spaces again now
         // thisText = thisText.replace(/^ +/g,'')
-        // console.log("After removing more leading spaces have '"+thisText+"'");
+        // console.log(`After removing more leading spaces have '${thisText}'`);
 
         if (thisText)
             doOurBasicTextChecks(lineName, thisText, true, lineLocation, optionalCheckingOptions);
@@ -115,27 +115,27 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
 
     // Main code for checkMarkdownText function
     const lines = markdownText.split('\n');
-    // console.log("  '" + location + "' has " + lines.length.toLocaleString() + " total lines");
+    // console.log(`  '${location}' has ${lines.length.toLocaleString()} total lines`);
 
     let headerLevel = 0;
     let lastNumLeadingSpaces = 0;
     let lastLineContents;
     for (let n = 1; n <= lines.length; n++) {
-        const atString = " in line " + n.toLocaleString() + ourLocation;
+        const atString = ` in line ${n.toLocaleString()}${ourLocation}`;
 
         const line = lines[n - 1];
         let numLeadingSpaces;
         if (line) {
 
             const thisHeaderLevel = line.match(/^#*/)[0].length;
-            // console.log("Got thisHeaderLevel="+ thisHeaderLevel + " for "+line+atString);
+            // console.log(`Got thisHeaderLevel=${thisHeaderLevel} for ${line}${atString}`);
             if (thisHeaderLevel > headerLevel + 1)
                 addNotice5(172, "Header levels should only increment by one", 0, '', atString);
             if (thisHeaderLevel > 0)
                 headerLevel = thisHeaderLevel;
 
             numLeadingSpaces = line.match(/^ */)[0].length;
-            // console.log("Got numLeadingSpaces="+ numLeadingSpaces + " for "+line+atString);
+            // console.log(`Got numLeadingSpaces=${numLeadingSpaces} for ${line}${atString}`);
             if (numLeadingSpaces && lastNumLeadingSpaces && numLeadingSpaces !== lastNumLeadingSpaces)
                 addNotice5(472, "Nesting seems confused", 0, '', atString);
 

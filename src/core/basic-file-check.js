@@ -23,27 +23,27 @@ export function doBasicFileChecks(filename, fileText, optionalFileLocation, opti
     //      4/ a short extract of the string containing the error (or empty-string if irrelevant)
     //      5/ the detailed location string
     //  (Returned in this way for more intelligent processing at a higher level)
-    // console.log("doBasicFileChecks(" + filename + ", " + fileText.length.toLocaleString() + " chars, " +allowedLinks +", '"+ optionalFileLocation + "')…");
+    // console.log(`doBasicFileChecks(${filename}, ${fileText.length.toLocaleString()} chars, ${allowedLinks}, '${optionalFileLocation}')…`);
     console.assert(filename !== undefined, "doBasicFileChecks: 'filename' parameter should be defined");
-    console.assert(typeof filename === 'string', "doBasicFileChecks: 'filename' parameter should be a number not a '" + (typeof filename) + "': " + filename);
+    console.assert(typeof filename === 'string', `doBasicFileChecks: 'filename' parameter should be a number not a '${typeof filename}': ${filename}`);
     console.assert(fileText !== undefined, "doBasicFileChecks: 'fileText' parameter should be defined");
-    console.assert(typeof fileText === 'string', "doBasicFileChecks: 'fileText' parameter should be a number not a '" + (typeof fileText) + "': " + fileText);
+    console.assert(typeof fileText === 'string', `doBasicFileChecks: 'fileText' parameter should be a number not a '${typeof fileText}': ${fileText}`);
     // console.assert( allowedLinks===true || allowedLinks===false, "doBasicFileChecks: allowedLinks parameter must be either true or false");
 
     let result = { noticeList: [] };
 
     function addNotice5(priority, message, index, extract, location) {
-        // console.log("dBTC Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
+        // console.log(`dBTC Notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? " " + extract : ""}${location}`);
         console.assert(priority !== undefined, "dBTCs addNotice5: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', "dBTCs addNotice5: 'priority' parameter should be a number not a '" + (typeof priority) + "': " + priority);
+        console.assert(typeof priority === 'number', `dBTCs addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message !== undefined, "dBTCs addNotice5: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', "dBTCs addNotice5: 'message' parameter should be a string not a '" + (typeof message) + "': " + message);
+        console.assert(typeof message === 'string', `dBTCs addNotice5: 'message' parameter should be a string not a '${typeof message}': ${message}`);
         console.assert(index !== undefined, "dBTCs addNotice5: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', "dBTCs addNotice5: 'index' parameter should be a number not a '" + (typeof index) + "': " + index);
+        console.assert(typeof index === 'number', `dBTCs addNotice5: 'index' parameter should be a number not a '${typeof index}': ${index}`);
         console.assert(extract !== undefined, "dBTCs addNotice5: 'extract' parameter should be defined");
-        console.assert(typeof extract === 'string', "dBTCs addNotice5: 'extract' parameter should be a string not a '" + (typeof extract) + "': " + extract);
+        console.assert(typeof extract === 'string', `dBTCs addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "dBTCs addNotice5: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', "dBTCs addNotice5: 'location' parameter should be a string not a '" + (typeof location) + "': " + location);
+        console.assert(typeof location === 'string', `dBTCs addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
         result.noticeList.push([priority, message, index, extract, location]);
     }
 
@@ -53,7 +53,7 @@ export function doBasicFileChecks(filename, fileText, optionalFileLocation, opti
         return result;
 
     // Create our more detailed location string by prepending the filename
-    let ourAtString = " in '" + filename + "'";
+    let ourAtString = ` in '${filename}'`;
     if (optionalFileLocation) {
         if (optionalFileLocation[0] !== ' ') ourAtString += ' ';
         ourAtString += optionalFileLocation;
@@ -73,10 +73,10 @@ export function doBasicFileChecks(filename, fileText, optionalFileLocation, opti
         // console.log("Using default extractLength=" + extractLength);
     }
     // else
-    //     console.log("Using supplied extractLength=" + extractLength, "cf. default="+DEFAULT_EXTRACT_LENGTH);
+        // console.log("Using supplied extractLength=" + extractLength, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
     const halfLength = Math.floor(extractLength / 2); // rounded down
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
-    // console.log("Using halfLength=" + halfLength, "halfLengthPlus="+halfLengthPlus);
+    // console.log("Using halfLength=" + halfLength, `halfLengthPlus=${halfLengthPlus}`);
 
     let ix;
     if ((ix = fileText.indexOf('<<<<<<<')) >= 0) {

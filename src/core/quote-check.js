@@ -169,10 +169,10 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, given
         // console.log("Using default extractLength=" + extractLength);
     }
     // else
-    //     console.log("Using supplied extractLength=" + extractLength, "cf. default="+DEFAULT_EXTRACT_LENGTH);
+        // console.log(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
     const halfLength = Math.floor(extractLength / 2); // rounded down
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
-    // console.log("Using halfLength=" + halfLength, "halfLengthPlus="+halfLengthPlus);
+    // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
 
     // if fieldText.lstrip() !== fieldText:
@@ -230,7 +230,7 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, given
                     else if (index === 0) partDescription = 'beginning';
                     else if (index === numQuoteBits - 1) partDescription = 'end';
                     else partDescription = `middle${numQuoteBits > 3 ? index : ''}`;
-                    // console.log(`721 Unable to find '${fieldText}' ${numQuoteBits === 1? '': "'"+quoteBits[index]+"' "}${partDescription? '('+partDescription+') ':''}in '${verseText}'`);
+                    // console.log(`721 Unable to find '${fieldText}' ${numQuoteBits === 1? '': `'${quoteBits[index]}' `}${partDescription? '('+partDescription+') ':''}in '${verseText}'`);
                     const extract = `${quoteBits[index]}' ${partDescription? '('+partDescription+')':''}`;
                     addNotice5(721, "Unable to find original language quote in verse text", -1, extract, ourLocation);
                 }

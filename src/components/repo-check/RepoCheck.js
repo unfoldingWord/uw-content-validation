@@ -30,7 +30,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
     if (branch === undefined) branch = 'master';
 
     const languageCode = repoName.split('_', 1)[0];
-    // console.log("languageCode='"+ languageCode+"'");
+    // console.log(`languageCode='${languageCode}'`);
 
     const checkingOptions = { // Uncomment any of these to test them
         // 'extractLength': 25,

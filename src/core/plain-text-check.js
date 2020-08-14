@@ -38,25 +38,25 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
         result.successList.push(successString);
     }
     function addNotice8(priority, BBB,C,V, message, index, extract, location) {
-        // console.log("checkPlainText notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
+        // console.log("checkPlainText notice: (priority="+priority+") "+message+(index > 0 ? ` (at character ${index}${1})` : "") + (extract ? " " + extract : "") + location);
         console.assert(priority!==undefined, "cPT addNotice8: 'priority' parameter should be defined");
-        console.assert(typeof priority==='number', "cPT addNotice8: 'priority' parameter should be a number not a '"+(typeof priority)+"': "+priority);
+        console.assert(typeof priority==='number', `cPT addNotice8: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(BBB !== undefined, "cPT addNotice9: 'BBB' parameter should be defined");
-        console.assert(typeof BBB === 'string', "cPT addNotice9: 'BBB' parameter should be a string not a '" + (typeof BBB) + "'");
+        console.assert(typeof BBB === 'string', `cPT addNotice9: 'BBB' parameter should be a string not a '${typeof BBB}'`);
         console.assert(BBB.length === 3, `cPT addNotice9: 'BBB' parameter should be three characters long not ${BBB.length}`);
         console.assert(books.isValidBookCode(BBB), `cPT addNotice9: '${BBB}' is not a valid USFM book code`);
         console.assert(C !== undefined, "cPT addNotice9: 'C' parameter should be defined");
-        console.assert(typeof C === 'string', "cPT addNotice9: 'C' parameter should be a string not a '" + (typeof C) + "'");
+        console.assert(typeof C === 'string', `cPT addNotice9: 'C' parameter should be a string not a '${typeof C}'`);
         console.assert(V !== undefined, "cPT addNotice9: 'V' parameter should be defined");
-        console.assert(typeof V === 'string', "cPT addNotice9: 'V' parameter should be a string not a '" + (typeof V) + "'");
+        console.assert(typeof V === 'string', `cPT addNotice9: 'V' parameter should be a string not a '${typeof V}'`);
         console.assert(message!==undefined, "cPT addNotice8: 'message' parameter should be defined");
-        console.assert(typeof message==='string', "cPT addNotice8: 'message' parameter should be a string not a '"+(typeof message)+"': "+message);
+        console.assert(typeof message==='string', `cPT addNotice8: 'message' parameter should be a string not a '${typeof message}': ${message}`);
         console.assert(index!==undefined, "cPT addNotice8: 'index' parameter should be defined");
-        console.assert(typeof index==='number', "cPT addNotice8: 'index' parameter should be a number not a '"+(typeof index)+"': "+index);
+        console.assert(typeof index==='number', `cPT addNotice8: 'index' parameter should be a number not a '${typeof index}': ${index}`);
         console.assert(extract!==undefined, "cPT addNotice8: 'extract' parameter should be defined");
-        console.assert(typeof extract==='string', "cPT addNotice8: 'extract' parameter should be a string not a '"+(typeof extract)+"': "+extract);
+        console.assert(typeof extract==='string', `cPT addNotice8: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location!==undefined, "cPT addNotice8: 'location' parameter should be defined");
-        console.assert(typeof location==='string', "cPT addNotice8: 'location' parameter should be a string not a '"+(typeof location)+"': "+location);
+        console.assert(typeof location==='string', `cPT addNotice8: 'location' parameter should be a string not a '${typeof location}': ${location}`);
         result.noticeList.push([priority, BBB,C,V, message, index, extract, location]);
     }
 
@@ -68,9 +68,9 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
         // Updates the global list of notices
         // console.log(`cPT doOurBasicTextChecks(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${fieldLocation}, …)`);
         console.assert(fieldName!==undefined, "cPT doOurBasicTextChecks: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName==='string', "cPT doOurBasicTextChecks: 'fieldName' parameter should be a string not a '"+(typeof fieldName)+"'");
+        console.assert(typeof fieldName==='string', `cPT doOurBasicTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
         console.assert(fieldText!==undefined, "cPT doOurBasicTextChecks: 'fieldText' parameter should be defined");
-        console.assert(typeof fieldText==='string', "cPT doOurBasicTextChecks: 'fieldText' parameter should be a string not a '"+(typeof fieldText)+"'");
+        console.assert(typeof fieldText==='string', `cPT doOurBasicTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         console.assert( allowedLinks===true || allowedLinks===false, "cPT doOurBasicTextChecks: allowedLinks parameter must be either true or false");
 
         const resultObject = doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
