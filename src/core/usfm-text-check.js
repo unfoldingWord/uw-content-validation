@@ -7,7 +7,7 @@ import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
 import { ourParseInt, consoleLogObject } from './utilities';
 
 
-const USFM_VALIDATOR_VERSION = '0.5.1';
+const USFM_VALIDATOR_VERSION = '0.5.2';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -92,7 +92,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
     // console.log(`Using supplied extractLength=${extractLength} cf. default=${DEFAULT_EXTRACT_LENGTH}`);
     const halfLength = Math.floor(extractLength / 2); // rounded down
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
-    // console.log("Using halfLength=" + halfLength, "halfLengthPlus="+halfLengthPlus);
+    // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     const result = { successList: [], noticeList: [] };
 
@@ -125,13 +125,17 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
         //  which can be quite time-consuming on large, complex USFM files
         // console.log("Running our BCS USFM grammar check (can take quite a while for a large book)…");
 
-        const grammarCheckResult = runBCSGrammarCheck('strict', fileText);
+        const grammarCheckResult = runBCSGrammarCheck('strict', fileText, fileLocation);
         // NOTE: We haven't figured out how to get ERRORS out of this parser yet
         // console.log(`  Finished our BCS USFM grammar check with ${grammarCheckResult.isValidUSFM} and ${grammarCheckResult.warnings.length} warnings.`);
         addSuccessMessage(`Checked USFM Grammar (strict mode) ${grammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN'T validate)"}`);
 
         if (!grammarCheckResult.isValidUSFM) // TEMP DEGRADE TO WARNING 994 -> 544 ................XXXXXXXXXXXXXXXXXXXXXX
-            addCVNotice7(544, "", "", `USFM3 Grammar Check (strict mode) doesn't pass`, -1, "", fileLocation);
+            addCVNotice7(994, "", "", `USFM3 Grammar Check (strict mode) doesn't pass`, -1, "", fileLocation);
+
+        // We only get one error if it fails
+        if (grammarCheckResult.error && grammarCheckResult.error[0])
+            addNotice5to8(grammarCheckResult.error[0], grammarCheckResult.error[1], grammarCheckResult.error[2], grammarCheckResult.error[3], grammarCheckResult.error[4]);
 
         // console.log("  Warnings:", JSON.stringify(grammarCheckResult.warnings));
         // Display these warnings but with a lower priority
@@ -142,7 +146,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
                 addCVNotice7(102, "", "", `USFMGrammar found: ${warningString}`, -1, "", fileLocation);
 
         if (!grammarCheckResult.isValidUSFM) {
-            const relaxedGrammarCheckResult = runBCSGrammarCheck('relaxed', fileText);
+            const relaxedGrammarCheckResult = runBCSGrammarCheck('relaxed', fileText, fileLocation);
             addSuccessMessage(`Checked USFM Grammar (relaxed mode) ${relaxedGrammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN'T validate)"}`);
             if (!relaxedGrammarCheckResult.isValidUSFM)
                 addCVNotice7(644, "", "", `USFM3 Grammar Check (relaxed mode) doesn't pass either`, -1, "", fileLocation);
@@ -493,7 +497,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
             let line = lines[n - 1];
             if (C === '0') V = n.toString();
             let atString = ` on line ${n.toLocaleString()}${ourLocation}`;
-            // console.log("line '"+line+"'"+ atString);
+            // console.log(`line '${line}'${atString}`);
             if (!line) {
                 // addCVNotice7(103, "Unexpected blank line", 0, '', atString);
                 continue;

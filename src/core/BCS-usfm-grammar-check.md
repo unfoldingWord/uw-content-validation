@@ -1,4 +1,4 @@
-## Bridgeconn USFM Grammar Check Sandbox
+## Bridgeconn (BCS) USFM Grammar Check Sandbox
 
 This function simply packages the [Bridgeconn USFM Grammar Check](https://www.npmjs.com/package/usfm-grammar) and runs it on the given USFM snippet just for our convenient testing.
 

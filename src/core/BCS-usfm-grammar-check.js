@@ -2,7 +2,10 @@ import grammar from 'usfm-grammar';
 import * as books from '../core/books/books';
 
 
-export function runBCSGrammarCheck(strictnessString, fileText) {
+const GRAMMAR_VALIDATOR_VERSION = '0.2.1';
+
+
+export function runBCSGrammarCheck(strictnessString, fileText, givenLocation) {
     // Runs the BCS USFM Grammar checker
     //  which can be quite time-consuming on large, complex USFM files
     // console.log("Running BCS USFM grammar check (can take quite a while for a large book)…");
@@ -12,22 +15,52 @@ export function runBCSGrammarCheck(strictnessString, fileText) {
         strictnessString === 'relaxed' ? grammar.LEVEL.RELAXED : null);
     // Returns a Boolean indicating whether the input USFM text satisfies the grammar or not.
     // This method is available in both default and relaxed modes.
-    const isValidUSFM = ourUsfmParser.validate();
-    // console.log(`  Finished BCS USFM grammar check with ${isValidUSFM} and ${ourUsfmParser.warnings.length} warnings.`);
-    // NOTE: We don't know how to get the errors out yet
+    // const parserResult = ourUsfmParser.validate();
+    const parserResult = ourUsfmParser.toJSON()
+    let parserMessages;
+    parserMessages = parserResult._messages; // Throw away the JSON (if any)
+    // console.log(`  Finished BCS USFM grammar check with messages: ${JSON.stringify(parserResult)}\n and warnings: ${JSON.stringify(ourUsfmParser.warnings)}.`);
+    let parseError;
+    parseError = parserMessages._error;
+    // console.log(`  parseError: ${parseError}`);
+    let ourErrorMessage, lineNumberString, characterIndex, extract;
+    // NOTE: The following code is quite fragile
+    //  as it depends on the precise format of the error message return from USFMParser
+    let ourErrorFields = [];
+    if (parseError) {
+        const contextRE = /(\d+?)\s\|\s(.+)/g;
+        for (const errorLine of parseError.split('\n')) {
+            // console.log(`errorLine=${errorLine}`);
+            if (errorLine.startsWith('>')) {
+                const regexResult = contextRE.exec(errorLine.substring(1).trim());
+                // console.log(`  regexResult: ${JSON.stringify(regexResult)}`);
+                if (regexResult) {
+                    lineNumberString = regexResult[1];
+                    extract = regexResult[2];
+                }
+            }
+            else if (errorLine.endsWith('^')) {
+                characterIndex = errorLine.indexOf('^') - 8;
+                if (characterIndex < 0) characterIndex = 0; // Just in case
+            }
+            else ourErrorMessage = errorLine; // We only want the last one
+        }
+        // console.log(`  ourErrorMessage: '${ourErrorMessage}' lineNumberString=${lineNumberString} characterIndex=${characterIndex} extract='${extract}'`);
+        ourErrorFields = [901, `USFMGrammar found: ${ourErrorMessage}`, characterIndex, extract, `in line ${lineNumberString}${givenLocation}`];
+    }
 
-    // Clean up their warnings a little
-    //  Remove trailing spaces and periods
-    // console.log("  Warnings:", JSON.stringify(ourUsfmParser.warnings));
+    const parseWarnings = parserResult._warnings ? parserResult._warnings : ourUsfmParser.warnings;
+    // console.log(`  Warnings: ${JSON.stringify(parseWarnings)}`);
     let ourWarnings = [];
-    for (const warningString of ourUsfmParser.warnings) {
+    for (const warningString of parseWarnings) {
         // console.log(`warningString: '${warningString}'`);
+        // Clean up their warnings a little: Remove trailing spaces and periods
         let adjustedString = warningString.trim(); // Removes the trailing space
-        if (adjustedString.endsWith('.')) adjustedString = adjustedString.substring(0, adjustedString.length-1);
+        if (adjustedString.endsWith('.')) adjustedString = adjustedString.substring(0, adjustedString.length - 1);
         ourWarnings.push(adjustedString);
     }
 
-    return { isValidUSFM: isValidUSFM, warnings: ourWarnings };
+    return { isValidUSFM: !parseError, error: ourErrorFields, warnings: ourWarnings };
 }
 // end of runBCSGrammarCheck function
 
@@ -40,7 +73,7 @@ export function checkUSFMGrammar(BBB, strictnessString, filename, givenText, giv
 
      Returns a result object containing a successList and a noticeList
      */
-    // console.log("checkUSFMGrammar(" + givenText.length.toLocaleString() + " chars, '" + location + "')…");
+    console.log(`checkUSFMGrammar(${givenText.length.toLocaleString()} chars, '${location}')…`);
     console.assert(strictnessString === 'strict' || strictnessString === 'relaxed');
 
     let ourLocation = givenLocation;
@@ -55,18 +88,18 @@ export function checkUSFMGrammar(BBB, strictnessString, filename, givenText, giv
         cugResult.successList.push(successString);
     }
     function addNotice5to8(priority, message, index, extract, location) {
-        // console.log("checkUSFMGrammar notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
+        // console.log(`checkUSFMGrammar notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? " " + extract : ""}${location}`);
         console.assert(priority !== undefined, "cUSFMgr addNotice5to8: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', "cUSFMgr addNotice5to8: 'priority' parameter should be a number not a '" + (typeof priority) + "': " + priority);
+        console.assert(typeof priority === 'number', `cUSFMgr addNotice5to8: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message !== undefined, "cUSFMgr addNotice5to8: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', "cUSFMgr addNotice5to8: 'message' parameter should be a string not a '" + (typeof message) + "': " + message);
+        console.assert(typeof message === 'string', `cUSFMgr addNotice5to8: 'message' parameter should be a string not a '${typeof message}': ${message}`);
         console.assert(index !== undefined, "cUSFMgr addNotice5to8: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', "cUSFMgr addNotice5to8: 'index' parameter should be a number not a '" + (typeof index) + "': " + index);
+        console.assert(typeof index === 'number', `cUSFMgr addNotice5to8: 'index' parameter should be a number not a '${typeof index}': ${index}`);
         console.assert(extract !== undefined, "cUSFMgr addNotice5to8: 'extract' parameter should be defined");
-        console.assert(typeof extract === 'string', "cUSFMgr addNotice5to8: 'extract' parameter should be a string not a '" + (typeof extract) + "': " + extract);
+        console.assert(typeof extract === 'string', `cUSFMgr addNotice5to8: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cUSFMgr addNotice5to8: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', "cUSFMgr addNotice5to8: 'location' parameter should be a string not a '" + (typeof location) + "': " + location);
-        cugResult.noticeList.push([priority, BBB,"","", message, index, extract, location]);
+        console.assert(typeof location === 'string', `cUSFMgr addNotice5to8: 'location' parameter should be a string not a '${typeof location}': ${location}`);
+        cugResult.noticeList.push([priority, BBB, "", "", message, index, extract, location]);
     }
 
 
@@ -75,14 +108,18 @@ export function checkUSFMGrammar(BBB, strictnessString, filename, givenText, giv
         return cugResult;
 
     const grammarCheckResult = runBCSGrammarCheck(strictnessString, givenText, ourLocation);
-    // NOTE: We haven't figured out how to get ERRORS out of this parser yet
+    // console.log(`grammarCheckResult=${JSON.stringify(grammarCheckResult)}`);
 
     if (!grammarCheckResult.isValidUSFM)
         addNotice5to8(944, `USFM3 Grammar Check (${strictnessString} mode) doesn't pass`, -1, "", ourLocation);
 
+    // We only get one error if it fails
+    if (grammarCheckResult.error && grammarCheckResult.error[0])
+        addNotice5to8(grammarCheckResult.error[0], grammarCheckResult.error[1], grammarCheckResult.error[2], grammarCheckResult.error[3], grammarCheckResult.error[4]);
+
     // Display these warnings but with a lowish priority
     for (const warningString of grammarCheckResult.warnings)
-        addNotice5to8(101, "USFMGrammar found: " + warningString, -1, "", ourLocation);
+        addNotice5to8(101, `USFMGrammar found: ${warningString}`, -1, "", ourLocation);
 
     addSuccessMessage(`Checked USFM Grammar (${strictnessString} mode) ${grammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN'T validate)"}`);
     // console.log(`  checkUSFMGrammar returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
