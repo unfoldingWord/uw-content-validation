@@ -26,10 +26,10 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
         // console.log("Using default extractLength=" + extractLength);
     }
     // else
-    //     console.log("Using supplied extractLength=" + extractLength, "cf. default="+DEFAULT_EXTRACT_LENGTH);
+        // console.log("Using supplied extractLength=" + extractLength, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
     const halfLength = Math.floor(extractLength / 2); // rounded down
     const halfLengthPlus = Math.floor((extractLength+1) / 2); // rounded up
-    // console.log("Using halfLength=" + halfLength, "halfLengthPlus="+halfLengthPlus);
+    // console.log("Using halfLength=" + halfLength, `halfLengthPlus=${halfLengthPlus}`);
 
     const result = { successList: [], noticeList: [] };
 
@@ -38,7 +38,7 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
         result.successList.push(successString);
     }
     function addNotice8(priority, BBB,C,V, message, index, extract, location) {
-        // console.log("checkPlainText notice: (priority="+priority+") "+message+(index > 0 ? ` (at character ${index}${1})` : "") + (extract ? " " + extract : "") + location);
+        // console.log(`checkPlainText notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? " " + extract : ""}${location}`);
         console.assert(priority!==undefined, "cPT addNotice8: 'priority' parameter should be defined");
         console.assert(typeof priority==='number', `cPT addNotice8: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(BBB !== undefined, "cPT addNotice9: 'BBB' parameter should be defined");
@@ -87,7 +87,7 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
 
     function checkPlainLineContents(lineName, lineText, lineLocation) {
 
-        // console.log("checkPlainLineContents for '"+lineName+"', '"+lineText+"' at"+lineLocation);
+        // console.log(`checkPlainLineContents for '${lineName}', '${lineText}' at${lineLocation}`);
         let thisText = lineText.trimStart(); // So we don't get "leading space" and "doubled spaces" errors
 
         if (thisText)
@@ -98,17 +98,17 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
 
     // Main code for checkPlainText function
     const lines = markdownText.split('\n');
-    // console.log("  '" + location + "' has " + lines.length.toLocaleString() + " total lines");
+    // console.log(`  '${location}' has ${lines.length.toLocaleString()} total lines`);
 
     let headerLevel = 0;
     let lastNumLeadingSpaces = 0;
     let lastLineContents;
     for (let n= 1; n <= lines.length; n++) {
-        const atString = " in line "+n.toLocaleString()+ourLocation;
+        const atString = ` in line ${n.toLocaleString()}${ourLocation}`;
 
         const line = lines[n - 1];
         if (line) {
-            checkPlainLineContents("line "+n.toLocaleString(), line, ourLocation);
+            checkPlainLineContents(`line ${n.toLocaleString()}`, line, ourLocation);
         } else {
             // This is a blank line
         }

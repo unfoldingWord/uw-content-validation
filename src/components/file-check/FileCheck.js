@@ -16,7 +16,7 @@ const CHECKER_VERSION_STRING = '0.1.1';
 
 function FileCheck(props) {
 
-    // console.log("I'm here in FileCheck v" + CHECKER_VERSION_STRING);
+    // console.log(`I'm here in FileCheck v${CHECKER_VERSION_STRING}`);
     // consoleLogObject("props", props);
 
     let username = props.username;

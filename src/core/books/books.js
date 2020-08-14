@@ -25,7 +25,7 @@ export const isExtraBookCode = (bookId) => {
 
 export const usfmNumberName = (bookId) => {
   try {return data[bookId.toLowerCase()].usfm;}
-  catch(err) {throw new Error("usfmNumberName() given invalid bookId: '" + bookId + "'");}
+  catch(err) {throw new Error(`usfmNumberName() given invalid bookId: '${bookId}'`);}
 }
 
 export const chaptersInBook = (bookId) => {
@@ -33,10 +33,10 @@ export const chaptersInBook = (bookId) => {
   try {
     chapters = data[bookId.toLowerCase()].chapters;
   } catch (err) {
-    throw new Error("chaptersInBook() given invalid bookId: '" + bookId + "'");
+    throw new Error(`chaptersInBook() given invalid bookId: '${bookId}'`);
   }
   if (chapters === undefined) {
-    throw new Error("chaptersInBook(): Invalid bookId: '" + bookId + "'");
+    throw new Error(`chaptersInBook(): Invalid bookId: '${bookId}'`);
   }
   return chapters;
 };
@@ -44,7 +44,7 @@ export const chaptersInBook = (bookId) => {
 export const versesInChapter = (bookId, chapter) => {
   const verses = chaptersInBook(bookId)[chapter - 1];
   if (verses === undefined) {
-    throw new Error("versesInChapter(" + bookId + ") given invalid chapter: " + chapter);
+    throw new Error(`versesInChapter(${bookId}) given invalid chapter: ${chapter}`);
   }
   return verses;
 };

@@ -36,11 +36,11 @@ export function checkUSFMToJSON(BBB, filename, givenText, givenLocation, optiona
     const result = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        // console.log("checkUSFMToJSON success: " + successString);
+        // console.log(`checkUSFMToJSON success: ${successString}`);
         result.successList.push(successString);
     }
     function addNotice5to8(priority, message, index, extract, location) {
-        // console.log(`checkUSFMToJSON notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? " " + extract : ""}${location}`);
+        // console.log(`checkUSFMToJSON notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cUSFMjs addNotice5to8: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cUSFMjs addNotice5to8: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message !== undefined, "cUSFMjs addNotice5to8: 'message' parameter should be defined");

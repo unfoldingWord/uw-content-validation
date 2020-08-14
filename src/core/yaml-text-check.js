@@ -26,32 +26,32 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
     } catch (ytcError) {}
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
-        // console.log("Using default extractLength=" + extractLength);
+        // console.log(`Using default extractLength=${extractLength}`);
     }
     // else
-    //     console.log("Using supplied extractLength=" + extractLength, "cf. default="+DEFAULT_EXTRACT_LENGTH);
+        // console.log(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
     const halfLength = Math.floor(extractLength / 2); // rounded down
     const halfLengthPlus = Math.floor((extractLength+1) / 2); // rounded up
-    // console.log("Using halfLength=" + halfLength, "halfLengthPlus="+halfLengthPlus);
+    // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     const cytResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        // console.log("checkYAMLText success: " + successString);
+        // console.log(`checkYAMLText success: ${successString}`);
         cytResult.successList.push(successString);
     }
     function addNotice5(priority, message, index, extract, location) {
-        // console.log("checkYAMLText Notice: (priority="+priority+") "+message+(index > 0 ? " (at character " + index + 1 + ")" : "") + (extract ? " " + extract : "") + location);
+        // console.log(`checkYAMLText Notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority!==undefined, "cYt addNotice5: 'priority' parameter should be defined");
-        console.assert(typeof priority==='number', "cManT addNotice5: 'priority' parameter should be a number not a '"+(typeof priority)+"': "+priority);
+        console.assert(typeof priority==='number', `cManT addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message!==undefined, "cYt addNotice5: 'message' parameter should be defined");
-        console.assert(typeof message==='string', "cManT addNotice5: 'message' parameter should be a string not a '"+(typeof message)+"': "+message);
+        console.assert(typeof message==='string', `cManT addNotice5: 'message' parameter should be a string not a '${typeof message}': ${message}`);
         console.assert(index!==undefined, "cYt addNotice5: 'index' parameter should be defined");
-        console.assert(typeof index==='number', "cManT addNotice5: 'index' parameter should be a number not a '"+(typeof index)+"': "+index);
+        console.assert(typeof index==='number', `cManT addNotice5: 'index' parameter should be a number not a '${typeof index}': ${index}`);
         console.assert(extract!==undefined, "cYt addNotice5: 'extract' parameter should be defined");
-        console.assert(typeof extract==='string', "cManT addNotice5: 'extract' parameter should be a string not a '"+(typeof extract)+"': "+extract);
+        console.assert(typeof extract==='string', `cManT addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location!==undefined, "cYt addNotice5: 'location' parameter should be defined");
-        console.assert(typeof location==='string', "cYt addNotice5: 'location' parameter should be a string not a '"+(typeof location)+"': "+location);
+        console.assert(typeof location==='string', `cYt addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
         cytResult.noticeList.push([priority, message, index, extract, location]);
     }
 
@@ -63,9 +63,9 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
         // Updates the global list of notices
         // console.log(`cYt doOurBasicTextChecks(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${fieldLocation}, …)`);
         console.assert(fieldName!==undefined, "cYt doOurBasicTextChecks: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName==='string', "cYt doOurBasicTextChecks: 'fieldName' parameter should be a string not a '"+(typeof fieldName)+"'");
+        console.assert(typeof fieldName==='string', `cYt doOurBasicTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
         console.assert(fieldText!==undefined, "cYt doOurBasicTextChecks: 'fieldText' parameter should be defined");
-        console.assert(typeof fieldText==='string', "cYt doOurBasicTextChecks: 'fieldText' parameter should be a string not a '"+(typeof fieldText)+"'");
+        console.assert(typeof fieldText==='string', `cYt doOurBasicTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         console.assert( allowedLinks===true || allowedLinks===false, "cYt doOurBasicTextChecks: allowedLinks parameter must be either true or false");
 
         const resultObject = doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
@@ -76,7 +76,7 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
             console.assert(noticeEntry.length === 5, `YAML doOurBasicTextChecks notice length=${noticeEntry.length}`);
             if (noticeEntry[0] !== 191 // "Unexpected XXX character after space"
               && noticeEntry[1] !== "Unexpected ' character after space"
-              && noticeEntry[1] !== "Unexpected space after ' character"
+            //   && noticeEntry[1] !== "Unexpected space after ' character"
               && noticeEntry[1] !== "Unexpected space after [ character"
               && (noticeEntry[1] !== "Unexpected doubled - characters" || fieldText === '---')
               )
@@ -127,17 +127,17 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
     let lastNumLeadingSpaces = 0;
     let lastLineContents;
     for (let n= 1; n <= lines.length; n++) {
-        const atString = " in line "+n.toLocaleString()+ourLocation;
+        const atString = ` in line ${n.toLocaleString()}${ourLocation}`;
 
         const line = lines[n - 1];
         // let numLeadingSpaces;
         // if (line) {
         //     numLeadingSpaces = line.match(/^ */)[0].length;
-        //     // console.log("Got numLeadingSpaces="+ numLeadingSpaces + " for "+line+atString);
+            // console.log(`Got numLeadingSpaces=${numLeadingSpaces} for ${line}${atString}`);
         //     if (numLeadingSpaces && lastNumLeadingSpaces && numLeadingSpaces!=lastNumLeadingSpaces)
         //         addNotice5(472, "Nesting seems confused", 0, '', atString);
 
-            checkYAMLLineContents("line "+n.toLocaleString(), line, ourLocation);
+            checkYAMLLineContents(`line ${n.toLocaleString()}`, line, ourLocation);
         // } else {
         //     // This is a blank line
         //     numLeadingSpaces = 0;

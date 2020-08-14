@@ -114,36 +114,36 @@ function BookPackagesCheck(/*username, language_code, bookCodes,*/ props) {
                 </>);
             } else if (displayType === 'SevereMediumLow') {
                 const processedResults = processNoticesToSevereMediumLow(rawCBPsResults, processOptions);
-                // console.log("FileCheck got processed results with " + processedResults.successList.length.toLocaleString() + " success message(s), " + processedResults.errorList.length.toLocaleString() + " error(s) and " + processedResults.warningList.length.toLocaleString() + " warning(s)\n"
-                //     + "  numIgnoredNotices=" + processedResults.numIgnoredNotices.toLocaleString(), "numSuppressedErrors=" + processedResults.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + processedResults.numSuppressedWarnings.toLocaleString());
+//                 console.log(`FileCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
+//   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()}`, `numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()}`, `numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
                 if (processedResults.severeList.length || processedResults.mediumList.length || processedResults.lowList.length)
                     setResultValue(<>
                         <p>Checked <b>{username} {language_code} {bookCodeList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
-                        {processedResults.numIgnoredNotices ? " (but " + processedResults.numIgnoredNotices.toLocaleString() + " ignored errors/warnings)" : ""}</p>
+                        {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</p>
                         <RenderSuccessesSevereMediumLow results={processedResults} />
                     </>);
                 else // no severe, medium, or low notices
                     setResultValue(<>
                         <p>Checked <b>{username} {language_code} {bookCodeList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
-                        {processedResults.numIgnoredNotices ? " (with a total of " + processedResults.numIgnoredNotices.toLocaleString() + " notices ignored)" : ""}</p>
+                        {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</p>
                         <RenderSuccessesSevereMediumLow results={processedResults} />
                     </>);
             } else if (displayType === 'SingleList') {
                 const processedResults = processNoticesToSingleList(rawCBPsResults, processOptions);
-                // console.log("FileCheck got processed results with " + processedResults.successList.length.toLocaleString() + " success message(s), " + processedResults.errorList.length.toLocaleString() + " error(s) and " + processedResults.warningList.length.toLocaleString() + " warning(s)\n"
-                //     + "  numIgnoredNotices=" + processedResults.numIgnoredNotices.toLocaleString(), "numSuppressedErrors=" + processedResults.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + processedResults.numSuppressedWarnings.toLocaleString());
+                console.log(`FileCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
+  numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()}`, `numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()}`, `numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
                 if (processedResults.warningList.length)
                     setResultValue(<>
                         <p>Checked <b>{username} {language_code} {bookCodeList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
-                        {processedResults.numIgnoredNotices ? " (but " + processedResults.numIgnoredNotices.toLocaleString() + " ignored errors/warnings)" : ""}</p>
+                        {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</p>
                         <RenderSuccessesWarningsGradient results={processedResults} />
                     </>);
                 else // no warnings
                     setResultValue(<>
                         <p>Checked <b>{username} {language_code} {bookCodeList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
-                        {processedResults.numIgnoredNotices ? " (with a total of " + processedResults.numIgnoredNotices.toLocaleString() + " notices ignored)" : ""}</p>
+                        {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</p>
                         <RenderSuccessesWarningsGradient results={processedResults} />
                     </>);
             } else setResultValue(<b style={{ color: 'red' }}>Invalid displayType='{displayType}'</b>)

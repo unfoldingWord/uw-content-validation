@@ -101,21 +101,21 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
         result.successList.push(successString);
     }
     function addCVNotice7(priority, C, V, message, index, extract, location) {
-        // console.log(`checkUSFMText addCVNotice7: (priority=${priority}) ${C}:${V} ${message}${index > 0 ? " (at character " + index + 1 + ")" : ""}${extract ? " " + extract : ""}${location}`);
+        // console.log(`checkUSFMText addCVNotice7: (priority=${priority}) ${C}:${V} ${message}${index > 0 ? " (at character " + index + 1 + ")" : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cUSFM addCVNotice7: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', "cUSFM addCVNotice7: 'priority' parameter should be a number not a '" + (typeof priority) + "': " + priority);
         console.assert(C !== undefined, "cUSFM addCVNotice7: 'C' parameter should be defined");
-        console.assert(typeof C === 'string', "cUSFM addCVNotice7: 'C' parameter should be a string not a '" + (typeof C) + "': " + C);
+        console.assert(typeof C === 'string', `cUSFM addCVNotice7: 'C' parameter should be a string not a '${typeof C}': ${C}`);
         console.assert(V !== undefined, "cUSFM addCVNotice7: 'V' parameter should be defined");
-        console.assert(typeof V === 'string', "cUSFM addCVNotice7: 'V' parameter should be a string not a '" + (typeof V) + "': " + V);
+        console.assert(typeof V === 'string', `cUSFM addCVNotice7: 'V' parameter should be a string not a '${typeof V}': ${V}`);
         console.assert(message !== undefined, "cUSFM addCVNotice7: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', "cUSFM addCVNotice7: 'message' parameter should be a string not a '" + (typeof message) + "': " + message);
+        console.assert(typeof message === 'string', `cUSFM addCVNotice7: 'message' parameter should be a string not a '${typeof message}': ${message}`);
         console.assert(index !== undefined, "cUSFM addCVNotice7: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', "cUSFM addCVNotice7: 'index' parameter should be a number not a '" + (typeof index) + "': " + index);
+        console.assert(typeof index === 'number', `cUSFM addCVNotice7: 'index' parameter should be a number not a '${typeof index}': ${index}`);
         console.assert(extract !== undefined, "cUSFM addCVNotice7: 'extract' parameter should be defined");
-        console.assert(typeof extract === 'string', "cUSFM addCVNotice7: 'extract' parameter should be a string not a '" + (typeof extract) + "': " + extract);
+        console.assert(typeof extract === 'string', `cUSFM addCVNotice7: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cUSFM addCVNotice7: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', "cUSFM addCVNotice7: 'location' parameter should be a string not a '" + (typeof location) + "': " + location);
+        console.assert(typeof location === 'string', `cUSFM addCVNotice7: 'location' parameter should be a string not a '${typeof location}': ${location}`);
         result.noticeList.push([priority, BBB, C, V, message, index, extract, location]);
     }
 
@@ -307,9 +307,9 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
         // Updates the global list of notices
         // console.log(`cUSFM doOurBasicTextChecks(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${fieldLocation}, …)`);
         console.assert(fieldName !== undefined, "cUSFM doOurBasicTextChecks: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName === 'string', "cUSFM doOurBasicTextChecks: 'fieldName' parameter should be a string not a '" + (typeof fieldName) + "'");
+        console.assert(typeof fieldName === 'string', `cUSFM doOurBasicTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
         console.assert(fieldText !== undefined, "cUSFM doOurBasicTextChecks: 'fieldText' parameter should be defined");
-        console.assert(typeof fieldText === 'string', "cUSFM doOurBasicTextChecks: 'fieldText' parameter should be a string not a '" + (typeof fieldText) + "'");
+        console.assert(typeof fieldText === 'string', `cUSFM doOurBasicTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         console.assert(allowedLinks === true || allowedLinks === false, "cUSFM doOurBasicTextChecks: allowedLinks parameter must be either true or false");
 
         const dbtcResultObject = doBasicTextChecks(fieldName, fieldText, allowedLinks, fieldLocation, optionalCheckingOptions);

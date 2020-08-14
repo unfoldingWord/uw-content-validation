@@ -24,13 +24,13 @@ async function checkBookPackages(username, language_code, bookCodeList, setResul
         console.assert(priority !== undefined, "cBPs addNotice9: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cBPs addNotice9: 'priority' parameter should be a number not a '${typeof priority}'`);
         console.assert(BBB !== undefined, "cBPs addNotice9: 'BBB' parameter should be defined");
-        console.assert(typeof BBB === 'string', "cBPs addNotice9: 'BBB' parameter should be a string not a '" + (typeof BBB) + "'");
+        console.assert(typeof BBB === 'string', `cBPs addNotice9: 'BBB' parameter should be a string not a '${typeof BBB}'`);
         console.assert(BBB.length === 3, `cBPs addNotice9: 'BBB' parameter should be three characters long not ${BBB.length}`);
         console.assert(books.isValidBookCode(BBB), `cBPs addNotice9: '${BBB}' is not a valid USFM book code`);
         console.assert(C !== undefined, "cBPs addNotice9: 'C' parameter should be defined");
-        console.assert(typeof C === 'string', "cBPs addNotice9: 'C' parameter should be a string not a '" + (typeof C) + "'");
+        console.assert(typeof C === 'string', `cBPs addNotice9: 'C' parameter should be a string not a '${typeof C}'`);
         console.assert(V !== undefined, "cBPs addNotice9: 'V' parameter should be defined");
-        console.assert(typeof V === 'string', "cBPs addNotice9: 'V' parameter should be a string not a '" + (typeof V) + "'");
+        console.assert(typeof V === 'string', `cBPs addNotice9: 'V' parameter should be a string not a '${typeof V}'`);
         console.assert(message !== undefined, "cBPs addNotice9: 'message' parameter should be defined");
         console.assert(typeof message === 'string', `cBPs addNotice9: 'message' parameter should be a string not a '${typeof message}'`);
         console.assert(index !== undefined, "cBPs addNotice9: 'index' parameter should be defined");
