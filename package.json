@@ -1,6 +1,6 @@
 {
   "name": "content-validation",
-  "description": "Components for Checking uW Content/Resources.",
+  "description": "Functions for Checking uW Content/Resources.",
   "version": "0.7.2",
   "private": false,
   "homepage": "https://unfoldingword.github.io/content-validation/",
@@ -43,7 +43,7 @@
     "react-dom": "^16.9.0",
     "react-markdown": "^4.0.6",
     "react-styleguidist": "^9.1.14",
-    "usfm-grammar": "^2.0.0-beta.4",
+    "usfm-grammar": "^2.0.0-beta.3",
     "usfm-js": "^2.1.0",
     "yaml": "^1.10.0"
   },
