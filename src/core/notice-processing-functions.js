@@ -1,8 +1,7 @@
 // import { displayPropertyNames, consoleLogObject } from './utilities';
-// import { result } from 'lodash';
 
 
-const PROCESSOR_VERSION_STRING = '0.3.1';
+const NOTICE_PROCESSOR_VERSION_STRING = '0.3.2';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -17,6 +16,7 @@ const DEFAULT_SEVERE_PRIORITY_LEVEL = 800; // This level or higher becomes a sev
 const DEFAULT_MEDIUM_PRIORITY_LEVEL = 600; // This level or higher becomes a medium error
 
 // For processNoticesToSingleList
+// (no constants required)
 
 
 function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
@@ -30,6 +30,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                     By default, notice priority numbers 700 and over are
                       considered `errors` and 0-699 are considered `warnings`.
                 The next three fields may be ommitted if irrelevant
+                 (since BCV is not relevant to all types of files/repos)
                     2/ Book code 3-character UPPERCASE string
                         (or empty string if not relevant)
                     3/ Chapter number string
@@ -59,8 +60,27 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             ignorePriorityNumberList (list of integers, default is empty list, list of notice priority numbers to be ignored)
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
+
+        Returns an array of three fields:
+            remainingNoticeList
+                A list of notice entries, each one containing exactly eight or nine fields (see above)
+                    i.e., notice entries originally containing five or six fields have had blank BCV fields inserted.
+            allTotals
+                A table of priority numbers with a count of notices for that priority.
+                    (May be used in further processing for possible removal of lots of similar messages)
+            resultObject
+                A prototype object which will be added to and then returned as the final result of the NEXT notice processing step.
+                Contains the following:
+                    successList -- a list of strings noting what has been checked
+                    numIgnored Notices (int)
+                    numSuppressedWarnings (int)
+                    processingOptions (a copy of the optionalProcessingOptions passed to these functions)
+                    Any other fields that were part of the givenNoticeObject passed to these functions. These might include:
+                        checkedFilenames -- list of strings
+                        checkedRepos -- list of strings
+                    depending on the type of check that was made.
     */
-    //     console.log(`processNoticesCommon v${PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
+    //     console.log(`processNoticesCommon v${NOTICE_PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
     //   Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
 
     // Add in any missing BBB,C,V fields
@@ -76,7 +96,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 standardisedNoticeList.push(thisGivenNotice);
             }
         }
-        // At this point, all noticeList entries should be eight or nine fields wide (no longer five or six)
+        // At this point, all noticeList entries should be eight or nine fields wide (i.e., no longer five or six)
 
         // Check that notice priority numbers are unique (to detect programming errors)
         if (true) { // May be commented out of production code
@@ -104,6 +124,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
 
     const resultObject = { // inititalise with our new fields
         numIgnoredNotices: 0,
+        numSuppressedWarnings: 0,
         processingOptions: optionalProcessingOptions, // Just helpfully includes what we were given (may be undefined)
     };
     // Copy across all the other properties that we aren't interested in
@@ -129,7 +150,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         sortBy = 'AsFound';
         // console.log(`Using default sortBy='${sortBy}'`);
     }
-    else console.log(`Using supplied sortBy='${sortBy}' cf. default='AsFound'`);
+    // else console.log(`Using supplied sortBy='${sortBy}' cf. default='AsFound'`);
     let cutoffPriorityLevel;
     try {
         cutoffPriorityLevel = optionalProcessingOptions.cutoffPriorityLevel;
@@ -270,7 +291,7 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
     */
-    //     console.log(`processNoticesToErrorsWarnings v${PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
+    //     console.log(`processNoticesToErrorsWarnings v${NOTICE_PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
     //    Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
 
     const [remainingNoticeList, allTotals, resultObject] = processNoticesCommon(givenNoticeObject, optionalProcessingOptions);
@@ -351,7 +372,7 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
     */
-    //     console.log(`processNoticesToSevereMediumLow v${PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
+    //     console.log(`processNoticesToSevereMediumLow v${NOTICE_PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
     //    Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
 
     const [remainingNoticeList, allTotals, resultObject] = processNoticesCommon(givenNoticeObject, optionalProcessingOptions);
@@ -447,7 +468,7 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
     */
-    //     console.log(`processNoticesToSingleList v${PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
+    //     console.log(`processNoticesToSingleList v${NOTICE_PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
     //    Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
 
     // We default to sorting ByPriority unless something else was specified

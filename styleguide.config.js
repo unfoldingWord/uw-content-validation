@@ -109,6 +109,24 @@ let sections = [
 				// description: ''
 			},
 			{
+				name: 'Manifest check',
+				content: 'src/core/manifest-text-check.md',
+				// description: ''
+			},
+			{
+				name: 'Markdown text check',
+				content: 'src/core/markdown-text-check.md',
+				// description: ''
+			},
+		]
+	},
+	{
+		// The difficulty with displaying core functions this way
+		//	is that they all appear and run on a SINGLE web-page.
+		name: 'Core Mid-level Filetype Checking Functions',
+		// content: 'src/core/README.md',
+		sections: [
+			{
 				name: 'USFM grammar check (from BCS)',
 				content: 'src/core/BCS-usfm-grammar-check.md',
 				// description: ''
@@ -119,18 +137,8 @@ let sections = [
 				// description: ''
 			},
 			{
-				name: 'Manifest check',
-				content: 'src/core/manifest-text-check.md',
-				// description: ''
-			},
-			{
 				name: 'YAML check',
 				content: 'src/core/yaml-text-check.md',
-				// description: ''
-			},
-			{
-				name: 'Markdown text check',
-				content: 'src/core/markdown-text-check.md',
 				// description: ''
 			},
 			{
@@ -147,7 +155,7 @@ let sections = [
 		// content: 'src/core/README.md',
 		sections: [
 			{
-				name: 'TSV table line check',
+				name: 'TSV table-line check',
 				content: 'src/core/tsv-table-line-check.md',
 				// description: ''
 			},
@@ -162,7 +170,7 @@ let sections = [
 				// description: ''
 			},
 			{
-				name: 'Basic text field check',
+				name: 'Basic text-field check',
 				content: 'src/core/basic-text-check.md',
 				// description: ''
 			},

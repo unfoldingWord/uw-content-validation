@@ -35,17 +35,17 @@ async function checkTAReference(fieldName, fieldText, givenLocation, optionalChe
     const ctarResult = { noticeList: [] };
 
     function addNotice5(priority, message, index, extract, location) {
-        // console.log(`checkTAReference Notice: (priority=${priority}) ${message}${index > 0 ? " (at character " + index + 1 + ")" : ""}${extract ? " " + extract : ""}${location}`);
+        // console.log(`checkTAReference Notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? " " + extract : ""}${location}`);
         console.assert(priority !== undefined, "cTAref addNotice5: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', "cTAref addNotice5: 'priority' parameter should be a number not a '" + (typeof priority) + "': " + priority);
+        console.assert(typeof priority === 'number', `cTAref addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message !== undefined, "cTAref addNotice5: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', "cTAref addNotice5: 'message' parameter should be a string not a '" + (typeof message) + "': " + message);
+        console.assert(typeof message === 'string', `cTAref addNotice5: 'message' parameter should be a string not a '${typeof message}': ${message}`);
         console.assert(index !== undefined, "cTAref addNotice5: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', "cTAref addNotice5: 'index' parameter should be a number not a '" + (typeof index) + "': " + index);
+        console.assert(typeof index === 'number', `cTAref addNotice5: 'index' parameter should be a number not a '${typeof index}': ${index}`);
         console.assert(extract !== undefined, "cTAref addNotice5: 'extract' parameter should be defined");
-        console.assert(typeof extract === 'string', "cTAref addNotice5: 'extract' parameter should be a string not a '" + (typeof extract) + "': " + extract);
+        console.assert(typeof extract === 'string', `cTAref addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cTAref addNotice5: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', "cTAref addNotice5: 'location' parameter should be a string not a '" + (typeof location) + "': " + location);
+        console.assert(typeof location === 'string', `cTAref addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
         ctarResult.noticeList.push([priority, message, index, extract, location]);
     }
 

@@ -39,7 +39,7 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
         cmtResult.successList.push(successString);
     }
     function addNotice8(priority, BBB,C,V, message, index, extract, location) {
-        // console.log(`checkManifestText Notice: (priority=${priority}) ${message}${index > 0 ? " (at character " + index + 1 + ")" : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // console.log(`checkManifestText Notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cManT addNotice8: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cManT addNotice8: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(BBB !== undefined, "cManT addNotice9: 'BBB' parameter should be defined");
@@ -70,9 +70,9 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
         // Updates the global list of notices
         // console.log(`cManT doOurYAMLTextChecks(${textName}, (${fieldText.length}), ${allowedLinks}, ${fieldLocation}, …)`);
         console.assert(textName !== undefined, "cManT doOurYAMLTextChecks: 'textName' parameter should be defined");
-        console.assert(typeof textName === 'string', "cManT doOurYAMLTextChecks: 'textName' parameter should be a string not a '" + (typeof textName) + "'");
+        console.assert(typeof textName === 'string', `cManT doOurYAMLTextChecks: 'textName' parameter should be a string not a '${typeof textName}'`);
         console.assert(manifestText !== undefined, "cManT doOurYAMLTextChecks: 'manifestText' parameter should be defined");
-        console.assert(typeof manifestText === 'string', "cManT doOurYAMLTextChecks: 'manifestText' parameter should be a string not a '" + (typeof manifestText) + "'");
+        console.assert(typeof manifestText === 'string', `cManT doOurYAMLTextChecks: 'manifestText' parameter should be a string not a '${typeof manifestText}'`);
         // console.assert( allowedLinks===true || allowedLinks===false, "cManT doOurYAMLTextChecks: allowedLinks parameter must be either true or false");
 
         const cYtResultObject = checkYAMLText(textName, manifestText, givenLocation, optionalCheckingOptions);

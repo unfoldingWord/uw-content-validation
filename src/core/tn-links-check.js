@@ -4,7 +4,7 @@ import { ourParseInt } from './utilities';
 // import { consoleLogObject } from '../core/utilities';
 
 
-const TN_LINKS_VALIDATOR_VERSION = '0.1.0';
+const TN_LINKS_VALIDATOR_VERSION = '0.1.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -26,7 +26,7 @@ async function checkTNLinks(BBB, fieldName, fieldText, givenLocation, optionalCh
 
     // console.log(`checkTNLinks v${TN_LINKS_VALIDATOR_VERSION} ${BBB} (${fieldName}, (${fieldText.length}) '${fieldText}', ${givenLocation}, …)`);
     console.assert(BBB !== undefined, "checkTNLinks: 'BBB' parameter should be defined");
-    console.assert(typeof BBB === 'string', "checkTNLinks: 'BBB' parameter should be a string not a '" + (typeof BBB) + "'");
+    console.assert(typeof BBB === 'string', `checkTNLinks: 'BBB' parameter should be a string not a '${typeof BBB}'`);
     console.assert(BBB.length === 3, `checkTNLinks: 'BBB' parameter should be three characters long not ${BBB.length}`);
     console.assert(books.isValidBookCode(BBB), `checkTNLinks: '${BBB}' is not a valid USFM book code`);
     console.assert(fieldName !== undefined, "checkTNLinks: 'fieldText' parameter should be defined");
@@ -44,17 +44,17 @@ async function checkTNLinks(BBB, fieldName, fieldText, givenLocation, optionalCh
     const ctarResult = { noticeList: [] };
 
     function addNotice5(priority, message, index, extract, location) {
-        // console.log(`checkTNLinks Notice: (priority=${priority}) ${message}${index > 0 ? " (at character " + index + 1 + ")" : ""}${extract ? " " + extract : ""}${location}`);
+        // console.log(`checkTNLinks Notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cTAref addNotice5: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', "cTAref addNotice5: 'priority' parameter should be a number not a '" + (typeof priority) + "': " + priority);
+        console.assert(typeof priority === 'number', `cTAref addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message !== undefined, "cTAref addNotice5: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', "cTAref addNotice5: 'message' parameter should be a string not a '" + (typeof message) + "': " + message);
+        console.assert(typeof message === 'string', `cTAref addNotice5: 'message' parameter should be a string not a '${typeof message}': ${message}`);
         console.assert(index !== undefined, "cTAref addNotice5: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', "cTAref addNotice5: 'index' parameter should be a number not a '" + (typeof index) + "': " + index);
+        console.assert(typeof index === 'number', `cTAref addNotice5: 'index' parameter should be a number not a '${typeof index}': ${index}`);
         console.assert(extract !== undefined, "cTAref addNotice5: 'extract' parameter should be defined");
-        console.assert(typeof extract === 'string', "cTAref addNotice5: 'extract' parameter should be a string not a '" + (typeof extract) + "': " + extract);
+        console.assert(typeof extract === 'string', `cTAref addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cTAref addNotice5: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', "cTAref addNotice5: 'location' parameter should be a string not a '" + (typeof location) + "': " + location);
+        console.assert(typeof location === 'string', `cTAref addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
         ctarResult.noticeList.push([priority, message, index, extract, location]);
     }
 
@@ -67,13 +67,13 @@ async function checkTNLinks(BBB, fieldName, fieldText, givenLocation, optionalCh
     } catch (trcELerror) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
-        // console.log("Using default extractLength=" + extractLength);
+        // console.log(`Using default extractLength=${extractLength}`);
     }
     // else
-    //     console.log("Using supplied extractLength=" + extractLength, "cf. default="+DEFAULT_EXTRACT_LENGTH);
+        // console.log(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
     const halfLength = Math.floor(extractLength / 2); // rounded down
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
-    // console.log("Using halfLength=" + halfLength, "halfLengthPlus="+halfLengthPlus);
+    // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
     */
 
     let username;
@@ -156,7 +156,7 @@ async function checkTNLinks(BBB, fieldName, fieldText, givenLocation, optionalCh
     try {
         numChaptersThisBook = books.chaptersInBook(bbb).length;
     } catch (tnlcError) {
-        addNotice5to8(979, "Invalid book code passed to checkTNLinks", -1, "", ` '${BBB}' in first parameter: ${tnlcError}`);
+        addNotice5(979, "Invalid book code passed to checkTNLinks", -1, "", ` '${BBB}' in first parameter: ${tnlcError}`);
     }
 
     // console.log("checkTNLinks: Search for Bible links")

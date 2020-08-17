@@ -41,17 +41,17 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, given
     const colqResult = { noticeList: [] };
 
     function addNotice5(priority, message, index, extract, location) {
-        // console.log(`checkOriginalLanguageQuote Notice: (priority=${priority}) ${message}${index > 0 ? " (at character " + index + 1 + ")" : ""}${extract ? " " + extract : ""}${location}`);
+        // console.log(`checkOriginalLanguageQuote Notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? " " + extract : ""}${location}`);
         console.assert(priority !== undefined, "cOLQ addNotice5: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', "cOLQ addNotice5: 'priority' parameter should be a number not a '" + (typeof priority) + "': " + priority);
+        console.assert(typeof priority === 'number', `cOLQ addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message !== undefined, "cOLQ addNotice5: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', "cOLQ addNotice5: 'message' parameter should be a string not a '" + (typeof message) + "': " + message);
+        console.assert(typeof message === 'string', `cOLQ addNotice5: 'message' parameter should be a string not a '${typeof message}': ${message}`);
         console.assert(index !== undefined, "cOLQ addNotice5: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', "cOLQ addNotice5: 'index' parameter should be a number not a '" + (typeof index) + "': " + index);
+        console.assert(typeof index === 'number', `cOLQ addNotice5: 'index' parameter should be a number not a '${typeof index}': ${index}`);
         console.assert(extract !== undefined, "cOLQ addNotice5: 'extract' parameter should be defined");
-        console.assert(typeof extract === 'string', "cOLQ addNotice5: 'extract' parameter should be a string not a '" + (typeof extract) + "': " + extract);
+        console.assert(typeof extract === 'string', `cOLQ addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cOLQ addNotice5: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', "cOLQ addNotice5: 'location' parameter should be a string not a '" + (typeof location) + "': " + location);
+        console.assert(typeof location === 'string', `cOLQ addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
         colqResult.noticeList.push([priority, message, index, extract, location]);
     }
 

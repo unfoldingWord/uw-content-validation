@@ -8,13 +8,14 @@ import checkTN_TSVText from '../../core/table-text-check';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-const CHECKER_VERSION_STRING = '0.1.4';
+const CHECK_FILE_VERSION_STRING = '0.1.5';
+
 
 async function checkFile(filename, fileContent, givenLocation, checkingOptions) {
     // Determine the file type from the filename extension
     //  and return the results of checking that kind of file
-    //     console.log(`I'm here in checkFile v${CHECKER_VERSION_STRING`
-    //   with ${filename}, ${fileContent.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)}`}`);
+    //     console.log(`I'm here in checkFile v${CHECK_FILE_VERSION_STRING}
+    //   with ${filename}, ${fileContent.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)}`);
     const startTime = new Date();
 
     let ourCFLocation = givenLocation;

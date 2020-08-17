@@ -2,7 +2,7 @@ import grammar from 'usfm-grammar';
 import * as books from '../core/books/books';
 
 
-const GRAMMAR_VALIDATOR_VERSION = '0.2.1';
+const USFM_GRAMMAR_VALIDATOR_VERSION = '0.2.2';
 
 
 export function runBCSGrammarCheck(strictnessString, fileText, givenLocation) {
@@ -46,7 +46,8 @@ export function runBCSGrammarCheck(strictnessString, fileText, givenLocation) {
             else ourErrorMessage = errorLine; // We only want the last one
         }
         // console.log(`  ourErrorMessage: '${ourErrorMessage}' lineNumberString=${lineNumberString} characterIndex=${characterIndex} extract='${extract}'`);
-        ourErrorFields = [901, `USFMGrammar found: ${ourErrorMessage}`, characterIndex, extract, `in line ${lineNumberString}${givenLocation}`];
+        // NOTE: \s5 fields are not valid USFM but we degrade the priority of those warnings
+        ourErrorFields = [extract==='\\s5'? 294:994, `USFMGrammar found: ${ourErrorMessage}`, characterIndex, extract, `in line ${lineNumberString}${givenLocation}`];
     }
 
     const parseWarnings = parserResult._warnings ? parserResult._warnings : ourUsfmParser.warnings;

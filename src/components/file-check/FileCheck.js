@@ -11,29 +11,29 @@ import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSu
 import { ourParseInt, consoleLogObject } from '../../core/utilities';
 
 
-const CHECKER_VERSION_STRING = '0.1.1';
+const FILE_CHECK_VERSION_STRING = '0.1.2';
 
 
 function FileCheck(props) {
 
-    // console.log(`I'm here in FileCheck v${CHECKER_VERSION_STRING}`);
+    // console.log(`I'm here in FileCheck v${FILE_CHECK_VERSION_STRING}`);
     // consoleLogObject("props", props);
 
-    let username = props.username;
-    // console.log(`username='${username}'`);
-    let repoName = props.repoName;
-    // console.log(`repoName='${repoName}'`);
+    const username = props.username;
+    // console.log(`FileCheck username='${username}'`);
+    const repoName = props.repoName;
+    // console.log(`FileCheck repoName='${repoName}'`);
     let branch = props.branch;
-    // console.log(`branch='${branch}'`);
+    // console.log(`FileCheck branch='${branch}'`);
     if (branch === undefined) branch = 'master';
-    let filename = props.filename;
+    const filename = props.filename;
     // console.log(`filename='${filename}'`);
 
     let givenLocation = props['location'] ? props['location'] : "";
     if (givenLocation && givenLocation[0] !== " ") givenLocation = ` ${givenLocation}`;
     givenLocation = ` in ${repoName} repo${givenLocation}`;
 
-    let checkingOptions = { // Uncomment any of these to test them
+    const checkingOptions = { // Uncomment any of these to test them
         // 'extractLength': 25,
     };
     // Or this allows the parameters to be specified as a FileCheck property

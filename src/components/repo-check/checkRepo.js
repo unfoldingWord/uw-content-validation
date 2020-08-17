@@ -8,7 +8,7 @@ import { fetchRepositoryZipFile, getFilelistFromZip, getFile } from '../../core/
 import { consoleLogObject } from '../../core/utilities';
 
 
-const CHECKER_VERSION_STRING = '0.3.2';
+const CHECK_REPO_VERSION_STRING = '0.3.3';
 
 
 async function checkRepo(username, repoName, branch, givenLocation, setResultValue, checkingOptions) {
@@ -19,8 +19,8 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
         successList: an array of strings to tell the use exactly what has been checked
         noticeList: an array of 9 (i.e., with extra bookOrFileCode parameter at end) notice components
     */
-    console.log(`I'm here in checkRepo v${CHECKER_VERSION_STRING}
-      with ${username}, ${repoName}, ${branch}, ${givenLocation}, ${JSON.stringify(checkingOptions)}`);
+    // console.log(`I'm here in checkRepo v${CHECK_REPO_VERSION_STRING}
+    //   with ${username}, ${repoName}, ${branch}, ${givenLocation}, ${JSON.stringify(checkingOptions)}`);
     const startTime = new Date();
 
     if (branch === undefined) branch = 'master'; // Ideally we should ask what the default branch is
@@ -32,34 +32,34 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
 
     function addSuccessMessage(successString) {
         // Adds the message to the result that we will later return
-        // console.log("checkRepo success: " + successString);
+        // console.log(`checkRepo success: ${successString}`);
         checkRepoResult.successList.push(successString);
     }
     function addNotice9(priority, BBB, C, V, message, index, extract, location, extra) {
         // Adds the notices to the result that we will later return
         // Note that BBB,C,V might all be empty strings (as some repos don't have BCV)
-        // console.log(`checkRepo addNotice9: (priority=${priority}) ${BBB} ${C}:${V} ${message}${index > 0 ? " (at character " + index + 1 + ")" : ""}${extract ? " " + extract : ""}${location}`);
+        // console.log(`checkRepo addNotice9: (priority=${priority}) ${BBB} ${C}:${V} ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cR addNotice9: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', "cR addNotice9: 'priority' parameter should be a number not a '" + (typeof priority) + "'");
+        console.assert(typeof priority === 'number', `cR addNotice9: 'priority' parameter should be a number not a '${typeof priority}'`);
         console.assert(BBB !== undefined, "cR addNotice9: 'BBB' parameter should be defined");
-        console.assert(typeof BBB === 'string', "cR addNotice9: 'BBB' parameter should be a string not a '" + (typeof BBB) + "'");
+        console.assert(typeof BBB === 'string', `cR addNotice9: 'BBB' parameter should be a string not a '${typeof BBB}'`);
         // console.assert(BBB.length === 3, `cR addNotice9: 'BBB' parameter should be three characters long not ${BBB.length}`);
         console.assert(books.isOptionalValidBookCode(BBB), `cR addNotice9: '${BBB}' is not a valid USFM book code`);
         console.assert(C !== undefined, "cR addNotice9: 'C' parameter should be defined");
-        console.assert(typeof C === 'string', "cR addNotice9: 'C' parameter should be a string not a '" + (typeof C) + "'");
+        console.assert(typeof C === 'string', `cR addNotice9: 'C' parameter should be a string not a '${typeof C}'`);
         console.assert(V !== undefined, "cR addNotice9: 'V' parameter should be defined");
-        console.assert(typeof V === 'string', "cR addNotice9: 'V' parameter should be a string not a '" + (typeof V) + "'");
+        console.assert(typeof V === 'string', `cR addNotice9: 'V' parameter should be a string not a '${typeof V}'`);
         console.assert(message !== undefined, "cR addNotice9: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', "cR addNotice9: 'message' parameter should be a string not a '" + (typeof message) + "'");
+        console.assert(typeof message === 'string', `cR addNotice9: 'message' parameter should be a string not a '${typeof message}'`);
         console.assert(index !== undefined, "cR addNotice9: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', "cR addNotice9: 'index' parameter should be a number not a '" + (typeof index) + "'");
+        console.assert(typeof index === 'number', `cR addNotice9: 'index' parameter should be a number not a '${typeof index}'`);
         console.assert(extract !== undefined, "cR addNotice9: 'extract' parameter should be defined");
-        console.assert(typeof extract === 'string', "cR addNotice9: 'extract' parameter should be a string not a '" + (typeof extract) + "'");
+        console.assert(typeof extract === 'string', `cR addNotice9: 'extract' parameter should be a string not a '${typeof extract}'`);
         console.assert(location !== undefined, "cR addNotice9: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', "cR addNotice9: 'location' parameter should be a string not a '" + (typeof location) + "'");
+        console.assert(typeof location === 'string', `cR addNotice9: 'location' parameter should be a string not a '${typeof location}'`);
         console.assert(extra !== undefined, "cR addNotice9: 'extra' parameter should be defined");
-        console.assert(typeof extra === 'string', "cR addNotice9: 'extra' parameter should be a string not a '" + (typeof extra) + "'");
-        checkRepoResult.noticeList.push([priority, BBB, '', '', message, index, extract, location, extra]);
+        console.assert(typeof extra === 'string', `cR addNotice9: 'extra' parameter should be a string not a '${typeof extra}'`);
+        checkRepoResult.noticeList.push([priority, BBB, C, V, message, index, extract, location, extra]);
     }
 
 
@@ -69,15 +69,15 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
 
         // Updates the global list of notices
         console.assert(bookOrFileCode !== undefined, "doOurCheckFile: 'bookOrFileCode' parameter should be defined");
-        console.assert(typeof bookOrFileCode === 'string', "doOurCheckFile: 'bookOrFileCode' parameter should be a string not a '" + (typeof bookOrFileCode) + "'");
+        console.assert(typeof bookOrFileCode === 'string', `doOurCheckFile: 'bookOrFileCode' parameter should be a string not a '${typeof bookOrFileCode}'`);
         console.assert(cfBBBid !== undefined, "doOurCheckFile: 'cfBBBid' parameter should be defined");
-        console.assert(typeof cfBBBid === 'string', "doOurCheckFile: 'cfBBBid' parameter should be a string not a '" + (typeof cfBBBid) + "'");
+        console.assert(typeof cfBBBid === 'string', `doOurCheckFile: 'cfBBBid' parameter should be a string not a '${typeof cfBBBid}'`);
         console.assert(filename !== undefined, "doOurCheckFile: 'filename' parameter should be defined");
-        console.assert(typeof filename === 'string', "doOurCheckFile: 'filename' parameter should be a string not a '" + (typeof filename) + "'");
+        console.assert(typeof filename === 'string', `doOurCheckFile: 'filename' parameter should be a string not a '${typeof filename}'`);
         console.assert(file_content !== undefined, "doOurCheckFile: 'file_content' parameter should be defined");
-        console.assert(typeof file_content === 'string', "doOurCheckFile: 'file_content' parameter should be a string not a '" + (typeof file_content) + "'");
+        console.assert(typeof file_content === 'string', `doOurCheckFile: 'file_content' parameter should be a string not a '${typeof file_content}'`);
         console.assert(fileLocation !== undefined, "doOurCheckFile: 'fileLocation' parameter should be defined");
-        console.assert(typeof fileLocation === 'string', "doOurCheckFile: 'fileLocation' parameter should be a string not a '" + (typeof fileLocation) + "'");
+        console.assert(typeof fileLocation === 'string', `doOurCheckFile: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
 
         const resultObject = await checkFile(filename, file_content, fileLocation, optionalCheckingOptions);
         // console.log("checkFile() returned", resultObject.successList.length, "success message(s) and", resultObject.noticeList.length, "notice(s)");
@@ -167,7 +167,7 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
                 repoFileContent = await getFile({ username, repository: repoName, path: thisFilepath, branch });
                 // console.log("Fetched file_content for", repoName, thisPath, typeof repoFileContent, repoFileContent.length);
             } catch (cRgfError) {
-                console.log("Failed to load", username, repoName, thisFilepath, branch, cRgfError + '');
+                console.log("Failed to load", username, repoName, thisFilepath, branch, `${cRgfError}`);
                 addNotice9(996, BBBid,'','', "Failed to load", -1, "", `${generalLocation} ${thisFilepath}: ${cRgfError}`, repoCode);
                 return;
             }
