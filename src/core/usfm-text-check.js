@@ -413,18 +413,19 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
 
         for (const compulsoryMarker of COMPULSORY_MARKERS)
             if (!markerSet.has(compulsoryMarker))
-                addNoticeCV7(819, '', '', "Missing compulsory USFM line", -1, `\\${compulsoryMarker}`, fileLocation);
+                addNoticeCV7(819, '', '', "Missing compulsory USFM line", -1, `missing \\${compulsoryMarker}`, fileLocation);
         for (const expectedMarker of EXPECTED_MARKERS)
-            if (!markerSet.has(expectedMarker))
-                addNoticeCV7(519, '', '', "Missing expected USFM line", -1, `\\${expectedMarker}`, fileLocation);
+            if (!markerSet.has(expectedMarker)
+            && (!expectedMarker.endsWith('1') || !markerSet.has(expectedMarker.substring(0, expectedMarker.length-1))))
+                addNoticeCV7(519, '', '', "Missing expected USFM line", -1, `missing \\${expectedMarker}`, fileLocation);
         if (books.isExtraBookCode(BBB))
         for (const expectedMarker of EXPECTED_PERIPHERAL_BOOK_MARKERS)
             if (!markerSet.has(expectedMarker))
-                addNoticeCV7(517, '', '', "Missing expected USFM line", -1, `\\${expectedMarker}`, fileLocation);
+                addNoticeCV7(517, '', '', "Missing expected USFM line", -1, `missing \\${expectedMarker}`, fileLocation);
         else
         for (const expectedMarker of EXPECTED_BIBLE_BOOK_MARKERS)
             if (!markerSet.has(expectedMarker))
-                addNoticeCV7(518, '', '', "Missing expected USFM line", -1, `\\${expectedMarker}`, fileLocation);
+                addNoticeCV7(518, '', '', "Missing expected USFM line", -1, `missing \\${expectedMarker}`, fileLocation);
         for (const deprecatedMarker of DEPRECATED_MARKERS)
             if (markerSet.has(deprecatedMarker))
                 addNoticeCV7(218, '', '', "Using deprecated USFM marker", -1, `\\${deprecatedMarker}`, fileLocation);

@@ -2,13 +2,13 @@
 
 This function checks the given manifest.yaml for typical formatting errors. See https://resource-container.readthedocs.io/en/latest/manifest.html for the manifest specification.
 
-It returns a list of success messages and a list of prioritised notice components.
+It returns a list of success messages and a list of notice components. (The first component is always a priority number in the range 0..999.)
 
 The notices can then be further processed into a list of errors and a list of warnings as desired.
 
 ```js
 import checkManifestText from './manifest-text-check';
-import { RenderLines, RenderRawResults } from '../components/RenderProcessedResults';
+import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Manifest empty, good and bad text samples
 const textE = '';

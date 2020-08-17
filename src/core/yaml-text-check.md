@@ -2,7 +2,7 @@
 
 This function checks the given yaml file for typical formatting errors.
 
-It returns a list of success messages and a list of prioritised notice components.
+It returns a list of success messages and a list of notice components. (The first component is always a priority number in the range 0..999.)
 
 The notices can then be further processed into a list of errors and a list of warnings as desired.
 
@@ -10,7 +10,7 @@ Note that we have a more specialised function for checking `manifest.yaml` files
 
 ```js
 import checkYAMLText from './yaml-text-check';
-import { RenderLines, RenderRawResults } from '../components/RenderProcessedResults';
+import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // YAML empty, good and bad text samples
 const textE = '';

@@ -1,7 +1,7 @@
 // import { displayPropertyNames, consoleLogObject } from './utilities';
 
 
-const NOTICE_PROCESSOR_VERSION_STRING = '0.3.2';
+const NOTICE_PROCESSOR_VERSION_STRING = '0.3.3';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -99,26 +99,26 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         // At this point, all noticeList entries should be eight or nine fields wide (i.e., no longer five or six)
 
         // Check that notice priority numbers are unique (to detect programming errors)
-        if (true) { // May be commented out of production code
-            const numberStore = {}, duplicatePriorityList = [];
-            for (const thisGivenNotice of standardisedNoticeList) {
-                const thisPriority = thisGivenNotice[0], thisMsg = thisGivenNotice[4];
-                const oldMsg = numberStore[thisPriority];
-                if (oldMsg && oldMsg !== thisMsg && duplicatePriorityList.indexOf(thisPriority) < 0
-                    // Some of the messages include the troubling character in the message
-                    //    so we expect them to differ slightly
-                    && !thisMsg.startsWith('Mismatched ')
-                    && !thisMsg.startsWith('Unexpected doubled ')
-                    && !thisMsg.startsWith('Unexpected space after ')
-                    && !thisMsg.startsWith('Unexpected content after \\')
-                    && !thisMsg.endsWith(' character after space')
-                    && !thisMsg.endsWith(' marker at start of line')
-                ) {
-                    console.log(`PROGRAMMING ERROR: priority ${thisPriority} has at least two different messages: '${oldMsg}' and '${thisMsg}'`);
-                    duplicatePriorityList.push(thisPriority); // so that we only give the error once
-                }
-                numberStore[thisPriority] = thisMsg;
+        // This section may be commented out of production code
+        const numberStore = {}, duplicatePriorityList = [];
+        for (const thisGivenNotice of standardisedNoticeList) {
+            const thisPriority = thisGivenNotice[0], thisMsg = thisGivenNotice[4];
+            const oldMsg = numberStore[thisPriority];
+            if (oldMsg && oldMsg !== thisMsg && duplicatePriorityList.indexOf(thisPriority) < 0
+                // Some of the messages include the troubling character in the message
+                //    so we expect them to differ slightly
+                && !thisMsg.startsWith('Mismatched ')
+                && !thisMsg.startsWith('Unexpected doubled ')
+                && !thisMsg.startsWith('Unexpected space after ')
+                && !thisMsg.startsWith('Unexpected content after \\')
+                && !thisMsg.startsWith('USFMGrammar found: ')
+                && !thisMsg.endsWith(' character after space')
+                && !thisMsg.endsWith(' marker at start of line')
+            ) {
+                console.log(`PROGRAMMING ERROR: priority ${thisPriority} has at least two different messages: '${oldMsg}' and '${thisMsg}'`);
+                duplicatePriorityList.push(thisPriority); // so that we only give the error once
             }
+            numberStore[thisPriority] = thisMsg;
         }
     }
 

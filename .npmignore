@@ -1,5 +1,5 @@
 # We don't need the StyleGuidist demonstration stuff
-src/components/
+src/demos/
 src/core/*.md
 styleguide/
 styleguide.config.js

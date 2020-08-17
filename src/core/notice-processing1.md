@@ -22,7 +22,7 @@ Although this demonstration here formats and colours the error and warning lists
 ```js
 import doBasicTextChecks from './basic-text-check';
 import { processNoticesToErrorsWarnings } from './notice-processing-functions';
-import { RenderRawResults, RenderSettings, RenderSuccessesErrorsWarnings } from '../components/RenderProcessedResults';
+import { RenderRawResults, RenderSettings, RenderSuccessesErrorsWarnings } from '../demos/RenderProcessedResults';
 
 // Empty, space, good, and bad, link, and RC text samples
 const textE = "";

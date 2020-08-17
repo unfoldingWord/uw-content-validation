@@ -20,7 +20,7 @@ import BookPackageCheck from './BookPackageCheck';
   language_code='en'
   // bookCode can be a USFM bookCode, e.g., GEN, MAT, 3JN
   //  and can also be OBS (for Open Bible Stories)
-  bookCode='TIT'
+  bookCode='RUT'
 
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'

@@ -69,7 +69,7 @@ async function checkTN_TSVText(BBB, tableText, givenLocation, optionalCheckingOp
     }
     catch {
         if (!books.isValidBookCode(BBB)) // must not be in FRT, BAK, etc.
-            addNoticeCV7(747, "","", "Bad function call: should be given a valid book abbreviation", -1, BBB, ` (not '${BBB}')${ourLocation}`);
+            addNoticeCV7(747, '','', "Bad function call: should be given a valid book abbreviation", -1, BBB, ` (not '${BBB}')${ourLocation}`);
     }
 
     let lines = tableText.split('\n');
@@ -79,13 +79,13 @@ async function checkTN_TSVText(BBB, tableText, givenLocation, optionalCheckingOp
     let fieldID_list = [];
     let numVersesThisChapter = 0;
     for (let n= 0; n < lines.length; n++) {
-        console.log(`checkTN_TSVText checking line ${n}: ${JSON.stringify(lines[n])}`);
+        // console.log(`checkTN_TSVText checking line ${n}: ${JSON.stringify(lines[n])}`);
         let inString = ` in line ${(n + 1).toLocaleString()}${ourLocation}`;
         if (n === 0) {
             if (lines[0] === EXPECTED_TN_HEADING_LINE)
                 addSuccessMessage(`Checked TSV header ${ourLocation}`);
             else
-                addNoticeCV7(746, "","", "Bad TSV header", -1, "", `${ourLocation}: '${lines[0]}'`);
+                addNoticeCV7(746, '','', "Bad TSV header", -1, "", `${ourLocation}: '${lines[0]}'`);
         }
         else // not the header
         {
@@ -178,7 +178,7 @@ async function checkTN_TSVText(BBB, tableText, givenLocation, optionalCheckingOp
                 //     console.log(`  Line ${n}: Has ${fields.length} field(s) instead of ${NUM_EXPECTED_TN_FIELDS}: ${EXPECTED_TN_HEADING_LINE.replace(/\t/g, ', ')}`);
                 // else
                 if (n !== lines.length - 1) // it's not the last line
-                    addNoticeCV7(988, "","", `Wrong number of tabbed fields (expected ${NUM_EXPECTED_TN_FIELDS})`, -1, `Found ${fields.length} field${fields.length===1?'':'s'}`, inString)
+                    addNoticeCV7(988, '','', `Wrong number of tabbed fields (expected ${NUM_EXPECTED_TN_FIELDS})`, -1, `Found ${fields.length} field${fields.length===1?'':'s'}`, inString)
         }
     }
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}.`);

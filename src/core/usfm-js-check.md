@@ -10,7 +10,7 @@ The notices can then be further processed into a list of errors and a list of wa
 
 ```js
 import checkUSFMToJSON from './usfm-js-check';
-import { RenderLines, RenderRawResults } from '../components/RenderProcessedResults';
+import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // USFM samples
 const textS = `\\id GEN Short test

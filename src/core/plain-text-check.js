@@ -12,7 +12,7 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
 
      Returns a result object containing a successList and a noticeList
      */
-    // console.log("checkPlainText(" + textName + ", " + markdownText.length + ", " + location + ")…");
+    console.log(`checkPlainText(${textName}, ${markdownText.length}, ${location})…`);
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     if (textName) ourLocation = ` in ${textName}${ourLocation}`;
@@ -23,22 +23,22 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
     } catch (ptcError) {}
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
-        // console.log("Using default extractLength=" + extractLength);
+        // console.log(`Using default extractLength=${extractLength}`);
     }
     // else
-        // console.log("Using supplied extractLength=" + extractLength, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
+        // console.log(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
     const halfLength = Math.floor(extractLength / 2); // rounded down
     const halfLengthPlus = Math.floor((extractLength+1) / 2); // rounded up
-    // console.log("Using halfLength=" + halfLength, `halfLengthPlus=${halfLengthPlus}`);
+    // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     const result = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        // console.log("checkPlainText success: " + successString);
+        // console.log(`checkPlainText success: ${successString}`);
         result.successList.push(successString);
     }
     function addNotice8(priority, BBB,C,V, message, index, extract, location) {
-        // console.log(`checkPlainText notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? " " + extract : ""}${location}`);
+        // console.log(`checkPlainText notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority!==undefined, "cPT addNotice8: 'priority' parameter should be defined");
         console.assert(typeof priority==='number', `cPT addNotice8: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(BBB !== undefined, "cPT addNotice9: 'BBB' parameter should be defined");
@@ -120,7 +120,7 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
     if (result.noticeList)
         addSuccessMessage(`checkPlainText v${PLAIN_TEXT_VALIDATOR_VERSION} finished with ${result.noticeList.length?result.noticeList.length.toLocaleString():"zero"} notice${result.noticeList.length === 1 ? '' : 's'}`);
     else
-        addSuccessMessage("No errors or warnings found by checkPlainText v" + PLAIN_TEXT_VALIDATOR_VERSION)
+        addSuccessMessage(`No errors or warnings found by checkPlainText v${PLAIN_TEXT_VALIDATOR_VERSION}`)
     // console.log(`  checkPlainText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
     // console.log("checkPlainText result is", JSON.stringify(result));
     return result;

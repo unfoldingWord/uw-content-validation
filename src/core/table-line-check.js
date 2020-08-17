@@ -203,7 +203,7 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
     } catch (tlcELerror) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
-        // console.log("Using default extractLength=" + extractLength);
+        // console.log(`Using default extractLength=${extractLength}`);
     }
     // else
         // console.log(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
@@ -222,14 +222,14 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
 
     // let inString;
     // if (rowLocation) inString = rowLocation;
-    // else inString = " in line " + rowNumber.toLocaleString();
+    // else inString = ` in line ${rowNumber.toLocaleString()}`;
 
     let fields = line.split('\t');
     if (fields.length === NUM_EXPECTED_TSV_FIELDS) {
         let [B, C, V, fieldID, supportReference, origQuote, occurrence, GLQuote, occurrenceNote] = fields;
-        // let withString = " with '" + fieldID + "'" + inString;
-        // let CV_withString = ' ' + C + ':' + V + withString;
-        // let atString = " at " + B + ' ' + C + ':' + V + " (" + fieldID + ")" + inString;
+        // let withString = ` with '${fieldID}'${inString}`;
+        // let CV_withString = ` ${C}:${V}${withString}`;
+        // let atString = ` at ${B} ${C}:${V} (${fieldID})${inString}`;
 
         // Check the fields one-by-one
         if (B.length) {

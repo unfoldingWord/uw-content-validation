@@ -2,13 +2,13 @@
 
 This function checks the given text for typical formatting errors.
 
-It returns a list of success messages and a list of prioritised notice components.
+It returns a list of success messages and a list of notice components. (The first component is always a priority number in the range 0..999.)
 
 The notices can then be further processed into a list of errors and a list of warnings as desired.
 
 ```js
 import checkPlainText from './plain-text-check';
-import { RenderLines, RenderRawResults } from '../components/RenderProcessedResults';
+import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Plain text samples
 const textSG = `Short Good Plain Test

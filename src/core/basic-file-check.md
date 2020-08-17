@@ -10,7 +10,7 @@ This demonstration doesn't display the raw notices, but rather displays the proc
 
 ```js
 import doBasicFileChecks from './basic-file-check';
-import { RenderLines, RenderRawResults } from '../components/RenderProcessedResults';
+import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Empty, space, good, and bad samples
 const textE = "";

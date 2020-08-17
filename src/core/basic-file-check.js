@@ -33,7 +33,7 @@ export function doBasicFileChecks(filename, fileText, optionalFileLocation, opti
     let result = { noticeList: [] };
 
     function addNotice5(priority, message, index, extract, location) {
-        // console.log(`dBTC Notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? " " + extract : ""}${location}`);
+        // console.log(`dBTC Notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "dBTCs addNotice5: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `dBTCs addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message !== undefined, "dBTCs addNotice5: 'message' parameter should be defined");
@@ -70,13 +70,13 @@ export function doBasicFileChecks(filename, fileText, optionalFileLocation, opti
     } catch (bfcError) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
-        // console.log("Using default extractLength=" + extractLength);
+        // console.log(`Using default extractLength=${extractLength}`);
     }
     // else
-        // console.log("Using supplied extractLength=" + extractLength, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
+        // console.log(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
     const halfLength = Math.floor(extractLength / 2); // rounded down
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
-    // console.log("Using halfLength=" + halfLength, `halfLengthPlus=${halfLengthPlus}`);
+    // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     let ix;
     if ((ix = fileText.indexOf('<<<<<<<')) >= 0) {

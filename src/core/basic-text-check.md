@@ -8,7 +8,7 @@ This demonstration doesn't display the raw notices, but rather displays the proc
 
 ```js
 import doBasicTextChecks from './basic-text-check';
-import { RenderLines, RenderRawResults } from '../components/RenderProcessedResults';
+import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Empty, space, good, and bad, link, and RC text samples
 const textE = "";

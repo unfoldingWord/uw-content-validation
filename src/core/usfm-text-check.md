@@ -2,7 +2,7 @@
 
 This function checks the given USFM text for typical formatting errors.
 
-It returns a list of success messages and a list of prioritised notice components.
+It returns a list of success messages and a list of notice components. (The first component is always a priority number in the range 0..999.)
 
 The notices can then be further processed into a list of errors and a list of warnings as desired.
 
@@ -14,7 +14,7 @@ Note that unfoldingWord has three distinct forms of USFM files (and these functi
 
 ```js
 import checkUSFMText from './usfm-text-check';
-import { RenderLines, RenderRawResults } from '../components/RenderProcessedResults';
+import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // USFM samples
 const textS = `\\id GEN Short test

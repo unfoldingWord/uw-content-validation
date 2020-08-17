@@ -33,7 +33,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     let result = { noticeList: [] };
 
     function addNotice5(priority, message, index, extract, location) {
-        // console.log(`dBTC Notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? " " + extract : ""}${location}`);
+        // console.log(`dBTC Notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "dBTCs addNotice5: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `dBTCs addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message !== undefined, "dBTCs addNotice5: 'message' parameter should be defined");
@@ -53,7 +53,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
         return result;
 
     // Create our more detailed location string by prepending the fieldName
-    let ourAtString = " in '" + fieldName + "'";
+    let ourAtString = ` in '${fieldName}'`;
     if (optionalFieldLocation) {
         if (optionalFieldLocation[0] !== ' ') ourAtString += ' ';
         ourAtString += optionalFieldLocation;
@@ -70,13 +70,13 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     } catch (btcError) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
-        // console.log("Using default extractLength=" + extractLength);
+        // console.log(`Using default extractLength=${extractLength}`);
     }
     // else
-        // console.log("Using supplied extractLength=" + extractLength, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
+        // console.log(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
     const halfLength = Math.floor(extractLength / 2); // rounded down
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
-    // console.log("Using halfLength=" + halfLength, `halfLengthPlus=${halfLengthPlus}`);
+    // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     let ix = fieldText.indexOf('<<<<<<<');
     if (ix >= 0) {
@@ -101,7 +101,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
 
     if (fieldText[0] === ' ') {
         const extract = fieldText.substring(0, extractLength).replace(/ /g, '␣') + (fieldText.length > extractLength ? '…' : '');
-        addNotice5(106, "Unexpected leading space" + (fieldText[1] === ' ' ? "s" : ""), 0, extract, ourAtString);
+        addNotice5(106, `Unexpected leading space${fieldText[1] === ' ' ? "s" : ""}`, 0, extract, ourAtString);
     }
     if (fieldText.substring(0, 4) === '<br>' || fieldText.substring(0, 5) === '<br/>' || fieldText.substring(0, 6) === '<br />') {
         const extract = fieldText.substring(0, extractLength) + (fieldText.length > extractLength ? '…' : '');
@@ -183,7 +183,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
         const lCount = countOccurrences(fieldText, leftChar);
         const rCount = countOccurrences(fieldText, rightChar);
         if (lCount !== rCount)
-            addNotice5(663, "Mismatched " + leftChar + rightChar + " characters", -1, `(left=${lCount.toLocaleString()}, right=${rCount.toLocaleString()})`, ourAtString);
+            addNotice5(663, `Mismatched ${leftChar}${rightChar} characters`, -1, `(left=${lCount.toLocaleString()}, right=${rCount.toLocaleString()})`, ourAtString);
     }
 
     if (!allowedLinks) {
@@ -197,7 +197,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
         if (ix === -1) ix = fieldText.indexOf('.info');
         if (ix === -1) ix = fieldText.indexOf('.bible');
         if (ix >= 0) {
-            let extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
+            let extract = `${ix > halfLength ? '…' : ''}${fieldText.substring(ix - halfLength, ix + halfLengthPlus)}${ix + halfLengthPlus < fieldText.length ? '…' : ''}`
             addNotice5(765, "Unexpected link", ix, extract, ourAtString);
         }
     }

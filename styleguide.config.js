@@ -17,7 +17,7 @@ let sections = [
 			];
 			return componentNames.map(componentName => {
 				const filename = upperFirst(camelCase(componentName));
-				return path.resolve(__dirname, `src/components/${componentName}`, `${filename}.js`)
+				return path.resolve(__dirname, `src/demos/${componentName}`, `${filename}.js`)
 			});
 		}
 	},
@@ -29,7 +29,7 @@ let sections = [
 			];
 			return componentNames.map(componentName => {
 				const filename = upperFirst(camelCase(componentName));
-				return path.resolve(__dirname, `src/components/${componentName}`, `${filename}.js`)
+				return path.resolve(__dirname, `src/demos/${componentName}`, `${filename}.js`)
 			});
 		}
 	},
@@ -41,7 +41,7 @@ let sections = [
 			];
 			return componentNames.map(componentName => {
 				const filename = upperFirst(camelCase(componentName));
-				return path.resolve(__dirname, `src/components/${componentName}`, `${filename}.js`)
+				return path.resolve(__dirname, `src/demos/${componentName}`, `${filename}.js`)
 			});
 		}
 	},
@@ -53,7 +53,7 @@ let sections = [
 			];
 			return componentNames.map(componentName => {
 				const filename = upperFirst(camelCase(componentName));
-				return path.resolve(__dirname, `src/components/${componentName}`, `${filename}.js`)
+				return path.resolve(__dirname, `src/demos/${componentName}`, `${filename}.js`)
 			});
 		}
 	},
@@ -65,7 +65,7 @@ let sections = [
 			];
 			return componentNames.map(componentName => {
 				const filename = upperFirst(camelCase(componentName));
-				return path.resolve(__dirname, `src/components/${componentName}`, `${filename}.js`)
+				return path.resolve(__dirname, `src/demos/${componentName}`, `${filename}.js`)
 			});
 		}
 	},
@@ -196,7 +196,7 @@ module.exports = {
 	exampleMode: 'expand',
 	pagePerSection: true,
 	sections,
-	components: 'src/components/**/[A-Z]*.js',
+	components: 'src/demos/**/[A-Z]*.js',
 	defaultExample: true,
 	moduleAliases: {
 		'rsg-example': path.resolve(__dirname, 'src'),

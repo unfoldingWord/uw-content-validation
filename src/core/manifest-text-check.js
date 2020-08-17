@@ -24,18 +24,18 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
     } catch (mfcError) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
-        // console.log("Using default extractLength=" + extractLength);
+        // console.log(`Using default extractLength=${extractLength}`);
     }
     // else
-        // console.log("Using supplied extractLength=" + extractLength, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
+        // console.log(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
     const halfLength = Math.floor(extractLength / 2); // rounded down
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
-    // console.log("Using halfLength=" + halfLength, `halfLengthPlus=${halfLengthPlus}`);
+    // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     const cmtResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        // console.log("checkManifestText success: " + successString);
+        // console.log(`checkManifestText success: ${successString}`);
         cmtResult.successList.push(successString);
     }
     function addNotice8(priority, BBB,C,V, message, index, extract, location) {
@@ -114,7 +114,7 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
     if (cmtResult.noticeList)
         addSuccessMessage(`checkManifestText v${MANIFEST_VALIDATOR_VERSION} finished with ${cmtResult.noticeList.length ? cmtResult.noticeList.length.toLocaleString() : "zero"} notice${cmtResult.noticeList.length === 1 ? '' : 's'}`);
     else
-        addSuccessMessage("No errors or warnings found by checkManifestText v" + MANIFEST_VALIDATOR_VERSION)
+        addSuccessMessage(`No errors or warnings found by checkManifestText v${MANIFEST_VALIDATOR_VERSION}`)
     // console.log(`  checkManifestText returning with ${cmtResult.successList.length.toLocaleString()} success(es), ${cmtResult.noticeList.length.toLocaleString()} notice(s).`);
     // console.log("checkManifestText result is", JSON.stringify(result));
     return cmtResult;

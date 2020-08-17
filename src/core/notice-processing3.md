@@ -22,7 +22,7 @@ Although this demonstration here formats and colour the warning list, it's expec
 ```js
 import doBasicTextChecks from './basic-text-check';
 import { processNoticesToSingleList } from './notice-processing-functions';
-import { RenderRawResults, RenderSettings, RenderSuccessesWarningsGradient } from '../components/RenderProcessedResults';
+import { RenderRawResults, RenderSettings, RenderSuccessesWarningsGradient } from '../demos/RenderProcessedResults';
 
 // Empty, space, good, and bad, link, and RC text samples
 const textE = "";

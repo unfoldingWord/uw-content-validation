@@ -42,7 +42,7 @@ This code is designed to thoroughly check various types of Bible-related content
 
 Note: There is also a separate function for checking individual TN/TSV lines which is intended to be able to provide instant user feedback if built into a TSV editor.
 
-The top-level checking components display:
+The top-level checking demonstrations:
 
 1. A list of things that were checked (successList)
 1. Typically a list of (higher-priority) errors and a list of (lower-priority) warnings, but other formats for display of messages are also demonstrated.
@@ -76,6 +76,7 @@ Still unfinished (in rough priority order):
 1. Testing and fine-tuning of error messages (e.g., comparing with tX), especially suppression of false alarms
 1. Improve documentation
 1. Optimise various different file fetches and caches (incl. using zips) for the demos
+1. Is our `RepoCheck` the same as `ResourceContainerCheck`? Or is the latter more specific?
 1. Standardise parameters according to best practice (i.e., dereferencing, etc.)
 1. Understand and standardise React stuff, e.g., e.g., withStyles, etc.
 1. Write unit tests (especially for the core functions) and get them passing

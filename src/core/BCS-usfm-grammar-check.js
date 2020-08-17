@@ -2,13 +2,13 @@ import grammar from 'usfm-grammar';
 import * as books from '../core/books/books';
 
 
-const USFM_GRAMMAR_VALIDATOR_VERSION = '0.2.2';
+const USFM_GRAMMAR_VALIDATOR_VERSION = '0.2.3';
 
 
 export function runBCSGrammarCheck(strictnessString, fileText, givenLocation) {
     // Runs the BCS USFM Grammar checker
     //  which can be quite time-consuming on large, complex USFM files
-    // console.log("Running BCS USFM grammar check (can take quite a while for a large book)…");
+    console.log(`Running ${strictnessString} BCS USFM grammar check${givenLocation} (can take quite a while for a large book)…`);
     console.assert(strictnessString === 'strict' || strictnessString === 'relaxed');
 
     const ourUsfmParser = new grammar.USFMParser(fileText,
@@ -30,7 +30,7 @@ export function runBCSGrammarCheck(strictnessString, fileText, givenLocation) {
     if (parseError) {
         const contextRE = /(\d+?)\s\|\s(.+)/g;
         for (const errorLine of parseError.split('\n')) {
-            // console.log(`errorLine=${errorLine}`);
+            console.log(`BCS errorLine=${errorLine}`);
             if (errorLine.startsWith('>')) {
                 const regexResult = contextRE.exec(errorLine.substring(1).trim());
                 // console.log(`  regexResult: ${JSON.stringify(regexResult)}`);
@@ -85,11 +85,11 @@ export function checkUSFMGrammar(BBB, strictnessString, filename, givenText, giv
     const cugResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        // console.log("checkUSFMGrammar success: " + successString);
+        // console.log(`checkUSFMGrammar success: ${successString}`);
         cugResult.successList.push(successString);
     }
     function addNotice5to8(priority, message, index, extract, location) {
-        // console.log(`checkUSFMGrammar notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? " " + extract : ""}${location}`);
+        // console.log(`checkUSFMGrammar notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cUSFMgr addNotice5to8: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cUSFMgr addNotice5to8: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message !== undefined, "cUSFMgr addNotice5to8: 'message' parameter should be defined");

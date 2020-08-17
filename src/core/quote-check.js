@@ -41,7 +41,7 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, given
     const colqResult = { noticeList: [] };
 
     function addNotice5(priority, message, index, extract, location) {
-        // console.log(`checkOriginalLanguageQuote Notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? " " + extract : ""}${location}`);
+        // console.log(`checkOriginalLanguageQuote Notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cOLQ addNotice5: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cOLQ addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message !== undefined, "cOLQ addNotice5: 'message' parameter should be defined");
@@ -166,7 +166,7 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, given
     } catch (gcELerror) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
-        // console.log("Using default extractLength=" + extractLength);
+        // console.log(`Using default extractLength=${extractLength}`);
     }
     // else
         // console.log(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
@@ -246,7 +246,8 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, given
             if (remainingBits.length > 2) // Join the extra bits back up
                 remainingBits = [remainingBits[0], remainingBits.slice(1).join('…')];
             console.assert(remainingBits.length === 2, `remaining bits are ${remainingBits.length}`);
-            if (remainingBits[0] && remainingBits[0].slice(-1).search(/[^A-Za-z\s*\(]/) !== -1) {
+            // Note: There's some Hebrew (RTL) characters at the beginning of the following regex
+            if (remainingBits[0] && remainingBits[0].slice(-1).search(/[^־A-Za-z\s*\(]/) !== -1) {
                 const badChar = remainingBits[0].slice(-1);
                 const badCharString = ` by '{badChar}' {unicodedata.name(badChar)}={hex(ord(badChar))}`;
                 // console.log(`Seems '${fieldText}' might not start at the beginning of a word—it's preceded ${badCharString} in '${verseText}'`);
