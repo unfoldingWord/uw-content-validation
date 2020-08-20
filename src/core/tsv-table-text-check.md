@@ -7,6 +7,7 @@ It returns a list of success messages and a list of notice components. (The firs
 The notices can then be further processed into a list of errors and a list of warnings as desired.
 
 ```js
+import React, { useState, useEffect } from 'react';
 import checkTN_TSVText from './table-text-check';
 import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
@@ -32,16 +33,42 @@ GEN\t1\t8\tss9r\tfigs-merism\t\t0\tevening and morning\tThis refers to the whole
 GEN\t1\t9\tzu6f\tfigs-activepassive\t\t0\tLet the waters…be gathered\tThis can be translated with an active verb. This is a command. By commanding that the waters gather together, God made them gather together. Alternate translation: “Let the waters…gather” or “Let the waters…come together” (See: [[rc://en/ta/man/translate/figs-activepassive]] and [[rc://en/ta/man/translate/figs-imperative]])";
 const lineA9 = "GEN\t1\t9\tha33\t\t\t0\tIt was so\t“It happened like that” or “That is what happened.” What God commanded happened just as he said it should. This phrase appears throughout the chapter and has the same meaning wherever it appears. See how you translated it in [Genesis 1:7](../01/07.md).`;
 
-// You can choose any of the above texts here
-//  (to demonstrate differing results)
-const chosenText = textA;
+const data = {
+  // You can choose any of the above lines here
+  //  (to demonstrate differing results)
+  tableTextName : "textG",
+  tableText : textG,
+  bookID : 'GEN',
+  givenLocation : 'in text that was supplied',
+}
 
-const rawResults = checkTN_TSVText('GEN', chosenText, 'that was supplied');
-if (!rawResults.successList || !rawResults.successList.length)
-    rawResults.successList = ["Done TSV table checks"];
+function CheckTSV(props) {
+  const [results, setResults] = useState(null);
+  const { bookID, tableText, tableTextName, givenLocation } = props.data;
 
-<>
-<b>TSV Lines</b>: <RenderLines text={chosenText} />
-<RenderRawResults results={rawResults} />
-</>
+  // We need the following construction because checkTN_TSVText is an ASYNC function
+  useEffect(() => {
+    checkTN_TSVText(bookID, tableText, givenLocation).then((rawResults) => {
+      if (JSON.stringify(results) !== JSON.stringify(rawResults)) {
+        setResults(rawResults);
+      }
+    });
+  }), [bookID, tableText, tableTextName, givenLocation];
+
+  return (
+    <div>
+        <b>Check</b> {tableTextName}: "{tableText.substr(0,256)}…"<br/><br/>
+        {results ?
+          <>
+              <b>Raw Data Returned</b>: "{JSON.stringify(results, null, 2)}"<br/><br/>
+              <RenderRawResults results={results} />
+          </>
+        :
+          <div>Waiting for TSV text validation results…</div>
+        }
+    </div>
+  );
+}
+
+<CheckTSV data={data}/>
 ```
