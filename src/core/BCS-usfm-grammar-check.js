@@ -70,6 +70,8 @@ export function checkUSFMGrammar(BBB, strictnessString, filename, givenText, giv
     /*
     This function is only used for the demonstration pages -- not for the core!
 
+    BBB is a three-character UPPERCASE USFM book code or 'OBS'.
+
     filename parameter can be an empty string if we don't have one.
 
      Returns a result object containing a successList and a noticeList
@@ -100,7 +102,7 @@ export function checkUSFMGrammar(BBB, strictnessString, filename, givenText, giv
         console.assert(typeof extract === 'string', `cUSFMgr addNotice5to8: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cUSFMgr addNotice5to8: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `cUSFMgr addNotice5to8: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        cugResult.noticeList.push([priority, BBB, "", "", message, index, extract, location]);
+        cugResult.noticeList.push({priority, BBB,C:'',V:'', message, index,extract, location});
     }
 
 

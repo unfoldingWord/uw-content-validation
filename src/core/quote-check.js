@@ -11,6 +11,8 @@ const DEFAULT_EXTRACT_LENGTH = 10;
 async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, givenLocation, optionalCheckingOptions) {
     // Checks that the Hebrew/Greek quote can be found in the original texts
 
+    // BBB is a three-character UPPERCASE USFM book code or 'OBS'.
+    
     // Note that the original language verse text can be passed in as
     //      optionalCheckingOptions.originalLanguageVerseText.
     // Alternatively, we can fetch it from Door43 -- you can control this with:
@@ -52,7 +54,7 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, given
         console.assert(typeof extract === 'string', `cOLQ addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cOLQ addNotice5: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `cOLQ addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        colqResult.noticeList.push([priority, message, index, extract, location]);
+        colqResult.noticeList.push({priority, message, index, extract, location});
     }
 
     async function getPassage(BBB, C, V, optionalCheckingOptions) {

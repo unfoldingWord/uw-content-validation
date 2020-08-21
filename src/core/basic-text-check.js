@@ -44,7 +44,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
         console.assert(typeof extract === 'string', `dBTCs addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "dBTCs addNotice5: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `dBTCs addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push([priority, message, index, extract, location]);
+        result.noticeList.push({priority, message, index,extract, location});
     }
 
 

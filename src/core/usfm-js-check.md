@@ -6,7 +6,7 @@ This might be removed again if it's not at all helpful.
 
 Our packaged function returns a list of success messages and a list of (prioritised) notice components.
 
-The notices can then be further processed into a list of errors and a list of warnings as desired.
+These raw notice components can then be filtered and/or sorted as required by the calling program, and then divided into a list of errors and a list of warnings or whatever as desired.
 
 ```js
 import checkUSFMToJSON from './usfm-js-check';

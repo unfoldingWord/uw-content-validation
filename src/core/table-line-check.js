@@ -18,6 +18,8 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
     /* This function is only for checking one data row
           and doesn't assume that it has any previous context.
 
+        BBB is a three-character UPPERCASE USFM book code or 'OBS'.
+        
         It's designed to be able to quickly show errors for a single row being displayed/edited.
 
         Returns noticeList
@@ -54,7 +56,7 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
         console.assert(location !== undefined, "cTSVrow addNotice5to8: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `cTSVrow addNotice5to8: 'location' parameter should be a string not a '${typeof location}': ${location}`);
         // Also uses the given BBB,C,V, parameters from the main function call
-        drResult.noticeList.push([priority, BBB, C, V, message, index, extract, location]);
+        drResult.noticeList.push({priority, BBB, C, V, message, index, extract, location});
     }
 
     function doOurMarkdownTextChecks(fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions) {
@@ -81,8 +83,8 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
         // If we need to put everything through addNotice5to8, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of cmtResultObject.noticeList) {
-            console.assert(noticeEntry.length === 5, `TL doOurMarkdownTextChecks notice length=${noticeEntry.length}`);
-            addNotice5to8(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+            console.assert(Object.keys(noticeEntry).length === 5, `TL doOurMarkdownTextChecks notice length=${Object.keys(noticeEntry).length}`);
+            addNotice5to8(noticeEntry.priority, noticeEntry.message, noticeEntry.index, noticeEntry.extract, noticeEntry.location);
         }
     }
     // end of doOurMarkdownTextChecks function
@@ -109,8 +111,8 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
         // If we need to put everything through addNotice5to8, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of dbtcResultObject.noticeList) {
-            console.assert(noticeEntry.length === 5, `TL doOurBasicTextChecks notice length=${noticeEntry.length}`);
-            addNotice5to8(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+            console.assert(Object.keys(noticeEntry).length === 5, `TL doOurBasicTextChecks notice length=${Object.keys(noticeEntry).length}`);
+            addNotice5to8(noticeEntry.priority, noticeEntry.message, noticeEntry.index, noticeEntry.extract, noticeEntry.location);
         }
     }
     // end of doOurBasicTextChecks function
@@ -134,8 +136,8 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
         // If we need to put everything through addNotice5to8, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of coqResultObject.noticeList) {
-            console.assert(noticeEntry.length === 5, `TL ourCheckTAReference notice length=${noticeEntry.length}`);
-            addNotice5to8(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+            console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckTAReference notice length=${Object.keys(noticeEntry).length}`);
+            addNotice5to8(noticeEntry.priority, noticeEntry.message, noticeEntry.index, noticeEntry.extract, noticeEntry.location);
         }
     }
     // end of ourCheckTAReference function
@@ -161,8 +163,8 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
         // If we need to put everything through addNotice5to8, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of coqResultObject.noticeList) {
-            console.assert(noticeEntry.length === 5, `TL ourCheckTNOriginalLanguageQuote notice length=${noticeEntry.length}`);
-            addNotice5to8(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+            console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckTNOriginalLanguageQuote notice length=${Object.keys(noticeEntry).length}`);
+            addNotice5to8(noticeEntry.priority, noticeEntry.message, noticeEntry.index, noticeEntry.extract, noticeEntry.location);
         }
     }
     // end of ourCheckTNOriginalLanguageQuote function
@@ -186,8 +188,8 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
         // If we need to put everything through addNotice5to8, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of coqResultObject.noticeList) {
-            console.assert(noticeEntry.length === 5, `TL ourCheckTNLinks notice length=${noticeEntry.length}`);
-            addNotice5to8(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+            console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckTNLinks notice length=${Object.keys(noticeEntry).length}`);
+            addNotice5to8(noticeEntry.priority, noticeEntry.message, noticeEntry.index, noticeEntry.extract, noticeEntry.location);
         }
     }
     // end of ourCheckTNLinks function

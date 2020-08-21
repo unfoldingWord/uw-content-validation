@@ -15,6 +15,8 @@ async function checkTN_TSVText(BBB, tableText, givenLocation, optionalCheckingOp
 
       It also has the advantage of being able to compare one row with the previous one.
 
+     BBB is a three-character UPPERCASE USFM book code or 'OBS'.
+     
      Returns a result object containing a successList and a noticeList
      */
     // console.log(`checkTN_TSVText(${BBB}, ${tableText.length}, ${location},${JSON.stringify(optionalCheckingOptions)})…`);
@@ -44,7 +46,7 @@ async function checkTN_TSVText(BBB, tableText, givenLocation, optionalCheckingOp
         console.assert(typeof extract === 'string', `TSV addNoticeCV7: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "TSV addNoticeCV7: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `TSV addNoticeCV7: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push([priority, BBB,C,V, message, index, extract, location]);
+        result.noticeList.push({priority, BBB,C,V, message, index, extract, location});
     }
 
 
@@ -104,7 +106,7 @@ async function checkTN_TSVText(BBB, tableText, givenLocation, optionalCheckingOp
                 // If we need to put everything through addNoticeCV7, e.g., for debugging or filtering
                 //  process results line by line
                 // for (const noticeEntry of firstResult.noticeList)
-                //     addNoticeCV7(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
+                //     addNoticeCV7(noticeEntry.priority, noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
 
                 // So here we only have to check against the previous and next fields for out-of-order problems
                 if (B) {

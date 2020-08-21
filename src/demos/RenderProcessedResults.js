@@ -1,98 +1,91 @@
 import React from 'react';
 import MaterialTable from 'material-table';
-// import { consoleLogObject } from '../core/utilities';
+// import { consoleLogObject, displayPropertyNames } from '../core/utilities';
 
 
-export function RenderLines(props) {
-    return <ol>
-        {props.text.split('\n').map(function (line, index) {
+export function RenderLines({text}) {
+    /**
+    * @description - Displays a given piece of text (which can include newline characters)
+    * @param {String} text - text to render
+    * @return {String} - rendered HTML for the numbered list of lines
+    */
+   return <ol>
+        {text.split('\n').map(function (line, index) {
             return <li key={index}>{line}</li>;
         })}
     </ol>;
 }
 
 
-export function RenderSettings(props) {
+export function RenderSettings({ settings }) {
+    /**
+    * @description - Displays whatever is in the settings object
+    * @param {Object} settings - object to render
+    * @return {String} - rendered HTML for list of object properties
+    */
     // console.log("In RenderSettings");
-    // consoleLogObject('RenderSettings props', props);
-    // consoleLogObject('RenderSettings settings', props.settings);
+    // consoleLogObject('RenderSettings settings', settings);
     return <ul>
         {
-            Object.keys(props.settings).map((key, index) => (
+            Object.keys(settings).map((key, index) => (
                 <li key={index}>&nbsp;&nbsp;&nbsp;&nbsp;
                     <span><b>{key}</b>:
-                    {typeof props.settings[key] === 'object' ? JSON.stringify(props.settings[key]) : props.settings[key]}</span>
+                    {typeof settings[key] === 'object' ? JSON.stringify(settings[key]) : settings[key]}</span>
                 </li>
             ), [])}
     </ul>;
 }
 
 
-export function RenderRawResults(props) {
-    // This function is flexible enough to handle notice entries of different lengths:
+export function RenderRawResults({ results }) {
+    /**
+    * @description - Displays the raw noticeList in a table
+    * @param {Object} results - object containing noticeList
+    * @return {String} - rendered HTML for table of notices
+    */
+    // This function is flexible enough to handle notice objects:
     //      including BBB,C,V or not
-    //      including extra at end or not
+    //      including extra or not
 
     // console.log("In RenderRawResults");
-    // consoleLogObject('RenderRawResults props', props);
+    // consoleLogObject('RenderRawResults results', results);
+    // displayPropertyNames('RenderRawResults results', results);
 
     // Create a list of other property names
-    let propertyList = [], newObject = {};
-    for (const propertyName in props.results)
-        if (propertyName !== 'noticeList') {
-            newObject[propertyName] = props.results[propertyName];
-            propertyList.push(<p>{propertyName} = {props.results[propertyName]}</p>);
-        }
+    // let propertyList = [], newObject = {};
+    // for (const propertyName in results)
+    //     if (propertyName !== 'noticeList') {
+    //         newObject[propertyName] = results[propertyName];
+    //         propertyList.push(<p>{propertyName} = {results[propertyName]}</p>);
+    //     }
     // consoleLogObject('propertyList', propertyList);
 
-    if (!props.results.noticeList || !props.results.noticeList.length)
+    if (!results.noticeList || !results.noticeList.length)
         return <>
             <p><b>No notices were produced</b>:</p>
-            <RenderSettings settings={props.results} />
+            <RenderSettings settings={results} />
         </>;
 
     // If we get here, we have notices.
-    let formattedData = [];
-    let haveBCV = false, haveExtras = false;
-    props.results.noticeList.map(function (noticeEntry) {
-        // console.log(`Render (${noticeEntry.length}) ${noticeEntry}`);
-        if (noticeEntry.length === 9) {
-            console.assert(noticeEntry[1].length || noticeEntry[2].length || noticeEntry[3].length, `Why have (${noticeEntry.length}) ${noticeEntry}`);
-            formattedData.push({
-                priority: noticeEntry[0], book: noticeEntry[1], chapter: noticeEntry[2], verse: noticeEntry[3],
-                message: noticeEntry[4], index: noticeEntry[5], extract: noticeEntry[6], location: noticeEntry[7], extra: noticeEntry[8]
-            });
+    // let formattedData = [];
+    let haveBCV = false, haveExtra = false;
+    results.noticeList.map(function (noticeEntry) {
+        // console.log(`Render (${Object.keys(noticeEntry).length}) ${Object.keys(noticeEntry)}`);
+        if (noticeEntry.BBB && noticeEntry.BBB.length)
             haveBCV = true;
-            haveExtras = true;
-        } else if (noticeEntry.length === 8) {
-            console.assert(noticeEntry[1].length || noticeEntry[2].length || noticeEntry[3].length, `Why have (${noticeEntry.length}) ${noticeEntry}`);
-            formattedData.push({
-                priority: noticeEntry[0], book: noticeEntry[1], chapter: noticeEntry[2], verse: noticeEntry[3],
-                message: noticeEntry[4], index: noticeEntry[5], extract: noticeEntry[6], location: noticeEntry[7], extra: ""
-            });
-            haveBCV = true;
-        } else if (noticeEntry.length === 6) {
-            formattedData.push({
-                priority: noticeEntry[0], book: "", chapter: "", verse: "",
-                message: noticeEntry[1], index: noticeEntry[2], extract: noticeEntry[3], location: noticeEntry[4], extra: ""
-            });
-            haveExtras = true;
-        } else if (noticeEntry.length === 5) {
-            formattedData.push({
-                priority: noticeEntry[0], book: "", chapter: "", verse: "",
-                message: noticeEntry[1], index: noticeEntry[2], extract: noticeEntry[3], location: noticeEntry[4], extra: noticeEntry[5]
-            });
-        } else
-            console.log(`ERROR: RenderRawResults: Unexpected notice entry length of ${noticeEntry.length}`);
+        if (noticeEntry.extra && noticeEntry.extra.length)
+            haveExtra = true;
+        // if (haveBCV && haveExtra) // no point in going any further
+        //     break; // but can't do this in map()
     });
 
     // Adjust the headers according to the column sets that we actually have
     let headerData = [{ title: 'Priority', field: 'priority', type: 'numeric' }];
     if (haveBCV)
         headerData = headerData.concat([
-            { title: 'Book', field: 'book' },
-            { title: 'Chapter', field: 'chapter' },
-            { title: 'Verse', field: 'verse' }
+            { title: 'Book', field: 'BBB' },
+            { title: 'Chapter', field: 'C' },
+            { title: 'Verse', field: 'V' }
         ]);
     headerData = headerData.concat([
         { title: 'Message', field: 'message' },
@@ -100,53 +93,61 @@ export function RenderRawResults(props) {
         { title: 'Extract', field: 'extract' },
         { title: 'Location', field: 'location' }
     ]);
-    if (haveExtras) headerData.push({ title: 'Extra', field: 'extra' });
+    if (haveExtra) headerData.push({ title: 'Extra', field: 'extra' });
 
     // Make the actual table and return it
     return <>
         <b>Raw Results</b>:
-        <RenderSettings settings={newObject} />
+        <RenderSettings settings={results} />
         <MaterialTable
             //icons={tableIcons}
             title='Raw Notices'
             columns={headerData}
-            data={formattedData}
-            options={{ fredXXX: '' }}
+            data={results.noticeList}
+        // options={{ fredXXX: '' }}
         />
     </>;
 }
 
 
 function RenderBCV({ BBB, C, V }) {
-    // These are all optional parameters
-    //  They may be blank if irrelevant
-    if (!BBB && !C && !V) return '';
+    /**
+    * @description - Displays the bookcode and chapter/verse details if specified
+    * @param {String} BBB - (optional) 3-character UPPERCASE USFM bookcode or 'OBS'.
+    * @param {String} C - (optional) chapter info
+    * @param {String} V - (optional) verse info
+    * @return {String} - rendered HTML for the given reference
+    */
+    // These are all optional parameters - they may be undefined or blank if irrelevant
+    console.log(`RenderBCV(${BBB}, ${C}, ${V})`);
+    if (!BBB && !C && !V) return ''; // They're all undefined or blank!
+    console.log(`RenderBCV2 ${BBB}, ${C}, ${V}`);
     let result;
-    if (BBB.length) result = BBB;
-    if (C.length) result = `${result}${result.length ? ' ' : ''}${C}`;
-    if (V.length) result = `${result}${result.length ? ':' : ''}${V}`;
-    if (result.length) return ` ${V.length ? 'at' : 'in'} ${result}`;
+    if (BBB && BBB.length) result = BBB;
+    if (C && C.length) result = `${result}${result.length ? ' ' : ''}${C}`;
+    if (V && V.length) result = `${result}${result.length ? ':' : ''}${V}`;
+    if (result.length) return ` ${V && V.length ? 'at' : 'in'} ${result}`;
     return '';
 }
 
 
-function RenderSuccessesColoured(props) {
+function RenderSuccessesColoured({results}) {
     // Display our array of success message strings in a nicer format
     //
-    // Expects props to contain:
+    // Expects results to contain:
     //      1/ successList
-    // console.log("In RenderSuccessesColoured with ", props.successList);
-    // consoleLogObject('RenderSuccessesColoured props', props);
+    // console.log("In RenderSuccessesColoured with ", successList);
+    // consoleLogObject('RenderSuccessesColoured results', results);
 
     let haveWarnings;
-    try { haveWarnings = props.results.errorList.length || props.results.warningList.length; }
+    try { haveWarnings = results.errorList.length || results.warningList.length; }
     catch (e1) {
-        try { haveWarnings = props.results.severeList.length || props.results.mediumList.length || props.results.lowList.length; }
-        catch (e2) { haveWarnings = props.results.warningList.length; }
+        try { haveWarnings = results.severeList.length || results.mediumList.length || results.lowList.length; }
+        catch (e2) { haveWarnings = results.warningList.length; }
     }
 
     return <ul>
-        {props.results.successList.map(function (listEntry, index) {
+        {results.successList.map(function (listEntry, index) {
             return <li key={index}>
                 <b style={{ color: haveWarnings ? 'limegreen' : 'green' }}>{listEntry}</b>
             </li>;
@@ -154,32 +155,29 @@ function RenderSuccessesColoured(props) {
     </ul>;
 }
 
-export function RenderProcessedArray(props) {
+export function RenderProcessedArray({arrayType, results}) {
     // Display our array of 8-part lists in a nicer format
     //  1/ priority number, 2/ BBB, 3/ C, 4/ V, 5/ message,
     //      6/ index (integer), 7/ extract (optional), 8/ location
     //
-    // Expects props to contain:
-    //      1/ results
-    //      2/ arrayType (letter)
-    // console.log("In RenderProcessedArray with ", props.arrayType);
-    // consoleLogObject('RenderProcessedArray props', props);
+    // console.log("In RenderProcessedArray with ", arrayType);
+    // consoleLogObject('RenderProcessedArray results', results);
 
-    if (props.arrayType === 's')
+    if (arrayType === 's')
         return <>
-            <RenderSuccessesColoured results={props.results} />
+            <RenderSuccessesColoured results={results} />
         </>;
     else { // not 's' (successList)
-        const myList = props.arrayType === 'e' ? props.results.errorList : props.results.warningList;
+        const myList = arrayType === 'e' ? results.errorList : results.warningList;
         return <ul>
             {myList.map(function (listEntry, index) {
                 return <li key={index}>
-                    <b style={{ color: props.arrayType === 'e' ? 'red' : 'orange' }}>{listEntry[4]}</b>
-                    <RenderBCV BBB={listEntry[1]} C={listEntry[2]} V={listEntry[3]} />
-                    {listEntry[5] > 0 ? " (at character " + (listEntry[5] + 1) + " of line)" : ""}
-                    <span style={{ color: 'DimGray' }}>{listEntry[6] ? " around '" + listEntry[6] + "'" : ""}</span>
-                    {listEntry[7]}
-                    <small style={{ color: 'Gray' }}>{listEntry[0] >= 0 ? " (Priority " + listEntry[0] + ")" : ""}</small>
+                    <b style={{ color: arrayType === 'e' ? 'red' : 'orange' }}>{listEntry.message}</b>
+                    <RenderBCV BBB={listEntry.BBB} C={listEntry.C} V={listEntry.V} />
+                    {listEntry.index > 0 ? " (at character " + (listEntry.index + 1) + " of line)" : ""}
+                    <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
+                    {listEntry.location}
+                    <small style={{ color: 'Gray' }}>{listEntry.priority >= 0 ? " (Priority " + listEntry.priority + ")" : ""}</small>
                 </li>;
             })}
         </ul>;
@@ -187,26 +185,23 @@ export function RenderProcessedArray(props) {
 }
 
 
-export function RenderGivenArray(props) {
+export function RenderGivenArray({array, colour}) {
     // Display our array of 8-part lists in a nicer format
     //  1/ priority number, 2/ BBB, 3/ C, 4/ V, 5/ message,
     //      6/ index (integer), 7/ extract (optional), 8/ location
     //
-    // Expects props to contain:
-    //      1/ array
-    //      2/ colour
-    // console.log("In RenderGivenArray with ", props.arrayType);
-    // consoleLogObject('RenderGivenArray props', props);
+    // console.log("In RenderGivenArray with ", arrayType);
+    // consoleLogObject('RenderGivenArray results', results);
 
     return <ul>
-        {props.array.map(function (listEntry, index) {
+        {array.map(function (listEntry, index) {
             return <li key={index}>
-                <b style={{ color: props.colour }}>{listEntry[4]}</b>
-                <RenderBCV BBB={listEntry[1]} C={listEntry[2]} V={listEntry[3]} />
-                {listEntry[5] > 0 ? " (at character " + (listEntry[5] + 1) + " of line)" : ""}
-                <span style={{ color: 'DimGray' }}>{listEntry[6] ? " around '" + listEntry[6] + "'" : ""}</span>
-                {listEntry[7]}
-                <small style={{ color: 'Gray' }}>{listEntry[0] >= 0 ? " (Priority " + listEntry[0] + ")" : ""}</small>
+                <b style={{ color: colour }}>{listEntry.message}</b>
+                <RenderBCV BBB={listEntry.BBB} C={listEntry.C} V={listEntry.V} />
+                {listEntry.index > 0 ? " (at character " + (listEntry.index + 1) + " of line)" : ""}
+                <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
+                {listEntry.location}
+                <small style={{ color: 'Gray' }}>{listEntry.priority >= 0 ? " (Priority " + listEntry.priority + ")" : ""}</small>
             </li>;
         })}
     </ul>;
@@ -224,173 +219,173 @@ function getGradientColour(priorityValue) {
 }
 
 
-function RenderWarningsGradient(props) {
+function RenderWarningsGradient({results}) {
     // Display our array of 8-part lists in a nicer format
     //  1/ priority number, 2/ BBB, 3/ C, 4/ V, 5/ message,
     //      6/ index (integer), 7/ extract (optional), 8/ location
     //
-    // Expects props to contain:
-    //      1/ results.warningList
-    // console.log("In RenderWarningsGradient with ", props.warningList);
-    // consoleLogObject('RenderWarningsGradient props', props);
+    // Expects results to contain:
+    //      1/ warningList
+    // console.log("In RenderWarningsGradient with ", results.warningList);
+    // consoleLogObject('RenderWarningsGradient results', results);
 
     return <ul>
-        {props.results.warningList.map(function (listEntry, index) {
-            const thisColour = getGradientColour(listEntry[0]);
+        {results.warningList.map(function (listEntry, index) {
+            const thisColour = getGradientColour(listEntry.priority);
             return <li key={index}>
-                <b style={{ color: thisColour }}>{listEntry[4]}</b>
-                <RenderBCV BBB={listEntry[1]} C={listEntry[2]} V={listEntry[3]} />
-                {listEntry[5] > 0 ? " (at character " + (listEntry[5] + 1) + " of line)" : ""}
-                <span style={{ color: 'DimGray' }}>{listEntry[6] ? " around '" + listEntry[6] + "'" : ""}</span>
-                {listEntry[7]}
-                <small style={{ color: 'Gray' }}>{listEntry[0] >= 0 ? " (Priority " + listEntry[0] + ")" : ""}</small>
+                <b style={{ color: thisColour }}>{listEntry.message}</b>
+                <RenderBCV BBB={listEntry.BBB} C={listEntry.C} V={listEntry.V} />
+                {listEntry.index > 0 ? " (at character " + (listEntry.index + 1) + " of line)" : ""}
+                <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
+                {listEntry.location}
+                <small style={{ color: 'Gray' }}>{listEntry.priority >= 0 ? " (Priority " + listEntry.priority + ")" : ""}</small>
             </li>;
         })}
     </ul>;
 }
 
 
-export function RenderErrors(props) {
+export function RenderErrors({results}) {
     // console.log("In RenderErrors");
-    // consoleLogObject('RenderErrors props', props);
+    // consoleLogObject('RenderErrors results', results);
     return <>
-        <b style={{ color: props.results.errorList.length ? 'red' : 'green' }}>{props.results.errorList.length.toLocaleString()} error{props.results.errorList.length === 1 ? '' : 's'}</b>{props.results.errorList.length ? ':' : ''}
-        <small style={{ color: 'Gray' }}>{props.results.numSuppressedErrors ? " (" + props.results.numSuppressedErrors.toLocaleString() + " similar one" + (props.results.numSuppressedErrors === 1 ? '' : 's') + " suppressed)" : ''}</small>
-        <RenderProcessedArray results={props.results} arrayType='e' />
+        <b style={{ color: results.errorList.length ? 'red' : 'green' }}>{results.errorList.length.toLocaleString()} error{results.errorList.length === 1 ? '' : 's'}</b>{results.errorList.length ? ':' : ''}
+        <small style={{ color: 'Gray' }}>{results.numSuppressedErrors ? " (" + results.numSuppressedErrors.toLocaleString() + " similar one" + (results.numSuppressedErrors === 1 ? '' : 's') + " suppressed)" : ''}</small>
+        <RenderProcessedArray results={results} arrayType='e' />
     </>;
 }
-export function RenderWarnings(props) {
+export function RenderWarnings({results}) {
     // console.log("In RenderWarnings");
-    // consoleLogObject('RenderWarnings props', props);
+    // consoleLogObject('RenderWarnings results', results);
     return <>
-        <b style={{ color: props.results.warningList.length ? 'orange' : 'green' }}>{props.results.warningList.length.toLocaleString()} warning{props.results.warningList.length === 1 ? '' : 's'}</b>{props.results.warningList.length ? ':' : ''}
-        <small style={{ color: 'Gray' }}>{props.results.numSuppressedWarnings ? " (" + props.results.numSuppressedWarnings.toLocaleString() + " similar one" + (props.results.numSuppressedWarnings === 1 ? '' : 's') + " suppressed)" : ''}</small>
-        <RenderProcessedArray results={props.results} arrayType='w' />
+        <b style={{ color: results.warningList.length ? 'orange' : 'green' }}>{results.warningList.length.toLocaleString()} warning{results.warningList.length === 1 ? '' : 's'}</b>{results.warningList.length ? ':' : ''}
+        <small style={{ color: 'Gray' }}>{results.numSuppressedWarnings ? " (" + results.numSuppressedWarnings.toLocaleString() + " similar one" + (results.numSuppressedWarnings === 1 ? '' : 's') + " suppressed)" : ''}</small>
+        <RenderProcessedArray results={results} arrayType='w' />
     </>;
 }
-export function RenderErrorsAndWarnings(props) {
+export function RenderErrorsAndWarnings({results}) {
     // console.log("In RenderErrorsAndWarnings");
-    // consoleLogObject('RenderErrorsAndWarnings props', props);
+    // consoleLogObject('RenderErrorsAndWarnings results', results);
     return <>
-        <RenderErrors results={props.results} />
-        <RenderWarnings results={props.results} />
+        <RenderErrors results={results} />
+        <RenderWarnings results={results} />
     </>;
 }
 
 
-export function RenderSevere(props) {
+export function RenderSevere({results}) {
     // console.log("In RenderSevere");
-    // consoleLogObject('RenderSevere props', props);
+    // consoleLogObject('RenderSevere results', results);
     return <>
-        <b style={{ color: props.results.severeList.length ? 'red' : 'green' }}>{props.results.severeList.length.toLocaleString()} severe error{props.results.severeList.length === 1 ? '' : 's'}</b>{props.results.severeList.length ? ':' : ''}
-        <small style={{ color: 'Gray' }}>{props.results.numSevereSuppressed ? " (" + props.results.numSevereSuppressed.toLocaleString() + " similar one" + (props.results.numSevereSuppressed === 1 ? '' : 's') + " suppressed)" : ''}</small>
-        <RenderGivenArray array={props.results.severeList} colour='red' />
+        <b style={{ color: results.severeList.length ? 'red' : 'green' }}>{results.severeList.length.toLocaleString()} severe error{results.severeList.length === 1 ? '' : 's'}</b>{results.severeList.length ? ':' : ''}
+        <small style={{ color: 'Gray' }}>{results.numSevereSuppressed ? " (" + results.numSevereSuppressed.toLocaleString() + " similar one" + (results.numSevereSuppressed === 1 ? '' : 's') + " suppressed)" : ''}</small>
+        <RenderGivenArray array={results.severeList} colour='red' />
     </>;
 }
-export function RenderMedium(props) {
+export function RenderMedium({results}) {
     // console.log("In RenderSevere");
-    // consoleLogObject('RenderSevere props', props);
+    // consoleLogObject('RenderSevere results', results);
     return <>
-        <b style={{ color: props.results.mediumList.length ? 'maroon' : 'green' }}>{props.results.mediumList.length.toLocaleString()} medium error{props.results.mediumList.length === 1 ? '' : 's'}</b>{props.results.mediumList.length ? ':' : ''}
-        <small style={{ color: 'Gray' }}>{props.results.numMediumSuppressed ? " (" + props.results.numMediumSuppressed.toLocaleString() + " similar one" + (props.results.numMediumSuppressed === 1 ? '' : 's') + " suppressed)" : ''}</small>
-        <RenderGivenArray array={props.results.mediumList} colour='maroon' />
+        <b style={{ color: results.mediumList.length ? 'maroon' : 'green' }}>{results.mediumList.length.toLocaleString()} medium error{results.mediumList.length === 1 ? '' : 's'}</b>{results.mediumList.length ? ':' : ''}
+        <small style={{ color: 'Gray' }}>{results.numMediumSuppressed ? " (" + results.numMediumSuppressed.toLocaleString() + " similar one" + (results.numMediumSuppressed === 1 ? '' : 's') + " suppressed)" : ''}</small>
+        <RenderGivenArray array={results.mediumList} colour='maroon' />
     </>;
 }
-export function RenderLow(props) {
+export function RenderLow({results}) {
     // console.log("In RenderLow");
-    // consoleLogObject('RenderLow props', props);
+    // consoleLogObject('RenderLow results', results);
     return <>
-        <b style={{ color: props.results.lowList.length ? 'orange' : 'green' }}>{props.results.lowList.length.toLocaleString()} other warning{props.results.lowList.length === 1 ? '' : 's'}</b>{props.results.lowList.length ? ':' : ''}
-        <small style={{ color: 'Gray' }}>{props.results.numLowSuppressed ? " (" + props.results.numLowSuppressed.toLocaleString() + " similar one" + (props.results.numLowSuppressed === 1 ? '' : 's') + " suppressed)" : ''}</small>
-        <RenderGivenArray array={props.results.lowList} colour='orange' />
+        <b style={{ color: results.lowList.length ? 'orange' : 'green' }}>{results.lowList.length.toLocaleString()} other warning{results.lowList.length === 1 ? '' : 's'}</b>{results.lowList.length ? ':' : ''}
+        <small style={{ color: 'Gray' }}>{results.numLowSuppressed ? " (" + results.numLowSuppressed.toLocaleString() + " similar one" + (results.numLowSuppressed === 1 ? '' : 's') + " suppressed)" : ''}</small>
+        <RenderGivenArray array={results.lowList} colour='orange' />
     </>;
 }
-export function RenderSevereMediumLow(props) {
+export function RenderSevereMediumLow({results}) {
     // console.log("In RenderSevereMediumLow");
-    // consoleLogObject('RenderSevereMediumLow props', props);
+    // consoleLogObject('RenderSevereMediumLow results', results);
     return <>
-        <RenderSevere results={props.results} />
-        <RenderMedium results={props.results} />
-        <RenderLow results={props.results} />
+        <RenderSevere results={results} />
+        <RenderMedium results={results} />
+        <RenderLow results={results} />
     </>;
 }
 
 
-export function RenderSuccessesErrorsWarnings(props) {
+export function RenderSuccessesErrorsWarnings({results}) {
     // console.log("In RenderSuccessesErrorsWarnings");
 
-    // consoleLogObject('RenderSuccessesErrorsWarnings props', props);
+    // consoleLogObject('RenderSuccessesErrorsWarnings results', results);
 
-    const haveErrorsOrWarnings = props.results.errorList.length || props.results.warningList.length;
+    const haveErrorsOrWarnings = results.errorList.length || results.warningList.length;
 
     let successCount;
-    if (props.results.successList.length === 1) successCount = 'One';
-    else if (props.results.successList.length === 2) successCount = 'Two';
-    else if (props.results.successList.length === 3) successCount = 'Three';
-    else if (props.results.successList.length === 4) successCount = 'Four';
-    else if (props.results.successList.length === 5) successCount = 'Five';
-    else successCount = props.results.successList.length.toLocaleString();
+    if (results.successList.length === 1) successCount = 'One';
+    else if (results.successList.length === 2) successCount = 'Two';
+    else if (results.successList.length === 3) successCount = 'Three';
+    else if (results.successList.length === 4) successCount = 'Four';
+    else if (results.successList.length === 5) successCount = 'Five';
+    else successCount = results.successList.length.toLocaleString();
 
     return <>
-        <b style={{ color: haveErrorsOrWarnings ? 'limegreen' : 'green' }}>{successCount.toLocaleString()} check{props.results.successList.length === 1 ? '' : 's'} completed</b>{props.results.successList.length ? ':' : ''}
-        <RenderSuccessesColoured results={props.results} />
-        {haveErrorsOrWarnings ? <RenderErrorsAndWarnings results={props.results} /> : ""}
+        <b style={{ color: haveErrorsOrWarnings ? 'limegreen' : 'green' }}>{successCount.toLocaleString()} check{results.successList.length === 1 ? '' : 's'} completed</b>{results.successList.length ? ':' : ''}
+        <RenderSuccessesColoured results={results} />
+        {haveErrorsOrWarnings ? <RenderErrorsAndWarnings results={results} /> : ""}
     </>;
 }
 
 
-export function RenderSuccessesSevereMediumLow(props) {
+export function RenderSuccessesSevereMediumLow({results}) {
     // console.log("In RenderSuccessesSevereMediumLow");
 
-    // consoleLogObject('RenderSuccessesSevereMediumLow props', props);
+    // consoleLogObject('RenderSuccessesSevereMediumLow results', results);
 
-    const haveErrorsOrWarnings = props.results.severeList.length || props.results.mediumList.length || props.results.lowList.length;
+    const haveErrorsOrWarnings = results.severeList.length || results.mediumList.length || results.lowList.length;
 
     let successCount;
-    if (props.results.successList.length === 1) successCount = 'One';
-    else if (props.results.successList.length === 2) successCount = 'Two';
-    else if (props.results.successList.length === 3) successCount = 'Three';
-    else if (props.results.successList.length === 4) successCount = 'Four';
-    else if (props.results.successList.length === 5) successCount = 'Five';
-    else successCount = props.results.successList.length.toLocaleString();
+    if (results.successList.length === 1) successCount = 'One';
+    else if (results.successList.length === 2) successCount = 'Two';
+    else if (results.successList.length === 3) successCount = 'Three';
+    else if (results.successList.length === 4) successCount = 'Four';
+    else if (results.successList.length === 5) successCount = 'Five';
+    else successCount = results.successList.length.toLocaleString();
 
     return <>
-        <b style={{ color: haveErrorsOrWarnings ? 'limegreen' : 'green' }}>{successCount.toLocaleString()} check{props.results.successList.length === 1 ? '' : 's'} completed</b>{props.results.successList.length ? ':' : ''}
-        <RenderSuccessesColoured results={props.results} />
-        {haveErrorsOrWarnings ? <RenderSevereMediumLow results={props.results} /> : ""}
+        <b style={{ color: haveErrorsOrWarnings ? 'limegreen' : 'green' }}>{successCount.toLocaleString()} check{results.successList.length === 1 ? '' : 's'} completed</b>{results.successList.length ? ':' : ''}
+        <RenderSuccessesColoured results={results} />
+        {haveErrorsOrWarnings ? <RenderSevereMediumLow results={results} /> : ""}
     </>;
 }
 
-export function RenderSuccessesWarningsGradient(props) {
+export function RenderSuccessesWarningsGradient({results}) {
     // console.log("In RenderSuccessesWarningsGradient");
 
-    // consoleLogObject('RenderSuccessesWarningsGradient props', props);
+    // consoleLogObject('RenderSuccessesWarningsGradient results', results);
 
     let successCount;
-    if (props.results.successList.length === 1) successCount = 'One';
-    else if (props.results.successList.length === 2) successCount = 'Two';
-    else if (props.results.successList.length === 3) successCount = 'Three';
-    else if (props.results.successList.length === 4) successCount = 'Four';
-    else if (props.results.successList.length === 5) successCount = 'Five';
-    else successCount = props.results.successList.length.toLocaleString();
+    if (results.successList.length === 1) successCount = 'One';
+    else if (results.successList.length === 2) successCount = 'Two';
+    else if (results.successList.length === 3) successCount = 'Three';
+    else if (results.successList.length === 4) successCount = 'Four';
+    else if (results.successList.length === 5) successCount = 'Five';
+    else successCount = results.successList.length.toLocaleString();
 
     return <>
-        <b style={{ color: props.results.warningList.length ? 'limegreen' : 'green' }}>{successCount.toLocaleString()} check{props.results.successList.length === 1 ? '' : 's'} completed</b>{props.results.successList.length ? ':' : ''}
-        <RenderSuccessesColoured results={props.results} />
-        <b style={{ color: props.results.warningList.length ? 'orange' : 'green' }}>{props.results.warningList.length.toLocaleString()} warning notice{props.results.warningList.length === 1 ? '' : 's'}</b>{props.results.warningList.length ? ':' : ''}
-        <small style={{ color: 'Gray' }}>{props.results.numSuppressedWarnings ? " (" + props.results.numSuppressedWarnings.toLocaleString() + " similar one" + (props.results.numSuppressedWarnings === 1 ? '' : 's') + " suppressed)" : ''}</small>
-        {props.results.warningList.length ? <RenderWarningsGradient results={props.results} /> : ""}
+        <b style={{ color: results.warningList.length ? 'limegreen' : 'green' }}>{successCount.toLocaleString()} check{results.successList.length === 1 ? '' : 's'} completed</b>{results.successList.length ? ':' : ''}
+        <RenderSuccessesColoured results={results} />
+        <b style={{ color: results.warningList.length ? 'orange' : 'green' }}>{results.warningList.length.toLocaleString()} warning notice{results.warningList.length === 1 ? '' : 's'}</b>{results.warningList.length ? ':' : ''}
+        <small style={{ color: 'Gray' }}>{results.numSuppressedWarnings ? " (" + results.numSuppressedWarnings.toLocaleString() + " similar one" + (results.numSuppressedWarnings === 1 ? '' : 's') + " suppressed)" : ''}</small>
+        {results.warningList.length ? <RenderWarningsGradient results={results} /> : ""}
     </>;
 }
 
 
-export function RenderElapsedTime(props) {
-    const seconds = Math.round(props.elapsedTime % 60);
-    let remainingTime = Math.floor(props.elapsedTime / 60);
+export function RenderElapsedTime({elapsedTime}) {
+    const seconds = Math.round(elapsedTime % 60);
+    let remainingTime = Math.floor(elapsedTime / 60);
     const minutes = Math.round(remainingTime % 60);
     remainingTime = Math.floor(remainingTime / 60);
     const hours = Math.round(remainingTime % 24);
     remainingTime = Math.floor(remainingTime / 24);
     console.assert(remainingTime === 0, `Elapsed time also contains ${remainingTime} days`);
-return <>{hours? `${hours} hour`:''}{hours && hours!==1?'s':''}{hours?', ':''}{minutes? `${minutes} minute`:''}{minutes && minutes!==1?'s':''}{minutes?', ':''}{seconds} second{seconds===1?'':'s'}</>;
+    return <>{hours ? `${hours} hour` : ''}{hours && hours !== 1 ? 's' : ''}{hours ? ', ' : ''}{minutes ? `${minutes} minute` : ''}{minutes && minutes !== 1 ? 's' : ''}{minutes ? ', ' : ''}{seconds} second{seconds === 1 ? '' : 's'}</>;
 }

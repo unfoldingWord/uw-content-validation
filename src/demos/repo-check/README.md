@@ -2,7 +2,7 @@
 
 The code below requests some info and then checks a Door43 repository.You can enter the `repoName`, i.e., the `username/repoName` in the code below. (Unfortunately if you refresh the page from the browser controls, it will return to the default setting. If you want to restart the test without returning to the default repo, just change one letter in a `//` comment line below.)
 
-**Warning**: Some repos contain many files and/or very large files, and downloading them all and then checking them might slow down your browser.
+**Warning**: Some repos contain many files and/or very large files, and downloading them all and then checking them might slow down your browser -- maybe even causing pop-up messages asking to confirm that you want to keep waiting.
 
 **Note**: This component uses cached values of files stored inside the local browser. This makes reruns of the checks much faster, but it won't notice if you have updated the files on Door43. If you want to clear the local caches, use the `Clear Cache` function.
 
@@ -20,7 +20,7 @@ import RepoCheck from './RepoCheck';
   // repoName='en_ta' // Translation Academy (markdown files)
   // repoName='en_tw' // Translation Words (markdown files)
   // repoName='en_obs' // Open Bible Stories (markdown files)
-  repoName='fr_ulb' // No alignment so smaller files (faster)
+  repoName='fr_ulb' // No alignment so smaller files (faster demo)
 
   // If we don't put the branch here, the default branch is used
   // branch='master'

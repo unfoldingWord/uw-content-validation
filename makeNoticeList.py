@@ -11,7 +11,7 @@ for root, dirs, files in os.walk('.'):
             with open(os.path.join(root, name), 'rt') as sourceFile:
                 for line in sourceFile:
                     if 'addNotice' in line and 'function addNotice' not in line \
-                    and 'console.assert' not in line and 'noticeEntry[0]' not in line:
+                    and 'console.assert' not in line and 'noticeEntry.priority' not in line:
                         strippedLine = line.strip()
                         if strippedLine.endswith(');'): strippedLine = strippedLine[:-2]
                         if not strippedLine.startswith('//'):

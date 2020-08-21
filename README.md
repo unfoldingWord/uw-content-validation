@@ -71,17 +71,22 @@ However, the user is, of course, free to create their own alternative version of
 
 Still unfinished (in rough priority order):
 
+1. Standardise parameters according to best practice (i.e., dereferencing, etc.)
+1. Document the API
 1. Publish to NPM so that the functions may be easily used by other software -- this may involve some changes to the folder structure, etc. as we only want the core functions published in this way -- not the demo code
 1. Checking of general markdown and naked links
 1. Testing and fine-tuning of error messages (e.g., comparing with tX), especially suppression of false alarms
 1. Improve documentation
 1. Optimise various different file fetches and caches (incl. using zips) for the demos
 1. Is our `RepoCheck` the same as `ResourceContainerCheck`? Or is the latter more specific?
-1. Standardise parameters according to best practice (i.e., dereferencing, etc.)
-1. Understand and standardise React stuff, e.g., e.g., withStyles, etc.
+1. Understand and standardise React stuff in the demos, e.g., e.g., withStyles, etc.
 1. Write unit tests (especially for the core functions) and get them passing
 1. Check for and remove left-over (but unused) code from the source projects that the original code was copied from
 1. Remove all debug code and console logging, and to consider possible speed and memory optimizations
+
+Known bugs:
+
+1. The line number in the USFM Grammar check doesn't account for blank lines, so the real line number may be larger.
 
 ## Functionality and Limitations
 

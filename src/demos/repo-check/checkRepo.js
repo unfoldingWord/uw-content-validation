@@ -27,7 +27,7 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
 
     let checkRepoResult = {
         successList: [], noticeList: [],
-        checkedFileCount:0, checkedFilenames: [], checkedFilenameExtensions: []
+        checkedFileCount: 0, checkedFilenames: [], checkedFilenameExtensions: []
     };
 
     function addSuccessMessage(successString) {
@@ -37,6 +37,7 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
     }
     function addNotice9(priority, BBB, C, V, message, index, extract, location, extra) {
         // Adds the notices to the result that we will later return
+        // BBB is a three-character UPPERCASE USFM book code or 'OBS'.
         // Note that BBB,C,V might all be empty strings (as some repos don't have BCV)
         // console.log(`checkRepo addNotice9: (priority=${priority}) ${BBB} ${C}:${V} ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cR addNotice9: 'priority' parameter should be defined");
@@ -59,7 +60,7 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
         console.assert(typeof location === 'string', `cR addNotice9: 'location' parameter should be a string not a '${typeof location}'`);
         console.assert(extra !== undefined, "cR addNotice9: 'extra' parameter should be defined");
         console.assert(typeof extra === 'string', `cR addNotice9: 'extra' parameter should be a string not a '${typeof extra}'`);
-        checkRepoResult.noticeList.push([priority, BBB, C, V, message, index, extract, location, extra]);
+        checkRepoResult.noticeList.push({ priority, BBB, C, V, message, index, extract, location, extra });
     }
 
 
@@ -87,14 +88,12 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
         // Process results line by line,  appending the bookOrFileCode as an extra field as we go
         for (const noticeEntry of resultObject.noticeList) {
             // We add the bookOrFileCode as an extra value
-            if (noticeEntry.length === 5)
-                // noticeEntry is an array of five fields: 1=priority, 2=msg, 3=index, 4=extract, 5=location
-            addNotice9(noticeEntry[0], cfBBBid, '', '', noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], bookOrFileCode);
-            else if (noticeEntry.length === 8)
-                // noticeEntry is an array of eight fields: 1=priority, 2=BBB, 3=C, 4=V, 5=msg, 6=index, 7=extract, 8=location
-                addNotice9(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7], bookOrFileCode);
+            if (Object.keys(noticeEntry).length === 5)
+                addNotice9(noticeEntry.priority, cfBBBid, '', '', noticeEntry.message, noticeEntry.index, noticeEntry.extract, noticeEntry.location, bookOrFileCode);
+            else if (Object.keys(noticeEntry).length === 8)
+                addNotice9(noticeEntry.priority, noticeEntry.BBB, noticeEntry.C, noticeEntry.V, noticeEntry.message, noticeEntry.index, noticeEntry.extract, noticeEntry.location, bookOrFileCode);
             else
-                console.log(`ERROR: checkRepo doOurCheckFile got length ${noticeEntry.length}`);
+                console.log(`ERROR: checkRepo doOurCheckFile got length ${Object.keys(noticeEntry).length}`);
         }
     }
     // end of doOurCheckFile function
@@ -168,7 +167,7 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
                 // console.log("Fetched file_content for", repoName, thisPath, typeof repoFileContent, repoFileContent.length);
             } catch (cRgfError) {
                 console.log("Failed to load", username, repoName, thisFilepath, branch, `${cRgfError}`);
-                addNotice9(996, BBBid,'','', "Failed to load", -1, "", `${generalLocation} ${thisFilepath}: ${cRgfError}`, repoCode);
+                addNotice9(996, BBBid, '', '', "Failed to load", -1, "", `${generalLocation} ${thisFilepath}: ${cRgfError}`, repoCode);
                 return;
             }
             if (repoFileContent) {
@@ -186,9 +185,9 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
 
         // Check that we processed a license and a manifest
         if (checkedFilenames.indexOf('LICENSE.md') < 0)
-            addNotice9(946, '','','', "Missing LICENSE.md", -1, "", ourLocation, 'LICENSE');
+            addNotice9(946, '', '', '', "Missing LICENSE.md", -1, "", ourLocation, 'LICENSE');
         if (checkedFilenames.indexOf('manifest.yaml') < 0)
-            addNotice9(947, '','','', "Missing manifest.yaml", -1, "", ourLocation, 'MANIFEST');
+            addNotice9(947, '', '', '', "Missing manifest.yaml", -1, "", ourLocation, 'MANIFEST');
 
         // Add some extra fields to our checkRepoResult object
         //  in case we need this information again later

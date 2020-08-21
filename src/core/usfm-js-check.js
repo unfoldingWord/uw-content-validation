@@ -22,7 +22,9 @@ export function checkUSFMToJSON(BBB, filename, givenText, givenLocation, optiona
     /*
     This function is only used for the demonstration pages -- not for the core!
 
-    filename parameter can be an empty string if we don't have one.
+    BBB is a three-character UPPERCASE USFM book code.
+
+        filename parameter can be an empty string if we don't have one.
 
      Returns a result object containing a successList and a noticeList
      */
@@ -51,7 +53,7 @@ export function checkUSFMToJSON(BBB, filename, givenText, givenLocation, optiona
         console.assert(typeof extract === 'string', `cUSFMjs addNotice5to8: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cUSFMjs addNotice5to8: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `cUSFMjs addNotice5to8: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push([priority, BBB,"","", message, index, extract, location]);
+        result.noticeList.push({priority, BBB,C:'',V:'', message, index, extract, location});
     }
 
 

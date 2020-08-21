@@ -71,6 +71,8 @@ const EXPECTED_PERIPHERAL_BOOK_MARKERS = ['periph'];
 function checkUSFMText(BBB, filename, givenText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
+    BBB is a three-character UPPERCASE USFM book code.
+
     filename parameter can be an empty string if we don't have one.
 
      Returns a result object containing a successList and a noticeList
@@ -116,7 +118,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
         console.assert(typeof extract === 'string', `cUSFM addNoticeCV7: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cUSFM addNoticeCV7: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `cUSFM addNoticeCV7: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push([priority, BBB, C, V, message, index, extract, location]);
+        result.noticeList.push({priority, BBB, C, V, message, index, extract, location});
     }
 
 
@@ -318,16 +320,16 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
         // Process results line by line to filter out potential false positives
         //  for this particular kind of text field
         for (const noticeEntry of dbtcResultObject.noticeList) {
-            console.assert(noticeEntry.length === 5, `USFM doOurBasicTextChecks notice length=${noticeEntry.length}`);
-            if (!noticeEntry[1].startsWith("Mismatched () characters") // 663 Mismatched left/right chars -- suppress these misleading warnings coz open quote can occur in one verse and close in another
-                && !noticeEntry[1].startsWith("Mismatched [] characters")
-                && !noticeEntry[1].startsWith("Mismatched “” characters")
-                && !noticeEntry[1].startsWith("Mismatched «» characters")
-                && (!noticeEntry[1].startsWith("Unexpected | character after space") || fieldText.indexOf('x-lemma') < 0) // inside \zaln-s fields
-                && (!noticeEntry[1].startsWith("Unexpected doubled , characters") || fieldText.indexOf('x-morph') < 0) // inside \w fields
-                && (!noticeEntry[1].startsWith('Unexpected doubled " characters') || fieldText.indexOf('x-morph') < 0) // inside \w fields
+            console.assert(Object.keys(noticeEntry).length === 5, `USFM doOurBasicTextChecks notice length=${Object.keys(noticeEntry).length}`);
+            if (!noticeEntry.message.startsWith("Mismatched () characters") // 663 Mismatched left/right chars -- suppress these misleading warnings coz open quote can occur in one verse and close in another
+                && !noticeEntry.message.startsWith("Mismatched [] characters")
+                && !noticeEntry.message.startsWith("Mismatched “” characters")
+                && !noticeEntry.message.startsWith("Mismatched «» characters")
+                && (!noticeEntry.message.startsWith("Unexpected | character after space") || fieldText.indexOf('x-lemma') < 0) // inside \zaln-s fields
+                && (!noticeEntry.message.startsWith("Unexpected doubled , characters") || fieldText.indexOf('x-morph') < 0) // inside \w fields
+                && (!noticeEntry.message.startsWith('Unexpected doubled " characters') || fieldText.indexOf('x-morph') < 0) // inside \w fields
             )
-                addNoticeCV7(noticeEntry[0], C, V, noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5]);
+                addNoticeCV7(noticeEntry.priority, C, V, noticeEntry.message, noticeEntry.index, noticeEntry.extract, noticeEntry.location);
         }
     }
     // end of doOurBasicTextChecks function
@@ -352,7 +354,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
         // If we need to put everything through addNoticeCV7, e.g., for debugging or filtering
         //  process results line by line
         // for (const noticeEntry of resultObject.noticeList)
-        //     addNoticeCV7(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
+        //     addNoticeCV7(noticeEntry.priority, noticeEntry.message, noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
     }
     // end of doOurBasicFileChecks function
 

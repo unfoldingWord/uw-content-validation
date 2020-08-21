@@ -20,6 +20,7 @@ async function checkBookPackages(username, language_code, bookCodeList, setResul
     }
 
     function addNotice9(priority, BBB,C,V, message, index, extract, location, extra) {
+        // BBB is a three-character UPPERCASE USFM book code or 'OBS'.
         // console.log(`checkBookPackages Notice: (priority=${priority}) ${extra} ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cBPs addNotice9: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cBPs addNotice9: 'priority' parameter should be a number not a '${typeof priority}'`);
@@ -41,7 +42,7 @@ async function checkBookPackages(username, language_code, bookCodeList, setResul
         console.assert(typeof location === 'string', `cBPs addNotice9: 'location' parameter should be a string not a '${typeof location}'`);
         console.assert(extra !== undefined, "cBPs addNotice9: 'extra' parameter should be defined");
         console.assert(typeof extra === 'string', `cBPs addNotice9: 'extra' parameter should be a string not a '${typeof extra}'`);
-        checkBookPackagesResult.noticeList.push([priority, BBB,C,V, message, index, extract, location, extra]);
+        checkBookPackagesResult.noticeList.push({priority, BBB,C,V, message, index, extract, location, extra});
     }
 
 
@@ -81,7 +82,7 @@ async function checkBookPackages(username, language_code, bookCodeList, setResul
         // for (const noticeEntry of cbpResultObject.noticeList)
         //     // noticeEntry is an array of eight fields: 1=priority, 2=BBB, 3=C, 4=V, 5=msg, 6=index, 7=extract, 8=location
         //     // The extra value from checkBookPackage is the repo name
-        //     addNotice9(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7], noticeEntry[5]);
+        //     addNotice9(noticeEntry.priority, noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7], noticeEntry[5]);
 
         checkedFileCount += cbpResultObject.checkedFileCount;
         checkedFilenames = [...checkedFilenames, ...cbpResultObject.checkedFilenames];

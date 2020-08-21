@@ -2,9 +2,9 @@
 
 This function checks the given block of TSV table lines for typical formatting errors.
 
-It returns a list of success messages and a list of notice components. (The first component is always a priority number in the range 0..999.)
+It returns a list of success messages and a list of notice components. (There is always a priority number in the range 0..999 and the main message string, as well as other helpful details as relevant.)
 
-The notices can then be further processed into a list of errors and a list of warnings as desired.
+These raw notice components can then be filtered and/or sorted as required by the calling program, and then divided into a list of errors and a list of warnings or whatever as desired.
 
 ```js
 import React, { useState, useEffect } from 'react';
@@ -36,10 +36,10 @@ const lineA9 = "GEN\t1\t9\tha33\t\t\t0\tIt was so\t“It happened like that” o
 const data = {
   // You can choose any of the above lines here
   //  (to demonstrate differing results)
-  tableTextName : "textG",
+  tableTextName : 'textG',
   tableText : textG,
   bookID : 'GEN',
-  givenLocation : 'in text that was supplied',
+  givenLocation : 'that was supplied',
 }
 
 function CheckTSV(props) {

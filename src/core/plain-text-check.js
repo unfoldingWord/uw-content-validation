@@ -12,7 +12,7 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
 
      Returns a result object containing a successList and a noticeList
      */
-    console.log(`checkPlainText(${textName}, ${markdownText.length}, ${location})…`);
+    // console.log(`checkPlainText(${textName}, ${markdownText.length}, ${location})…`);
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     if (textName) ourLocation = ` in ${textName}${ourLocation}`;
@@ -31,13 +31,14 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
     const halfLengthPlus = Math.floor((extractLength+1) / 2); // rounded up
     // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
-    const result = { successList: [], noticeList: [] };
+    const cptResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
         // console.log(`checkPlainText success: ${successString}`);
-        result.successList.push(successString);
+        cptResult.successList.push(successString);
     }
     function addNotice8(priority, BBB,C,V, message, index, extract, location) {
+        // BBB is a three-character UPPERCASE USFM book code or 'OBS'.
         // console.log(`checkPlainText notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority!==undefined, "cPT addNotice8: 'priority' parameter should be defined");
         console.assert(typeof priority==='number', `cPT addNotice8: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
@@ -57,7 +58,7 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
         console.assert(typeof extract==='string', `cPT addNotice8: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location!==undefined, "cPT addNotice8: 'location' parameter should be defined");
         console.assert(typeof location==='string', `cPT addNotice8: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push([priority, BBB,C,V, message, index, extract, location]);
+        cptResult.noticeList.push({priority, BBB,C,V, message, index, extract, location});
     }
 
     function doOurBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
@@ -77,11 +78,11 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
-        result.noticeList = result.noticeList.concat(resultObject.noticeList);
+        cptResult.noticeList = cptResult.noticeList.concat(resultObject.noticeList);
         // If we need to put everything through addNotice8, e.g., for debugging or filtering
         //  process results line by line
         // for (const noticeEntry of resultObject.noticeList)
-        //     addNotice8(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
+        //     addNotice8(noticeEntry.priority, noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
     }
     // end of doOurBasicTextChecks function
 
@@ -117,13 +118,13 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
     }
 
     addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'}${ourLocation}.`);
-    if (result.noticeList)
-        addSuccessMessage(`checkPlainText v${PLAIN_TEXT_VALIDATOR_VERSION} finished with ${result.noticeList.length?result.noticeList.length.toLocaleString():"zero"} notice${result.noticeList.length === 1 ? '' : 's'}`);
+    if (cptResult.noticeList)
+        addSuccessMessage(`checkPlainText v${PLAIN_TEXT_VALIDATOR_VERSION} finished with ${cptResult.noticeList.length?cptResult.noticeList.length.toLocaleString():"zero"} notice${cptResult.noticeList.length === 1 ? '' : 's'}`);
     else
         addSuccessMessage(`No errors or warnings found by checkPlainText v${PLAIN_TEXT_VALIDATOR_VERSION}`)
     // console.log(`  checkPlainText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
     // console.log("checkPlainText result is", JSON.stringify(result));
-    return result;
+    return cptResult;
 }
 // end of checkPlainText function
 

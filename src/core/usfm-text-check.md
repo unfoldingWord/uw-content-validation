@@ -2,9 +2,9 @@
 
 This function checks the given USFM text for typical formatting errors.
 
-It returns a list of success messages and a list of notice components. (The first component is always a priority number in the range 0..999.)
+It returns a list of success messages and a list of notice components. (There is always a priority number in the range 0..999 and the main message string, as well as other helpful details as relevant.)
 
-The notices can then be further processed into a list of errors and a list of warnings as desired.
+These raw notice components can then be filtered and/or sorted as required by the calling program, and then divided into a list of errors and a list of warnings or whatever as desired.
 
 Note that unfoldingWord has three distinct forms of USFM files (and these functions have been designed to properly handle all three):
 

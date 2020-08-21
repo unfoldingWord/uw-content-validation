@@ -46,7 +46,7 @@ async function checkTAReference(fieldName, fieldText, givenLocation, optionalChe
         console.assert(typeof extract === 'string', `cTAref addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cTAref addNotice5: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `cTAref addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        ctarResult.noticeList.push([priority, message, index, extract, location]);
+        ctarResult.noticeList.push({priority, message, index, extract, location});
     }
 
 

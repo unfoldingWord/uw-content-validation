@@ -52,7 +52,7 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
         console.assert(typeof extract==='string', `cManT addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location!==undefined, "cYt addNotice5: 'location' parameter should be defined");
         console.assert(typeof location==='string', `cYt addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        cytResult.noticeList.push([priority, message, index, extract, location]);
+        cytResult.noticeList.push({priority, message, index, extract, location});
     }
 
     function doOurBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
@@ -73,14 +73,14 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
         // Process results line by line
         //  suppressing undesired errors
         for (const noticeEntry of resultObject.noticeList) {
-            console.assert(noticeEntry.length === 5, `YAML doOurBasicTextChecks notice length=${noticeEntry.length}`);
-            if (noticeEntry[0] !== 191 // "Unexpected XXX character after space"
-              && noticeEntry[1] !== "Unexpected ' character after space"
-            //   && noticeEntry[1] !== "Unexpected space after ' character"
-              && noticeEntry[1] !== "Unexpected space after [ character"
-              && (noticeEntry[1] !== "Unexpected doubled - characters" || fieldText === '---')
+            console.assert(Object.keys(noticeEntry).length === 5, `YAML doOurBasicTextChecks notice length=${Object.keys(noticeEntry).length}`);
+            if (noticeEntry.priority !== 191 // "Unexpected XXX character after space"
+              && noticeEntry.message !== "Unexpected ' character after space"
+            //   && noticeEntry.message !== "Unexpected space after ' character"
+              && noticeEntry.message !== "Unexpected space after [ character"
+              && (noticeEntry.message !== "Unexpected doubled - characters" || fieldText === '---')
               )
-                addNotice5(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
+                addNotice5(noticeEntry.priority, noticeEntry.message, noticeEntry.index, noticeEntry.extract, noticeEntry.location);
     }
 }
     // end of doOurBasicTextChecks function

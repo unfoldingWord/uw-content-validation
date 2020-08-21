@@ -28,7 +28,7 @@ async function startLiveLinksCheck(linksList, existingNoticeList, callbackFuncti
         console.assert(typeof extract==='string', `sLLC addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location!==undefined, "sLLC addNotice5: 'location' parameter should be defined");
         console.assert(typeof location==='string', `sLLC addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push([priority, message, index, extract, location]);
+        result.noticeList.push({priority, message, index,extract, location});
     }
 
     // Now try fetching each link in turn
@@ -79,7 +79,7 @@ function doBasicLinkChecks(fieldName, fieldText, linkOptions, optionalFieldLocat
         console.assert(typeof extract==='string', `sLLC addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location!==undefined, "sLLC addNotice5: 'location' parameter should be defined");
         console.assert(typeof location==='string', `sLLC addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push([priority, message, index, extract, location]);
+        result.noticeList.push({priority, message, index,extract, location});
     }
 
     // Create our more detailed location string by prepending the fieldName

@@ -12,6 +12,8 @@ const DEFAULT_EXTRACT_LENGTH = 10;
 async function checkTNLinks(BBB, fieldName, fieldText, givenLocation, optionalCheckingOptions) {
     /* This is for the case of the OccurrenceNote field containing markdown links
 
+    BBB is a three-character UPPERCASE USFM book code or 'OBS'.
+
     These notes may contain links
         to TA, e.g., “(See: [[rc://en/ta/man/translate/figs-metaphor]] and …”
         to TWs, e.g., “(See: [[rc://en/tw/dict/bible/other/death]] and …”
@@ -55,7 +57,7 @@ async function checkTNLinks(BBB, fieldName, fieldText, givenLocation, optionalCh
         console.assert(typeof extract === 'string', `cTAref addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cTAref addNotice5: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `cTAref addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        ctarResult.noticeList.push([priority, message, index, extract, location]);
+        ctarResult.noticeList.push({priority, message, index, extract, location});
     }
 
 
