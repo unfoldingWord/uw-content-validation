@@ -40,7 +40,7 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
         result.successList.push(successString);
     }
     function addNotice5(priority, message, index, extract, location) {
-        // console.log(`checkMarkdownText addNotice5: (priority=${priority}) ${message}${index > 0 ? " (at character " + index + 1 + ")" : ""}${extract ? " " + extract : ""}${location}`);
+        // console.log(`checkMarkdownText addNotice5: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? " " + extract : ""}${location}`);
         console.assert(priority !== undefined, "cMdT addNotice5: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cMdT addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message !== undefined, "cMdT addNotice5: 'message' parameter should be defined");
@@ -56,6 +56,14 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
     // end of addNotice5 function
 
     function doOurBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
+        /**
+        * @description - checks the given text field and processes the returned results
+        * @param {String} fieldName - name of the field being checked
+        * @param {String} fieldText - the actual text of the field being checked
+        * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
+        * @param {String} optionalFieldLocation - description of where the field is located
+        * @param {Object} optionalCheckingOptions - parameters that might affect the check
+        */
         // Does basic checks for small errors like leading/trailing spaces, etc.
 
         // We assume that checking for compulsory fields is done elsewhere

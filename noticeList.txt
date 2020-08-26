@@ -1,74 +1,74 @@
-./makeNoticeList.py 
-Got 96 notices:                                                                                                                   
-  996, bookCode, '', '', "Failed to load", -1, "", `${generalLocation} ${filename}: ${cBPgfError}`, repoCode                      
-  996, bookCode, "", "", "Failed to load", -1, "", `${generalLocation} ${thisPath}: ${tQerror}`, repoCode                         
-  996, BBBid,'','', "Failed to load", -1, "", `${generalLocation} ${thisFilepath}: ${cRgfError}`, repoCode                        
-  996, "Failed to load", -1, "", `${generalLocation} ${filename}: ${gcUHBerror}`, repoCode                                        
-  996, "Failed to load", -1, "", `${generalLocation} ${filename}: ${gcUGNTerror}`, repoCode                                       
-  993, "Unresolved GIT conflict", ix, extract                                                                                     
-  993, "Unresolved GIT conflict", ix, extract                                                                                     
-  992, "Unresolved GIT conflict", ix, extract                                                                                     
-  992, "Unresolved GIT conflict", ix, extract                                                                                     
-  991, "Unresolved GIT conflict", ix, extract                                                                                     
-  991, "Unresolved GIT conflict", ix, extract                                                                                     
-  979, "Invalid book code passed to checkTN_TSVDataRow", -1, "", ` '${BBB}' in first parameter: ${tlcNCerror}`                    
-  979, "Invalid book code passed to checkTNLinks", -1, "", ` '${BBB}' in first parameter: ${tnlcError}`                           
-  978, `Wrong '${B}' book code`, -1, "", ` (expected '${BBB}')`                                                                   
-  977, "Missing book code", 0, ""                                                                                                 
-  947, BBBid,'','', "Missing manifest.yaml", -1, "", 'MANIFEST'                                                                   
-  946, BBBid,'','', "Missing LICENSE.md", -1, "", 'LICENSE'                                                                       
-  944, `USFM3 toJSON Check doesn't pass`, -1, ""                                                                                  
-  944, `USFM3 Grammar Check (${strictnessString} mode) doesn't pass`, -1, ""                                                      
-  929, "'projects' key is missing", -1, ""                                                                                        
-  928, "'dublin_core' key is missing", -1, ""                                                                                     
-  916, yamlError.message, -1, "")                                                                                                 
-  900, '','','', "Bad parameter: should be given a valid book abbreviation", -1,bookCodeList, ` (not '${bookCodeList}')${location}`                                                                                                                                 
-  900, '', '', '', "Bad function call: should be given a valid book abbreviation", -1, bookCode, ` (not '${bookCode}')${location}`, ''                                                                                                                              
-  889, `Unable to find ${fieldName} TA link`, -1, fieldText, `${ourLocation} ${filepath}`                                         
-  888, `Error loading ${fieldName} TA link`, -1, fieldText, `${ourLocation} ${filepath}: ${trcGCerror}`                           
-  887, `Linked ${fieldName} TA article seems empty`, -1, fieldText, `${ourLocation} ${filepath}`                                  
-  886, `Unable to find ${fieldName} TA link`, -1, resultArray[0], `${ourLocation} ${filepath}`                                    
-  885, `Error loading ${fieldName} TA link`, -1, resultArray[0], `${ourLocation} ${filepath}: ${trcGCerror}`                      
-  884, `Linked ${fieldName} TA article seems empty`, -1, resultArray[0], `${ourLocation} ${filepath}`                             
-  883, `Unable to find ${fieldName} TW link`, -1, resultArray[0], `${ourLocation} ${filepath}`                                    
-  882, `Error loading ${fieldName} TW link`, -1, resultArray[0], `${ourLocation} ${filepath}: ${trcGCerror}`                      
-  881, `Linked ${fieldName} TW article seems empty`, -1, resultArray[0], `${ourLocation} ${filepath}`                             
-  861, `Found wrong number of TSV fields (expected ${NUM_EXPECTED_TSV_FIELDS})`, -1, `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`                                                                                                                
-  851, "Unable to load original language verse text", -1, ""                                                                      
-  843, "Invalid chapter number", -1, resultArray[4], `${ourLocation}`                                                             
-  824, `Invalid zero chapter number`, -1, C                                                                                       
-  823, `Invalid large chapter number`, -1, C                                                                                      
-  822, "Unable to check chapter number", -1, "", ` '${C}'`                                                                        
-  821, "Bad chapter number", -1, "", ` '${C}' with`                                                                               
-  820, "Missing chapter number", -1, "", ` ?:${V}`                                                                                
-  814, `Invalid zero '${V}' verse number`, -1, ""                                                                                 
-  813, `Invalid large '${V}' verse number`, ` for chapter ${C}`                                                                   
-  812, "Unable to check verse number", -1, "", ` '${V}'`                                                                          
-  811, "Bad verse number", -1, "", ` '${V}'`                                                                                      
-  810, "Missing verse number", -1, "", ` after ${C}:?`                                                                            
-  792, `Invalid '${occurrence}' occurrence field`, -1, ""                                                                         
-  779, "Missing ID field", -1, ""                                                                                                 
-  778, "ID should be exactly 4 characters", -1, "", ` (not ${fieldID.length})`)                                                   
-  765, "Unexpected link", ix, extract                                                                                             
-  743, "Chapter numbers of Bible link don't match", -1, resultArray[0], `${ourLocation}`                                          
-  742, "Verse numbers of Bible link don't match", -1, resultArray[0], `${ourLocation}`                                            
-  722, "Unable to find original language quote in verse text", -1, extract                                                        
-  721, "Unable to find original language quote in verse text", -1, extract                                                        
-  663, "Mismatched " + leftChar + rightChar + " characters", -1, "(left=" + lCount.toLocaleString() + ", right=" + rCount.toLocaleString() + ")"                                                                                                                    
-  638, "Only found whitespace", -1, ""                                                                                            
-  638, "Only found whitespace", -1, ""                                                                                            
-  621, "Seems original language quote might not finish at the end of a word", fieldText.length, extract                           
-  620, "Seems original language quote might not start at the beginning of a word", 0, extract                                     
-  600, `${regexResultsArray.length} link target${regexResultsArray.length === 1 ? ' is' : 's are'} still being checked…`, -1, "", ""                                                                                                                                
-  583, "Unexpected newLine character", ix, extract                                                                                
-  582, "Unexpected carriageReturn character", ix, extract                                                                         
-  581, "Unexpected non-break space character", ix, extract                                                                        
-  580, "Unexpected narrow non-break space character", ix, extract                                                                 
-  550, "Invalid zero occurrence field when we have an original quote", -1, ""                                                     
-  472, "Nesting seems confused", 0, ''                                                                                            
-  441, `Unknown linkType parameter`, -1, linkType, ""                                                                             
-  439, "Error fetching link", -1, "", ` ${fetchLink}`                                                                             
-  438, `Blank field / missing link (expected ${linkOptions.expectedCount} link${linkOptions.expectedCount === 1 ? "" : "s"})`, -1, ""                                                                                                                               
+./makeNoticeList.py
+Got 96 notices:
+  996, bookID, '', '', "Failed to load", -1, "", `${generalLocation} ${filename}: ${cBPgfError}`, repoCode
+  996, bookID, "", "", "Failed to load", -1, "", `${generalLocation} ${thisPath}: ${tQerror}`, repoCode
+  996, BBBid,'','', "Failed to load", -1, "", `${generalLocation} ${thisFilepath}: ${cRgfError}`, repoCode
+  996, "Failed to load", -1, "", `${generalLocation} ${filename}: ${gcUHBerror}`, repoCode
+  996, "Failed to load", -1, "", `${generalLocation} ${filename}: ${gcUGNTerror}`, repoCode
+  993, "Unresolved GIT conflict", ix, extract
+  993, "Unresolved GIT conflict", ix, extract
+  992, "Unresolved GIT conflict", ix, extract
+  992, "Unresolved GIT conflict", ix, extract
+  991, "Unresolved GIT conflict", ix, extract
+  991, "Unresolved GIT conflict", ix, extract
+  979, "Invalid book identifier passed to checkTN_TSVDataRow", -1, "", ` '${bookID}' in first parameter: ${tlcNCerror}`
+  979, "Invalid book identifier passed to checkTNLinks", -1, "", ` '${bookID}' in first parameter: ${tnlcError}`
+  978, `Wrong '${B}' book identifier`, -1, "", ` (expected '${bookID}')`
+  977, "Missing book identifier", 0, ""
+  947, BBBid,'','', "Missing manifest.yaml", -1, "", 'MANIFEST'
+  946, BBBid,'','', "Missing LICENSE.md", -1, "", 'LICENSE'
+  944, `USFM3 toJSON Check doesn't pass`, -1, ""
+  944, `USFM3 Grammar Check (${strictnessString} mode) doesn't pass`, -1, ""
+  929, "'projects' key is missing", -1, ""
+  928, "'dublin_core' key is missing", -1, ""
+  916, yamlError.message, -1, "")
+  900, '','','', "Bad parameter: should be given a valid book abbreviation", -1,bookIDList, ` (not '${bookIDList}')${location}`
+  900, '', '', '', "Bad function call: should be given a valid book abbreviation", -1, bookID, ` (not '${bookID}')${location}`, ''
+  889, `Unable to find ${fieldName} TA link`, -1, fieldText, `${ourLocation} ${filepath}`
+  888, `Error loading ${fieldName} TA link`, -1, fieldText, `${ourLocation} ${filepath}: ${trcGCerror}`
+  887, `Linked ${fieldName} TA article seems empty`, -1, fieldText, `${ourLocation} ${filepath}`
+  886, `Unable to find ${fieldName} TA link`, -1, resultArray[0], `${ourLocation} ${filepath}`
+  885, `Error loading ${fieldName} TA link`, -1, resultArray[0], `${ourLocation} ${filepath}: ${trcGCerror}`
+  884, `Linked ${fieldName} TA article seems empty`, -1, resultArray[0], `${ourLocation} ${filepath}`
+  883, `Unable to find ${fieldName} TW link`, -1, resultArray[0], `${ourLocation} ${filepath}`
+  882, `Error loading ${fieldName} TW link`, -1, resultArray[0], `${ourLocation} ${filepath}: ${trcGCerror}`
+  881, `Linked ${fieldName} TW article seems empty`, -1, resultArray[0], `${ourLocation} ${filepath}`
+  861, `Found wrong number of TSV fields (expected ${NUM_EXPECTED_TSV_FIELDS})`, -1, `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`
+  851, "Unable to load original language verse text", -1, ""
+  843, "Invalid chapter number", -1, resultArray[4], `${ourLocation}`
+  824, `Invalid zero chapter number`, -1, C
+  823, `Invalid large chapter number`, -1, C
+  822, "Unable to check chapter number", -1, "", ` '${C}'`
+  821, "Bad chapter number", -1, "", ` '${C}' with`
+  820, "Missing chapter number", -1, "", ` ?:${V}`
+  814, `Invalid zero '${V}' verse number`, -1, ""
+  813, `Invalid large '${V}' verse number`, ` for chapter ${C}`
+  812, "Unable to check verse number", -1, "", ` '${V}'`
+  811, "Bad verse number", -1, "", ` '${V}'`
+  810, "Missing verse number", -1, "", ` after ${C}:?`
+  792, `Invalid '${occurrence}' occurrence field`, -1, ""
+  779, "Missing ID field", -1, ""
+  778, "ID should be exactly 4 characters", -1, "", ` (not ${fieldID.length})`)
+  765, "Unexpected link", ix, extract
+  743, "Chapter numbers of Bible link don't match", -1, resultArray[0], `${ourLocation}`
+  742, "Verse numbers of Bible link don't match", -1, resultArray[0], `${ourLocation}`
+  722, "Unable to find original language quote in verse text", -1, extract
+  721, "Unable to find original language quote in verse text", -1, extract
+  663, "Mismatched " + leftChar + rightChar + " characters", -1, "(left=" + lCount.toLocaleString() + ", right=" + rCount.toLocaleString() + ")"
+  638, "Only found whitespace", -1, ""
+  638, "Only found whitespace", -1, ""
+  621, "Seems original language quote might not finish at the end of a word", fieldText.length, extract
+  620, "Seems original language quote might not start at the beginning of a word", 0, extract
+  600, `${regexResultsArray.length} link target${regexResultsArray.length === 1 ? ' is' : 's are'} still being checked…`, -1, "", ""
+  583, "Unexpected newLine character", ix, extract
+  582, "Unexpected carriageReturn character", ix, extract
+  581, "Unexpected non-break space character", ix, extract
+  580, "Unexpected narrow non-break space character", ix, extract
+  550, "Invalid zero occurrence field when we have an original quote", -1, ""
+  472, "Nesting seems confused", 0, ''
+  441, `Unknown linkType parameter`, -1, linkType, ""
+  439, "Error fetching link", -1, "", ` ${fetchLink}`
+  438, `Blank field / missing link (expected ${linkOptions.expectedCount} link${linkOptions.expectedCount === 1 ? "" : "s"})`, -1, ""
   375, "Ellipsis without surrounding snippet", -1, ""
   287, `Not enough links (expected ${linkOptions.expectedCount} link${linkOptions.expectedCount === 1 ? "" : "s"})`, -1, "", ` (only found ${regexResultsArray.length})${ourAtString}`
   276, "Missing OrigQuote field", -1, ""

@@ -178,10 +178,10 @@ const textB = `\\id GEN Bad USFM test
 
 // You can choose any of the above texts here
 //  (to demonstrate differing results)
-const chosenName = 'textH';
+const chosenTextName = 'textH';
 const chosenText = textH;
 
-const rawResults = checkUSFMToJSON(chosenName, chosenText, 'that was supplied');
+const rawResults = checkUSFMToJSON(chosenTextName, chosenText, 'that was supplied');
 
 <>
 <b>Check</b><RenderLines text={chosenText} />

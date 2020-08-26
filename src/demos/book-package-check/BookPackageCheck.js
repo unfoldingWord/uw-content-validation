@@ -10,7 +10,7 @@ import { ourParseInt, consoleLogObject } from '../../core/utilities';
 const CHECKER_VERSION_STRING = '0.1.2';
 
 
-function BookPackageCheck(/*username, language_code, bookCode,*/ props) {
+function BookPackageCheck(/*username, language_code, bookID,*/ props) {
     // Check a single Bible book across many repositories
     const [result, setResultValue] = useState("Waiting-CheckBookPackage");
 
@@ -22,16 +22,16 @@ function BookPackageCheck(/*username, language_code, bookCode,*/ props) {
     // console.log(`username='${username}'`);
     let language_code = props.language_code;
     // console.log(`language_code='${language_code}'`);
-    let bookCode = props.bookCode;
-    // console.log(`bookCode='${bookCode}'`);
+    let bookID = props.bookID;
+    // console.log(`bookID='${bookID}'`);
     let branch = props.branch;
     // console.log(`branch='${branch}'`);
 
-    if (bookCode!=='OBS' && !books.isValidBookCode(bookCode))
-        return (<p>Please enter a valid USFM book code. ('{bookCode}' is not valid.)</p>);
+    if (bookID!=='OBS' && !books.isValidBookID(bookID))
+        return (<p>Please enter a valid USFM book identifier. ('{bookID}' is not valid.)</p>);
 
      // Clear cached files if we've changed repo
-    //  autoClearCache(bookCode); // This technique avoids the complications of needing a button
+    //  autoClearCache(bookID); // This technique avoids the complications of needing a button
 
      let checkingOptions = { // Uncomment any of these to test them
         // 'extractLength': 25,
@@ -46,16 +46,16 @@ function BookPackageCheck(/*username, language_code, bookCode,*/ props) {
             // console.log("Started unnamedFunction()");
 
             // Display our "waiting" message
-            setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {language_code} <b>{bookCode}</b> book package…</p>);
+            setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {language_code} <b>{bookID}</b> book package…</p>);
 
-            const rawCBPResults = await checkBookPackage(username, language_code, bookCode, setResultValue, checkingOptions);
+            const rawCBPResults = await checkBookPackage(username, language_code, bookID, setResultValue, checkingOptions);
             // console.log("checkBookPackage() returned", typeof rawCBPResults); //, JSON.stringify(rawCBPResults));
 
             // Add some extra fields to our rawCBPResults object in case we need this information again later
             rawCBPResults.checkType = 'BookPackage';
             rawCBPResults.username = username;
             rawCBPResults.language_code = language_code;
-            rawCBPResults.bookCode = bookCode;
+            rawCBPResults.bookID = bookID;
             rawCBPResults.checkedOptions = checkingOptions;
 
             // console.log("Here with CBP rawCBPResults", typeof rawCBPResults);
@@ -79,7 +79,7 @@ function BookPackageCheck(/*username, language_code, bookCode,*/ props) {
 
             function renderSummary(processedResults) {
                 return (<>
-                <p>Checked <b>{username} {language_code} {bookCode}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
+                <p>Checked <b>{username} {language_code} {bookID}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
                 <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount==1?'':'s'} from {processedResults.checkedRepoNames.length} repo{processedResults.checkedRepoNames.length==1?'':'s'}: <b>{processedResults.checkedRepoNames.join(', ')}</b>
                 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>
                 <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedTime={processedResults.elapsedTime} />.</p>
@@ -158,7 +158,7 @@ function BookPackageCheck(/*username, language_code, bookCode,*/ props) {
 //   username: PropTypes.object.isRequired,
 //   /** @ignore */
 //   language_code: PropTypes.object.isRequired,
-//   bookCode: PropTypes.object.isRequired,
+//   bookID: PropTypes.object.isRequired,
 //   props: PropTypes.object,
 // };
 

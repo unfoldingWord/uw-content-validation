@@ -26,7 +26,7 @@ async function checkTAReference(fieldName, fieldText, givenLocation, optionalChe
     console.assert(typeof fieldText === 'string', `checkTAReference: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
     console.assert(givenLocation !== undefined, "checkTAReference: 'fieldText' parameter should be defined");
     console.assert(typeof givenLocation === 'string', `checkTAReference: 'fieldText' parameter should be a string not a '${typeof givenLocation}'`);
-    console.assert(fieldName === 'SupportReference'); // so far
+    console.assert(fieldName === 'SupportReference', `Unexpected checkTAReference fieldName='${fieldName}'`); // so far
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;

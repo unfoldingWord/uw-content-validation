@@ -38,15 +38,15 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
         // console.log(`checkManifestText success: ${successString}`);
         cmtResult.successList.push(successString);
     }
-    function addNotice8(priority, BBB,C,V, message, index, extract, location) {
-        // BBB is a three-character UPPERCASE USFM book code or 'OBS'.
+    function addNotice8(priority, bookID,C,V, message, index, extract, location) {
+        // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
         // console.log(`checkManifestText Notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cManT addNotice8: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cManT addNotice8: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        console.assert(BBB !== undefined, "cManT addNotice9: 'BBB' parameter should be defined");
-        console.assert(typeof BBB === 'string', `cManT addNotice9: 'BBB' parameter should be a string not a '${typeof BBB}'`);
-        console.assert(BBB.length === 3, `cManT addNotice9: 'BBB' parameter should be three characters long not ${BBB.length}`);
-        console.assert(books.isValidBookCode(BBB), `cManT addNotice9: '${BBB}' is not a valid USFM book code`);
+        console.assert(bookID !== undefined, "cManT addNotice9: 'bookID' parameter should be defined");
+        console.assert(typeof bookID === 'string', `cManT addNotice9: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+        console.assert(bookID.length === 3, `cManT addNotice9: 'bookID' parameter should be three characters long not ${bookID.length}`);
+        console.assert(books.isValidBookID(bookID), `cManT addNotice9: '${bookID}' is not a valid USFM book identifier`);
         console.assert(C !== undefined, "cManT addNotice9: 'C' parameter should be defined");
         console.assert(typeof C === 'string', `cManT addNotice9: 'C' parameter should be a string not a '${typeof C}'`);
         console.assert(V !== undefined, "cManT addNotice9: 'V' parameter should be defined");
@@ -59,7 +59,7 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
         console.assert(typeof extract === 'string', `cManT addNotice8: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cManT addNotice8: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `cManT addNotice8: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        cmtResult.noticeList.push({priority, BBB,C,V, message, index,extract, location});
+        cmtResult.noticeList.push({priority, bookID,C,V, message, index,extract, location});
     }
 
 

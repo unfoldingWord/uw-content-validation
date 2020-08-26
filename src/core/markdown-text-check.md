@@ -37,9 +37,9 @@ Another  paragraph.
 // You can choose any of the above texts here
 //  (to demonstrate differing results)
 const chosenText = textSB;
-const chosenName = 'textSB';
+const chosenTextName = 'textSB';
 
-const rawResults = checkMarkdownText(chosenName, chosenText, 'that was supplied');
+const rawResults = checkMarkdownText(chosenTextName, chosenText, 'that was supplied');
 if (!rawResults.successList || !rawResults.successList.length)
   rawResults.successList = ["Done markdown text checks"];
 

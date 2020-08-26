@@ -1,4 +1,5 @@
 import React from 'react';
+// NOTE: The following line is currently giving compile warnings -- a problem in a dependency it seems
 import MaterialTable from 'material-table';
 // import { consoleLogObject, displayPropertyNames } from '../core/utilities';
 
@@ -6,7 +7,7 @@ import MaterialTable from 'material-table';
 export function RenderLines({text}) {
     /**
     * @description - Displays a given piece of text (which can include newline characters)
-    * @param {String} text - text to render
+    * @param {String} text - text to render as numbered lines
     * @return {String} - rendered HTML for the numbered list of lines
     */
    return <ol>
@@ -17,22 +18,25 @@ export function RenderLines({text}) {
 }
 
 
-export function RenderSettings({ settings }) {
+export function RenderObject({ thisObject, excludeList }) {
     /**
-    * @description - Displays whatever is in the settings object
-    * @param {Object} settings - object to render
-    * @return {String} - rendered HTML for list of object properties
+    * @description - Displays whatever is in the object
+    * @param {Object} thisObject - object to render
+    * @param {Array} excludeList - optional list of object property names to be ignored
+    * @return {String} - rendered HTML for list of thisObject properties
     */
-    // console.log("In RenderSettings");
-    // consoleLogObject('RenderSettings settings', settings);
+    // console.log("In RenderObject");
+    // consoleLogObject('RenderObject settings', settings);
     return <ul>
         {
-            Object.keys(settings).map((key, index) => (
-                <li key={index}>&nbsp;&nbsp;&nbsp;&nbsp;
-                    <span><b>{key}</b>:
-                    {typeof settings[key] === 'object' ? JSON.stringify(settings[key]) : settings[key]}</span>
-                </li>
-            ), [])}
+            Object.keys(thisObject).map((key, index) => {
+                if (!excludeList || excludeList.indexOf(key) < 0)
+                    return (
+                        <li key={index}>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <span><b>{key}</b>{Array.isArray(thisObject[key]) ? ` (${thisObject[key].length}) `:''}: {typeof thisObject[key] === 'object' ? JSON.stringify(thisObject[key]) : thisObject[key]}</span>
+                        </li>
+                    )
+        }, [])}
     </ul>;
 }
 
@@ -44,7 +48,7 @@ export function RenderRawResults({ results }) {
     * @return {String} - rendered HTML for table of notices
     */
     // This function is flexible enough to handle notice objects:
-    //      including BBB,C,V or not
+    //      including bookID,C,V or not
     //      including extra or not
 
     // console.log("In RenderRawResults");
@@ -62,8 +66,8 @@ export function RenderRawResults({ results }) {
 
     if (!results.noticeList || !results.noticeList.length)
         return <>
-            <p><b>No notices were produced</b>:</p>
-            <RenderSettings settings={results} />
+            <p><b>Raw Results</b> (no notices were produced):</p>
+            <RenderObject thisObject={results} excludeList={['noticeList']}/>
         </>;
 
     // If we get here, we have notices.
@@ -71,7 +75,7 @@ export function RenderRawResults({ results }) {
     let haveBCV = false, haveExtra = false;
     results.noticeList.map(function (noticeEntry) {
         // console.log(`Render (${Object.keys(noticeEntry).length}) ${Object.keys(noticeEntry)}`);
-        if (noticeEntry.BBB && noticeEntry.BBB.length)
+        if (noticeEntry.bookID && noticeEntry.bookID.length)
             haveBCV = true;
         if (noticeEntry.extra && noticeEntry.extra.length)
             haveExtra = true;
@@ -83,7 +87,7 @@ export function RenderRawResults({ results }) {
     let headerData = [{ title: 'Priority', field: 'priority', type: 'numeric' }];
     if (haveBCV)
         headerData = headerData.concat([
-            { title: 'Book', field: 'BBB' },
+            { title: 'Book', field: 'bookID' },
             { title: 'Chapter', field: 'C' },
             { title: 'Verse', field: 'V' }
         ]);
@@ -98,7 +102,7 @@ export function RenderRawResults({ results }) {
     // Make the actual table and return it
     return <>
         <b>Raw Results</b>:
-        <RenderSettings settings={results} />
+        <RenderObject thisObject={results} />
         <MaterialTable
             //icons={tableIcons}
             title='Raw Notices'
@@ -110,20 +114,20 @@ export function RenderRawResults({ results }) {
 }
 
 
-function RenderBCV({ BBB, C, V }) {
+function RenderBCV({ bookID, C, V }) {
     /**
     * @description - Displays the bookcode and chapter/verse details if specified
-    * @param {String} BBB - (optional) 3-character UPPERCASE USFM bookcode or 'OBS'.
+    * @param {String} bookID - (optional) 3-character UPPERCASE USFM bookcode or 'OBS'.
     * @param {String} C - (optional) chapter info
     * @param {String} V - (optional) verse info
     * @return {String} - rendered HTML for the given reference
     */
     // These are all optional parameters - they may be undefined or blank if irrelevant
-    console.log(`RenderBCV(${BBB}, ${C}, ${V})`);
-    if (!BBB && !C && !V) return ''; // They're all undefined or blank!
-    console.log(`RenderBCV2 ${BBB}, ${C}, ${V}`);
+    // console.log(`RenderBCV(${bookID}, ${C}, ${V})`);
+    if (!bookID && !C && !V) return null; // They're all undefined or blank!
+    // console.log(`RenderBCV2 ${bookID}, ${C}, ${V}`);
     let result;
-    if (BBB && BBB.length) result = BBB;
+    if (bookID && bookID.length) result = bookID;
     if (C && C.length) result = `${result}${result.length ? ' ' : ''}${C}`;
     if (V && V.length) result = `${result}${result.length ? ':' : ''}${V}`;
     if (result.length) return ` ${V && V.length ? 'at' : 'in'} ${result}`;
@@ -157,7 +161,7 @@ function RenderSuccessesColoured({results}) {
 
 export function RenderProcessedArray({arrayType, results}) {
     // Display our array of 8-part lists in a nicer format
-    //  1/ priority number, 2/ BBB, 3/ C, 4/ V, 5/ message,
+    //  1/ priority number, 2/ bookID, 3/ C, 4/ V, 5/ message,
     //      6/ index (integer), 7/ extract (optional), 8/ location
     //
     // console.log("In RenderProcessedArray with ", arrayType);
@@ -173,7 +177,7 @@ export function RenderProcessedArray({arrayType, results}) {
             {myList.map(function (listEntry, index) {
                 return <li key={index}>
                     <b style={{ color: arrayType === 'e' ? 'red' : 'orange' }}>{listEntry.message}</b>
-                    <RenderBCV BBB={listEntry.BBB} C={listEntry.C} V={listEntry.V} />
+                    <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
                     {listEntry.index > 0 ? " (at character " + (listEntry.index + 1) + " of line)" : ""}
                     <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
                     {listEntry.location}
@@ -187,7 +191,7 @@ export function RenderProcessedArray({arrayType, results}) {
 
 export function RenderGivenArray({array, colour}) {
     // Display our array of 8-part lists in a nicer format
-    //  1/ priority number, 2/ BBB, 3/ C, 4/ V, 5/ message,
+    //  1/ priority number, 2/ bookID, 3/ C, 4/ V, 5/ message,
     //      6/ index (integer), 7/ extract (optional), 8/ location
     //
     // console.log("In RenderGivenArray with ", arrayType);
@@ -197,7 +201,7 @@ export function RenderGivenArray({array, colour}) {
         {array.map(function (listEntry, index) {
             return <li key={index}>
                 <b style={{ color: colour }}>{listEntry.message}</b>
-                <RenderBCV BBB={listEntry.BBB} C={listEntry.C} V={listEntry.V} />
+                <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
                 {listEntry.index > 0 ? " (at character " + (listEntry.index + 1) + " of line)" : ""}
                 <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
                 {listEntry.location}
@@ -221,7 +225,7 @@ function getGradientColour(priorityValue) {
 
 function RenderWarningsGradient({results}) {
     // Display our array of 8-part lists in a nicer format
-    //  1/ priority number, 2/ BBB, 3/ C, 4/ V, 5/ message,
+    //  1/ priority number, 2/ bookID, 3/ C, 4/ V, 5/ message,
     //      6/ index (integer), 7/ extract (optional), 8/ location
     //
     // Expects results to contain:
@@ -234,7 +238,7 @@ function RenderWarningsGradient({results}) {
             const thisColour = getGradientColour(listEntry.priority);
             return <li key={index}>
                 <b style={{ color: thisColour }}>{listEntry.message}</b>
-                <RenderBCV BBB={listEntry.BBB} C={listEntry.C} V={listEntry.V} />
+                <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
                 {listEntry.index > 0 ? " (at character " + (listEntry.index + 1) + " of line)" : ""}
                 <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
                 {listEntry.location}

@@ -7,7 +7,7 @@ import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
 import { ourParseInt, consoleLogObject } from './utilities';
 
 
-const USFM_VALIDATOR_VERSION = '0.5.3';
+const USFM_VALIDATOR_VERSION = '0.5.4';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -68,16 +68,16 @@ const EXPECTED_BIBLE_BOOK_MARKERS = ['h', 'toc1', 'toc2', 'toc3'];
 const EXPECTED_PERIPHERAL_BOOK_MARKERS = ['periph'];
 
 
-function checkUSFMText(BBB, filename, givenText, givenLocation, optionalCheckingOptions) {
+function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
-    BBB is a three-character UPPERCASE USFM book code.
+    bookID is a three-character UPPERCASE USFM book identifier.
 
     filename parameter can be an empty string if we don't have one.
 
      Returns a result object containing a successList and a noticeList
      */
-    // console.log(`checkUSFMText(${BBB}, ${givenText.length.toLocaleString()} chars, '${location}')…`);
+    // console.log(`checkUSFMText(${bookID}, ${givenText.length.toLocaleString()} chars, '${location}')…`);
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     if (filename.length) ourLocation = ` in ${filename}${ourLocation}`;
@@ -118,7 +118,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
         console.assert(typeof extract === 'string', `cUSFM addNoticeCV7: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cUSFM addNoticeCV7: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `cUSFM addNoticeCV7: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push({priority, BBB, C, V, message, index, extract, location});
+        result.noticeList.push({priority, bookID, C, V, message, index, extract, location});
     }
 
 
@@ -127,7 +127,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
         //  which can be quite time-consuming on large, complex USFM files
         // console.log("Running our BCS USFM grammar check (can take quite a while for a large book)…");
 
-        const grammarCheckResult = runBCSGrammarCheck('strict', fileText, fileLocation);
+        const grammarCheckResult = runBCSGrammarCheck('strict', fileText, fileLocation, optionalCheckingOptions);
         // NOTE: We haven't figured out how to get ERRORS out of this parser yet
         // console.log(`  Finished our BCS USFM grammar check with ${grammarCheckResult.isValidUSFM} and ${grammarCheckResult.warnings.length} warnings.`);
         addSuccessMessage(`Checked USFM Grammar (strict mode) ${grammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN'T validate)"}`);
@@ -159,7 +159,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
     // end of ourRunBCSGrammarCheck function
 
 
-    function CVCheck(BBB, givenText, CVlocation) {
+    function CVCheck(bookID, givenText, CVlocation) {
         /*
         This check uses the USFM-JS package to parse the USFM
             and then it checks the results to make sure all expected verses are there.
@@ -210,10 +210,10 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
 
 
         // Main code for CVCheck function
-        let bbb = BBB.toLowerCase();
+        let lowercaseBookID = bookID.toLowerCase();
         let expectedVersesPerChapterList = [];
         try {
-            expectedVersesPerChapterList = books.chaptersInBook(bbb); // A list of integers -- numVerses for each chapter
+            expectedVersesPerChapterList = books.chaptersInBook(lowercaseBookID); // A list of integers -- numVerses for each chapter
             // console.log("Got chapterList", JSON.stringify(expectedVersesPerChapterList));
         }
         catch { }
@@ -231,10 +231,10 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
             try {
                 chapterInt = ourParseInt(chapterNumberString);
             } catch (usfmCIerror) {
-                console.log(`CVCheck couldn't convert ${BBB} chapter '${chapterNumberString}': ${usfmCIerror}`);
+                console.log(`CVCheck couldn't convert ${bookID} chapter '${chapterNumberString}': ${usfmCIerror}`);
             }
             if (chapterInt < 1 || chapterInt > expectedVersesPerChapterList.length)
-                addNoticeCV7(869, chapterNumberString, "", "Chapter number out of range", -1, `${BBB} ${chapterNumberString}`, CVlocation);
+                addNoticeCV7(869, chapterNumberString, "", "Chapter number out of range", -1, `${bookID} ${chapterNumberString}`, CVlocation);
             else {
                 let discoveredVerseList = [], discoveredVerseWithTextList = [];
                 // console.log(`Chapter ${chapterNumberString} verses ${Object.keys(result1.returnedJSON.chapters[chapterNumberString])}`);
@@ -269,11 +269,11 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
                             verseInt = ourParseInt(verseNumberString);
                             discoveredVerseList.push(verseInt);
                         } catch (usfmPIerror) {
-                            console.log(`We couldn't convert ${BBB} ${chapterNumberString} verse '${verseNumberString}': ${usfmPIerror}`);
+                            console.log(`We couldn't convert ${bookID} ${chapterNumberString} verse '${verseNumberString}': ${usfmPIerror}`);
                         }
 
                         if (verseInt < 1 || verseInt > expectedVersesPerChapterList[chapterInt - 1])
-                            addNoticeCV7(868, chapterNumberString, verseNumberString, "Verse number out of range", -1, `${BBB} ${chapterNumberString}:${verseNumberString}`, CVlocation);
+                            addNoticeCV7(868, chapterNumberString, verseNumberString, "Verse number out of range", -1, `${bookID} ${chapterNumberString}:${verseNumberString}`, CVlocation);
 
                         if (verseHasText)
                             discoveredVerseWithTextList.push(verseInt);
@@ -284,7 +284,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
                 // console.log("Doing missing verse check");
                 for (let v = 1; v <= expectedVersesPerChapterList[chapterInt - 1]; v++) {
                     if (discoveredVerseList.indexOf(v) < 0)
-                        if (books.isOftenMissing(BBB, chapterInt, v))
+                        if (books.isOftenMissing(bookID, chapterInt, v))
                             addNoticeCV7(67, chapterNumberString, `${v}`, "Verse appears to be left out", -1, "", CVlocation);
                         else
                             addNoticeCV7(867, chapterNumberString, `${v}`, "Verse appears to be missing", -1, "", CVlocation);
@@ -297,12 +297,22 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
                 }
             }
         }
-        addSuccessMessage(`Checked CV patterns for ${BBB}${CVlocation}`);
+        addSuccessMessage(`Checked CV patterns for ${bookID}${CVlocation}`);
     }
     // end of CVCheck function
 
 
     function doOurBasicTextChecks(C, V, fieldName, fieldText, allowedLinks, fieldLocation, optionalCheckingOptions) {
+        /**
+        * @description - checks the given text field and processes the returned results
+        * @param {String} C - chapter number of the text being checked
+        * @param {String} V - verse number of the text being checked
+        * @param {String} fieldName - name of the field being checked
+        * @param {String} fieldText - the actual text of the field being checked
+        * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
+        * @param {String} fieldLocation - description of where the field is located
+        * @param {Object} optionalCheckingOptions - parameters that might affect the check
+        */
         // Does basic checks for small errors like leading/trailing spaces, etc.
 
         // We assume that checking for compulsory fields is done elsewhere
@@ -420,7 +430,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
             if (!markerSet.has(expectedMarker)
             && (!expectedMarker.endsWith('1') || !markerSet.has(expectedMarker.substring(0, expectedMarker.length-1))))
                 addNoticeCV7(519, '', '', "Missing expected USFM line", -1, `missing \\${expectedMarker}`, fileLocation);
-        if (books.isExtraBookCode(BBB))
+        if (books.isExtraBookID(bookID))
         for (const expectedMarker of EXPECTED_PERIPHERAL_BOOK_MARKERS)
             if (!markerSet.has(expectedMarker))
                 addNoticeCV7(517, '', '', "Missing expected USFM line", -1, `missing \\${expectedMarker}`, fileLocation);
@@ -473,20 +483,20 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
     // end of checkUSFMLineContents function
 
 
-    function mainUSFMCheck(BBB, filename, givenText, location) {
+    function mainUSFMCheck(bookID, filename, givenText, location) {
         // console.log("Running mainUSFMCheck() (can take quite a while for a large book)…");
 
         let ourLocation = location;
         if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
-        let bbb = BBB.toLowerCase();
+        let lowercaseBookID = bookID.toLowerCase();
         let numChaptersThisBook = 0;
         try {
-            numChaptersThisBook = books.chaptersInBook(bbb).length;
+            numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
         }
         catch {
-            if (!books.isValidBookCode(BBB)) // must not be in FRT, BAK, etc.
-                addNoticeCV7(900, "", "", "Bad function call: should be given a valid book abbreviation", -1, BBB, ` (not '${BBB}')${ourLocation}`);
+            if (!books.isValidBookID(bookID)) // must not be in FRT, BAK, etc.
+                addNoticeCV7(900, "", "", "Bad function call: should be given a valid book abbreviation", -1, bookID, ` (not '${bookID}')${ourLocation}`);
         }
 
         let lines = givenText.split('\n');
@@ -597,10 +607,10 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
             }
             atString = ` on line ${n.toLocaleString()}${ourLocation}`;
 
-            if (marker === 'id' && !rest.startsWith(BBB)) {
+            if (marker === 'id' && !rest.startsWith(bookID)) {
                 const thisLength = Math.max(4, extractLength);
                 const extract = `${rest.substring(0, thisLength)}${rest.length > thisLength ? '…' : ''}`;
-                addNoticeCV7(987, C, V, "Expected \\id line to start with book code", 4, extract, atString);
+                addNoticeCV7(987, C, V, "Expected \\id line to start with book identifier", 4, extract, atString);
             }
             // Check the order of markers
             // In headers
@@ -623,7 +633,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
         // Do overall global checks of the entire text
         checkUSFMFileContents(filename, givenText, markerSet, ourLocation) // Do this last so the results are lower in the lists
 
-        addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length === 1 ? '' : 's'} for ${BBB}${ourLocation}`)
+        addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length === 1 ? '' : 's'} for ${bookID}${ourLocation}`)
     }
 
     /* function runSlowTask(which) {
@@ -631,7 +641,7 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
         //  See https://hackernoon.com/multithreading-multiprocessing-and-the-nodejs-event-loop-5b2929bd450b
         console.log(`runSlowTask(${which})`)
         return (which === 1)
-            ? mainUSFMCheck(BBB, filename, givenText, location)
+            ? mainUSFMCheck(bookID, filename, givenText, location)
             : runBCSGrammarCheck(filename, givenText, location);
     }
     // Main code for checkUSFMText()
@@ -651,9 +661,9 @@ function checkUSFMText(BBB, filename, givenText, givenLocation, optionalChecking
     // NOTE: If we're careful about how/when we add their notices to our global list,
     //  we should be able to run these three slowish checks in parallel on different threads/processes
     let allResults = [];
-    allResults.push(mainUSFMCheck(BBB, filename, givenText, ourLocation));
-    allResults.push(CVCheck(BBB, givenText, ourLocation));
-    if (!books.isExtraBookCode(BBB))
+    allResults.push(mainUSFMCheck(bookID, filename, givenText, ourLocation));
+    allResults.push(CVCheck(bookID, givenText, ourLocation));
+    if (!books.isExtraBookID(bookID))
         allResults.push(ourRunBCSGrammarCheck(givenText, ourLocation));
     // console.assert(allResults.length === 2);
     // console.log("allResults", JSON.stringify(allResults));

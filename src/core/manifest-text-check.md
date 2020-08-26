@@ -213,9 +213,9 @@ projects:
 // You can choose any of the above texts here
 //  (to demonstrate differing results)
 const chosenText = textG;
-const chosenName = 'textG';
+const chosenTextName = 'textG';
 
-const rawResults = checkManifestText(chosenName, chosenText, 'in manifest data that was supplied');
+const rawResults = checkManifestText(chosenTextName, chosenText, 'in manifest data that was supplied');
 
 <>
 <b>Manifest contents</b>: <RenderLines text={chosenText} />

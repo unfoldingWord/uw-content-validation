@@ -11,17 +11,18 @@ export function consoleLogObject(clTitle, clObject) {
         // console.log("   ", clTitle, clPropertyName); // for debugging only!
         let thisPropertyContents = "" + clObject[clPropertyName];
         if (thisPropertyContents.length > 50)
-            thisPropertyContents = "(" + thisPropertyContents.length + ") " + thisPropertyContents.substring(0, 50) + "…";
+            thisPropertyContents = `(${thisPropertyContents.length}) ${thisPropertyContents.substring(0, 50)}…`;
         let oType = typeof clObject[clPropertyName];
         // From https://stackoverflow.com/questions/12996871/why-does-typeof-array-with-objects-return-object-and-not-array#12996879
         if (oType === "object" && Object.prototype.toString.call(clObject[clPropertyName]) === "[object Array]")
             oType = "array";
-        clOutput += "  " + clPropertyName + " (type=" + oType + ")";
+        clOutput += `  ${clPropertyName} (type=${oType})`;
         let oLength;
         try { oLength = clObject[clPropertyName].length; }
         catch (olError) { oLength = "null" }
-        if (oLength !== undefined) clOutput += " (length=" + oLength + ")";
-        if (thisPropertyContents !== undefined) clOutput += ": " + thisPropertyContents + "\n";
+        if (oLength !== undefined) clOutput += ` (length=${oLength})`;
+        if (thisPropertyContents !== undefined) clOutput += `: ${thisPropertyContents}
+`;
     }
     console.log(clOutput);
 }
@@ -29,9 +30,11 @@ export function consoleLogObject(clTitle, clObject) {
 
 
 export function displayPropertyNames(givenTitle, givenObject) {
-    let output = "dPN: " + givenTitle + " " + (typeof givenObject) + ":\n";
+    let output = `dPN: ${givenTitle} ${typeof givenObject}:
+`;
     for (const propertyName in givenObject)
-        output += "  " + propertyName + " (type=" + typeof givenObject[propertyName] + ")\n";
+        output += `  ${propertyName} (type=${typeof givenObject[propertyName]})
+`;
     console.log(output);
 }
 // end of displayPropertyNames function

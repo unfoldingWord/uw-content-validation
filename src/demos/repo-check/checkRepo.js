@@ -35,17 +35,17 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
         // console.log(`checkRepo success: ${successString}`);
         checkRepoResult.successList.push(successString);
     }
-    function addNotice9(priority, BBB, C, V, message, index, extract, location, extra) {
+    function addNotice9(priority, bookID, C, V, message, index, extract, location, extra) {
         // Adds the notices to the result that we will later return
-        // BBB is a three-character UPPERCASE USFM book code or 'OBS'.
-        // Note that BBB,C,V might all be empty strings (as some repos don't have BCV)
-        // console.log(`checkRepo addNotice9: (priority=${priority}) ${BBB} ${C}:${V} ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
+        // Note that bookID,C,V might all be empty strings (as some repos don't have BCV)
+        // console.log(`checkRepo addNotice9: (priority=${priority}) ${bookID} ${C}:${V} ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cR addNotice9: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cR addNotice9: 'priority' parameter should be a number not a '${typeof priority}'`);
-        console.assert(BBB !== undefined, "cR addNotice9: 'BBB' parameter should be defined");
-        console.assert(typeof BBB === 'string', `cR addNotice9: 'BBB' parameter should be a string not a '${typeof BBB}'`);
-        // console.assert(BBB.length === 3, `cR addNotice9: 'BBB' parameter should be three characters long not ${BBB.length}`);
-        console.assert(books.isOptionalValidBookCode(BBB), `cR addNotice9: '${BBB}' is not a valid USFM book code`);
+        console.assert(bookID !== undefined, "cR addNotice9: 'bookID' parameter should be defined");
+        console.assert(typeof bookID === 'string', `cR addNotice9: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+        // console.assert(bookID.length === 3, `cR addNotice9: 'bookID' parameter should be three characters long not ${bookID.length}`);
+        console.assert(books.isOptionalValidBookID(bookID), `cR addNotice9: '${bookID}' is not a valid USFM book identifier`);
         console.assert(C !== undefined, "cR addNotice9: 'C' parameter should be defined");
         console.assert(typeof C === 'string', `cR addNotice9: 'C' parameter should be a string not a '${typeof C}'`);
         console.assert(V !== undefined, "cR addNotice9: 'V' parameter should be defined");
@@ -60,19 +60,19 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
         console.assert(typeof location === 'string', `cR addNotice9: 'location' parameter should be a string not a '${typeof location}'`);
         console.assert(extra !== undefined, "cR addNotice9: 'extra' parameter should be defined");
         console.assert(typeof extra === 'string', `cR addNotice9: 'extra' parameter should be a string not a '${typeof extra}'`);
-        checkRepoResult.noticeList.push({ priority, BBB, C, V, message, index, extract, location, extra });
+        checkRepoResult.noticeList.push({ priority, bookID, C, V, message, index, extract, location, extra });
     }
 
 
-    async function doOurCheckFile(bookOrFileCode, cfBBBid, filename, file_content, fileLocation, optionalCheckingOptions) {
+    async function doOurCheckFile(bookOrFileCode, cfBookID, filename, file_content, fileLocation, optionalCheckingOptions) {
         // We assume that checking for compulsory fields is done elsewhere
         // console.log(`checkRepo doOurCheckFile(${filename})…`);
 
         // Updates the global list of notices
         console.assert(bookOrFileCode !== undefined, "doOurCheckFile: 'bookOrFileCode' parameter should be defined");
         console.assert(typeof bookOrFileCode === 'string', `doOurCheckFile: 'bookOrFileCode' parameter should be a string not a '${typeof bookOrFileCode}'`);
-        console.assert(cfBBBid !== undefined, "doOurCheckFile: 'cfBBBid' parameter should be defined");
-        console.assert(typeof cfBBBid === 'string', `doOurCheckFile: 'cfBBBid' parameter should be a string not a '${typeof cfBBBid}'`);
+        console.assert(cfBookID !== undefined, "doOurCheckFile: 'cfBookID' parameter should be defined");
+        console.assert(typeof cfBookID === 'string', `doOurCheckFile: 'cfBookID' parameter should be a string not a '${typeof cfBookID}'`);
         console.assert(filename !== undefined, "doOurCheckFile: 'filename' parameter should be defined");
         console.assert(typeof filename === 'string', `doOurCheckFile: 'filename' parameter should be a string not a '${typeof filename}'`);
         console.assert(file_content !== undefined, "doOurCheckFile: 'file_content' parameter should be defined");
@@ -89,9 +89,9 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
         for (const noticeEntry of resultObject.noticeList) {
             // We add the bookOrFileCode as an extra value
             if (Object.keys(noticeEntry).length === 5)
-                addNotice9(noticeEntry.priority, cfBBBid, '', '', noticeEntry.message, noticeEntry.index, noticeEntry.extract, noticeEntry.location, bookOrFileCode);
+                addNotice9(noticeEntry.priority, cfBookID, '', '', noticeEntry.message, noticeEntry.index, noticeEntry.extract, noticeEntry.location, bookOrFileCode);
             else if (Object.keys(noticeEntry).length === 8)
-                addNotice9(noticeEntry.priority, noticeEntry.BBB, noticeEntry.C, noticeEntry.V, noticeEntry.message, noticeEntry.index, noticeEntry.extract, noticeEntry.location, bookOrFileCode);
+                addNotice9(noticeEntry.priority, noticeEntry.bookID, noticeEntry.C, noticeEntry.V, noticeEntry.message, noticeEntry.index, noticeEntry.extract, noticeEntry.location, bookOrFileCode);
             else
                 console.log(`ERROR: checkRepo doOurCheckFile got length ${Object.keys(noticeEntry).length}`);
         }
@@ -140,24 +140,24 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
 
             // Default to the main filename without the extensions
             let bookOrFileCode = thisFilename.substring(0, thisFilename.length - thisFilenameExtension.length - 1);
-            let BBBid = "";
+            let ourBookID = "";
             if (thisFilenameExtension === 'usfm') {
                 // const filenameMain = thisFilename.substring(0, thisFilename.length - 5); // drop .usfm
                 // console.log(`Have USFM filenameMain=${bookOrFileCode}`);
-                const BBB = bookOrFileCode.substring(bookOrFileCode.length - 3);
-                // console.log(`Have USFM bookcode=${BBB}`);
-                console.assert(books.isValidBookCode(BBB), `checkRepo: '${BBB}' is not a valid USFM book code`);
-                bookOrFileCode = BBB;
-                BBBid = BBB;
+                const bookID = bookOrFileCode.substring(bookOrFileCode.length - 3);
+                // console.log(`Have USFM bookcode=${bookID}`);
+                console.assert(books.isValidBookID(bookID), `checkRepo: '${bookID}' is not a valid USFM book identifier`);
+                bookOrFileCode = bookID;
+                ourBookID = bookID;
             }
             else if (thisFilenameExtension === 'tsv') {
                 // const filenameMain = thisFilename.substring(0, thisFilename.length - 4); // drop .tsv
                 // console.log(`Have TSV filenameMain=${bookOrFileCode}`);
-                const BBB = bookOrFileCode.substring(bookOrFileCode.length - 3);
-                // console.log(`Have TSV bookcode=${BBB}`);
-                console.assert(books.isValidBookCode(BBB), `checkRepo: '${BBB}' is not a valid USFM book code`);
-                bookOrFileCode = BBB;
-                BBBid = BBB;
+                const bookID = bookOrFileCode.substring(bookOrFileCode.length - 3);
+                // console.log(`Have TSV bookcode=${bookID}`);
+                console.assert(books.isValidBookID(bookID), `checkRepo: '${bookID}' is not a valid USFM book identifier`);
+                bookOrFileCode = bookID;
+                ourBookID = bookID;
             }
 
             // console.log("checkRepo: Try to load", username, repoName, thisFilepath, branch);
@@ -167,12 +167,12 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
                 // console.log("Fetched file_content for", repoName, thisPath, typeof repoFileContent, repoFileContent.length);
             } catch (cRgfError) {
                 console.log("Failed to load", username, repoName, thisFilepath, branch, `${cRgfError}`);
-                addNotice9(996, BBBid, '', '', "Failed to load", -1, "", `${generalLocation} ${thisFilepath}: ${cRgfError}`, repoCode);
+                addNotice9(996, ourBookID, '', '', "Failed to load", -1, "", `${generalLocation} ${thisFilepath}: ${cRgfError}`, repoCode);
                 return;
             }
             if (repoFileContent) {
                 // console.log(`checkRepo checking ${thisFilename}`);
-                await doOurCheckFile(bookOrFileCode, BBBid, thisFilename, repoFileContent, ourLocation, checkingOptions);
+                await doOurCheckFile(bookOrFileCode, ourBookID, thisFilename, repoFileContent, ourLocation, checkingOptions);
                 checkedFileCount += 1;
                 checkedFilenames.push(thisFilename);
                 checkedFilenameExtensions.add(thisFilenameExtension);

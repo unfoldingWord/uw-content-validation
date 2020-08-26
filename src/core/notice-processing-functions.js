@@ -37,7 +37,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                       considered `errors` and 0-699 are considered `warnings`.
                 The next three fields may be ommitted if irrelevant
                  (since BCV is not relevant to all types of files/repos)
-                    2/ BBB: Book code 3-character UPPERCASE string
+                    2/ bookID: book identifier 3-character UPPERCASE string
                         (or empty string if not relevant)
                     3/ C: Chapter number string
                         (or empty string if not relevant)
@@ -56,7 +56,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 8/ location: A string indicating the context of the notice,
                         e.g., `in line 17 of 'someBook.usfm'.
                 There is also an optional sixth/ninth notice component (where multiple files/repos are checked)
-                9/ extra: A string indicating an extra location component, e.g., repoCode or bookCode
+                9/ extra: A string indicating an extra location component, e.g., repoCode or bookID
                     This will need to be added to the message string (#5 above) but is left
                         to now in order to allow the most display flexibility
         Available options are:
@@ -93,23 +93,6 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     const standardisedNoticeList = givenNoticeObject.noticeList;
 
     if (givenNoticeObject.noticeList && givenNoticeObject.noticeList.length) {
-        /*
-        // Add in any missing BBB,C,V fields
-        const standardisedNoticeList = [];
-        for (const thisGivenNotice of givenNoticeObject.noticeList) {
-            if (thisGivenNotice.length === 6)
-            const standardisedNoticeList = givenNoticeObject.noticeList;
-                standardisedNoticeList.push([thisGivenNotice[0], '', '', '', thisGivenNotice[1], thisGivenNotice[2], thisGivenNotice[3], thisGivenNotice[4], thisGivenNotice[5]]);
-            else if (thisGivenNotice.length === 5)
-                standardisedNoticeList.push([thisGivenNotice[0], '', '', '', thisGivenNotice[1], thisGivenNotice[2], thisGivenNotice[3], thisGivenNotice[4]]);
-            else { // pass through as is
-                console.assert(thisGivenNotice.length === 9 || thisGivenNotice.length === 8);
-                standardisedNoticeList.push(thisGivenNotice);
-            }
-        }
-        // At this point, all noticeList entries should be eight or nine fields wide (i.e., no longer five or six)
-*/
-
         // Check that notice priority numbers are unique (to detect programming errors)
         // This section may be commented out of production code
         const numberStore = {}, duplicatePriorityList = [];
@@ -226,7 +209,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     for (const thisParticularNotice of standardisedNoticeList) {
         // console.log("thisParticularNotice", thisParticularNotice);
         if (thisParticularNotice.message.indexOf('\\s5') >= 0) {
-            let thisNewNotice = { priority: 701, BBB: thisParticularNotice.BBB, C: '', V: '', message: "\\s5 fields should be coded as \\ts\\* milestones", index: -1, extract: '', location: ` in ${givenNoticeObject.checkType}` };
+            let thisNewNotice = { priority: 701, bookID: thisParticularNotice.bookID, C: '', V: '', message: "\\s5 fields should be coded as \\ts\\* milestones", index: -1, extract: '', location: ` in ${givenNoticeObject.checkType}` };
             if (thisParticularNotice.extra && thisParticularNotice.extra.length)
                 thisNewNotice.extra = thisParticularNotice.extra; // Sometime we have an additional file identifier
             standardisedNoticeList.push(thisNewNotice);
@@ -283,7 +266,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 extract: thisNotice.extract,
                 location: thisNotice.location
             };
-            if (thisNotice.BBB) newNotice.BBB = thisNotice.BBB;
+            if (thisNotice.bookID) newNotice.bookID = thisNotice.bookID;
             if (thisNotice.C) newNotice.C = thisNotice.C;
             if (thisNotice.V) newNotice.V = thisNotice.V;
             newNoticeList.push(newNotice);

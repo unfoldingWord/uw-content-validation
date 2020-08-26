@@ -10,7 +10,7 @@ import { ourParseInt, consoleLogObject } from '../../core/utilities';
 const CHECKER_VERSION_STRING = '0.0.3';
 
 
-function BookPackagesCheck(/*username, language_code, bookCodes,*/ props) {
+function BookPackagesCheck(/*username, language_code, bookIDs,*/ props) {
     // Check a single Bible book across many repositories
     const [result, setResultValue] = useState("Waiting-CheckBookPackages");
 
@@ -22,22 +22,22 @@ function BookPackagesCheck(/*username, language_code, bookCodes,*/ props) {
     // console.log(`username='${username}'`);
     let language_code = props.language_code;
     // console.log(`language_code='${language_code}'`);
-    let bookCodes = props.bookCodes;
-    // console.log(`bookCodes='${bookCodes}'`);
+    let bookIDs = props.bookIDs;
+    // console.log(`bookIDs='${bookIDs}'`);
     let branch = props.branch;
     // console.log(`branch='${branch}'`);
 
      // Clear cached files if we've changed repo
-    //  autoClearCache(bookCodes); // This technique avoids the complications of needing a button
+    //  autoClearCache(bookIDs); // This technique avoids the complications of needing a button
 
-    let bookCodeList = [];
-    for (let bookCode of bookCodes.split(',')) {
-        bookCode = bookCode.trim();
-        if (!books.isValidBookCode(bookCode) && bookCode!=='OBS')
-            return (<p>Please enter only valid USFM book codes separated by commas. ('{bookCode}' is not valid.)</p>);
-        bookCodeList.push(bookCode);
+    let bookIDList = [];
+    for (let bookID of bookIDs.split(',')) {
+        bookID = bookID.trim();
+        if (!books.isValidBookID(bookID) && bookID!=='OBS')
+            return (<p>Please enter only valid USFM book identifiers separated by commas. ('{bookID}' is not valid.)</p>);
+        bookIDList.push(bookID);
     }
-    // console.log(`bookCodeList (${bookCodeList.length}) = ${bookCodeList.join(', ')}`);
+    // console.log(`bookIDList (${bookIDList.length}) = ${bookIDList.join(', ')}`);
 
     let checkingOptions = { // Uncomment any of these to test them
         // 'extractLength': 25,
@@ -52,17 +52,17 @@ function BookPackagesCheck(/*username, language_code, bookCodes,*/ props) {
             // console.log("Started unnamedFunction()");
 
             // Display our "waiting" message
-            setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {language_code} <b>{bookCodeList.join(', ')}</b> book packages…</p>);
+            setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {language_code} <b>{bookIDList.join(', ')}</b> book packages…</p>);
 
-            const rawCBPsResults = await checkBookPackages(username, language_code, bookCodeList, setResultValue, checkingOptions);
+            const rawCBPsResults = await checkBookPackages(username, language_code, bookIDList, setResultValue, checkingOptions);
             // console.log("checkBookPackage() returned", typeof rawCBPsResults); //, JSON.stringify(rawCBPsResults));
 
             // Add some extra fields to our rawCBPsResults object in case we need this information again later
             rawCBPsResults.checkType = 'BookPackages';
             rawCBPsResults.username = username;
             rawCBPsResults.language_code = language_code;
-            rawCBPsResults.bookCodes = bookCodes;
-            rawCBPsResults.bookCodeList = bookCodeList;
+            rawCBPsResults.bookIDs = bookIDs;
+            rawCBPsResults.bookIDList = bookIDList;
             rawCBPsResults.checkedOptions = checkingOptions;
 
             console.log("Here with CBPs rawCBPsResults", typeof rawCBPsResults);
@@ -93,7 +93,7 @@ function BookPackagesCheck(/*username, language_code, bookCodes,*/ props) {
 
             function renderSummary() {
                 return (<>
-                <p>Checked <b>{username} {language_code} {bookCodeList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
+                <p>Checked <b>{username} {language_code} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
                 <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount==1?'':'s'} from {username} {processedResults.checkedRepoNames.join(', ')}
                 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>
                 <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedTime={processedResults.elapsedTime} />.</p>
@@ -119,13 +119,13 @@ function BookPackagesCheck(/*username, language_code, bookCodes,*/ props) {
 
                 if (processedResults.severeList.length || processedResults.mediumList.length || processedResults.lowList.length)
                     setResultValue(<>
-                        <p>Checked <b>{username} {language_code} {bookCodeList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
+                        <p>Checked <b>{username} {language_code} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
                         {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</p>
                         <RenderSuccessesSevereMediumLow results={processedResults} />
                     </>);
                 else // no severe, medium, or low notices
                     setResultValue(<>
-                        <p>Checked <b>{username} {language_code} {bookCodeList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
+                        <p>Checked <b>{username} {language_code} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
                         {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</p>
                         <RenderSuccessesSevereMediumLow results={processedResults} />
                     </>);
@@ -136,13 +136,13 @@ function BookPackagesCheck(/*username, language_code, bookCodes,*/ props) {
 
                 if (processedResults.warningList.length)
                     setResultValue(<>
-                        <p>Checked <b>{username} {language_code} {bookCodeList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
+                        <p>Checked <b>{username} {language_code} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
                         {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</p>
                         <RenderSuccessesWarningsGradient results={processedResults} />
                     </>);
                 else // no warnings
                     setResultValue(<>
-                        <p>Checked <b>{username} {language_code} {bookCodeList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
+                        <p>Checked <b>{username} {language_code} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
                         {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</p>
                         <RenderSuccessesWarningsGradient results={processedResults} />
                     </>);
@@ -165,7 +165,7 @@ function BookPackagesCheck(/*username, language_code, bookCodes,*/ props) {
 //   username: PropTypes.object.isRequired,
 //   /** @ignore */
 //   language_code: PropTypes.object.isRequired,
-//   bookCodes: PropTypes.object.isRequired,
+//   bookIDs: PropTypes.object.isRequired,
 //   props: PropTypes.object,
 // };
 

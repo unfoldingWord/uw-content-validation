@@ -7,7 +7,7 @@ This `processNoticesToSingleList()` function is passed an object that contains a
 It should be noted that although the success messages are simple strings, the notices and the returned warning lists are lists/arrays of ARRAYS. This is done to allow the encapsulating software to have more flexibility in how the information is used. See the code documentation for the final details, but in general, the error and warning lists contain eight fields:
 
 1. A priority integer (0..999)
-2. The book code (if relevant, 3-letter UPPERCASE string or empty string)
+2. The book identifier (if relevant, 3-character UPPERCASE string or empty string)
 3. The chapter number (if relevant, string or empty string)
 4. The verse number (if relevant, string or empty string, can be a range, e.g., '22-24')
 5. The main error/warning message (string)
@@ -22,7 +22,7 @@ Although this demonstration here formats and colour the warning list, it's expec
 ```js
 import doBasicTextChecks from './basic-text-check';
 import { processNoticesToSingleList } from './notice-processing-functions';
-import { RenderRawResults, RenderSettings, RenderSuccessesWarningsGradient } from '../demos/RenderProcessedResults';
+import { RenderRawResults, RenderObject, RenderSuccessesWarningsGradient } from '../demos/RenderProcessedResults';
 
 // Empty, space, good, and bad, link, and RC text samples
 const textE = "";
@@ -34,11 +34,11 @@ const textRC1 = "rc://en/obs/book/obs/02/03";
 const textRC2 = "Compare with rc://en/tw/dict/bible/other/canaan";
 
 // Just change this next two lines to change the text being used (to demonstrate differing results)
-const chosenName = "textB";
+const chosenTextName = "textB";
 const chosenText = textB;
 
 // The third parameter is "linksAllowed"
-const rawResults = doBasicTextChecks('Sample', chosenText, false, 'in '+chosenName+' that was supplied');
+const rawResults = doBasicTextChecks('Sample', chosenText, false, 'in '+chosenTextName+' that was supplied');
 if (!rawResults.successList || !rawResults.successList.length)
     rawResults.successList = ["Done basic text checks"];
 const processOptions = {
@@ -53,7 +53,7 @@ const processedResults = processNoticesToSingleList(rawResults, processOptions);
 <>
 <b>Check</b> "{chosenText}"<br/><br/>
 <RenderRawResults results={rawResults} />
-<br/>Which after processing{Object.keys(processOptions).length? <> using <b>processOptions</b><RenderSettings settings={processOptions} /></>:''} then becomes:<br/><br/>
+<br/>Which after processing{Object.keys(processOptions).length? <> using <b>processOptions</b><RenderObject thisObject={processOptions} /></>:''} then becomes:<br/><br/>
 <RenderSuccessesWarningsGradient results={processedResults} />
 </>
 ```

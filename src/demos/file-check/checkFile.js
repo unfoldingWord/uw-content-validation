@@ -4,7 +4,7 @@ import checkMarkdownText from '../../core/markdown-text-check';
 import checkPlainText from '../../core/plain-text-check';
 import checkYAMLText from '../../core/yaml-text-check';
 import checkManifestText from '../../core/manifest-text-check';
-import checkTN_TSVText from '../../core/table-text-check';
+import checkTN_TSVText from '../../core/tn-table-text-check';
 // import { consoleLogObject } from '../../core/utilities';
 
 
@@ -25,25 +25,25 @@ async function checkFile(filename, fileContent, givenLocation, checkingOptions) 
     if (filename.toLowerCase().endsWith('.tsv')) {
         const filenameMain = filename.substring(0, filename.length - 4); // drop .tsv
         // console.log(`Have TSV filenameMain=${filenameMain}`);
-        const BBB = filenameMain.substring(filenameMain.length - 3);
-        // console.log(`Have TSV bookcode=${BBB}`);
-        console.assert(books.isValidBookCode(BBB), `checkFile: '${BBB}' is not a valid USFM book code`);
-        checkFileResult = await checkTN_TSVText(BBB, fileContent, ourCFLocation, checkingOptions);
+        const bookID = filenameMain.substring(filenameMain.length - 3);
+        // console.log(`Have TSV bookcode=${bookID}`);
+        console.assert(books.isValidBookID(bookID), `checkFile: '${bookID}' is not a valid USFM book identifier`);
+        checkFileResult = await checkTN_TSVText(bookID, fileContent, ourCFLocation, checkingOptions);
     }
     else if (filename.toLowerCase().endsWith('.usfm')) {
         const filenameMain = filename.substring(0, filename.length - 5); // drop .usfm
         // console.log(`Have USFM filenameMain=${filenameMain}`);
-        const BBB = filenameMain.substring(filenameMain.length - 3);
-        // console.log(`Have USFM bookcode=${BBB}`);
-        console.assert(books.isValidBookCode(BBB), `checkFile: '${BBB}' is not a valid USFM book code`);
-        checkFileResult = checkUSFMText(BBB, filename, fileContent, ourCFLocation, checkingOptions);
+        const bookID = filenameMain.substring(filenameMain.length - 3);
+        // console.log(`Have USFM bookcode=${bookID}`);
+        console.assert(books.isValidBookID(bookID), `checkFile: '${bookID}' is not a valid USFM book identifier`);
+        checkFileResult = checkUSFMText(bookID, filename, fileContent, ourCFLocation, checkingOptions);
     } else if (filename.toLowerCase().endsWith('.sfm')) {
         const filenameMain = filename.substring(0, filename.length - 4); // drop .sfm
         console.log(`Have SFM filenameMain=${filenameMain}`);
-        const BBB = filenameMain.substring(2, 5);
-        console.log(`Have SFM bookcode=${BBB}`);
-        console.assert(books.isValidBookCode(BBB), `checkFile: '${BBB}' is not a valid USFM book code`);
-        checkFileResult = checkUSFMText(BBB, filename, fileContent, ourCFLocation, checkingOptions);
+        const bookID = filenameMain.substring(2, 5);
+        console.log(`Have SFM bookcode=${bookID}`);
+        console.assert(books.isValidBookID(bookID), `checkFile: '${bookID}' is not a valid USFM book identifier`);
+        checkFileResult = checkUSFMText(bookID, filename, fileContent, ourCFLocation, checkingOptions);
     } else if (filename.toLowerCase().endsWith('.md'))
         checkFileResult = checkMarkdownText(filename, fileContent, ourCFLocation, checkingOptions);
     else if (filename.toLowerCase().endsWith('.txt'))

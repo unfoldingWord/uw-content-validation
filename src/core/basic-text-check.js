@@ -1,6 +1,6 @@
 import { isWhitespace, countOccurrences } from './text-handling-functions'
 
-const CHECKER_VERSION_STRING = '0.0.3';
+const CHECKER_VERSION_STRING = '0.0.4';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -165,7 +165,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     }
     // Check for punctuation chars before space
     //  Removed ' (can be normal, e.g., Jesus' cloak)
-    for (const punctChar of '[({<⟨،、‒–—―‹«‐‘“/⁄·@\•^†‡°¡¿※№×ºª%‰‱¶′″‴§~_|‖¦©℗℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥') {
+    for (const punctChar of '[({<⟨،、‒–—―‹«‐‘“/⁄·@\•^†‡°¡¿※№×ºª‰‱¶′″‴§~_|‖¦©℗℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥') {
         ix = fieldText.indexOf(punctChar + ' ');
         if (ix >= 0) {
             let extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
@@ -174,10 +174,9 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     }
 
     // Check matched pairs
-    // for (const punctSet of ['[]', '()', '{}', '<>', '⟨⟩', '“”', '‹›', '«»']) {
     for (const punctSet of [['[', ']'], ['(', ')'], ['{', '}'],
-    ['<', '>'], ['⟨', '⟩'], ['“', '”'],
-    ['‹', '›'], ['«', '»'], ['**_', '_**']]) {
+                            ['<', '>'], ['⟨', '⟩'], ['“', '”'],
+                            ['‹', '›'], ['«', '»'], ['**_', '_**']]) {
         // Can't check '‘’' coz they might be used as apostrophe
         const leftChar = punctSet[0], rightChar = punctSet[1];
         const lCount = countOccurrences(fieldText, leftChar);

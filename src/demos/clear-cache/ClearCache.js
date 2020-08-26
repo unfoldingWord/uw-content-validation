@@ -26,7 +26,7 @@ function ClearCache({areYouSure}) {
 //   username: PropTypes.object.isRequired,
 //   /** @ignore */
 //   language_code: PropTypes.object.isRequired,
-//   bookCodes: PropTypes.object.isRequired,
+//   bookIDs: PropTypes.object.isRequired,
 //   props: PropTypes.object,
 // };
 

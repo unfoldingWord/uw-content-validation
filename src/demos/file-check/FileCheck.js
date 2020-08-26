@@ -51,7 +51,7 @@ function FileCheck(props) {
             // console.log(`About to call getFile(${username}, ${repoName}, ${filename}, ${branch})…`);
             const fileContent = await getFile({ username: username, repository: repoName, path: filename, branch: branch });
             const rawCFResults = await checkFile(filename, fileContent, givenLocation, checkingOptions);
-            // console.log("FileCheck got initial results with " + rawCFResults.successList.length + " success message(s) and " + rawCFResults.noticeList.length + " notice(s)");
+            // console.log(`FileCheck got initial results with ${rawCFResults.successList.length} success message(s) and ${rawCFResults.noticeList.length} notice(s)`);
 
             // Add some extra fields to our rawCFResults object in case we need this information again later
             rawCFResults.checkType = 'File';
@@ -88,53 +88,53 @@ function FileCheck(props) {
 
             if (displayType === 'ErrorsWarnings') {
                 const processedResults = processNoticesToErrorsWarnings(rawCFResults, processOptions);
-                // console.log("FileCheck got processed results with " + processedResults.successList.length.toLocaleString() + " success message(s), " + processedResults.errorList.length.toLocaleString() + " error(s) and " + processedResults.warningList.length.toLocaleString() + " warning(s)\n"
-                //     + "  numIgnoredNotices=" + processedResults.numIgnoredNotices.toLocaleString(), "numSuppressedErrors=" + processedResults.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + processedResults.numSuppressedWarnings.toLocaleString());
+//                 console.log(`${`FileCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)`}
+//   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
                 if (processedResults.errorList.length || processedResults.warningList.length)
                     setResultValue(<>
                         <div>{renderSummary(processedResults)}
-                            {processedResults.numIgnoredNotices ? " (but " + processedResults.numIgnoredNotices.toLocaleString() + " ignored errors/warnings)" : ""}</div>
+                            {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
                         <RenderSuccessesErrorsWarnings results={processedResults} />
                     </>);
                 else // no errors or warnings
                     setResultValue(<>
                         <div>{renderSummary(processedResults)}
-                            {processedResults.numIgnoredNotices ? " (with a total of " + processedResults.numIgnoredNotices.toLocaleString() + " notices ignored)" : ""}</div>
+                            {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
                         <RenderSuccessesErrorsWarnings results={processedResults} />
                     </>);
             } else if (displayType === 'SevereMediumLow') {
                 const processedResults = processNoticesToSevereMediumLow(rawCFResults, processOptions);
-                // console.log("FileCheck got processed results with " + processedResults.successList.length.toLocaleString() + " success message(s), " + processedResults.errorList.length.toLocaleString() + " error(s) and " + processedResults.warningList.length.toLocaleString() + " warning(s)\n"
-                //     + "  numIgnoredNotices=" + processedResults.numIgnoredNotices.toLocaleString(), "numSuppressedErrors=" + processedResults.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + processedResults.numSuppressedWarnings.toLocaleString());
+//                 console.log(`FileCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
+//   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
                 if (processedResults.severeList.length || processedResults.mediumList.length || processedResults.lowList.length)
                     setResultValue(<>
                         <div>{renderSummary(processedResults)}
-                            {processedResults.numIgnoredNotices ? " (but " + processedResults.numIgnoredNotices.toLocaleString() + " ignored errors/warnings)" : ""}</div>
+                            {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
                         <RenderSuccessesSevereMediumLow results={processedResults} />
                     </>);
                 else // no severe, medium, or low notices
                     setResultValue(<>
                         <div>{renderSummary(processedResults)}
-                            {processedResults.numIgnoredNotices ? " (with a total of " + processedResults.numIgnoredNotices.toLocaleString() + " notices ignored)" : ""}</div>
+                            {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
                         <RenderSuccessesSevereMediumLow results={processedResults} />
                     </>);
             } else if (displayType === 'SingleList') {
                 const processedResults = processNoticesToSingleList(rawCFResults, processOptions);
-                // console.log("FileCheck got processed results with " + processedResults.successList.length.toLocaleString() + " success message(s), " + processedResults.errorList.length.toLocaleString() + " error(s) and " + processedResults.warningList.length.toLocaleString() + " warning(s)\n"
-                //     + "  numIgnoredNotices=" + processedResults.numIgnoredNotices.toLocaleString(), "numSuppressedErrors=" + processedResults.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + processedResults.numSuppressedWarnings.toLocaleString());
+//                 console.log(`FileCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
+//   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
                 if (processedResults.warningList.length)
                     setResultValue(<>
                         <div>{renderSummary(processedResults)}
-                            {processedResults.numIgnoredNotices ? " (but " + processedResults.numIgnoredNotices.toLocaleString() + " ignored errors/warnings)" : ""}</div>
+                            {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
                         <RenderSuccessesWarningsGradient results={processedResults} />
                     </>);
                 else // no warnings
                     setResultValue(<>
                         <div>{renderSummary(processedResults)}
-                            {processedResults.numIgnoredNotices ? " (with a total of " + processedResults.numIgnoredNotices.toLocaleString() + " notices ignored)" : ""}</div>
+                            {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
                         <RenderSuccessesWarningsGradient results={processedResults} />
                     </>);
             } else setResultValue(<b style={{ color: 'red' }}>Invalid displayType='{displayType}'</b>)

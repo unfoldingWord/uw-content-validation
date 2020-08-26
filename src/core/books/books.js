@@ -12,13 +12,13 @@ import data from './books.json';
 // }
 
 const extraBookList = ['FRT','BAK'];
-export const isValidBookCode = (bookId) => {
+export const isValidBookID = (bookId) => {
   return bookId.toLowerCase() in data || extraBookList.indexOf(bookId) >= 0;
 }
-export const isOptionalValidBookCode = (bookId) => {
+export const isOptionalValidBookID = (bookId) => {
   return !bookId || bookId.toLowerCase() in data || extraBookList.indexOf(bookId) >= 0;
 }
-export const isExtraBookCode = (bookId) => {
+export const isExtraBookID = (bookId) => {
   return extraBookList.indexOf(bookId) >= 0;
 }
 
@@ -149,8 +149,8 @@ const oftenMissingList = [
 ];
 
 
-export function isOftenMissing(BBB,C,V) {
-  function matchBCV(entry) { return entry[0]===BBB && entry[1]===C && entry[2]===V; }
+export function isOftenMissing(bookID,C,V) {
+  function matchBCV(entry) { return entry[0]===bookID && entry[1]===C && entry[2]===V; }
 
   return oftenMissingList.find(matchBCV) !== undefined;
 }

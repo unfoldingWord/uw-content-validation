@@ -37,15 +37,15 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
         // console.log(`checkPlainText success: ${successString}`);
         cptResult.successList.push(successString);
     }
-    function addNotice8(priority, BBB,C,V, message, index, extract, location) {
-        // BBB is a three-character UPPERCASE USFM book code or 'OBS'.
+    function addNotice8(priority, bookID,C,V, message, index, extract, location) {
+        // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
         // console.log(`checkPlainText notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority!==undefined, "cPT addNotice8: 'priority' parameter should be defined");
         console.assert(typeof priority==='number', `cPT addNotice8: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        console.assert(BBB !== undefined, "cPT addNotice9: 'BBB' parameter should be defined");
-        console.assert(typeof BBB === 'string', `cPT addNotice9: 'BBB' parameter should be a string not a '${typeof BBB}'`);
-        console.assert(BBB.length === 3, `cPT addNotice9: 'BBB' parameter should be three characters long not ${BBB.length}`);
-        console.assert(books.isValidBookCode(BBB), `cPT addNotice9: '${BBB}' is not a valid USFM book code`);
+        console.assert(bookID !== undefined, "cPT addNotice9: 'bookID' parameter should be defined");
+        console.assert(typeof bookID === 'string', `cPT addNotice9: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+        console.assert(bookID.length === 3, `cPT addNotice9: 'bookID' parameter should be three characters long not ${bookID.length}`);
+        console.assert(books.isValidBookID(bookID), `cPT addNotice9: '${bookID}' is not a valid USFM book identifier`);
         console.assert(C !== undefined, "cPT addNotice9: 'C' parameter should be defined");
         console.assert(typeof C === 'string', `cPT addNotice9: 'C' parameter should be a string not a '${typeof C}'`);
         console.assert(V !== undefined, "cPT addNotice9: 'V' parameter should be defined");
@@ -58,10 +58,18 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
         console.assert(typeof extract==='string', `cPT addNotice8: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location!==undefined, "cPT addNotice8: 'location' parameter should be defined");
         console.assert(typeof location==='string', `cPT addNotice8: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        cptResult.noticeList.push({priority, BBB,C,V, message, index, extract, location});
+        cptResult.noticeList.push({priority, bookID,C,V, message, index, extract, location});
     }
 
     function doOurBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
+        /**
+        * @description - checks the given text field and processes the returned results
+        * @param {String} fieldName - name of the field being checked
+        * @param {String} fieldText - the actual text of the field being checked
+        * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
+        * @param {String} optionalFieldLocation - description of where the field is located
+        * @param {Object} optionalCheckingOptions - parameters that might affect the check
+        */
         // Does basic checks for small errors like leading/trailing spaces, etc.
 
         // We assume that checking for compulsory fields is done elsewhere

@@ -1,6 +1,6 @@
-## TSV Table Text Check Sandbox
+## TN TSV Table Text Check Sandbox
 
-This function checks the given block of TSV table lines for typical formatting errors.
+This function checks the given block of TranslationNote TSV table lines for typical formatting errors.
 
 It returns a list of success messages and a list of notice components. (There is always a priority number in the range 0..999 and the main message string, as well as other helpful details as relevant.)
 
@@ -8,7 +8,7 @@ These raw notice components can then be filtered and/or sorted as required by th
 
 ```js
 import React, { useState, useEffect } from 'react';
-import checkTN_TSVText from './table-text-check';
+import checkTN_TSVText from './tn-table-text-check';
 import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Text samples
@@ -42,33 +42,30 @@ const data = {
   givenLocation : 'that was supplied',
 }
 
-function CheckTSV(props) {
-  const [results, setResults] = useState(null);
+function CheckTNTSVText(props) {
   const { bookID, tableText, tableTextName, givenLocation } = props.data;
+
+  const [results, setResults] = useState(null);
 
   // We need the following construction because checkTN_TSVText is an ASYNC function
   useEffect(() => {
-    checkTN_TSVText(bookID, tableText, givenLocation).then((rawResults) => {
-      if (JSON.stringify(results) !== JSON.stringify(rawResults)) {
-        setResults(rawResults);
-      }
-    });
-  }), [bookID, tableText, tableTextName, givenLocation];
+    // Use an IIFE (Immediately Invoked Function Expression)
+    //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
+    (async () => {
+      // Display our "waiting" message
+      setResults(<p style={{ color: 'magenta' }}>Waiting for check results for {tableTextName} <b>{bookID}</b>…</p>);
+      const rawResults = await checkTN_TSVText(bookID, tableText, givenLocation);
+      setResults(
+        <div>
+          <b>Check</b> {tableTextName}: "{tableText.substr(0,256)}…"<br/><br/>
+          <RenderRawResults results={rawResults} />
+        </div>
+      );
+    })(); // end of async part in unnamedFunction
+  }, []); // end of useEffect part
 
-  return (
-    <div>
-        <b>Check</b> {tableTextName}: "{tableText.substr(0,256)}…"<br/><br/>
-        {results ?
-          <>
-              <b>Raw Data Returned</b>: "{JSON.stringify(results, null, 2)}"<br/><br/>
-              <RenderRawResults results={results} />
-          </>
-        :
-          <div>Waiting for TSV text validation results…</div>
-        }
-    </div>
-  );
-}
+  return results;
+} // end of CheckTNTSVText function
 
-<CheckTSV data={data}/>
+<CheckTNTSVText data={data}/>
 ```

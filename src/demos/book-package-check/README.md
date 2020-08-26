@@ -2,9 +2,9 @@
 
 The code below requests some info and then checks the single specified Bible book in several repos. This is convenient to see all these check results collected into one place.
 
-See a list of valid book codes [here](http://ubsicap.github.io/usfm/identification/books.html), although only `GEN` to `REV` from that list are useful here.
+See a list of valid book identifiers [here](http://ubsicap.github.io/usfm/identification/books.html), although only `GEN` to `REV` from that list are useful here.
 
-Note that `OBS` can also be entered here as a *pseudo book code* in order to check an **Open Bible Stories** repo.
+Note that `OBS` can also be entered here as a *pseudo book identifier* in order to check an **Open Bible Stories** repo.
 
 `Book Package Check` calls `checkBookPackage()` which then calls `checkFile()` for the book file in each repo (or calls `checkRepo()` for **OBS**).
 
@@ -18,9 +18,9 @@ import BookPackageCheck from './BookPackageCheck';
 <BookPackageCheck
   username='unfoldingWord'
   language_code='en'
-  // bookCode can be a USFM bookCode, e.g., GEN, MAT, 3JN
+  // bookID can be a USFM bookID, e.g., GEN, MAT, 3JN
   //  and can also be OBS (for Open Bible Stories)
-  bookCode='RUT'
+  bookID='RUT'
 
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'

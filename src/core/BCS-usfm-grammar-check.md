@@ -202,14 +202,14 @@ const textB = `\\id GEN Bad USFM test
 
 // You can choose any of the above texts here
 //  (to demonstrate differing results)
-const chosenName = 'textH';
+const chosenTextName = 'textH';
 const chosenText = textH;
-const BBB = 'RUT';
+const bookID = 'RUT'; // 3-character UPPERCASE USFM book identifier
 
 // Choose 'strict' or 'relaxed'
 const strictness = 'strict';
 
-const rawResults = checkUSFMGrammar(BBB, strictness, chosenName, chosenText, 'that was supplied');
+const rawResults = checkUSFMGrammar(bookID, strictness, chosenTextName, chosenText, 'that was supplied');
 
 <>
 <b>Check</b><RenderLines text={chosenText} />
