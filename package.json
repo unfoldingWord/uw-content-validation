@@ -1,7 +1,7 @@
 {
   "name": "content-validation",
-  "description": "Functions for Checking uW Content/Resources.",
-  "version": "0.8.2",
+  "description": "Functions for Validating uW Content/Resources.",
+  "version": "0.8.3",
   "private": false,
   "homepage": "https://unfoldingword.github.io/content-validation/",
   "repository": {
@@ -61,7 +61,6 @@
     "file-loader": "^4.2.0",
     "gh-pages": "^2.0.1",
     "istanbul-lib-coverage": "^2.0.5",
-    "markdown-translatable": "^0.11.0",
     "nyc": "^14.1.1",
     "start-server-and-test": "^1.10.6",
     "style-loader": "^1.0.0",

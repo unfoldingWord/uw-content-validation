@@ -1,7 +1,7 @@
 // import { displayPropertyNames, consoleLogObject } from './utilities';
 
 
-const NOTICE_PROCESSOR_VERSION_STRING = '0.4.1';
+const NOTICE_PROCESSOR_VERSION_STRING = '0.4.2';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -156,7 +156,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     }
     else console.log(`Using supplied cutoffPriorityLevel=${cutoffPriorityLevel} cf. default=${DEFAULT_CUTOFF_PRIORITY_LEVEL}`);
     // if (cutoffPriorityLevel > errorPriorityLevel)
-    // resultObject.errorList.push([999, "Cutoff level must not be higher than error level", -1, `(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
+    // resultObject.errorList.push({priority:999, "Cutoff level must not be higher than error level", -1, `(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
 
 
     if (givenNoticeObject.successList)
@@ -242,7 +242,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         remainingNoticeList = newNoticeList;
     }
     // if (cutoffPriorityLevel > errorPriorityLevel)
-    // resultObject.errorList.push([999, "Cutoff level must not be higher than error level", -1, `(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
+    // resultObject.errorList.push({priority:999, "Cutoff level must not be higher than error level", -1, `(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
 
     // Sort the remainingNoticeList as required
     if (sortBy === 'ByPriority')
@@ -340,11 +340,11 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
         if (maximumSimilarMessages > 0 && counter[thisID] === maximumSimilarMessages + 1) {
             if (thisPriority >= errorPriorityLevel) {
                 const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
-                resultObject.errorList.push([-1, '', '', '', thisMsg, -1, '', ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`]);
+                resultObject.errorList.push({priority:-1, bookID:'',C:'',V:'', message:thisMsg, index:-1,extract:'', location:` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`});
                 resultObject.numSuppressedErrors++;
             } else {
                 const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
-                resultObject.warningList.push([-1, '', '', '', thisMsg, -1, '', ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`]);
+                resultObject.warningList.push({priority:-1, bookID:'',C:'',V:'', message:thisMsg, index:-1,extract:'', location:` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`});
                 resultObject.numSuppressedWarnings++;
             }
         } else if (maximumSimilarMessages > 0 && counter[thisID] > maximumSimilarMessages + 1) {
@@ -430,15 +430,15 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
         if (maximumSimilarMessages > 0 && counter[thisID] === maximumSimilarMessages + 1) {
             if (thisPriority >= severePriorityLevel) {
                 const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
-                resultObject.severeList.push([-1, '', '', '', thisMsg, -1, '', ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`]);
+                resultObject.severeList.push({priority:-1, bookID:'',C:'',V:'', message:thisMsg, index:-1,extract:'', location:` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`});
                 resultObject.numSevereSuppressed++;
             } else if (thisPriority >= mediumPriorityLevel) {
                 const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
-                resultObject.mediumList.push([-1, '', '', '', thisMsg, -1, '', ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`]);
+                resultObject.mediumList.push({priority:-1, bookID:'',C:'',V:'', message:thisMsg, index:-1,extract:'', location:` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`});
                 resultObject.numMediumSuppressed++;
             } else {
                 const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
-                resultObject.lowList.push([-1, '', '', '', thisMsg, -1, '', ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`]);
+                resultObject.lowList.push({priority:-1, bookID:'',C:'',V:'', message:thisMsg, index:-1,extract:'', location:` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`});
                 resultObject.numLowSuppressed++;
             }
         } else if (maximumSimilarMessages > 0 && counter[thisID] > maximumSimilarMessages + 1) {
@@ -514,7 +514,7 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
         else counter[thisID]++;
         if (maximumSimilarMessages > 0 && counter[thisID] === maximumSimilarMessages + 1) {
             const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
-            resultObject.warningList.push([thisPriority, '', '', '', thisMsg, -1, '', ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`]);
+            resultObject.warningList.push({priority:thisPriority, bookID:'',C:'',V:'', message:thisMsg, index:-1,extract:'', location:` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`});
             resultObject.numSuppressedWarnings++;
         } else if (maximumSimilarMessages > 0 && counter[thisID] > maximumSimilarMessages + 1) {
             resultObject.numSuppressedWarnings++;

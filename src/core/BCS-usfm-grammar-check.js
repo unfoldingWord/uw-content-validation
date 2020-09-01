@@ -10,7 +10,7 @@ const DEFAULT_EXTRACT_LENGTH = 10;
 export function runBCSGrammarCheck(strictnessString, fileText, givenLocation, optionalCheckingOptions) {
     // Runs the BCS USFM Grammar checker
     //  which can be quite time-consuming on large, complex USFM files
-    console.log(`Running ${strictnessString} BCS USFM grammar check${givenLocation} (can take quite a while for a large book)…`);
+    // console.log(`Running ${strictnessString} BCS USFM grammar check${givenLocation} (can take quite a while for a large book)…`);
     console.assert(strictnessString === 'strict' || strictnessString === 'relaxed', `Unexpected strictnessString='${strictnessString}'`);
 
     let extractLength;
@@ -47,7 +47,7 @@ export function runBCSGrammarCheck(strictnessString, fileText, givenLocation, op
     if (parseError) {
         const contextRE = /(\d+?)\s\|\s(.+)/g;
         for (const errorLine of parseError.split('\n')) {
-            console.log(`BCS errorLine=${errorLine}`);
+            // console.log(`BCS errorLine=${errorLine}`);
             if (errorLine.startsWith('>')) {
                 const regexResult = contextRE.exec(errorLine.substring(1).trim());
                 // console.log(`  regexResult: ${JSON.stringify(regexResult)}`);
