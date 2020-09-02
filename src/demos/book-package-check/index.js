@@ -1,2 +1,2 @@
-export {checkBookPackage} from './checkBookPackage';
-export {BookPackageCheck} from './BookPackageCheck';
+export {default as checkBookPackage} from './checkBookPackage';
+export {default as BookPackageCheck} from './BookPackageCheck';

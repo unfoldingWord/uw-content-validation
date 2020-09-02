@@ -1,1 +1,2 @@
-export {default as checkFile} from './file-check';
+export * from './file-check';
+export * from './book-package-check';
