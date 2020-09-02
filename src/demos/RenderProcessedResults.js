@@ -1,8 +1,31 @@
 import React from 'react';
+import { forwardRef } from 'react';
+
 // NOTE: The following line is currently giving compile warnings -- a problem in a dependency it seems
 import MaterialTable from 'material-table';
-// import { consoleLogObject, displayPropertyNames } from '../core/utilities';
 
+// import { consoleLogObject, displayPropertyNames } from '../core/utilities';
+const tableIcons = {
+    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
+    Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
+    Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+    Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
+    DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+    Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
+    Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
+    Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
+    FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
+    LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
+    NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+    PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
+    ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+    Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
+    SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
+    ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
+    ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
+  };
+  /* end material box imports and icons */
+  
 
 export function RenderLines({text}) {
     /**
@@ -104,11 +127,11 @@ export function RenderRawResults({ results }) {
         <b>Raw Results</b>:
         <RenderObject thisObject={results} />
         <MaterialTable
-            //icons={tableIcons}
+            icons={tableIcons}
             title='Raw Notices'
             columns={headerData}
             data={results.noticeList}
-        // options={{ fredXXX: '' }}
+            options={ {sorting: true, exportButton: true, exportAllData: true} }
         />
     </>;
 }
