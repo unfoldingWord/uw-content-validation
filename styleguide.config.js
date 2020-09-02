@@ -160,12 +160,12 @@ let sections = [
 		// content: 'src/core/README.md',
 		sections: [
 			{
-				name: 'Annotation line check',
+				name: 'Annotation row check',
 				content: 'src/core/annotation-row-check.md',
 				// description: ''
 			},
 			{
-				name: 'TN TSV table line check',
+				name: 'TN TSV table row check',
 				content: 'src/core/tn-tsv-table-row-check.md',
 				// description: ''
 			},

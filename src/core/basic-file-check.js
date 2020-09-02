@@ -1,12 +1,13 @@
 import { isWhitespace, countOccurrences } from './text-handling-functions'
 
-const CHECKER_VERSION_STRING = '0.0.1';
+const CHECKER_VERSION_STRING = '0.1.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
 export function doBasicFileChecks(filename, fileText, optionalFileLocation, optionalCheckingOptions) {
     // Does basic checks for small errors like mismatched punctuation pairs, etc.
+    //  (Used by usfm-text-check)
 
     // filename (str): Used for identification
     // fileText (str): The field being checked
@@ -32,19 +33,19 @@ export function doBasicFileChecks(filename, fileText, optionalFileLocation, opti
 
     let result = { noticeList: [] };
 
-    function addNotice5(priority, message, characterIndex, extract, location) {
+    function addNotice6({priority,message, lineNumber,characterIndex, extract, location}) {
         // console.log(`dBTC Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(priority !== undefined, "dBTCs addNotice5: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', `dBTCs addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        console.assert(message !== undefined, "dBTCs addNotice5: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', `dBTCs addNotice5: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        console.assert(characterIndex !== undefined, "dBTCs addNotice5: 'characterIndex' parameter should be defined");
-        console.assert(typeof characterIndex === 'number', `dBTCs addNotice5: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
-        console.assert(extract !== undefined, "dBTCs addNotice5: 'extract' parameter should be defined");
-        console.assert(typeof extract === 'string', `dBTCs addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
-        console.assert(location !== undefined, "dBTCs addNotice5: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', `dBTCs addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push({priority, message, characterIndex,extract, location});
+        console.assert(priority !== undefined, "dBTCs addNotice6: 'priority' parameter should be defined");
+        console.assert(typeof priority === 'number', `dBTCs addNotice6: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
+        console.assert(message !== undefined, "dBTCs addNotice6: 'message' parameter should be defined");
+        console.assert(typeof message === 'string', `dBTCs addNotice6: 'message' parameter should be a string not a '${typeof message}': ${message}`);
+        // console.assert(characterIndex !== undefined, "dBTCs addNotice6: 'characterIndex' parameter should be defined");
+        if (characterIndex) console.assert(typeof characterIndex === 'number', `dBTCs addNotice6: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
+        // console.assert(extract !== undefined, "dBTCs addNotice6: 'extract' parameter should be defined");
+        if (extract) console.assert(typeof extract === 'string', `dBTCs addNotice6: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
+        console.assert(location !== undefined, "dBTCs addNotice6: 'location' parameter should be defined");
+        console.assert(typeof location === 'string', `dBTCs addNotice6: 'location' parameter should be a string not a '${typeof location}': ${location}`);
+        result.noticeList.push({priority, message, lineNumber, characterIndex,extract, location});
     }
 
 
@@ -60,7 +61,7 @@ export function doBasicFileChecks(filename, fileText, optionalFileLocation, opti
     }
 
     if (isWhitespace(fileText)) {
-        addNotice5(638, "Only found whitespace", -1, "", ourAtString);
+        addNotice6({priority:638, message:"Only found whitespace", location:ourAtString});
         return result;
     }
 
@@ -78,19 +79,19 @@ export function doBasicFileChecks(filename, fileText, optionalFileLocation, opti
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
     // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
-    let ix;
-    if ((ix = fileText.indexOf('<<<<<<<')) >= 0) {
-        const iy = ix + halfLength; // Want extract to focus more on what follows
+    let characterIndex;
+    if ((characterIndex = fileText.indexOf('<<<<<<<')) >= 0) {
+        const iy = characterIndex + halfLength; // Want extract to focus more on what follows
         const extract = (iy > halfLength ? '…' : '') + fileText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < fileText.length ? '…' : '')
-        addNotice5(993, "Unresolved GIT conflict", ix, extract, ourAtString);
-    } else if ((ix = fileText.indexOf('=======')) >= 0) {
-        const iy = ix + halfLength; // Want extract to focus more on what follows
+        addNotice6({priority:993, message:"Unresolved GIT conflict", characterIndex, extract, location:ourAtString});
+    } else if ((characterIndex = fileText.indexOf('=======')) >= 0) {
+        const iy = characterIndex + halfLength; // Want extract to focus more on what follows
         const extract = (iy > halfLength ? '…' : '') + fileText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < fileText.length ? '…' : '')
-        addNotice5(992, "Unresolved GIT conflict", ix, extract, ourAtString);
-    } else if ((ix = fileText.indexOf('>>>>>>>>')) >= 0) {
-        const iy = ix + halfLength; // Want extract to focus more on what follows
+        addNotice6({priority:992, message:"Unresolved GIT conflict", characterIndex, extract, location:ourAtString});
+    } else if ((characterIndex = fileText.indexOf('>>>>>>>>')) >= 0) {
+        const iy = characterIndex + halfLength; // Want extract to focus more on what follows
         const extract = (iy > halfLength ? '…' : '') + fileText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < fileText.length ? '…' : '')
-        addNotice5(991, "Unresolved GIT conflict", ix, extract, ourAtString);
+        addNotice6({priority:991, message:"Unresolved GIT conflict", characterIndex, extract, location:ourAtString});
     }
 
     // Check matched pairs
@@ -102,7 +103,7 @@ export function doBasicFileChecks(filename, fileText, optionalFileLocation, opti
         const lCount = countOccurrences(fileText, leftChar);
         const rCount = countOccurrences(fileText, rightChar);
         if (lCount !== rCount)
-            addNotice5(163, `Mismatched ${leftChar}${rightChar} characters`, -1, `(left=${lCount.toLocaleString()}, right=${rCount.toLocaleString()})`, ourAtString);
+            addNotice6({priority:163, message:`Mismatched ${leftChar}${rightChar} characters`, extract:`(left=${lCount.toLocaleString()}, right=${rCount.toLocaleString()})`, location:ourAtString});
     }
 
     // if (!allowedLinks) {
@@ -117,7 +118,7 @@ export function doBasicFileChecks(filename, fileText, optionalFileLocation, opti
     //     if (ix === -1) ix = fileText.indexOf('.bible');
     //     if (ix >= 0) {
     //         let extract = (ix>halfLength ? '…' : '') + fileText.substring(ix-halfLength, ix+halfLengthPlus) + (ix+halfLengthPlus < fileText.length ? '…' : '')
-    //         addNotice5(765, "Unexpected link", ix,extract, ourAtString);
+    //         addNotice6({765, "Unexpected link", ix,extract, ourAtString});
     //     }
     // }
     return result;

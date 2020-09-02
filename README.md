@@ -10,7 +10,7 @@ This repository contains JavaScript functions for validating/checking for errors
 The basic functions return an object containing two lists:
 
 1. successList: a list of strings giving an overview of what checks have been made,
-1. noticeList: a list of fields that can be filtered, sorted, combined, and then displayed as error or warning messages.
+1. noticeList: a list of objects with fields that can be filtered, sorted, combined, and then displayed as error or warning messages.
 
 There are three sample notice processing functions that show how to:
 
@@ -47,15 +47,16 @@ The top-level checking demonstrations:
 1. A list of things that were checked (successList)
 1. Typically a list of (higher-priority) errors and a list of (lower-priority) warnings, but other formats for display of messages are also demonstrated.
 
-However, the lower-level checking functions provide only the list of success message strings and one list of `notices` (i.e., warnings/errors combined) typically consisting of the following eight fields:
+However, the lower-level checking functions provide only the list of success message strings and one list of `notices` (i.e., warnings/errors combined) typically consisting of an object with some or all of the following fields (as available/relevant):
 
 1. A notice priority number in the range 1-1000. Each different type of warning/error has a unique number (but not each instance of those warnings/errors). By default, notice priority numbers 700 and over are considered `errors` and 0-699 are considered `warnings`.
+1. The actual general descriptive text of the notice
 1. The 3-character UPPERCASE [book identifier](http://ubsicap.github.io/usfm/identification/books.html) or [OBS](https://www.openbiblestories.org/) (if relevant)
 1. The chapter number or story number (if relevant)
-1. The verse number or frame number
-1. The actual general descriptive text of the notice
-1. A zero-based integer characterIndex which indicates the zero-based position of the error in the given text (line or file). -1 indicates that this index does not contain any useful information, e.g., for a global error.
-1. An extract of the checked text which indicates the area containing the problem. Where helpful, some character substitutions have already been made, for example, if the notice is about spaces, it is generally helpful to display spaces as a visible character in an attempt to best highlight the issue to the user. (The length of the extract defaults to ten characters, but is settable as an option.)
+1. The verse number or frame number (if relevant)
+1. A one-based line number in the file (if available)
+1. A zero-based integer character index which indicates the position of the error in the given text (line or file) (if relevant)
+1. An extract (if available) of the checked text which indicates the area containing the problem. Where helpful, some character substitutions have already been made, for example, if the notice is about spaces, it is generally helpful to display spaces as a visible character in an attempt to best highlight the issue to the user. (The length of the extract defaults to ten characters, but is settable as an option.)
 1. A string indicating the context of the notice, e.g., `in line 17 of 'someBook.usfm'`.
 
 
@@ -71,6 +72,7 @@ However, the user is, of course, free to create their own alternative version of
 
 Still unfinished (in rough priority order):
 
+1. Finish adding line number as a separate notice field
 1. Standardise parameters according to best practice (i.e., dereferencing, etc.)
 1. Document the API
 1. Publish to NPM so that the functions may be easily used by other software -- this may involve some changes to the folder structure, etc. as we only want the core functions published in this way -- not the demo code
@@ -86,7 +88,8 @@ Still unfinished (in rough priority order):
 
 Known bugs:
 
-1. The line number in the USFM Grammar check doesn't account for blank lines, so the real line number may be larger.
+1. The line number in the USFM Grammar check doesn't account for blank lines, so the real line number may be larger. (This is a bug in the BCS library.)
+1. Work on removing false alarms is not yet completed
 
 ## Functionality and Limitations
 

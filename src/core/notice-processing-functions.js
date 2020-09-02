@@ -1,7 +1,7 @@
 // import { displayPropertyNames, consoleLogObject } from './utilities';
 
 
-const NOTICE_PROCESSOR_VERSION_STRING = '0.4.2';
+const NOTICE_PROCESSOR_VERSION_STRING = '0.5.1';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -44,10 +44,11 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                         (or empty string if not relevant)
                     V: Verse number string (can also be a bridge, e.g., '22-23')
                         (or empty string if not relevant)
-                    lineNumber: A one-based integer indicating the lineNumber in the file
+                    lineNumber: A one-based integer indicating the line number in the file
                     characterIndex: A zero-based integer index which indicates the position
                       of the error on the line or in the text field as appropriate.
-                    -1 indicates that this characterIndex does not contain any useful information.
+                    -1 might still indicate that this characterIndex does not contain any useful information
+                        but this will be removed (rather the field won't be included at all)
                 extract: An extract of the checked text which indicates the area
                       containing the problem.
                     Where helpful, some character substitutions have already been made,
@@ -205,12 +206,12 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     }
 
     // Specialised processing
-    // If have s5 marker warnings, add one error
-    // consoleLogObject('givenNoticeObject', givenNoticeObject);
+    // If have s5 marker warnings, add one summary error
+    // consoleLogObject('standardisedNoticeList', standardisedNoticeList);
     for (const thisParticularNotice of standardisedNoticeList) {
-        // console.log("thisParticularNotice", thisParticularNotice);
+        // console.log("thisParticularNotice", JSON.stringify(thisParticularNotice));
         if (thisParticularNotice.message.indexOf('\\s5') >= 0) {
-            let thisNewNotice = { priority: 701, bookID: thisParticularNotice.bookID, C: '', V: '', message: "\\s5 fields should be coded as \\ts\\* milestones", characterIndex: -1, extract: '', location: ` in ${givenNoticeObject.checkType}` };
+            let thisNewNotice = { priority: 701, bookID: thisParticularNotice.bookID, message: "\\s5 fields should be coded as \\ts\\* milestones", characterIndex: -1, extract: '', location: ` in ${givenNoticeObject.checkType}` };
             if (thisParticularNotice.extra && thisParticularNotice.extra.length)
                 thisNewNotice.extra = thisParticularNotice.extra; // Sometime we have an additional file identifier
             standardisedNoticeList.push(thisNewNotice);

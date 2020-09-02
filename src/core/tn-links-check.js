@@ -4,7 +4,7 @@ import { ourParseInt } from './utilities';
 // import { consoleLogObject } from '../core/utilities';
 
 
-const TN_LINKS_VALIDATOR_VERSION = '0.1.1';
+const TN_LINKS_VALIDATOR_VERSION = '0.2.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -45,19 +45,19 @@ async function checkTNLinks(bookID, fieldName, fieldText, givenLocation, optiona
 
     const ctarResult = { noticeList: [] };
 
-    function addNotice5(priority, message, characterIndex, extract, location) {
+    function addNotice6({priority,message, lineNumber,characterIndex, extract, location}) {
         // console.log(`checkTNLinks Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(priority !== undefined, "cTAref addNotice5: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', `cTAref addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        console.assert(message !== undefined, "cTAref addNotice5: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', `cTAref addNotice5: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        console.assert(characterIndex !== undefined, "cTAref addNotice5: 'characterIndex' parameter should be defined");
-        console.assert(typeof characterIndex === 'number', `cTAref addNotice5: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
-        console.assert(extract !== undefined, "cTAref addNotice5: 'extract' parameter should be defined");
-        console.assert(typeof extract === 'string', `cTAref addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
-        console.assert(location !== undefined, "cTAref addNotice5: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', `cTAref addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        ctarResult.noticeList.push({priority, message, characterIndex, extract, location});
+        console.assert(priority !== undefined, "cTNlnk addNotice6: 'priority' parameter should be defined");
+        console.assert(typeof priority === 'number', `cTNlnk addNotice6: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
+        console.assert(message !== undefined, "cTNlnk addNotice6: 'message' parameter should be defined");
+        console.assert(typeof message === 'string', `cTNlnk addNotice6: 'message' parameter should be a string not a '${typeof message}': ${message}`);
+        // console.assert(characterIndex !== undefined, "cTNlnk addNotice6: 'characterIndex' parameter should be defined");
+        if (characterIndex) console.assert(typeof characterIndex === 'number', `cTNlnk addNotice6: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
+        // console.assert(extract !== undefined, "cTNlnk addNotice6: 'extract' parameter should be defined");
+        if (extract) console.assert(typeof extract === 'string', `cTNlnk addNotice6: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
+        console.assert(location !== undefined, "cTNlnk addNotice6: 'location' parameter should be defined");
+        console.assert(typeof location === 'string', `cTNlnk addNotice6: 'location' parameter should be a string not a '${typeof location}': ${location}`);
+        ctarResult.noticeList.push({priority, message, lineNumber, characterIndex, extract, location});
     }
 
 
@@ -116,12 +116,12 @@ async function checkTNLinks(bookID, fieldName, fieldText, givenLocation, optiona
             // console.log("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
         } catch (trcGCerror) {
             console.log("ERROR: Failed to load", username, taRepoName, filepath, branch, trcGCerror.message);
-            addNotice5(885, `Error loading ${fieldName} TA link`, -1, resultArray[0], `${ourLocation} ${filepath}: ${trcGCerror}`);
+            addNotice6({priority:885, message:`Error loading ${fieldName} TA link`, extract:resultArray[0], location:`${ourLocation} ${filepath}: ${trcGCerror}`});
         }
         if (!taFileContent)
-            addNotice5(886, `Unable to find ${fieldName} TA link`, -1, resultArray[0], `${ourLocation} ${filepath}`);
+            addNotice6({priority:886, message:`Unable to find ${fieldName} TA link`, extract:resultArray[0], location:`${ourLocation} ${filepath}`});
         else if (taFileContent.length < 10)
-            addNotice5(884, `Linked ${fieldName} TA article seems empty`, -1, resultArray[0], `${ourLocation} ${filepath}`);
+            addNotice6({priority:884, message:`Linked ${fieldName} TA article seems empty`, extract:resultArray[0], location:`${ourLocation} ${filepath}`});
     }
 
     // Check TW links like [[rc://en/tw/dict/bible/other/death]]
@@ -144,12 +144,12 @@ async function checkTNLinks(bookID, fieldName, fieldText, givenLocation, optiona
             // console.log("Fetched fileContent for", twRepoName, filepath, typeof fileContent, fileContent.length);
         } catch (trcGCerror) {
             console.log("ERROR: Failed to load", username, twRepoName, filepath, branch, trcGCerror.message);
-            addNotice5(882, `Error loading ${fieldName} TW link`, -1, resultArray[0], `${ourLocation} ${filepath}: ${trcGCerror}`);
+            addNotice6({priority:882, message:`Error loading ${fieldName} TW link`, extract:resultArray[0], location:`${ourLocation} ${filepath}: ${trcGCerror}`});
         }
         if (!taFileContent)
-            addNotice5(883, `Unable to find ${fieldName} TW link`, -1, resultArray[0], `${ourLocation} ${filepath}`);
+            addNotice6({priority:883, message:`Unable to find ${fieldName} TW link`, extract:resultArray[0], location:`${ourLocation} ${filepath}`});
         else if (taFileContent.length < 10)
-            addNotice5(881, `Linked ${fieldName} TW article seems empty`, -1, resultArray[0], `${ourLocation} ${filepath}`);
+            addNotice6({priority:881, message:`Linked ${fieldName} TW article seems empty`, extract:resultArray[0], location:`${ourLocation} ${filepath}`});
     }
 
     // Check Bible links like [Revelation 3:11](../03/11.md)
@@ -158,7 +158,7 @@ async function checkTNLinks(bookID, fieldName, fieldText, givenLocation, optiona
     try {
         numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
     } catch (tnlcError) {
-        addNotice5(979, "Invalid book identifier passed to checkTNLinks", -1, "", ` '${bookID}' in first parameter: ${tnlcError}`);
+        addNotice6({priority:979, message:"Invalid book identifier passed to checkTNLinks", location:` '${bookID}' in first parameter: ${tnlcError}`});
     }
 
     // console.log("checkTNLinks: Search for Bible links")
@@ -176,7 +176,7 @@ async function checkTNLinks(bookID, fieldName, fieldText, givenLocation, optiona
         }
         let numVersesThisChapter;
         if (chapterInt < 1 || chapterInt > numChaptersThisBook)
-            addNotice5(843, "Invalid chapter number", -1, resultArray[4], `${ourLocation}`);
+            addNotice6({priority:843, message:"Invalid chapter number", extract:resultArray[4], location:`${ourLocation}`});
         else {
             try {
                 numVersesThisChapter = books.versesInChapter(lowercaseBookID, chapterInt);
@@ -187,7 +187,7 @@ async function checkTNLinks(bookID, fieldName, fieldText, givenLocation, optiona
         }
         try {
             if (ourParseInt(resultArray[2]) !== chapterInt)
-                addNotice5(743, "Chapter numbers of Bible link don't match", -1, resultArray[0], `${ourLocation}`);
+                addNotice6({priority:743, message:"Chapter numbers of Bible link don't match", extract:resultArray[0], location:`${ourLocation}`});
         } catch (ccError) {
             console.log(`TN Link Check couldn't compare chapter numbers: ${ccError}`);
         }
@@ -198,7 +198,7 @@ async function checkTNLinks(bookID, fieldName, fieldText, givenLocation, optiona
         }
         try {
             if (ourParseInt(resultArray[3]) !== ourParseInt(verseInt))
-                addNotice5(742, "Verse numbers of Bible link don't match", -1, resultArray[0], `${ourLocation}`);
+                addNotice6({priority:742, message:"Verse numbers of Bible link don't match", extract:resultArray[0], location:`${ourLocation}`});
         } catch (vvError) {
             console.log(`TN Link Check couldn't compare verse numbers: ${vvError}`);
         }

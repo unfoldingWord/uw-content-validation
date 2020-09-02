@@ -1,4 +1,4 @@
-## Annotation (TSV) Line Check Sandbox
+## Annotation (TSV) Row Check Sandbox
 
 This function checks one tab-separated line for typical formatting errors.
 

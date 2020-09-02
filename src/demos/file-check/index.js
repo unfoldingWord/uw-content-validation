@@ -1,2 +1,2 @@
-export {default} from './checkFile';
-export {default} from './FileCheck';
+export {checkFile} from './checkFile';
+export {FileCheck} from './FileCheck';

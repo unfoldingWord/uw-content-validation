@@ -1,6 +1,6 @@
 import { isWhitespace, countOccurrences } from './text-handling-functions'
 
-const CHECKER_VERSION_STRING = '0.0.4';
+const CHECKER_VERSION_STRING = '0.1.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -32,19 +32,19 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
 
     let result = { noticeList: [] };
 
-    function addNotice5(priority, message, characterIndex, extract, location) {
+    function addNotice6({priority,message, lineNumber,characterIndex, extract, location}) {
         // console.log(`dBTC Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(priority !== undefined, "dBTCs addNotice5: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', `dBTCs addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        console.assert(message !== undefined, "dBTCs addNotice5: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', `dBTCs addNotice5: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        console.assert(characterIndex !== undefined, "dBTCs addNotice5: 'characterIndex' parameter should be defined");
-        console.assert(typeof characterIndex === 'number', `dBTCs addNotice5: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
-        console.assert(extract !== undefined, "dBTCs addNotice5: 'extract' parameter should be defined");
-        console.assert(typeof extract === 'string', `dBTCs addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
-        console.assert(location !== undefined, "dBTCs addNotice5: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', `dBTCs addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push({priority, message, characterIndex,extract, location});
+        console.assert(priority !== undefined, "dBTCs addNotice6: 'priority' parameter should be defined");
+        console.assert(typeof priority === 'number', `dBTCs addNotice6: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
+        console.assert(message !== undefined, "dBTCs addNotice6: 'message' parameter should be defined");
+        console.assert(typeof message === 'string', `dBTCs addNotice6: 'message' parameter should be a string not a '${typeof message}': ${message}`);
+        // console.assert(characterIndex !== undefined, "dBTCs addNotice6: 'characterIndex' parameter should be defined");
+        if (characterIndex) console.assert(typeof characterIndex === 'number', `dBTCs addNotice6: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
+        // console.assert(extract !== undefined, "dBTCs addNotice6: 'extract' parameter should be defined");
+        if (extract) console.assert(typeof extract === 'string', `dBTCs addNotice6: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
+        console.assert(location !== undefined, "dBTCs addNotice6: 'location' parameter should be defined");
+        console.assert(typeof location === 'string', `dBTCs addNotice6: 'location' parameter should be a string not a '${typeof location}': ${location}`);
+        result.noticeList.push({priority, message, lineNumber, characterIndex,extract, location});
     }
 
 
@@ -60,7 +60,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     }
 
     if (isWhitespace(fieldText)) {
-        addNotice5(638, "Only found whitespace", -1, "", ourAtString);
+        addNotice6({priority:638, message:"Only found whitespace", location:ourAtString});
         return result;
     }
 
@@ -78,70 +78,70 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
     // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
-    let ix = fieldText.indexOf('<<<<<<<');
-    if (ix >= 0) {
-        const iy = ix + halfLength; // Want extract to focus more on what follows
+    let characterIndex = fieldText.indexOf('<<<<<<<');
+    if (characterIndex >= 0) {
+        const iy = characterIndex + halfLength; // Want extract to focus more on what follows
         const extract = (iy > halfLength ? '…' : '') + fieldText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < fieldText.length ? '…' : '')
-        addNotice5(993, "Unresolved GIT conflict", ix, extract, ourAtString);
+        addNotice6({priority:993, message:"Unresolved GIT conflict", characterIndex, extract, location:ourAtString});
     } else {
-        ix = fieldText.indexOf('=======');
-        if (ix >= 0) {
-            const iy = ix + halfLength; // Want extract to focus more on what follows
+        characterIndex = fieldText.indexOf('=======');
+        if (characterIndex >= 0) {
+            const iy = characterIndex + halfLength; // Want extract to focus more on what follows
             const extract = (iy > halfLength ? '…' : '') + fieldText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < fieldText.length ? '…' : '')
-            addNotice5(992, "Unresolved GIT conflict", ix, extract, ourAtString);
+            addNotice6({priority:992, message:"Unresolved GIT conflict", characterIndex, extract, location:ourAtString});
         } else {
-            ix = fieldText.indexOf('>>>>>>>>');
-            if (ix >= 0) {
-                const iy = ix + halfLength; // Want extract to focus more on what follows
+            characterIndex = fieldText.indexOf('>>>>>>>>');
+            if (characterIndex >= 0) {
+                const iy = characterIndex + halfLength; // Want extract to focus more on what follows
                 const extract = (iy > halfLength ? '…' : '') + fieldText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < fieldText.length ? '…' : '')
-                addNotice5(991, "Unresolved GIT conflict", ix, extract, ourAtString);
+                addNotice6({priority:991, message:"Unresolved GIT conflict", characterIndex, extract, location:ourAtString});
             }
         }
     }
 
     if (fieldText[0] === ' ') {
         const extract = fieldText.substring(0, extractLength).replace(/ /g, '␣') + (fieldText.length > extractLength ? '…' : '');
-        addNotice5(106, `Unexpected leading space${fieldText[1] === ' ' ? "s" : ""}`, 0, extract, ourAtString);
+        addNotice6({priority:106, message:`Unexpected leading space${fieldText[1] === ' ' ? "s" : ""}`, characterIndex:0, extract, location:ourAtString});
     }
     if (fieldText.substring(0, 4) === '<br>' || fieldText.substring(0, 5) === '<br/>' || fieldText.substring(0, 6) === '<br />') {
         const extract = fieldText.substring(0, extractLength) + (fieldText.length > extractLength ? '…' : '');
-        addNotice5(107, "Unexpected leading break", 0, extract, ourAtString);
+        addNotice6({priority:107, message:"Unexpected leading break", characterIndex:0, extract, location:ourAtString});
     }
     if (fieldText[fieldText.length - 1] === ' ') {
         const extract = (fieldText.length > extractLength ? '…' : '') + fieldText.substring(fieldText.length - 10).replace(/ /g, '␣');
-        addNotice5(105, "Unexpected trailing space(s)", fieldText.length - 1, extract, ourAtString);
+        addNotice6({priority:105, message:"Unexpected trailing space(s)", characterIndex:fieldText.length - 1, extract, location:ourAtString});
     }
     if (fieldText.substring(fieldText.length - 4) === '<br>' || fieldText.substring(fieldText.length - 5) === '<br/>' || fieldText.substring(fieldText.length - 6) === '<br />') {
         const extract = (fieldText.length > extractLength ? '…' : '') + fieldText.substring(fieldText.length - 10);
-        addNotice5(104, "Unexpected trailing break", fieldText.length - 1, extract, ourAtString);
+        addNotice6({priority:104, message:"Unexpected trailing break", characterIndex:fieldText.length - 1, extract, location:ourAtString});
     }
-    if ((ix= fieldText.indexOf('  ')) >= 0) {
-        const extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus).replace(/ /g, '␣') + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-        addNotice5(194, "Unexpected double spaces", ix, extract, ourAtString);
+    if ((characterIndex= fieldText.indexOf('  ')) >= 0) {
+        const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
+        addNotice6({priority:194, message:"Unexpected double spaces", characterIndex, extract, location:ourAtString});
     }
-    if ((ix = fieldText.indexOf('\n')) >= 0) {
-        const extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-        addNotice5(583, "Unexpected newLine character", ix, extract, ourAtString);
+    if ((characterIndex = fieldText.indexOf('\n')) >= 0) {
+        const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
+        addNotice6({priority:583, message:"Unexpected newLine character", characterIndex, extract, location:ourAtString});
     }
-    if ((ix = fieldText.indexOf('\r')) >= 0) {
-        const extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-        addNotice5(582, "Unexpected carriageReturn character", ix, extract, ourAtString);
+    if ((characterIndex = fieldText.indexOf('\r')) >= 0) {
+        const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
+        addNotice6({priority:582, message:"Unexpected carriageReturn character", characterIndex, extract, location:ourAtString});
     }
-    if ((ix = fieldText.indexOf('\xA0')) >= 0) { // non-break space
-        const extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus).replace(/\xA0/g, '⍽') + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-        addNotice5(581, "Unexpected non-break space character", ix, extract, ourAtString);
+    if ((characterIndex = fieldText.indexOf('\xA0')) >= 0) { // non-break space
+        const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/\xA0/g, '⍽') + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
+        addNotice6({priority:581, message:"Unexpected non-break space character", characterIndex, extract, location:ourAtString});
     }
-    if ((ix = fieldText.indexOf('\u202F')) >= 0) { // narrow non-break space
-        const extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus).replace(/\u202F/g, '⍽') + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-        addNotice5(580, "Unexpected narrow non-break space character", ix, extract, ourAtString);
+    if ((characterIndex = fieldText.indexOf('\u202F')) >= 0) { // narrow non-break space
+        const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/\u202F/g, '⍽') + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
+        addNotice6({priority:580, message:"Unexpected narrow non-break space character", characterIndex, extract, location:ourAtString});
     }
-    if ((ix= fieldText.indexOf(' …')) >= 0) {
-        const extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-        addNotice5(179, "Unexpected space before ellipse character", ix, extract, ourAtString);
+    if ((characterIndex= fieldText.indexOf(' …')) >= 0) {
+        const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
+        addNotice6({priority:179, message:"Unexpected space before ellipse character", characterIndex, extract, location:ourAtString});
     }
-    if ((ix= fieldText.indexOf('… ')) >= 0) {
-        const extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-        addNotice5(178, "Unexpected space after ellipse character", ix, extract, ourAtString);
+    if ((characterIndex= fieldText.indexOf('… ')) >= 0) {
+        const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
+        addNotice6({priority:178, message:"Unexpected space after ellipse character", characterIndex, extract, location:ourAtString});
     }
     // Check for doubled punctuation chars (international)
     // Doesn't check for doubled forward slash coz that might occur in a link, e.g., https://etc…
@@ -149,27 +149,27 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     let checkList = '’\'({}<>⟨⟩:,،、‒–—―…!‹›«»‐-?‘’“”\'";⁄·&*@•^†‡°¡¿※№÷×ºª%‰+−=‱¶′″‴§~_|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥';
     if (!allowedLinks) checkList += '[].)' // Double square brackets can be part of markdown links, double periods can be part of a path
     for (const punctChar of checkList) {
-        ix = fieldText.indexOf(punctChar + punctChar);
-        if (ix >= 0) {
-            let extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-            addNotice5(177, `Unexpected doubled ${punctChar} characters`, ix, extract, ourAtString);
+        characterIndex = fieldText.indexOf(punctChar + punctChar);
+        if (characterIndex >= 0) {
+            let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
+            addNotice6({priority:177, message:`Unexpected doubled ${punctChar} characters`, characterIndex, extract, location:ourAtString});
         }
     }
     // Check for punctuation chars following space
     for (const punctChar of '.\')}>⟩:,،、‒–—―…!.‹›«»‐-?’”\'";/⁄·*@•^†‡°¡¿※#№÷×ºª%‰‱¶′″‴§~_|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥') {
-        ix = fieldText.indexOf(' ' + punctChar);
-        if (ix >= 0) {
-            let extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-            addNotice5(191, `Unexpected ${punctChar} character after space`, ix, extract, ourAtString);
+        characterIndex = fieldText.indexOf(' ' + punctChar);
+        if (characterIndex >= 0) {
+            let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
+            addNotice6({priority:191, message:`Unexpected ${punctChar} character after space`, characterIndex, extract, location:ourAtString});
         }
     }
     // Check for punctuation chars before space
     //  Removed ' (can be normal, e.g., Jesus' cloak)
     for (const punctChar of '[({<⟨،、‒–—―‹«‐‘“/⁄·@\•^†‡°¡¿※№×ºª‰‱¶′″‴§~_|‖¦©℗℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥') {
-        ix = fieldText.indexOf(punctChar + ' ');
-        if (ix >= 0) {
-            let extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
-            addNotice5(192, `Unexpected space after ${punctChar} character`, ix, extract, ourAtString);
+        characterIndex = fieldText.indexOf(punctChar + ' ');
+        if (characterIndex >= 0) {
+            let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
+            addNotice6({priority:192, message:`Unexpected space after ${punctChar} character`, characterIndex, extract, location:ourAtString});
         }
     }
 
@@ -182,22 +182,22 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
         const lCount = countOccurrences(fieldText, leftChar);
         const rCount = countOccurrences(fieldText, rightChar);
         if (lCount !== rCount)
-            addNotice5(663, `Mismatched ${leftChar}${rightChar} characters`, -1, `(left=${lCount.toLocaleString()}, right=${rCount.toLocaleString()})`, ourAtString);
+            addNotice6({priority:663, message:`Mismatched ${leftChar}${rightChar} characters`, extract:`(left=${lCount.toLocaleString()}, right=${rCount.toLocaleString()})`, location:ourAtString});
     }
 
     if (!allowedLinks) {
         // Simple check that there aren't any
-        ix = fieldText.indexOf('://');
-        if (ix === -1) ix = fieldText.indexOf('http');
-        if (ix === -1) ix = fieldText.indexOf('ftp');
+        characterIndex = fieldText.indexOf('://');
+        if (characterIndex === -1) characterIndex = fieldText.indexOf('http');
+        if (characterIndex === -1) characterIndex = fieldText.indexOf('ftp');
         // The following might have to be removed if text fields can contain email addresses
-        if (ix === -1) ix = fieldText.indexOf('.org');
-        if (ix === -1) ix = fieldText.indexOf('.com');
-        if (ix === -1) ix = fieldText.indexOf('.info');
-        if (ix === -1) ix = fieldText.indexOf('.bible');
-        if (ix >= 0) {
-            let extract = `${ix > halfLength ? '…' : ''}${fieldText.substring(ix - halfLength, ix + halfLengthPlus)}${ix + halfLengthPlus < fieldText.length ? '…' : ''}`
-            addNotice5(765, "Unexpected link", ix, extract, ourAtString);
+        if (characterIndex === -1) characterIndex = fieldText.indexOf('.org');
+        if (characterIndex === -1) characterIndex = fieldText.indexOf('.com');
+        if (characterIndex === -1) characterIndex = fieldText.indexOf('.info');
+        if (characterIndex === -1) characterIndex = fieldText.indexOf('.bible');
+        if (characterIndex >= 0) {
+            let extract = `${characterIndex > halfLength ? '…' : ''}${fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus)}${characterIndex + halfLengthPlus < fieldText.length ? '…' : ''}`
+            addNotice6({priority:765, message:"Unexpected link", characterIndex, extract, location:ourAtString});
         }
     }
     return result;

@@ -3,7 +3,7 @@ import { getFile } from '../core/getApi';
 // import { consoleLogObject } from '../core/utilities';
 
 
-const TA_REFERENCE_VALIDATOR_VERSION = '0.1.1';
+const TA_REFERENCE_VALIDATOR_VERSION = '0.2.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -34,19 +34,19 @@ async function checkTAReference(fieldName, fieldText, givenLocation, optionalChe
 
     const ctarResult = { noticeList: [] };
 
-    function addNotice5(priority, message, characterIndex, extract, location) {
+    function addNotice6({priority,message, lineNumber,characterIndex, extract, location}) {
         // console.log(`checkTAReference Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(priority !== undefined, "cTAref addNotice5: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', `cTAref addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        console.assert(message !== undefined, "cTAref addNotice5: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', `cTAref addNotice5: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        console.assert(characterIndex !== undefined, "cTAref addNotice5: 'characterIndex' parameter should be defined");
-        console.assert(typeof characterIndex === 'number', `cTAref addNotice5: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
-        console.assert(extract !== undefined, "cTAref addNotice5: 'extract' parameter should be defined");
-        console.assert(typeof extract === 'string', `cTAref addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
-        console.assert(location !== undefined, "cTAref addNotice5: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', `cTAref addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        ctarResult.noticeList.push({priority, message, characterIndex, extract, location});
+        console.assert(priority !== undefined, "cTAref addNotice6: 'priority' parameter should be defined");
+        console.assert(typeof priority === 'number', `cTAref addNotice6: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
+        console.assert(message !== undefined, "cTAref addNotice6: 'message' parameter should be defined");
+        console.assert(typeof message === 'string', `cTAref addNotice6: 'message' parameter should be a string not a '${typeof message}': ${message}`);
+        // console.assert(characterIndex !== undefined, "cTAref addNotice6: 'characterIndex' parameter should be defined");
+        if (characterIndex) console.assert(typeof characterIndex === 'number', `cTAref addNotice6: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
+        // console.assert(extract !== undefined, "cTAref addNotice6: 'extract' parameter should be defined");
+        if (extract) console.assert(typeof extract === 'string', `cTAref addNotice6: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
+        console.assert(location !== undefined, "cTAref addNotice6: 'location' parameter should be defined");
+        console.assert(typeof location === 'string', `cTAref addNotice6: 'location' parameter should be a string not a '${typeof location}': ${location}`);
+        ctarResult.noticeList.push({priority, message, lineNumber, characterIndex, extract, location});
     }
 
 
@@ -97,12 +97,12 @@ async function checkTAReference(fieldName, fieldText, givenLocation, optionalChe
         // console.log("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
     } catch (trcGCerror) {
         console.log("ERROR: Failed to load", username, taRepoName, filepath, branch, trcGCerror.message);
-        addNotice5(888, `Error loading ${fieldName} TA link`, -1, fieldText, `${ourLocation} ${filepath}: ${trcGCerror}`);
+        addNotice6({priority:888, message:`Error loading ${fieldName} TA link`, extract:fieldText, location:`${ourLocation} ${filepath}: ${trcGCerror}`});
     }
     if (!taFileContent)
-        addNotice5(889, `Unable to find ${fieldName} TA link`, -1, fieldText, `${ourLocation} ${filepath}`);
+        addNotice6({priority:889, message:`Unable to find ${fieldName} TA link`, extract:fieldText, location:`${ourLocation} ${filepath}`});
     else if ( taFileContent.length < 10)
-        addNotice5(887, `Linked ${fieldName} TA article seems empty`, -1, fieldText, `${ourLocation} ${filepath}`);
+        addNotice6({priority:887, message:`Linked ${fieldName} TA article seems empty`, extract:fieldText, location:`${ourLocation} ${filepath}`});
 
     // console.log(`checkTAReference is returning ${JSON.stringify(ctarResult)}`);
     return ctarResult;

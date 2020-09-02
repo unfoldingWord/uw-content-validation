@@ -15,7 +15,7 @@ for root, dirs, files in os.walk('.'):
                         strippedLine = line.strip()
                         if strippedLine.endswith(');'): strippedLine = strippedLine[:-2]
                         if not strippedLine.startswith('//'):
-                            cleanedLine = strippedLine.replace('addNotice5to8','').replace('addNotice5','') \
+                            cleanedLine = strippedLine.replace('addNotice6to9','').replace('addNotice6','') \
                                                 .replace('addNotice8','').replace('addNotice9','')
                             if cleanedLine.startswith('('): cleanedLine = cleanedLine[1:]
                             adjustedLine = cleanedLine.replace(', ourAtString','').replace(', atString','') \

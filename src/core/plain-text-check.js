@@ -2,7 +2,7 @@ import { isWhitespace, countOccurrences } from './text-handling-functions'
 import doBasicTextChecks from './basic-text-check';
 
 
-const PLAIN_TEXT_VALIDATOR_VERSION = '0.0.2';
+const PLAIN_TEXT_VALIDATOR_VERSION = '0.1.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -37,11 +37,14 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
         // console.log(`checkPlainText success: ${successString}`);
         cptResult.successList.push(successString);
     }
-    function addNotice8(priority, bookID,C,V, message, characterIndex, extract, location) {
+    /*
+    function addNotice9({priority,message, bookID,C,V, lineNumber, characterIndex, extract, location}) {
         // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
         // console.log(`checkPlainText notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(priority!==undefined, "cPT addNotice8: 'priority' parameter should be defined");
-        console.assert(typeof priority==='number', `cPT addNotice8: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
+        console.assert(priority!==undefined, "cPT addNotice9: 'priority' parameter should be defined");
+        console.assert(typeof priority==='number', `cPT addNotice9: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
+        console.assert(message!==undefined, "cPT addNotice9: 'message' parameter should be defined");
+        console.assert(typeof message==='string', `cPT addNotice9: 'message' parameter should be a string not a '${typeof message}': ${message}`);
         console.assert(bookID !== undefined, "cPT addNotice9: 'bookID' parameter should be defined");
         console.assert(typeof bookID === 'string', `cPT addNotice9: 'bookID' parameter should be a string not a '${typeof bookID}'`);
         console.assert(bookID.length === 3, `cPT addNotice9: 'bookID' parameter should be three characters long not ${bookID.length}`);
@@ -50,16 +53,15 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
         console.assert(typeof C === 'string', `cPT addNotice9: 'C' parameter should be a string not a '${typeof C}'`);
         console.assert(V !== undefined, "cPT addNotice9: 'V' parameter should be defined");
         console.assert(typeof V === 'string', `cPT addNotice9: 'V' parameter should be a string not a '${typeof V}'`);
-        console.assert(message!==undefined, "cPT addNotice8: 'message' parameter should be defined");
-        console.assert(typeof message==='string', `cPT addNotice8: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        console.assert(characterIndex!==undefined, "cPT addNotice8: 'characterIndex' parameter should be defined");
-        console.assert(typeof characterIndex==='number', `cPT addNotice8: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
-        console.assert(extract!==undefined, "cPT addNotice8: 'extract' parameter should be defined");
-        console.assert(typeof extract==='string', `cPT addNotice8: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
-        console.assert(location!==undefined, "cPT addNotice8: 'location' parameter should be defined");
-        console.assert(typeof location==='string', `cPT addNotice8: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        cptResult.noticeList.push({priority, bookID,C,V, message, characterIndex, extract, location});
+        // console.assert(characterIndex!==undefined, "cPT addNotice9: 'characterIndex' parameter should be defined");
+        if (characterIndex) console.assert(typeof characterIndex==='number', `cPT addNotice9: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
+        // console.assert(extract!==undefined, "cPT addNotice9: 'extract' parameter should be defined");
+        if (extract) console.assert(typeof extract==='string', `cPT addNotice9: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
+        console.assert(location!==undefined, "cPT addNotice9: 'location' parameter should be defined");
+        console.assert(typeof location==='string', `cPT addNotice9: 'location' parameter should be a string not a '${typeof location}': ${location}`);
+        cptResult.noticeList.push({priority,message, bookID,C,V, lineNumber, characterIndex, extract, location});
     }
+    */
 
     function doOurBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
         /**
@@ -87,10 +89,10 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
         cptResult.noticeList = cptResult.noticeList.concat(resultObject.noticeList);
-        // If we need to put everything through addNotice8, e.g., for debugging or filtering
+        // If we need to put everything through addNotice9, e.g., for debugging or filtering
         //  process results line by line
         // for (const noticeEntry of resultObject.noticeList)
-        //     addNotice8(noticeEntry.priority, noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
+        //     addNotice9(noticeEntry.priority, noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
     }
     // end of doOurBasicTextChecks function
 

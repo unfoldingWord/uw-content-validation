@@ -1,7 +1,7 @@
 import checkYAMLText from './yaml-text-check';
 
 
-const MANIFEST_VALIDATOR_VERSION = '0.1.1';
+const MANIFEST_VALIDATOR_VERSION = '0.2.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -38,28 +38,28 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
         // console.log(`checkManifestText success: ${successString}`);
         cmtResult.successList.push(successString);
     }
-    function addNotice8(priority, bookID,C,V, message, characterIndex, extract, location) {
+    function addNotice9({priority,message, bookID,C,V, lineNumber, characterIndex, extract, location}) {
         // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
         // console.log(`checkManifestText Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(priority !== undefined, "cManT addNotice8: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', `cManT addNotice8: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
+        console.assert(priority !== undefined, "cManT addNotice9: 'priority' parameter should be defined");
+        console.assert(typeof priority === 'number', `cManT addNotice9: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
+        console.assert(message !== undefined, "cManT addNotice9: 'message' parameter should be defined");
+        console.assert(typeof message === 'string', `cManT addNotice9: 'message' parameter should be a string not a '${typeof message}': ${message}`);
         console.assert(bookID !== undefined, "cManT addNotice9: 'bookID' parameter should be defined");
         console.assert(typeof bookID === 'string', `cManT addNotice9: 'bookID' parameter should be a string not a '${typeof bookID}'`);
         console.assert(bookID.length === 3, `cManT addNotice9: 'bookID' parameter should be three characters long not ${bookID.length}`);
         console.assert(books.isValidBookID(bookID), `cManT addNotice9: '${bookID}' is not a valid USFM book identifier`);
-        console.assert(C !== undefined, "cManT addNotice9: 'C' parameter should be defined");
-        console.assert(typeof C === 'string', `cManT addNotice9: 'C' parameter should be a string not a '${typeof C}'`);
-        console.assert(V !== undefined, "cManT addNotice9: 'V' parameter should be defined");
-        console.assert(typeof V === 'string', `cManT addNotice9: 'V' parameter should be a string not a '${typeof V}'`);
-        console.assert(message !== undefined, "cManT addNotice8: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', `cManT addNotice8: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        console.assert(characterIndex !== undefined, "cManT addNotice8: 'characterIndex' parameter should be defined");
-        console.assert(typeof characterIndex === 'number', `cManT addNotice8: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
-        console.assert(extract !== undefined, "cManT addNotice8: 'extract' parameter should be defined");
-        console.assert(typeof extract === 'string', `cManT addNotice8: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
-        console.assert(location !== undefined, "cManT addNotice8: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', `cManT addNotice8: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        cmtResult.noticeList.push({priority, bookID,C,V, message, characterIndex,extract, location});
+        // console.assert(C !== undefined, "cManT addNotice9: 'C' parameter should be defined");
+        if (C) console.assert(typeof C === 'string', `cManT addNotice9: 'C' parameter should be a string not a '${typeof C}'`);
+        // console.assert(V !== undefined, "cManT addNotice9: 'V' parameter should be defined");
+        if (V) console.assert(typeof V === 'string', `cManT addNotice9: 'V' parameter should be a string not a '${typeof V}'`);
+        // console.assert(characterIndex !== undefined, "cManT addNotice9: 'characterIndex' parameter should be defined");
+        if (characterIndex) console.assert(typeof characterIndex === 'number', `cManT addNotice9: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
+        // console.assert(extract !== undefined, "cManT addNotice9: 'extract' parameter should be defined");
+        if (extract) console.assert(typeof extract === 'string', `cManT addNotice9: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
+        console.assert(location !== undefined, "cManT addNotice9: 'location' parameter should be defined");
+        console.assert(typeof location === 'string', `cManT addNotice9: 'location' parameter should be a string not a '${typeof location}': ${location}`);
+        cmtResult.noticeList.push({priority,message, bookID,C,V, lineNumber, characterIndex,extract, location});
     }
 
 
@@ -89,7 +89,7 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
               && noticeEntry.message !== "Unexpected space after ' character"
               && noticeEntry.message !== "Unexpected space after [ character"
               )
-                addNotice8(noticeEntry.priority, noticeEntry.message, noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
+                addNotice9(noticeEntry.priority, noticeEntry.message, noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
         */
         return cYtResultObject.formData;
     }
@@ -104,11 +104,11 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
         // console.log("formData keys", JSON.stringify(formDataKeys));
 
         if (formDataKeys.indexOf('dublin_core') < 0)
-            addNotice8(928, "'dublin_core' key is missing", -1, "", ourLocation);
+            addNotice9({priority:928, message:"'dublin_core' key is missing", location:ourLocation});
         if (formDataKeys.indexOf('projects') < 0)
-            addNotice8(929, "'projects' key is missing", -1, "", ourLocation);
+            addNotice9({priority:929, message:"'projects' key is missing", location:ourLocation});
         if (formDataKeys.indexOf('checking') < 0)
-            addNotice8(148, "'checking' key is missing", -1, "", ourLocation);
+            addNotice9({priority:148, message:"'checking' key is missing", location:ourLocation});
     }
 
     // addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'}${ourLocation}.`);
