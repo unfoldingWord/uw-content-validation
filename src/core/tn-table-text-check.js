@@ -1,26 +1,28 @@
-import * as books from '../core/books/books';
-import checkTN_TSVDataRow from './table-line-check';
+import * as books from './books/books';
+import checkTN_TSVDataRow from './tn-table-row-check';
 
 
 const TABLE_TEXT_VALIDATOR_VERSION = '0.1.4';
 
-const NUM_EXPECTED_TN_FIELDS = 9;
+const NUM_EXPECTED_TN_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-async function checkTN_TSVText(BBB, tableText, givenLocation, optionalCheckingOptions) {
+async function checkTN_TSVText(bookID, tableText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all rows.
 
       It also has the advantage of being able to compare one row with the previous one.
 
+     bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
+
      Returns a result object containing a successList and a noticeList
      */
-    // console.log(`checkTN_TSVText(${BBB}, ${tableText.length}, ${location},${JSON.stringify(optionalCheckingOptions)})…`);
+    // console.log(`checkTN_TSVText(${bookID}, ${tableText.length}, ${location},${JSON.stringify(optionalCheckingOptions)})…`);
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
-    // if (BBB) ourLocation = ` in ${BBB}${ourLocation}`;
+    // if (bookID) ourLocation = ` in ${bookID}${ourLocation}`;
 
     const result = { successList: [], noticeList: [] };
 
@@ -28,8 +30,8 @@ async function checkTN_TSVText(BBB, tableText, givenLocation, optionalCheckingOp
         // console.log(`checkTN_TSVText success: ${successString}`);
         result.successList.push(successString);
     }
-    function addNoticeCV7(priority, C,V, message, index, extract, location) {
-        // console.log(`checkTN_TSVText notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+    function addNoticeCV7(priority, C,V, message, characterIndex, extract, location) {
+        // console.log(`checkTN_TSVText notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "TSV addNoticeCV7: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `TSV addNoticeCV7: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(C !== undefined, "TSV addNoticeCV7: 'C' parameter should be defined");
@@ -38,13 +40,13 @@ async function checkTN_TSVText(BBB, tableText, givenLocation, optionalCheckingOp
         console.assert(typeof V === 'string', `TSV addNoticeCV7: 'V' parameter should be a string not a '${typeof V}': ${V}`);
         console.assert(message !== undefined, "TSV addNoticeCV7: 'message' parameter should be defined");
         console.assert(typeof message === 'string', `TSV addNoticeCV7: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        console.assert(index !== undefined, "TSV addNoticeCV7: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', `TSV addNoticeCV7: 'index' parameter should be a number not a '${typeof index}': ${index}`);
+        console.assert(characterIndex !== undefined, "TSV addNoticeCV7: 'characterIndex' parameter should be defined");
+        console.assert(typeof characterIndex === 'number', `TSV addNoticeCV7: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
         console.assert(extract !== undefined, "TSV addNoticeCV7: 'extract' parameter should be defined");
         console.assert(typeof extract === 'string', `TSV addNoticeCV7: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "TSV addNoticeCV7: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `TSV addNoticeCV7: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push([priority, BBB,C,V, message, index, extract, location]);
+        result.noticeList.push({priority, bookID,C,V, message, characterIndex, extract, location});
     }
 
 
@@ -62,14 +64,14 @@ async function checkTN_TSVText(BBB, tableText, givenLocation, optionalCheckingOp
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
     // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
-    let bbb = BBB.toLowerCase();
+    let lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook = 0;
     try {
-        numChaptersThisBook = books.chaptersInBook(bbb).length;
+        numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
     }
     catch {
-        if (!books.isValidBookCode(BBB)) // must not be in FRT, BAK, etc.
-            addNoticeCV7(747, '','', "Bad function call: should be given a valid book abbreviation", -1, BBB, ` (not '${BBB}')${ourLocation}`);
+        if (!books.isValidBookID(bookID)) // must not be in FRT, BAK, etc.
+            addNoticeCV7(747, '','', "Bad function call: should be given a valid book abbreviation", -1, bookID, ` (not '${bookID}')${ourLocation}`);
     }
 
     let lines = tableText.split('\n');
@@ -91,35 +93,35 @@ async function checkTN_TSVText(BBB, tableText, givenLocation, optionalCheckingOp
         {
             let fields = lines[n].split('\t');
             if (fields.length === NUM_EXPECTED_TN_FIELDS) {
-                let [B, C, V, fieldID, _support_reference, _orig_quote, _occurrence, _GL_quote, _occurrenceNote] = fields;
-                let withString = ` with ID '${fieldID}'${inString}`;
+                const [B, C, V, fieldID, _support_reference, _orig_quote, _occurrence, _GL_quote, _occurrenceNote] = fields;
+                const withString = ` with ID '${fieldID}'${inString}`;
                 // let CV_withString = ` ${C}:${V}${withString}`;
                 // let atString = ` at ${B} ${C}:${V} (${fieldID})${inString}`;
 
                 // Use the row check to do most basic checks
-                const firstResult = await checkTN_TSVDataRow(lines[n], BBB,C,V, withString, optionalCheckingOptions);
+                const firstResult = await checkTN_TSVDataRow(lines[n], bookID,C,V, withString, optionalCheckingOptions);
                 // Choose only ONE of the following
                 // This is the fast way of append the results from this field
                 result.noticeList = result.noticeList.concat(firstResult.noticeList);
                 // If we need to put everything through addNoticeCV7, e.g., for debugging or filtering
                 //  process results line by line
                 // for (const noticeEntry of firstResult.noticeList)
-                //     addNoticeCV7(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
+                //     addNoticeCV7(noticeEntry.priority, noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
 
                 // So here we only have to check against the previous and next fields for out-of-order problems
                 if (B) {
-                    if (B !== BBB)
-                        addNoticeCV7(745, C,V, `Wrong '${B}' book code (expected '${BBB}')`, -1, "", withString);
+                    if (B !== bookID)
+                        addNoticeCV7(745, C,V, `Wrong '${B}' book identifier (expected '${bookID}')`, -1, "", withString);
                 }
                 else
-                    addNoticeCV7(744, C,V, "Missing book code", -1, "", withString);
+                    addNoticeCV7(744, C,V, "Missing book identifier", -1, "", withString);
 
                 if (C) {
                     if (C === 'front') { }
                     else if (/^\d+$/.test(C)) {
                         let intC = Number(C);
                         if (C !== lastC)
-                            numVersesThisChapter = books.versesInChapter(bbb, intC);
+                            numVersesThisChapter = books.versesInChapter(lowercaseBookID, intC);
                         if (intC === 0)
                             addNoticeCV7(551, C,V, `Invalid zero '${C}' chapter number`, -1, "", withString);
                         if (intC > numChaptersThisBook)
@@ -133,7 +135,7 @@ async function checkTN_TSVText(BBB, tableText, givenLocation, optionalCheckingOp
                         }
                     }
                     else
-                        addNoticeCV7(734, C,V, "Bad chapter number", -1, "", ` with${CV_withString}`);
+                        addNoticeCV7(734, C,V, "Bad chapter number", -1, "", withString);
                 }
                 else
                     addNoticeCV7(739, C,V, "Missing chapter number", -1, "", ` after ${lastC}:${V}${withString}`);

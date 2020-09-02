@@ -2,13 +2,13 @@
 
 The code below requests some info and then checks the single specified Bible book in several repos. This is convenient to see all these check results collected into one place.
 
-See a list of valid book codes [here](http://ubsicap.github.io/usfm/identification/books.html), although only `GEN` to `REV` from that list are useful here.
+See a list of valid book identifiers [here](http://ubsicap.github.io/usfm/identification/books.html), although only `GEN` to `REV` from that list are useful here.
 
-Note that `OBS` can also be entered here as a *pseudo book code* in order to check an **Open Bible Stories** repo.
+Note that `OBS` can also be entered here as a *pseudo book identifier* in order to check an **Open Bible Stories** repo.
 
 `Book Package Check` calls `checkBookPackage()` which then calls `checkFile()` for the book file in each repo (or calls `checkRepo()` for **OBS**).
 
-**Warning**: Some book packages contain many files and/or very large files, and downloading them all and then checking them might slow down your browser.
+**Warning**: Some book packages contain many files and/or very large files, and downloading them all and then checking them might slow down your browser -- maybe even causing pop-up messages asking to confirm that you want to keep waiting.
 
 **Note**: This component uses cached values of files stored inside the local browser. This makes reruns of the checks much faster, but it won't notice if you have updated the files on Door43. If you want to clear the local caches, use the `Clear Cache` function.
 
@@ -18,9 +18,9 @@ import BookPackageCheck from './BookPackageCheck';
 <BookPackageCheck
   username='unfoldingWord'
   language_code='en'
-  // bookCode can be a USFM bookCode, e.g., GEN, MAT, 3JN
+  // bookID can be a USFM bookID, e.g., GEN, MAT, 3JN
   //  and can also be OBS (for Open Bible Stories)
-  bookCode='RUT'
+  bookID='NEH'
 
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'

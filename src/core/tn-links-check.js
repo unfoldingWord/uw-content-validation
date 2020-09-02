@@ -9,8 +9,10 @@ const TN_LINKS_VALIDATOR_VERSION = '0.1.1';
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-async function checkTNLinks(BBB, fieldName, fieldText, givenLocation, optionalCheckingOptions) {
+async function checkTNLinks(bookID, fieldName, fieldText, givenLocation, optionalCheckingOptions) {
     /* This is for the case of the OccurrenceNote field containing markdown links
+
+    bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
 
     These notes may contain links
         to TA, e.g., “(See: [[rc://en/ta/man/translate/figs-metaphor]] and …”
@@ -24,18 +26,18 @@ async function checkTNLinks(BBB, fieldName, fieldText, givenLocation, optionalCh
     //      optionalCheckingOptions.taRepoDefaultLanguageCode
     */
 
-    // console.log(`checkTNLinks v${TN_LINKS_VALIDATOR_VERSION} ${BBB} (${fieldName}, (${fieldText.length}) '${fieldText}', ${givenLocation}, …)`);
-    console.assert(BBB !== undefined, "checkTNLinks: 'BBB' parameter should be defined");
-    console.assert(typeof BBB === 'string', `checkTNLinks: 'BBB' parameter should be a string not a '${typeof BBB}'`);
-    console.assert(BBB.length === 3, `checkTNLinks: 'BBB' parameter should be three characters long not ${BBB.length}`);
-    console.assert(books.isValidBookCode(BBB), `checkTNLinks: '${BBB}' is not a valid USFM book code`);
+    // console.log(`checkTNLinks v${TN_LINKS_VALIDATOR_VERSION} ${bookID} (${fieldName}, (${fieldText.length}) '${fieldText}', ${givenLocation}, …)`);
+    console.assert(bookID !== undefined, "checkTNLinks: 'bookID' parameter should be defined");
+    console.assert(typeof bookID === 'string', `checkTNLinks: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+    console.assert(bookID.length === 3, `checkTNLinks: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    console.assert(books.isValidBookID(bookID), `checkTNLinks: '${bookID}' is not a valid USFM book identifier`);
     console.assert(fieldName !== undefined, "checkTNLinks: 'fieldText' parameter should be defined");
     console.assert(typeof fieldName === 'string', `checkTNLinks: 'fieldText' parameter should be a string not a '${typeof fieldName}'`);
     console.assert(fieldText !== undefined, "checkTNLinks: 'fieldText' parameter should be defined");
     console.assert(typeof fieldText === 'string', `checkTNLinks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
     console.assert(givenLocation !== undefined, "checkTNLinks: 'fieldText' parameter should be defined");
     console.assert(typeof givenLocation === 'string', `checkTNLinks: 'fieldText' parameter should be a string not a '${typeof givenLocation}'`);
-    console.assert(fieldName === 'OccurrenceNote'); // so far
+    console.assert(fieldName === 'OccurrenceNote' || fieldName === 'Annotation', `Unexpected checkTNLinks fieldName='${fieldName}'`);
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -43,19 +45,19 @@ async function checkTNLinks(BBB, fieldName, fieldText, givenLocation, optionalCh
 
     const ctarResult = { noticeList: [] };
 
-    function addNotice5(priority, message, index, extract, location) {
-        // console.log(`checkTNLinks Notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+    function addNotice5(priority, message, characterIndex, extract, location) {
+        // console.log(`checkTNLinks Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cTAref addNotice5: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cTAref addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message !== undefined, "cTAref addNotice5: 'message' parameter should be defined");
         console.assert(typeof message === 'string', `cTAref addNotice5: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        console.assert(index !== undefined, "cTAref addNotice5: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', `cTAref addNotice5: 'index' parameter should be a number not a '${typeof index}': ${index}`);
+        console.assert(characterIndex !== undefined, "cTAref addNotice5: 'characterIndex' parameter should be defined");
+        console.assert(typeof characterIndex === 'number', `cTAref addNotice5: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
         console.assert(extract !== undefined, "cTAref addNotice5: 'extract' parameter should be defined");
         console.assert(typeof extract === 'string', `cTAref addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cTAref addNotice5: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `cTAref addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        ctarResult.noticeList.push([priority, message, index, extract, location]);
+        ctarResult.noticeList.push({priority, message, characterIndex, extract, location});
     }
 
 
@@ -151,12 +153,12 @@ async function checkTNLinks(BBB, fieldName, fieldText, givenLocation, optionalCh
     }
 
     // Check Bible links like [Revelation 3:11](../03/11.md)
-    const bbb = BBB.toLowerCase();
+    const lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook;
     try {
-        numChaptersThisBook = books.chaptersInBook(bbb).length;
+        numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
     } catch (tnlcError) {
-        addNotice5(979, "Invalid book code passed to checkTNLinks", -1, "", ` '${BBB}' in first parameter: ${tnlcError}`);
+        addNotice5(979, "Invalid book identifier passed to checkTNLinks", -1, "", ` '${bookID}' in first parameter: ${tnlcError}`);
     }
 
     // console.log("checkTNLinks: Search for Bible links")
@@ -177,7 +179,7 @@ async function checkTNLinks(BBB, fieldName, fieldText, givenLocation, optionalCh
             addNotice5(843, "Invalid chapter number", -1, resultArray[4], `${ourLocation}`);
         else {
             try {
-                numVersesThisChapter = books.versesInChapter(bbb, chapterInt);
+                numVersesThisChapter = books.versesInChapter(lowercaseBookID, chapterInt);
             } catch (tnVIerror) {
             console.log(`TN Link Check couldn't convert verse '${resultArray[5]}': ${tnVIerror}`);
             verseInt = 1;

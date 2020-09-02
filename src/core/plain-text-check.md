@@ -2,9 +2,9 @@
 
 This function checks the given text for typical formatting errors.
 
-It returns a list of success messages and a list of notice components. (The first component is always a priority number in the range 0..999.)
+It returns a list of success messages and a list of notice components. (There is always a priority number in the range 0..999 and the main message string, as well as other helpful details as relevant.)
 
-The notices can then be further processed into a list of errors and a list of warnings as desired.
+These raw notice components can then be filtered and/or sorted as required by the calling program, and then divided into a list of errors and a list of warnings or whatever as desired.
 
 ```js
 import checkPlainText from './plain-text-check';
@@ -37,9 +37,9 @@ Another  paragraph.
 // You can choose any of the above texts here
 //  (to demonstrate differing results)
 const chosenText = textSB;
-const chosenName = 'textSB';
+const chosenTextName = 'textSB';
 
-const rawResults = checkPlainText(chosenName, chosenText, 'that was supplied');
+const rawResults = checkPlainText(chosenTextName, chosenText, 'that was supplied');
 if (!rawResults.successList || !rawResults.successList.length)
   rawResults.successList = ["Done plain text checks"];
 

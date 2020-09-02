@@ -21,10 +21,10 @@ const textB = `{ Peace  on Earth,,
  good will to all) men! `;
 
 // Just change these next two lines to change the text being used (to demonstrate differing results)
-const chosenName = "textB";
+const chosenTextName = "textB";
 const chosenText = textB;
 
-const rawResults = doBasicFileChecks('Sample', chosenText, 'in '+chosenName+' that was supplied');
+const rawResults = doBasicFileChecks('Sample', chosenText, 'in '+chosenTextName+' that was supplied');
 if (!rawResults.successList || !rawResults.successList.length)
     rawResults.successList = ["Done basic file checks"];
 

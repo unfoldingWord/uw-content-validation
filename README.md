@@ -50,11 +50,11 @@ The top-level checking demonstrations:
 However, the lower-level checking functions provide only the list of success message strings and one list of `notices` (i.e., warnings/errors combined) typically consisting of the following eight fields:
 
 1. A notice priority number in the range 1-1000. Each different type of warning/error has a unique number (but not each instance of those warnings/errors). By default, notice priority numbers 700 and over are considered `errors` and 0-699 are considered `warnings`.
-1. The 3-character UPPERCASE [book code](http://ubsicap.github.io/usfm/identification/books.html) or [OBS](https://www.openbiblestories.org/) (if relevant)
+1. The 3-character UPPERCASE [book identifier](http://ubsicap.github.io/usfm/identification/books.html) or [OBS](https://www.openbiblestories.org/) (if relevant)
 1. The chapter number or story number (if relevant)
 1. The verse number or frame number
 1. The actual general descriptive text of the notice
-1. A zero-based integer index which indicates the zero-based position of the error in the given text (line or file). -1 indicates that this index does not contain any useful information, e.g., for a global error.
+1. A zero-based integer characterIndex which indicates the zero-based position of the error in the given text (line or file). -1 indicates that this index does not contain any useful information, e.g., for a global error.
 1. An extract of the checked text which indicates the area containing the problem. Where helpful, some character substitutions have already been made, for example, if the notice is about spaces, it is generally helpful to display spaces as a visible character in an attempt to best highlight the issue to the user. (The length of the extract defaults to ten characters, but is settable as an option.)
 1. A string indicating the context of the notice, e.g., `in line 17 of 'someBook.usfm'`.
 
@@ -71,17 +71,22 @@ However, the user is, of course, free to create their own alternative version of
 
 Still unfinished (in rough priority order):
 
+1. Standardise parameters according to best practice (i.e., dereferencing, etc.)
+1. Document the API
 1. Publish to NPM so that the functions may be easily used by other software -- this may involve some changes to the folder structure, etc. as we only want the core functions published in this way -- not the demo code
 1. Checking of general markdown and naked links
 1. Testing and fine-tuning of error messages (e.g., comparing with tX), especially suppression of false alarms
 1. Improve documentation
 1. Optimise various different file fetches and caches (incl. using zips) for the demos
 1. Is our `RepoCheck` the same as `ResourceContainerCheck`? Or is the latter more specific?
-1. Standardise parameters according to best practice (i.e., dereferencing, etc.)
-1. Understand and standardise React stuff, e.g., e.g., withStyles, etc.
+1. Understand and standardise React stuff in the demos, e.g., e.g., withStyles, etc.
 1. Write unit tests (especially for the core functions) and get them passing
 1. Check for and remove left-over (but unused) code from the source projects that the original code was copied from
 1. Remove all debug code and console logging, and to consider possible speed and memory optimizations
+
+Known bugs:
+
+1. The line number in the USFM Grammar check doesn't account for blank lines, so the real line number may be larger.
 
 ## Functionality and Limitations
 

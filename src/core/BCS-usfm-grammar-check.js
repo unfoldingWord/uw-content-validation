@@ -2,15 +2,32 @@ import grammar from 'usfm-grammar';
 import * as books from '../core/books/books';
 
 
-const USFM_GRAMMAR_VALIDATOR_VERSION = '0.2.3';
+const USFM_GRAMMAR_VALIDATOR_VERSION = '0.3.1';
+
+const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-export function runBCSGrammarCheck(strictnessString, fileText, givenLocation) {
+export function runBCSGrammarCheck(strictnessString, fileText, givenLocation, optionalCheckingOptions) {
     // Runs the BCS USFM Grammar checker
     //  which can be quite time-consuming on large, complex USFM files
-    console.log(`Running ${strictnessString} BCS USFM grammar check${givenLocation} (can take quite a while for a large book)…`);
-    console.assert(strictnessString === 'strict' || strictnessString === 'relaxed');
+    // console.log(`Running ${strictnessString} BCS USFM grammar check${givenLocation} (can take quite a while for a large book)…`);
+    console.assert(strictnessString === 'strict' || strictnessString === 'relaxed', `Unexpected strictnessString='${strictnessString}'`);
 
+    let extractLength;
+    try {
+        extractLength = optionalCheckingOptions.extractLength;
+    } catch (usfmELerror) { }
+    if (typeof extractLength !== 'number' || isNaN(extractLength)) {
+        extractLength = DEFAULT_EXTRACT_LENGTH;
+        // console.log(`Using default extractLength=${extractLength}`);
+    }
+    // else
+    // console.log(`Using supplied extractLength=${extractLength} cf. default=${DEFAULT_EXTRACT_LENGTH}`);
+    const halfLength = Math.floor(extractLength / 2); // rounded down
+    const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
+    // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+
+    // Now create the parser and run the check
     const ourUsfmParser = new grammar.USFMParser(fileText,
         strictnessString === 'relaxed' ? grammar.LEVEL.RELAXED : null);
     // Returns a Boolean indicating whether the input USFM text satisfies the grammar or not.
@@ -30,7 +47,7 @@ export function runBCSGrammarCheck(strictnessString, fileText, givenLocation) {
     if (parseError) {
         const contextRE = /(\d+?)\s\|\s(.+)/g;
         for (const errorLine of parseError.split('\n')) {
-            console.log(`BCS errorLine=${errorLine}`);
+            // console.log(`BCS errorLine=${errorLine}`);
             if (errorLine.startsWith('>')) {
                 const regexResult = contextRE.exec(errorLine.substring(1).trim());
                 // console.log(`  regexResult: ${JSON.stringify(regexResult)}`);
@@ -42,12 +59,14 @@ export function runBCSGrammarCheck(strictnessString, fileText, givenLocation) {
             else if (errorLine.endsWith('^')) {
                 characterIndex = errorLine.indexOf('^') - 8;
                 if (characterIndex < 0) characterIndex = 0; // Just in case
+                if (extract.length)
+                    extract = (characterIndex > halfLength ? '…' : '') + extract.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < extract.length ? '…' : '')
             }
             else ourErrorMessage = errorLine; // We only want the last one
         }
         // console.log(`  ourErrorMessage: '${ourErrorMessage}' lineNumberString=${lineNumberString} characterIndex=${characterIndex} extract='${extract}'`);
         // NOTE: \s5 fields are not valid USFM but we degrade the priority of those warnings
-        ourErrorFields = [extract==='\\s5'? 294:994, `USFMGrammar found: ${ourErrorMessage}`, characterIndex, extract, `in line ${lineNumberString}${givenLocation}`];
+        ourErrorFields = [extract==='\\s5'? 294:994, `USFMGrammar: ${ourErrorMessage}`, characterIndex, extract, `in line ${lineNumberString}${givenLocation}`];
     }
 
     const parseWarnings = parserResult._warnings ? parserResult._warnings : ourUsfmParser.warnings;
@@ -66,16 +85,18 @@ export function runBCSGrammarCheck(strictnessString, fileText, givenLocation) {
 // end of runBCSGrammarCheck function
 
 
-export function checkUSFMGrammar(BBB, strictnessString, filename, givenText, givenLocation, optionalCheckingOptions) {
+export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, givenLocation, optionalCheckingOptions) {
     /*
     This function is only used for the demonstration pages -- not for the core!
+
+    bookID is a three-character UPPERCASE USFM book identifier.
 
     filename parameter can be an empty string if we don't have one.
 
      Returns a result object containing a successList and a noticeList
      */
     console.log(`checkUSFMGrammar(${givenText.length.toLocaleString()} chars, '${location}')…`);
-    console.assert(strictnessString === 'strict' || strictnessString === 'relaxed');
+    console.assert(strictnessString === 'strict' || strictnessString === 'relaxed', `Unexpected strictnessString='${strictnessString}'`);
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -88,27 +109,35 @@ export function checkUSFMGrammar(BBB, strictnessString, filename, givenText, giv
         // console.log(`checkUSFMGrammar success: ${successString}`);
         cugResult.successList.push(successString);
     }
-    function addNotice5to8(priority, message, index, extract, location) {
-        // console.log(`checkUSFMGrammar notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+    function addNotice5to8(priority, message, characterIndex, extract, location) {
+        /**
+        * @description - adds a new notice entry, adding bookID,C,V to the given fields
+        * @param {Number} priority - notice priority from 1 (lowest) to 999 (highest)
+        * @param {String} message - the text of the notice message
+        * @param {Number} characterIndex - where the issue occurs in the line (or -1 if unknown)
+        * @param {String} extract - short extract from the line centred on the problem (if available)
+        * @param {String} location - description of where the issue is located
+        */
+        // console.log(`checkUSFMGrammar notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cUSFMgr addNotice5to8: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cUSFMgr addNotice5to8: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message !== undefined, "cUSFMgr addNotice5to8: 'message' parameter should be defined");
         console.assert(typeof message === 'string', `cUSFMgr addNotice5to8: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        console.assert(index !== undefined, "cUSFMgr addNotice5to8: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', `cUSFMgr addNotice5to8: 'index' parameter should be a number not a '${typeof index}': ${index}`);
+        console.assert(characterIndex !== undefined, "cUSFMgr addNotice5to8: 'characterIndex' parameter should be defined");
+        console.assert(typeof characterIndex === 'number', `cUSFMgr addNotice5to8: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
         console.assert(extract !== undefined, "cUSFMgr addNotice5to8: 'extract' parameter should be defined");
         console.assert(typeof extract === 'string', `cUSFMgr addNotice5to8: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cUSFMgr addNotice5to8: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `cUSFMgr addNotice5to8: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        cugResult.noticeList.push([priority, BBB, "", "", message, index, extract, location]);
+        cugResult.noticeList.push({priority, bookID,C:'',V:'', message, characterIndex,extract, location});
     }
 
 
     // Main code for checkUSFMGrammar function
-    if (books.isExtraBookCode(BBB)) // doesn't work for these
+    if (books.isExtraBookID(bookID)) // doesn't work for these
         return cugResult;
 
-    const grammarCheckResult = runBCSGrammarCheck(strictnessString, givenText, ourLocation);
+    const grammarCheckResult = runBCSGrammarCheck(strictnessString, givenText, ourLocation, optionalCheckingOptions);
     // console.log(`grammarCheckResult=${JSON.stringify(grammarCheckResult)}`);
 
     if (!grammarCheckResult.isValidUSFM)
@@ -120,7 +149,7 @@ export function checkUSFMGrammar(BBB, strictnessString, filename, givenText, giv
 
     // Display these warnings but with a lowish priority
     for (const warningString of grammarCheckResult.warnings)
-        addNotice5to8(101, `USFMGrammar found: ${warningString}`, -1, "", ourLocation);
+        addNotice5to8(101, `USFMGrammar: ${warningString}`, -1, "", ourLocation);
 
     addSuccessMessage(`Checked USFM Grammar (${strictnessString} mode) ${grammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN'T validate)"}`);
     // console.log(`  checkUSFMGrammar returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);

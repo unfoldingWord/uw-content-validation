@@ -1,7 +1,7 @@
 // import { displayPropertyNames, consoleLogObject } from './utilities';
 
 
-const NOTICE_PROCESSOR_VERSION_STRING = '0.3.3';
+const NOTICE_PROCESSOR_VERSION_STRING = '0.4.2';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -20,39 +20,46 @@ const DEFAULT_MEDIUM_PRIORITY_LEVEL = 600; // This level or higher becomes a med
 
 
 function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
+    /**
+    * @description - Preprocesses the successList and noticeList
+    * @param {Object} givenNoticeObject - must contain a noticeList array
+    * @param {Object} optionalProcessingOptions - may contain parameters
+    * @return {Array} - noticeList, countObject, preResultObject
+    */
     /*
         Expects to get an object with:
             successList: a list of strings describing what has been checked
-            noticeList: a list of five or eight common/compulsory components to notices, being:
-                1/ A notice priority number in the range 1-1000.
+            noticeList: a list of components to notices, being:
+                priority: A notice priority number in the range 1-1000.
                     Each different type of warning/error has a unique number
                       (but not each instance of those warnings/errors).
                     By default, notice priority numbers 700 and over are
                       considered `errors` and 0-699 are considered `warnings`.
+                message: The actual general description text of the notice
                 The next three fields may be ommitted if irrelevant
                  (since BCV is not relevant to all types of files/repos)
-                    2/ Book code 3-character UPPERCASE string
+                     bookID: book identifier 3-character UPPERCASE string
                         (or empty string if not relevant)
-                    3/ Chapter number string
+                    C: Chapter number string
                         (or empty string if not relevant)
-                    4/ Verse number string (can also be a bridge, e.g., '22-23')
+                    V: Verse number string (can also be a bridge, e.g., '22-23')
                         (or empty string if not relevant)
-                5/ The actual general description text of the notice
-                6/ A zero-based integer index which indicates the position
-                      of the error on the line or in the text as appropriate.
-                    -1 indicates that this index does not contain any useful information.
-                7/ An extract of the checked text which indicates the area
+                    lineNumber: A one-based integer indicating the lineNumber in the file
+                    characterIndex: A zero-based integer index which indicates the position
+                      of the error on the line or in the text field as appropriate.
+                    -1 indicates that this characterIndex does not contain any useful information.
+                extract: An extract of the checked text which indicates the area
                       containing the problem.
                     Where helpful, some character substitutions have already been made,
                       for example, if the notice is about spaces,
                       it is generally helpful to display spaces as a visible
                       character in an attempt to best highlight the issue to the user.
-                8/ A string indicating the context of the notice,
-                        e.g., `in line 17 of 'someBook.usfm'.
-                There is also an optional sixth/ninth notice component (where multiple files/repos are checked)
-                9/ A string indicating an extra location component, e.g., repoCode or bookCode
-                    This will need to be added to the message string (#5 above) but is left
-                        to now in order to allow the most display flexibility
+                 location: A string indicating the context of the notice,
+                        e.g., `in 'someBook.usfm'.
+                There is also an optional notice component (where multiple files/repos are checked)
+                extra: A string indicating an extra location component, e.g., repoCode or bookID
+                    This will probably need to be added to the message string but is left
+                        until now in order to allow the most display flexibility
         Available options are:
             cutoffPriorityLevel (integer; default is DEFAULT_CUTOFF_PRIORITY_LEVEL above)
             maximumSimilarMessages (integer; default is DEFAULT_MAXIMUM_SIMILAR_MESSAGES above)
@@ -83,26 +90,15 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     //     console.log(`processNoticesCommon v${NOTICE_PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
     //   Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
 
-    // Add in any missing BBB,C,V fields
-    const standardisedNoticeList = [];
-    if (givenNoticeObject.noticeList && givenNoticeObject.noticeList.length) {
-        for (const thisGivenNotice of givenNoticeObject.noticeList) {
-            if (thisGivenNotice.length === 6)
-                standardisedNoticeList.push([thisGivenNotice[0], '', '', '', thisGivenNotice[1], thisGivenNotice[2], thisGivenNotice[3], thisGivenNotice[4], thisGivenNotice[5]]);
-            else if (thisGivenNotice.length === 5)
-                standardisedNoticeList.push([thisGivenNotice[0], '', '', '', thisGivenNotice[1], thisGivenNotice[2], thisGivenNotice[3], thisGivenNotice[4]]);
-            else { // pass through as is
-                console.assert(thisGivenNotice.length === 9 || thisGivenNotice.length === 8);
-                standardisedNoticeList.push(thisGivenNotice);
-            }
-        }
-        // At this point, all noticeList entries should be eight or nine fields wide (i.e., no longer five or six)
 
+    const standardisedNoticeList = givenNoticeObject.noticeList;
+
+    if (givenNoticeObject.noticeList && givenNoticeObject.noticeList.length) {
         // Check that notice priority numbers are unique (to detect programming errors)
         // This section may be commented out of production code
         const numberStore = {}, duplicatePriorityList = [];
         for (const thisGivenNotice of standardisedNoticeList) {
-            const thisPriority = thisGivenNotice[0], thisMsg = thisGivenNotice[4];
+            const thisPriority = thisGivenNotice.priority, thisMsg = thisGivenNotice.message;
             const oldMsg = numberStore[thisPriority];
             if (oldMsg && oldMsg !== thisMsg && duplicatePriorityList.indexOf(thisPriority) < 0
                 // Some of the messages include the troubling character in the message
@@ -111,7 +107,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 && !thisMsg.startsWith('Unexpected doubled ')
                 && !thisMsg.startsWith('Unexpected space after ')
                 && !thisMsg.startsWith('Unexpected content after \\')
-                && !thisMsg.startsWith('USFMGrammar found: ')
+                && !thisMsg.startsWith('USFMGrammar: ')
                 && !thisMsg.endsWith(' character after space')
                 && !thisMsg.endsWith(' marker at start of line')
             ) {
@@ -161,7 +157,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     }
     else console.log(`Using supplied cutoffPriorityLevel=${cutoffPriorityLevel} cf. default=${DEFAULT_CUTOFF_PRIORITY_LEVEL}`);
     // if (cutoffPriorityLevel > errorPriorityLevel)
-    // resultObject.errorList.push([999, "Cutoff level must not be higher than error level", -1, `(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
+    // resultObject.errorList.push({999, "Cutoff level must not be higher than error level", -1, `(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
 
 
     if (givenNoticeObject.successList)
@@ -213,10 +209,11 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     // consoleLogObject('givenNoticeObject', givenNoticeObject);
     for (const thisParticularNotice of standardisedNoticeList) {
         // console.log("thisParticularNotice", thisParticularNotice);
-        if (thisParticularNotice[4].indexOf('\\s5') >= 0) {
-            let thisthisParticularNoticeArray = [701, thisParticularNotice[1], '', '', "\\s5 fields should be coded as \\ts\\* milestones", -1, '', ` in ${givenNoticeObject.checkType}`];
-            if (thisParticularNotice.length === 6) thisParticularNotice.push(thisParticularNotice[5]); // Sometime we have an additional file identifier
-            standardisedNoticeList.push(thisParticularNotice);
+        if (thisParticularNotice.message.indexOf('\\s5') >= 0) {
+            let thisNewNotice = { priority: 701, bookID: thisParticularNotice.bookID, C: '', V: '', message: "\\s5 fields should be coded as \\ts\\* milestones", characterIndex: -1, extract: '', location: ` in ${givenNoticeObject.checkType}` };
+            if (thisParticularNotice.extra && thisParticularNotice.extra.length)
+                thisNewNotice.extra = thisParticularNotice.extra; // Sometime we have an additional file identifier
+            standardisedNoticeList.push(thisNewNotice);
             break;
         }
     }
@@ -227,7 +224,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         // console.log("Doing ignore of", ignorePriorityNumberList.length,"value(s)");
         remainingNoticeList = [];
         for (const thisNotice of standardisedNoticeList)
-            if (ignorePriorityNumberList.indexOf(thisNotice[0]) >= 0)
+            if (ignorePriorityNumberList.indexOf(thisNotice.priority) >= 0)
                 resultObject.numIgnoredNotices++;
             else
                 remainingNoticeList.push(thisNotice);
@@ -240,36 +237,50 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     if (cutoffPriorityLevel > 0) {
         const newNoticeList = [];
         for (const thisNotice of remainingNoticeList)
-            if (thisNotice[0] < cutoffPriorityLevel)
+            if (thisNotice.priority < cutoffPriorityLevel)
                 resultObject.numSuppressedWarnings++;
             else newNoticeList.push(thisNotice);
         remainingNoticeList = newNoticeList;
     }
     // if (cutoffPriorityLevel > errorPriorityLevel)
-    // resultObject.errorList.push([999, "Cutoff level must not be higher than error level", -1, `(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
+    // resultObject.errorList.push({999, "Cutoff level must not be higher than error level", -1, `(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
 
     // Sort the remainingNoticeList as required
     if (sortBy === 'ByPriority')
-        remainingNoticeList.sort(function (a, b) { return b[0] - a[0] });
+        remainingNoticeList.sort(function (a, b) { return b.priority - a.priority });
     else if (sortBy !== 'AsFound')
         console.log(`ERROR: Sorting '${sortBy}' is not implemented yet!!!`);
 
     // Add in extra location info if it's there
     // Default is to prepend it to the msg
     //  This prevents errors/warnings from different repos or books from being combined
-    if (remainingNoticeList.length && remainingNoticeList[0].length === 9) { // normally it's 8
+    if (remainingNoticeList.length
+    && remainingNoticeList[0].extra && remainingNoticeList[0].extra.length) {
         // console.log(`We need to add the extra location, e.g. '${remainingNoticeList[0][5]}': will prepend it to the messages`);
         const newNoticeList = [];
-        for (const thisNotice of remainingNoticeList)
-            newNoticeList.push([thisNotice[0], thisNotice[1], thisNotice[2], thisNotice[3], `${thisNotice[8]} ${thisNotice[4]}`, thisNotice[5], thisNotice[6], thisNotice[7]]);
+        for (const thisNotice of remainingNoticeList) {
+            console.assert(thisNotice.extra && thisNotice.extra.length, `Expect thisNotice to have an "extra" field: ${JSON.stringify(thisNotice)}`)
+            const newNotice = {
+                priority: thisNotice.priority,
+                message: `${thisNotice.extra} ${thisNotice.message}`,
+                characterIndex: thisNotice.characterIndex,
+                extract: thisNotice.extract,
+                location: thisNotice.location
+            };
+            if (thisNotice.bookID) newNotice.bookID = thisNotice.bookID;
+            if (thisNotice.C) newNotice.C = thisNotice.C;
+            if (thisNotice.V) newNotice.V = thisNotice.V;
+            newNoticeList.push(newNotice);
+        }
         remainingNoticeList = newNoticeList;
     }
 
     // Count the number of occurrences of each message
+    //  ready for further processing
     const allTotals = {};
     for (const thisNotice of remainingNoticeList)
-        if (isNaN(allTotals[thisNotice[0]])) allTotals[thisNotice[0]] = 1;
-        else allTotals[thisNotice[0]]++;
+        if (isNaN(allTotals[thisNotice.priority])) allTotals[thisNotice.priority] = 1;
+        else allTotals[thisNotice.priority]++;
 
     return [remainingNoticeList, allTotals, resultObject];
 }
@@ -323,18 +334,18 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
     //  while simultaneously separating into error and warning lists
     let counter = {};
     for (const thisNotice of remainingNoticeList) {
-        const thisPriority = thisNotice[0], thisMsg = thisNotice[4];
+        const thisPriority = thisNotice.priority, thisMsg = thisNotice.message;
         const thisID = thisPriority + thisMsg; // Could have identical worded messages but with different priorities
         if (isNaN(counter[thisID])) counter[thisID] = 1;
         else counter[thisID]++;
         if (maximumSimilarMessages > 0 && counter[thisID] === maximumSimilarMessages + 1) {
             if (thisPriority >= errorPriorityLevel) {
                 const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
-                resultObject.errorList.push([-1, '', '', '', thisMsg, -1, '', ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`]);
+                resultObject.errorList.push({priority:-1, bookID:'',C:'',V:'', message:thisMsg, characterIndex:-1,extract:'', location:` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`});
                 resultObject.numSuppressedErrors++;
             } else {
                 const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
-                resultObject.warningList.push([-1, '', '', '', thisMsg, -1, '', ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`]);
+                resultObject.warningList.push({priority:-1, bookID:'',C:'',V:'', message:thisMsg, characterIndex:-1,extract:'', location:` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`});
                 resultObject.numSuppressedWarnings++;
             }
         } else if (maximumSimilarMessages > 0 && counter[thisID] > maximumSimilarMessages + 1) {
@@ -413,22 +424,22 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
     //  while simultaneously separating into error and warning lists
     let counter = {};
     for (const thisNotice of remainingNoticeList) {
-        const thisPriority = thisNotice[0], thisMsg = thisNotice[4];
+        const thisPriority = thisNotice.priority, thisMsg = thisNotice.message;
         const thisID = thisPriority + thisMsg; // Could have identical worded messages but with different priorities
         if (isNaN(counter[thisID])) counter[thisID] = 1;
         else counter[thisID]++;
         if (maximumSimilarMessages > 0 && counter[thisID] === maximumSimilarMessages + 1) {
             if (thisPriority >= severePriorityLevel) {
                 const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
-                resultObject.severeList.push([-1, '', '', '', thisMsg, -1, '', ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`]);
+                resultObject.severeList.push({prioriyy:-1, bookID:'',C:'',V:'', message:thisMsg, characterIndex:-1,extract:'', location:` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`});
                 resultObject.numSevereSuppressed++;
             } else if (thisPriority >= mediumPriorityLevel) {
                 const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
-                resultObject.mediumList.push([-1, '', '', '', thisMsg, -1, '', ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`]);
+                resultObject.mediumList.push({priority:-1, bookID:'',C:'',V:'', message:thisMsg, characterIndex:-1,extract:'', location:` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`});
                 resultObject.numMediumSuppressed++;
             } else {
                 const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
-                resultObject.lowList.push([-1, '', '', '', thisMsg, -1, '', ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`]);
+                resultObject.lowList.push({priority:-1, bookID:'',C:'',V:'', message:thisMsg, characterIndex:-1,extract:'', location:` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`});
                 resultObject.numLowSuppressed++;
             }
         } else if (maximumSimilarMessages > 0 && counter[thisID] > maximumSimilarMessages + 1) {
@@ -498,13 +509,13 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
     //  while simultaneously creating warning list
     let counter = {};
     for (const thisNotice of remainingNoticeList) {
-        const thisPriority = thisNotice[0], thisMsg = thisNotice[4];
+        const thisPriority = thisNotice.priority, thisMsg = thisNotice.message;
         const thisID = thisPriority + thisMsg; // Could have identical worded messages but with different priorities
         if (isNaN(counter[thisID])) counter[thisID] = 1;
         else counter[thisID]++;
         if (maximumSimilarMessages > 0 && counter[thisID] === maximumSimilarMessages + 1) {
             const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
-            resultObject.warningList.push([thisPriority, '', '', '', thisMsg, -1, '', ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`]);
+            resultObject.warningList.push({priority:thisPriority, bookID:'',C:'',V:'', message:thisMsg, characterIndex:-1,extract:'', location:` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`});
             resultObject.numSuppressedWarnings++;
         } else if (maximumSimilarMessages > 0 && counter[thisID] > maximumSimilarMessages + 1) {
             resultObject.numSuppressedWarnings++;

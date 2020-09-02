@@ -4,7 +4,7 @@ This function simply packages the [Bridgeconn USFM Grammar Check](https://www.np
 
 Our packaged function returns a list of success messages and a list of (prioritised) notice components.
 
-The notices can then be further processed into a list of errors and a list of warnings as desired.
+These raw notice components can then be filtered and/or sorted as required by the calling program, and then divided into a list of errors and a list of warnings or whatever as desired.
 
 ```js
 import checkUSFMGrammar from './BCS-usfm-grammar-check';
@@ -202,14 +202,14 @@ const textB = `\\id GEN Bad USFM test
 
 // You can choose any of the above texts here
 //  (to demonstrate differing results)
-const chosenName = 'textH';
+const chosenTextName = 'textH';
 const chosenText = textH;
-const BBB = 'RUT';
+const bookID = 'RUT'; // 3-character UPPERCASE USFM book identifier
 
 // Choose 'strict' or 'relaxed'
 const strictness = 'strict';
 
-const rawResults = checkUSFMGrammar(BBB, strictness, chosenName, chosenText, 'that was supplied');
+const rawResults = checkUSFMGrammar(bookID, strictness, chosenTextName, chosenText, 'that was supplied');
 
 <>
 <b>Check</b><RenderLines text={chosenText} />

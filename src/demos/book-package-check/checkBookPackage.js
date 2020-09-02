@@ -9,8 +9,8 @@ import { getFilelistFromZip, getFile } from '../../core/getApi';
 const CHECKER_VERSION_STRING = '0.2.4';
 
 
-async function checkTQbook(username, repoName, branch, BBB, checkingOptions) {
-    // console.log(`checkTQbook(${username}, ${repoName}, ${branch}, ${BBB}, …)…`);
+async function checkTQbook(username, repoName, branch, bookID, checkingOptions) {
+    // console.log(`checkTQbook(${username}, ${repoName}, ${branch}, ${bookID}, …)…`);
 
     const repoCode = 'TQ';
     const generalLocation = `in ${username} ${repoName} (${branch})`;
@@ -22,33 +22,34 @@ async function checkTQbook(username, repoName, branch, BBB, checkingOptions) {
         ctqResult.successList.push(successString);
     }
 
-    function addNotice9(priority, BBB, C, V, message, index, extract, location, extra) {
-        // console.log(`checkTQbook addNotice9: (priority=${priority}) ${BBB} ${C}:${V} ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+    function addNotice9(priority, bookID, C, V, message, characterIndex, extract, location, extra) {
+        // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
+        // console.log(`checkTQbook addNotice9: (priority=${priority}) ${bookID} ${C}:${V} ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cTQ addNotice9: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cTQ addNotice9: 'priority' parameter should be a number not a '${typeof priority}'`);
-        console.assert(BBB !== undefined, "cTQ addNotice9: 'BBB' parameter should be defined");
-        console.assert(typeof BBB === 'string', `cTQ addNotice9: 'BBB' parameter should be a string not a '${typeof BBB}'`);
-        console.assert(BBB.length === 3, `cTQ addNotice9: 'BBB' parameter should be three characters long not ${BBB.length}`);
-        console.assert(books.isValidBookCode(BBB), `cTQ addNotice9: '${BBB}' is not a valid USFM book code`);
+        console.assert(bookID !== undefined, "cTQ addNotice9: 'bookID' parameter should be defined");
+        console.assert(typeof bookID === 'string', `cTQ addNotice9: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+        console.assert(bookID.length === 3, `cTQ addNotice9: 'bookID' parameter should be three characters long not ${bookID.length}`);
+        console.assert(books.isValidBookID(bookID), `cTQ addNotice9: '${bookID}' is not a valid USFM book identifier`);
         console.assert(C !== undefined, "cTQ addNotice9: 'C' parameter should be defined");
         console.assert(typeof C === 'string', `cTQ addNotice9: 'C' parameter should be a string not a '${typeof C}'`);
         console.assert(V !== undefined, "cTQ addNotice9: 'V' parameter should be defined");
         console.assert(typeof V === 'string', `cTQ addNotice9: 'V' parameter should be a string not a '${typeof V}'`);
         console.assert(message !== undefined, "cTQ addNotice9: 'message' parameter should be defined");
         console.assert(typeof message === 'string', `cTQ addNotice9: 'message' parameter should be a string not a '${typeof message}'`);
-        console.assert(index !== undefined, "cTQ addNotice9: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', `cTQ addNotice9: 'index' parameter should be a number not a '${typeof index}'`);
+        console.assert(characterIndex !== undefined, "cTQ addNotice9: 'characterIndex' parameter should be defined");
+        console.assert(typeof characterIndex === 'number', `cTQ addNotice9: 'characterIndex' parameter should be a number not a '${typeof characterIndex}'`);
         console.assert(extract !== undefined, "cTQ addNotice9: 'extract' parameter should be defined");
         console.assert(typeof extract === 'string', `cTQ addNotice9: 'extract' parameter should be a string not a '${typeof extract}'`);
         console.assert(location !== undefined, "cTQ addNotice9: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `cTQ addNotice9: 'location' parameter should be a string not a '${typeof location}'`);
         console.assert(extra !== undefined, "cTQ addNotice9: 'extra' parameter should be defined");
         console.assert(typeof extra === 'string', `cTQ addNotice9: 'extra' parameter should be a string not a '${typeof extra}'`);
-        ctqResult.noticeList.push([priority, BBB, C, V, message, index, extract, location, extra]);
+        ctqResult.noticeList.push({priority, bookID, C, V, message, characterIndex, extract, location, extra});
     }
 
 
-    async function doOurCheckFile(repoCode, BBB, C, V, cfFilename, file_content, fileLocation, optionalCheckingOptions) {
+    async function doOurCheckFile(repoCode, bookID, C, V, cfFilename, file_content, fileLocation, optionalCheckingOptions) {
         // console.log(`checkBookPackage doOurCheckFile(${cfFilename})`);
 
         // Updates the global list of notices
@@ -67,10 +68,10 @@ async function checkTQbook(username, repoName, branch, BBB, checkingOptions) {
 
         // Process results line by line,  appending the repoCode as an extra field as we go
         for (const noticeEntry of cfResultObject.noticeList) {
-            // noticeEntry is an array of eight fields: 1=priority, 2=BBB, 3=C, 4=V, 5=msg, 6=index, 7=extract, 8=location
-            console.assert(noticeEntry.length === 5, `cTQ doOurCheckFile notice length=${noticeEntry.length}`);
+            // noticeEntry is an array of eight fields: 1=priority, 2=bookID, 3=C, 4=V, 5=msg, 6=characterIndex, 7=extract, 8=location
+            console.assert(Object.keys(noticeEntry).length === 5, `cTQ doOurCheckFile notice length=${Object.keys(noticeEntry).length}`);
             // We add the repoCode as an extra value
-            addNotice9(noticeEntry[0], BBB, C, V, noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], repoCode);
+            addNotice9(noticeEntry.priority, bookID, C, V, noticeEntry.message, noticeEntry.characterIndex, noticeEntry.extract, noticeEntry.location, repoCode);
         }
     }
     // end of doOurCheckFile function
@@ -79,7 +80,7 @@ async function checkTQbook(username, repoName, branch, BBB, checkingOptions) {
     // Main code for checkTQbook
     // We need to find an check all the markdown folders/files for this book
     let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(['md']), totalCheckedSize = 0;
-    const pathList = await getFilelistFromZip({ username, repository: repoName, branch, optionalPrefix: `${BBB.toLowerCase()}/` });
+    const pathList = await getFilelistFromZip({ username, repository: repoName, branch, optionalPrefix: `${bookID.toLowerCase()}/` });
     // console.log(`  Got ${pathList.length} pathList entries`)
     for (const thisPath of pathList) {
         // console.log("checkTQbook: Try to load", username, repoName, thisPath, branch);
@@ -97,13 +98,13 @@ async function checkTQbook(username, repoName, branch, BBB, checkingOptions) {
             totalCheckedSize += tqFileContent.length;
         } catch (tQerror) {
             console.log("checkTQbook failed to load", username, repoName, thisPath, branch, tQerror + '');
-            addNotice9(996, BBB, C, V, "Failed to load", -1, "", `${generalLocation} ${thisPath}: ${tQerror}`, repoCode);
+            addNotice9(996, bookID, C, V, "Failed to load", -1, "", `${generalLocation} ${thisPath}: ${tQerror}`, repoCode);
             continue;
         }
 
         // We use the generalLocation here (does not include repo name)
         //  so that we can adjust the returned strings ourselves
-        await doOurCheckFile(repoCode, BBB, C, V, thisPath, tqFileContent, generalLocation, checkingOptions); // Adds the notices to checkBookPackageResult
+        await doOurCheckFile(repoCode, bookID, C, V, thisPath, tqFileContent, generalLocation, checkingOptions); // Adds the notices to checkBookPackageResult
         checkedFileCount += 1;
         // addSuccessMessage(`Checked ${repoCode.toUpperCase()} file: ${thisPath}`);
     }
@@ -119,12 +120,12 @@ async function checkTQbook(username, repoName, branch, BBB, checkingOptions) {
 // end of checkTQbook function
 
 
-async function checkBookPackage(username, language_code, bookCode, setResultValue, checkingOptions) {
+async function checkBookPackage(username, language_code, bookID, setResultValue, checkingOptions) {
     /*
-    Note that bookCode here can also be the 'OBS' pseudo bookCode.
+    Note that bookID here can also be the 'OBS' pseudo bookID.
     */
     //     console.log(`I'm here in checkBookPackage v${CHECKER_VERSION_STRING}
-    //   with ${username}, ${language_code}, ${bookCode}, ${JSON.stringify(checkingOptions)}`);
+    //   with ${username}, ${language_code}, ${bookID}, ${JSON.stringify(checkingOptions)}`);
     const startTime = new Date();
 
     let checkBookPackageResult = { successList: [], noticeList: [] };
@@ -134,29 +135,30 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
         checkBookPackageResult.successList.push(successString);
     }
 
-    function addNotice9(priority, BBB, C, V, message, index, extract, location, extra) {
-        // console.log(`checkBookPackage addNotice9: (priority=${priority}) ${BBB} ${C}:${V} ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+    function addNotice9(priority, bookID, C, V, message, characterIndex, extract, location, extra) {
+        // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
+        // console.log(`checkBookPackage addNotice9: (priority=${priority}) ${bookID} ${C}:${V} ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cBP addNotice9: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cBP addNotice9: 'priority' parameter should be a number not a '${typeof priority}'`);
-        console.assert(BBB !== undefined, "cBP addNotice9: 'BBB' parameter should be defined");
-        console.assert(typeof BBB === 'string', `cBP addNotice9: 'BBB' parameter should be a string not a '${typeof BBB}'`);
-        console.assert(BBB.length === 3, `cBP addNotice9: 'BBB' parameter should be three characters long not ${BBB.length}`);
-        console.assert(books.isValidBookCode(BBB), `cBP addNotice9: '${BBB}' is not a valid USFM book code`);
+        console.assert(bookID !== undefined, "cBP addNotice9: 'bookID' parameter should be defined");
+        console.assert(typeof bookID === 'string', `cBP addNotice9: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+        console.assert(bookID.length === 3, `cBP addNotice9: 'bookID' parameter should be three characters long not ${bookID.length}`);
+        console.assert(books.isValidBookID(bookID), `cBP addNotice9: '${bookID}' is not a valid USFM book identifier`);
         console.assert(C !== undefined, "cBP addNotice9: 'C' parameter should be defined");
         console.assert(typeof C === 'string', `cBP addNotice9: 'C' parameter should be a string not a '${typeof C}'`);
         console.assert(V !== undefined, "cBP addNotice9: 'V' parameter should be defined");
         console.assert(typeof V === 'string', `cBP addNotice9: 'V' parameter should be a string not a '${typeof V}'`);
         console.assert(message !== undefined, "cBP addNotice9: 'message' parameter should be defined");
         console.assert(typeof message === 'string', `cBP addNotice9: 'message' parameter should be a string not a '${typeof message}'`);
-        console.assert(index !== undefined, "cBP addNotice9: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', `cBP addNotice9: 'index' parameter should be a number not a '${typeof index}'`);
+        console.assert(characterIndex !== undefined, "cBP addNotice9: 'characterIndex' parameter should be defined");
+        console.assert(typeof characterIndex === 'number', `cBP addNotice9: 'characterIndex' parameter should be a number not a '${typeof characterIndex}'`);
         console.assert(extract !== undefined, "cBP addNotice9: 'extract' parameter should be defined");
         console.assert(typeof extract === 'string', `cBP addNotice9: 'extract' parameter should be a string not a '${typeof extract}'`);
         console.assert(location !== undefined, "cBP addNotice9: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `cBP addNotice9: 'location' parameter should be a string not a '${typeof location}'`);
         console.assert(extra !== undefined, "cBP addNotice9: 'extra' parameter should be defined");
         console.assert(typeof extra === 'string', `cBP addNotice9: 'extra' parameter should be a string not a '${typeof extra}'`);
-        checkBookPackageResult.noticeList.push([priority, BBB, C, V, message, index, extract, location, extra]);
+        checkBookPackageResult.noticeList.push({priority, bookID, C, V, message, characterIndex, extract, location, extra});
     }
 
 
@@ -179,14 +181,14 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
 
         // Process results line by line,  appending the repoCode as an extra field as we go
         for (const noticeEntry of cfResultObject.noticeList) {
-            // noticeEntry is an array of eight fields: 1=priority, 2=BBB, 3=C, 4=V, 5=msg, 6=index, 7=extract, 8=location
+            // noticeEntry is an array of eight fields: 1=priority, 2=bookID, 3=C, 4=V, 5=msg, 6=characterIndex, 7=extract, 8=location
             // We add the repoCode as an extra value
-            if (noticeEntry.length === 8)
-                addNotice9(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7], repoCode);
-            else if (noticeEntry.length === 5)
-                addNotice9(noticeEntry[0], bookCode,'','', noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], repoCode);
+            if (Object.keys(noticeEntry).length === 8)
+                addNotice9(noticeEntry.priority, noticeEntry.bookID, noticeEntry.C, noticeEntry.V, noticeEntry.message, noticeEntry.characterIndex, noticeEntry.extract, noticeEntry.location, repoCode);
+            else if (Object.keys(noticeEntry).length === 5)
+                addNotice9(noticeEntry.priority, bookID,'','', noticeEntry.message, noticeEntry.characterIndex, noticeEntry.extract, noticeEntry.location, repoCode);
             else
-                console.assert(noticeEntry.length === 8, `cBP doOurCheckFile notice length=${noticeEntry.length}`);
+                console.assert(Object.keys(noticeEntry).length === 8, `cBP doOurCheckFile notice length=${Object.keys(noticeEntry).length}`);
         }
     }
     // end of doOurCheckFile function
@@ -212,9 +214,9 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
         checkBookPackageResult.noticeList = checkBookPackageResult.noticeList.concat(crResultObject.noticeList);
         // Process results line by line
         // for (const noticeEntry of crResultObject.noticeList)
-        // noticeEntry is an array of eight fields: 1=priority, 2=BBB, 3=C, 4=V, 5=msg, 6=index, 7=extract, 8=location
+        // noticeEntry is an array of eight fields: 1=priority, 2=bookID, 3=C, 4=V, 5=msg, 6=characterIndex, 7=extract, 8=location
         // We add the repoCode as an extra value
-        // addNotice9(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
+        // addNotice9(noticeEntry.priority, noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
         // console.log(`doOurCheckRepo() finished.`)
         return crResultObject;
     }
@@ -222,13 +224,13 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
 
 
     // Main code for checkBookPackage()
-    const generalLocation = ` ${language_code} ${bookCode} book package from ${username}`;
+    const generalLocation = ` ${language_code} ${bookID} book package from ${username}`;
 
     // No point in passing the branch through as a parameter
     //  coz if it's not 'master', it's unlikely to be common for all the repos
     const branch = 'master'
 
-    if (bookCode === 'OBS') {
+    if (bookID === 'OBS') {
         // We use the generalLocation here (does not include repo name)
         //  so that we can adjust the returned strings ourselves
         // console.log("Calling OBS checkRepo()…");
@@ -245,13 +247,13 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
         // We also need to know the number for USFM books
         let bookNumberAndName, whichTestament;
         try {
-            bookNumberAndName = books.usfmNumberName(bookCode);
-            whichTestament = books.testament(bookCode); // returns 'old' or 'new'
+            bookNumberAndName = books.usfmNumberName(bookID);
+            whichTestament = books.testament(bookID); // returns 'old' or 'new'
         } catch (bNNerror) {
-            if (books.isValidBookCode(bookCode)) // must be in FRT, BAK, etc.
+            if (books.isValidBookID(bookID)) // must be in FRT, BAK, etc.
                 whichTestament = 'other'
             else {
-                addNotice9(900, '', '', '', "Bad function call: should be given a valid book abbreviation", -1, bookCode, ` (not '${bookCode}')${location}`, '');
+                addNotice9(900, '', '', '', "Bad function call: should be given a valid book abbreviation", -1, bookID, ` (not '${bookID}')${location}`, '');
                 return checkBookPackageResult;
             }
         }
@@ -261,7 +263,7 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
         //  UHB/UGNT, ULT, UST, TN, TQ
         let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0, checkedRepoNames = [];
         for (const repoCode of [(whichTestament === 'old' ? 'UHB' : 'UGNT'), 'ULT', 'UST', 'TN', 'TQ']) {
-            // console.log(`Let's try ${repoCode} (${language_code} ${bookCode} from ${username})`);
+            // console.log(`Let's try ${repoCode} (${language_code} ${bookID} from ${username})`);
             const repoLocation = ` in ${repoCode.toUpperCase()}${generalLocation}`;
 
             let repo_language_code = language_code;
@@ -270,7 +272,7 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
             const repoName = `${repo_language_code}_${repoCode.toLowerCase()}`;
 
             const fullRepoName = username + '/' + repoName;
-            // console.log("Let's try1", bookCode, "from", fullRepoName);
+            // console.log("Let's try1", bookID, "from", fullRepoName);
 
             let filename;
             if (repoCode === 'UHB' || repoCode === 'UGNT' || repoCode === 'ULT' || repoCode === 'UST') {
@@ -284,7 +286,7 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
 
             if (repoCode === 'TQ') {
                 // This resource might eventually be converted to TSV tables
-                const tqResultObject = await checkTQbook(username, repoName, branch, bookCode, checkingOptions);
+                const tqResultObject = await checkTQbook(username, repoName, branch, bookID, checkingOptions);
                 checkBookPackageResult.successList = checkBookPackageResult.successList.concat(tqResultObject.successList);
                 checkBookPackageResult.noticeList = checkBookPackageResult.noticeList.concat(tqResultObject.noticeList);
                 checkedFilenames = checkedFilenames.concat(tqResultObject.checkedFilenames);
@@ -303,7 +305,7 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
                     checkedRepoNames.push(repoCode);
                 } catch (cBPgfError) {
                     console.log("ERROR: Failed to load", username, repoName, filename, branch, cBPgfError + '');
-                    addNotice9(996, bookCode, '', '', "Failed to load", -1, "", `${generalLocation} ${filename}: ${cBPgfError}`, repoCode);
+                    addNotice9(996, bookID, '', '', "Failed to load", -1, "", `${generalLocation} ${filename}: ${cBPgfError}`, repoCode);
                     continue;
                 }
 
@@ -315,7 +317,7 @@ async function checkBookPackage(username, language_code, bookCode, setResultValu
             }
 
             // Update our "waiting" message
-            setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {language_code} <b>{bookCode}</b> book package: checked <b>{checkedRepoNames.length.toLocaleString()}</b>/5 repos…</p>);
+            setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {language_code} <b>{bookID}</b> book package: checked <b>{checkedRepoNames.length.toLocaleString()}</b>/5 repos…</p>);
         }
 
         // Add some extra fields to our checkFileResult object

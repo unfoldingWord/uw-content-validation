@@ -99,8 +99,13 @@ let sections = [
 		// content: 'src/core/README.md',
 		sections: [
 			{
-				name: 'TSV table check',
-				content: 'src/core/tsv-table-text-check.md',
+				name: 'Annotation table check',
+				content: 'src/core/annotation-table-check.md',
+				// description: ''
+			},
+			{
+				name: 'TN TSV table check',
+				content: 'src/core/tn-tsv-table-text-check.md',
 				// description: ''
 			},
 			{
@@ -155,8 +160,13 @@ let sections = [
 		// content: 'src/core/README.md',
 		sections: [
 			{
-				name: 'TSV table-line check',
-				content: 'src/core/tsv-table-line-check.md',
+				name: 'Annotation line check',
+				content: 'src/core/annotation-row-check.md',
+				// description: ''
+			},
+			{
+				name: 'TN TSV table line check',
+				content: 'src/core/tn-tsv-table-row-check.md',
 				// description: ''
 			},
 			{

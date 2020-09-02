@@ -1,6 +1,6 @@
 import { isWhitespace, countOccurrences } from './text-handling-functions'
 
-const CHECKER_VERSION_STRING = '0.0.3';
+const CHECKER_VERSION_STRING = '0.0.4';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -32,19 +32,19 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
 
     let result = { noticeList: [] };
 
-    function addNotice5(priority, message, index, extract, location) {
-        // console.log(`dBTC Notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+    function addNotice5(priority, message, characterIndex, extract, location) {
+        // console.log(`dBTC Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "dBTCs addNotice5: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `dBTCs addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message !== undefined, "dBTCs addNotice5: 'message' parameter should be defined");
         console.assert(typeof message === 'string', `dBTCs addNotice5: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        console.assert(index !== undefined, "dBTCs addNotice5: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', `dBTCs addNotice5: 'index' parameter should be a number not a '${typeof index}': ${index}`);
+        console.assert(characterIndex !== undefined, "dBTCs addNotice5: 'characterIndex' parameter should be defined");
+        console.assert(typeof characterIndex === 'number', `dBTCs addNotice5: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
         console.assert(extract !== undefined, "dBTCs addNotice5: 'extract' parameter should be defined");
         console.assert(typeof extract === 'string', `dBTCs addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "dBTCs addNotice5: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `dBTCs addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push([priority, message, index, extract, location]);
+        result.noticeList.push({priority, message, characterIndex,extract, location});
     }
 
 
@@ -165,7 +165,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     }
     // Check for punctuation chars before space
     //  Removed ' (can be normal, e.g., Jesus' cloak)
-    for (const punctChar of '[({<⟨،、‒–—―‹«‐‘“/⁄·@\•^†‡°¡¿※№×ºª%‰‱¶′″‴§~_|‖¦©℗℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥') {
+    for (const punctChar of '[({<⟨،、‒–—―‹«‐‘“/⁄·@\•^†‡°¡¿※№×ºª‰‱¶′″‴§~_|‖¦©℗℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥') {
         ix = fieldText.indexOf(punctChar + ' ');
         if (ix >= 0) {
             let extract = (ix > halfLength ? '…' : '') + fieldText.substring(ix - halfLength, ix + halfLengthPlus) + (ix + halfLengthPlus < fieldText.length ? '…' : '')
@@ -174,10 +174,9 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     }
 
     // Check matched pairs
-    // for (const punctSet of ['[]', '()', '{}', '<>', '⟨⟩', '“”', '‹›', '«»']) {
     for (const punctSet of [['[', ']'], ['(', ')'], ['{', '}'],
-    ['<', '>'], ['⟨', '⟩'], ['“', '”'],
-    ['‹', '›'], ['«', '»'], ['**_', '_**']]) {
+                            ['<', '>'], ['⟨', '⟩'], ['“', '”'],
+                            ['‹', '›'], ['«', '»'], ['**_', '_**']]) {
         // Can't check '‘’' coz they might be used as apostrophe
         const leftChar = punctSet[0], rightChar = punctSet[1];
         const lCount = countOccurrences(fieldText, leftChar);

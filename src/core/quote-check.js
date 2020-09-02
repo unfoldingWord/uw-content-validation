@@ -8,8 +8,10 @@ const QUOTE_VALIDATOR_VERSION = '0.2.1';
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, givenLocation, optionalCheckingOptions) {
+async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, givenLocation, optionalCheckingOptions) {
     // Checks that the Hebrew/Greek quote can be found in the original texts
+
+    // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
 
     // Note that the original language verse text can be passed in as
     //      optionalCheckingOptions.originalLanguageVerseText.
@@ -18,15 +20,15 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, given
     //      (UHB or UGNT will be used for the repo name)
     //      optionalCheckingOptions.originalLanguageRepoBranch (or tag)
 
-    // console.log(`checkOriginalLanguageQuote v${QUOTE_VALIDATOR_VERSION} (${fieldName}, (${fieldText.length}) '${fieldText}', ${BBB} ${C}:${V} ${givenLocation}, …)`);
+    // console.log(`checkOriginalLanguageQuote v${QUOTE_VALIDATOR_VERSION} (${fieldName}, (${fieldText.length}) '${fieldText}', ${bookID} ${C}:${V} ${givenLocation}, …)`);
     console.assert(fieldName !== undefined, "checkOriginalLanguageQuote: 'fieldText' parameter should be defined");
     console.assert(typeof fieldName === 'string', `checkOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof fieldName}'`);
     console.assert(fieldText !== undefined, "checkOriginalLanguageQuote: 'fieldText' parameter should be defined");
     console.assert(typeof fieldText === 'string', `checkOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-    console.assert(BBB !== undefined, "checkOriginalLanguageQuote: 'fieldText' parameter should be defined");
-    console.assert(typeof BBB === 'string', `checkOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof BBB}'`);
-    console.assert(BBB.length === 3, `checkOriginalLanguageQuote: 'BBB' parameter should be three characters long not ${BBB.length}`);
-    console.assert(books.isValidBookCode(BBB), `checkOriginalLanguageQuote: '${BBB}' is not a valid USFM book code`);
+    console.assert(bookID !== undefined, "checkOriginalLanguageQuote: 'fieldText' parameter should be defined");
+    console.assert(typeof bookID === 'string', `checkOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof bookID}'`);
+    console.assert(bookID.length === 3, `checkOriginalLanguageQuote: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    console.assert(books.isValidBookID(bookID), `checkOriginalLanguageQuote: '${bookID}' is not a valid USFM book identifier`);
     console.assert(C !== undefined, "checkOriginalLanguageQuote: 'fieldText' parameter should be defined");
     console.assert(typeof C === 'string', `checkOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof C}'`);
     console.assert(V !== undefined, "checkOriginalLanguageQuote: 'fieldText' parameter should be defined");
@@ -40,26 +42,26 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, given
 
     const colqResult = { noticeList: [] };
 
-    function addNotice5(priority, message, index, extract, location) {
-        // console.log(`checkOriginalLanguageQuote Notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+    function addNotice5(priority, message, characterIndex, extract, location) {
+        // console.log(`checkOriginalLanguageQuote Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cOLQ addNotice5: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cOLQ addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message !== undefined, "cOLQ addNotice5: 'message' parameter should be defined");
         console.assert(typeof message === 'string', `cOLQ addNotice5: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        console.assert(index !== undefined, "cOLQ addNotice5: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', `cOLQ addNotice5: 'index' parameter should be a number not a '${typeof index}': ${index}`);
+        console.assert(characterIndex !== undefined, "cOLQ addNotice5: 'characterIndex' parameter should be defined");
+        console.assert(typeof characterIndex === 'number', `cOLQ addNotice5: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
         console.assert(extract !== undefined, "cOLQ addNotice5: 'extract' parameter should be defined");
         console.assert(typeof extract === 'string', `cOLQ addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cOLQ addNotice5: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `cOLQ addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        colqResult.noticeList.push([priority, message, index, extract, location]);
+        colqResult.noticeList.push({priority, message, characterIndex, extract, location});
     }
 
-    async function getPassage(BBB, C, V, optionalCheckingOptions) {
-        // console.log(`getPassage(${BBB}, ${C}, ${V})`);
+    async function getPassage(bookID, C, V, optionalCheckingOptions) {
+        // console.log(`getPassage(${bookID}, ${C}, ${V})`);
 
-        const bookNumberAndName = books.usfmNumberName(BBB);
-        const whichTestament = books.testament(BBB); // returns 'old' or 'new'
+        const bookNumberAndName = books.usfmNumberName(bookID);
+        const whichTestament = books.testament(bookID); // returns 'old' or 'new'
         const originalLanguageRepoLanguageCode = whichTestament === 'old' ? 'hbo' : 'el-x-koine';
         const originalLanguageRepoCode = whichTestament === 'old' ? 'UHB' : 'UGNT';
         const originalLanguageRepoName = `${originalLanguageRepoLanguageCode}_${originalLanguageRepoCode.toLowerCase()}`;
@@ -148,12 +150,12 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, given
 
         // Final clean-up (shouldn't be necessary, but just in case)
         verseText = verseText.replace(/  /g, ' ');
-        console.assert(verseText.indexOf('\\w') === -1, `getPassage: Should be no \\w in ${BBB} ${C}:${V} '${verseText}'`);
-        console.assert(verseText.indexOf('\\k') === -1, `getPassage: Should be no \\k in ${BBB} ${C}:${V} '${verseText}'`);
-        console.assert(verseText.indexOf('x-') === -1, `getPassage: Should be no x- in ${BBB} ${C}:${V} '${verseText}'`);
-        console.assert(verseText.indexOf('\\f') === -1, `getPassage: Should be no \\f in ${BBB} ${C}:${V} '${verseText}'`);
-        console.assert(verseText.indexOf('\\x') === -1, `getPassage: Should be no \\x in ${BBB} ${C}:${V} '${verseText}'`);
-        // console.log(`  getPassage(${BBB} ${C}:${V}) is returning '${verseText}'`);
+        console.assert(verseText.indexOf('\\w') === -1, `getPassage: Should be no \\w in ${bookID} ${C}:${V} '${verseText}'`);
+        console.assert(verseText.indexOf('\\k') === -1, `getPassage: Should be no \\k in ${bookID} ${C}:${V} '${verseText}'`);
+        console.assert(verseText.indexOf('x-') === -1, `getPassage: Should be no x- in ${bookID} ${C}:${V} '${verseText}'`);
+        console.assert(verseText.indexOf('\\f') === -1, `getPassage: Should be no \\f in ${bookID} ${C}:${V} '${verseText}'`);
+        console.assert(verseText.indexOf('\\x') === -1, `getPassage: Should be no \\x in ${bookID} ${C}:${V} '${verseText}'`);
+        // console.log(`  getPassage(${bookID} ${C}:${V}) is returning '${verseText}'`);
         return verseText;
     }
     // end of getPassage function
@@ -212,7 +214,7 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, given
         verseText = optionalCheckingOptions.originalLanguageVerseText;
     } catch (gcVTerror) { }
     if (!verseText) // not supplied, so then we need to get it ourselves
-        verseText = await getPassage(BBB, C, V, optionalCheckingOptions);
+        verseText = await getPassage(bookID, C, V, optionalCheckingOptions);
     if (!verseText) {
         addNotice5(851, "Unable to load original language verse text", -1, "", ourLocation);
         return colqResult; // nothing else we can do here
@@ -222,16 +224,16 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, BBB, C, V, given
     if (quoteBits) {
         const numQuoteBits = quoteBits.length;
         if (numQuoteBits >= 2) {
-            for (let index = 0; index < numQuoteBits; index++) {
-                if (verseText.indexOf(quoteBits[index]) < 0) { // this is what we really want to catch
+            for (let bitIndex = 0; bitIndex < numQuoteBits; bitIndex++) {
+                if (verseText.indexOf(quoteBits[bitIndex]) < 0) { // this is what we really want to catch
                     // If the quote has multiple parts, create a description of the current part
                     let partDescription;
                     if (numQuoteBits === 1) partDescription = '';
-                    else if (index === 0) partDescription = 'beginning';
-                    else if (index === numQuoteBits - 1) partDescription = 'end';
-                    else partDescription = `middle${numQuoteBits > 3 ? index : ''}`;
-                    // console.log(`721 Unable to find '${fieldText}' ${numQuoteBits === 1? '': `'${quoteBits[index]}' `}${partDescription? '('+partDescription+') ':''}in '${verseText}'`);
-                    const extract = `${quoteBits[index]}' ${partDescription? '('+partDescription+')':''}`;
+                    else if (bitIndex === 0) partDescription = 'beginning';
+                    else if (bitIndex === numQuoteBits - 1) partDescription = 'end';
+                    else partDescription = `middle${numQuoteBits > 3 ? bitIndex : ''}`;
+                    // console.log(`721 Unable to find '${fieldText}' ${numQuoteBits === 1? '': `'${quoteBits[bitIndex]}' `}${partDescription? '('+partDescription+') ':''}in '${verseText}'`);
+                    const extract = `${quoteBits[bitIndex]}' ${partDescription? '('+partDescription+')':''}`;
                     addNotice5(721, "Unable to find original language quote in verse text", -1, extract, ourLocation);
                 }
             }

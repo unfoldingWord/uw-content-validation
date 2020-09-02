@@ -39,23 +39,31 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
         // console.log("checkMarkdownText success: " + successString);
         result.successList.push(successString);
     }
-    function addNotice5(priority, message, index, extract, location) {
-        // console.log(`checkMarkdownText addNotice5: (priority=${priority}) ${message}${index > 0 ? " (at character " + index + 1 + ")" : ""}${extract ? " " + extract : ""}${location}`);
+    function addNotice5(priority, message, characterIndex, extract, location) {
+        // console.log(`checkMarkdownText addNotice5: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? " " + extract : ""}${location}`);
         console.assert(priority !== undefined, "cMdT addNotice5: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cMdT addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message !== undefined, "cMdT addNotice5: 'message' parameter should be defined");
         console.assert(typeof message === 'string', `cMdT addNotice5: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        console.assert(index !== undefined, "cMdT addNotice5: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', `cMdT addNotice5: 'index' parameter should be a number not a '${typeof index}': ${index}`);
+        console.assert(characterIndex !== undefined, "cMdT addNotice5: 'characterIndex' parameter should be defined");
+        console.assert(typeof characterIndex === 'number', `cMdT addNotice5: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
         console.assert(extract !== undefined, "cMdT addNotice5: 'extract' parameter should be defined");
         console.assert(typeof extract === 'string', `cMdT addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cMdT addNotice5: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `cMdT addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push([priority, message, index, extract, location]);
+        result.noticeList.push({priority, message, characterIndex, extract, location});
     }
     // end of addNotice5 function
 
     function doOurBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
+        /**
+        * @description - checks the given text field and processes the returned results
+        * @param {String} fieldName - name of the field being checked
+        * @param {String} fieldText - the actual text of the field being checked
+        * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
+        * @param {String} optionalFieldLocation - description of where the field is located
+        * @param {Object} optionalCheckingOptions - parameters that might affect the check
+        */
         // Does basic checks for small errors like leading/trailing spaces, etc.
 
         // We assume that checking for compulsory fields is done elsewhere
@@ -76,11 +84,11 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
         // If we need to put everything through addNotice5, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of dbtcResultObject.noticeList) {
-            console.assert(noticeEntry.length === 5, `MD doOurBasicTextChecks notice length=${noticeEntry.length}`);
-            if (!noticeEntry[1].startsWith("Unexpected doubled * characters") // 577 Markdown allows this
-                && !noticeEntry[1].startsWith("Unexpected * character after space") // 191
+            console.assert(Object.keys(noticeEntry).length === 5, `MD doOurBasicTextChecks notice length=${Object.keys(noticeEntry).length}`);
+            if (!noticeEntry.message.startsWith("Unexpected doubled * characters") // 577 Markdown allows this
+                && !noticeEntry.message.startsWith("Unexpected * character after space") // 191
             )
-                addNotice5(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+                addNotice5(noticeEntry.priority, noticeEntry.message, noticeEntry.characterIndex, noticeEntry.extract, noticeEntry.location);
         }
     }
     // end of doOurBasicTextChecks function

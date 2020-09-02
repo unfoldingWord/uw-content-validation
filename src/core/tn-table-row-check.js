@@ -1,4 +1,4 @@
-import * as books from '../core/books/books';
+import * as books from './books/books';
 import doBasicTextChecks from './basic-text-check';
 import checkMarkdownText from './markdown-text-check';
 import checkTAReference from './ta-reference-check';
@@ -6,29 +6,39 @@ import checkTNLinks from './tn-links-check';
 import checkOriginalLanguageQuote from './quote-check';
 
 
-const TABLE_LINE_VALIDATOR_VERSION = '0.3.2';
+const TABLE_LINE_VALIDATOR_VERSION = '0.3.3';
 
-const NUM_EXPECTED_TSV_FIELDS = 9;
+const NUM_EXPECTED_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalCheckingOptions) {
+async function checkTN_TSVDataRow(line, bookID, C, V, givenRowLocation, optionalCheckingOptions) {
+    /**
+    * @description - Checks one TSV data row of translation notes (TN)
+    * @param {String} line - the TSV line to be checked
+    * @param {String} bookID - 3-character UPPERCASE USFM book identifier
+    * @param {String} C - chapter number string
+    * @param {String} V - verse number string
+    * @param {String} givenRowLocation - description of where the line is located
+    * @param {Object} optionalCheckingOptions - may contain extractLength parameter
+    * @return {Object} - containing noticeList
+    */
     /* This function is only for checking one data row
-          and doesn't assume that it has any previous context.
+          and the function doesn't assume that it has any previous context.
 
         It's designed to be able to quickly show errors for a single row being displayed/edited.
 
-        Returns noticeList
+        Returns an object containing the noticeList.
     */
-    // console.log(`checkTN_TSVDataRow(${BBB}, ${line}, ${givenRowLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
+    // console.log(`checkTN_TSVDataRow(${bookID}, ${line}, ${givenRowLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
     console.assert(line !== undefined, "checkTN_TSVDataRow: 'line' parameter should be defined");
     console.assert(typeof line === 'string', `checkTN_TSVDataRow: 'line' parameter should be a string not a '${typeof line}'`);
-    console.assert(BBB !== undefined, "checkTN_TSVDataRow: 'BBB' parameter should be defined");
-    console.assert(typeof BBB === 'string', `checkTN_TSVDataRow: 'BBB' parameter should be a string not a '${typeof BBB}'`);
-    console.assert(BBB.length === 3, `checkTN_TSVDataRow: 'BBB' parameter should be three characters long not ${BBB.length}`);
-    console.assert(books.isValidBookCode(BBB), `checkTN_TSVDataRow: '${BBB}' is not a valid USFM book code`);
+    console.assert(bookID !== undefined, "checkTN_TSVDataRow: 'bookID' parameter should be defined");
+    console.assert(typeof bookID === 'string', `checkTN_TSVDataRow: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+    console.assert(bookID.length === 3, `checkTN_TSVDataRow: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    console.assert(books.isValidBookID(bookID), `checkTN_TSVDataRow: '${bookID}' is not a valid USFM book identifier`);
     console.assert(C !== undefined, "checkTN_TSVDataRow: 'C' parameter should be defined");
     console.assert(typeof C === 'string', `checkTN_TSVDataRow: 'C' parameter should be a string not a '${typeof C}'`);
     console.assert(V !== undefined, "checkTN_TSVDataRow: 'V' parameter should be defined");
@@ -41,23 +51,39 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
 
     let drResult = { noticeList: [] };
 
-    function addNotice5to8(priority, message, index, extract, location) {
-        // console.log(`TSV Line Notice: (priority=${priority}) ${message}, ${index}, ${extract}, ${location}`);
+    function addNotice5to8(priority, message, characterIndex, extract, location) {
+        /**
+        * @description - adds a new notice entry, adding bookID,C,V to the given fields
+        * @param {Number} priority - notice priority from 1 (lowest) to 999 (highest)
+        * @param {String} message - the text of the notice message
+        * @param {Number} characterIndex - where the issue occurs in the line (or -1 if unknown)
+        * @param {String} extract - short extract from the line centred on the problem (if available)
+        * @param {String} location - description of where the issue is located
+        */
+        // console.log(`TSV Line Notice: (priority=${priority}) ${message}, ${characterIndex}, ${extract}, ${location}`);
         console.assert(priority !== undefined, "cTSVrow addNotice5to8: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cTSVrow addNotice5to8: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message !== undefined, "cTSVrow addNotice5to8: 'message' parameter should be defined");
         console.assert(typeof message === 'string', `cTSVrow addNotice5to8: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        console.assert(index !== undefined, "cTSVrow addNotice5to8: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', `cTSVrow addNotice5to8: 'index' parameter should be a number not a '${typeof index}': ${index}`);
+        console.assert(characterIndex !== undefined, "cTSVrow addNotice5to8: 'characterIndex' parameter should be defined");
+        console.assert(typeof characterIndex === 'number', `cTSVrow addNotice5to8: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
         console.assert(extract !== undefined, "cTSVrow addNotice5to8: 'extract' parameter should be defined");
         console.assert(typeof extract === 'string', `cTSVrow addNotice5to8: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cTSVrow addNotice5to8: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `cTSVrow addNotice5to8: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        // Also uses the given BBB,C,V, parameters from the main function call
-        drResult.noticeList.push([priority, BBB, C, V, message, index, extract, location]);
+        // Also uses the given bookID,C,V, parameters from the main function call
+        drResult.noticeList.push({priority, bookID, C, V, message, characterIndex, extract, location});
     }
 
     function doOurMarkdownTextChecks(fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions) {
+        /**
+        * @description - checks the given markdown field and processes the returned results
+        * @param {String} fieldName - name of the field being checked
+        * @param {String} fieldText - the actual text of the field being checked
+        * @param {} allowedLinks - true if links are allowed in the field, otherwise false
+        * @param {String} rowLocation - description of where the line is located
+        * @param {Object} optionalCheckingOptions - parameters that might affect the check
+        */
         // Does markdown checks for small errors like leading/trailing spaces, etc.
 
         // We assume that checking for compulsory fields is done elsewhere
@@ -81,13 +107,21 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
         // If we need to put everything through addNotice5to8, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of cmtResultObject.noticeList) {
-            console.assert(noticeEntry.length === 5, `TL doOurMarkdownTextChecks notice length=${noticeEntry.length}`);
-            addNotice5to8(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+            console.assert(Object.keys(noticeEntry).length === 5, `TL doOurMarkdownTextChecks notice length=${Object.keys(noticeEntry).length}`);
+            addNotice5to8(noticeEntry.priority, noticeEntry.message, noticeEntry.characterIndex, noticeEntry.extract, noticeEntry.location);
         }
     }
     // end of doOurMarkdownTextChecks function
 
     function doOurBasicTextChecks(fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions) {
+        /**
+        * @description - checks the given text field and processes the returned results
+        * @param {String} fieldName - name of the field being checked
+        * @param {String} fieldText - the actual text of the field being checked
+        * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
+        * @param {String} rowLocation - description of where the line is located
+        * @param {Object} optionalCheckingOptions - parameters that might affect the check
+        */
         // Does basic checks for small errors like leading/trailing spaces, etc.
 
         // We assume that checking for compulsory fields is done elsewhere
@@ -109,8 +143,8 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
         // If we need to put everything through addNotice5to8, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of dbtcResultObject.noticeList) {
-            console.assert(noticeEntry.length === 5, `TL doOurBasicTextChecks notice length=${noticeEntry.length}`);
-            addNotice5to8(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+            console.assert(Object.keys(noticeEntry).length === 5, `TL doOurBasicTextChecks notice length=${Object.keys(noticeEntry).length}`);
+            addNotice5to8(noticeEntry.priority, noticeEntry.message, noticeEntry.characterIndex, noticeEntry.extract, noticeEntry.location);
         }
     }
     // end of doOurBasicTextChecks function
@@ -134,8 +168,8 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
         // If we need to put everything through addNotice5to8, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of coqResultObject.noticeList) {
-            console.assert(noticeEntry.length === 5, `TL ourCheckTAReference notice length=${noticeEntry.length}`);
-            addNotice5to8(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+            console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckTAReference notice length=${Object.keys(noticeEntry).length}`);
+            addNotice5to8(noticeEntry.priority, noticeEntry.message, noticeEntry.characterIndex, noticeEntry.extract, noticeEntry.location);
         }
     }
     // end of ourCheckTAReference function
@@ -143,7 +177,7 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
     async function ourCheckTNOriginalLanguageQuote(fieldName, fieldText, rowLocation, optionalCheckingOptions) {
         // Checks that the Hebrew/Greek quote can be found in the original texts
 
-        // Uses the BBB,C,V values from the main function call
+        // Uses the bookID,C,V values from the main function call
 
         // Updates the global list of notices
 
@@ -153,7 +187,7 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
         console.assert(fieldText !== undefined, "cTSVrow ourCheckTNOriginalLanguageQuote: 'fieldText' parameter should be defined");
         console.assert(typeof fieldText === 'string', `cTSVrow ourCheckTNOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
 
-        const coqResultObject = await checkOriginalLanguageQuote(fieldName,fieldText, BBB,C,V, rowLocation, optionalCheckingOptions);
+        const coqResultObject = await checkOriginalLanguageQuote(fieldName,fieldText, bookID,C,V, rowLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -161,8 +195,8 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
         // If we need to put everything through addNotice5to8, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of coqResultObject.noticeList) {
-            console.assert(noticeEntry.length === 5, `TL ourCheckTNOriginalLanguageQuote notice length=${noticeEntry.length}`);
-            addNotice5to8(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+            console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckTNOriginalLanguageQuote notice length=${Object.keys(noticeEntry).length}`);
+            addNotice5to8(noticeEntry.priority, noticeEntry.message, noticeEntry.characterIndex, noticeEntry.extract, noticeEntry.location);
         }
     }
     // end of ourCheckTNOriginalLanguageQuote function
@@ -178,7 +212,7 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
         console.assert(taLinkText !== undefined, "cTSVrow ourCheckTNLinks: 'taLinkText' parameter should be defined");
         console.assert(typeof taLinkText === 'string', `cTSVrow ourCheckTNLinks: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
 
-        const coqResultObject = await checkTNLinks(BBB, fieldName, taLinkText, rowLocation, optionalCheckingOptions);
+        const coqResultObject = await checkTNLinks(bookID, fieldName, taLinkText, rowLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -186,8 +220,8 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
         // If we need to put everything through addNotice5to8, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of coqResultObject.noticeList) {
-            console.assert(noticeEntry.length === 5, `TL ourCheckTNLinks notice length=${noticeEntry.length}`);
-            addNotice5to8(noticeEntry[0], noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4]);
+            console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckTNLinks notice length=${Object.keys(noticeEntry).length}`);
+            addNotice5to8(noticeEntry.priority, noticeEntry.message, noticeEntry.characterIndex, noticeEntry.extract, noticeEntry.location);
         }
     }
     // end of ourCheckTNLinks function
@@ -211,14 +245,14 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
     // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
-    const bbb = BBB.toLowerCase();
+    const lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook;
     try {
-        numChaptersThisBook = books.chaptersInBook(bbb).length;
+        numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
     } catch (tlcNCerror) {
-        addNotice5to8(979, "Invalid book code passed to checkTN_TSVDataRow", -1, "", ` '${BBB}' in first parameter: ${tlcNCerror}`);
+        addNotice5to8(979, "Invalid book identifier passed to checkTN_TSVDataRow", -1, "", ` '${bookID}' in first parameter: ${tlcNCerror}`);
     }
-    const haveGoodBookCode = numChaptersThisBook !== undefined;
+    const haveGoodBookID = numChaptersThisBook !== undefined;
 
     // let inString;
     // if (rowLocation) inString = rowLocation;
@@ -226,18 +260,18 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
 
     let fields = line.split('\t');
     if (fields.length === NUM_EXPECTED_TSV_FIELDS) {
-        let [B, C, V, fieldID, supportReference, origQuote, occurrence, GLQuote, occurrenceNote] = fields;
+        const [B, C, V, fieldID, supportReference, origQuote, occurrence, GLQuote, occurrenceNote] = fields;
         // let withString = ` with '${fieldID}'${inString}`;
         // let CV_withString = ` ${C}:${V}${withString}`;
         // let atString = ` at ${B} ${C}:${V} (${fieldID})${inString}`;
 
         // Check the fields one-by-one
         if (B.length) {
-            if (B !== BBB)
-                addNotice5to8(978, `Wrong '${B}' book code`, -1, "", ` (expected '${BBB}')${ourRowLocation}`);
+            if (B !== bookID)
+                addNotice5to8(978, `Wrong '${B}' book identifier`, -1, "", ` (expected '${bookID}')${ourRowLocation}`);
         }
         else
-            addNotice5to8(977, "Missing book code", 0, "", ourRowLocation);
+            addNotice5to8(977, "Missing book identifier", 0, "", ourRowLocation);
 
         let numVersesThisChapter, haveGoodChapterNumber;
         if (C.length) {
@@ -254,10 +288,10 @@ async function checkTN_TSVDataRow(line, BBB, C, V, givenRowLocation, optionalChe
                     haveGoodChapterNumber = false;
                 }
                 try {
-                    numVersesThisChapter = books.versesInChapter(bbb, intC);
+                    numVersesThisChapter = books.versesInChapter(lowercaseBookID, intC);
                     haveGoodChapterNumber = true;
                 } catch (tlcNVerror) {
-                    if (!haveGoodBookCode)
+                    if (!haveGoodBookID)
                         // addNotice5to8(500, "Invalid chapter number", rowLocation);
                         // else
                         addNotice5to8(822, "Unable to check chapter number", -1, "", ` '${C}'${ourRowLocation}`);
