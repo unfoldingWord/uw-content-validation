@@ -32,19 +32,19 @@ export function doBasicFileChecks(filename, fileText, optionalFileLocation, opti
 
     let result = { noticeList: [] };
 
-    function addNotice5(priority, message, index, extract, location) {
-        // console.log(`dBTC Notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+    function addNotice5(priority, message, characterIndex, extract, location) {
+        // console.log(`dBTC Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "dBTCs addNotice5: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `dBTCs addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message !== undefined, "dBTCs addNotice5: 'message' parameter should be defined");
         console.assert(typeof message === 'string', `dBTCs addNotice5: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        console.assert(index !== undefined, "dBTCs addNotice5: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', `dBTCs addNotice5: 'index' parameter should be a number not a '${typeof index}': ${index}`);
+        console.assert(characterIndex !== undefined, "dBTCs addNotice5: 'characterIndex' parameter should be defined");
+        console.assert(typeof characterIndex === 'number', `dBTCs addNotice5: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
         console.assert(extract !== undefined, "dBTCs addNotice5: 'extract' parameter should be defined");
         console.assert(typeof extract === 'string', `dBTCs addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "dBTCs addNotice5: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `dBTCs addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push({priority, message, index,extract, location});
+        result.noticeList.push({priority, message, characterIndex,extract, location});
     }
 
 

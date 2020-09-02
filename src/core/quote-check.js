@@ -42,19 +42,19 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, gi
 
     const colqResult = { noticeList: [] };
 
-    function addNotice5(priority, message, index, extract, location) {
-        // console.log(`checkOriginalLanguageQuote Notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+    function addNotice5(priority, message, characterIndex, extract, location) {
+        // console.log(`checkOriginalLanguageQuote Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cOLQ addNotice5: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cOLQ addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message !== undefined, "cOLQ addNotice5: 'message' parameter should be defined");
         console.assert(typeof message === 'string', `cOLQ addNotice5: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        console.assert(index !== undefined, "cOLQ addNotice5: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', `cOLQ addNotice5: 'index' parameter should be a number not a '${typeof index}': ${index}`);
+        console.assert(characterIndex !== undefined, "cOLQ addNotice5: 'characterIndex' parameter should be defined");
+        console.assert(typeof characterIndex === 'number', `cOLQ addNotice5: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
         console.assert(extract !== undefined, "cOLQ addNotice5: 'extract' parameter should be defined");
         console.assert(typeof extract === 'string', `cOLQ addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cOLQ addNotice5: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `cOLQ addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        colqResult.noticeList.push({priority, message, index, extract, location});
+        colqResult.noticeList.push({priority, message, characterIndex, extract, location});
     }
 
     async function getPassage(bookID, C, V, optionalCheckingOptions) {
@@ -224,16 +224,16 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, gi
     if (quoteBits) {
         const numQuoteBits = quoteBits.length;
         if (numQuoteBits >= 2) {
-            for (let index = 0; index < numQuoteBits; index++) {
-                if (verseText.indexOf(quoteBits[index]) < 0) { // this is what we really want to catch
+            for (let bitIndex = 0; bitIndex < numQuoteBits; bitIndex++) {
+                if (verseText.indexOf(quoteBits[bitIndex]) < 0) { // this is what we really want to catch
                     // If the quote has multiple parts, create a description of the current part
                     let partDescription;
                     if (numQuoteBits === 1) partDescription = '';
-                    else if (index === 0) partDescription = 'beginning';
-                    else if (index === numQuoteBits - 1) partDescription = 'end';
-                    else partDescription = `middle${numQuoteBits > 3 ? index : ''}`;
-                    // console.log(`721 Unable to find '${fieldText}' ${numQuoteBits === 1? '': `'${quoteBits[index]}' `}${partDescription? '('+partDescription+') ':''}in '${verseText}'`);
-                    const extract = `${quoteBits[index]}' ${partDescription? '('+partDescription+')':''}`;
+                    else if (bitIndex === 0) partDescription = 'beginning';
+                    else if (bitIndex === numQuoteBits - 1) partDescription = 'end';
+                    else partDescription = `middle${numQuoteBits > 3 ? bitIndex : ''}`;
+                    // console.log(`721 Unable to find '${fieldText}' ${numQuoteBits === 1? '': `'${quoteBits[bitIndex]}' `}${partDescription? '('+partDescription+') ':''}in '${verseText}'`);
+                    const extract = `${quoteBits[bitIndex]}' ${partDescription? '('+partDescription+')':''}`;
                     addNotice5(721, "Unable to find original language quote in verse text", -1, extract, ourLocation);
                 }
             }

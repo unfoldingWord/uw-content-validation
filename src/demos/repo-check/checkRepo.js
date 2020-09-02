@@ -35,11 +35,11 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
         // console.log(`checkRepo success: ${successString}`);
         checkRepoResult.successList.push(successString);
     }
-    function addNotice9(priority, bookID, C, V, message, index, extract, location, extra) {
+    function addNotice9(priority, bookID, C, V, message, characterIndex, extract, location, extra) {
         // Adds the notices to the result that we will later return
         // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
         // Note that bookID,C,V might all be empty strings (as some repos don't have BCV)
-        // console.log(`checkRepo addNotice9: (priority=${priority}) ${bookID} ${C}:${V} ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // console.log(`checkRepo addNotice9: (priority=${priority}) ${bookID} ${C}:${V} ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cR addNotice9: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cR addNotice9: 'priority' parameter should be a number not a '${typeof priority}'`);
         console.assert(bookID !== undefined, "cR addNotice9: 'bookID' parameter should be defined");
@@ -52,15 +52,15 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
         console.assert(typeof V === 'string', `cR addNotice9: 'V' parameter should be a string not a '${typeof V}'`);
         console.assert(message !== undefined, "cR addNotice9: 'message' parameter should be defined");
         console.assert(typeof message === 'string', `cR addNotice9: 'message' parameter should be a string not a '${typeof message}'`);
-        console.assert(index !== undefined, "cR addNotice9: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', `cR addNotice9: 'index' parameter should be a number not a '${typeof index}'`);
+        console.assert(characterIndex !== undefined, "cR addNotice9: 'characterIndex' parameter should be defined");
+        console.assert(typeof characterIndex === 'number', `cR addNotice9: 'characterIndex' parameter should be a number not a '${typeof characterIndex}'`);
         console.assert(extract !== undefined, "cR addNotice9: 'extract' parameter should be defined");
         console.assert(typeof extract === 'string', `cR addNotice9: 'extract' parameter should be a string not a '${typeof extract}'`);
         console.assert(location !== undefined, "cR addNotice9: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `cR addNotice9: 'location' parameter should be a string not a '${typeof location}'`);
         console.assert(extra !== undefined, "cR addNotice9: 'extra' parameter should be defined");
         console.assert(typeof extra === 'string', `cR addNotice9: 'extra' parameter should be a string not a '${typeof extra}'`);
-        checkRepoResult.noticeList.push({ priority, bookID, C, V, message, index, extract, location, extra });
+        checkRepoResult.noticeList.push({ priority, bookID, C, V, message, characterIndex, extract, location, extra });
     }
 
 
@@ -89,9 +89,9 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
         for (const noticeEntry of resultObject.noticeList) {
             // We add the bookOrFileCode as an extra value
             if (Object.keys(noticeEntry).length === 5)
-                addNotice9(noticeEntry.priority, cfBookID, '', '', noticeEntry.message, noticeEntry.index, noticeEntry.extract, noticeEntry.location, bookOrFileCode);
+                addNotice9(noticeEntry.priority, cfBookID, '', '', noticeEntry.message, noticeEntry.characterIndex, noticeEntry.extract, noticeEntry.location, bookOrFileCode);
             else if (Object.keys(noticeEntry).length === 8)
-                addNotice9(noticeEntry.priority, noticeEntry.bookID, noticeEntry.C, noticeEntry.V, noticeEntry.message, noticeEntry.index, noticeEntry.extract, noticeEntry.location, bookOrFileCode);
+                addNotice9(noticeEntry.priority, noticeEntry.bookID, noticeEntry.C, noticeEntry.V, noticeEntry.message, noticeEntry.characterIndex, noticeEntry.extract, noticeEntry.location, bookOrFileCode);
             else
                 console.log(`ERROR: checkRepo doOurCheckFile got length ${Object.keys(noticeEntry).length}`);
         }

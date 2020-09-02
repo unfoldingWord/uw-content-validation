@@ -54,7 +54,7 @@ However, the lower-level checking functions provide only the list of success mes
 1. The chapter number or story number (if relevant)
 1. The verse number or frame number
 1. The actual general descriptive text of the notice
-1. A zero-based integer index which indicates the zero-based position of the error in the given text (line or file). -1 indicates that this index does not contain any useful information, e.g., for a global error.
+1. A zero-based integer characterIndex which indicates the zero-based position of the error in the given text (line or file). -1 indicates that this index does not contain any useful information, e.g., for a global error.
 1. An extract of the checked text which indicates the area containing the problem. Where helpful, some character substitutions have already been made, for example, if the notice is about spaces, it is generally helpful to display spaces as a visible character in an attempt to best highlight the issue to the user. (The length of the extract defaults to ten characters, but is settable as an option.)
 1. A string indicating the context of the notice, e.g., `in line 17 of 'someBook.usfm'`.
 

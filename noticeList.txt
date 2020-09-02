@@ -95,5 +95,5 @@ Got 96 notices:
   106, "Unexpected leading space" + (fieldText[1] === ' ' ? "s" : ""), 0, extract
   105, "Unexpected trailing space(s)", fieldText.length - 1, extract
   104, "Unexpected trailing break", fieldText.length - 1, extract
-  101, "USFMGrammar found: " + warningString, -1, ""
+  101, "USFMGrammar: " + warningString, -1, ""
 

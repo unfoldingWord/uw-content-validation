@@ -40,19 +40,19 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
         // console.log(`checkYAMLText success: ${successString}`);
         cytResult.successList.push(successString);
     }
-    function addNotice5(priority, message, index, extract, location) {
-        // console.log(`checkYAMLText Notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+    function addNotice5(priority, message, characterIndex, extract, location) {
+        // console.log(`checkYAMLText Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority!==undefined, "cYt addNotice5: 'priority' parameter should be defined");
         console.assert(typeof priority==='number', `cManT addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message!==undefined, "cYt addNotice5: 'message' parameter should be defined");
         console.assert(typeof message==='string', `cManT addNotice5: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        console.assert(index!==undefined, "cYt addNotice5: 'index' parameter should be defined");
-        console.assert(typeof index==='number', `cManT addNotice5: 'index' parameter should be a number not a '${typeof index}': ${index}`);
+        console.assert(characterIndex!==undefined, "cYt addNotice5: 'characterIndex' parameter should be defined");
+        console.assert(typeof characterIndex==='number', `cManT addNotice5: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
         console.assert(extract!==undefined, "cYt addNotice5: 'extract' parameter should be defined");
         console.assert(typeof extract==='string', `cManT addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location!==undefined, "cYt addNotice5: 'location' parameter should be defined");
         console.assert(typeof location==='string', `cYt addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        cytResult.noticeList.push({priority, message, index, extract, location});
+        cytResult.noticeList.push({priority, message, characterIndex, extract, location});
     }
 
     function doOurBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
@@ -88,7 +88,7 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
               && noticeEntry.message !== "Unexpected space after [ character"
               && (noticeEntry.message !== "Unexpected doubled - characters" || fieldText === '---')
               )
-                addNotice5(noticeEntry.priority, noticeEntry.message, noticeEntry.index, noticeEntry.extract, noticeEntry.location);
+                addNotice5(noticeEntry.priority, noticeEntry.message, noticeEntry.characterIndex, noticeEntry.extract, noticeEntry.location);
     }
 }
     // end of doOurBasicTextChecks function

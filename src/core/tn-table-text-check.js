@@ -30,8 +30,8 @@ async function checkTN_TSVText(bookID, tableText, givenLocation, optionalCheckin
         // console.log(`checkTN_TSVText success: ${successString}`);
         result.successList.push(successString);
     }
-    function addNoticeCV7(priority, C,V, message, index, extract, location) {
-        // console.log(`checkTN_TSVText notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+    function addNoticeCV7(priority, C,V, message, characterIndex, extract, location) {
+        // console.log(`checkTN_TSVText notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "TSV addNoticeCV7: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `TSV addNoticeCV7: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(C !== undefined, "TSV addNoticeCV7: 'C' parameter should be defined");
@@ -40,13 +40,13 @@ async function checkTN_TSVText(bookID, tableText, givenLocation, optionalCheckin
         console.assert(typeof V === 'string', `TSV addNoticeCV7: 'V' parameter should be a string not a '${typeof V}': ${V}`);
         console.assert(message !== undefined, "TSV addNoticeCV7: 'message' parameter should be defined");
         console.assert(typeof message === 'string', `TSV addNoticeCV7: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        console.assert(index !== undefined, "TSV addNoticeCV7: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', `TSV addNoticeCV7: 'index' parameter should be a number not a '${typeof index}': ${index}`);
+        console.assert(characterIndex !== undefined, "TSV addNoticeCV7: 'characterIndex' parameter should be defined");
+        console.assert(typeof characterIndex === 'number', `TSV addNoticeCV7: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
         console.assert(extract !== undefined, "TSV addNoticeCV7: 'extract' parameter should be defined");
         console.assert(typeof extract === 'string', `TSV addNoticeCV7: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "TSV addNoticeCV7: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `TSV addNoticeCV7: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push({priority, bookID,C,V, message, index, extract, location});
+        result.noticeList.push({priority, bookID,C,V, message, characterIndex, extract, location});
     }
 
 

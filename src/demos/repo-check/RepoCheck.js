@@ -55,7 +55,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
                     rawCRResults = await checkRepo(username, repoName, branch, "", setResultValue, checkingOptions);
                 } catch (checkRepoError) {
                     rawCRResults = { successList: [], noticeList: [] };
-                    rawCRResults.noticeList.push({priority:999, message:"checkRepo function FAILED", index:-1, extract:checkRepoError, location:repoName});
+                    rawCRResults.noticeList.push({priority:999, message:"checkRepo function FAILED", characterIndex:-1, extract:checkRepoError, location:repoName});
                 }
                 // console.log("checkRepo() returned", typeof rawCRResults); //, JSON.stringify(rawCRResults));
 

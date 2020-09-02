@@ -39,19 +39,19 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
         // console.log("checkMarkdownText success: " + successString);
         result.successList.push(successString);
     }
-    function addNotice5(priority, message, index, extract, location) {
-        // console.log(`checkMarkdownText addNotice5: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? " " + extract : ""}${location}`);
+    function addNotice5(priority, message, characterIndex, extract, location) {
+        // console.log(`checkMarkdownText addNotice5: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? " " + extract : ""}${location}`);
         console.assert(priority !== undefined, "cMdT addNotice5: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cMdT addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message !== undefined, "cMdT addNotice5: 'message' parameter should be defined");
         console.assert(typeof message === 'string', `cMdT addNotice5: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        console.assert(index !== undefined, "cMdT addNotice5: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', `cMdT addNotice5: 'index' parameter should be a number not a '${typeof index}': ${index}`);
+        console.assert(characterIndex !== undefined, "cMdT addNotice5: 'characterIndex' parameter should be defined");
+        console.assert(typeof characterIndex === 'number', `cMdT addNotice5: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
         console.assert(extract !== undefined, "cMdT addNotice5: 'extract' parameter should be defined");
         console.assert(typeof extract === 'string', `cMdT addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cMdT addNotice5: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `cMdT addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push({priority, message, index, extract, location});
+        result.noticeList.push({priority, message, characterIndex, extract, location});
     }
     // end of addNotice5 function
 
@@ -88,7 +88,7 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
             if (!noticeEntry.message.startsWith("Unexpected doubled * characters") // 577 Markdown allows this
                 && !noticeEntry.message.startsWith("Unexpected * character after space") // 191
             )
-                addNotice5(noticeEntry.priority, noticeEntry.message, noticeEntry.index, noticeEntry.extract, noticeEntry.location);
+                addNotice5(noticeEntry.priority, noticeEntry.message, noticeEntry.characterIndex, noticeEntry.extract, noticeEntry.location);
         }
     }
     // end of doOurBasicTextChecks function

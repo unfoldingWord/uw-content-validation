@@ -7,7 +7,7 @@ import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
 import { ourParseInt, consoleLogObject } from './utilities';
 
 
-const USFM_VALIDATOR_VERSION = '0.5.4';
+const USFM_VALIDATOR_VERSION = '0.5.5';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -36,6 +36,8 @@ const PARAGRAPH_MARKERS = ['p', 'q', 'q1', 'q2', 'q3', 'q4',
     'm', 'mi',
     'pi', 'pi1', 'pi2', 'pi3', 'pi4',
     'li', 'li1', 'li2', 'li3', 'li4',
+    'lim', 'lim1', 'lim2', 'lim3', 'lim4',
+    'lh', 'lf',
     'po', 'pm',
     'ph', 'ph1', 'ph2', 'ph3', 'ph4',
     'tr'];
@@ -43,11 +45,12 @@ const NOTE_MARKERS = ['f', 'x'];
 const SPECIAL_MARKERS = ['w', 'zaln-s', 'k-s',
     'qt-s', 'qt1-s', 'qt2-s',
     'lit'];
-const MILESTONE_MARKERS = ['ts-s', 'ts-e', 'ts\\*', 'k-e\\*']; // Is this a good way to handle it???
+const MILESTONE_MARKERS = ['ts\\*', 'ts-s', 'ts-e', 'k-e\\*']; // Is this a good way to handle it???
 const MARKERS_WITHOUT_CONTENT = ['b', 'nb', 'ib', 'ie'].concat(MILESTONE_MARKERS);
 const ALLOWED_LINE_START_MARKERS = [].concat(INTRO_LINE_START_MARKERS).concat(HEADING_TYPE_MARKERS)
     .concat(CV_MARKERS).concat(PARAGRAPH_MARKERS)
-    .concat(NOTE_MARKERS).concat(SPECIAL_MARKERS).concat(MARKERS_WITHOUT_CONTENT);
+    .concat(NOTE_MARKERS).concat(SPECIAL_MARKERS).concat(MARKERS_WITHOUT_CONTENT)
+    .concat(MILESTONE_MARKERS);
 const DEPRECATED_MARKERS = [
     'h1', 'h2', 'h3', 'h4',
     'pr',
@@ -59,7 +62,9 @@ const CHARACTER_MARKERS = ['add', 'bk', 'dc', 'k', 'nd', 'ord', 'pn', 'png', 'ad
     'qt', 'sig', 'sls', 'tl', 'wj',
     'rq', 'ior', 'iqt',
     'em', 'bd', 'it', 'bdit', 'no', 'sc', 'sup',
-    'fig', 'ndx', 'rb', 'pro', 'w', 'wg', 'wh', 'wa']; // NOTE that we have \w in TWO places
+    'fig', 'ndx', 'rb', 'pro', 'w', 'wg', 'wh', 'wa', // NOTE that we have \w in TWO places
+    'litl', 'lik',
+    'liv', 'liv1', 'liv2', 'liv3', 'liv4'];
 const FOOTNOTE_INTERNAL_MARKERS = ['fr', 'fq', 'fqa', 'fk', 'fl', 'fw', 'fp', 'fv', 'ft', 'fdc', 'fm', 'xt'];
 const XREF_INTERNAL_MARKERS = ['xo', 'xk', 'xq', 'xt', 'xta', 'xop', 'xot', 'xnt', 'xdc', 'rq'];
 const COMPULSORY_MARKERS = ['id', 'ide'];
@@ -102,8 +107,8 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
         // console.log(`checkUSFMText success: ${successString}`);
         result.successList.push(successString);
     }
-    function addNoticeCV7(priority, C, V, message, index, extract, location) {
-        // console.log(`checkUSFMText addNoticeCV7: (priority=${priority}) ${C}:${V} ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+    function addNoticeCV7(priority, C, V, message, characterIndex, extract, location) {
+        // console.log(`checkUSFMText addNoticeCV7: (priority=${priority}) ${C}:${V} ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cUSFM addNoticeCV7: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cUSFM addNoticeCV7: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(C !== undefined, "cUSFM addNoticeCV7: 'C' parameter should be defined");
@@ -112,13 +117,13 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
         console.assert(typeof V === 'string', `cUSFM addNoticeCV7: 'V' parameter should be a string not a '${typeof V}': ${V}`);
         console.assert(message !== undefined, "cUSFM addNoticeCV7: 'message' parameter should be defined");
         console.assert(typeof message === 'string', `cUSFM addNoticeCV7: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        console.assert(index !== undefined, "cUSFM addNoticeCV7: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', `cUSFM addNoticeCV7: 'index' parameter should be a number not a '${typeof index}': ${index}`);
+        console.assert(characterIndex !== undefined, "cUSFM addNoticeCV7: 'characterIndex' parameter should be defined");
+        console.assert(typeof characterIndex === 'number', `cUSFM addNoticeCV7: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
         console.assert(extract !== undefined, "cUSFM addNoticeCV7: 'extract' parameter should be defined");
         console.assert(typeof extract === 'string', `cUSFM addNoticeCV7: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cUSFM addNoticeCV7: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `cUSFM addNoticeCV7: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push({priority, bookID, C, V, message, index, extract, location});
+        result.noticeList.push({priority, bookID, C, V, message, characterIndex, extract, location});
     }
 
 
@@ -146,7 +151,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
             if (!warningString.startsWith("Empty lines present") // we allow empty lines in our USFM
                 && !warningString.startsWith("Trailing spaces present at line end") // we find these ourselves
             )
-                addNoticeCV7(102, '', '', `USFMGrammar found: ${warningString}`, -1, "", fileLocation);
+                addNoticeCV7(102, '', '', `USFMGrammar: ${warningString}`, -1, "", fileLocation);
 
         if (!grammarCheckResult.isValidUSFM) {
             const relaxedGrammarCheckResult = runBCSGrammarCheck('relaxed', fileText, fileLocation);
@@ -339,7 +344,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
                 && (!noticeEntry.message.startsWith("Unexpected doubled , characters") || fieldText.indexOf('x-morph') < 0) // inside \w fields
                 && (!noticeEntry.message.startsWith('Unexpected doubled " characters') || fieldText.indexOf('x-morph') < 0) // inside \w fields
             )
-                addNoticeCV7(noticeEntry.priority, C, V, noticeEntry.message, noticeEntry.index, noticeEntry.extract, noticeEntry.location);
+                addNoticeCV7(noticeEntry.priority, C, V, noticeEntry.message, noticeEntry.characterIndex, noticeEntry.extract, noticeEntry.location);
         }
     }
     // end of doOurBasicTextChecks function
@@ -477,7 +482,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
                 addNoticeCV7(711, C, V, "Expected compulsory content", marker.length, "", ` after \\${marker} marker${lineLocation}`);
         } else // it's not a recognised line marker
             // Lower priority of deprecated \s5 markers (compared to all other unknown markers)
-            addNoticeCV7(marker === 's5' ? 111 : 811, C, V, `${marker === 's5' ? 'Deprecated' : 'Unexpected'} '\\${marker}' marker at start of line`, 1, "", lineLocation);
+            addNoticeCV7(marker === 's5' ? 111 : 809, C, V, `${marker === 's5' ? 'Deprecated' : 'Unexpected'} '\\${marker}' marker at start of line`, 1, "", lineLocation);
         if (rest) checkUSFMLineInternals(marker, rest, lineLocation);
     }
     // end of checkUSFMLineContents function
@@ -516,10 +521,10 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
                 // addNoticeCV7(103, "Unexpected blank line", 0, '', atString);
                 continue;
             }
-            let index;
-            if ((index = line.indexOf('\r')) >= 0) {
+            let characterIndex;
+            if ((characterIndex = line.indexOf('\r')) >= 0) {
                 const extract = ``; // TODO xxxxxxxxxxxxxxxxxxx................................
-                addNoticeCV7(703, C, V, "Unexpected CarriageReturn character", index, extract, atString);
+                addNoticeCV7(703, C, V, "Unexpected CarriageReturn character", characterIndex, extract, atString);
             }
 
             let marker, rest;
@@ -531,7 +536,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
                 // NOTE: Some unfoldingWord USFM Bibles commonly have this
                 //          so it's not necessarily either an error or a warning
                 rest = line;
-                if (`(“‘`.indexOf(line[0]) < 0) { // These are the often expected characters
+                if (`([“‘`.indexOf(line[0]) < 0) { // These are the often expected characters
                     addNoticeCV7(980, C, V, "Expected line to start with backslash", 0, line[0], atString);
                     if (line[1] === '\\') { // Let's drop the leading punctuation and try to check the rest of the line
                         marker = line.substring(2).split(' ', 1)[0];
@@ -655,7 +660,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
     console.log("  Warnings:", JSON.stringify(allResults[1].warnings));
     // Display these warnings but with a lower priority
     for (const warningString of allResults[1].warnings)
-        addNoticeCV7(103, `USFMGrammar found: ${warningString.trim()}`, -1, "", location);
+        addNoticeCV7(103, `USFMGrammar: ${warningString.trim()}`, -1, "", location);
     */
 
     // NOTE: If we're careful about how/when we add their notices to our global list,
@@ -672,7 +677,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
     // console.log("  Warnings:", JSON.stringify(allResults[1].warnings));
     // // Display these warnings but with a lower priority
     // for (const warningString of allResults[1].warnings)
-        // addNoticeCV7(103, `USFMGrammar found: ${warningString.trim()}`, -1, "", location);
+        // addNoticeCV7(103, `USFMGrammar: ${warningString.trim()}`, -1, "", location);
 
     // console.log(`  checkUSFMText returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
     // console.log(`checkUSFMText result is ${JSON.stringify(result)}`);

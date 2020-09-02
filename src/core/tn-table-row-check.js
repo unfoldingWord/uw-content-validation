@@ -51,28 +51,28 @@ async function checkTN_TSVDataRow(line, bookID, C, V, givenRowLocation, optional
 
     let drResult = { noticeList: [] };
 
-    function addNotice5to8(priority, message, index, extract, location) {
+    function addNotice5to8(priority, message, characterIndex, extract, location) {
         /**
         * @description - adds a new notice entry, adding bookID,C,V to the given fields
         * @param {Number} priority - notice priority from 1 (lowest) to 999 (highest)
         * @param {String} message - the text of the notice message
-        * @param {Number} index - where the issue occurs in the line (or -1 if unknown)
+        * @param {Number} characterIndex - where the issue occurs in the line (or -1 if unknown)
         * @param {String} extract - short extract from the line centred on the problem (if available)
         * @param {String} location - description of where the issue is located
         */
-        // console.log(`TSV Line Notice: (priority=${priority}) ${message}, ${index}, ${extract}, ${location}`);
+        // console.log(`TSV Line Notice: (priority=${priority}) ${message}, ${characterIndex}, ${extract}, ${location}`);
         console.assert(priority !== undefined, "cTSVrow addNotice5to8: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cTSVrow addNotice5to8: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message !== undefined, "cTSVrow addNotice5to8: 'message' parameter should be defined");
         console.assert(typeof message === 'string', `cTSVrow addNotice5to8: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        console.assert(index !== undefined, "cTSVrow addNotice5to8: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', `cTSVrow addNotice5to8: 'index' parameter should be a number not a '${typeof index}': ${index}`);
+        console.assert(characterIndex !== undefined, "cTSVrow addNotice5to8: 'characterIndex' parameter should be defined");
+        console.assert(typeof characterIndex === 'number', `cTSVrow addNotice5to8: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
         console.assert(extract !== undefined, "cTSVrow addNotice5to8: 'extract' parameter should be defined");
         console.assert(typeof extract === 'string', `cTSVrow addNotice5to8: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cTSVrow addNotice5to8: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `cTSVrow addNotice5to8: 'location' parameter should be a string not a '${typeof location}': ${location}`);
         // Also uses the given bookID,C,V, parameters from the main function call
-        drResult.noticeList.push({priority, bookID, C, V, message, index, extract, location});
+        drResult.noticeList.push({priority, bookID, C, V, message, characterIndex, extract, location});
     }
 
     function doOurMarkdownTextChecks(fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions) {
@@ -108,7 +108,7 @@ async function checkTN_TSVDataRow(line, bookID, C, V, givenRowLocation, optional
         //  process results line by line
         for (const noticeEntry of cmtResultObject.noticeList) {
             console.assert(Object.keys(noticeEntry).length === 5, `TL doOurMarkdownTextChecks notice length=${Object.keys(noticeEntry).length}`);
-            addNotice5to8(noticeEntry.priority, noticeEntry.message, noticeEntry.index, noticeEntry.extract, noticeEntry.location);
+            addNotice5to8(noticeEntry.priority, noticeEntry.message, noticeEntry.characterIndex, noticeEntry.extract, noticeEntry.location);
         }
     }
     // end of doOurMarkdownTextChecks function
@@ -144,7 +144,7 @@ async function checkTN_TSVDataRow(line, bookID, C, V, givenRowLocation, optional
         //  process results line by line
         for (const noticeEntry of dbtcResultObject.noticeList) {
             console.assert(Object.keys(noticeEntry).length === 5, `TL doOurBasicTextChecks notice length=${Object.keys(noticeEntry).length}`);
-            addNotice5to8(noticeEntry.priority, noticeEntry.message, noticeEntry.index, noticeEntry.extract, noticeEntry.location);
+            addNotice5to8(noticeEntry.priority, noticeEntry.message, noticeEntry.characterIndex, noticeEntry.extract, noticeEntry.location);
         }
     }
     // end of doOurBasicTextChecks function
@@ -169,7 +169,7 @@ async function checkTN_TSVDataRow(line, bookID, C, V, givenRowLocation, optional
         //  process results line by line
         for (const noticeEntry of coqResultObject.noticeList) {
             console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckTAReference notice length=${Object.keys(noticeEntry).length}`);
-            addNotice5to8(noticeEntry.priority, noticeEntry.message, noticeEntry.index, noticeEntry.extract, noticeEntry.location);
+            addNotice5to8(noticeEntry.priority, noticeEntry.message, noticeEntry.characterIndex, noticeEntry.extract, noticeEntry.location);
         }
     }
     // end of ourCheckTAReference function
@@ -196,7 +196,7 @@ async function checkTN_TSVDataRow(line, bookID, C, V, givenRowLocation, optional
         //  process results line by line
         for (const noticeEntry of coqResultObject.noticeList) {
             console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckTNOriginalLanguageQuote notice length=${Object.keys(noticeEntry).length}`);
-            addNotice5to8(noticeEntry.priority, noticeEntry.message, noticeEntry.index, noticeEntry.extract, noticeEntry.location);
+            addNotice5to8(noticeEntry.priority, noticeEntry.message, noticeEntry.characterIndex, noticeEntry.extract, noticeEntry.location);
         }
     }
     // end of ourCheckTNOriginalLanguageQuote function
@@ -221,7 +221,7 @@ async function checkTN_TSVDataRow(line, bookID, C, V, givenRowLocation, optional
         //  process results line by line
         for (const noticeEntry of coqResultObject.noticeList) {
             console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckTNLinks notice length=${Object.keys(noticeEntry).length}`);
-            addNotice5to8(noticeEntry.priority, noticeEntry.message, noticeEntry.index, noticeEntry.extract, noticeEntry.location);
+            addNotice5to8(noticeEntry.priority, noticeEntry.message, noticeEntry.characterIndex, noticeEntry.extract, noticeEntry.location);
         }
     }
     // end of ourCheckTNLinks function

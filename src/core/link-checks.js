@@ -16,19 +16,19 @@ async function startLiveLinksCheck(linksList, existingNoticeList, callbackFuncti
 
     let result = { noticeList: existingNoticeList };
 
-    function addNotice5(priority, message, index, extract, location) {
-        console.log(`sLLC Link Notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+    function addNotice5(priority, message, characterIndex, extract, location) {
+        console.log(`sLLC Link Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority!==undefined, "sLLC addNotice5: 'priority' parameter should be defined");
         console.assert(typeof priority==='number', `sLLC addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message!==undefined, "sLLC addNotice5: 'message' parameter should be defined");
         console.assert(typeof message==='string', `sLLC addNotice5: 'message' parameter should be a string not a '${typeof message}':${message}`);
-        console.assert(index!==undefined, "sLLC addNotice5: 'index' parameter should be defined");
-        console.assert(typeof index==='number', `sLLC addNotice5: 'index' parameter should be a number not a '${typeof index}': ${index}`);
+        console.assert(characterIndex!==undefined, "sLLC addNotice5: 'characterIndex' parameter should be defined");
+        console.assert(typeof characterIndex==='number', `sLLC addNotice5: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
         console.assert(extract!==undefined, "sLLC addNotice5: 'extract' parameter should be defined");
         console.assert(typeof extract==='string', `sLLC addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location!==undefined, "sLLC addNotice5: 'location' parameter should be defined");
         console.assert(typeof location==='string', `sLLC addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push({priority, message, index,extract, location});
+        result.noticeList.push({priority, message, characterIndex,extract, location});
     }
 
     // Now try fetching each link in turn
@@ -67,19 +67,19 @@ function doBasicLinkChecks(fieldName, fieldText, linkOptions, optionalFieldLocat
 
     let result = { noticeList: [] };
 
-    function addNotice5(priority, message, index, extract, location) {
-        console.log(`dBLC Notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+    function addNotice5(priority, message, characterIndex, extract, location) {
+        console.log(`dBLC Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority!==undefined, "sLLC addNotice5: 'priority' parameter should be defined");
         console.assert(typeof priority==='number', `sLLC addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message!==undefined, "sLLC addNotice5: 'message' parameter should be defined");
         console.assert(typeof message==='string', `sLLC addNotice5: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        console.assert(index!==undefined, "sLLC addNotice5: 'index' parameter should be defined");
-        console.assert(typeof index==='number', `sLLC addNotice5: 'index' parameter should be a number not a '${typeof index}': ${index}`);
+        console.assert(characterIndex!==undefined, "sLLC addNotice5: 'characterIndex' parameter should be defined");
+        console.assert(typeof characterIndex==='number', `sLLC addNotice5: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
         console.assert(extract!==undefined, "sLLC addNotice5: 'extract' parameter should be defined");
         console.assert(typeof extract==='string', `sLLC addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location!==undefined, "sLLC addNotice5: 'location' parameter should be defined");
         console.assert(typeof location==='string', `sLLC addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push({priority, message, index,extract, location});
+        result.noticeList.push({priority, message, characterIndex,extract, location});
     }
 
     // Create our more detailed location string by prepending the fieldName

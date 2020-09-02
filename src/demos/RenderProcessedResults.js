@@ -178,7 +178,7 @@ export function RenderProcessedArray({arrayType, results}) {
                 return <li key={index}>
                     <b style={{ color: arrayType === 'e' ? 'red' : 'orange' }}>{listEntry.message}</b>
                     <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
-                    {listEntry.index > 0 ? " (at character " + (listEntry.index + 1) + " of line)" : ""}
+                    {listEntry.characterIndex > 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
                     <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
                     {listEntry.location}
                     <small style={{ color: 'Gray' }}>{listEntry.priority >= 0 ? " (Priority " + listEntry.priority + ")" : ""}</small>
@@ -202,7 +202,7 @@ export function RenderGivenArray({array, colour}) {
             return <li key={index}>
                 <b style={{ color: colour }}>{listEntry.message}</b>
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
-                {listEntry.index > 0 ? " (at character " + (listEntry.index + 1) + " of line)" : ""}
+                {listEntry.characterIndex > 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
                 <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
                 {listEntry.location}
                 <small style={{ color: 'Gray' }}>{listEntry.priority >= 0 ? " (Priority " + listEntry.priority + ")" : ""}</small>
@@ -239,7 +239,7 @@ function RenderWarningsGradient({results}) {
             return <li key={index}>
                 <b style={{ color: thisColour }}>{listEntry.message}</b>
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
-                {listEntry.index > 0 ? " (at character " + (listEntry.index + 1) + " of line)" : ""}
+                {listEntry.characterIndex > 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
                 <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
                 {listEntry.location}
                 <small style={{ color: 'Gray' }}>{listEntry.priority >= 0 ? " (Priority " + listEntry.priority + ")" : ""}</small>

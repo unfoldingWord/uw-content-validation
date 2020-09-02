@@ -41,27 +41,27 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, opti
         // console.log(`checkUSFMToJSON success: ${successString}`);
         result.successList.push(successString);
     }
-    function addNotice5to8(priority, message, index, extract, location) {
+    function addNotice5to8(priority, message, characterIndex, extract, location) {
         /**
         * @description - adds a new notice entry, adding bookID,C,V to the given fields
         * @param {Number} priority - notice priority from 1 (lowest) to 999 (highest)
         * @param {String} message - the text of the notice message
-        * @param {Number} index - where the issue occurs in the line (or -1 if unknown)
+        * @param {Number} characterIndex - where the issue occurs in the line (or -1 if unknown)
         * @param {String} extract - short extract from the line centred on the problem (if available)
         * @param {String} location - description of where the issue is located
         */
-        // console.log(`checkUSFMToJSON notice: (priority=${priority}) ${message}${index > 0 ? ` (at character ${index}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // console.log(`checkUSFMToJSON notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cUSFMjs addNotice5to8: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cUSFMjs addNotice5to8: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message !== undefined, "cUSFMjs addNotice5to8: 'message' parameter should be defined");
         console.assert(typeof message === 'string', `cUSFMjs addNotice5to8: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        console.assert(index !== undefined, "cUSFMjs addNotice5to8: 'index' parameter should be defined");
-        console.assert(typeof index === 'number', `cUSFMjs addNotice5to8: 'index' parameter should be a number not a '${typeof index}': ${index}`);
+        console.assert(characterIndex !== undefined, "cUSFMjs addNotice5to8: 'characterIndex' parameter should be defined");
+        console.assert(typeof characterIndex === 'number', `cUSFMjs addNotice5to8: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
         console.assert(extract !== undefined, "cUSFMjs addNotice5to8: 'extract' parameter should be defined");
         console.assert(typeof extract === 'string', `cUSFMjs addNotice5to8: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cUSFMjs addNotice5to8: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `cUSFMjs addNotice5to8: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push({priority, bookID,C:'',V:'', message, index, extract, location});
+        result.noticeList.push({priority, bookID,C:'',V:'', message, characterIndex, extract, location});
     }
 
 
