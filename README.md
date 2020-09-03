@@ -1,9 +1,9 @@
 [![Custom badge](https://img.shields.io/endpoint?color=%2374b9ff&url=https%3A%2F%2Fraw.githubusercontent.com%2unfoldingWord%2Fcontent-validation%2Fmaster%2Fcoverage%2Fshields.json)]()
-[![Install, Build & Run Cypress](https://github.com/unfoldingWord/content-validation/workflows/Install,%20Build%20&%20Run%20Cypress/badge.svg)]()
+[![Install, Build & Run Cypress](https://github.com/unfoldingWord/door43-content-validation/workflows/Install,%20Build%20&%20Run%20Cypress/badge.svg)]()
 
 # uW Content/Resource Validation functions
 
-GH Pages: https://unfoldingword.github.io/content-validation/
+GH Pages: https://unfoldingword.github.io/door43-content-validation/
 
 This repository contains JavaScript functions for validating/checking for errors in text that is passed to the functions. This text might be a line in a file (especially a TSV file when a line contains a number of distinct fields), or the entire text of a file that's perhaps open in an editor in the enclosing app.
 
@@ -18,7 +18,7 @@ There are three sample notice processing functions that show how to:
 1. Divide the noticeList into a list of severe, medium, and low priority warnings,
 1. Convert the noticeList into a list of warnings sorted by priority,
 
-In addition, there are Styleguidist pages viewable at https://unfoldingword.github.io/content-validation/ which show how these core functions may be used, effectively producing a primitive app that checks Door43 files, repositories (repos), book packages, etc. as well as demonstrating the basic functions.
+In addition, there are Styleguidist pages viewable at https://unfoldingword.github.io/door43-content-validation/ which show how these core functions may be used, effectively producing a primitive app that checks Door43.org files, repositories (repos), book packages, etc. as well as demonstrating the basic functions.
 
 ## The Stack
 
@@ -60,7 +60,7 @@ However, the lower-level checking functions provide only the list of success mes
 1. A string indicating the context of the notice, e.g., `in line 17 of 'someBook.usfm'`.
 
 
-Keeping our notices in this format, rather than the simplicity of just saving an array of single strings, allows the above *notice components* to be processed at a higher level. The default is to funnel them all through the supplied `processNoticesToErrorsWarnings` function (in core/notice-processing-functions.fs) which does the following:
+Keeping our notices in this format, rather than the simplicity of just saving an array of single strings, allows the above *notice components* to be processed at a higher level, e.g., to allow user-controlled filtering, sorting, etc. The default is to funnel them all through the supplied `processNoticesToErrorsWarnings` function (in core/notice-processing-functions.fs) which does the following:
 
 1. Removes excess repeated errors. For example, if there's a systematic error in a file, say with unneeded leading spaces in every field, rather than returning with hundreds of errors, only the first several errors will be returned, followed by an "errors suppressed" message. (The number of each error displayed is settable as an option -- zero means display all errors with no suppression.)
 1. Separates notices into error and warning lists based on the priority number. (The switch-over point is settable as an option.)
@@ -72,24 +72,27 @@ However, the user is, of course, free to create their own alternative version of
 
 Still unfinished (in rough priority order):
 
-1. Finish adding line number as a separate notice field
+1. Finish adding lineNumber, fileName, repoName as separate optional notice fields
+1. Consider fetching TA and TW as zip files when checking links to those resources
 1. Standardise parameters according to best practice (i.e., dereferencing, etc.)
 1. Document the API
-1. Publish to NPM so that the functions may be easily used by other software -- this may involve some changes to the folder structure, etc. as we only want the core functions published in this way -- not the demo code
 1. Checking of general markdown and naked links
 1. Testing and fine-tuning of error messages (e.g., comparing with tX), especially suppression of false alarms
-1. Improve documentation
+1. Improve general documentation
 1. Optimise various different file fetches and caches (incl. using zips) for the demos
 1. Is our `RepoCheck` the same as `ResourceContainerCheck`? Or is the latter more specific?
 1. Understand and standardise React stuff in the demos, e.g., e.g., withStyles, etc.
-1. Write unit tests (especially for the core functions) and get them passing
+1. Write unit tests (especially for the core functions) and get them passing, including on GitHub push -- is it Cypress or Jest that's the right tool for this? Or Jest for the core functions? Cypress for some basic tests of the demos?
+1. Write the correct checks for the new TSV annotation formats
 1. Check for and remove left-over (but unused) code from the source projects that the original code was copied from
 1. Remove all debug code and console logging, and to consider possible speed and memory optimizations
+1. Add a Scripture Burrito check (once Door43 has that available)
 
 Known bugs:
 
 1. The line number in the USFM Grammar check doesn't account for blank lines, so the real line number may be larger. (This is a bug in the BCS library.)
 1. Work on removing false alarms is not yet completed
+1. Work on checking links (esp. naked links) is not yet completed.
 
 ## Functionality and Limitations
 
