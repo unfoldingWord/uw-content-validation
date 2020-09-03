@@ -137,7 +137,7 @@ export function RenderRawResults({ results }) {
 }
 
 
-function RenderBCV({ bookID, C, V }) {
+export function RenderBCV({ bookID, C, V }) {
     /**
     * @description - Displays the bookcode and chapter/verse details if specified
     * @param {String} bookID - (optional) 3-character UPPERCASE USFM bookcode or 'OBS'.
@@ -158,7 +158,7 @@ function RenderBCV({ bookID, C, V }) {
 }
 
 
-function RenderSuccessesColoured({results}) {
+export function RenderSuccessesColoured({results}) {
     // Display our array of success message strings in a nicer format
     //
     // Expects results to contain:
@@ -235,7 +235,7 @@ export function RenderGivenArray({array, colour}) {
 }
 
 
-function getGradientColour(priorityValue) {
+export function getGradientColour(priorityValue) {
     // priorityValue is in range 1..999
     //
     // Returns a colour value from red (highest priority) to orange (lower)
@@ -246,7 +246,7 @@ function getGradientColour(priorityValue) {
 }
 
 
-function RenderWarningsGradient({results}) {
+export function RenderWarningsGradient({results}) {
     // Display our array of 8-part lists in a nicer format
     //  1/ priority number, 2/ bookID, 3/ C, 4/ V, 5/ message,
     //      6/ index (integer), 7/ extract (optional), 8/ location

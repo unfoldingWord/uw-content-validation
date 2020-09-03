@@ -170,14 +170,14 @@ export const testament = (bookId) => {
 //   return "";
 // }
 
-// export const bookTitleById = (id) => {
-//   for (const i=0; i < data.length; i++) {
-//     if ( data[i].id === id ) {
-//       return data[i].title;
-//     }
-//   }
-//   return "";
-// }
+export const bookTitleById = (id) => {
+  for (const i=0; i < data.length; i++) {
+    if ( data[i].id === id ) {
+      return data[i].title;
+    }
+  }
+  return "";
+}
 
 const oftenMissingList = [
   // See https://en.wikipedia.org/wiki/List_of_New_Testament_verses_not_included_in_modern_English_translations
