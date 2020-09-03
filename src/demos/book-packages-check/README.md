@@ -18,9 +18,9 @@ import BookPackagesCheck from './BookPackagesCheck';
 <BookPackagesCheck
   username='unfoldingWord'
   language_code='en'
-  // Enter a string containing UPPERCASE USFM book identifiers separated by commas
+  // Enter a string containing UPPERCASE USFM book identifiers separated only by commas
   //  and can also include OBS (for Open Bible Stories)
-  bookIDs='RUT,EST,JON,EPH,TIT,3JN,OBS'
+  bookIDs='RUT,NEH,EST,JON,EPH,TIT,3JN,OBS'
 
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'
