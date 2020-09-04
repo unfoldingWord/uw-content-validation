@@ -80,21 +80,22 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, gi
 
         let originalUSFM;
         // console.log(`Need to check against ${originalLanguageRepoCode}`);
+        const getFile_ = (optionalCheckingOptions && optionalCheckingOptions.getFile) ? optionalCheckingOptions.getFile : getFile;
         if (originalLanguageRepoCode === 'UHB') {
             try {
-                originalUSFM = await getFile({ username, repository: originalLanguageRepoName, path: filename, branch });
+                originalUSFM = await getFile_({ username, repository: originalLanguageRepoName, path: filename, branch });
                 // console.log("Fetched file_content for", repoName, filename, typeof originalUSFM, originalUSFM.length);
             } catch (gcUHBerror) {
                 console.log("ERROR: Failed to load", username, originalLanguageRepoCode, filename, branch, gcUHBerror.message);
-                addNotice6({priority:996, message:"Failed to load", location:`${generalLocation} ${filename}: ${gcUHBerror}`, extra:repoCode});
+                addNotice6({priority:996, message:"Failed to load", location:`${ourLocation} ${filename}: ${gcUHBerror}`, extra: originalLanguageRepoName});
             }
         } else if (originalLanguageRepoCode === 'UGNT') {
             try {
-                originalUSFM = await getFile({ username, repository: originalLanguageRepoName, path: filename, branch });
+                originalUSFM = await getFile_({ username, repository: originalLanguageRepoName, path: filename, branch });
                 // console.log("Fetched file_content for", repoName, filename, typeof originalUSFM, originalUSFM.length);
             } catch (gcUGNTerror) {
                 console.log("ERROR: Failed to load", username, originalLanguageRepoCode, filename, branch, gcUGNTerror.message);
-                addNotice6({priority:996, message:"Failed to load", location:`${generalLocation} ${filename}: ${gcUGNTerror}`, extra:repoCode});
+                addNotice6({priority:996, message:"Failed to load", location:`${ourLocation} ${filename}: ${gcUGNTerror}`, extra: originalLanguageRepoName});
             }
         }
 
@@ -106,7 +107,7 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, gi
         // Now find the desired C:V
         let foundChapter = false, foundVerse = false;
         let verseText = '';
-        for (const bookLine of originalUSFM.split('\n')) {
+        for (let bookLine of originalUSFM.split('\n')) {
             // console.log("bookLine", bookLine);
             if (!foundChapter && bookLine === `\\c ${C}`) {
                 foundChapter = true;
@@ -135,7 +136,7 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, gi
                 const adjusted_field = bits[0];
                 verseText = verseText.substring(0, ixW) + adjusted_field + verseText.substring(ixEnd + 3);
             } else {
-                console.log(`Missing \\w* in ${B} ${C}:${V} verseText: '${verseText}'`);
+                console.log(`Missing \\w* in ${bookID} ${C}:${V} verseText: '${verseText}'`);
                 verseText = verseText.replace(/\\w /g, '', 1); // Attempt to limp on
             }
             ixW = verseText.indexOf('\\w ', ixW + 1); // Might be another one

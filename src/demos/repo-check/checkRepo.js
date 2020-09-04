@@ -161,12 +161,13 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
 
             // console.log("checkRepo: Try to load", username, repoName, thisFilepath, branch);
             let repoFileContent;
+            const getFile_ = (checkingOptions && checkingOptions.getFile) ? checkingOptions.getFile : getFile;
             try {
-                repoFileContent = await getFile({ username, repository: repoName, path: thisFilepath, branch });
+                repoFileContent = await getFile_({ username, repository: repoName, path: thisFilepath, branch });
                 // console.log("Fetched file_content for", repoName, thisPath, typeof repoFileContent, repoFileContent.length);
             } catch (cRgfError) {
                 console.log("Failed to load", username, repoName, thisFilepath, branch, `${cRgfError}`);
-                addNotice10({priority:996, bookID:ourBookID, message:"Failed to load", location:`${generalLocation} ${thisFilepath}: ${cRgfError}`, repoCode});
+                addNotice10({priority:996, bookID:ourBookID, message:"Failed to load", location:`${givenLocation} ${thisFilepath}: ${cRgfError}`, repoName});
                 return;
             }
             if (repoFileContent) {
