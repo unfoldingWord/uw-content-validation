@@ -90,7 +90,7 @@ Got 96 notices:
   158, "Unexpected space(s) beside ellipse characters", ix, extract
   158, "Unexpected space(s) beside ellipse character", ix, extract
   148, "'checking' key is missing", -1, ""
-  111, `Bad options for doBasicLinkChecks: expectedCount=${linkOptions.expectedCount} but allowedCount=${linkOptions.allowedCount}`, -1, "", ""
+  111, `Bad options for checkFieldLinks: expectedCount=${linkOptions.expectedCount} but allowedCount=${linkOptions.allowedCount}`, -1, "", ""
   107, "Unexpected leading break", 0, extract
   106, "Unexpected leading space" + (fieldText[1] === ' ' ? "s" : ""), 0, extract
   105, "Unexpected trailing space(s)", fieldText.length - 1, extract

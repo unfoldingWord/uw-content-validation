@@ -1,5 +1,5 @@
 import * as books from './books/books';
-import doBasicTextChecks from './basic-text-check';
+import checkTextField from './field-text-check';
 import checkMarkdownText from './markdown-text-check';
 import checkTAReference from './ta-reference-check';
 import checkTNLinks from './tn-links-check';
@@ -68,8 +68,8 @@ async function checkAnnotationTSVDataRow(annotationType, line, bookID, C, V, giv
         * @description - adds a new notice entry, adding bookID,C,V to the given fields
         * @param {Number} priority - notice priority from 1 (lowest) to 999 (highest)
         * @param {String} message - the text of the notice message
-        * @param {Number} lineNumber - one-based line number (or -1 if unknown)
-        * @param {Number} characterIndex - zero-based index of where the issue occurs in the line (or -1 if unknown)
+        * @param {Number} lineNumber - one-based line number
+        * @param {Number} characterIndex - zero-based index of where the issue occurs in the line
         * @param {String} extract - short extract from the line centred on the problem (if available)
         * @param {String} location - description of where the issue is located
         */
@@ -90,7 +90,7 @@ async function checkAnnotationTSVDataRow(annotationType, line, bookID, C, V, giv
         adrResult.noticeList.push({ priority, message, bookID, C, V, lineNumber, characterIndex, extract, location });
     }
 
-    function doOurMarkdownTextChecks(fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions) {
+    function ourMarkdownTextChecks(fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions) {
         /**
         * @description - checks the given markdown field and processes the returned results
         * @param {String} fieldName - name of the field being checked
@@ -107,12 +107,12 @@ async function checkAnnotationTSVDataRow(annotationType, line, bookID, C, V, giv
 
         // We don't currently use the allowedLinks parameter
 
-        // console.log(`cATSVrow doOurBasicTextChecks(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
-        console.assert(fieldName !== undefined, "cATSVrow doOurMarkdownTextChecks: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName === 'string', `cATSVrow doOurMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        console.assert(fieldText !== undefined, "cATSVrow doOurMarkdownTextChecks: 'fieldText' parameter should be defined");
-        console.assert(typeof fieldText === 'string', `cATSVrow doOurMarkdownTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-        console.assert(allowedLinks === true || allowedLinks === false, "cATSVrow doOurMarkdownTextChecks: allowedLinks parameter must be either true or false");
+        // console.log(`cATSVrow ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
+        console.assert(fieldName !== undefined, "cATSVrow ourMarkdownTextChecks: 'fieldName' parameter should be defined");
+        console.assert(typeof fieldName === 'string', `cATSVrow ourMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        console.assert(fieldText !== undefined, "cATSVrow ourMarkdownTextChecks: 'fieldText' parameter should be defined");
+        console.assert(typeof fieldText === 'string', `cATSVrow ourMarkdownTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+        console.assert(allowedLinks === true || allowedLinks === false, "cATSVrow ourMarkdownTextChecks: allowedLinks parameter must be either true or false");
 
         const cmtResultObject = checkMarkdownText(fieldName, fieldText, rowLocation, optionalCheckingOptions);
 
@@ -122,13 +122,13 @@ async function checkAnnotationTSVDataRow(annotationType, line, bookID, C, V, giv
         // If we need to put everything through addNotice6to9, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of cmtResultObject.noticeList) {
-            // console.assert(Object.keys(noticeEntry).length === 5, `TL doOurMarkdownTextChecks notice length=${Object.keys(noticeEntry).length}`);
+            // console.assert(Object.keys(noticeEntry).length === 5, `TL ourMarkdownTextChecks notice length=${Object.keys(noticeEntry).length}`);
             addNotice6to9({priority:noticeEntry.priority, message:noticeEntry.message, characterIndex:noticeEntry.characterIndex, extract:noticeEntry.extract, location:noticeEntry.location});
         }
     }
-    // end of doOurMarkdownTextChecks function
+    // end of ourMarkdownTextChecks function
 
-    function doOurBasicTextChecks(fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions) {
+    function ourCheckTextField(fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions) {
         /**
         * @description - checks the given text field and processes the returned results
         * @param {String} fieldName - name of the field being checked
@@ -143,14 +143,14 @@ async function checkAnnotationTSVDataRow(annotationType, line, bookID, C, V, giv
 
         // Updates the global list of notices
 
-        // console.log(`cATSVrow doOurBasicTextChecks(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
-        console.assert(fieldName !== undefined, "cATSVrow doOurBasicTextChecks: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName === 'string', `cATSVrow doOurBasicTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        console.assert(fieldText !== undefined, "cATSVrow doOurBasicTextChecks: 'fieldText' parameter should be defined");
-        console.assert(typeof fieldText === 'string', `cATSVrow doOurBasicTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-        console.assert(allowedLinks === true || allowedLinks === false, "cATSVrow doOurBasicTextChecks: allowedLinks parameter must be either true or false");
+        // console.log(`cATSVrow ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
+        console.assert(fieldName !== undefined, "cATSVrow ourCheckTextField: 'fieldName' parameter should be defined");
+        console.assert(typeof fieldName === 'string', `cATSVrow ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        console.assert(fieldText !== undefined, "cATSVrow ourCheckTextField: 'fieldText' parameter should be defined");
+        console.assert(typeof fieldText === 'string', `cATSVrow ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+        console.assert(allowedLinks === true || allowedLinks === false, "cATSVrow ourCheckTextField: allowedLinks parameter must be either true or false");
 
-        const dbtcResultObject = doBasicTextChecks(fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions);
+        const dbtcResultObject = checkTextField(fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -158,11 +158,11 @@ async function checkAnnotationTSVDataRow(annotationType, line, bookID, C, V, giv
         // If we need to put everything through addNotice6to9, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of dbtcResultObject.noticeList) {
-            // console.assert(Object.keys(noticeEntry).length === 5, `TL doOurBasicTextChecks notice length=${Object.keys(noticeEntry).length}`);
+            // console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
             addNotice6to9({priority:noticeEntry.priority, message:noticeEntry.message, characterIndex:noticeEntry.characterIndex, extract:noticeEntry.extract, location:noticeEntry.location});
         }
     }
-    // end of doOurBasicTextChecks function
+    // end of ourCheckTextField function
 
     async function ourCheckTAReference(fieldName, taLinkText, rowLocation, optionalCheckingOptions) {
         // Checks that the TA reference can be found
@@ -170,8 +170,8 @@ async function checkAnnotationTSVDataRow(annotationType, line, bookID, C, V, giv
         // Updates the global list of notices
 
         // console.log(`cATSVrow ourCheckTAReference(${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
-        console.assert(fieldName !== undefined, "cATSVrow doOurMarkdownTextChecks: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName === 'string', `cATSVrow doOurMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        console.assert(fieldName !== undefined, "cATSVrow ourMarkdownTextChecks: 'fieldName' parameter should be defined");
+        console.assert(typeof fieldName === 'string', `cATSVrow ourMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
         console.assert(taLinkText !== undefined, "cATSVrow ourCheckTAReference: 'taLinkText' parameter should be defined");
         console.assert(typeof taLinkText === 'string', `cATSVrow ourCheckTAReference: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
 
@@ -197,8 +197,8 @@ async function checkAnnotationTSVDataRow(annotationType, line, bookID, C, V, giv
         // Updates the global list of notices
 
         // console.log(`cATSVrow ourCheckTNOriginalLanguageQuote(${fieldName}, (${fieldText.length}) '${fieldText}', ${rowLocation}, …)`);
-        console.assert(fieldName !== undefined, "cATSVrow doOurMarkdownTextChecks: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName === 'string', `cATSVrow doOurMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        console.assert(fieldName !== undefined, "cATSVrow ourMarkdownTextChecks: 'fieldName' parameter should be defined");
+        console.assert(typeof fieldName === 'string', `cATSVrow ourMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
         console.assert(fieldText !== undefined, "cATSVrow ourCheckTNOriginalLanguageQuote: 'fieldText' parameter should be defined");
         console.assert(typeof fieldText === 'string', `cATSVrow ourCheckTNOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
 
@@ -356,14 +356,14 @@ async function checkAnnotationTSVDataRow(annotationType, line, bookID, C, V, giv
             ;
 
         if (supportReference.length) { // need to check UTN against UTA
-            doOurBasicTextChecks('SupportReference', supportReference, true, ourRowLocation, optionalCheckingOptions);
+            ourCheckTextField('SupportReference', supportReference, true, ourRowLocation, optionalCheckingOptions);
             await ourCheckTAReference('SupportReference', supportReference, ourRowLocation, optionalCheckingOptions);
         }
         // else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
         //     addNotice6to9({priority:277, message:"Missing SupportReference field", location:ourRowLocation});
 
         if (quote.length) { // need to check UTN against UHB and UGNT
-            doOurBasicTextChecks('Quote', quote, false, ourRowLocation, optionalCheckingOptions);
+            ourCheckTextField('Quote', quote, false, ourRowLocation, optionalCheckingOptions);
             await ourCheckTNOriginalLanguageQuote('Quote', quote, ourRowLocation, optionalCheckingOptions);
         }
         else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
@@ -375,7 +375,7 @@ async function checkAnnotationTSVDataRow(annotationType, line, bookID, C, V, giv
                 if (quote.length)
                     addNotice6to9({priority:550, message:"Invalid zero occurrence field when we have an original quote", location:ourRowLocation});
                 // if (V !== 'intro')
-                //     addNotice6to9({priority:500, message:"Invalid zero occurrence field", -1, "", rowLocation);
+                //     addNotice6to9({priority:500, message:"Invalid zero occurrence field", location:rowLocation);
             }
             else if (occurrence === '-1') // TODO check the special conditions when this can occur???
                 ;
@@ -384,7 +384,7 @@ async function checkAnnotationTSVDataRow(annotationType, line, bookID, C, V, giv
         }
 
         if (annotation.length) {
-            doOurMarkdownTextChecks('Annotation', annotation, true, ourRowLocation, optionalCheckingOptions);
+            ourMarkdownTextChecks('Annotation', annotation, true, ourRowLocation, optionalCheckingOptions);
             await ourCheckTNLinks('Annotation', annotation, ourRowLocation, optionalCheckingOptions);
         }
         else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???

@@ -1,4 +1,4 @@
-import { doBasicTextChecks } from './basic-text-check'
+import { checkTextField } from './field-text-check'
 import { cachedGetURL } from './getApi';
 
 
@@ -50,7 +50,7 @@ async function startLiveLinksCheck(linksList, existingNoticeList, callbackFuncti
     callbackFunction(result);
 }
 
-function doBasicLinkChecks(fieldName, fieldText, linkOptions, optionalFieldLocation, optionalCheckingOptions) {
+function checkFieldLinks(fieldName, fieldText, linkOptions, optionalFieldLocation, optionalCheckingOptions) {
     // Does basic checks for fields that are links or that contain links
 
     // We assume that checking for compulsory fields is done elsewhere
@@ -61,7 +61,7 @@ function doBasicLinkChecks(fieldName, fieldText, linkOptions, optionalFieldLocat
     //      2/ the detailed location string
     //  (Returned in this way for more intelligent processing at a higher level)
 
-    console.log(`doBasicLinkChecks('${fieldName}', '${fieldText}')…`);
+    console.log(`checkFieldLinks('${fieldName}', '${fieldText}')…`);
     // console.log( "linkOptions", JSON.stringify(linkOptions));
     // console.log( "linkOptionsEC", linkOptions.expectedCount);
 
@@ -97,11 +97,11 @@ function doBasicLinkChecks(fieldName, fieldText, linkOptions, optionalFieldLocat
 
     // Ok, we have something in our field
     if (linkOptions.otherTextAllowed)
-        result = doBasicTextChecks(fieldName, fieldText, true, optionalFieldLocation, optionalCheckingOptions);
+        result = checkTextField(fieldName, fieldText, true, optionalFieldLocation, optionalCheckingOptions);
 
     // Parameter nonsense check
     if (linkOptions.allowedCount > 0 && linkOptions.expectedCount > linkOptions.allowedCount)
-        addNotice6({priority:111, message:`Bad options for doBasicLinkChecks: expectedCount=${linkOptions.expectedCount} but allowedCount=${linkOptions.allowedCount}`});
+        addNotice6({priority:111, message:`Bad options for checkFieldLinks: expectedCount=${linkOptions.expectedCount} but allowedCount=${linkOptions.allowedCount}`});
 
     // Check for embedded links
     // First, create our regex from the allowed link types
@@ -109,7 +109,7 @@ function doBasicLinkChecks(fieldName, fieldText, linkOptions, optionalFieldLocat
     if (linkOptions.linkTypesAllowed) {
         linkRegexParts = [];
         for (const linkType of linkOptions.linkTypesAllowed) {
-            // console.log("doBasicLinkChecks linkType", linkType);
+            // console.log("checkFieldLinks linkType", linkType);
             if (linkType==='RC')
                 linkRegexParts.push('(rc://[^ ]+)');
             else if (linkType==='md') {
@@ -124,13 +124,13 @@ function doBasicLinkChecks(fieldName, fieldText, linkOptions, optionalFieldLocat
     } else { // No link types specified
         linkRegexParts = [];
     }
-    // console.log("doBasicLinkChecks linkRegexParts", JSON.stringify(linkRegexParts));
+    // console.log("checkFieldLinks linkRegexParts", JSON.stringify(linkRegexParts));
     const linkRegex = new RegExp(linkRegexParts.join('|'), 'g');
     // console.log("linkRegex", JSON.stringify(linkRegex));
     // const regexResults = fieldText.matchAll(linkRegex);
     // console.log("regexResults", regexResults.length, JSON.stringify(regexResults));
     const regexResultsArray = [...fieldText.matchAll(linkRegex)];
-    // console.log("doBasicLinkChecks regexResultsArray", regexResultsArray.length, JSON.stringify(regexResultsArray));
+    // console.log("checkFieldLinks regexResultsArray", regexResultsArray.length, JSON.stringify(regexResultsArray));
 
     if (regexResultsArray.length < linkOptions.expectedCount)
         addNotice6({priority:287, message:`Not enough links (expected ${linkOptions.expectedCount} link${linkOptions.expectedCount === 1 ? "" : "s"})`, location:` (only found ${regexResultsArray.length})${ourAtString}`});
@@ -138,12 +138,12 @@ function doBasicLinkChecks(fieldName, fieldText, linkOptions, optionalFieldLocat
     if (linkOptions.checkTargets && linkOptions.callbackFunction && regexResultsArray) {
         startLiveLinksCheck(regexResultsArray, result.noticeList.slice(0), linkOptions.callbackFunction);
         addNotice6({priority:600, message:`${regexResultsArray.length} link target${regexResultsArray.length === 1 ? ' is' : 's are'} still being checked…`});
-        console.log("doBasicLinkChecks now returning initial result…");
+        console.log("checkFieldLinks now returning initial result…");
     }
 
-    console.log(`  doBasicLinkChecks returning with ${result.noticeList.length} notices.`);
+    console.log(`  checkFieldLinks returning with ${result.noticeList.length} notices.`);
     return result;
 }
-// end of doBasicLinkChecks function
+// end of checkFieldLinks function
 
-export default doBasicLinkChecks;
+export default checkFieldLinks;

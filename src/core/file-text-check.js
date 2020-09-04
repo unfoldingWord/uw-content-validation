@@ -5,7 +5,7 @@ const CHECKER_VERSION_STRING = '0.1.1';
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-export function doBasicFileChecks(filename, fileText, optionalFileLocation, optionalCheckingOptions) {
+export function checkFileText(filename, fileText, optionalFileLocation, optionalCheckingOptions) {
     // Does basic checks for small errors like mismatched punctuation pairs, etc.
     //  (Used by usfm-text-check)
 
@@ -17,19 +17,19 @@ export function doBasicFileChecks(filename, fileText, optionalFileLocation, opti
     // We assume that checking for compulsory fields is done elsewhere
 
     // Returns a single notice list
-    //  The list contains arrays of five objects:
-    //      1/ the priority number 0..999 (usually 800+ are errors, lower are warnings)
-    //      2/ the error description string
-    //      3/ the 0-based index for the position in the string (or -1 if irrelevant)
-    //      4/ a short extract of the string containing the error (or empty-string if irrelevant)
-    //      5/ the detailed location string
+    //  The list contains objects with the following fields:
+    //      priority (compulsory): the priority number 0..999 (usually 800+ are errors, lower are warnings)
+    //      message (compulsory): the error description string
+    //      characterIndeX: the 0-based index for the position in the string
+    //      extract: a short extract of the string containing the error (or empty-string if irrelevant)
+    //      location: the detailed location string
     //  (Returned in this way for more intelligent processing at a higher level)
-    // console.log(`doBasicFileChecks(${filename}, ${fileText.length.toLocaleString()} chars, ${allowedLinks}, '${optionalFileLocation}')…`);
-    console.assert(filename !== undefined, "doBasicFileChecks: 'filename' parameter should be defined");
-    console.assert(typeof filename === 'string', `doBasicFileChecks: 'filename' parameter should be a number not a '${typeof filename}': ${filename}`);
-    console.assert(fileText !== undefined, "doBasicFileChecks: 'fileText' parameter should be defined");
-    console.assert(typeof fileText === 'string', `doBasicFileChecks: 'fileText' parameter should be a number not a '${typeof fileText}': ${fileText}`);
-    // console.assert( allowedLinks===true || allowedLinks===false, "doBasicFileChecks: allowedLinks parameter must be either true or false");
+    // console.log(`checkFileText(${filename}, ${fileText.length.toLocaleString()} chars, ${allowedLinks}, '${optionalFileLocation}')…`);
+    console.assert(filename !== undefined, "checkFileText: 'filename' parameter should be defined");
+    console.assert(typeof filename === 'string', `checkFileText: 'filename' parameter should be a number not a '${typeof filename}': ${filename}`);
+    console.assert(fileText !== undefined, "checkFileText: 'fileText' parameter should be defined");
+    console.assert(typeof fileText === 'string', `checkFileText: 'fileText' parameter should be a number not a '${typeof fileText}': ${fileText}`);
+    // console.assert( allowedLinks===true || allowedLinks===false, "checkFileText: allowedLinks parameter must be either true or false");
 
     let result = { noticeList: [] };
 
@@ -49,7 +49,7 @@ export function doBasicFileChecks(filename, fileText, optionalFileLocation, opti
     }
 
 
-    // Main code for doBasicFileChecks()
+    // Main code for checkFileText()
     if (!fileText) // Nothing to check
         return result;
 
@@ -123,6 +123,6 @@ export function doBasicFileChecks(filename, fileText, optionalFileLocation, opti
     // }
     return result;
 }
-// end of doBasicFileChecks function
+// end of checkFileText function
 
-export default doBasicFileChecks;
+export default checkFileText;

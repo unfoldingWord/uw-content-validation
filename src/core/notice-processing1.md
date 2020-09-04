@@ -20,7 +20,7 @@ Note below that the optional `processOptions` object allows the user to adjust t
 Although this demonstration here formats and colours the error and warning lists, it's expected that the encapsulating program will format and use the fields as desired. Because they are returned as an array of fields rather than simply strings, it's certainly possible for the encapsulating program to sort or filter the messages as desired.
 
 ```js
-import doBasicTextChecks from './basic-text-check';
+import checkTextField from './field-text-check';
 import { processNoticesToErrorsWarnings } from './notice-processing-functions';
 import { RenderRawResults, RenderObject, RenderSuccessesErrorsWarnings } from '../demos/RenderProcessedResults';
 
@@ -38,7 +38,7 @@ const chosenTextName = "textB";
 const chosenText = textB;
 
 // The third parameter is "linksAllowed"
-const rawResults = doBasicTextChecks('Sample', chosenText, false, 'in '+chosenTextName+' that was supplied');
+const rawResults = checkTextField('Sample', chosenText, false, 'in '+chosenTextName+' that was supplied');
 if (!rawResults.successList || !rawResults.successList.length)
     rawResults.successList = ["Done basic text checks"];
 const processOptions = {

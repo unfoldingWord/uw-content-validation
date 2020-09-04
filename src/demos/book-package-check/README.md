@@ -18,8 +18,8 @@ import BookPackageCheck from './BookPackageCheck';
 <BookPackageCheck
   username='unfoldingWord'
   language_code='en'
-  // bookID can be a USFM bookID, e.g., GEN, MAT, 3JN
-  //  and can also be OBS (for Open Bible Stories)
+  // bookID can be a USFM bookID, e.g., 'GEN', 'MAT', '3JN'
+  //  and can also be 'OBS' (for Open Bible Stories)
   bookID='TIT'
 
   // Default displayType is 'ErrorsWarnings'

@@ -47,8 +47,6 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                     lineNumber: A one-based integer indicating the line number in the file
                     characterIndex: A zero-based integer index which indicates the position
                       of the error on the line or in the text field as appropriate.
-                    -1 might still indicate that this characterIndex does not contain any useful information
-                        but this will be removed (rather the field won't be included at all)
                 extract: An extract of the checked text which indicates the area
                       containing the problem.
                     Where helpful, some character substitutions have already been made,
@@ -158,7 +156,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     }
     else console.log(`Using supplied cutoffPriorityLevel=${cutoffPriorityLevel} cf. default=${DEFAULT_CUTOFF_PRIORITY_LEVEL}`);
     // if (cutoffPriorityLevel > errorPriorityLevel)
-    // resultObject.errorList.push({999, "Cutoff level must not be higher than error level", -1, `(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
+    // resultObject.errorList.push({999, "Cutoff level must not be higher than error level", extract:`(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
 
 
     if (givenNoticeObject.successList)
@@ -244,7 +242,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         remainingNoticeList = newNoticeList;
     }
     // if (cutoffPriorityLevel > errorPriorityLevel)
-    // resultObject.errorList.push({999, "Cutoff level must not be higher than error level", -1, `(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
+    // resultObject.errorList.push({999, "Cutoff level must not be higher than error level", extract:`(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
 
     // Sort the remainingNoticeList as required
     if (sortBy === 'ByPriority')

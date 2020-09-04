@@ -1,5 +1,5 @@
 import { isWhitespace, countOccurrences } from './text-handling-functions'
-import doBasicTextChecks from './basic-text-check';
+import checkTextField from './field-text-check';
 
 
 const PLAIN_TEXT_VALIDATOR_VERSION = '0.1.1';
@@ -7,12 +7,12 @@ const PLAIN_TEXT_VALIDATOR_VERSION = '0.1.1';
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-function checkPlainText(textName, markdownText, givenLocation, optionalCheckingOptions) {
-    /* This function is optimised for checking the entire file, i.e., all lines.
+function checkPlainText(textName, plainText, givenLocation, optionalCheckingOptions) {
+    /* This function is optimised for checking the entire text, i.e., all lines.
 
      Returns a result object containing a successList and a noticeList
      */
-    // console.log(`checkPlainText(${textName}, ${markdownText.length}, ${location})…`);
+    // console.log(`checkPlainText(${textName}, ${plainText.length}, ${location})…`);
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     if (textName) ourLocation = ` in ${textName}${ourLocation}`;
@@ -63,7 +63,7 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
     }
     */
 
-    function doOurBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
+    function ourCheckTextField(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
         /**
         * @description - checks the given text field and processes the returned results
         * @param {String} fieldName - name of the field being checked
@@ -77,14 +77,14 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global list of notices
-        // console.log(`cPT doOurBasicTextChecks(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${fieldLocation}, …)`);
-        console.assert(fieldName!==undefined, "cPT doOurBasicTextChecks: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName==='string', `cPT doOurBasicTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        console.assert(fieldText!==undefined, "cPT doOurBasicTextChecks: 'fieldText' parameter should be defined");
-        console.assert(typeof fieldText==='string', `cPT doOurBasicTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-        console.assert( allowedLinks===true || allowedLinks===false, "cPT doOurBasicTextChecks: allowedLinks parameter must be either true or false");
+        // console.log(`cPT ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${fieldLocation}, …)`);
+        console.assert(fieldName!==undefined, "cPT ourCheckTextField: 'fieldName' parameter should be defined");
+        console.assert(typeof fieldName==='string', `cPT ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        console.assert(fieldText!==undefined, "cPT ourCheckTextField: 'fieldText' parameter should be defined");
+        console.assert(typeof fieldText==='string', `cPT ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+        console.assert( allowedLinks===true || allowedLinks===false, "cPT ourCheckTextField: allowedLinks parameter must be either true or false");
 
-        const resultObject = doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
+        const resultObject = checkTextField(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -94,7 +94,7 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
         // for (const noticeEntry of resultObject.noticeList)
         //     addNotice9(noticeEntry.priority, noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
     }
-    // end of doOurBasicTextChecks function
+    // end of ourCheckTextField function
 
     function checkPlainLineContents(lineName, lineText, lineLocation) {
 
@@ -102,13 +102,13 @@ function checkPlainText(textName, markdownText, givenLocation, optionalCheckingO
         let thisText = lineText.trimStart(); // So we don't get "leading space" and "doubled spaces" errors
 
         if (thisText)
-            doOurBasicTextChecks(lineName, thisText, false, lineLocation, optionalCheckingOptions);
+            ourCheckTextField(lineName, thisText, false, lineLocation, optionalCheckingOptions);
     }
     // end of checkPlainLine function
 
 
     // Main code for checkPlainText function
-    const lines = markdownText.split('\n');
+    const lines = plainText.split('\n');
     // console.log(`  '${location}' has ${lines.length.toLocaleString()} total lines`);
 
     let headerLevel = 0;

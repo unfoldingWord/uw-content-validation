@@ -1,6 +1,6 @@
 // import { isWhitespace, countOccurrences } from './text-handling-functions'
 import yaml from 'yaml';
-import doBasicTextChecks from './basic-text-check';
+import checkTextField from './field-text-check';
 
 
 const YAML_VALIDATOR_VERSION = '0.1.1';
@@ -55,7 +55,7 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
         cytResult.noticeList.push({priority, message, lineNumber, characterIndex, extract, location});
     }
 
-    function doOurBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
+    function ourCheckTextField(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
         /**
         * @description - checks the given text field and processes the returned results
         * @param {String} fieldName - name of the field being checked
@@ -69,19 +69,19 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global list of notices
-        // console.log(`cYt doOurBasicTextChecks(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${fieldLocation}, …)`);
-        console.assert(fieldName!==undefined, "cYt doOurBasicTextChecks: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName==='string', `cYt doOurBasicTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        console.assert(fieldText!==undefined, "cYt doOurBasicTextChecks: 'fieldText' parameter should be defined");
-        console.assert(typeof fieldText==='string', `cYt doOurBasicTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-        console.assert( allowedLinks===true || allowedLinks===false, "cYt doOurBasicTextChecks: allowedLinks parameter must be either true or false");
+        // console.log(`cYt ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${fieldLocation}, …)`);
+        console.assert(fieldName!==undefined, "cYt ourCheckTextField: 'fieldName' parameter should be defined");
+        console.assert(typeof fieldName==='string', `cYt ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        console.assert(fieldText!==undefined, "cYt ourCheckTextField: 'fieldText' parameter should be defined");
+        console.assert(typeof fieldText==='string', `cYt ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+        console.assert( allowedLinks===true || allowedLinks===false, "cYt ourCheckTextField: allowedLinks parameter must be either true or false");
 
-        const resultObject = doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
+        const resultObject = checkTextField(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
 
         // Process results line by line
         //  suppressing undesired errors
         for (const noticeEntry of resultObject.noticeList) {
-            // console.assert(Object.keys(noticeEntry).length === 5, `YAML doOurBasicTextChecks notice length=${Object.keys(noticeEntry).length}`);
+            // console.assert(Object.keys(noticeEntry).length === 5, `YAML ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
             if (noticeEntry.priority !== 191 // "Unexpected XXX character after space"
               && noticeEntry.message !== "Unexpected ' character after space"
             //   && noticeEntry.message !== "Unexpected space after ' character"
@@ -91,7 +91,7 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
                 addNotice6({priority:noticeEntry.priority, message:noticeEntry.message, characterIndex:noticeEntry.characterIndex, extract:noticeEntry.extract, location:noticeEntry.location});
     }
 }
-    // end of doOurBasicTextChecks function
+    // end of ourCheckTextField function
 
     function checkYAMLLineContents(lineName, lineText, lineLocation) {
 
@@ -112,7 +112,7 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
 
         const allowedLinksInLine = thisText.startsWith('url:') || thisText.startsWith('chapter_url:');
         if (thisText)
-            doOurBasicTextChecks(lineName, thisText, allowedLinksInLine, lineLocation, optionalCheckingOptions);
+            ourCheckTextField(lineName, thisText, allowedLinksInLine, lineLocation, optionalCheckingOptions);
     }
     // end of checkYAMLLine function
 

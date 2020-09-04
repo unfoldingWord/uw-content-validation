@@ -118,11 +118,6 @@ let sections = [
 				content: 'src/core/manifest-text-check.md',
 				// description: ''
 			},
-			{
-				name: 'Markdown text check',
-				content: 'src/core/markdown-text-check.md',
-				// description: ''
-			},
 		]
 	},
 	{
@@ -146,6 +141,24 @@ let sections = [
 				content: 'src/core/yaml-text-check.md',
 				// description: ''
 			},
+		]
+	},
+	{
+		// The difficulty with displaying core functions this way
+		//	is that they all appear and run on a SINGLE web-page.
+		name: 'Core Whole-text Checking Functions',
+		// content: 'src/core/README.md',
+		sections: [
+			{
+				name: 'Markdown text check',
+				content: 'src/core/markdown-text-check.md',
+				// description: ''
+			},
+			{
+				name: 'Basic whole text check',
+				content: 'src/core/file-text-check.md',
+				// description: ''
+			},
 			{
 				name: 'Plain text check',
 				content: 'src/core/plain-text-check.md',
@@ -156,7 +169,7 @@ let sections = [
 	{
 		// The difficulty with displaying core functions this way
 		//	is that they all appear and run on a SINGLE web-page.
-		name: 'Core Checking Functions',
+		name: 'Core Field Checking Functions',
 		// content: 'src/core/README.md',
 		sections: [
 			{
@@ -170,22 +183,17 @@ let sections = [
 				// description: ''
 			},
 			{
-				name: 'Basic whole text check',
-				content: 'src/core/basic-file-check.md',
-				// description: ''
-			},
-			{
-				name: 'Basic link check',
-				content: 'src/core/basic-link-check.md',
+				name: 'Basic text-field link check',
+				content: 'src/core/field-link-check.md',
 				// description: ''
 			},
 			{
 				name: 'Basic text-field check',
-				content: 'src/core/basic-text-check.md',
+				content: 'src/core/field-text-check.md',
 				// description: ''
 			},
 		]
-	}
+	},
 ];
 
 module.exports = {

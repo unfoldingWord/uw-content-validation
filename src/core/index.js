@@ -1,6 +1,6 @@
 export * from './books/';
 export * from './text-handling-functions';
-export * from './basic-text-check';
+export * from './field-text-check';
 export * from './markdown-text-check';
 export * from './plain-text-check';
 export * from './tn-table-row-check';

@@ -63,18 +63,18 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
     }
 
 
-    function doOurYAMLTextChecks(textName, manifestText, givenLocation, optionalCheckingOptions) {
+    function ourYAMLTextChecks(textName, manifestText, givenLocation, optionalCheckingOptions) {
         // Does basic checks for small errors like leading/trailing spaces, etc.
 
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global list of notices
-        // console.log(`cManT doOurYAMLTextChecks(${textName}, (${fieldText.length}), ${allowedLinks}, ${fieldLocation}, …)`);
-        console.assert(textName !== undefined, "cManT doOurYAMLTextChecks: 'textName' parameter should be defined");
-        console.assert(typeof textName === 'string', `cManT doOurYAMLTextChecks: 'textName' parameter should be a string not a '${typeof textName}'`);
-        console.assert(manifestText !== undefined, "cManT doOurYAMLTextChecks: 'manifestText' parameter should be defined");
-        console.assert(typeof manifestText === 'string', `cManT doOurYAMLTextChecks: 'manifestText' parameter should be a string not a '${typeof manifestText}'`);
-        // console.assert( allowedLinks===true || allowedLinks===false, "cManT doOurYAMLTextChecks: allowedLinks parameter must be either true or false");
+        // console.log(`cManT ourYAMLTextChecks(${textName}, (${fieldText.length}), ${allowedLinks}, ${fieldLocation}, …)`);
+        console.assert(textName !== undefined, "cManT ourYAMLTextChecks: 'textName' parameter should be defined");
+        console.assert(typeof textName === 'string', `cManT ourYAMLTextChecks: 'textName' parameter should be a string not a '${typeof textName}'`);
+        console.assert(manifestText !== undefined, "cManT ourYAMLTextChecks: 'manifestText' parameter should be defined");
+        console.assert(typeof manifestText === 'string', `cManT ourYAMLTextChecks: 'manifestText' parameter should be a string not a '${typeof manifestText}'`);
+        // console.assert( allowedLinks===true || allowedLinks===false, "cManT ourYAMLTextChecks: allowedLinks parameter must be either true or false");
 
         const cYtResultObject = checkYAMLText(textName, manifestText, givenLocation, optionalCheckingOptions);
 
@@ -93,11 +93,11 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
         */
         return cYtResultObject.formData;
     }
-    // end of doOurYAMLTextChecks function
+    // end of ourYAMLTextChecks function
 
 
     // Main code for checkManifestText function
-    const formData = doOurYAMLTextChecks(textName, manifestText, ourLocation, optionalCheckingOptions);
+    const formData = ourYAMLTextChecks(textName, manifestText, ourLocation, optionalCheckingOptions);
     if (formData) {
         // console.log("formData", JSON.stringify(formData));
         const formDataKeys = Object.keys(formData);

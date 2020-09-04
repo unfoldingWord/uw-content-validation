@@ -3,7 +3,7 @@
 This function is for checking text fields that are links, or that contain links.
 
 ```js
-import doBasicLinkChecks from './link-checks';
+import checkFieldLinks from './field-link-check';
 import { processNoticesToErrorsWarnings } from './notice-processing-functions';
 import { RenderLines, RenderRawResults, RenderSuccessesErrorsWarnings } from '../demos/RenderProcessedResults';
 
@@ -45,7 +45,7 @@ const linkOptions = {
 
 // This function returns the results of the fast checks
 //  and if specified in linkOptions, the callback will update result later with results of slower checks
-rawResults = doBasicLinkChecks(chosenTextName, chosenText, linkOptions, 'that was supplied');
+rawResults = checkFieldLinks(chosenTextName, chosenText, linkOptions, 'that was supplied');
 if (!rawResults.successList || !rawResults.successList.length)
     rawResults.successList = ["Done basic link checks"];
 

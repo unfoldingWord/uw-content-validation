@@ -5,7 +5,7 @@ const CHECKER_VERSION_STRING = '0.1.1';
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
+export function checkTextField(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
     // Does basic checks for small errors like leading/trailing spaces, etc.
 
     // fieldName (str): Used for identification
@@ -16,19 +16,19 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     // We assume that checking for compulsory fields is done elsewhere
 
     // Returns a single notice list
-    //  The list contains arrays of five objects:
-    //      1/ the priority number 0..999 (usually 800+ are errors, lower are warnings)
-    //      2/ the error description string
-    //      3/ the 0-based index for the position in the string (or -1 if irrelevant)
-    //      4/ a short extract of the string containing the error (or empty-string if irrelevant)
-    //      5/ the detailed location string
+    //  The list contains objects with the following fields:
+    //      priority (compulsory): the priority number 0..999 (usually 800+ are errors, lower are warnings)
+    //      message (compulsory): the error description string
+    //      characterIndeX: the 0-based index for the position in the string
+    //      extract: a short extract of the string containing the error (or empty-string if irrelevant)
+    //      location: the detailed location string
     //  (Returned in this way for more intelligent processing at a higher level)
-    // console.log(`doBasicTextChecks(${fieldName}, ${fieldText.length.toLocaleString()} chars, ${allowedLinks}, '${optionalFieldLocation}')…`);
-    console.assert(fieldName !== undefined, "doBasicTextChecks: 'fieldName' parameter should be defined");
-    console.assert(typeof fieldName === 'string', `doBasicTextChecks: 'fieldName' parameter should be a number not a '${typeof fieldName}': ${fieldName}`);
-    console.assert(fieldText !== undefined, "doBasicTextChecks: 'fieldText' parameter should be defined");
-    console.assert(typeof fieldText === 'string', `doBasicTextChecks: 'fieldText' parameter should be a number not a '${typeof fieldText}': ${fieldText}`);
-    console.assert(allowedLinks === true || allowedLinks === false, "doBasicTextChecks: allowedLinks parameter must be either true or false");
+    // console.log(`checkTextField(${fieldName}, ${fieldText.length.toLocaleString()} chars, ${allowedLinks}, '${optionalFieldLocation}')…`);
+    console.assert(fieldName !== undefined, "checkTextField: 'fieldName' parameter should be defined");
+    console.assert(typeof fieldName === 'string', `checkTextField: 'fieldName' parameter should be a number not a '${typeof fieldName}': ${fieldName}`);
+    console.assert(fieldText !== undefined, "checkTextField: 'fieldText' parameter should be defined");
+    console.assert(typeof fieldText === 'string', `checkTextField: 'fieldText' parameter should be a number not a '${typeof fieldText}': ${fieldText}`);
+    console.assert(allowedLinks === true || allowedLinks === false, "checkTextField: allowedLinks parameter must be either true or false");
 
     let result = { noticeList: [] };
 
@@ -48,7 +48,7 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     }
 
 
-    // Main code for doBasicTextChecks()
+    // Main code for checkTextField()
     if (!fieldText) // Nothing to check
         return result;
 
@@ -202,6 +202,6 @@ export function doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFi
     }
     return result;
 }
-// end of doBasicTextChecks function
+// end of checkTextField function
 
-export default doBasicTextChecks;
+export default checkTextField;

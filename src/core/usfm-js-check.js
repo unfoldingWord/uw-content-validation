@@ -46,7 +46,7 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, opti
         * @description - adds a new notice entry, adding bookID,C,V to the given fields
         * @param {Number} priority - notice priority from 1 (lowest) to 999 (highest)
         * @param {String} message - the text of the notice message
-        * @param {Number} characterIndex - where the issue occurs in the line (or -1 if unknown)
+        * @param {Number} characterIndex - where the issue occurs in the line
         * @param {String} extract - short extract from the line centred on the problem (if available)
         * @param {String} location - description of where the issue is located
         */
