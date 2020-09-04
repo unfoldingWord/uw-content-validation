@@ -167,4 +167,5 @@ const styles = theme => ({
   },
 });
 
-export default withStyles(styles)(BookPackageCheck);
+//export default withStyles(styles)(BookPackageCheck);
+export default BookPackageCheck;

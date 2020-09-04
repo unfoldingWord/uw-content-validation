@@ -10,7 +10,7 @@ import { ourParseInt, consoleLogObject } from '../../core/utilities';
 const CHECKER_VERSION_STRING = '0.0.3';
 
 
-function BookPackagesCheck(/*username, language_code, bookIDs,*/ props) {
+export function BookPackagesCheck(/*username, language_code, bookIDs,*/ props) {
     // Check a single Bible book across many repositories
     const [result, setResultValue] = useState("Waiting-CheckBookPackages");
 
@@ -174,4 +174,4 @@ const styles = theme => ({
   },
 });
 
-export default withStyles(styles)(BookPackagesCheck);
+//export default withStyles(styles)(BookPackagesCheck);
