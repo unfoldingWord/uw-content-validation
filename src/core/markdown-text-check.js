@@ -1,5 +1,5 @@
 import { isWhitespace, countOccurrences } from './text-handling-functions'
-import doBasicTextChecks from './basic-text-check';
+import checkTextField from './field-text-check';
 
 
 const MARKDOWN_VALIDATOR_VERSION = '0.3.1';
@@ -55,7 +55,7 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
     }
     // end of addNotice6 function
 
-    function doOurBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
+    function ourCheckTextField(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
         /**
         * @description - checks the given text field and processes the returned results
         * @param {String} fieldName - name of the field being checked
@@ -69,14 +69,14 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global list of notices
-        // console.log(`cMdT doOurBasicTextChecks(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${optionalFieldLocation}, …)`);
-        console.assert(fieldName !== undefined, "cMdT doOurBasicTextChecks: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName === 'string', `cMdT doOurBasicTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        console.assert(fieldText !== undefined, "cMdT doOurBasicTextChecks: 'fieldText' parameter should be defined");
-        console.assert(typeof fieldText === 'string', `cMdT doOurBasicTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-        console.assert(allowedLinks === true || allowedLinks === false, "cMdT doOurBasicTextChecks: allowedLinks parameter must be either true or false");
+        // console.log(`cMdT ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${optionalFieldLocation}, …)`);
+        console.assert(fieldName !== undefined, "cMdT ourCheckTextField: 'fieldName' parameter should be defined");
+        console.assert(typeof fieldName === 'string', `cMdT ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        console.assert(fieldText !== undefined, "cMdT ourCheckTextField: 'fieldText' parameter should be defined");
+        console.assert(typeof fieldText === 'string', `cMdT ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+        console.assert(allowedLinks === true || allowedLinks === false, "cMdT ourCheckTextField: allowedLinks parameter must be either true or false");
 
-        const dbtcResultObject = doBasicTextChecks(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
+        const dbtcResultObject = checkTextField(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -84,7 +84,7 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
         // If we need to put everything through addNotice6, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of dbtcResultObject.noticeList) {
-            // console.assert(Object.keys(noticeEntry).length === 5, `MD doOurBasicTextChecks notice length=${Object.keys(noticeEntry).length}`);
+            // console.assert(Object.keys(noticeEntry).length === 5, `MD ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
             if (!noticeEntry.message.startsWith("Unexpected doubled * characters") // 577 Markdown allows this
                 && !noticeEntry.message.startsWith("Unexpected * character after space") // 191
             )
@@ -93,7 +93,7 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
                     location:noticeEntry.location});
         }
     }
-    // end of doOurBasicTextChecks function
+    // end of ourCheckTextField function
 
 
     function checkMarkdownLineContents(lineName, lineText, lineLocation) {
@@ -118,7 +118,7 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
         // console.log(`After removing more leading spaces have '${thisText}'`);
 
         if (thisText)
-            doOurBasicTextChecks(lineName, thisText, true, lineLocation, optionalCheckingOptions);
+            ourCheckTextField(lineName, thisText, true, lineLocation, optionalCheckingOptions);
     }
     // end of checkMarkdownLine function
 

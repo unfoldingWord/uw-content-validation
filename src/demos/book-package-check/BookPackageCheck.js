@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { withStyles } from '@material-ui/core/styles';
+// import { withStyles } from '@material-ui/core/styles';
 import * as books from '../../core/books/books';
 import checkBookPackage from './checkBookPackage';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../../core/notice-processing-functions';
@@ -162,10 +162,10 @@ function BookPackageCheck(/*username, language_code, bookID,*/ props) {
 //   props: PropTypes.object,
 // };
 
-const styles = theme => ({
-  root: {
-  },
-});
+// const styles = theme => ({
+//   root: {
+//   },
+// });
 
 //export default withStyles(styles)(BookPackageCheck);
 export default BookPackageCheck;

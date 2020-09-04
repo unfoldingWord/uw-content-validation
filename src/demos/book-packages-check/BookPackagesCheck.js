@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { withStyles } from '@material-ui/core/styles';
+// import { withStyles } from '@material-ui/core/styles';
 import * as books from '../../core/books/books';
 import checkBookPackages from './checkBookPackages';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../../core/notice-processing-functions';
@@ -10,7 +10,7 @@ import { ourParseInt, consoleLogObject } from '../../core/utilities';
 const CHECKER_VERSION_STRING = '0.0.3';
 
 
-export function BookPackagesCheck(/*username, language_code, bookIDs,*/ props) {
+function BookPackagesCheck(/*username, language_code, bookIDs,*/ props) {
     // Check a single Bible book across many repositories
     const [result, setResultValue] = useState("Waiting-CheckBookPackages");
 
@@ -169,9 +169,10 @@ export function BookPackagesCheck(/*username, language_code, bookIDs,*/ props) {
 //   props: PropTypes.object,
 // };
 
-const styles = theme => ({
-  root: {
-  },
-});
+// const styles = theme => ({
+//   root: {
+//   },
+// });
 
 //export default withStyles(styles)(BookPackagesCheck);
+export default BookPackagesCheck;

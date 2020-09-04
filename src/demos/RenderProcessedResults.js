@@ -5,6 +5,9 @@ import { forwardRef } from 'react';
 import MaterialTable from 'material-table';
 
 // import { consoleLogObject, displayPropertyNames } from '../core/utilities';
+
+
+/*
 const tableIcons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -25,7 +28,7 @@ const tableIcons = {
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
   };
   /* end material box imports and icons */
-  
+
 
 export function RenderLines({text}) {
     /**
@@ -52,10 +55,10 @@ export function RenderObject({ thisObject, excludeList }) {
     // consoleLogObject('RenderObject settings', settings);
     return <ul>
         {
-            Object.keys(thisObject).map((key, index) => {
+            Object.keys(thisObject).map((key, keyIndex) => {
                 if (!excludeList || excludeList.indexOf(key) < 0)
                     return (
-                        <li key={index}>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <li key={keyIndex}>&nbsp;&nbsp;&nbsp;&nbsp;
                             <span><b>{key}</b>{Array.isArray(thisObject[key]) ? ` (${thisObject[key].length}) `:''}: {typeof thisObject[key] === 'object' ? JSON.stringify(thisObject[key]) : thisObject[key]}</span>
                         </li>
                     )
@@ -94,40 +97,78 @@ export function RenderRawResults({ results }) {
         </>;
 
     // If we get here, we have notices.
-    // let formattedData = [];
-    let haveBCV = false, haveExtra = false;
+    // console.log(`Got ${results.noticeList.length} notices`);
+    const allPropertiesSet = new Set();
+    let haveOBS = false, haveBible = false;
+    // console.log( "allPropertiesSet-A", JSON.stringify([...allPropertiesSet]));
     results.noticeList.map(function (noticeEntry) {
-        // console.log(`Render (${Object.keys(noticeEntry).length}) ${Object.keys(noticeEntry)}`);
-        if (noticeEntry.bookID && noticeEntry.bookID.length)
-            haveBCV = true;
-        if (noticeEntry.extra && noticeEntry.extra.length)
-            haveExtra = true;
-        // if (haveBCV && haveExtra) // no point in going any further
-        //     break; // but can't do this in map()
+        // console.log("noticeEntry", JSON.stringify(noticeEntry));
+        // console.log(`Found (${Object.keys(noticeEntry).length}) ${Object.keys(noticeEntry)}`);
+        Object.entries(noticeEntry).map(function ([noticePropertyName, noticePropertyValue]) {
+            // console.log("  Found", noticePropertyName, "=", noticeEntry[noticePropertyName]);
+            if (noticePropertyValue !== undefined) {
+                allPropertiesSet.add(noticePropertyName);
+                if (noticePropertyName === 'bookID' && noticePropertyValue) {
+                    if (noticePropertyValue === 'OBS') haveOBS = true;
+                    else haveBible = true;
+                }
+            }
+        });
     });
+    // console.log( "allPropertiesSet-Z", JSON.stringify([...allPropertiesSet]));
+
+    /*
+    // Now add all of the missing fields
+    const expandedNoticeList = [];
+    for (const noticeObject of results.noticeList) {
+        // console.log("noticeObject", JSON.stringify(noticeObject));
+        for (const propertyName of allPropertiesSet) {
+            // console.log("  propertyName", propertyName, JSON.stringify(Object.keys(noticeObject)), Object.keys(noticeObject).indexOf(propertyName) < 0);
+            if (Object.keys(noticeObject).indexOf(propertyName) < 0) {
+                console.log(`    Setting missing ${propertyName}`);
+                noticeObject[propertyName] = propertyName==='characterIndex'? -1: '';
+            }
+            if (noticeObject[propertyName] === undefined) {
+                console.log(`    Setting undefined ${propertyName}`);
+                noticeObject[propertyName] = '';
+            }
+        }
+        expandedNoticeList.push(noticeObject);
+    }
+    console.log(`Now got ${expandedNoticeList.length} notices`);
+    */
 
     // Adjust the headers according to the column sets that we actually have
-    let headerData = [{ title: 'Priority', field: 'priority', type: 'numeric' }];
-    if (haveBCV)
+    let headerData = [
+            { title: 'Priority', field: 'priority', type: 'numeric' },
+            { title: 'Message', field: 'message' },
+            ];
+    if (allPropertiesSet.has('bookID')) headerData = headerData.concat([{ title: 'Book', field: 'bookID' }]);
+    if (allPropertiesSet.has('C') || allPropertiesSet.has('V')) {
+        let CName = '???', VName = '???';
+        if (haveBible && !haveOBS) { CName = 'Chapter';  VName = 'Verse'; }
+        else if (haveOBS && !haveBible) { CName = 'Story';  VName = 'Frame'; }
+        else if (haveBible && haveOBS) { CName = 'Chapter/Story';  VName = 'Verse/Frame'; }
         headerData = headerData.concat([
-            { title: 'Book', field: 'bookID' },
-            { title: 'Chapter', field: 'C' },
-            { title: 'Verse', field: 'V' }
-        ]);
-    headerData = headerData.concat([
-        { title: 'Message', field: 'message' },
-        { title: 'Index', field: 'index', type: 'numeric' },
-        { title: 'Extract', field: 'extract' },
-        { title: 'Location', field: 'location' }
-    ]);
-    if (haveExtra) headerData.push({ title: 'Extra', field: 'extra' });
+            { title: CName, field: 'C' },
+            { title: VName, field: 'V' }
+            ]);
+        }
+    if (allPropertiesSet.has('lineNumber')) headerData = headerData.concat([{ title: 'Line', field: 'lineNumber' }]);
+    if (allPropertiesSet.has('filename')) headerData = headerData.concat([{ title: 'Filename', field: 'filename' }]);
+    if (allPropertiesSet.has('repoName')) headerData = headerData.concat([{ title: 'Repo', field: 'repoName' }]);
+    if (allPropertiesSet.has('characterIndex')) headerData = headerData.concat([{ title: 'CharIndex', field: 'characterIndex' }]);
+    if (allPropertiesSet.has('extract')) headerData = headerData.concat([{ title: 'Extract', field: 'extract' }]);
+    if (allPropertiesSet.has('location')) headerData = headerData.concat([{ title: 'Location', field: 'location' }]);
+    if (allPropertiesSet.has('extra')) headerData = headerData.concat([{ title: 'Extra', field: 'extra' }]);
+    // console.log("headerData", headerData.length, JSON.stringify(headerData));
 
     // Make the actual table and return it
     return <>
         <b>Raw Results</b>:
         <RenderObject thisObject={results} />
         <MaterialTable
-            icons={tableIcons}
+            // icons={tableIcons}
             title='Raw Notices'
             columns={headerData}
             data={results.noticeList}
@@ -225,7 +266,7 @@ export function RenderGivenArray({array, colour}) {
             return <li key={index}>
                 <b style={{ color: colour }}>{listEntry.message}</b>
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
-                {listEntry.characterIndex > 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
+                {listEntry.characterIndex !== undefined && listEntry.characterIndex >= 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
                 <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
                 {listEntry.location}
                 <small style={{ color: 'Gray' }}>{listEntry.priority >= 0 ? " (Priority " + listEntry.priority + ")" : ""}</small>
@@ -262,7 +303,7 @@ export function RenderWarningsGradient({results}) {
             return <li key={index}>
                 <b style={{ color: thisColour }}>{listEntry.message}</b>
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
-                {listEntry.characterIndex > 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
+                {listEntry.characterIndex !== undefined && listEntry.characterIndex >= 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
                 <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
                 {listEntry.location}
                 <small style={{ color: 'Gray' }}>{listEntry.priority >= 0 ? " (Priority " + listEntry.priority + ")" : ""}</small>

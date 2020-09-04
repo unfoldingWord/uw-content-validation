@@ -1,7 +1,7 @@
-import React from 'react';
+// import React from 'react';
 import * as books from '../../core/books/books';
 import checkBookPackage from '../book-package-check/checkBookPackage';
-import { getFile } from '../../core/getApi';
+// import { getFile } from '../../core/getApi';
 // import { consoleLogObject } from '../../core/utilities';
 
 const CHECKER_VERSION_STRING = '0.2.1';
@@ -75,7 +75,7 @@ async function checkBookPackages(username, language_code, bookIDList, setResultV
         checkBookPackagesResult.successList = checkBookPackagesResult.successList.concat(cbpResultObject.successList);
         // Process results line by line,  appending the repoCode/bookID as an extra field as we go
         // for (const successEntry of cbpResultObject.successList) {
-        //     // console.log("  doOurCheckBookPackage:", successEntry);
+        //     // console.log("  ourCheckBookPackage:", successEntry);
         //     addSuccessMessage(successEntry);
         // }
 

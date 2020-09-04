@@ -54,7 +54,7 @@ async function checkFile(filename, fileContent, givenLocation, checkingOptions) 
         checkFileResult = checkYAMLText(filename, fileContent, ourCFLocation, checkingOptions);
     else {
         checkFileResult = checkPlainText(filename, fileContent, ourCFLocation, checkingOptions);
-        checkFileResult.noticeList.unshift([995, "File extension is not recognized, so treated as plain text.", -1, '', filename]);
+        checkFileResult.noticeList.unshift({priority:995, message:"File extension is not recognized, so treated as plain text.", location:filename});
     }
     // console.log(`checkFile got initial results with ${checkFileResult.successList.length} success message(s) and ${checkFileResult.noticeList.length} notice(s)`);
 

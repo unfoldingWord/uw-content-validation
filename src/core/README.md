@@ -3,9 +3,9 @@
 
 This non-component function can have playgrounds to test them out.
 
-`doBasicTextChecks()` does basic checks of a text field.
+`checkTextField()` does basic checks of a text field.
 
-`doBasicLinkChecks()` checks text fields that might either be a link or contain one or more links.
+`checkFieldLinks()` checks text fields that might either be a link or contain one or more links.
 
 `checkTN_TSVDataRow()` checks a line of tab-separated fields.
 

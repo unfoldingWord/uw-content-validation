@@ -1,7 +1,7 @@
 import * as books from '../core/books/books';
 import { isWhitespace, countOccurrences } from './text-handling-functions'
-import doBasicTextChecks from './basic-text-check';
-import doBasicFileChecks from './basic-file-check';
+import checkTextField from './field-text-check';
+import checkFileText from './file-text-check';
 import { runUsfmJsCheck } from './usfm-js-check';
 import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
 import { ourParseInt, consoleLogObject } from './utilities';
@@ -107,23 +107,23 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
         // console.log(`checkUSFMText success: ${successString}`);
         result.successList.push(successString);
     }
-    function addNoticeCV8({priority, message, C, V, lineNumber, characterIndex, extract, location}) {
-        // console.log(`checkUSFMText addNoticeCV8: (priority=${priority}) ${C}:${V} ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(priority !== undefined, "cUSFM addNoticeCV8: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', `cUSFM addNoticeCV8: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        console.assert(message !== undefined, "cUSFM addNoticeCV8: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', `cUSFM addNoticeCV8: 'message' parameter should be a string not a '${typeof message}': ${message}`);
+    function addNoticeCV8(noticeObject) {
+        // console.log(`checkUSFMText addNoticeCV8: (priority=${noticeObject.priority}) ${noticeObject.C}:${noticeObject.V} ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex}${1})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
+        console.assert(noticeObject.priority !== undefined, "cUSFM addNoticeCV8: 'priority' parameter should be defined");
+        console.assert(typeof noticeObject.priority === 'number', `cUSFM addNoticeCV8: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        console.assert(noticeObject.message !== undefined, "cUSFM addNoticeCV8: 'message' parameter should be defined");
+        console.assert(typeof noticeObject.message === 'string', `cUSFM addNoticeCV8: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
         // console.assert(C !== undefined, "cUSFM addNoticeCV8: 'C' parameter should be defined");
-        if (C) console.assert(typeof C === 'string', `cUSFM addNoticeCV8: 'C' parameter should be a string not a '${typeof C}': ${C}`);
+        if (noticeObject.C) console.assert(typeof noticeObject.C === 'string', `cUSFM addNoticeCV8: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
         // console.assert(V !== undefined, "cUSFM addNoticeCV8: 'V' parameter should be defined");
-        if (V) console.assert(typeof V === 'string', `cUSFM addNoticeCV8: 'V' parameter should be a string not a '${typeof V}': ${V}`);
+        if (noticeObject.V) console.assert(typeof noticeObject.V === 'string', `cUSFM addNoticeCV8: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
         // console.assert(characterIndex !== undefined, "cUSFM addNoticeCV8: 'characterIndex' parameter should be defined");
-        if (characterIndex) console.assert(typeof characterIndex === 'number', `cUSFM addNoticeCV8: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
+        if (noticeObject.characterIndex !== undefined) console.assert(typeof noticeObject.characterIndex === 'number', `cUSFM addNoticeCV8: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
         // console.assert(extract !== undefined, "cUSFM addNoticeCV8: 'extract' parameter should be defined");
-        if (extract) console.assert(typeof extract === 'string', `cUSFM addNoticeCV8: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
-        console.assert(location !== undefined, "cUSFM addNoticeCV8: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', `cUSFM addNoticeCV8: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push({priority,message, bookID, C, V, lineNumber, characterIndex, extract, location});
+        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cUSFM addNoticeCV8: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        console.assert(noticeObject.location !== undefined, "cUSFM addNoticeCV8: 'location' parameter should be defined");
+        console.assert(typeof noticeObject.location === 'string', `cUSFM addNoticeCV8: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        result.noticeList.push({...noticeObject, bookID, filename});
     }
 
 
@@ -139,7 +139,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
 
         // if (!grammarCheckResult.isValidUSFM) // TEMP DEGRADE TO WARNING 994 -> 544 ................XXXXXXXXXXXXXXXXXXXXXX
             // Don't do this since we add the actual error message elsewhere now
-            // addNoticeCV8({priority:994, '', '', `USFM3 Grammar Check (strict mode) doesn't pass`, -1, "", location:fileLocation});
+            // addNoticeCV8({priority:994, '', '', `USFM3 Grammar Check (strict mode) doesn't pass`, location:fileLocation});
 
         // We only get one error if it fails
         if (grammarCheckResult.error && grammarCheckResult.error.priority)
@@ -312,7 +312,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
     // end of CVCheck function
 
 
-    function doOurBasicTextChecks(C, V, fieldName, fieldText, allowedLinks, fieldLocation, optionalCheckingOptions) {
+    function ourCheckTextField(C, V, fieldName, fieldText, allowedLinks, fieldLocation, optionalCheckingOptions) {
         /**
         * @description - checks the given text field and processes the returned results
         * @param {String} C - chapter number of the text being checked
@@ -328,19 +328,20 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global list of notices
-        // console.log(`cUSFM doOurBasicTextChecks(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${fieldLocation}, …)`);
-        console.assert(fieldName !== undefined, "cUSFM doOurBasicTextChecks: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName === 'string', `cUSFM doOurBasicTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        console.assert(fieldText !== undefined, "cUSFM doOurBasicTextChecks: 'fieldText' parameter should be defined");
-        console.assert(typeof fieldText === 'string', `cUSFM doOurBasicTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-        console.assert(allowedLinks === true || allowedLinks === false, "cUSFM doOurBasicTextChecks: allowedLinks parameter must be either true or false");
+        // console.log(`cUSFM ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${fieldLocation}, …)`);
+        console.assert(fieldName !== undefined, "cUSFM ourCheckTextField: 'fieldName' parameter should be defined");
+        console.assert(typeof fieldName === 'string', `cUSFM ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        console.assert(fieldText !== undefined, "cUSFM ourCheckTextField: 'fieldText' parameter should be defined");
+        console.assert(typeof fieldText === 'string', `cUSFM ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+        console.assert(allowedLinks === true || allowedLinks === false, "cUSFM ourCheckTextField: allowedLinks parameter must be either true or false");
 
-        const dbtcResultObject = doBasicTextChecks(fieldName, fieldText, allowedLinks, fieldLocation, optionalCheckingOptions);
+        const dbtcResultObject = checkTextField(fieldName, fieldText, allowedLinks, fieldLocation, optionalCheckingOptions);
 
         // Process results line by line to filter out potential false positives
         //  for this particular kind of text field
         for (const noticeEntry of dbtcResultObject.noticeList) {
-            // console.assert(Object.keys(noticeEntry).length === 5, `USFM doOurBasicTextChecks notice length=${Object.keys(noticeEntry).length}`);
+            console.log("Notice keys", JSON.stringify(Object.keys(noticeEntry)));
+            console.assert(Object.keys(noticeEntry).length === 5, `USFM ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
             if (!noticeEntry.message.startsWith("Mismatched () characters") // 663 Mismatched left/right chars -- suppress these misleading warnings coz open quote can occur in one verse and close in another
                 && !noticeEntry.message.startsWith("Mismatched [] characters")
                 && !noticeEntry.message.startsWith("Mismatched “” characters")
@@ -348,25 +349,32 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
                 && (!noticeEntry.message.startsWith("Unexpected | character after space") || fieldText.indexOf('x-lemma') < 0) // inside \zaln-s fields
                 && (!noticeEntry.message.startsWith("Unexpected doubled , characters") || fieldText.indexOf('x-morph') < 0) // inside \w fields
                 && (!noticeEntry.message.startsWith('Unexpected doubled " characters') || fieldText.indexOf('x-morph') < 0) // inside \w fields
-            )
-                addNoticeCV8({priority:noticeEntry.priority, C, V, message:noticeEntry.message, characterIndex:noticeEntry.characterIndex, extract:noticeEntry.extract, location:noticeEntry.location});
+            ) {
+                const newNoticeObject = { priority:noticeEntry.priority, message:noticeEntry.message }
+                if (C !== undefined && C.length) newNoticeObject.C = C;
+                if (V !== undefined && V.length) newNoticeObject.V = V;
+                if (noticeEntry.characterIndex !== undefined) newNoticeObject.characterIndex = noticeEntry.characterIndex;
+                if (noticeEntry.extract !== undefined && noticeEntry.extract.length) newNoticeObject.extract = noticeEntry.extract;
+                if (noticeEntry.location !== undefined && noticeEntry.location.length) newNoticeObject.location = noticeEntry.location;
+                addNoticeCV8(newNoticeObject);
+            }
         }
     }
-    // end of doOurBasicTextChecks function
+    // end of ourCheckTextField function
 
 
-    function doOurBasicFileChecks(filename, fileText, fileLocation, optionalCheckingOptions) {
+    function ourBasicFileChecks(filename, fileText, fileLocation, optionalCheckingOptions) {
         // Does basic checks for small errors like leading/trailing spaces, etc.
 
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global list of notices
-        console.assert(filename !== undefined, "cUSFM doOurBasicFileChecks: 'filename' parameter should be defined");
-        console.assert(typeof filename === 'string', `cUSFM doOurBasicFileChecks: 'filename' parameter should be a string not a '${typeof filename}'`);
-        console.assert(fileText !== undefined, "cUSFM doOurBasicFileChecks: 'fileText' parameter should be defined");
-        console.assert(typeof fileText === 'string', `cUSFM doOurBasicFileChecks: 'fileText' parameter should be a string not a '${typeof fileText}'`);
+        console.assert(filename !== undefined, "cUSFM ourBasicFileChecks: 'filename' parameter should be defined");
+        console.assert(typeof filename === 'string', `cUSFM ourBasicFileChecks: 'filename' parameter should be a string not a '${typeof filename}'`);
+        console.assert(fileText !== undefined, "cUSFM ourBasicFileChecks: 'fileText' parameter should be defined");
+        console.assert(typeof fileText === 'string', `cUSFM ourBasicFileChecks: 'fileText' parameter should be a string not a '${typeof fileText}'`);
 
-        const resultObject = doBasicFileChecks(filename, fileText, fileLocation, optionalCheckingOptions);
+        const resultObject = checkFileText(filename, fileText, fileLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -376,7 +384,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
         // for (const noticeEntry of resultObject.noticeList)
         //     addNoticeCV8({priority:noticeEntry.priority, noticeEntry.message, noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
     }
-    // end of doOurBasicFileChecks function
+    // end of ourBasicFileChecks function
 
 
     function checkUSFMCharacterFields(filename, fileText, fileLocation) {
@@ -431,7 +439,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
         checkUSFMCharacterFields(filename, fileText, fileLocation)
 
         // Now do the general global checks (e.g., for general punctuation)
-        doOurBasicFileChecks(filename, fileText, fileLocation);
+        ourBasicFileChecks(filename, fileText, fileLocation);
 
         for (const compulsoryMarker of COMPULSORY_MARKERS)
             if (!markerSet.has(compulsoryMarker))
@@ -469,7 +477,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
         const allowedLinks = (marker === 'w' || marker === 'k-s' || marker === 'SPECIAL1')
             // (because we don't know what marker SPECIAL1 is, so default to "no false alarms")
             && rest.indexOf('x-tw') >= 0;
-        if (rest) doOurBasicTextChecks(C, V, '\\' + marker, rest, allowedLinks, ' field ' + lineLocation, optionalCheckingOptions);
+        if (rest) ourCheckTextField(C, V, '\\' + marker, rest, allowedLinks, ' field ' + lineLocation, optionalCheckingOptions);
     }
     // end of checkUSFMLineInternals function
 

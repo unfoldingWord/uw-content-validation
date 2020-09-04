@@ -66,21 +66,21 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
     }
 
 
-    async function doOurCheckFile(bookOrFileCode, cfBookID, filename, file_content, fileLocation, optionalCheckingOptions) {
+    async function ourCheckFile(bookOrFileCode, cfBookID, filename, file_content, fileLocation, optionalCheckingOptions) {
         // We assume that checking for compulsory fields is done elsewhere
-        // console.log(`checkRepo doOurCheckFile(${filename})…`);
+        // console.log(`checkRepo ourCheckFile(${filename})…`);
 
         // Updates the global list of notices
-        console.assert(bookOrFileCode !== undefined, "doOurCheckFile: 'bookOrFileCode' parameter should be defined");
-        console.assert(typeof bookOrFileCode === 'string', `doOurCheckFile: 'bookOrFileCode' parameter should be a string not a '${typeof bookOrFileCode}'`);
-        console.assert(cfBookID !== undefined, "doOurCheckFile: 'cfBookID' parameter should be defined");
-        console.assert(typeof cfBookID === 'string', `doOurCheckFile: 'cfBookID' parameter should be a string not a '${typeof cfBookID}'`);
-        console.assert(filename !== undefined, "doOurCheckFile: 'filename' parameter should be defined");
-        console.assert(typeof filename === 'string', `doOurCheckFile: 'filename' parameter should be a string not a '${typeof filename}'`);
-        console.assert(file_content !== undefined, "doOurCheckFile: 'file_content' parameter should be defined");
-        console.assert(typeof file_content === 'string', `doOurCheckFile: 'file_content' parameter should be a string not a '${typeof file_content}'`);
-        console.assert(fileLocation !== undefined, "doOurCheckFile: 'fileLocation' parameter should be defined");
-        console.assert(typeof fileLocation === 'string', `doOurCheckFile: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
+        console.assert(bookOrFileCode !== undefined, "ourCheckFile: 'bookOrFileCode' parameter should be defined");
+        console.assert(typeof bookOrFileCode === 'string', `ourCheckFile: 'bookOrFileCode' parameter should be a string not a '${typeof bookOrFileCode}'`);
+        console.assert(cfBookID !== undefined, "ourCheckFile: 'cfBookID' parameter should be defined");
+        console.assert(typeof cfBookID === 'string', `ourCheckFile: 'cfBookID' parameter should be a string not a '${typeof cfBookID}'`);
+        console.assert(filename !== undefined, "ourCheckFile: 'filename' parameter should be defined");
+        console.assert(typeof filename === 'string', `ourCheckFile: 'filename' parameter should be a string not a '${typeof filename}'`);
+        console.assert(file_content !== undefined, "ourCheckFile: 'file_content' parameter should be defined");
+        console.assert(typeof file_content === 'string', `ourCheckFile: 'file_content' parameter should be a string not a '${typeof file_content}'`);
+        console.assert(fileLocation !== undefined, "ourCheckFile: 'fileLocation' parameter should be defined");
+        console.assert(typeof fileLocation === 'string', `ourCheckFile: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
 
         const resultObject = await checkFile(filename, file_content, fileLocation, optionalCheckingOptions);
         // console.log("checkFile() returned", resultObject.successList.length, "success message(s) and", resultObject.noticeList.length, "notice(s)");
@@ -95,7 +95,7 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
                 characterIndex:noticeEntry.characterIndex, extract:noticeEntry.extract,
                 location:noticeEntry.location, extra:bookOrFileCode});
     }
-    // end of doOurCheckFile function
+    // end of ourCheckFile function
 
 
     // Main code for checkRepo()
@@ -171,7 +171,7 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
             }
             if (repoFileContent) {
                 // console.log(`checkRepo checking ${thisFilename}`);
-                await doOurCheckFile(bookOrFileCode, ourBookID, thisFilename, repoFileContent, ourLocation, checkingOptions);
+                await ourCheckFile(bookOrFileCode, ourBookID, thisFilename, repoFileContent, ourLocation, checkingOptions);
                 checkedFileCount += 1;
                 checkedFilenames.push(thisFilename);
                 checkedFilenameExtensions.add(thisFilenameExtension);
