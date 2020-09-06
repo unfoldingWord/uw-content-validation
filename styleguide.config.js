@@ -221,6 +221,7 @@ module.exports = {
 	},
 	version,
 	webpackConfig: {
+        devtool: 'source-map',
 		module: {
 			rules: [
 				{

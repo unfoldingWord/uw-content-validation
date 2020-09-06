@@ -2,12 +2,39 @@ import React from 'react';
 import * as books from '../../core/books/books';
 import checkFile from '../file-check/checkFile';
 import checkRepo from '../repo-check/checkRepo';
-import { getFilelistFromZip, getFile } from '../../core/getApi';
+import {getFilelistFromZip, getFile, clearCaches, fetchRepositoryZipFile} from '../../core/getApi';
+import Path from "path";
 // import { consoleLogObject } from '../../core/utilities';
 
 
 const CHECKER_VERSION_STRING = '0.3.1';
+let cachedUnzippedFiles = {};
 
+/**
+ * adds caching of uncompressed files, calls getFile() if file is not cached
+ * @param {String} username
+ * @param {String} repository
+ * @param {String} path
+ * @param {String} branch
+ * @return {Promise<*>}
+ */
+export async function getFileCached({ username, repository, path, branch }) {
+  const filePath = Path.join(repository, path, branch);
+  // console.log(`getFileCached(${username}, ${repository}, ${path}, ${branch})…`);
+  if (cachedUnzippedFiles[filePath]) {
+    // console.log(`in cache - ${filePath}`);
+    return cachedUnzippedFiles[filePath];
+  }
+
+  let file = await getFile({ username, repository, path, branch });
+
+  if (file) {
+    cachedUnzippedFiles[filePath] = file;
+    // console.log(`saving to cache - ${filePath}`);
+  }
+
+  return file;
+}
 
 async function checkTQbook(username, repoName, branch, bookID, checkingOptions) {
     // console.log(`checkTQbook(${username}, ${repoName}, ${branch}, ${bookID}, …)…`);
@@ -85,6 +112,7 @@ async function checkTQbook(username, repoName, branch, bookID, checkingOptions) 
     let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(['md']), totalCheckedSize = 0;
     const pathList = await getFilelistFromZip({ username, repository: repoName, branch, optionalPrefix: `${bookID.toLowerCase()}/` });
     // console.log(`  Got ${pathList.length} pathList entries`)
+    const getFile_ = (checkingOptions && checkingOptions.getFile) ? checkingOptions.getFile : getFile;
     for (const thisPath of pathList) {
         // console.log("checkTQbook: Try to load", username, repoName, thisPath, branch);
 
@@ -95,7 +123,7 @@ async function checkTQbook(username, repoName, branch, bookID, checkingOptions) 
 
         let tqFileContent;
         try {
-            tqFileContent = await getFile({ username, repository: repoName, path: thisPath, branch });
+            tqFileContent = await getFile_({ username, repository: repoName, path: thisPath, branch });
             // console.log("Fetched file_content for", repoName, thisPath, typeof tqFileContent, tqFileContent.length);
             checkedFilenames.push(thisPath);
             totalCheckedSize += tqFileContent.length;
@@ -123,6 +151,14 @@ async function checkTQbook(username, repoName, branch, bookID, checkingOptions) 
 // end of checkTQbook function
 
 
+function getRepoName(language_code, repoCode) {
+  let repo_language_code = language_code;
+  if (repoCode === 'UHB') repo_language_code = 'hbo';
+  else if (repoCode === 'UGNT') repo_language_code = 'el-x-koine';
+  const repoName = `${repo_language_code}_${repoCode.toLowerCase()}`;
+  return repoName;
+}
+
 async function checkBookPackage(username, language_code, bookID, setResultValue, checkingOptions) {
     /*
     Note that bookID here can also be the 'OBS' pseudo bookID.
@@ -132,6 +168,10 @@ async function checkBookPackage(username, language_code, bookID, setResultValue,
     const startTime = new Date();
 
     let checkBookPackageResult = { successList: [], noticeList: [] };
+    const newCheckingOptions = checkingOptions ? { ...checkingOptions } : { }; // clone before modify
+
+    let getFile_ = newCheckingOptions.getFile ? newCheckingOptions.getFile : getFileCached; // default to using caching of files
+    newCheckingOptions.getFile = getFile_; // use same getFile_ when we call core functions
 
     function addSuccessMessage(successString) {
         // console.log(`checkBookPackage success: ${successString}`);
@@ -224,6 +264,8 @@ async function checkBookPackage(username, language_code, bookID, setResultValue,
     }
     // end of ourCheckRepo function */
 
+    clearCaches(); // make sure caches cleared to make sure no stale data
+    cachedUnzippedFiles = {}; // make sure caches cleared
 
     // Main code for checkBookPackage()
     const generalLocation = ` ${language_code} ${bookID} book package from ${username}`;
@@ -236,7 +278,7 @@ async function checkBookPackage(username, language_code, bookID, setResultValue,
         // We use the generalLocation here (does not include repo name)
         //  so that we can adjust the returned strings ourselves
         // console.log("Calling OBS checkRepo()…");
-        checkBookPackageResult = await checkRepo(username, `${language_code}_obs`, branch, generalLocation, setResultValue, checkingOptions); // Adds the notices to checkBookPackageResult
+        checkBookPackageResult = await checkRepo(username, `${language_code}_obs`, branch, generalLocation, setResultValue, newCheckingOptions); // Adds the notices to checkBookPackageResult
         // console.log(`checkRepo() returned ${checkBookPackageResult.successList.length} success message(s) and ${checkBookPackageResult.noticeList.length} notice(s)`);
         // console.log("crResultObject keys", JSON.stringify(Object.keys(checkBookPackageResult)));
 
@@ -255,7 +297,7 @@ async function checkBookPackage(username, language_code, bookID, setResultValue,
             if (books.isValidBookID(bookID)) // must be in FRT, BAK, etc.
                 whichTestament = 'other'
             else {
-                addNotice10({priority:900, message:"Bad function call: should be given a valid book abbreviation", extract:bookID, location:` (not '${bookID}')${location}`});
+                addNotice10({priority:900, message:"Bad function call: should be given a valid book abbreviation", extract:bookID, location:` (not '${bookID}')${generalLocation}`});
                 return checkBookPackageResult;
             }
         }
@@ -264,14 +306,18 @@ async function checkBookPackage(username, language_code, bookID, setResultValue,
         // So now we want to work through checking this one specified Bible book in various repos:
         //  UHB/UGNT, ULT, UST, TN, TQ
         let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0, checkedRepoNames = [];
-        for (const repoCode of [(whichTestament === 'old' ? 'UHB' : 'UGNT'), 'ULT', 'UST', 'TN', 'TQ']) {
-            // console.log(`Let's try ${repoCode} (${language_code} ${bookID} from ${username})`);
+        let origLang = whichTestament === 'old' ? 'UHB' : 'UGNT';
+        for (const repoCode of [origLang, 'TA', 'TW']) {
+          const repoName = getRepoName(language_code, repoCode);
+          console.log(`Loading zip file for ${repoName})`);
+          const zipFetchSucceeded = await fetchRepositoryZipFile({ username, repository: repoName, branch });
+          if (!zipFetchSucceeded)
+            console.log(`checkRepo: misfetched zip file for repo with ${zipFetchSucceeded}`);
+        }
+        for (const repoCode of [origLang, 'ULT', 'UST', 'TN', 'TQ']) {
+            console.log(`Let's try ${repoCode} (${language_code} ${bookID} from ${username})`);
             const repoLocation = ` in ${repoCode.toUpperCase()}${generalLocation}`;
-
-            let repo_language_code = language_code;
-            if (repoCode === 'UHB') repo_language_code = 'hbo';
-            else if (repoCode === 'UGNT') repo_language_code = 'el-x-koine';
-            const repoName = `${repo_language_code}_${repoCode.toLowerCase()}`;
+            const repoName = getRepoName(language_code, repoCode);
 
             const fullRepoName = username + '/' + repoName;
             // console.log("Let's try1", bookID, "from", fullRepoName);
@@ -288,7 +334,7 @@ async function checkBookPackage(username, language_code, bookID, setResultValue,
 
             if (repoCode === 'TQ') {
                 // This resource might eventually be converted to TSV tables
-                const tqResultObject = await checkTQbook(username, repoName, branch, bookID, checkingOptions);
+                const tqResultObject = await checkTQbook(username, repoName, branch, bookID, newCheckingOptions);
                 checkBookPackageResult.successList = checkBookPackageResult.successList.concat(tqResultObject.successList);
                 checkBookPackageResult.noticeList = checkBookPackageResult.noticeList.concat(tqResultObject.noticeList);
                 checkedFilenames = checkedFilenames.concat(tqResultObject.checkedFilenames);
@@ -300,7 +346,7 @@ async function checkBookPackage(username, language_code, bookID, setResultValue,
                 // console.log("Try to load", username, repoName, filename, branch);
                 let repoFileContent;
                 try {
-                    repoFileContent = await getFile({ username, repository: repoName, path: filename, branch });
+                    repoFileContent = await getFile_({ username, repository: repoName, path: filename, branch });
                     // console.log("Fetched file_content for", repoName, filename, typeof repoFileContent, repoFileContent.length);
                     checkedFilenames.push(filename);
                     totalCheckedSize += repoFileContent.length;
@@ -313,7 +359,7 @@ async function checkBookPackage(username, language_code, bookID, setResultValue,
 
                 // We use the generalLocation here (does not include repo name)
                 //  so that we can adjust the returned strings ourselves
-                await ourCheckFile(repoCode, filename, repoFileContent, generalLocation, checkingOptions); // Adds the notices to checkBookPackageResult
+                await ourCheckFile(repoCode, filename, repoFileContent, generalLocation, newCheckingOptions); // Adds the notices to checkBookPackageResult
                 checkedFileCount += 1;
                 addSuccessMessage(`Checked ${repoCode.toUpperCase()} file: ${filename}`);
             }

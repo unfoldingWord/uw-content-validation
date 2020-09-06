@@ -93,7 +93,8 @@ async function checkTAReference(fieldName, fieldText, givenLocation, optionalChe
     // console.log(`Need to check against ${taRepoName}`);
     let taFileContent; // Not really used here -- just to show that we got something valid
     try {
-        taFileContent = await getFile({ username, repository: taRepoName, path: filepath, branch });
+        const getFile_ = (optionalCheckingOptions && optionalCheckingOptions.getFile) ? optionalCheckingOptions.getFile : getFile;
+        taFileContent = await getFile_({ username, repository: taRepoName, path: filepath, branch });
         // console.log("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
     } catch (trcGCerror) {
         console.log("ERROR: Failed to load", username, taRepoName, filepath, branch, trcGCerror.message);
