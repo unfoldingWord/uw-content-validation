@@ -1,4 +1,6 @@
 export * from './books/';
+export * from './utilities';
+export * from './getApi';
 export * from './text-handling-functions';
 export * from './field-text-check';
 export * from './markdown-text-check';
@@ -10,4 +12,3 @@ export * from './annotation-table-check';
 export * from './usfm-text-check';
 export * from './notice-processing-functions';
 export * from './book-package-check';
-export * from './utilities';

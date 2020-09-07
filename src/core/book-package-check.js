@@ -7,13 +7,13 @@ import checkYAMLText from './yaml-text-check';
 import checkManifestText from './manifest-text-check';
 import checkTN_TSVText from './tn-table-text-check';
 
-import { fetchRepositoryZipFile, getFilelistFromZip, getFile } from './getApi';
+import {getFilelistFromZip, getFile, getFileCached, clearCaches, fetchRepositoryZipFile} from './getApi';
+
 
 /*
     checkRepo
 */
-const CHECK_REPO_VERSION_STRING = '0.4.1';
-async function checkRepo(username, repoName, branch, givenLocation, setResultValue, checkingOptions) {
+export async function checkRepo(username, repoName, branch, givenLocation, setResultValue, checkingOptions) {
     /*
     checkRepo DOES NOT USE the Gitea React Toolkit to fetch the repo
 
@@ -37,7 +37,7 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
         // console.log(`checkRepo success: ${successString}`);
         checkRepoResult.successList.push(successString);
     }
-    function addNotice10({priority, message, bookID, C, V, lineNumber, characterIndex, extract, location, extra}) {
+    function addNotice10({priority, message, filename, bookID, C, V, lineNumber, characterIndex, extract, location, extra}) {
         // Adds the notices to the result that we will later return
         // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
         // Note that bookID,C,V might all be empty strings (as some repos don't have BCV)
@@ -64,7 +64,7 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
         console.assert(typeof location === 'string', `cR addNotice10: 'location' parameter should be a string not a '${typeof location}'`);
         console.assert(extra !== undefined, "cR addNotice10: 'extra' parameter should be defined");
         console.assert(typeof extra === 'string', `cR addNotice10: 'extra' parameter should be a string not a '${typeof extra}'`);
-        checkRepoResult.noticeList.push({ priority,message, bookID, C, V, lineNumber, characterIndex, extract, location, extra });
+        checkRepoResult.noticeList.push({ priority,message, bookID, C, V, repoName, filename, lineNumber, characterIndex, extract, location, extra });
     }
 
 
@@ -93,7 +93,8 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
         for (const noticeEntry of resultObject.noticeList)
             // We add the bookOrFileCode as an extra value
             addNotice10({priority:noticeEntry.priority, message:noticeEntry.message,
-                bookID:noticeEntry.bookID, C:noticeEntry.C, V:noticeEntry.V, lineNumber:noticeEntry.lineNumber,
+                bookID:noticeEntry.bookID, C:noticeEntry.C, V:noticeEntry.V,
+                filename, lineNumber:noticeEntry.lineNumber,
                 characterIndex:noticeEntry.characterIndex, extract:noticeEntry.extract,
                 location:noticeEntry.location, extra:bookOrFileCode});
     }
@@ -162,13 +163,14 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
             }
 
             // console.log("checkRepo: Try to load", username, repoName, thisFilepath, branch);
+            const getFile_ = (checkingOptions && checkingOptions.getFile) ? checkingOptions.getFile : getFile;
             let repoFileContent;
             try {
-                repoFileContent = await getFile({ username, repository: repoName, path: thisFilepath, branch });
+                repoFileContent = await getFile_({ username, repository: repoName, path: thisFilepath, branch });
                 // console.log("Fetched file_content for", repoName, thisPath, typeof repoFileContent, repoFileContent.length);
             } catch (cRgfError) {
                 console.log("Failed to load", username, repoName, thisFilepath, branch, `${cRgfError}`);
-                addNotice10({priority:996, bookID:ourBookID, message:"Failed to load", location:`${generalLocation} ${thisFilepath}: ${cRgfError}`, repoCode});
+                addNotice10({priority:996, message:"Failed to load", bookID:ourBookID, filename:thisFilename, location:`${givenLocation} ${thisFilepath}: ${cRgfError}`, extra:repoName});
                 return;
             }
             if (repoFileContent) {
@@ -208,7 +210,7 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
         </>);
 
     }
-    checkRepoResult.elapsedTime = (new Date() - startTime) / 1000; // seconds
+    checkRepoResult.elapsedSeconds = (new Date() - startTime) / 1000; // seconds
     return checkRepoResult;
 };
 // end of checkRepo()
@@ -217,8 +219,7 @@ async function checkRepo(username, repoName, branch, givenLocation, setResultVal
 /*
     checkFile
 */
-const CHECK_FILE_VERSION_STRING = '0.1.5';
-async function checkFile(filename, fileContent, givenLocation, checkingOptions) {
+export async function checkFile(filename, fileContent, givenLocation, checkingOptions) {
     // Determine the file type from the filename extension
     //  and return the results of checking that kind of file
     //     console.log(`I'm here in checkFile v${CHECK_FILE_VERSION_STRING}
@@ -272,7 +273,7 @@ async function checkFile(filename, fileContent, givenLocation, checkingOptions) 
     checkFileResult.checkedFilesize = fileContent.length;
     checkFileResult.checkedOptions = checkingOptions;
 
-    checkFileResult.elapsedTime = (new Date() - startTime) / 1000; // seconds
+    checkFileResult.elapsedSeconds = (new Date() - startTime) / 1000; // seconds
     return checkFileResult;
 };
 // end of checkFile()
@@ -280,8 +281,7 @@ async function checkFile(filename, fileContent, givenLocation, checkingOptions) 
 /*
     checkTQbook
 */
-const CHECKER_VERSION_STRING = '0.3.1';
-async function checkTQbook(username, repoName, branch, bookID, checkingOptions) {
+export async function checkTQbook(username, repoName, branch, bookID, checkingOptions) {
     const repoCode = 'TQ';
     const generalLocation = `in ${username} ${repoName} (${branch})`;
 
@@ -342,7 +342,8 @@ async function checkTQbook(username, repoName, branch, bookID, checkingOptions) 
             // console.assert(Object.keys(noticeEntry).length === 5, `cTQ ourCheckFile notice length=${Object.keys(noticeEntry).length}`);
             // We add the repoCode as an extra value
             addNotice10({priority:noticeEntry.priority, message:noticeEntry.message,
-                bookID, C, V, lineNumber:noticeEntry.lineNumber,
+                bookID, C, V,
+                filename: cfFilename, lineNumber:noticeEntry.lineNumber,
                 characterIndex:noticeEntry.characterIndex, extract:noticeEntry.extract,
                 location:noticeEntry.location, extra:repoCode});
         }
@@ -363,9 +364,10 @@ async function checkTQbook(username, repoName, branch, bookID, checkingOptions) 
         const C = pathParts[pathParts.length-2].replace(/^0+(?=\d)/, '');
         const V = pathParts[pathParts.length-1].replace(/^0+(?=\d)/, '');
 
+        const getFile_ = (checkingOptions && checkingOptions.getFile) ? checkingOptions.getFile : getFile;
         let tqFileContent;
         try {
-            tqFileContent = await getFile({ username, repository: repoName, path: thisPath, branch });
+            tqFileContent = await getFile_({ username, repository: repoName, path: thisPath, branch });
             // console.log("Fetched file_content for", repoName, thisPath, typeof tqFileContent, tqFileContent.length);
             checkedFilenames.push(thisPath);
             totalCheckedSize += tqFileContent.length;
@@ -392,11 +394,23 @@ async function checkTQbook(username, repoName, branch, bookID, checkingOptions) 
 }
 // end of checkTQbook function
 
+
+function getRepoName(language_code, repoCode) {
+    let repo_language_code = language_code;
+    if (repoCode === 'UHB') repo_language_code = 'hbo';
+    else if (repoCode === 'UGNT') repo_language_code = 'el-x-koine';
+    const repoName = `${repo_language_code}_${repoCode.toLowerCase()}`;
+    return repoName;
+  }
+
+
 /*
     checkBookPackage
 */
 export async function checkBookPackage(username, language_code, bookID, setResultValue, checkingOptions) {
     /*
+    Note: You may want to run clearCaches() before running this function???
+
     Note that bookID here can also be the 'OBS' pseudo bookID.
     */
     //     console.log(`I'm here in checkBookPackage v${CHECKER_VERSION_STRING}
@@ -404,6 +418,10 @@ export async function checkBookPackage(username, language_code, bookID, setResul
     const startTime = new Date();
 
     let checkBookPackageResult = { successList: [], noticeList: [] };
+
+    const newCheckingOptions = checkingOptions ? { ...checkingOptions } : { }; // clone before modify
+    const getFile_ = newCheckingOptions.getFile ? newCheckingOptions.getFile : getFileCached; // default to using caching of files
+    newCheckingOptions.getFile = getFile_; // use same getFile_ when we call core functions
 
     function addSuccessMessage(successString) {
         // console.log(`checkBookPackage success: ${successString}`);
@@ -478,7 +496,7 @@ export async function checkBookPackage(username, language_code, bookID, setResul
         // We use the generalLocation here (does not include repo name)
         //  so that we can adjust the returned strings ourselves
         // console.log("Calling OBS checkRepo()…");
-        checkBookPackageResult = await checkRepo(username, `${language_code}_obs`, branch, generalLocation, setResultValue, checkingOptions); // Adds the notices to checkBookPackageResult
+        checkBookPackageResult = await checkRepo(username, `${language_code}_obs`, branch, generalLocation, setResultValue, newCheckingOptions); // Adds the notices to checkBookPackageResult
         // console.log(`checkRepo() returned ${checkBookPackageResult.successList.length} success message(s) and ${checkBookPackageResult.noticeList.length} notice(s)`);
         // console.log("crResultObject keys", JSON.stringify(Object.keys(checkBookPackageResult)));
 
@@ -487,7 +505,7 @@ export async function checkBookPackage(username, language_code, bookID, setResul
         // checkBookPackageResult.noticeList = checkBookPackageResult.noticeList.concat(crResultObject.noticeList);
         // checkedFileCount += crResultObject.fileCount;
         addSuccessMessage(`Checked ${language_code} OBS repo from ${username}`);
-    } else {
+    } else { // not OBS
         // We also need to know the number for USFM books
         let bookNumberAndName, whichTestament;
         try {
@@ -497,7 +515,9 @@ export async function checkBookPackage(username, language_code, bookID, setResul
             if (books.isValidBookID(bookID)) // must be in FRT, BAK, etc.
                 whichTestament = 'other'
             else {
-                addNotice10({priority:900, message:"Bad function call: should be given a valid book abbreviation", extract:bookID, location:` (not '${bookID}')${location}`});
+                addNotice10({priority:902, message:"Bad function call: should be given a valid book abbreviation",
+                                bookID,
+                                extract:bookID, location:` (not '${bookID}')${generalLocation}`});
                 return checkBookPackageResult;
             }
         }
@@ -505,17 +525,22 @@ export async function checkBookPackage(username, language_code, bookID, setResul
 
         // So now we want to work through checking this one specified Bible book in various repos:
         //  UHB/UGNT, ULT, UST, TN, TQ
+        const getFile_ = (checkingOptions && checkingOptions.getFile) ? checkingOptions.getFile : getFile;
         let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0, checkedRepoNames = [];
-        for (const repoCode of [(whichTestament === 'old' ? 'UHB' : 'UGNT'), 'ULT', 'UST', 'TN', 'TQ']) {
-            // console.log(`Let's try ${repoCode} (${language_code} ${bookID} from ${username})`);
-            const repoLocation = ` in ${repoCode.toUpperCase()}${generalLocation}`;
+        const origLang = whichTestament === 'old' ? 'UHB' : 'UGNT';
+        for (const repoCode of [origLang, 'TA', 'TW']) {
+            const repoName = getRepoName(language_code, repoCode);
+            console.log(`Loading zip file for ${repoName}…`);
+            const zipFetchSucceeded = await fetchRepositoryZipFile({ username, repository: repoName, branch });
+            if (!zipFetchSucceeded)
+              console.log(`checkRepo: misfetched zip file for repo with ${zipFetchSucceeded}`);
+          }
+          for (const repoCode of [origLang, 'ULT', 'UST', 'TN', 'TQ']) {
+              console.log(`Check ${bookID} in ${repoCode} (${language_code} ${bookID} from ${username})`);
+              const repoLocation = ` in ${repoCode.toUpperCase()}${generalLocation}`;
+              const repoName = getRepoName(language_code, repoCode);
 
-            let repo_language_code = language_code;
-            if (repoCode === 'UHB') repo_language_code = 'hbo';
-            else if (repoCode === 'UGNT') repo_language_code = 'el-x-koine';
-            const repoName = `${repo_language_code}_${repoCode.toLowerCase()}`;
-
-            const fullRepoName = username + '/' + repoName;
+              // const fullRepoName = username + '/' + repoName;
             // console.log("Let's try1", bookID, "from", fullRepoName);
 
             let filename;
@@ -530,7 +555,7 @@ export async function checkBookPackage(username, language_code, bookID, setResul
 
             if (repoCode === 'TQ') {
                 // This resource might eventually be converted to TSV tables
-                const tqResultObject = await checkTQbook(username, repoName, branch, bookID, checkingOptions);
+                const tqResultObject = await checkTQbook(username, repoName, branch, bookID, newCheckingOptions);
                 checkBookPackageResult.successList = checkBookPackageResult.successList.concat(tqResultObject.successList);
                 checkBookPackageResult.noticeList = checkBookPackageResult.noticeList.concat(tqResultObject.noticeList);
                 checkedFilenames = checkedFilenames.concat(tqResultObject.checkedFilenames);
@@ -542,20 +567,20 @@ export async function checkBookPackage(username, language_code, bookID, setResul
                 // console.log("Try to load", username, repoName, filename, branch);
                 let repoFileContent;
                 try {
-                    repoFileContent = await getFile({ username, repository: repoName, path: filename, branch });
+                    repoFileContent = await getFile_({ username, repository: repoName, path: filename, branch });
                     // console.log("Fetched file_content for", repoName, filename, typeof repoFileContent, repoFileContent.length);
                     checkedFilenames.push(filename);
                     totalCheckedSize += repoFileContent.length;
                     checkedRepoNames.push(repoCode);
                 } catch (cBPgfError) {
                     console.log("ERROR: Failed to load", username, repoName, filename, branch, cBPgfError + '');
-                    addNotice10({priority:996, message:"Failed to load", bookID, location:`${generalLocation} ${filename}: ${cBPgfError}`, extra:repoCode});
+                    addNotice10({priority:996, message:"Failed to load", bookID, repoName, filename, location:`${repoLocation} ${filename}: ${cBPgfError}`, extra:repoCode});
                     continue;
                 }
 
                 // We use the generalLocation here (does not include repo name)
                 //  so that we can adjust the returned strings ourselves
-                await ourCheckFile(repoCode, filename, repoFileContent, generalLocation, checkingOptions); // Adds the notices to checkBookPackageResult
+                await ourCheckFile(repoCode, filename, repoFileContent, generalLocation, newCheckingOptions); // Adds the notices to checkBookPackageResult
                 checkedFileCount += 1;
                 addSuccessMessage(`Checked ${repoCode.toUpperCase()} file: ${filename}`);
             }
@@ -574,9 +599,8 @@ export async function checkBookPackage(username, language_code, bookID, setResul
         // checkBookPackageResult.checkedOptions = checkingOptions; // This is done at the caller level
     }
 
-    checkBookPackageResult.elapsedTime = (new Date() - startTime) / 1000; // seconds
-    console.log("checkBookPackageResult:",checkBookPackageResult)
+    checkBookPackageResult.elapsedSeconds = (new Date() - startTime) / 1000; // seconds
+    // console.log("checkBookPackageResult:", JSON.stringify(checkBookPackageResult));
     return checkBookPackageResult;
 };
 // end of checkBookPackage()
-

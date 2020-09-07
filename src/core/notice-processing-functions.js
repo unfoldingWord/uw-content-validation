@@ -38,15 +38,14 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 message: The actual general description text of the notice
                 The next three fields may be ommitted if irrelevant
                  (since BCV is not relevant to all types of files/repos)
-                     bookID: book identifier 3-character UPPERCASE string
-                        (or empty string if not relevant)
+                    bookID: book identifier 3-character UPPERCASE string
                     C: Chapter number string
-                        (or empty string if not relevant)
                     V: Verse number string (can also be a bridge, e.g., '22-23')
-                        (or empty string if not relevant)
-                    lineNumber: A one-based integer indicating the line number in the file
-                    characterIndex: A zero-based integer index which indicates the position
-                      of the error on the line or in the text field as appropriate.
+                repoName: repository name (if relevant)
+                filename: string (if relevant)
+                lineNumber: A one-based integer indicating the line number in the file
+                characterIndex: A zero-based integer index which indicates the position
+                    of the error on the line or in the text field as appropriate.
                 extract: An extract of the checked text which indicates the area
                       containing the problem.
                     Where helpful, some character substitutions have already been made,
@@ -209,9 +208,15 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     for (const thisParticularNotice of standardisedNoticeList) {
         // console.log("thisParticularNotice", JSON.stringify(thisParticularNotice));
         if (thisParticularNotice.message.indexOf('\\s5') >= 0) {
-            let thisNewNotice = { priority: 701, bookID: thisParticularNotice.bookID, message: "\\s5 fields should be coded as \\ts\\* milestones", characterIndex: -1, extract: '', location: ` in ${givenNoticeObject.checkType}` };
-            if (thisParticularNotice.extra && thisParticularNotice.extra.length)
-                thisNewNotice.extra = thisParticularNotice.extra; // Sometime we have an additional file identifier
+            const thisNewNotice = { ...thisParticularNotice, priority: 701, message: "\\s5 fields should be coded as \\ts\\* milestones", location: ` in ${givenNoticeObject.checkType}`,
+                                    // I think we need to delete these fields below as they were probably set in thisParticularNotice
+                                    C:undefined, V:undefined, characterIndex:undefined, extract:undefined };
+            // if (thisParticularNotice.filename && thisParticularNotice.filename.length)
+            //     thisNewNotice.filename = thisParticularNotice.filename; // Sometimes we have an additional file identifier
+            // if (thisParticularNotice.repoName && thisParticularNotice.repoName.length)
+            //     thisNewNotice.repoName = thisParticularNotice.repoName; // Sometimes we have an additional file identifier
+            // if (thisParticularNotice.extra && thisParticularNotice.extra.length)
+            //     thisNewNotice.extra = thisParticularNotice.extra; // Sometimes we have an additional file identifier
             standardisedNoticeList.push(thisNewNotice);
             break;
         }
@@ -259,16 +264,18 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         const newNoticeList = [];
         for (const thisNotice of remainingNoticeList) {
             console.assert(thisNotice.extra && thisNotice.extra.length, `Expect thisNotice to have an "extra" field: ${JSON.stringify(thisNotice)}`)
-            const newNotice = {
-                priority: thisNotice.priority,
-                message: `${thisNotice.extra} ${thisNotice.message}`,
-                characterIndex: thisNotice.characterIndex,
-                extract: thisNotice.extract,
-                location: thisNotice.location
-            };
-            if (thisNotice.bookID) newNotice.bookID = thisNotice.bookID;
-            if (thisNotice.C) newNotice.C = thisNotice.C;
-            if (thisNotice.V) newNotice.V = thisNotice.V;
+            // const newNotice = {
+            //     priority: thisNotice.priority,
+            //     message: `${thisNotice.extra} ${thisNotice.message}`,
+            //     characterIndex: thisNotice.characterIndex,
+            //     extract: thisNotice.extract,
+            //     location: thisNotice.location
+            // };
+            // if (thisNotice.bookID) newNotice.bookID = thisNotice.bookID;
+            // if (thisNotice.C) newNotice.C = thisNotice.C;
+            // if (thisNotice.V) newNotice.V = thisNotice.V;
+            const newNotice = { ...thisNotice, message:`${thisNotice.extra} ${thisNotice.message}`};
+            delete newNotice.extra; // since we've used it (if it existed)
             newNoticeList.push(newNotice);
         }
         remainingNoticeList = newNoticeList;
@@ -340,11 +347,11 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
         if (maximumSimilarMessages > 0 && counter[thisID] === maximumSimilarMessages + 1) {
             if (thisPriority >= errorPriorityLevel) {
                 const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
-                resultObject.errorList.push({priority:-1, bookID:'',C:'',V:'', message:thisMsg, characterIndex:-1,extract:'', location:` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`});
+                resultObject.errorList.push({priority:-1, message:thisMsg, location:` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`});
                 resultObject.numSuppressedErrors++;
             } else {
                 const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
-                resultObject.warningList.push({priority:-1, bookID:'',C:'',V:'', message:thisMsg, characterIndex:-1,extract:'', location:` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`});
+                resultObject.warningList.push({priority:-1, message:thisMsg, location:` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`});
                 resultObject.numSuppressedWarnings++;
             }
         } else if (maximumSimilarMessages > 0 && counter[thisID] > maximumSimilarMessages + 1) {
@@ -430,15 +437,15 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
         if (maximumSimilarMessages > 0 && counter[thisID] === maximumSimilarMessages + 1) {
             if (thisPriority >= severePriorityLevel) {
                 const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
-                resultObject.severeList.push({prioriyy:-1, bookID:'',C:'',V:'', message:thisMsg, characterIndex:-1,extract:'', location:` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`});
+                resultObject.severeList.push({prioriyy:-1, message:thisMsg, location:` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`});
                 resultObject.numSevereSuppressed++;
             } else if (thisPriority >= mediumPriorityLevel) {
                 const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
-                resultObject.mediumList.push({priority:-1, bookID:'',C:'',V:'', message:thisMsg, characterIndex:-1,extract:'', location:` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`});
+                resultObject.mediumList.push({priority:-1, message:thisMsg, location:` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`});
                 resultObject.numMediumSuppressed++;
             } else {
                 const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
-                resultObject.lowList.push({priority:-1, bookID:'',C:'',V:'', message:thisMsg, characterIndex:-1,extract:'', location:` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`});
+                resultObject.lowList.push({priority:-1, message:thisMsg, location:` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`});
                 resultObject.numLowSuppressed++;
             }
         } else if (maximumSimilarMessages > 0 && counter[thisID] > maximumSimilarMessages + 1) {
@@ -514,7 +521,7 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
         else counter[thisID]++;
         if (maximumSimilarMessages > 0 && counter[thisID] === maximumSimilarMessages + 1) {
             const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
-            resultObject.warningList.push({priority:thisPriority, bookID:'',C:'',V:'', message:thisMsg, characterIndex:-1,extract:'', location:` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`});
+            resultObject.warningList.push({priority:thisPriority, message:thisMsg, location:` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED`});
             resultObject.numSuppressedWarnings++;
         } else if (maximumSimilarMessages > 0 && counter[thisID] > maximumSimilarMessages + 1) {
             resultObject.numSuppressedWarnings++;

@@ -3,7 +3,7 @@ import Path from 'path';
 import localforage from 'localforage';
 import { setup } from 'axios-cache-adapter';
 import JSZip from 'jszip';
-import { consoleLogObject } from '../core/utilities';
+// import { consoleLogObject } from '../core/utilities';
 
 
 const baseURL = 'https://git.door43.org/';
@@ -41,6 +41,35 @@ const Door43Api = setup({
 });
 
 
+let cachedUnzippedFiles = {};
+
+/**
+ * adds caching of uncompressed files, calls getFile() if file is not cached
+ * @param {String} username
+ * @param {String} repository
+ * @param {String} path
+ * @param {String} branch
+ * @return {Promise<*>}
+ */
+export async function getFileCached({ username, repository, path, branch }) {
+  const filePath = Path.join(repository, path, branch);
+  // console.log(`getFileCached(${username}, ${repository}, ${path}, ${branch})…`);
+  if (cachedUnzippedFiles[filePath]) {
+    // console.log(`in cache - ${filePath}`);
+    return cachedUnzippedFiles[filePath];
+  }
+
+  let file = await getFile({ username, repository, path, branch });
+
+  if (file) {
+    cachedUnzippedFiles[filePath] = file;
+    // console.log(`saving to cache - ${filePath}`);
+  }
+
+  return file;
+}
+
+
 export async function clearCaches() {
   console.log("Clearing localforage.INDEXEDDB zipStore and cacheStore caches…");
   // const tasks = [zipStore, cacheStore].map(localforage.clear);
@@ -49,6 +78,7 @@ export async function clearCaches() {
   await failedStore.clear();
   await zipStore.clear();
   await cacheStore.clear();
+  cachedUnzippedFiles = {};
 }
 
 
@@ -106,8 +136,9 @@ async function fetchManifest({username, repository}) {
 async function fetchFileFromServer({ username, repository, path, branch = 'master' }) {
   // console.log(`fetchFileFromServer(${username}, ${repository}, ${path}, ${branch})…`);
   const repoExists = await repositoryExists({ username, repository });
+  let uri;
   if (repoExists) {
-    const uri = Path.join(username, repository, 'raw/branch', branch, path);
+    uri = Path.join(username, repository, 'raw/branch', branch, path);
     const failMessage = await failedStore.getItem(uri);
     if (failMessage) {
       // console.log(`fetchFileFromServer failed previously for ${uri}: ${failMessage}`);
@@ -286,7 +317,7 @@ async function getFileFromZip({ username, repository, path, branch }) {
     }
     // else console.log("  No zipBlob");
   } catch (error) {
-    console.log(`ERROR: getFileFromZip got: ${error.message}`);
+    console.log(`ERROR: getFileFromZip for ${username} ${repository} ${path} ${branch} got: ${error.message}`);
     file = null;
   }
   return file;
@@ -303,10 +334,11 @@ export function zipUri({ username, repository, branch = 'master' }) {
 
 export async function fetchTree({ username, repository, sha = 'master' }) {
   // console.log(`fetchTree(${username}, ${repository}, ${sha})…`);
+  let data;
   try {
     const uri = Path.join('api/v1/repos', username, repository, 'git/trees', sha);
     // console.log(`  uri='${uri}'`);
-    const data = await cachedGet({ uri });
+    data = await cachedGet({ uri });
     // console.log(`  data (${typeof data})`);
     return data;
     // const tree = JSON.parse(data); // RJH: Why was this here???
