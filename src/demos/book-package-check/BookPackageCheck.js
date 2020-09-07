@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 // import { withStyles } from '@material-ui/core/styles';
 import * as books from '../../core/books/books';
-import checkBookPackage from './checkBookPackage';
+import { checkBookPackage } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../../core/notice-processing-functions';
-import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
-import { ourParseInt, consoleLogObject } from '../../core/utilities';
+import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime, RenderRawResults } from '../RenderProcessedResults';
+import { ourParseInt } from '../../core/utilities';
+// import { consoleLogObject } from '../../core/utilities';
 
 
-const CHECKER_VERSION_STRING = '0.1.2';
+const CHECKER_VERSION_STRING = '0.1.3';
 
 
 function BookPackageCheck(/*username, language_code, bookID,*/ props) {
@@ -80,9 +81,10 @@ function BookPackageCheck(/*username, language_code, bookID,*/ props) {
             function renderSummary(processedResults) {
                 return (<>
                 <p>Checked <b>{username} {language_code} {bookID}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
-                <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount==1?'':'s'} from {processedResults.checkedRepoNames.length} repo{processedResults.checkedRepoNames.length==1?'':'s'}: <b>{processedResults.checkedRepoNames.join(', ')}</b>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount===1?'':'s'} from {processedResults.checkedRepoNames.length} repo{processedResults.checkedRepoNames.length===1?'':'s'}: <b>{processedResults.checkedRepoNames.join(', ')}</b>
                 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>
-                <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedTime={processedResults.elapsedTime} />.</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} />.</p>
+                {/* <RenderRawResults results={rawCBPResults} /> */}
                 </>);
             }
 

@@ -3,7 +3,7 @@
 The code below requests some info to select an online repository
 and then validates the content of one file selected from the repo.
 
-**Note**: This component uses cached values of files stored inside the local browser. This makes reruns of the checks much faster, but it won't notice if you have updated the files on Door43. If you want to clear the local caches, use the `Clear Cache` function.
+**Note**: This demonstration uses cached values of files stored inside the local browser. This makes reruns of the checks much faster, but it won't notice if you have updated the files on Door43. If you want to clear the local caches, use the `Clear Cache` function.
 
 ```js
 <FileCheck
@@ -52,11 +52,11 @@ and then validates the content of one file selected from the repo.
 
 <!-- ## Component Description
 
-This component takes a file as input, pre-processes the string, and
+This demonstration takes a file as input, pre-processes the string, and
 finally counts all the words. Review the source code for all the
 pre-processing that is performed for each format.
 
-This component also supports an optional format property. The default
+This demonstration also supports an optional format property. The default
 is `markdown`. As of this writing, supported formats are:
 
 - `markdown`

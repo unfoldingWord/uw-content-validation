@@ -1,14 +1,15 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 // import PropTypes from 'prop-types';
 // import ReactJson from 'react-json-view';
 // import { Paper, Button } from '@material-ui/core';
 // import { RepositoryContext, FileContext } from 'gitea-react-toolkit';
 import { withStyles } from '@material-ui/core/styles';
-import { getFile } from '../../core/getApi';
-import checkFile from './checkFile';
+// import { getFile } from '../../core/getApi';
+import { getFile, checkFile } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../../core/notice-processing-functions';
-import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
-import { ourParseInt, consoleLogObject } from '../../core/utilities';
+import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime, RenderRawResults } from '../RenderProcessedResults';
+import { ourParseInt } from '../../core/utilities';
+// import { consoleLogObject } from '../../core/utilities';
 
 
 const FILE_CHECK_VERSION_STRING = '0.1.2';
@@ -50,7 +51,9 @@ function FileCheck(props) {
             setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for <b>{filename}</b>…</p>);
             // console.log(`About to call getFile(${username}, ${repoName}, ${filename}, ${branch})…`);
             const fileContent = await getFile({ username: username, repository: repoName, path: filename, branch: branch });
-            const rawCFResults = await checkFile(filename, fileContent, givenLocation, checkingOptions);
+            let rawCFResults = { noticeList:[{priority:990, message:"Unable to load file", filename}], elapsedSeconds:0 };
+            if (fileContent)
+                rawCFResults = await checkFile(filename, fileContent, givenLocation, checkingOptions);
             // console.log(`FileCheck got initial results with ${rawCFResults.successList.length} success message(s) and ${rawCFResults.noticeList.length} notice(s)`);
 
             // Add some extra fields to our rawCFResults object in case we need this information again later
@@ -82,7 +85,8 @@ function FileCheck(props) {
             function renderSummary(processedResults) {
                 return (<>
                     <p>Checked <b>{filename}</b> (from {username} {repoName} <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)</p>
-                    <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedTime={processedResults.elapsedTime} />.</p>
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} />.</p>
+                    {/* <RenderRawResults results={rawCFResults} /> */}
                 </>);
             }
 
@@ -139,6 +143,7 @@ function FileCheck(props) {
                     </>);
             } else setResultValue(<b style={{ color: 'red' }}>Invalid displayType='{displayType}'</b>)
         })(); // end of async part in unnamedFunction
+    // Doesn't work if we add this to next line: username,repoName,branch,checkingOptions,filename,givenLocation,props
     }, []); // end of useEffect part
 
     // {/* <div className={classes.root}> */}

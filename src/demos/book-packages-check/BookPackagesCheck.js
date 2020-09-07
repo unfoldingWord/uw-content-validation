@@ -3,8 +3,9 @@ import React, { useState, useEffect } from 'react';
 import * as books from '../../core/books/books';
 import checkBookPackages from './checkBookPackages';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../../core/notice-processing-functions';
-import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
-import { ourParseInt, consoleLogObject } from '../../core/utilities';
+import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime, RenderRawResults } from '../RenderProcessedResults';
+import { ourParseInt } from '../../core/utilities';
+// import { consoleLogObject } from '../../core/utilities';
 
 
 const CHECKER_VERSION_STRING = '0.0.3';
@@ -94,9 +95,10 @@ function BookPackagesCheck(/*username, language_code, bookIDs,*/ props) {
             function renderSummary() {
                 return (<>
                 <p>Checked <b>{username} {language_code} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
-                <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount==1?'':'s'} from {username} {processedResults.checkedRepoNames.join(', ')}
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount===1?'':'s'} from {username} {processedResults.checkedRepoNames.join(', ')}
                 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>
-                <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedTime={processedResults.elapsedTime} />.</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} />.</p>
+                {/* <RenderRawResults results={rawCBPsResults} /> */}
                 </>);
             }
 
@@ -150,6 +152,7 @@ function BookPackagesCheck(/*username, language_code, bookIDs,*/ props) {
 
             // console.log("Finished rendering bit.");
         })(); // end of async part in unnamedFunction
+    // Doesn't work if we add this to next line: bookIDList,bookIDs,username,branch,checkingOptions,language_code,props
     }, []); // end of useEffect part
 
     // {/* <div className={classes.root}> */}

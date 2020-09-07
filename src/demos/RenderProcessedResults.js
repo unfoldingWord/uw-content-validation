@@ -1,5 +1,5 @@
 import React from 'react';
-import { forwardRef } from 'react';
+// import { forwardRef } from 'react';
 
 // NOTE: The following line is currently giving compile warnings -- a problem in a dependency it seems
 import MaterialTable from 'material-table';
@@ -43,7 +43,6 @@ export function RenderLines({text}) {
     </ol>;
 }
 
-
 export function RenderObject({ thisObject, excludeList }) {
     /**
     * @description - Displays whatever is in the object
@@ -58,10 +57,11 @@ export function RenderObject({ thisObject, excludeList }) {
             Object.keys(thisObject).map((key, keyIndex) => {
                 if (!excludeList || excludeList.indexOf(key) < 0)
                     return (
-                        <li key={keyIndex}>&nbsp;&nbsp;&nbsp;&nbsp;
-                            <span><b>{key}</b>{Array.isArray(thisObject[key]) ? ` (${thisObject[key].length}) `:''}: {typeof thisObject[key] === 'object' ? JSON.stringify(thisObject[key]) : thisObject[key]}</span>
-                        </li>
+                    <li key={keyIndex}>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <span><b>{key}</b>{Array.isArray(thisObject[key]) ? ` (${thisObject[key].length.toLocaleString()}) `:''}: {typeof thisObject[key] === 'object' ? JSON.stringify(thisObject[key]) : thisObject[key]}</span>
+                    </li>
                     )
+                return null;
         }, [])}
     </ul>;
 }
@@ -95,9 +95,10 @@ export function RenderRawResults({ results }) {
             <p><b>Raw Results</b> (no notices were produced):</p>
             <RenderObject thisObject={results} excludeList={['noticeList']}/>
         </>;
-
     // If we get here, we have notices.
     // console.log(`Got ${results.noticeList.length} notices`);
+
+    // Discover what fields we have in our notice objects
     const allPropertiesSet = new Set();
     let haveOBS = false, haveBible = false;
     // console.log( "allPropertiesSet-A", JSON.stringify([...allPropertiesSet]));
@@ -195,9 +196,27 @@ export function RenderBCV({ bookID, C, V }) {
     if (C && C.length) result = `${result}${result.length ? ' ' : ''}${C}`;
     if (V && V.length) result = `${result}${result.length ? ':' : ''}${V}`;
     if (result.length) return ` ${V && V.length ? 'at' : 'in'} ${result}`;
-    return '';
+    return null;
 }
 
+export function RenderFileDetails({ repoName, filename, lineNumber }) {
+    /**
+    * @description - Displays the bookcode and chapter/verse details if specified
+    * @param {String} repoName - (optional) repo name string
+    * @param {String} filename - (optional) filename string
+    * @param {String} lineNumber - (optional) line number integer (1-based)
+    * @return {String} - rendered HTML for the given reference
+    */
+    // These are all optional parameters - they may be undefined or blank if irrelevant
+    // console.log(`RenderFileDetails(${repoName}, ${filename}, ${lineNumber})`);
+    if (!repoName && !filename && !lineNumber) return null; // They're all undefined or blank!
+    // console.log(`RenderFileDetails2 ${repoName}, ${filename}, ${lineNumber}`);
+    let result = '';
+    if (repoName && repoName.length) result += ` in ${repoName} repository`;
+    if (filename && filename.length) result += ` in ${filename}`;
+    if (lineNumber) result += ` on line ${lineNumber.toLocaleString()}`;
+    return result;
+}
 
 export function RenderSuccessesColoured({results}) {
     // Display our array of success message strings in a nicer format
@@ -224,9 +243,11 @@ export function RenderSuccessesColoured({results}) {
 }
 
 export function RenderProcessedArray({arrayType, results}) {
-    // Display our array of 8-part lists in a nicer format
-    //  1/ priority number, 2/ bookID, 3/ C, 4/ V, 5/ message,
-    //      6/ index (integer), 7/ extract (optional), 8/ location
+    // Display our array of objects in a nicer format
+    //  priority (integer), message (string)
+    //  plus optional fields:
+    //      bookID, C, V, repoName, filename, lineNumber
+    //      characterIindex (integer), extract (string), location (string)
     //
     // console.log("In RenderProcessedArray with ", arrayType);
     // consoleLogObject('RenderProcessedArray results', results);
@@ -242,7 +263,8 @@ export function RenderProcessedArray({arrayType, results}) {
                 return <li key={index}>
                     <b style={{ color: arrayType === 'e' ? 'red' : 'orange' }}>{listEntry.message}</b>
                     <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
-                    {listEntry.characterIndex > 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
+                    <RenderFileDetails repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} />
+                    {listEntry.characterIndex > 0 ? " (at character " + (listEntry.characterIndex + 1) + ")" : ""}
                     <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
                     {listEntry.location}
                     <small style={{ color: 'Gray' }}>{listEntry.priority >= 0 ? " (Priority " + listEntry.priority + ")" : ""}</small>
@@ -254,9 +276,12 @@ export function RenderProcessedArray({arrayType, results}) {
 
 
 export function RenderGivenArray({array, colour}) {
-    // Display our array of 8-part lists in a nicer format
-    //  1/ priority number, 2/ bookID, 3/ C, 4/ V, 5/ message,
-    //      6/ index (integer), 7/ extract (optional), 8/ location
+    // Display our array of objects in a nicer format
+    //  priority (integer), message (string),
+    //  plus possible optional fields:
+    //      bookID, C, V,
+    //      repoName, filename, lineNumber,
+    //      characterIndex (integer), extract (string), location (descriptive string)
     //
     // console.log("In RenderGivenArray with ", arrayType);
     // consoleLogObject('RenderGivenArray results', results);
@@ -266,6 +291,7 @@ export function RenderGivenArray({array, colour}) {
             return <li key={index}>
                 <b style={{ color: colour }}>{listEntry.message}</b>
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
+                <RenderFileDetails repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} />
                 {listEntry.characterIndex !== undefined && listEntry.characterIndex >= 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
                 <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
                 {listEntry.location}
@@ -303,6 +329,7 @@ export function RenderWarningsGradient({results}) {
             return <li key={index}>
                 <b style={{ color: thisColour }}>{listEntry.message}</b>
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
+                <RenderFileDetails repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} />
                 {listEntry.characterIndex !== undefined && listEntry.characterIndex >= 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
                 <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
                 {listEntry.location}
@@ -447,9 +474,9 @@ export function RenderSuccessesWarningsGradient({results}) {
 }
 
 
-export function RenderElapsedTime({elapsedTime}) {
-    const seconds = Math.round(elapsedTime % 60);
-    let remainingTime = Math.floor(elapsedTime / 60);
+export function RenderElapsedTime({elapsedSeconds}) {
+    const seconds = Math.round(elapsedSeconds % 60);
+    let remainingTime = Math.floor(elapsedSeconds / 60);
     const minutes = Math.round(remainingTime % 60);
     remainingTime = Math.floor(remainingTime / 60);
     const hours = Math.round(remainingTime % 24);

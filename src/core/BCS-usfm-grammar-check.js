@@ -7,7 +7,7 @@ const USFM_GRAMMAR_VALIDATOR_VERSION = '0.3.1';
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-export function runBCSGrammarCheck(strictnessString, fileText, givenLocation, optionalCheckingOptions) {
+export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLocation, optionalCheckingOptions) {
     // Runs the BCS USFM Grammar checker
     //  which can be quite time-consuming on large, complex USFM files
     // console.log(`Running ${strictnessString} BCS USFM grammar check${givenLocation} (can take quite a while for a large book)…`);
@@ -66,7 +66,11 @@ export function runBCSGrammarCheck(strictnessString, fileText, givenLocation, op
         }
         // console.log(`  ourErrorMessage: '${ourErrorMessage}' lineNumberString=${lineNumberString} characterIndex=${characterIndex} extract='${extract}'`);
         // NOTE: \s5 fields are not valid USFM but we degrade the priority of those warnings
-        ourErrorObject = {priority:extract==='\\s5'? 294:994, message:`USFMGrammar: ${ourErrorMessage}`, characterIndex, extract, location:`in line ${lineNumberString}${givenLocation}`};
+        ourErrorObject = {priority:extract==='\\s5'? 294:994, message:`USFMGrammar: ${ourErrorMessage}`,
+                            filename,
+                            characterIndex, extract,
+                            location:givenLocation};
+        if (lineNumberString && lineNumberString.length) ourErrorObject.lineNumber = Number(lineNumberString);
     }
 
     const parseWarnings = parserResult._warnings ? parserResult._warnings : ourUsfmParser.warnings;
@@ -129,7 +133,7 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
         if (extract) console.assert(typeof extract === 'string', `cUSFMgr addNotice6to7: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cUSFMgr addNotice6to7: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `cUSFMgr addNotice6to7: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        cugResult.noticeList.push({priority,message, bookID,lineNumber, characterIndex,extract, location});
+        cugResult.noticeList.push({priority,message, bookID,filename,lineNumber, characterIndex,extract, location});
     }
 
 
@@ -137,21 +141,21 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
     if (books.isExtraBookID(bookID)) // doesn't work for these
         return cugResult;
 
-    const grammarCheckResult = runBCSGrammarCheck(strictnessString, givenText, ourLocation, optionalCheckingOptions);
+    const grammarCheckResult = runBCSGrammarCheck(strictnessString, givenText, filename, ourLocation, optionalCheckingOptions);
     // console.log(`grammarCheckResult=${JSON.stringify(grammarCheckResult)}`);
 
     if (!grammarCheckResult.isValidUSFM)
-        addNotice6to7({priority:944, message:`USFM3 Grammar Check (${strictnessString} mode) doesn't pass`, location:ourLocation});
+        addNotice6to7({priority:944, message:`USFM3 Grammar Check (${strictnessString} mode) doesn't pass`,
+                        location:ourLocation});
 
     // We only get one error if it fails
-    if (grammarCheckResult.error && grammarCheckResult.error[0])
-        addNotice6to7({priority:grammarCheckResult.error.priority, message:grammarCheckResult.error.message,
-            characterIndex:grammarCheckResult.error.characterIndex, extract:grammarCheckResult.error.extract,
-            location:grammarCheckResult.error.location});
+    if (grammarCheckResult.error && grammarCheckResult.priority)
+        addNotice6to7(grammarCheckResult.error);
 
     // Display these warnings but with a lowish priority
     for (const warningString of grammarCheckResult.warnings)
-        addNotice6to7({priority:101, message:`USFMGrammar: ${warningString}`, location:ourLocation});
+        addNotice6to7({priority:101, message:`USFMGrammar: ${warningString}`,
+                        location:ourLocation});
 
     addSuccessMessage(`Checked USFM Grammar (${strictnessString} mode) ${grammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN'T validate)"}`);
     // console.log(`  checkUSFMGrammar returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);

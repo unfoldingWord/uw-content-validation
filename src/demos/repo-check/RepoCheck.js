@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import checkRepo from './checkRepo';
+import { checkRepo } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../../core/notice-processing-functions';
-import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
-import { ourParseInt, consoleLogObject, displayPropertyNames } from '../../core/utilities';
+import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime, RenderRawResults } from '../RenderProcessedResults';
+import { ourParseInt } from '../../core/utilities';
+// import { consoleLogObject, displayPropertyNames } from '../../core/utilities';
 
 
 const CHECKER_VERSION_STRING = '0.1.2';
@@ -55,7 +56,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
                     rawCRResults = await checkRepo(username, repoName, branch, "", setResultValue, checkingOptions);
                 } catch (checkRepoError) {
                     rawCRResults = { successList: [], noticeList: [] };
-                    rawCRResults.noticeList.push({priority:999, message:"checkRepo function FAILED", characterIndex:-1, extract:checkRepoError, location:repoName});
+                    rawCRResults.noticeList.push({priority:999, message:"checkRepo function FAILED", repoName, extract:checkRepoError, location:repoName});
                 }
                 // console.log("checkRepo() returned", typeof rawCRResults); //, JSON.stringify(rawCRResults));
 
@@ -89,7 +90,8 @@ function RepoCheck(/*username, languageCode,*/ props) {
                         <p>Checked <b>{username} {repoName}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)</p>
                         <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount === 1 ? '' : 's'} from {repoName}: {processedResults.checkedFilenames.join(', ')}
                             <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>
-                        <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedTime={processedResults.elapsedTime} />.</p>
+                        <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} />.</p>
+                        {/* <RenderRawResults results={rawCRResults} /> */}
                     </>);
                 }
 
@@ -157,6 +159,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 </>);
             }
         })(); // end of async part in unnamedFunction
+    // Doesn't work if we add this to next line: languageCode,username,repoName,branch,checkingOptions,props
     }, []); // end of useEffect part
 
     // {/* <div className={classes.root}> */}

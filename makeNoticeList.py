@@ -15,12 +15,14 @@ for root, dirs, files in os.walk('.'):
                         strippedLine = line.strip()
                         if strippedLine.endswith(');'): strippedLine = strippedLine[:-2]
                         if not strippedLine.startswith('//'):
-                            cleanedLine = strippedLine.replace('addNotice6to9','').replace('addNotice6','') \
-                                                .replace('addNotice8','').replace('addNotice9','')
+                            cleanedLine = strippedLine.replace('addNotice6to9','').replace('addNotice6to7','') \
+                                                .replace('addNotice6','').replace('addNotice8','').replace('addNotice9','') \
+                                                .replace('addNoticeCV8','').replace('addNotice10','')
                             if cleanedLine.startswith('('): cleanedLine = cleanedLine[1:]
                             adjustedLine = cleanedLine.replace(', ourAtString','').replace(', atString','') \
                                                 .replace(', ourLocation','').replace(', ourRowLocation','') \
-                                                .replace('${ourRowLocation}','')
+                                                .replace('${ourRowLocation}','') \
+                                                .replace('{priority:','').replace('message:','')
                             noticeList.append(adjustedLine.strip())
     # for name in dirs:
     #     print("dir", name, os.path.join(root, name))

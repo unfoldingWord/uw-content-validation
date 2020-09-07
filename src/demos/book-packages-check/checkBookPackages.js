@@ -1,6 +1,6 @@
 // import React from 'react';
-import * as books from '../../core/books/books';
-import checkBookPackage from '../book-package-check/checkBookPackage';
+import * as books  from '../../core/books/books';
+import { checkBookPackage } from '../../core';
 // import { getFile } from '../../core/getApi';
 // import { consoleLogObject } from '../../core/utilities';
 
@@ -60,7 +60,8 @@ async function checkBookPackages(username, language_code, bookIDList, setResultV
                 bookNumberAndName = books.usfmNumberName(bookID);
                 // whichTestament = books.testament(bookID); // returns 'old' or 'new'
             } catch (CBPsError) {
-                addNotice10({priority:900, message:"Bad parameter: should be given a valid book abbreviation", extract:bookIDList, location:` (not '${bookIDList}')${location}`});
+                addNotice10({priority:900, message:"Bad parameter: should be given a valid book abbreviation",
+                                extract:bookIDList, location:` (not '${bookIDList}')`});
                 return checkBookPackagesResult;
             }
             // console.log(`bookNumberAndName='${bookNumberAndName}' (${whichTestament} testament)`);
@@ -111,7 +112,7 @@ async function checkBookPackages(username, language_code, bookIDList, setResultV
     // checkBookPackagesResult.checkedOptions = checkingOptions; // This is done at the caller level
 
     // console.log("checkBookPackages() is returning", checkBookPackagesResult.successList.length.toLocaleString(), "success message(s) and", checkBookPackagesResult.noticeList.length.toLocaleString(), "notice(s)");
-    checkBookPackagesResult.elapsedTime = (new Date() - startTime) / 1000; // seconds
+    checkBookPackagesResult.elapsedSeconds = (new Date() - startTime) / 1000; // seconds
     return checkBookPackagesResult;
 };
 // end of checkBookPackages()
