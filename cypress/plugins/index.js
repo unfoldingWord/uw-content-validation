@@ -1,5 +1,8 @@
 module.exports = (on, config) => {
-  on('task', require('@cypress/code-coverage/task'))
-  on('file:preprocessor', require('@cypress/code-coverage/use-browserify-istanbul'))
-  return config;
+  require('@cypress/code-coverage/task')(on, config)
+  on(
+    'file:preprocessor',
+    require('@cypress/code-coverage/use-browserify-istanbul')
+  )
+  return config
 }

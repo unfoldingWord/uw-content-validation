@@ -115,7 +115,6 @@ function checkPlainText(textName, plainText, givenLocation, optionalCheckingOpti
     let lastNumLeadingSpaces = 0;
     let lastLineContents;
     for (let n= 1; n <= lines.length; n++) {
-        const atString = ` in line ${n.toLocaleString()}${ourLocation}`;
 
         const line = lines[n - 1];
         if (line) {
