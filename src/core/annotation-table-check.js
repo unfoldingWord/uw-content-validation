@@ -84,7 +84,6 @@ async function CheckAnnotationRows(annotationType, bookID, tableText, givenLocat
     let numVersesThisChapter = 0;
     for (let n= 0; n < lines.length; n++) {
         // console.log(`CheckAnnotationRows checking line ${n}: ${JSON.stringify(lines[n])}`);
-        let inString = ` in line ${(n + 1).toLocaleString()}${ourLocation}`;
         if (n === 0) {
             if (lines[0] === EXPECTED_TN_HEADING_LINE)
                 addSuccessMessage(`Checked TSV header ${ourLocation}`);
@@ -97,7 +96,7 @@ async function CheckAnnotationRows(annotationType, bookID, tableText, givenLocat
             if (fields.length === NUM_EXPECTED_TN_FIELDS) {
                 const [reference, fieldID, tags, _support_reference, _quote, _occurrence, _annotation] = fields;
                 const [C, V] = reference.split(':')
-                const withString = ` with ID '${fieldID}'${inString}`;
+                const withString = ` with ID '${fieldID}'${ourLocation}`;
                 // let CV_withString = ` ${C}:${V}${withString}`;
                 // let atString = ` at ${Annotation} ${C}:${V} (${fieldID})${inString}`;
 
@@ -105,11 +104,11 @@ async function CheckAnnotationRows(annotationType, bookID, tableText, givenLocat
                 const firstResult = await checkAnnotationTSVDataRow(annotationType, lines[n], bookID,C,V, withString, optionalCheckingOptions);
                 // Choose only ONE of the following
                 // This is the fast way of append the results from this field
-                result.noticeList = result.noticeList.concat(firstResult.noticeList);
+                // result.noticeList = result.noticeList.concat(firstResult.noticeList);
                 // If we need to put everything through addNoticeCV8, e.g., for debugging or filtering
                 //  process results line by line
-                // for (const noticeEntry of firstResult.noticeList)
-                //     addNoticeCV8({priority:noticeEntry.priority, noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
+                for (const noticeEntry of firstResult.noticeList)
+                    addNoticeCV8({ ...noticeEntry, lineNumber:n+1});
 
                 // So here we only have to check against the previous and next fields for out-of-order problems
                 if (C) {
@@ -176,7 +175,7 @@ async function CheckAnnotationRows(annotationType, bookID, tableText, givenLocat
                 //     console.log(`  Line ${n}: Has ${fields.length} field(s) instead of ${NUM_EXPECTED_TN_FIELDS}: ${EXPECTED_TN_HEADING_LINE.replace(/\t/g, ', ')}`);
                 // else
                 if (n !== lines.length - 1) // it's not the last line
-                    addNoticeCV8({priority:988, message:`Wrong number of tabbed fields (expected ${NUM_EXPECTED_TN_FIELDS})`, extract:`Found ${fields.length} field${fields.length===1?'':'s'}`, lineNumber:n+1, location:inString});
+                    addNoticeCV8({priority:988, message:`Wrong number of tabbed fields (expected ${NUM_EXPECTED_TN_FIELDS})`, extract:`Found ${fields.length} field${fields.length===1?'':'s'}`, lineNumber:n+1, location:ourLocation});
         }
     }
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}.`);

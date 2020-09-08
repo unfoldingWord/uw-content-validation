@@ -12,7 +12,7 @@ import { ourParseInt } from '../../core/utilities';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-const FILE_CHECK_VERSION_STRING = '0.1.2';
+const FILE_CHECK_VERSION_STRING = '0.1.3';
 
 
 function FileCheck(props) {
@@ -22,17 +22,19 @@ function FileCheck(props) {
 
     const username = props.username;
     // console.log(`FileCheck username='${username}'`);
+    if (!username) return <><b>ERROR</b>: The Door43 username must be specified</>;
     const repoName = props.repoName;
     // console.log(`FileCheck repoName='${repoName}'`);
+    if (!repoName) return <><b>ERROR</b>: The Door43 repository name must be specified</>;
     let branch = props.branch;
     // console.log(`FileCheck branch='${branch}'`);
     if (branch === undefined) branch = 'master';
     const filename = props.filename;
     // console.log(`filename='${filename}'`);
+    if (!filename) return <><b>ERROR</b>: The Door43 filename must be specified</>;
 
     let givenLocation = props['location'] ? props['location'] : "";
-    if (givenLocation && givenLocation[0] !== " ") givenLocation = ` ${givenLocation}`;
-    givenLocation = ` in ${repoName} repo${givenLocation}`;
+    if (givenLocation && givenLocation[0] !== ' ') givenLocation = ` ${givenLocation}`;
 
     const checkingOptions = { // Uncomment any of these to test them
         // 'extractLength': 25,
@@ -55,6 +57,10 @@ function FileCheck(props) {
             if (fileContent)
                 rawCFResults = await checkFile(filename, fileContent, givenLocation, checkingOptions);
             // console.log(`FileCheck got initial results with ${rawCFResults.successList.length} success message(s) and ${rawCFResults.noticeList.length} notice(s)`);
+
+            // Since we know the repoName here, add it to our notices
+            for (const thisNotice of rawCFResults.noticeList)
+                thisNotice.repoName = repoName; // Add in this info that we know
 
             // Add some extra fields to our rawCFResults object in case we need this information again later
             rawCFResults.checkType = 'File';

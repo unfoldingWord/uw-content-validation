@@ -1,4 +1,4 @@
-## Repo Check - Readme
+## Door43 Repo Check - Readme
 
 The code below requests some info and then checks a Door43 repository.You can enter the `repoName`, i.e., the `username/repoName` in the code below. (Unfortunately if you refresh the page from the browser controls, it will return to the default setting. If you want to restart the test without returning to the default repo, just change one letter in a `//` comment line below.)
 

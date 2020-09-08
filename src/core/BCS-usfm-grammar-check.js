@@ -99,12 +99,11 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
 
      Returns a result object containing a successList and a noticeList
      */
-    console.log(`checkUSFMGrammar(${givenText.length.toLocaleString()} chars, '${location}')…`);
+    console.log(`checkUSFMGrammar(${givenText.length.toLocaleString()} chars, '${givenLocation}')…`);
     console.assert(strictnessString === 'strict' || strictnessString === 'relaxed', `Unexpected strictnessString='${strictnessString}'`);
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
-    if (filename) ourLocation = ` in ${filename}${ourLocation}`;
 
 
     const cugResult = { successList: [], noticeList: [] };
@@ -146,7 +145,7 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
 
     if (!grammarCheckResult.isValidUSFM)
         addNotice6to7({priority:944, message:`USFM3 Grammar Check (${strictnessString} mode) doesn't pass`,
-                        location:ourLocation});
+                        filename, location:ourLocation});
 
     // We only get one error if it fails
     if (grammarCheckResult.error && grammarCheckResult.priority)
@@ -155,7 +154,7 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
     // Display these warnings but with a lowish priority
     for (const warningString of grammarCheckResult.warnings)
         addNotice6to7({priority:101, message:`USFMGrammar: ${warningString}`,
-                        location:ourLocation});
+                        filename, location:ourLocation});
 
     addSuccessMessage(`Checked USFM Grammar (${strictnessString} mode) ${grammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN'T validate)"}`);
     // console.log(`  checkUSFMGrammar returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
