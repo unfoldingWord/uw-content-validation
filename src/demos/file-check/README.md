@@ -17,14 +17,15 @@ and then validates the content of one file selected from the repo.
     // If we don't put the branch here, the default branch is used
     // branch='master'
 
+    // Of course, the filename must be correct for the chosen repository
     // filename= '01-GEN.usfm' // e.g., for UHB, ULT, or UST
     // filename= '08-RUT.usfm' // e.g., for UHB, ULT, or UST
     // filename= '41-MAT.usfm' // e.g., for UGNT, ULT, or UST
     // filename= '42-MRK.usfm' // e.g., for UGNT, ULT, or UST
     // filename= '45-ACT.usfm' // e.g., for UGNT, ULT, or UST
     // filename= '48-2CO.usfm' // e.g., for UGNT, ULT, or UST
-    // filename= '50-EPH.usfm' // e.g., for UGNT, ULT, or UST
-    filename= '65-3JN.usfm' // e.g., for UGNT, ULT, or UST
+    filename= '50-EPH.usfm' // e.g., for UGNT, ULT, or UST
+    // filename= '65-3JN.usfm' // e.g., for UGNT, ULT, or UST
     // filename= '67-REV.usfm' // e.g., for UGNT, ULT, or UST
     // filename= 'en_tn_01-GEN.tsv' // for TN
     // filename= 'en_tn_16-NEH.tsv' // for TN

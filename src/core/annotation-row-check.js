@@ -273,10 +273,6 @@ async function checkAnnotationTSVDataRow(annotationType, line, bookID, C, V, giv
     }
     const haveBibleBookID = numChaptersThisBook !== undefined;
 
-    // let inString;
-    // if (rowLocation) inString = rowLocation;
-    // else inString = ` in line ${rowNumber.toLocaleString()}`;
-
     let fields = line.split('\t');
     if (fields.length === NUM_EXPECTED_TSV_FIELDS) {
         const [reference, fieldID, tags, supportReference, quote, occurrence, annotation] = fields;

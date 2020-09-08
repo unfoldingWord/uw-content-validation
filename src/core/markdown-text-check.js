@@ -131,7 +131,6 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
     let lastNumLeadingSpaces = 0;
     let lastLineContents;
     for (let n = 1; n <= lines.length; n++) {
-        const atString = ` in line ${n.toLocaleString()}${ourLocation}`;
 
         const line = lines[n - 1];
         let numLeadingSpaces;
@@ -140,14 +139,14 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
             const thisHeaderLevel = line.match(/^#*/)[0].length;
             // console.log(`Got thisHeaderLevel=${thisHeaderLevel} for ${line}${atString}`);
             if (thisHeaderLevel > headerLevel + 1)
-                addNotice6({priority:172, message:"Header levels should only increment by one", lineNumber:n, characterIndex:0, location:atString});
+                addNotice6({priority:172, message:"Header levels should only increment by one", lineNumber:n, characterIndex:0, location:ourLocation});
             if (thisHeaderLevel > 0)
                 headerLevel = thisHeaderLevel;
 
             numLeadingSpaces = line.match(/^ */)[0].length;
             // console.log(`Got numLeadingSpaces=${numLeadingSpaces} for ${line}${atString}`);
             if (numLeadingSpaces && lastNumLeadingSpaces && numLeadingSpaces !== lastNumLeadingSpaces)
-                addNotice6({priority:472, message:"Nesting seems confused", lineNumber:n, characterIndex:0, location:atString});
+                addNotice6({priority:472, message:"Nesting seems confused", lineNumber:n, characterIndex:0, location:ourLocation});
 
             checkMarkdownLineContents(`line ${n.toLocaleString()}`, line, ourLocation);
         } else {

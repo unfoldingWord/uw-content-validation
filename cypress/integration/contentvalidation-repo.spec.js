@@ -1,4 +1,4 @@
-describe('Content Checker Repository Tests', function () {
+describe('uW Content Validation Repository Tests', function () {
   before(() => {
     cy.visit('/')
   })

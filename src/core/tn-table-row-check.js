@@ -254,10 +254,6 @@ async function checkTN_TSVDataRow(line, bookID, C, V, givenRowLocation, optional
     }
     const haveGoodBookID = numChaptersThisBook !== undefined;
 
-    // let inString;
-    // if (rowLocation) inString = rowLocation;
-    // else inString = ` in line ${rowNumber.toLocaleString()}`;
-
     let fields = line.split('\t');
     if (fields.length === NUM_EXPECTED_TSV_FIELDS) {
         const [B, C, V, fieldID, supportReference, origQuote, occurrence, GLQuote, occurrenceNote] = fields;

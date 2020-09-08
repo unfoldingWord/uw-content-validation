@@ -44,7 +44,7 @@ export function RenderLines({ text }) {
 }
 
 
-const MAX_ARRAY_ITEMS_TO_DISPLAY = 10;
+const MAX_ARRAY_ITEMS_TO_DISPLAY = 8; // Or do we want this as a parameter?
 export function RenderObject({ thisObject, excludeList }) {
     /**
     * @description - Displays whatever is in the object
@@ -60,7 +60,7 @@ export function RenderObject({ thisObject, excludeList }) {
                 if (!excludeList || excludeList.indexOf(key) < 0) {
                     let displayObject = thisObject[key];
                     if (Array.isArray(displayObject) && displayObject.length > MAX_ARRAY_ITEMS_TO_DISPLAY)
-                        displayObject = `(only first ${MAX_ARRAY_ITEMS_TO_DISPLAY} displayed here) ${JSON.stringify(displayObject.slice(0,MAX_ARRAY_ITEMS_TO_DISPLAY))}, etc…`;
+                        displayObject = `(only first ${MAX_ARRAY_ITEMS_TO_DISPLAY} displayed here) ${JSON.stringify(displayObject.slice(0, MAX_ARRAY_ITEMS_TO_DISPLAY))}, etc…`;
                     return (
                         <li key={keyIndex}>&nbsp;&nbsp;&nbsp;&nbsp;
                             <span><b>{key}</b>{Array.isArray(thisObject[key]) ? ` (${thisObject[key].length.toLocaleString()}) ` : ''}: {typeof displayObject === 'object' ? JSON.stringify(displayObject) : displayObject}</span>
@@ -105,14 +105,14 @@ export function RenderRawResults({ results }) {
     // If we get here, we have notices.
     // console.log(`Got ${results.noticeList.length} notices`);
 
-    // Discover what fields we have in our notice objects
+    // Discover what fields we have in our notice objects (in order to set our table headers below)
     const allPropertiesSet = new Set();
     let haveOBS = false, haveBible = false;
     // console.log( "allPropertiesSet-A", JSON.stringify([...allPropertiesSet]));
-    results.noticeList.map(function (noticeEntry) {
+    for (const noticeEntry of results.noticeList)
         // console.log("noticeEntry", JSON.stringify(noticeEntry));
         // console.log(`Found (${Object.keys(noticeEntry).length}) ${Object.keys(noticeEntry)}`);
-        Object.entries(noticeEntry).map(function ([noticePropertyName, noticePropertyValue]) {
+        for (const [noticePropertyName, noticePropertyValue] of Object.entries(noticeEntry))
             // console.log("  Found", noticePropertyName, "=", noticeEntry[noticePropertyName]);
             if (noticePropertyValue !== undefined) {
                 allPropertiesSet.add(noticePropertyName);
@@ -121,11 +121,9 @@ export function RenderRawResults({ results }) {
                     else haveBible = true;
                 }
             }
-        });
-    });
     // console.log( "allPropertiesSet-Z", JSON.stringify([...allPropertiesSet]));
 
-    // Adjust the headers according to the column sets that we actually have
+    // Adjust the headers according to the column sets that we actually have in the noticeList
     let headerData = [
         { title: 'Priority', field: 'priority', type: 'numeric' },
         { title: 'Message', field: 'message' },
@@ -156,7 +154,7 @@ export function RenderRawResults({ results }) {
         <RenderObject thisObject={results} />
         <MaterialTable
             // icons={tableIcons}
-            title='Raw Notices'
+            title={`All ${results.noticeList.length.toLocaleString()} Raw Notices`}
             columns={headerData}
             data={results.noticeList}
             options={{ sorting: true, exportButton: true, exportAllData: true }}
