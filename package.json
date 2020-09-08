@@ -15,7 +15,7 @@
   "scripts": {
     "build": "react-scripts build",
     "prepublishOnly": "rm -fr ./dist & babel ./src --out-dir ./dist -s inline",
-    "predeploy": "yarn styleguide:build",
+    "xxxpredeploy": "yarn styleguide:build",
     "deploy": "gh-pages -d styleguide",
     "postpublish": "yarn deploy",
     "start": "styleguidist server",
