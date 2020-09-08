@@ -30,19 +30,21 @@ const tableIcons = {
   /* end material box imports and icons */
 
 
-export function RenderLines({text}) {
+export function RenderLines({ text }) {
     /**
     * @description - Displays a given piece of text (which can include newline characters)
     * @param {String} text - text to render as numbered lines
     * @return {String} - rendered HTML for the numbered list of lines
     */
-   return <ol>
+    return <ol>
         {text.split('\n').map(function (line, index) {
             return <li key={index}>{line}</li>;
         })}
     </ol>;
 }
 
+
+const MAX_ARRAY_ITEMS_TO_DISPLAY = 10;
 export function RenderObject({ thisObject, excludeList }) {
     /**
     * @description - Displays whatever is in the object
@@ -55,14 +57,18 @@ export function RenderObject({ thisObject, excludeList }) {
     return <ul>
         {
             Object.keys(thisObject).map((key, keyIndex) => {
-                if (!excludeList || excludeList.indexOf(key) < 0)
+                if (!excludeList || excludeList.indexOf(key) < 0) {
+                    let displayObject = thisObject[key];
+                    if (Array.isArray(displayObject) && displayObject.length > MAX_ARRAY_ITEMS_TO_DISPLAY)
+                        displayObject = `(only first ${MAX_ARRAY_ITEMS_TO_DISPLAY} displayed here) ${JSON.stringify(displayObject.slice(0,MAX_ARRAY_ITEMS_TO_DISPLAY))}, etc…`;
                     return (
-                    <li key={keyIndex}>&nbsp;&nbsp;&nbsp;&nbsp;
-                        <span><b>{key}</b>{Array.isArray(thisObject[key]) ? ` (${thisObject[key].length.toLocaleString()}) `:''}: {typeof thisObject[key] === 'object' ? JSON.stringify(thisObject[key]) : thisObject[key]}</span>
-                    </li>
+                        <li key={keyIndex}>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <span><b>{key}</b>{Array.isArray(thisObject[key]) ? ` (${thisObject[key].length.toLocaleString()}) ` : ''}: {typeof displayObject === 'object' ? JSON.stringify(displayObject) : displayObject}</span>
+                        </li>
                     )
+                }
                 return null;
-        }, [])}
+            }, [])}
     </ul>;
 }
 
@@ -75,6 +81,7 @@ export function RenderRawResults({ results }) {
     */
     // This function is flexible enough to handle notice objects:
     //      including bookID,C,V or not
+    //      including repoName, filename, lineNumber or not
     //      including extra or not
 
     // console.log("In RenderRawResults");
@@ -93,7 +100,7 @@ export function RenderRawResults({ results }) {
     if (!results.noticeList || !results.noticeList.length)
         return <>
             <p><b>Raw Results</b> (no notices were produced):</p>
-            <RenderObject thisObject={results} excludeList={['noticeList']}/>
+            <RenderObject thisObject={results} excludeList={['noticeList']} />
         </>;
     // If we get here, we have notices.
     // console.log(`Got ${results.noticeList.length} notices`);
@@ -118,43 +125,22 @@ export function RenderRawResults({ results }) {
     });
     // console.log( "allPropertiesSet-Z", JSON.stringify([...allPropertiesSet]));
 
-    /*
-    // Now add all of the missing fields
-    const expandedNoticeList = [];
-    for (const noticeObject of results.noticeList) {
-        // console.log("noticeObject", JSON.stringify(noticeObject));
-        for (const propertyName of allPropertiesSet) {
-            // console.log("  propertyName", propertyName, JSON.stringify(Object.keys(noticeObject)), Object.keys(noticeObject).indexOf(propertyName) < 0);
-            if (Object.keys(noticeObject).indexOf(propertyName) < 0) {
-                console.log(`    Setting missing ${propertyName}`);
-                noticeObject[propertyName] = propertyName==='characterIndex'? -1: '';
-            }
-            if (noticeObject[propertyName] === undefined) {
-                console.log(`    Setting undefined ${propertyName}`);
-                noticeObject[propertyName] = '';
-            }
-        }
-        expandedNoticeList.push(noticeObject);
-    }
-    console.log(`Now got ${expandedNoticeList.length} notices`);
-    */
-
     // Adjust the headers according to the column sets that we actually have
     let headerData = [
-            { title: 'Priority', field: 'priority', type: 'numeric' },
-            { title: 'Message', field: 'message' },
-            ];
+        { title: 'Priority', field: 'priority', type: 'numeric' },
+        { title: 'Message', field: 'message' },
+    ];
     if (allPropertiesSet.has('bookID')) headerData = headerData.concat([{ title: 'Book', field: 'bookID' }]);
     if (allPropertiesSet.has('C') || allPropertiesSet.has('V')) {
         let CName = '???', VName = '???';
-        if (haveBible && !haveOBS) { CName = 'Chapter';  VName = 'Verse'; }
-        else if (haveOBS && !haveBible) { CName = 'Story';  VName = 'Frame'; }
-        else if (haveBible && haveOBS) { CName = 'Chapter/Story';  VName = 'Verse/Frame'; }
+        if (haveBible && !haveOBS) { CName = 'Chapter'; VName = 'Verse'; }
+        else if (haveOBS && !haveBible) { CName = 'Story'; VName = 'Frame'; }
+        else if (haveBible && haveOBS) { CName = 'Chapter/Story'; VName = 'Verse/Frame'; }
         headerData = headerData.concat([
             { title: CName, field: 'C' },
             { title: VName, field: 'V' }
-            ]);
-        }
+        ]);
+    }
     if (allPropertiesSet.has('lineNumber')) headerData = headerData.concat([{ title: 'Line', field: 'lineNumber' }]);
     if (allPropertiesSet.has('filename')) headerData = headerData.concat([{ title: 'Filename', field: 'filename' }]);
     if (allPropertiesSet.has('repoName')) headerData = headerData.concat([{ title: 'Repo', field: 'repoName' }]);
@@ -173,7 +159,7 @@ export function RenderRawResults({ results }) {
             title='Raw Notices'
             columns={headerData}
             data={results.noticeList}
-            options={ {sorting: true, exportButton: true, exportAllData: true} }
+            options={{ sorting: true, exportButton: true, exportAllData: true }}
         />
     </>;
 }
@@ -201,7 +187,7 @@ export function RenderBCV({ bookID, C, V }) {
 
 export function RenderFileDetails({ repoName, filename, lineNumber }) {
     /**
-    * @description - Displays the bookcode and chapter/verse details if specified
+    * @description - Displays the repoName and filename/lineNumber details if specified
     * @param {String} repoName - (optional) repo name string
     * @param {String} filename - (optional) filename string
     * @param {String} lineNumber - (optional) line number integer (1-based)
@@ -218,7 +204,7 @@ export function RenderFileDetails({ repoName, filename, lineNumber }) {
     return result;
 }
 
-export function RenderSuccessesColoured({results}) {
+export function RenderSuccessesColoured({ results }) {
     // Display our array of success message strings in a nicer format
     //
     // Expects results to contain:
@@ -242,7 +228,7 @@ export function RenderSuccessesColoured({results}) {
     </ul>;
 }
 
-export function RenderProcessedArray({arrayType, results}) {
+export function RenderProcessedArray({ arrayType, results }) {
     // Display our array of objects in a nicer format
     //  priority (integer), message (string)
     //  plus optional fields:
@@ -275,7 +261,7 @@ export function RenderProcessedArray({arrayType, results}) {
 }
 
 
-export function RenderGivenArray({array, colour}) {
+export function RenderGivenArray({ array, colour }) {
     // Display our array of objects in a nicer format
     //  priority (integer), message (string),
     //  plus possible optional fields:
@@ -313,7 +299,7 @@ export function getGradientColour(priorityValue) {
 }
 
 
-export function RenderWarningsGradient({results}) {
+export function RenderWarningsGradient({ results }) {
     // Display our array of 8-part lists in a nicer format
     //  1/ priority number, 2/ bookID, 3/ C, 4/ V, 5/ message,
     //      6/ index (integer), 7/ extract (optional), 8/ location
@@ -340,7 +326,7 @@ export function RenderWarningsGradient({results}) {
 }
 
 
-export function RenderErrors({results}) {
+export function RenderErrors({ results }) {
     // console.log("In RenderErrors");
     // consoleLogObject('RenderErrors results', results);
     return <>
@@ -349,7 +335,7 @@ export function RenderErrors({results}) {
         <RenderProcessedArray results={results} arrayType='e' />
     </>;
 }
-export function RenderWarnings({results}) {
+export function RenderWarnings({ results }) {
     // console.log("In RenderWarnings");
     // consoleLogObject('RenderWarnings results', results);
     return <>
@@ -358,7 +344,7 @@ export function RenderWarnings({results}) {
         <RenderProcessedArray results={results} arrayType='w' />
     </>;
 }
-export function RenderErrorsAndWarnings({results}) {
+export function RenderErrorsAndWarnings({ results }) {
     // console.log("In RenderErrorsAndWarnings");
     // consoleLogObject('RenderErrorsAndWarnings results', results);
     return <>
@@ -368,7 +354,7 @@ export function RenderErrorsAndWarnings({results}) {
 }
 
 
-export function RenderSevere({results}) {
+export function RenderSevere({ results }) {
     // console.log("In RenderSevere");
     // consoleLogObject('RenderSevere results', results);
     return <>
@@ -377,7 +363,7 @@ export function RenderSevere({results}) {
         <RenderGivenArray array={results.severeList} colour='red' />
     </>;
 }
-export function RenderMedium({results}) {
+export function RenderMedium({ results }) {
     // console.log("In RenderSevere");
     // consoleLogObject('RenderSevere results', results);
     return <>
@@ -386,7 +372,7 @@ export function RenderMedium({results}) {
         <RenderGivenArray array={results.mediumList} colour='maroon' />
     </>;
 }
-export function RenderLow({results}) {
+export function RenderLow({ results }) {
     // console.log("In RenderLow");
     // consoleLogObject('RenderLow results', results);
     return <>
@@ -395,7 +381,7 @@ export function RenderLow({results}) {
         <RenderGivenArray array={results.lowList} colour='orange' />
     </>;
 }
-export function RenderSevereMediumLow({results}) {
+export function RenderSevereMediumLow({ results }) {
     // console.log("In RenderSevereMediumLow");
     // consoleLogObject('RenderSevereMediumLow results', results);
     return <>
@@ -406,7 +392,7 @@ export function RenderSevereMediumLow({results}) {
 }
 
 
-export function RenderSuccessesErrorsWarnings({results}) {
+export function RenderSuccessesErrorsWarnings({ results }) {
     // console.log("In RenderSuccessesErrorsWarnings");
 
     // consoleLogObject('RenderSuccessesErrorsWarnings results', results);
@@ -429,7 +415,7 @@ export function RenderSuccessesErrorsWarnings({results}) {
 }
 
 
-export function RenderSuccessesSevereMediumLow({results}) {
+export function RenderSuccessesSevereMediumLow({ results }) {
     // console.log("In RenderSuccessesSevereMediumLow");
 
     // consoleLogObject('RenderSuccessesSevereMediumLow results', results);
@@ -451,7 +437,7 @@ export function RenderSuccessesSevereMediumLow({results}) {
     </>;
 }
 
-export function RenderSuccessesWarningsGradient({results}) {
+export function RenderSuccessesWarningsGradient({ results }) {
     // console.log("In RenderSuccessesWarningsGradient");
 
     // consoleLogObject('RenderSuccessesWarningsGradient results', results);
@@ -474,7 +460,7 @@ export function RenderSuccessesWarningsGradient({results}) {
 }
 
 
-export function RenderElapsedTime({elapsedSeconds}) {
+export function RenderElapsedTime({ elapsedSeconds }) {
     const seconds = Math.round(elapsedSeconds % 60);
     let remainingTime = Math.floor(elapsedSeconds / 60);
     const minutes = Math.round(remainingTime % 60);

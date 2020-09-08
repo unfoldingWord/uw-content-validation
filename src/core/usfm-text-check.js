@@ -86,7 +86,6 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
     // console.log(`checkUSFMText(${bookID}, ${givenText.length.toLocaleString()} chars, '${location}')…`);
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
-    if (filename.length) ourLocation = ` in ${filename}${ourLocation}`;
 
     let extractLength;
     try {
@@ -317,7 +316,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
     // end of CVCheck function
 
 
-    function ourCheckTextField(C, V, fieldName, fieldText, allowedLinks, fieldLocation, optionalCheckingOptions) {
+    function ourCheckTextField(lineNumber, C, V, fieldName, fieldText, allowedLinks, fieldLocation, optionalCheckingOptions) {
         /**
         * @description - checks the given text field and processes the returned results
         * @param {String} C - chapter number of the text being checked
@@ -355,14 +354,14 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
                 && (!noticeEntry.message.startsWith("Unexpected doubled , characters") || fieldText.indexOf('x-morph') < 0) // inside \w fields
                 && (!noticeEntry.message.startsWith('Unexpected doubled " characters') || fieldText.indexOf('x-morph') < 0) // inside \w fields
             ) {
-                const newNoticeObject = { priority:noticeEntry.priority, message:noticeEntry.message }
-                if (C !== undefined && C.length) newNoticeObject.C = C;
-                if (V !== undefined && V.length) newNoticeObject.V = V;
-                // if (filename !== undefined && filename.length) newNoticeObject.filename = filename;
-                if (noticeEntry.characterIndex !== undefined) newNoticeObject.characterIndex = noticeEntry.characterIndex;
-                if (noticeEntry.extract !== undefined && noticeEntry.extract.length) newNoticeObject.extract = noticeEntry.extract;
-                if (noticeEntry.location !== undefined && noticeEntry.location.length) newNoticeObject.location = noticeEntry.location;
-                addNoticeCV8(newNoticeObject);
+                // const newNoticeObject = { priority:noticeEntry.priority, message:noticeEntry.message }
+                // if (C !== undefined && C.length) newNoticeObject.C = C;
+                // if (V !== undefined && V.length) newNoticeObject.V = V;
+                // // if (filename !== undefined && filename.length) newNoticeObject.filename = filename;
+                // if (noticeEntry.characterIndex !== undefined) newNoticeObject.characterIndex = noticeEntry.characterIndex;
+                // if (noticeEntry.extract !== undefined && noticeEntry.extract.length) newNoticeObject.extract = noticeEntry.extract;
+                // if (noticeEntry.location !== undefined && noticeEntry.location.length) newNoticeObject.location = noticeEntry.location;
+                addNoticeCV8({ ...noticeEntry, lineNumber, C, V });
             }
         }
     }
@@ -469,12 +468,12 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
     // end of checkUSFMFileContents function
 
 
-    function checkUSFMLineInternals(C, V, marker, rest, lineLocation, optionalCheckingOptions) {
+    function checkUSFMLineInternals(lineNumber, C, V, marker, rest, lineLocation, optionalCheckingOptions) {
         // Handles character formatting within the line contents
         let adjustedRest = rest;
 
         if (marker === 'c' && isNaN(rest))
-            addNoticeCV8({priority:822, C, V, message:"Expected \\c field to contain an integer", characterIndex:3, extract:'\\c ' + rest, location:lineLocation});
+            addNoticeCV8({priority:822, message:"Expected \\c field to contain an integer", lineNumber, C, V, characterIndex:3, extract:'\\c ' + rest, location:lineLocation});
         if (marker === 'v') {
             let Vstr = (rest) ? rest.split(' ', 1)[0] : '?';
             if (isNaN(Vstr) && Vstr.indexOf('-') < 0)
@@ -483,7 +482,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
         const allowedLinks = (marker === 'w' || marker === 'k-s' || marker === 'SPECIAL1')
             // (because we don't know what marker SPECIAL1 is, so default to "no false alarms")
             && rest.indexOf('x-tw') >= 0;
-        if (rest) ourCheckTextField(C, V, '\\' + marker, rest, allowedLinks, ' field ' + lineLocation, optionalCheckingOptions);
+        if (rest) ourCheckTextField(lineNumber, C, V, '\\' + marker, rest, allowedLinks, ' field ' + lineLocation, optionalCheckingOptions);
     }
     // end of checkUSFMLineInternals function
 
@@ -506,7 +505,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
             // Lower priority of deprecated \s5 markers (compared to all other unknown markers)
             addNoticeCV8({priority:marker === 's5' ? 111 : 809, message:`${marker === 's5' ? 'Deprecated' : 'Unexpected'} '\\${marker}' marker at start of line`,
                             C, V, lineNumber, characterIndex:1, location:lineLocation});
-        if (rest) checkUSFMLineInternals(marker, rest, lineLocation);
+        if (rest) checkUSFMLineInternals(lineNumber, marker, rest, lineLocation);
     }
     // end of checkUSFMLineContents function
 
@@ -539,16 +538,15 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
         for (let n = 1; n <= lines.length; n++) {
             let line = lines[n - 1];
             if (C === '0') V = n.toString();
-            let atString = ` on line ${n.toLocaleString()}${ourLocation}`;
             // console.log(`line '${line}'${atString}`);
             if (!line) {
-                // addNoticeCV8({priority:103, "Unexpected blank line", 0, '', location:atString});
+                // addNoticeCV8({priority:103, "Unexpected blank line", 0, '', location:ourLocation});
                 continue;
             }
             let characterIndex;
             if ((characterIndex = line.indexOf('\r')) >= 0) {
                 const extract = ``; // TODO xxxxxxxxxxxxxxxxxxx................................
-                addNoticeCV8({priority:703, C, V, message:"Unexpected CarriageReturn character", lineNumber:n, characterIndex, extract, location:atString});
+                addNoticeCV8({priority:703, C, V, message:"Unexpected CarriageReturn character", lineNumber:n, characterIndex, extract, location:ourLocation});
             }
 
             let marker, rest;
@@ -561,7 +559,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
                 //          so it's not necessarily either an error or a warning
                 rest = line;
                 if (`([“‘`.indexOf(line[0]) < 0) { // These are the often expected characters
-                    addNoticeCV8({priority:980, C, V, message:"Expected line to start with backslash", lineNumber:n, characterIndex:0, extract:line[0], location:atString});
+                    addNoticeCV8({priority:980, C, V, message:"Expected line to start with backslash", lineNumber:n, characterIndex:0, extract:line[0], location:ourLocation});
                     if (line[1] === '\\') { // Let's drop the leading punctuation and try to check the rest of the line
                         marker = line.substring(2).split(' ', 1)[0];
                         rest = line.substring(marker.length + 2 + 1); // Skip leading character, backslash, marker, and space after marker
@@ -583,11 +581,11 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
                 try {
                     intC = ourParseInt(C);
                 } catch (usfmICerror) {
-                    addNoticeCV8({priority:724, C, V, message:"Unable to convert chapter number to integer", lineNumber:n, characterIndex:3, extract:`${rest.substring(0, halfLength)}${rest.length > halfLength ? '…' : ''}`, location:atString});
+                    addNoticeCV8({priority:724, C, V, message:"Unable to convert chapter number to integer", lineNumber:n, characterIndex:3, extract:`${rest.substring(0, halfLength)}${rest.length > halfLength ? '…' : ''}`, location:ourLocation});
                     intC = -999; // Used to prevent consequential errors
                 }
                 if (C === lastC || (intC > 0 && intC !== lastIntC + 1))
-                    addNoticeCV8({priority:764, C, V, message:"Chapter number didn't increment correctly", lineNumber:n, characterIndex:3, extract:`${rest.substring(0, halfLength)}${rest.length > halfLength ? '…' : ''} (${lastC ? lastC : '0'} → ${C})`, location:atString});
+                    addNoticeCV8({priority:764, C, V, message:"Chapter number didn't increment correctly", lineNumber:n, characterIndex:3, extract:`${rest.substring(0, halfLength)}${rest.length > halfLength ? '…' : ''} (${lastC ? lastC : '0'} → ${C})`, location:ourLocation});
                 lastC = C; lastV = '0';
                 lastIntC = intC; lastIntV = 0;
             } else if (marker === 'v') {
@@ -596,11 +594,11 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
                     try {
                         intV = ourParseInt(V);
                     } catch (usfmIVerror) {
-                        addNoticeCV8({priority:723, C, V, message:"Unable to convert verse number to integer", lineNumber:n, characterIndex:3, extract:`${rest.substring(0, halfLength)}${rest.length > halfLength ? '…' : ''}`, location:atString});
+                        addNoticeCV8({priority:723, C, V, message:"Unable to convert verse number to integer", lineNumber:n, characterIndex:3, extract:`${rest.substring(0, halfLength)}${rest.length > halfLength ? '…' : ''}`, location:ourLocation});
                         intV = -999; // Used to prevent consequential errors
                     }
                     if (V === lastV || (intV > 0 && intV !== lastIntV + 1))
-                        addNoticeCV8({priority:763, C, V, message:"Verse number didn't increment correctly", lineNumber:n, characterIndex:3, extract:`${rest.substring(0, halfLength)}${rest.length > halfLength ? '…' : ''} (${lastV ? lastV : '0'} → ${V})`, location:atString});
+                        addNoticeCV8({priority:763, C, V, message:"Verse number didn't increment correctly", lineNumber:n, characterIndex:3, extract:`${rest.substring(0, halfLength)}${rest.length > halfLength ? '…' : ''} (${lastV ? lastV : '0'} → ${V})`, location:ourLocation});
                     lastV = V; lastIntV = intV;
                 } else { // handle verse bridge
                     const bits = V.split('-');
@@ -610,13 +608,13 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
                         intFirstV = ourParseInt(firstV);
                         intSecondV = ourParseInt(secondV);
                     } catch (usfmV12error) {
-                        addNoticeCV8({priority:762, C, V, message:"Unable to convert verse bridge numbers to integers", lineNumber:n, characterIndex:3, extract:`${rest.substring(0, Math.max(9, extractLength))}${rest.length > extractLength ? '…' : ''}`, location:atString});
+                        addNoticeCV8({priority:762, C, V, message:"Unable to convert verse bridge numbers to integers", lineNumber:n, characterIndex:3, extract:`${rest.substring(0, Math.max(9, extractLength))}${rest.length > extractLength ? '…' : ''}`, location:ourLocation});
                         intFirstV = -999; intSecondV = -998; // Used to prevent consequential errors
                     }
                     if (intSecondV <= intFirstV)
-                        addNoticeCV8({priority:769, C, V, message:"Verse bridge numbers not in ascending order", lineNumber:n, characterIndex:3, extract:`${rest.substring(0, Math.max(9, extractLength))}${rest.length > extractLength ? '…' : ''} (${firstV} → ${secondV})`, location:atString});
+                        addNoticeCV8({priority:769, C, V, message:"Verse bridge numbers not in ascending order", lineNumber:n, characterIndex:3, extract:`${rest.substring(0, Math.max(9, extractLength))}${rest.length > extractLength ? '…' : ''} (${firstV} → ${secondV})`, location:ourLocation});
                     else if (firstV === lastV || (intFirstV > 0 && intFirstV !== lastIntV + 1))
-                        addNoticeCV8({priority:765, C, V, message:"Bridged verse numbers didn't increment correctly", lineNumber:n, characterIndex:3, extract:`${rest.substring(0, Math.max(9, extractLength))}${rest.length > extractLength ? '…' : ''} (${lastV} → ${firstV})`, location:atString});
+                        addNoticeCV8({priority:765, C, V, message:"Bridged verse numbers didn't increment correctly", lineNumber:n, characterIndex:3, extract:`${rest.substring(0, Math.max(9, extractLength))}${rest.length > extractLength ? '…' : ''} (${lastV} → ${firstV})`, location:ourLocation});
                     lastV = secondV; lastIntV = intSecondV;
                 }
             } else if ((vIndex = rest.indexOf('\\v ')) >= 0) {
@@ -627,34 +625,33 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
                     intV = parseInt(restRest);
                     // console.log("Got", intV);
                 } catch (usfmIIVerror) {
-                    addNoticeCV8({priority:720, C, V, message:"Unable to convert internal verse number to integer", lineNumber:n, characterIndex:3, extract:`${restRest.substring(0, halfLength)}${restRest.length > halfLength ? '…' : ''}`, location:atString});
+                    addNoticeCV8({priority:720, C, V, message:"Unable to convert internal verse number to integer", lineNumber:n, characterIndex:3, extract:`${restRest.substring(0, halfLength)}${restRest.length > halfLength ? '…' : ''}`, location:ourLocation});
                     intV = -999; // Used to prevent consequential errors
                 }
                 if (intV > 0 && intV !== lastIntV + 1)
-                    addNoticeCV8({priority:761, C, V, message:"Verse number didn't increment correctly", lineNumber:n, characterIndex:3, extract:`${restRest.substring(0, halfLength)}${restRest.length > halfLength ? '…' : ''} (${lastV ? lastV : '0'} → ${V})`, location:atString});
+                    addNoticeCV8({priority:761, C, V, message:"Verse number didn't increment correctly", lineNumber:n, characterIndex:3, extract:`${restRest.substring(0, halfLength)}${restRest.length > halfLength ? '…' : ''} (${lastV ? lastV : '0'} → ${V})`, location:ourLocation});
                 lastV = intV.toString(); lastIntV = intV;
             }
-            atString = ` on line ${n.toLocaleString()}${ourLocation}`;
 
             if (marker === 'id' && !rest.startsWith(bookID)) {
                 const thisLength = Math.max(4, extractLength);
                 const extract = `${rest.substring(0, thisLength)}${rest.length > thisLength ? '…' : ''}`;
-                addNoticeCV8({priority:987, C, V, message:"Expected \\id line to start with book identifier", lineNumber:n, characterIndex:4, extract, location:atString});
+                addNoticeCV8({priority:987, C, V, message:"Expected \\id line to start with book identifier", lineNumber:n, characterIndex:4, extract, location:ourLocation});
             }
             // Check the order of markers
             // In headers
             if (marker === 'toc2' && lastMarker !== 'toc1')
-                addNoticeCV8({priority:87, C, V, message:"Expected \\toc2 line to follow \\toc1", lineNumber:n, characterIndex:1, extract:`(not '${lastMarker}')`, location:atString});
+                addNoticeCV8({priority:87, C, V, message:"Expected \\toc2 line to follow \\toc1", lineNumber:n, characterIndex:1, extract:`(not '${lastMarker}')`, location:ourLocation});
             else if (marker === 'toc3' && lastMarker !== 'toc2')
-                addNoticeCV8({priority:87, C, V, message:"Expected \\toc3 line to follow \\toc2", lineNumber:n, characterIndex:1, extract:`(not '${lastMarker}')`, location:atString});
+                addNoticeCV8({priority:87, C, V, message:"Expected \\toc3 line to follow \\toc2", lineNumber:n, characterIndex:1, extract:`(not '${lastMarker}')`, location:ourLocation});
             // In chapters
             else if ((PARAGRAPH_MARKERS.indexOf(marker) >= 0 || marker === 's5' || marker === 'ts\\*')
                 && PARAGRAPH_MARKERS.indexOf(lastMarker) >= 0
                 && !lastRest)
-                addNoticeCV8({priority:399, C, V, message:"Useless paragraph marker", lineNumber:n, characterIndex:1, extract:`('${lastMarker}' before '${marker}')`, location:atString});
+                addNoticeCV8({priority:399, C, V, message:"Useless paragraph marker", lineNumber:n, characterIndex:1, extract:`('${lastMarker}' before '${marker}')`, location:ourLocation});
 
             // Do general checks
-            checkUSFMLineContents(n, C, V, marker, rest, atString);
+            checkUSFMLineContents(n, C, V, marker, rest, ourLocation);
 
             lastMarker = marker; lastRest = rest;
         }

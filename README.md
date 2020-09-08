@@ -12,6 +12,8 @@ The basic functions return an object containing two lists:
 1. successList: a list of strings giving an overview of what checks have been made,
 1. noticeList: a list of objects with fields that can be filtered, sorted, combined, and then displayed as error or warning messages.
 
+Note that the object may also contain other relevant fields such as `checkedFileCount`, `checkedFilenames`, `checkedFilenameExtensions`, `checkedFilesizes`, `checkedRepoNames`, and `elapsedSeconds`.
+
 There are three sample notice processing functions that show how to:
 
 1. Divide the noticeList into a list of errors and a list of warnings,
@@ -34,7 +36,7 @@ In addition, there are Styleguidist pages viewable at https://unfoldingword.gith
 
 This code is designed to thoroughly check various types of Bible-related content data files. This includes:
 
-1. Unified Standard Format Marker (USFM) Bible content files, including original language Bibles and Bible translations aligned by word/phrase to the original words/phrases
+1. [Unified Standard Format Marker](ubsicap.github.io/usfm/) (USFM) Bible content files, including original language Bibles and Bible translations aligned by word/phrase to the original words/phrases
 1. Translation Notes (TN) tables in Tab-Separated Values (TSV) files
 1. Markdown files (and markdown fields in TSV files)
 1. Plain-text files
@@ -57,21 +59,20 @@ There are two compulsory fields in all of these notice objects:
 All of the following fields may be missing or undefined, i.e., they're all optional:
 
 1. `bookID`: The 3-character UPPERCASE [book identifier](http://ubsicap.github.io/usfm/identification/books.html) or [OBS](https://www.openbiblestories.org/) (if relevant)
-1. `C`: The chapter number or story number (if relevant)
-1. `V`: The verse number or frame number (if relevant)
-1. `filename`: filename string (if available)
+1. `C`: The chapter number or OBS story number (if relevant)
+1. `V`: The verse number or OBS frame number (if relevant)
 1. `repoName`: repository name (if available)
+1. `filename`: filename string (if available)
 1. `lineNumber`: A one-based line number in the file (if available)
 1. `characterIndex`: A zero-based integer character index which indicates the position of the error in the given text (line or field) (if available)
 1. `extract`: An extract (if available) of the checked text which indicates the area containing the problem. Where helpful, some character substitutions have already been made, for example, if the notice is about spaces, it is generally helpful to display spaces as a visible character in an attempt to best highlight the issue to the user. (The length of the extract defaults to ten characters, but is settable as an option.)
-1. `location`: A string indicating the context of the notice, e.g., "in line 17 of 'someBook.usfm'". (Still not completely sure what should be in this string now that we have added optional `filename`, `repoName`, `lineNumber` fields.)
-
+1. `location`: A string indicating the context of the notice, e.g., "in line 17 of 'someBook.usfm'". (Still not completely sure what should be left in this string now that we have added optional `filename`, `repoName`, `lineNumber` fields.)
 
 Keeping our notices in this format, rather than the simplicity of just saving an array of single strings, allows the above *notice components* to be processed at a higher level, e.g., to allow user-controlled filtering, sorting, etc. The default is to funnel them all through the supplied `processNoticesToErrorsWarnings` function (in core/notice-processing-functions.fs) which does the following:
 
 1. Removes excess repeated errors. For example, if there's a systematic error in a file, say with unneeded leading spaces in every field, rather than returning with hundreds of errors, only the first several errors will be returned, followed by an "errors suppressed" message. (The number of each error displayed is settable as an option -- zero means display all errors with no suppression.)
 1. Separates notices into error and warning lists based on the priority number. (The switch-over point is settable as an option.)
-1. Optionally drops the lowest priority notices.
+1. Optionally drops the lowest priority notices and/or certain given notice types (by priority number).
 
 There is a second version of the function which splits into `Severe`, `Medium`, and `Low` priority lists instead. And a third version that leaves them as notices, but allows for a Bright red...Dull red colour gradient instead.
 
@@ -80,7 +81,6 @@ However, the user is, of course, free to create their own alternative version of
 Still unfinished (in rough priority order):
 
 1. Finish adding lineNumber, fileName, repoName as separate optional notice fields
-1. Consider fetching TA and TW as zip files when checking links to those resources
 1. Standardise parameters according to best practice (i.e., dereferencing, etc.)
 1. Document the API with (JsDoc)
 1. Checking of general markdown and naked links (esp. in plain text and markdown files)
@@ -97,8 +97,9 @@ Still unfinished (in rough priority order):
 
 Known bugs:
 
+1. At the moment, the relevant `repoName`, `filename`, and `lineNumber` information is not yet all properly added to the notice objects -- also the `location` field may still contain overlapping information
 1. The line number in the USFM Grammar check doesn't account for blank lines, so the real line number may be larger. (This is a bug in the BCS library.)
-1. Work on removing false alarms is not yet completed
+1. Work on removing false alarms for end-users is not yet completed
 1. Work on checking links (esp. naked links) is not yet completed.
 
 ## Functionality and Limitations

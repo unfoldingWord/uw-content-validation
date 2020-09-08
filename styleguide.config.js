@@ -93,6 +93,39 @@ let sections = [
 		]
 	},
 	{
+		name: 'Core Door43 Book Package Check',
+		// content: 'src/core/README.md',
+		sections: [
+			{
+				name: 'Book Package check',
+				content: 'src/core/book-package-check.md',
+				// description: ''
+			}
+		]
+	},
+	{
+		name: 'Core Door43 Repository Check',
+		// content: 'src/core/README.md',
+		sections: [
+			{
+				name: 'Repo check',
+				content: 'src/core/repo-check.md',
+				// description: ''
+			}
+		]
+	},
+	{
+		name: 'Core File Contents Check',
+		// content: 'src/core/README.md',
+		sections: [
+			{
+				name: 'File contents check',
+				content: 'src/core/file-check.md',
+				// description: ''
+			}
+		]
+	},
+	{
 		// The difficulty with displaying core functions this way
 		//	is that they all appear and run on a SINGLE web-page.
 		name: 'Core Filetype Checking Functions',

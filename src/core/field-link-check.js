@@ -2,7 +2,7 @@ import { checkTextField } from './field-text-check'
 import { cachedGetURL } from './getApi';
 
 
-const LINK_VALIDATOR_VERSION = '0.3.1';
+const LINK_VALIDATOR_VERSION = '0.3.2';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -16,19 +16,19 @@ async function startLiveLinksCheck(linksList, existingNoticeList, callbackFuncti
 
     let result = { noticeList: existingNoticeList };
 
-    function addNotice6({priority,message, lineNumber,characterIndex, extract, location}) {
+    function addNotice5({priority,message, characterIndex, extract, location}) {
         console.log(`sLLC Link Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(priority!==undefined, "sLLC addNotice6: 'priority' parameter should be defined");
-        console.assert(typeof priority==='number', `sLLC addNotice6: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        console.assert(message!==undefined, "sLLC addNotice6: 'message' parameter should be defined");
-        console.assert(typeof message==='string', `sLLC addNotice6: 'message' parameter should be a string not a '${typeof message}':${message}`);
-        // console.assert(characterIndex!==undefined, "sLLC addNotice6: 'characterIndex' parameter should be defined");
-        if (characterIndex) console.assert(typeof characterIndex==='number', `sLLC addNotice6: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
-        // console.assert(extract!==undefined, "sLLC addNotice6: 'extract' parameter should be defined");
-        if (extract) console.assert(typeof extract==='string', `sLLC addNotice6: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
-        // console.assert(location!==undefined, "sLLC addNotice6: 'location' parameter should be defined");
-        // console.assert(typeof location==='string', `sLLC addNotice6: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push({priority, message, lineNumber, characterIndex,extract, location});
+        console.assert(priority!==undefined, "sLLC addNotice5: 'priority' parameter should be defined");
+        console.assert(typeof priority==='number', `sLLC addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
+        console.assert(message!==undefined, "sLLC addNotice5: 'message' parameter should be defined");
+        console.assert(typeof message==='string', `sLLC addNotice5: 'message' parameter should be a string not a '${typeof message}':${message}`);
+        // console.assert(characterIndex!==undefined, "sLLC addNotice5: 'characterIndex' parameter should be defined");
+        if (characterIndex) console.assert(typeof characterIndex==='number', `sLLC addNotice5: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
+        // console.assert(extract!==undefined, "sLLC addNotice5: 'extract' parameter should be defined");
+        if (extract) console.assert(typeof extract==='string', `sLLC addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
+        // console.assert(location!==undefined, "sLLC addNotice5: 'location' parameter should be defined");
+        // console.assert(typeof location==='string', `sLLC addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
+        result.noticeList.push({priority, message, characterIndex,extract, location});
     }
 
     // Now try fetching each link in turn
@@ -42,7 +42,7 @@ async function startLiveLinksCheck(linksList, existingNoticeList, callbackFuncti
             console.log("startLiveLinksCheck got response: ", reponseText.length, reponseText);
         } catch (lcError) {
             console.log(`startLiveLinksCheck had an error fetching '${fetchLink}': ${lcError}`);
-            addNotice6({priority:439, message:"Error fetching link", location:` ${fetchLink}`});
+            addNotice5({priority:439, message:"Error fetching link", location:` ${fetchLink}`});
         }
     }
 
@@ -67,19 +67,19 @@ function checkFieldLinks(fieldName, fieldText, linkOptions, optionalFieldLocatio
 
     let result = { noticeList: [] };
 
-    function addNotice6({priority,message, lineNumber,characterIndex, extract, location}) {
-        console.log(`dBLC Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(priority!==undefined, "sLLC addNotice6: 'priority' parameter should be defined");
-        console.assert(typeof priority==='number', `sLLC addNotice6: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        console.assert(message!==undefined, "sLLC addNotice6: 'message' parameter should be defined");
-        console.assert(typeof message==='string', `sLLC addNotice6: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        // console.assert(characterIndex!==undefined, "sLLC addNotice6: 'characterIndex' parameter should be defined");
-        if (characterIndex) console.assert(typeof characterIndex==='number', `sLLC addNotice6: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
-        // console.assert(extract!==undefined, "sLLC addNotice6: 'extract' parameter should be defined");
-        if (extract) console.assert(typeof extract==='string', `sLLC addNotice6: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
-        console.assert(location!==undefined, "sLLC addNotice6: 'location' parameter should be defined");
-        console.assert(typeof location==='string', `sLLC addNotice6: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push({priority, message, lineNumber, characterIndex,extract, location});
+    function addNotice5({priority,message, characterIndex, extract, location}) {
+        console.log(`cFLs addNotice5: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        console.assert(priority!==undefined, "cFLs addNotice5: 'priority' parameter should be defined");
+        console.assert(typeof priority==='number', `cFLs addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
+        console.assert(message!==undefined, "cFLs addNotice5: 'message' parameter should be defined");
+        console.assert(typeof message==='string', `cFLs addNotice5: 'message' parameter should be a string not a '${typeof message}': ${message}`);
+        // console.assert(characterIndex!==undefined, "cFLs addNotice5: 'characterIndex' parameter should be defined");
+        if (characterIndex) console.assert(typeof characterIndex==='number', `cFLs addNotice5: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
+        // console.assert(extract!==undefined, "cFLs addNotice5: 'extract' parameter should be defined");
+        if (extract) console.assert(typeof extract==='string', `cFLs addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
+        console.assert(location!==undefined, "cFLs addNotice5: 'location' parameter should be defined");
+        console.assert(typeof location==='string', `cFLs addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
+        result.noticeList.push({priority, message, characterIndex,extract, location});
     }
 
     // Create our more detailed location string by prepending the fieldName
@@ -91,7 +91,7 @@ function checkFieldLinks(fieldName, fieldText, linkOptions, optionalFieldLocatio
 
     if (!fieldText) { // Nothing to check
         if (linkOptions.expectedCount > 0)
-            addNotice6({priority:438, message:`Blank field / missing link (expected ${linkOptions.expectedCount} link${linkOptions.expectedCount === 1 ? "" : "s"})`, location:ourAtString});
+            addNotice5({priority:438, message:`Blank field / missing link (expected ${linkOptions.expectedCount} link${linkOptions.expectedCount === 1 ? "" : "s"})`, location:ourAtString});
         return result;
     }
 
@@ -101,7 +101,7 @@ function checkFieldLinks(fieldName, fieldText, linkOptions, optionalFieldLocatio
 
     // Parameter nonsense check
     if (linkOptions.allowedCount > 0 && linkOptions.expectedCount > linkOptions.allowedCount)
-        addNotice6({priority:111, message:`Bad options for checkFieldLinks: expectedCount=${linkOptions.expectedCount} but allowedCount=${linkOptions.allowedCount}`});
+        addNotice5({priority:111, message:`Bad options for checkFieldLinks: expectedCount=${linkOptions.expectedCount} but allowedCount=${linkOptions.allowedCount}`});
 
     // Check for embedded links
     // First, create our regex from the allowed link types
@@ -119,7 +119,7 @@ function checkFieldLinks(fieldName, fieldText, linkOptions, optionalFieldLocatio
             else if (linkType==='naked')
                 linkRegexParts.push('(https*://[^ ]+)');
             else
-                addNotice6({priority:441, message:`Unknown linkType parameter`, extract:linkType});
+                addNotice5({priority:441, message:`Unknown linkType parameter`, extract:linkType});
         }
     } else { // No link types specified
         linkRegexParts = [];
@@ -133,11 +133,11 @@ function checkFieldLinks(fieldName, fieldText, linkOptions, optionalFieldLocatio
     // console.log("checkFieldLinks regexResultsArray", regexResultsArray.length, JSON.stringify(regexResultsArray));
 
     if (regexResultsArray.length < linkOptions.expectedCount)
-        addNotice6({priority:287, message:`Not enough links (expected ${linkOptions.expectedCount} link${linkOptions.expectedCount === 1 ? "" : "s"})`, location:` (only found ${regexResultsArray.length})${ourAtString}`});
+        addNotice5({priority:287, message:`Not enough links (expected ${linkOptions.expectedCount} link${linkOptions.expectedCount === 1 ? "" : "s"})`, location:` (only found ${regexResultsArray.length})${ourAtString}`});
 
     if (linkOptions.checkTargets && linkOptions.callbackFunction && regexResultsArray) {
         startLiveLinksCheck(regexResultsArray, result.noticeList.slice(0), linkOptions.callbackFunction);
-        addNotice6({priority:600, message:`${regexResultsArray.length} link target${regexResultsArray.length === 1 ? ' is' : 's are'} still being checked…`});
+        addNotice5({priority:600, message:`${regexResultsArray.length} link target${regexResultsArray.length === 1 ? ' is' : 's are'} still being checked…`, location:ourAtString});
         console.log("checkFieldLinks now returning initial result…");
     }
 

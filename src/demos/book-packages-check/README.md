@@ -1,4 +1,4 @@
-## Book Packages Check - Readme
+## Door43 Book Packages Check - Readme
 
 The code below requests some info and then checks the given Bible books across several repos. This is convenient to see all these check results collected into one place.
 
