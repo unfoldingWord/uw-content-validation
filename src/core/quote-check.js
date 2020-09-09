@@ -3,7 +3,7 @@ import { getFile } from '../core/getApi';
 // import { consoleLogObject } from '../core/utilities';
 
 
-const QUOTE_VALIDATOR_VERSION = '0.3.1';
+export const QUOTE_VALIDATOR_VERSION = '0.3.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -123,7 +123,7 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, gi
                 verseText += (bookLine.startsWith('\\f ') ? '' : ' ') + bookLine;
             }
         }
-        verseText = verseText.replace(/\\p/g, '').trim().replace(/  /g, ' ')
+        verseText = verseText.replace(/\\p/g, '').trim().replace(/ {2}/g, ' ')
         // console.log(`Got verse text1: '${verseText}'`);
 
         // Remove \w fields (just leaving the actual Bible text words)
@@ -150,7 +150,7 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, gi
         // console.log(`Got verse text3: '${verseText}'`);
 
         // Final clean-up (shouldn't be necessary, but just in case)
-        verseText = verseText.replace(/  /g, ' ');
+        verseText = verseText.replace(/ {2}/g, ' ');
         console.assert(verseText.indexOf('\\w') === -1, `getPassage: Should be no \\w in ${bookID} ${C}:${V} '${verseText}'`);
         console.assert(verseText.indexOf('\\k') === -1, `getPassage: Should be no \\k in ${bookID} ${C}:${V} '${verseText}'`);
         console.assert(verseText.indexOf('x-') === -1, `getPassage: Should be no x- in ${bookID} ${C}:${V} '${verseText}'`);
@@ -250,17 +250,17 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, gi
                 remainingBits = [remainingBits[0], remainingBits.slice(1).join('…')];
             console.assert(remainingBits.length === 2, `remaining bits are ${remainingBits.length}`);
             // Note: There's some Hebrew (RTL) characters at the beginning of the following regex
-            if (remainingBits[0] && remainingBits[0].slice(-1).search(/[^־A-Za-z\s*\(]/) !== -1) {
-                const badChar = remainingBits[0].slice(-1);
-                const badCharString = ` by '{badChar}' {unicodedata.name(badChar)}={hex(ord(badChar))}`;
+            if (remainingBits[0] && remainingBits[0].slice(-1).search(/[^־A-Za-z\s*(]/) !== -1) {
+                // const badChar = remainingBits[0].slice(-1);
+                // const badCharString = ` by '{badChar}' {unicodedata.name(badChar)}={hex(ord(badChar))}`;
                 // console.log(`Seems '${fieldText}' might not start at the beginning of a word—it's preceded ${badCharString} in '${verseText}'`);
                 const extract = `(${remainingBits[0].slice(-1)})` + fieldText.substring(0, extractLength-3) + (fieldText.length > extractLength-3 ? '…' : '');
                 addNotice6({priority:620, message:"Seems original language quote might not start at the beginning of a word", characterIndex:0, extract, location:ourLocation});
             }
             // Note: There's some Hebrew (RTL) characters at the beginning of the following regex
             if (remainingBits[1] && remainingBits[1][0].search(/[^׃־A-Za-z\s.,:;?!–)]/) !== -1) {
-                const badChar = remainingBits[1][0];
-                const badCharString = ` by '${badChar}' {unicodedata.name(badChar)}={hex(ord(badChar))}`;
+                // const badChar = remainingBits[1][0];
+                // const badCharString = ` by '${badChar}' {unicodedata.name(badChar)}={hex(ord(badChar))}`;
                 // console.log(`Seems '${fieldText}' might not finish at the end of a word—it's followed ${badCharString} in '${verseText}'`);
                 const extract = (fieldText.length > extractLength-3 ? '…' : '') + fieldText.substring(fieldText.length-extractLength+3, fieldText.length) + `(${remainingBits[1][0]})`;
                 addNotice6({priority:621, message:"Seems original language quote might not finish at the end of a word", characterIndex:fieldText.length, extract, location:ourLocation});

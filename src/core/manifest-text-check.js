@@ -1,4 +1,5 @@
 import checkYAMLText from './yaml-text-check';
+import * as books from './books';
 
 
 const MANIFEST_VALIDATOR_VERSION = '0.2.1';
@@ -28,8 +29,8 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
     }
     // else
         // console.log(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
-    const halfLength = Math.floor(extractLength / 2); // rounded down
-    const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
+    // const halfLength = Math.floor(extractLength / 2); // rounded down
+    // const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
     // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     const cmtResult = { successList: [], noticeList: [] };

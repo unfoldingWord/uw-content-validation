@@ -3,12 +3,12 @@ import React, { useState, useEffect } from 'react';
 import * as books from '../../core/books/books';
 import { checkBookPackage } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../../core/notice-processing-functions';
-import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime, RenderRawResults } from '../RenderProcessedResults';
+import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
 import { ourParseInt } from '../../core/utilities';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-const CHECKER_VERSION_STRING = '0.1.3';
+export const CHECKER_VERSION_STRING = '0.1.3';
 
 
 function BookPackageCheck(/*username, language_code, bookID,*/ props) {
@@ -28,9 +28,6 @@ function BookPackageCheck(/*username, language_code, bookID,*/ props) {
     let branch = props.branch;
     // console.log(`branch='${branch}'`);
 
-    if (bookID!=='OBS' && !books.isValidBookID(bookID))
-        return (<p>Please enter a valid USFM book identifier. ('{bookID}' is not valid.)</p>);
-
      // Clear cached files if we've changed repo
     //  autoClearCache(bookID); // This technique avoids the complications of needing a button
 
@@ -41,6 +38,9 @@ function BookPackageCheck(/*username, language_code, bookID,*/ props) {
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
 
     useEffect(() => {
+        const newProps = { bookID, branch, checkingOptions, language_code, cutoffPriorityLevel: props.cutoffPriorityLevel, displayType: props.displayType, errorPriorityLevel: props.errorPriorityLevel, maximumSimilarMessages: props.maximumSimilarMessages, sortBy: props.sortBy, username};
+        console.log("useEffect() called with ", newProps);
+
         // Use an IIFE (Immediately Invoked Function Expression)
         //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
         (async () => {
@@ -145,7 +145,11 @@ function BookPackageCheck(/*username, language_code, bookID,*/ props) {
 
             // console.log("Finished rendering bit.");
         })(); // end of async part in unnamedFunction
-    }, []); // end of useEffect part
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [bookID, branch, JSON.stringify(checkingOptions), language_code, JSON.stringify(props), username]); // end of useEffect part
+
+    if (bookID!=='OBS' && !books.isValidBookID(bookID))
+      return (<p>Please enter a valid USFM book identifier. ('{bookID}' is not valid.)</p>);
 
     // {/* <div className={classes.root}> */}
     return (

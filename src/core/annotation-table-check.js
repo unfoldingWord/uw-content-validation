@@ -2,7 +2,7 @@ import * as books from './books/books';
 import checkAnnotationTSVDataRow from './annotation-row-check';
 
 
-const TABLE_TEXT_VALIDATOR_VERSION = '0.2.1';
+export const TABLE_TEXT_VALIDATOR_VERSION = '0.2.1';
 
 const NUM_EXPECTED_TN_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tAnnotation';
@@ -62,8 +62,8 @@ async function CheckAnnotationRows(annotationType, bookID, tableText, givenLocat
     }
     // else
         // console.log(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
-    const halfLength = Math.floor(extractLength / 2); // rounded down
-    const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
+    // const halfLength = Math.floor(extractLength / 2); // rounded down
+    // const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
     // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     let lowercaseBookID = bookID.toLowerCase();
@@ -94,6 +94,7 @@ async function CheckAnnotationRows(annotationType, bookID, tableText, givenLocat
         {
             let fields = lines[n].split('\t');
             if (fields.length === NUM_EXPECTED_TN_FIELDS) {
+              // eslint-disable-next-line no-unused-vars
                 const [reference, fieldID, tags, _support_reference, _quote, _occurrence, _annotation] = fields;
                 const [C, V] = reference.split(':')
                 const withString = ` with ID '${fieldID}'${ourLocation}`;

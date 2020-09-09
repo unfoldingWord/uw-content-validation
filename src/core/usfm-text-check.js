@@ -8,7 +8,7 @@ import { ourParseInt } from './utilities';
 // import { consoleLogObject } from './utilities';
 
 
-const USFM_VALIDATOR_VERSION = '0.6.1';
+export const USFM_VALIDATOR_VERSION = '0.6.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -59,6 +59,7 @@ const DEPRECATED_MARKERS = [
     'addpn', 'pro', 'fdc', 'xdc'];
 const MARKERS_WITH_COMPULSORY_CONTENT = [].concat(INTRO_LINE_START_MARKERS).concat(HEADING_TYPE_MARKERS)
     .concat(CV_MARKERS).concat(NOTE_MARKERS).concat(SPECIAL_MARKERS);
+// eslint-disable-next-line no-unused-vars
 const CHARACTER_MARKERS = ['add', 'bk', 'dc', 'k', 'nd', 'ord', 'pn', 'png', 'addpn',
     'qt', 'sig', 'sls', 'tl', 'wj',
     'rq', 'ior', 'iqt',
@@ -66,7 +67,9 @@ const CHARACTER_MARKERS = ['add', 'bk', 'dc', 'k', 'nd', 'ord', 'pn', 'png', 'ad
     'fig', 'ndx', 'rb', 'pro', 'w', 'wg', 'wh', 'wa', // NOTE that we have \w in TWO places
     'litl', 'lik',
     'liv', 'liv1', 'liv2', 'liv3', 'liv4'];
+// eslint-disable-next-line no-unused-vars
 const FOOTNOTE_INTERNAL_MARKERS = ['fr', 'fq', 'fqa', 'fk', 'fl', 'fw', 'fp', 'fv', 'ft', 'fdc', 'fm', 'xt'];
+// eslint-disable-next-line no-unused-vars
 const XREF_INTERNAL_MARKERS = ['xo', 'xk', 'xq', 'xt', 'xta', 'xop', 'xot', 'xnt', 'xdc', 'rq'];
 const COMPULSORY_MARKERS = ['id', 'ide'];
 const EXPECTED_MARKERS = ['usfm', 'mt1'];
@@ -96,9 +99,9 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
         // console.log(`Using default extractLength=${extractLength}`);
     }
     // else
-    // console.log(`Using supplied extractLength=${extractLength} cf. default=${DEFAULT_EXTRACT_LENGTH}`);
+      // console.log(`Using supplied extractLength=${extractLength} cf. default=${DEFAULT_EXTRACT_LENGTH}`);
     const halfLength = Math.floor(extractLength / 2); // rounded down
-    const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
+    // const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
     // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     const result = { successList: [], noticeList: [] };
@@ -470,7 +473,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
 
     function checkUSFMLineInternals(lineNumber, C, V, marker, rest, lineLocation, optionalCheckingOptions) {
         // Handles character formatting within the line contents
-        let adjustedRest = rest;
+        // let adjustedRest = rest;
 
         if (marker === 'c' && isNaN(rest))
             addNoticeCV8({priority:822, message:"Expected \\c field to contain an integer", lineNumber, C, V, characterIndex:3, extract:'\\c ' + rest, location:lineLocation});
@@ -517,6 +520,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
         if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
         let lowercaseBookID = bookID.toLowerCase();
+      // eslint-disable-next-line no-unused-vars
         let numChaptersThisBook = 0;
         try {
             numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
@@ -530,7 +534,8 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
         let lines = givenText.split('\n');
         // console.log(`  '${ourLocation}' has ${lines.length.toLocaleString()} total lines`);
 
-        let lastB = '', lastC = '', lastV = '', C = '0', V = '0';
+        // let lastB = '';
+        let lastC = '', lastV = '', C = '0', V = '0';
         let lastIntC = 0, lastIntV = 0;
         // let numVersesThisChapter = 0;
         let lastMarker = '', lastRest = '';

@@ -62,6 +62,7 @@ export function ourParseInt(givenString) {
 
     // Optimised version
     const int = givenString * 1; // This one is less forgiving it seems
+  // eslint-disable-next-line no-throw-literal
     if (isNaN(int)) throw "String is not a simple integer";
     return int;
 }

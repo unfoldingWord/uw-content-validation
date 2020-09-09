@@ -6,7 +6,7 @@ import checkTNLinks from './tn-links-check';
 import checkOriginalLanguageQuote from './quote-check';
 
 
-const TABLE_LINE_VALIDATOR_VERSION = '0.1.0';
+export const TABLE_LINE_VALIDATOR_VERSION = '0.1.0';
 
 const NUM_EXPECTED_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tAnnotation';
@@ -258,12 +258,12 @@ async function checkAnnotationTSVDataRow(annotationType, line, bookID, C, V, giv
     }
     // else
     // console.log(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
-    const halfLength = Math.floor(extractLength / 2); // rounded down
-    const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
+    // const halfLength = Math.floor(extractLength / 2); // rounded down
+    // const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
     // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     let numChaptersThisBook;
-    if (bookID != 'OBS') {
+    if (bookID !== 'OBS') {
         const lowercaseBookID = bookID.toLowerCase();
         try {
             numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
@@ -297,7 +297,7 @@ async function checkAnnotationTSVDataRow(annotationType, line, bookID, C, V, giv
                     haveGoodChapterNumber = false;
                 }
                 try {
-                    numVersesThisChapter = books.versesInChapter(lowercaseBookID, intC);
+                    numVersesThisChapter = books.versesInChapter(bookID.toLowerCase(), intC);
                     haveGoodChapterNumber = true;
                 } catch (tlcNVerror) {
                     if (!haveBibleBookID)

@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { checkRepo } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../../core/notice-processing-functions';
-import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime, RenderRawResults } from '../RenderProcessedResults';
+import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
 import { ourParseInt } from '../../core/utilities';
 // import { consoleLogObject, displayPropertyNames } from '../../core/utilities';
 
 
-const CHECKER_VERSION_STRING = '0.1.2';
+export const CHECKER_VERSION_STRING = '0.1.2';
 
 
 function RepoCheck(/*username, languageCode,*/ props) {
@@ -160,7 +160,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
             }
         })(); // end of async part in unnamedFunction
     // Doesn't work if we add this to next line: languageCode,username,repoName,branch,checkingOptions,props
-    }, []); // end of useEffect part
+    }); // end of useEffect part
 
     // {/* <div className={classes.root}> */}
     return (

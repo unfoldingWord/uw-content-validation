@@ -1,8 +1,7 @@
-import { isWhitespace, countOccurrences } from './text-handling-functions'
 import checkTextField from './field-text-check';
 
 
-const PLAIN_TEXT_VALIDATOR_VERSION = '0.1.1';
+export const PLAIN_TEXT_VALIDATOR_VERSION = '0.1.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -27,8 +26,8 @@ function checkPlainText(textName, plainText, givenLocation, optionalCheckingOpti
     }
     // else
         // console.log(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
-    const halfLength = Math.floor(extractLength / 2); // rounded down
-    const halfLengthPlus = Math.floor((extractLength+1) / 2); // rounded up
+    // const halfLength = Math.floor(extractLength / 2); // rounded down
+    // const halfLengthPlus = Math.floor((extractLength+1) / 2); // rounded up
     // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     const cptResult = { successList: [], noticeList: [] };
@@ -111,9 +110,9 @@ function checkPlainText(textName, plainText, givenLocation, optionalCheckingOpti
     const lines = plainText.split('\n');
     // console.log(`  '${location}' has ${lines.length.toLocaleString()} total lines`);
 
-    let headerLevel = 0;
-    let lastNumLeadingSpaces = 0;
-    let lastLineContents;
+    // let headerLevel = 0;
+    // let lastNumLeadingSpaces = 0;
+    // let lastLineContents;
     for (let n= 1; n <= lines.length; n++) {
 
         const line = lines[n - 1];
@@ -123,10 +122,10 @@ function checkPlainText(textName, plainText, givenLocation, optionalCheckingOpti
             // This is a blank line
         }
 
-        lastLineContents = line;
+        // lastLineContents = line;
     }
 
-    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'}${ourLocation}.`);
+    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length===1?'':'s'}${ourLocation}.`);
     if (cptResult.noticeList)
         addSuccessMessage(`checkPlainText v${PLAIN_TEXT_VALIDATOR_VERSION} finished with ${cptResult.noticeList.length?cptResult.noticeList.length.toLocaleString():"zero"} notice${cptResult.noticeList.length === 1 ? '' : 's'}`);
     else

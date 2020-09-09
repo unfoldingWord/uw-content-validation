@@ -2,7 +2,7 @@ import * as books from './books/books';
 import checkTN_TSVDataRow from './tn-table-row-check';
 
 
-const TABLE_TEXT_VALIDATOR_VERSION = '0.2.1';
+export const TABLE_TEXT_VALIDATOR_VERSION = '0.2.1';
 
 const NUM_EXPECTED_TN_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -60,8 +60,8 @@ async function checkTN_TSVText(bookID, tableText, givenLocation, optionalCheckin
     }
     // else
         // console.log(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
-    const halfLength = Math.floor(extractLength / 2); // rounded down
-    const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
+    // const halfLength = Math.floor(extractLength / 2); // rounded down
+    // const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
     // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     let lowercaseBookID = bookID.toLowerCase();
@@ -92,6 +92,7 @@ async function checkTN_TSVText(bookID, tableText, givenLocation, optionalCheckin
         {
             let fields = lines[n].split('\t');
             if (fields.length === NUM_EXPECTED_TN_FIELDS) {
+                // eslint-disable-next-line no-unused-vars
                 const [B, C, V, fieldID, _support_reference, _orig_quote, _occurrence, _GL_quote, _occurrenceNote] = fields;
                 const withString = ` with ID '${fieldID}'${ourLocation}`;
                 // let CV_withString = ` ${C}:${V}${withString}`;

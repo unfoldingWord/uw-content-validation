@@ -1,166 +1,173 @@
 import React, { useState, useEffect } from 'react';
-import { withStyles } from '@material-ui/core/styles';
+// import { withStyles } from '@material-ui/core/styles';
 import * as books from '../../core/books/books';
 import checkBookPackages from './checkBookPackages';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../../core/notice-processing-functions';
-import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime, RenderRawResults } from '../RenderProcessedResults';
+import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
 import { ourParseInt } from '../../core/utilities';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-const CHECKER_VERSION_STRING = '0.0.3';
+export const CHECKER_VERSION_STRING = '0.0.3';
 
 
 function BookPackagesCheck(/*username, language_code, bookIDs,*/ props) {
-    // Check a single Bible book across many repositories
-    const [result, setResultValue] = useState("Waiting-CheckBookPackages");
+  // Check a single Bible book across many repositories
+  const [result, setResultValue] = useState("Waiting-CheckBookPackages");
 
-    // console.log(`I'm here in BookPackagesCheck v${CHECKER_VERSION_STRING}`);
-    // consoleLogObject("props", props);
-    // consoleLogObject("props.classes", props.classes);
+  // console.log(`I'm here in BookPackagesCheck v${CHECKER_VERSION_STRING}`);
+  // consoleLogObject("props", props);
+  // consoleLogObject("props.classes", props.classes);
 
-    let username = props.username;
-    // console.log(`username='${username}'`);
-    let language_code = props.language_code;
-    // console.log(`language_code='${language_code}'`);
-    let bookIDs = props.bookIDs;
-    // console.log(`bookIDs='${bookIDs}'`);
-    let branch = props.branch;
-    // console.log(`branch='${branch}'`);
+  let username = props.username;
+  // console.log(`username='${username}'`);
+  let language_code = props.language_code;
+  // console.log(`language_code='${language_code}'`);
+  let bookIDs = props.bookIDs;
+  // console.log(`bookIDs='${bookIDs}'`);
+  let branch = props.branch;
+  // console.log(`branch='${branch}'`);
 
-     // Clear cached files if we've changed repo
-    //  autoClearCache(bookIDs); // This technique avoids the complications of needing a button
+  // Clear cached files if we've changed repo
+  //  autoClearCache(bookIDs); // This technique avoids the complications of needing a button
 
-    let bookIDList = [];
-    for (let bookID of bookIDs.split(',')) {
-        bookID = bookID.trim();
-        if (!books.isValidBookID(bookID) && bookID!=='OBS')
-            return (<p>Please enter only valid USFM book identifiers separated by commas. ('{bookID}' is not valid.)</p>);
-        bookIDList.push(bookID);
+  let bookIDList = [];
+  let bookIDInvalid;
+  for (let bookID of bookIDs.split(',')) {
+    bookID = bookID.trim();
+    if (!books.isValidBookID(bookID) && bookID!=='OBS') {
+      bookIDInvalid = bookID;
     }
-    // console.log(`bookIDList (${bookIDList.length}) = ${bookIDList.join(', ')}`);
+    bookIDList.push(bookID);
+  }
+  // console.log(`bookIDList (${bookIDList.length}) = ${bookIDList.join(', ')}`);
 
-    let checkingOptions = { // Uncomment any of these to test them
-        // 'extractLength': 25,
-        };
-    // Or this allows the parameters to be specified as a BookPackagesCheck property
-    if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
+  let checkingOptions = { // Uncomment any of these to test them
+    // 'extractLength': 25,
+  };
+  // Or this allows the parameters to be specified as a BookPackagesCheck property
+  if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
 
-    useEffect(() => {
-        // Use an IIFE (Immediately Invoked Function Expression)
-        //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
-        (async () => {
-            // console.log("Started unnamedFunction()");
+  useEffect(() => {
+    // Use an IIFE (Immediately Invoked Function Expression)
+    //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
+    (async () => {
+      // console.log("Started unnamedFunction()");
 
-            // Display our "waiting" message
-            setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {language_code} <b>{bookIDList.join(', ')}</b> book packages…</p>);
+      // Display our "waiting" message
+      setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {language_code} <b>{bookIDList.join(', ')}</b> book packages…</p>);
 
-            const rawCBPsResults = await checkBookPackages(username, language_code, bookIDList, setResultValue, checkingOptions);
-            // console.log("checkBookPackage() returned", typeof rawCBPsResults); //, JSON.stringify(rawCBPsResults));
+      const rawCBPsResults = await checkBookPackages(username, language_code, bookIDList, setResultValue, checkingOptions);
+      // console.log("checkBookPackage() returned", typeof rawCBPsResults); //, JSON.stringify(rawCBPsResults));
 
-            // Add some extra fields to our rawCBPsResults object in case we need this information again later
-            rawCBPsResults.checkType = 'BookPackages';
-            rawCBPsResults.username = username;
-            rawCBPsResults.language_code = language_code;
-            rawCBPsResults.bookIDs = bookIDs;
-            rawCBPsResults.bookIDList = bookIDList;
-            rawCBPsResults.checkedOptions = checkingOptions;
+      // Add some extra fields to our rawCBPsResults object in case we need this information again later
+      rawCBPsResults.checkType = 'BookPackages';
+      rawCBPsResults.username = username;
+      rawCBPsResults.language_code = language_code;
+      rawCBPsResults.bookIDs = bookIDs;
+      rawCBPsResults.bookIDList = bookIDList;
+      rawCBPsResults.checkedOptions = checkingOptions;
 
-            console.log("Here with CBPs rawCBPsResults", typeof rawCBPsResults);
-            // Now do our final handling of the result -- we have some options available
-            let processOptions = { // Uncomment any of these to test them
-                // 'maximumSimilarMessages': 3, // default is 2
-                // 'errorPriorityLevel': 800, // default is 700
-                // 'cutoffPriorityLevel': 100, // default is 0
-                // 'sortBy': 'ByPriority', // default is 'AsFound'
-                // 'ignorePriorityNumberList': [123, 202], // default is []
-            };
-            // Or this allows the parameters to be specified as a BookPackagesCheck property
-            if (props.maximumSimilarMessages) processOptions.maximumSimilarMessages = ourParseInt(props.maximumSimilarMessages);
-            if (props.errorPriorityLevel) processOptions.errorPriorityLevel = ourParseInt(props.errorPriorityLevel);
-            if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
-            if (props.sortBy) processOptions.sortBy = props.sortBy;
-            // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
+      console.log("Here with CBPs rawCBPsResults", typeof rawCBPsResults);
+      // Now do our final handling of the result -- we have some options available
+      let processOptions = { // Uncomment any of these to test them
+        // 'maximumSimilarMessages': 3, // default is 2
+        // 'errorPriorityLevel': 800, // default is 700
+        // 'cutoffPriorityLevel': 100, // default is 0
+        // 'sortBy': 'ByPriority', // default is 'AsFound'
+        // 'ignorePriorityNumberList': [123, 202], // default is []
+      };
+      // Or this allows the parameters to be specified as a BookPackagesCheck property
+      if (props.maximumSimilarMessages) processOptions.maximumSimilarMessages = ourParseInt(props.maximumSimilarMessages);
+      if (props.errorPriorityLevel) processOptions.errorPriorityLevel = ourParseInt(props.errorPriorityLevel);
+      if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
+      if (props.sortBy) processOptions.sortBy = props.sortBy;
+      // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
 
-            let displayType = 'ErrorsWarnings'; // default
-            if (props.displayType) displayType = props.displayType;
+      let displayType = 'ErrorsWarnings'; // default
+      if (props.displayType) displayType = props.displayType;
 
-            if (displayType === 'ErrorsWarnings') {
-            const processedResults = processNoticesToErrorsWarnings(rawCBPsResults, processOptions);
-            console.log(`BookPackagesCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
+      if (displayType === 'ErrorsWarnings') {
+        const processedResults = processNoticesToErrorsWarnings(rawCBPsResults, processOptions);
+        console.log(`BookPackagesCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
-            // console.log("Here now in rendering bit!");
+        // console.log("Here now in rendering bit!");
 
-            function renderSummary() {
-                return (<>
-                <p>Checked <b>{username} {language_code} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
-                <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount===1?'':'s'} from {username} {processedResults.checkedRepoNames.join(', ')}
-                <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>
-                <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} />.</p>
-                {/* <RenderRawResults results={rawCBPsResults} /> */}
-                </>);
-            }
+        function renderSummary() {
+          return (<>
+            <p>Checked <b>{username} {language_code} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
+            <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount===1?'':'s'} from {username} {processedResults.checkedRepoNames.join(', ')}
+              <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>
+            <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} />.</p>
+            {/* <RenderRawResults results={rawCBPsResults} /> */}
+          </>);
+        }
 
-            if (processedResults.errorList.length || processedResults.warningList.length)
-                setResultValue(<>
-                    <p>{renderSummary()}
-                        {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</p>
-                    <RenderSuccessesErrorsWarnings results={processedResults} />
-                </>);
-            else // no errors or warnings
-                setResultValue(<>
-                    <p>{renderSummary()}
-                    {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</p>
-                    <RenderSuccessesErrorsWarnings results={processedResults} />
-                </>);
-            } else if (displayType === 'SevereMediumLow') {
-                const processedResults = processNoticesToSevereMediumLow(rawCBPsResults, processOptions);
+        if (processedResults.errorList.length || processedResults.warningList.length)
+          setResultValue(<>
+            <p>{renderSummary()}
+              {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</p>
+            <RenderSuccessesErrorsWarnings results={processedResults} />
+          </>);
+        else // no errors or warnings
+          setResultValue(<>
+            <p>{renderSummary()}
+              {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</p>
+            <RenderSuccessesErrorsWarnings results={processedResults} />
+          </>);
+      } else if (displayType === 'SevereMediumLow') {
+        const processedResults = processNoticesToSevereMediumLow(rawCBPsResults, processOptions);
 //                 console.log(`FileCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
 //   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()}`, `numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()}`, `numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
-                if (processedResults.severeList.length || processedResults.mediumList.length || processedResults.lowList.length)
-                    setResultValue(<>
-                        <p>Checked <b>{username} {language_code} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
-                        {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</p>
-                        <RenderSuccessesSevereMediumLow results={processedResults} />
-                    </>);
-                else // no severe, medium, or low notices
-                    setResultValue(<>
-                        <p>Checked <b>{username} {language_code} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
-                        {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</p>
-                        <RenderSuccessesSevereMediumLow results={processedResults} />
-                    </>);
-            } else if (displayType === 'SingleList') {
-                const processedResults = processNoticesToSingleList(rawCBPsResults, processOptions);
-                console.log(`FileCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
+        if (processedResults.severeList.length || processedResults.mediumList.length || processedResults.lowList.length)
+          setResultValue(<>
+            <p>Checked <b>{username} {language_code} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
+              {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</p>
+            <RenderSuccessesSevereMediumLow results={processedResults} />
+          </>);
+        else // no severe, medium, or low notices
+          setResultValue(<>
+            <p>Checked <b>{username} {language_code} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
+              {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</p>
+            <RenderSuccessesSevereMediumLow results={processedResults} />
+          </>);
+      } else if (displayType === 'SingleList') {
+        const processedResults = processNoticesToSingleList(rawCBPsResults, processOptions);
+        console.log(`FileCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()}`, `numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()}`, `numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
-                if (processedResults.warningList.length)
-                    setResultValue(<>
-                        <p>Checked <b>{username} {language_code} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
-                        {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</p>
-                        <RenderSuccessesWarningsGradient results={processedResults} />
-                    </>);
-                else // no warnings
-                    setResultValue(<>
-                        <p>Checked <b>{username} {language_code} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
-                        {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</p>
-                        <RenderSuccessesWarningsGradient results={processedResults} />
-                    </>);
-            } else setResultValue(<b style={{ color: 'red' }}>Invalid displayType='{displayType}'</b>)
+        if (processedResults.warningList.length)
+          setResultValue(<>
+            <p>Checked <b>{username} {language_code} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
+              {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</p>
+            <RenderSuccessesWarningsGradient results={processedResults} />
+          </>);
+        else // no warnings
+          setResultValue(<>
+            <p>Checked <b>{username} {language_code} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
+              {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</p>
+            <RenderSuccessesWarningsGradient results={processedResults} />
+          </>);
+      } else setResultValue(<b style={{ color: 'red' }}>Invalid displayType='{displayType}'</b>)
 
-            // console.log("Finished rendering bit.");
-        })(); // end of async part in unnamedFunction
+      // console.log("Finished rendering bit.");
+    })(); // end of async part in unnamedFunction
     // Doesn't work if we add this to next line: bookIDList,bookIDs,username,branch,checkingOptions,language_code,props
-    }, []); // end of useEffect part
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(bookIDList), bookIDs, branch, JSON.stringify(checkingOptions), language_code, JSON.stringify(props), username]); // end of useEffect part
 
-    // {/* <div className={classes.root}> */}
-    return (
-        <div className="Fred">
-        {result}
-        </div>
-    );
+  if (bookIDInvalid) {
+    return (<p>Please enter only valid USFM book identifiers separated by commas. ('{bookIDInvalid}' is not valid.)</p>);
+  }
+
+  // {/* <div className={classes.root}> */}
+  return (
+    <div className="Fred">
+      {result}
+    </div>
+  );
 }
 
 // BookPackagesCheck.propTypes = {
@@ -172,10 +179,10 @@ function BookPackagesCheck(/*username, language_code, bookIDs,*/ props) {
 //   props: PropTypes.object,
 // };
 
-const styles = theme => ({
-  root: {
-  },
-});
+// const styles = theme => ({
+//   root: {
+//   },
+// });
 
-export default withStyles(styles)(BookPackagesCheck);
-//export default BookPackagesCheck;
+//export default withStyles(styles)(BookPackagesCheck);
+export default BookPackagesCheck;

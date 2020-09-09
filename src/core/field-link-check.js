@@ -2,9 +2,9 @@ import { checkTextField } from './field-text-check'
 import { cachedGetURL } from './getApi';
 
 
-const LINK_VALIDATOR_VERSION = '0.3.2';
+export const LINK_VALIDATOR_VERSION = '0.3.2';
 
-const DEFAULT_EXTRACT_LENGTH = 10;
+// const DEFAULT_EXTRACT_LENGTH = 10;
 
 
 async function startLiveLinksCheck(linksList, existingNoticeList, callbackFunction) {
