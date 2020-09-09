@@ -4,7 +4,7 @@ import { checkBookPackage } from '../../core';
 // import { getFile } from '../../core/getApi';
 // import { consoleLogObject } from '../../core/utilities';
 
-const CHECKER_VERSION_STRING = '0.2.1';
+export const CHECKER_VERSION_STRING = '0.2.1';
 
 
 async function checkBookPackages(username, language_code, bookIDList, setResultValue, checkingOptions) {
@@ -14,10 +14,10 @@ async function checkBookPackages(username, language_code, bookIDList, setResultV
 
     const checkBookPackagesResult = { successList: [], noticeList: [] };
 
-    function addSuccessMessage(successString) {
-        // console.log(`checkBookPackages success: ${successString}`);
-        checkBookPackagesResult.successList.push(successString);
-    }
+    // function addSuccessMessage(successString) {
+    //     // console.log(`checkBookPackages success: ${successString}`);
+    //     checkBookPackagesResult.successList.push(successString);
+    // }
 
     function addNotice10({priority,message, bookID,C,V, lineNumber, characterIndex, extract, location, extra}) {
         // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
@@ -55,6 +55,7 @@ async function checkBookPackages(username, language_code, bookIDList, setResultV
 
         // const generalLocation = ` ${language_code} ${bookID} book packages from ${username}`;
         if (bookID !== 'OBS') {
+          // eslint-disable-next-line no-unused-vars
             let bookNumberAndName; //, whichTestament;
             try {
                 bookNumberAndName = books.usfmNumberName(bookID);

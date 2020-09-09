@@ -7,7 +7,7 @@ import checkYAMLText from './yaml-text-check';
 import checkManifestText from './manifest-text-check';
 import checkTN_TSVText from './tn-table-text-check';
 
-import {getFilelistFromZip, getFile, getFileCached, clearCaches, fetchRepositoryZipFile} from './getApi';
+import {getFilelistFromZip, getFile, getFileCached, fetchRepositoryZipFile} from './getApi';
 
 
 /*

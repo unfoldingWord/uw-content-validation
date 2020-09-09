@@ -1,11 +1,10 @@
-import * as books from '../core/books/books';
 import { getFile } from '../core/getApi';
 // import { consoleLogObject } from '../core/utilities';
 
 
-const TA_REFERENCE_VALIDATOR_VERSION = '0.2.1';
+export const TA_REFERENCE_VALIDATOR_VERSION = '0.2.1';
 
-const DEFAULT_EXTRACT_LENGTH = 10;
+// const DEFAULT_EXTRACT_LENGTH = 10;
 
 
 async function checkTAReference(fieldName, fieldText, givenLocation, optionalCheckingOptions) {

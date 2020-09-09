@@ -4,10 +4,9 @@ import { ourParseInt } from './utilities';
 // import { consoleLogObject } from '../core/utilities';
 
 
-const TN_LINKS_VALIDATOR_VERSION = '0.2.1';
+export const TN_LINKS_VALIDATOR_VERSION = '0.2.1';
 
-const DEFAULT_EXTRACT_LENGTH = 10;
-
+// const DEFAULT_EXTRACT_LENGTH = 10;
 
 async function checkTNLinks(bookID, fieldName, fieldText, givenLocation, optionalCheckingOptions) {
     /* This is for the case of the OccurrenceNote field containing markdown links
@@ -100,6 +99,7 @@ async function checkTNLinks(bookID, fieldName, fieldText, givenLocation, optiona
     let resultArray;
     // console.log("checkTNLinks: Search for TA links")
     const taRegex = new RegExp('\\[\\[rc://([^ /]+?)/ta/man/([^ /]+?)/([^ \\]]+?)\\]\\]', 'g');
+    // eslint-disable-next-line no-cond-assign
     while (resultArray = taRegex.exec(fieldText)) {
         // console.log(`  resultArray=${JSON.stringify(resultArray)}`);
         console.assert(resultArray.length === 4, `Expected 4 fields (not ${resultArray.length})`)
@@ -128,6 +128,7 @@ async function checkTNLinks(bookID, fieldName, fieldText, givenLocation, optiona
     // Check TW links like [[rc://en/tw/dict/bible/other/death]]
     // console.log("checkTNLinks: Search for TW links")
     const twRegex = new RegExp('\\[\\[rc://([^ /]+?)/tw/dict/bible/([^ /]+?)/([^ \\]]+?)\\]\\]', 'g');
+    // eslint-disable-next-line no-cond-assign
     while (resultArray = twRegex.exec(fieldText)) {
         // console.log(`  resultArray=${JSON.stringify(resultArray)}`);
         console.assert(resultArray.length === 4, `Expected 4 fields (not ${resultArray.length})`)
@@ -164,6 +165,7 @@ async function checkTNLinks(bookID, fieldName, fieldText, givenLocation, optiona
 
     // console.log("checkTNLinks: Search for Bible links")
     const bibleRegex = new RegExp('\\[(\\w+?) (\\d{1,3}):(\\d{1,3})\\]\\(\\.\\./(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');
+    // eslint-disable-next-line no-cond-assign
     while (resultArray = bibleRegex.exec(fieldText)) {
         // console.log(`  resultArray=${JSON.stringify(resultArray)}`);
         console.assert(resultArray.length === 6, `Expected 6 fields (not ${resultArray.length})`)
@@ -175,6 +177,7 @@ async function checkTNLinks(bookID, fieldName, fieldText, givenLocation, optiona
             console.log(`TN Link Check couldn't convert chapter '${resultArray[4]}': ${tnCIerror}`);
             chapterInt = 1;
         }
+        // eslint-disable-next-line no-unused-vars
         let numVersesThisChapter;
         if (chapterInt < 1 || chapterInt > numChaptersThisBook)
             addNotice6({priority:843, message:"Invalid chapter number", extract:resultArray[4], location:`${ourLocation}`});

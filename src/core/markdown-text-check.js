@@ -1,8 +1,7 @@
-import { isWhitespace, countOccurrences } from './text-handling-functions'
 import checkTextField from './field-text-check';
 
 
-const MARKDOWN_VALIDATOR_VERSION = '0.3.1';
+export const MARKDOWN_VALIDATOR_VERSION = '0.3.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -29,8 +28,8 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
     }
     // else
         // console.log("Using supplied extractLength=" + extractLength, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
-    const halfLength = Math.floor(extractLength / 2); // rounded down
-    const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
+    // const halfLength = Math.floor(extractLength / 2); // rounded down
+    // const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
     // console.log("Using halfLength=" + halfLength, `halfLengthPlus=${halfLengthPlus}`);
 
     const result = { successList: [], noticeList: [] };
@@ -129,7 +128,7 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
 
     let headerLevel = 0;
     let lastNumLeadingSpaces = 0;
-    let lastLineContents;
+    // let lastLineContents;
     for (let n = 1; n <= lines.length; n++) {
 
         const line = lines[n - 1];
@@ -154,7 +153,7 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
             numLeadingSpaces = 0;
         }
 
-        lastLineContents = line;
+        // lastLineContents = line;
         lastNumLeadingSpaces = numLeadingSpaces;
     }
 

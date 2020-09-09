@@ -3,7 +3,7 @@ import yaml from 'yaml';
 import checkTextField from './field-text-check';
 
 
-const YAML_VALIDATOR_VERSION = '0.1.1';
+export const YAML_VALIDATOR_VERSION = '0.1.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -30,8 +30,8 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
     }
     // else
         // console.log(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
-    const halfLength = Math.floor(extractLength / 2); // rounded down
-    const halfLengthPlus = Math.floor((extractLength+1) / 2); // rounded up
+    // const halfLength = Math.floor(extractLength / 2); // rounded down
+    // const halfLengthPlus = Math.floor((extractLength+1) / 2); // rounded up
     // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     const cytResult = { successList: [], noticeList: [] };
@@ -103,7 +103,7 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
         // console.log(`After removing leading spaces have '${thisText}'`);
 
         // Remove leading hyphens
-        thisText = thisText.replace(/^\-/g,'')
+        thisText = thisText.replace(/^-/g,'')
         // console.log(`After removing hyphens have '${thisText}'`);
 
         // Remove leading spaces again now
@@ -132,8 +132,8 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
     // Add the parsed YAML to our result
     cytResult.formData = formData;
 
-    let lastNumLeadingSpaces = 0;
-    let lastLineContents;
+    // let lastNumLeadingSpaces = 0;
+    // let lastLineContents;
     for (let n= 1; n <= lines.length; n++) {
 
         const line = lines[n - 1];
@@ -154,7 +154,7 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
         // lastNumLeadingSpaces = numLeadingSpaces;
     }
 
-    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'}${ourLocation}.`);
+    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length===1?'':'s'}${ourLocation}.`);
     if (cytResult.noticeList)
         addSuccessMessage(`checkYAMLText v${YAML_VALIDATOR_VERSION} finished with ${cytResult.noticeList.length?cytResult.noticeList.length.toLocaleString():"zero"} notice${cytResult.noticeList.length === 1 ? '' : 's'}`);
     else
