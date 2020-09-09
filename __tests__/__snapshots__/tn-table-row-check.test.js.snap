@@ -1,3 +1,252 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`checkTN_TSVDataRow() should succeed 1`] = `undefined`;
+exports[`checkTN_TSVDataRow() should find bad ellipse 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": undefined,
+      "extract": undefined,
+      "lineNumber": undefined,
+      "location": " that was supplied",
+      "message": "Missing OrigQuote field",
+      "priority": 276,
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": 11,
+      "extract": "…lipse...",
+      "lineNumber": undefined,
+      "location": " in 'GLQuote' that was supplied",
+      "message": "Unexpected doubled . characters",
+      "priority": 177,
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() should find invalid Book ID, chapter number, ID, SupportReference, quotes, OccurrenceNote 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": undefined,
+      "extract": undefined,
+      "lineNumber": undefined,
+      "location": " (expected 'GEN') that was supplied",
+      "message": "Wrong 'GIN' book identifier",
+      "priority": 978,
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": undefined,
+      "extract": "200",
+      "lineNumber": undefined,
+      "location": " that was supplied",
+      "message": "Invalid large chapter number",
+      "priority": 823,
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": undefined,
+      "extract": undefined,
+      "lineNumber": undefined,
+      "location": " '9' that was supplied",
+      "message": "Unable to check verse number",
+      "priority": 812,
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": undefined,
+      "extract": undefined,
+      "lineNumber": undefined,
+      "location": " (not 5) that was supplied",
+      "message": "ID should be exactly 4 characters",
+      "priority": 778,
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": undefined,
+      "extract": "Laugh",
+      "lineNumber": undefined,
+      "location": " in SupportReference that was supplied translate/Laugh/01.md",
+      "message": "Unable to find SupportReference TA link",
+      "priority": 889,
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": undefined,
+      "extract": undefined,
+      "lineNumber": undefined,
+      "location": " that was supplied",
+      "message": "Missing OrigQuote field",
+      "priority": 276,
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": undefined,
+      "extract": undefined,
+      "lineNumber": undefined,
+      "location": " that was supplied",
+      "message": "Invalid '17' occurrence field",
+      "priority": 792,
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": 11,
+      "extract": "…lipse...",
+      "lineNumber": undefined,
+      "location": " in 'GLQuote' that was supplied",
+      "message": "Unexpected doubled . characters",
+      "priority": 177,
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": 0,
+      "extract": "<br>Boo ho…",
+      "lineNumber": undefined,
+      "location": " in 'line 1' in OccurrenceNote that was supplied",
+      "message": "Unexpected leading break",
+      "priority": 107,
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": 11,
+      "extract": "…o hoo,,<br…",
+      "lineNumber": undefined,
+      "location": " in 'line 1' in OccurrenceNote that was supplied",
+      "message": "Unexpected doubled , characters",
+      "priority": 177,
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": 30,
+      "extract": "… shoe !",
+      "lineNumber": undefined,
+      "location": " in 'line 1' in OccurrenceNote that was supplied",
+      "message": "Unexpected ! character after space",
+      "priority": 191,
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() should find invalid SupportReference and missing quotes 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": undefined,
+      "extract": "Laugh",
+      "lineNumber": undefined,
+      "location": " in SupportReference that was supplied translate/Laugh/01.md",
+      "message": "Unable to find SupportReference TA link",
+      "priority": 889,
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": undefined,
+      "extract": undefined,
+      "lineNumber": undefined,
+      "location": " that was supplied",
+      "message": "Missing OrigQuote field",
+      "priority": 276,
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": undefined,
+      "extract": undefined,
+      "lineNumber": undefined,
+      "location": " that was supplied",
+      "message": "Missing GLQuote field",
+      "priority": 275,
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() should find missing Original Quote 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": undefined,
+      "extract": undefined,
+      "lineNumber": undefined,
+      "location": " that was supplied",
+      "message": "Missing OrigQuote field",
+      "priority": 276,
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() should find not TSV 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": undefined,
+      "extract": "Found 1 field",
+      "lineNumber": undefined,
+      "location": " that was supplied",
+      "message": "Found wrong number of TSV fields (expected 9)",
+      "priority": 861,
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() should find wrong row count 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": undefined,
+      "extract": "Found 8 fields",
+      "lineNumber": undefined,
+      "location": " that was supplied",
+      "message": "Found wrong number of TSV fields (expected 9)",
+      "priority": 861,
+    },
+  ],
+}
+`;

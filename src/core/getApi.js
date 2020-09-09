@@ -52,7 +52,7 @@ let cachedUnzippedFiles = {};
  * @return {Promise<*>}
  */
 export async function getFileCached({ username, repository, path, branch }) {
-  const filePath = Path.join(repository, path, branch);
+  const filePath = Path.join(username, repository, path, branch);
   // console.log(`getFileCached(${username}, ${repository}, ${path}, ${branch})…`);
   if (cachedUnzippedFiles[filePath]) {
     // console.log(`in cache - ${filePath}`);

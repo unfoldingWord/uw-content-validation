@@ -1,0 +1,1 @@
+When phrases are used with nouns, what are phrases that inform or remind and how can I translate them?

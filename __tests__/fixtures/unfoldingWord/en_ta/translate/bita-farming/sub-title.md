@@ -1,0 +1,1 @@
+What are some examples in the Bible of images taken from farming?
