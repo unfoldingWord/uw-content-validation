@@ -1,15 +1,6 @@
-## TN TSV Table Row Check Sandbox
+/* eslint-env jest */
 
-This function checks one TranslationNotes tab-separated line for typical formatting errors.
-
-It returns a list of success messages and a list of notice components. (There is always a priority number in the range 0..999 and the main message string, as well as other details to help locate the error as available.)
-
-These raw notice components can then be filtered and/or sorted as required by the calling program, and then divided into a list of errors and a list of warnings or whatever as desired.
-
-```js
-import React, { useState, useEffect } from 'react';
-import checkTN_TSVDataRow from './tn-table-row-check';
-import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
+import checkTN_TSVDataRow from '../src/core/tn-table-row-check';
 
 // Empty, Header, Nonsense, Good, Bad, Very bad, and Actual line samples
 const lineE = "";
@@ -36,39 +27,19 @@ const lineA7 = "GEN\t1\t8\tss9r\tfigs-merism\t\t0\tevening and morning\tThis ref
 const lineA8 = "GEN\t1\t9\tzu6f\tfigs-activepassive\t\t0\tLet the waters…be gathered\tThis can be translated with an active verb. This is a command. By commanding that the waters gather together, God made them gather together. Alternate translation: “Let the waters…gather” or “Let the waters…come together” (See: [[rc://en/ta/man/translate/figs-activepassive]] and [[rc://en/ta/man/translate/figs-imperative]])";
 const lineA9 = "GEN\t1\t9\tha33\t\t\t0\tIt was so\t“It happened like that” or “That is what happened.” What God commanded happened just as he said it should. This phrase appears throughout the chapter and has the same meaning wherever it appears. See how you translated it in [Genesis 1:7](../01/07.md).";
 
-const data = {
-  // You can choose any of the above lines here
-  //  (to demonstrate differing results)
-  tableLineName : 'lineA9',
-  tableLine : lineA9,
-  bookID : 'GEN', C:'1', V:'2',
-  givenLocation : 'that was supplied',
-}
+// You can choose any of the above lines here
+//  (to demonstrate differing results)
 
-function CheckTNTSVRow(props) {
-  const { bookID, C, V, tableLine, tableLineName, givenLocation } = props.data;
+// const rawResults = checkTN_TSVDataRow(chosenLine, 'GEN','1','2', 'that was supplied');
+// if (!rawResults.successList || !rawResults.successList.length)
+//   rawResults.successList = ["Done TSV table line checks"];
 
-  const [results, setResults] = useState(null);
+describe('checkTN_TSVDataRow()', () => {
 
-  // We need the following construction because checkTN_TSVDataRow is an ASYNC function
-  useEffect(() => {
-    // Use an IIFE (Immediately Invoked Function Expression)
-    //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
-    (async () => {
-      // Display our "waiting" message
-      setResults(<p style={{ color: 'magenta' }}>Waiting for check results for {tableLineName} <b>{bookID}</b>…</p>);
-      const rawResults = await checkTN_TSVDataRow(tableLine, bookID, C, V, givenLocation);
-      setResults(
-        <div>
-          <b>Check</b> {tableLineName}: "{tableLine.substr(0,256)}…"<br/><br/>
-          <RenderRawResults results={rawResults} />
-        </div>
-      );
-    })(); // end of async part in unnamedFunction
-  }, []); // end of useEffect part
+  it('should succeed', async() => {
+    const chosenLine = lineB1;
+    const rawResults = await checkTN_TSVDataRow(chosenLine, 'GEN','1','2', 'that was supplied');
+    expect(rawResults.length).toMatchSnapshot();
+  });
+})
 
-  return results;
-} // end of CheckTNTSVRow function
-
-<CheckTNTSVRow data={data}/>
-```
