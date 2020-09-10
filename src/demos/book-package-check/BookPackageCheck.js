@@ -8,7 +8,7 @@ import { ourParseInt } from '../../core/utilities';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-export const CHECKER_VERSION_STRING = '0.1.3';
+//const CHECKER_VERSION_STRING = '0.1.3';
 
 
 function BookPackageCheck(/*username, language_code, bookID,*/ props) {

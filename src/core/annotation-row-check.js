@@ -6,8 +6,6 @@ import checkTNLinks from './tn-links-check';
 import checkOriginalLanguageQuote from './quote-check';
 
 
-export const TABLE_LINE_VALIDATOR_VERSION = '0.1.0';
-
 const NUM_EXPECTED_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tAnnotation';
 
