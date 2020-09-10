@@ -70,24 +70,24 @@ let sections = [
 		}
 	},
 	{
-		// The difficulty with displaying core functions this way
+		// The difficulty with displaying the various functions this way
 		//	is that they all appear and run on a SINGLE web-page.
 		name: 'Sample Notice Processing Functions',
 		content: 'src/core/README.md',
 		sections: [
 			{
 				name: 'Process notices -> Errors/Warnings',
-				content: 'src/core/notice-processing1.md',
+				content: 'src/demos/notice-processing1.md',
 				// description: ''
 			},
 			{
 				name: 'Process notices -> Severe/Medium/Low',
-				content: 'src/core/notice-processing2.md',
+				content: 'src/demos/notice-processing2.md',
 				// description: ''
 			},
 			{
 				name: 'Process notices -> colour gradient',
-				content: 'src/core/notice-processing3.md',
+				content: 'src/demos/notice-processing3.md',
 				// description: ''
 			}
 		]

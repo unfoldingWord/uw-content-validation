@@ -10,5 +10,4 @@ export * from './tn-table-text-check';
 export * from './annotation-row-check';
 export * from './annotation-table-check';
 export * from './usfm-text-check';
-export * from './notice-processing-functions';
 export * from './book-package-check';
