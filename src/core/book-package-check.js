@@ -414,8 +414,6 @@ export async function checkBookPackage(username, language_code, bookID, setResul
 
     Note that bookID here can also be the 'OBS' pseudo bookID.
     */
-    //     console.log(`I'm here in checkBookPackage v${CHECKER_VERSION_STRING}
-    //   with ${username}, ${language_code}, ${bookID}, ${JSON.stringify(checkingOptions)}`);
     const startTime = new Date();
 
     let checkBookPackageResult = { successList: [], noticeList: [] };

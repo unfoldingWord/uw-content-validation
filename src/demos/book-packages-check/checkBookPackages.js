@@ -4,7 +4,7 @@ import { checkBookPackage } from '../../core';
 // import { getFile } from '../../core/getApi';
 // import { consoleLogObject } from '../../core/utilities';
 
-export const CHECKER_VERSION_STRING = '0.2.1';
+//const CHECKER_VERSION_STRING = '0.2.1';
 
 
 async function checkBookPackages(username, language_code, bookIDList, setResultValue, checkingOptions) {

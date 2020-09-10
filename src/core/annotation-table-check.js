@@ -2,7 +2,7 @@ import * as books from './books/books';
 import checkAnnotationTSVDataRow from './annotation-row-check';
 
 
-export const TABLE_TEXT_VALIDATOR_VERSION = '0.2.1';
+const TABLE_TEXT_VALIDATOR_VERSION = '0.2.1';
 
 const NUM_EXPECTED_TN_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tAnnotation';

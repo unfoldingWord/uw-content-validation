@@ -2,7 +2,7 @@ import * as books from './books/books';
 import checkTN_TSVDataRow from './tn-table-row-check';
 
 
-export const TABLE_TEXT_VALIDATOR_VERSION = '0.2.1';
+const TABLE_TEXT_VALIDATOR_VERSION = '0.2.1';
 
 const NUM_EXPECTED_TN_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';

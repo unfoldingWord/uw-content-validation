@@ -7,7 +7,7 @@ import { ourParseInt } from '../../core/utilities';
 // import { consoleLogObject, displayPropertyNames } from '../../core/utilities';
 
 
-export const CHECKER_VERSION_STRING = '0.1.2';
+//const CHECKER_VERSION_STRING = '0.1.2';
 
 
 function RepoCheck(/*username, languageCode,*/ props) {
