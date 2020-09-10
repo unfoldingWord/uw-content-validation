@@ -1,5 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`checkTN_TSVDataRow() should fail to find OrigLang Quote 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": undefined,
+      "extract": "וְ⁠חֹ֖שֶךְ",
+      "lineNumber": undefined,
+      "location": " in OrigQuote that was supplied",
+      "message": "Unable to find original language quote in verse text",
+      "priority": 722,
+    },
+  ],
+}
+`;
+
 exports[`checkTN_TSVDataRow() should find bad ellipse 1`] = `
 Object {
   "noticeList": Array [
@@ -75,6 +93,17 @@ Object {
       "location": " (not 5) that was supplied",
       "message": "ID should be exactly 4 characters",
       "priority": 778,
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": undefined,
+      "extract": "Laugh",
+      "lineNumber": undefined,
+      "location": " in SupportReference that was supplied translate/Laugh/01.md: Could not find __tests__/fixtures/unfoldingWord/en_ta/translate/Laugh/01.md",
+      "message": "Error loading SupportReference TA link",
+      "priority": 888,
     },
     Object {
       "C": "1",
@@ -167,6 +196,17 @@ Object {
       "characterIndex": undefined,
       "extract": "Laugh",
       "lineNumber": undefined,
+      "location": " in SupportReference that was supplied translate/Laugh/01.md: Could not find __tests__/fixtures/unfoldingWord/en_ta/translate/Laugh/01.md",
+      "message": "Error loading SupportReference TA link",
+      "priority": 888,
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": undefined,
+      "extract": "Laugh",
+      "lineNumber": undefined,
       "location": " in SupportReference that was supplied translate/Laugh/01.md",
       "message": "Unable to find SupportReference TA link",
       "priority": 889,
@@ -192,6 +232,35 @@ Object {
       "location": " that was supplied",
       "message": "Missing GLQuote field",
       "priority": 275,
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() should find mismatched bookId 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": undefined,
+      "extract": undefined,
+      "lineNumber": undefined,
+      "location": " (expected 'GEN') that was supplied",
+      "message": "Wrong 'EXO' book identifier",
+      "priority": 978,
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": undefined,
+      "extract": undefined,
+      "lineNumber": undefined,
+      "location": " that was supplied",
+      "message": "Missing OrigQuote field",
+      "priority": 276,
     },
   ],
 }
