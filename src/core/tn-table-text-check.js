@@ -78,7 +78,7 @@ async function checkTN_TSVText(bookID, tableText, givenLocation, optionalCheckin
     // console.log(`  '${location}' has ${lines.length.toLocaleString()} total lines (expecting ${NUM_EXPECTED_TN_FIELDS} fields in each line)`);
 
     let lastB = '', lastC = '', lastV = '';
-    let fieldID_list = [];
+    let rowID_list = [];
     let numVersesThisChapter = 0;
     for (let n= 0; n < lines.length; n++) {
         // console.log(`checkTN_TSVText checking line ${n}: ${JSON.stringify(lines[n])}`);
@@ -93,10 +93,10 @@ async function checkTN_TSVText(bookID, tableText, givenLocation, optionalCheckin
             let fields = lines[n].split('\t');
             if (fields.length === NUM_EXPECTED_TN_FIELDS) {
                 // eslint-disable-next-line no-unused-vars
-                const [B, C, V, fieldID, _support_reference, _orig_quote, _occurrence, _GL_quote, _occurrenceNote] = fields;
-                const withString = ` with ID '${fieldID}'${ourLocation}`;
+                const [B, C, V, rowID, _support_reference, _orig_quote, _occurrence, _GL_quote, _occurrenceNote] = fields;
+                const withString = ` with ID '${rowID}'${ourLocation}`;
                 // let CV_withString = ` ${C}:${V}${withString}`;
-                // let atString = ` at ${B} ${C}:${V} (${fieldID})${inString}`;
+                // let atString = ` at ${B} ${C}:${V} (${rowID})${inString}`;
 
                 // Use the row check to do most basic checks
                 const firstResult = await checkTN_TSVDataRow(lines[n], bookID,C,V, withString, optionalCheckingOptions);
@@ -163,15 +163,15 @@ async function checkTN_TSVText(bookID, tableText, givenLocation, optionalCheckin
                 else
                     addNoticeCV8({priority:790, C,V, message:"Missing verse number", lineNumber:n+1, location:` after ${C}:${lastV}${withString}`});
 
-                if (fieldID) {
-                    if (fieldID_list.indexOf(fieldID) >= 0)
-                        addNoticeCV8({priority:729, C,V, message:`Duplicate '${fieldID}' ID`, lineNumber:n+1, location:withString});
+                if (rowID) {
+                    if (rowID_list.indexOf(rowID) >= 0)
+                        addNoticeCV8({priority:729, C,V, message:`Duplicate '${rowID}' ID`, lineNumber:n+1, location:withString});
                 } else
                     addNoticeCV8({priority:730, C,V, message:"Missing ID", lineNumber:n+1, location:withString});
 
 
                 if (B !== lastB || C !== lastC || V !== lastV) {
-                    fieldID_list = []; // ID's only need to be unique within each verse
+                    rowID_list = []; // ID's only need to be unique within each verse
                     lastB = B; lastC = C; lastV = V;
                 }
 

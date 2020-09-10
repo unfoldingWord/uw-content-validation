@@ -7,6 +7,9 @@ import MaterialTable from 'material-table';
 // import { consoleLogObject, displayPropertyNames } from '../core/utilities';
 
 
+// Note from RJH: I commented out these fields because 1/ they seemed to cause warnings/errors,
+//  2/ I didn't understand what they do anyway.
+// so feel free to uncomment it if it makes the table work better.
 /*
 const tableIcons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -139,9 +142,11 @@ export function RenderRawResults({ results }) {
             { title: VName, field: 'V' }
         ]);
     }
-    if (allPropertiesSet.has('lineNumber')) headerData = headerData.concat([{ title: 'Line', field: 'lineNumber' }]);
-    if (allPropertiesSet.has('filename')) headerData = headerData.concat([{ title: 'Filename', field: 'filename' }]);
+    if (allPropertiesSet.has('rowID')) headerData = headerData.concat([{ title: 'ID', field: 'rowID' }]);
     if (allPropertiesSet.has('repoName')) headerData = headerData.concat([{ title: 'Repo', field: 'repoName' }]);
+    if (allPropertiesSet.has('filename')) headerData = headerData.concat([{ title: 'Filename', field: 'filename' }]);
+    if (allPropertiesSet.has('fieldName')) headerData = headerData.concat([{ title: 'Field', field: 'fieldName' }]);
+    if (allPropertiesSet.has('lineNumber')) headerData = headerData.concat([{ title: 'Line', field: 'lineNumber' }]);
     if (allPropertiesSet.has('characterIndex')) headerData = headerData.concat([{ title: 'CharIndex', field: 'characterIndex' }]);
     if (allPropertiesSet.has('extract')) headerData = headerData.concat([{ title: 'Extract', field: 'extract' }]);
     if (allPropertiesSet.has('location')) headerData = headerData.concat([{ title: 'Location', field: 'location' }]);
