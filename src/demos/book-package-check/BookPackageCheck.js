@@ -55,6 +55,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
 
             // Preload the reference repos
             setResultValue(<p style={{ color: 'magenta' }}>Preloading TA/TQ/TW repos for {username} {languageCode}…</p>);
+            // this call is not needed, but makes sure you don't have stale data that has been cached
             const success = await initBookPackageCheck(username, languageCode, [bookID], branch = 'master');
             if (!success) {
               console.log(`Failed to pre-load all repos`)
