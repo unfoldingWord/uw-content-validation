@@ -4,11 +4,11 @@ import { checkBookPackage } from '../../core';
 // import { getFile } from '../../core/getApi';
 // import { consoleLogObject } from '../../core/utilities';
 
-//const CHECKER_VERSION_STRING = '0.2.1';
+//const VALIDATOR_VERSION_STRING = '0.2.1';
 
 
 async function checkBookPackages(username, language_code, bookIDList, setResultValue, checkingOptions) {
-    //     console.log(`I'm here in checkBookPackages v${CHECKER_VERSION_STRING}
+    //     console.log(`I'm here in checkBookPackages v${VALIDATOR_VERSION_STRING}
     //   with ${username}, ${language_code}, ${bookIDList}, ${JSON.stringify(checkingOptions)}`);
     const startTime = new Date();
 

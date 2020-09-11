@@ -6,7 +6,9 @@ import checkTNLinks from './tn-links-check';
 import checkOriginalLanguageQuote from './quote-check';
 
 
-const NUM_EXPECTED_TSV_FIELDS = 7; // so expects 6 tabs per line
+// const ANNOTATION_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.4.1';
+
+const NUM_EXPECTED_ANNOTATION_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tAnnotation';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
@@ -286,7 +288,7 @@ async function checkAnnotationTSVDataRow(annotationType, line, bookID, C, V, giv
     const haveBibleBookID = numChaptersThisBook !== undefined;
 
     let fields = line.split('\t');
-    if (fields.length === NUM_EXPECTED_TSV_FIELDS) {
+    if (fields.length === NUM_EXPECTED_ANNOTATION_TSV_FIELDS) {
         const [reference, rowID, tags, supportReference, quote, occurrence, annotation] = fields;
         // let withString = ` with '${rowID}'${inString}`;
         // let CV_withString = ` ${C}:${V}${withString}`;
@@ -399,7 +401,7 @@ async function checkAnnotationTSVDataRow(annotationType, line, bookID, C, V, giv
             addNotice6to9({priority:274, message:`Missing ${annotationType} Annotation field`, rowID, location:ourRowLocation});
 
     } else
-        addNotice6to9({priority:861, message:`Found wrong number of TSV fields (expected ${NUM_EXPECTED_TSV_FIELDS})`, extract:`Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, location:ourRowLocation});
+        addNotice6to9({priority:861, message:`Found wrong number of TSV fields (expected ${NUM_EXPECTED_ANNOTATION_TSV_FIELDS})`, extract:`Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, location:ourRowLocation});
 
     // console.log(`  checkAnnotationTSVDataRow returning with ${drResult.noticeList.length.toLocaleString()} notice(s).`);
     // console.log("checkAnnotationTSVDataRow result is", JSON.stringify(drResult));

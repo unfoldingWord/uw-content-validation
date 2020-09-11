@@ -2,7 +2,7 @@ import { getFile } from '../core/getApi';
 // import { consoleLogObject } from '../core/utilities';
 
 
-export const TA_REFERENCE_VALIDATOR_VERSION = '0.2.1';
+// const TA_REFERENCE_VALIDATOR_VERSION_STRING = '0.2.1';
 
 // const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -18,7 +18,7 @@ async function checkTAReference(fieldName, fieldText, givenLocation, optionalChe
     //      optionalCheckingOptions.taRepoLanguageCode
     //      optionalCheckingOptions.taRepoSectionName
 
-    // console.log(`checkTAReference v${TA_REFERENCE_VALIDATOR_VERSION} (${fieldName}, (${fieldText.length}) '${fieldText}', ${givenLocation}, …)`);
+    // console.log(`checkTAReference v${TA_REFERENCE_VALIDATOR_VERSION_STRING} (${fieldName}, (${fieldText.length}) '${fieldText}', ${givenLocation}, …)`);
     console.assert(fieldName !== undefined, "checkTAReference: 'fieldText' parameter should be defined");
     console.assert(typeof fieldName === 'string', `checkTAReference: 'fieldText' parameter should be a string not a '${typeof fieldName}'`);
     console.assert(fieldText !== undefined, "checkTAReference: 'fieldText' parameter should be defined");

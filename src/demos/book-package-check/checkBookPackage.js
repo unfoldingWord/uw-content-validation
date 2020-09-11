@@ -7,7 +7,7 @@
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const CHECKER_VERSION_STRING = '0.3.1';
+// const VALIDATOR_VERSION_STRING = '0.3.1';
 
 
 // let cachedUnzippedFiles = {};
@@ -165,7 +165,7 @@
 // async function checkBookPackageDemo(username, language_code, bookID, setResultValue, checkingOptions) {
 //     // Note that bookID here can also be the 'OBS' pseudo bookID.
 
-//     //     console.log(`I'm here in checkBookPackage v${CHECKER_VERSION_STRING}
+//     //     console.log(`I'm here in checkBookPackage v${VALIDATOR_VERSION_STRING}
 //     //   with ${username}, ${language_code}, ${bookID}, ${JSON.stringify(checkingOptions)}`);
 //     const startTime = new Date();
 

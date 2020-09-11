@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 // import { Paper, Button } from '@material-ui/core';
 // import { RepositoryContext, FileContext } from 'gitea-react-toolkit';
 import { withStyles } from '@material-ui/core/styles';
-// import { getFile } from '../../core/getApi';
 import { getFile, checkFile } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
@@ -12,7 +11,7 @@ import { ourParseInt } from '../../core/utilities';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-export const FILE_CHECK_VERSION_STRING = '0.1.3';
+// const FILE_CHECK_VERSION_STRING = '0.1.3';
 
 
 function FileCheck(props) {

@@ -2,9 +2,9 @@ import * as books from './books/books';
 import checkTN_TSVDataRow from './tn-table-row-check';
 
 
-const TABLE_TEXT_VALIDATOR_VERSION = '0.2.1';
+const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.2.2';
 
-const NUM_EXPECTED_TN_FIELDS = 9; // so expects 8 tabs per line
+const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
@@ -91,7 +91,7 @@ async function checkTN_TSVText(bookID, tableText, givenLocation, optionalCheckin
         else // not the header
         {
             let fields = lines[n].split('\t');
-            if (fields.length === NUM_EXPECTED_TN_FIELDS) {
+            if (fields.length === NUM_EXPECTED_TN_TSV_FIELDS) {
                 // eslint-disable-next-line no-unused-vars
                 const [B, C, V, rowID, _support_reference, _orig_quote, _occurrence, _GL_quote, _occurrenceNote] = fields;
                 const withString = ` with ID '${rowID}'${ourLocation}`;
@@ -180,14 +180,14 @@ async function checkTN_TSVText(bookID, tableText, givenLocation, optionalCheckin
                 //     console.log(`  Line ${n}: Has ${fields.length} field(s) instead of ${NUM_EXPECTED_TN_FIELDS}: ${EXPECTED_TN_HEADING_LINE.replace(/\t/g, ', ')}`);
                 // else
                 if (n !== lines.length - 1) // it's not the last line
-                    addNoticeCV8({priority:988, message:`Wrong number of tabbed fields (expected ${NUM_EXPECTED_TN_FIELDS})`, extract:`Found ${fields.length} field${fields.length===1?'':'s'}`, lineNumber:n+1, location:ourLocation});
+                    addNoticeCV8({priority:988, message:`Wrong number of tabbed fields (expected ${NUM_EXPECTED_TN_TSV_FIELDS})`, extract:`Found ${fields.length} field${fields.length===1?'':'s'}`, lineNumber:n+1, location:ourLocation});
         }
     }
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}.`);
     if (result.noticeList)
-        addSuccessMessage(`checkTN_TSVText v${TABLE_TEXT_VALIDATOR_VERSION} finished with ${result.noticeList.length?result.noticeList.length.toLocaleString():"zero"} notice${result.noticeList.length === 1 ? '' : 's'}`);
+        addSuccessMessage(`checkTN_TSVText v${TN_TABLE_TEXT_VALIDATOR_VERSION_STRING} finished with ${result.noticeList.length?result.noticeList.length.toLocaleString():"zero"} notice${result.noticeList.length === 1 ? '' : 's'}`);
     else
-        addSuccessMessage(`No errors or warnings found by checkTN_TSVText v${TABLE_TEXT_VALIDATOR_VERSION}`)
+        addSuccessMessage(`No errors or warnings found by checkTN_TSVText v${TN_TABLE_TEXT_VALIDATOR_VERSION_STRING}`)
     // console.log(`  checkTN_TSVText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
     // console.log("checkTN_TSVText result is", JSON.stringify(result));
     return result;

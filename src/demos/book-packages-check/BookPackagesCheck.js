@@ -8,14 +8,14 @@ import { ourParseInt } from '../../core/utilities';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-//const CHECKER_VERSION_STRING = '0.0.3';
+//const VALIDATOR_VERSION_STRING = '0.0.3';
 
 
 function BookPackagesCheck(/*username, language_code, bookIDs,*/ props) {
   // Check a single Bible book across many repositories
   const [result, setResultValue] = useState("Waiting-CheckBookPackages");
 
-  // console.log(`I'm here in BookPackagesCheck v${CHECKER_VERSION_STRING}`);
+  // console.log(`I'm here in BookPackagesCheck v${VALIDATOR_VERSION_STRING}`);
   // consoleLogObject("props", props);
   // consoleLogObject("props.classes", props.classes);
 

@@ -1,7 +1,7 @@
 // import { displayPropertyNames, consoleLogObject } from './utilities';
 
 
-export const NOTICE_PROCESSOR_VERSION_STRING = '0.6.1';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.6.1';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages

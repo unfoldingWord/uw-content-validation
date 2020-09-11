@@ -1,7 +1,7 @@
 import checkTextField from './field-text-check';
 
 
-export const PLAIN_TEXT_VALIDATOR_VERSION = '0.1.1';
+const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.1.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -127,9 +127,9 @@ function checkPlainText(textName, plainText, givenLocation, optionalCheckingOpti
 
     addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length===1?'':'s'}${ourLocation}.`);
     if (cptResult.noticeList)
-        addSuccessMessage(`checkPlainText v${PLAIN_TEXT_VALIDATOR_VERSION} finished with ${cptResult.noticeList.length?cptResult.noticeList.length.toLocaleString():"zero"} notice${cptResult.noticeList.length === 1 ? '' : 's'}`);
+        addSuccessMessage(`checkPlainText v${PLAIN_TEXT_VALIDATOR_VERSION_STRING} finished with ${cptResult.noticeList.length?cptResult.noticeList.length.toLocaleString():"zero"} notice${cptResult.noticeList.length === 1 ? '' : 's'}`);
     else
-        addSuccessMessage(`No errors or warnings found by checkPlainText v${PLAIN_TEXT_VALIDATOR_VERSION}`)
+        addSuccessMessage(`No errors or warnings found by checkPlainText v${PLAIN_TEXT_VALIDATOR_VERSION_STRING}`)
     // console.log(`  checkPlainText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
     // console.log("checkPlainText result is", JSON.stringify(result));
     return cptResult;

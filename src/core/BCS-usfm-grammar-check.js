@@ -2,7 +2,7 @@ import grammar from 'usfm-grammar';
 import * as books from '../core/books/books';
 
 
-export const USFM_GRAMMAR_VALIDATOR_VERSION = '0.3.1';
+// const USFM_GRAMMAR_VALIDATOR_VERSION_STRING = '0.3.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 

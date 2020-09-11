@@ -3,7 +3,7 @@ import { getFile } from '../core/getApi';
 // import { consoleLogObject } from '../core/utilities';
 
 
-export const QUOTE_VALIDATOR_VERSION = '0.3.1';
+// const QUOTE_VALIDATOR_VERSION_STRING = '0.3.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -20,7 +20,7 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, gi
     //      (UHB or UGNT will be used for the repo name)
     //      optionalCheckingOptions.originalLanguageRepoBranch (or tag)
 
-    // console.log(`checkOriginalLanguageQuote v${QUOTE_VALIDATOR_VERSION} (${fieldName}, (${fieldText.length}) '${fieldText}', ${bookID} ${C}:${V} ${givenLocation}, …)`);
+    // console.log(`checkOriginalLanguageQuote v${QUOTE_VALIDATOR_VERSION_STRING} (${fieldName}, (${fieldText.length}) '${fieldText}', ${bookID} ${C}:${V} ${givenLocation}, …)`);
     console.assert(fieldName !== undefined, "checkOriginalLanguageQuote: 'fieldText' parameter should be defined");
     console.assert(typeof fieldName === 'string', `checkOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof fieldName}'`);
     console.assert(fieldText !== undefined, "checkOriginalLanguageQuote: 'fieldText' parameter should be defined");

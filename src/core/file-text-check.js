@@ -1,6 +1,6 @@
 import { isWhitespace, countOccurrences } from './text-handling-functions'
 
-//const CHECKER_VERSION_STRING = '0.1.1';
+//const VALIDATOR_VERSION_STRING = '0.1.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 

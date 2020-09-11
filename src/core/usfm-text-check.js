@@ -5,10 +5,9 @@ import checkFileText from './file-text-check';
 import { runUsfmJsCheck } from './usfm-js-check';
 import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
 import { ourParseInt } from './utilities';
-// import { consoleLogObject } from './utilities';
 
 
-export const USFM_VALIDATOR_VERSION = '0.6.1';
+// const USFM_VALIDATOR_VERSION_STRING = '0.6.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 

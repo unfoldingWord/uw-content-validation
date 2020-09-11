@@ -7,7 +7,7 @@ import { ourParseInt } from '../../core/utilities';
 // import { consoleLogObject, displayPropertyNames } from '../../core/utilities';
 
 
-//const CHECKER_VERSION_STRING = '0.1.2';
+//const VALIDATOR_VERSION_STRING = '0.1.2';
 
 
 function RepoCheck(/*username, languageCode,*/ props) {
@@ -18,7 +18,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
         and then checks all the individual files
     */
 
-    // console.log(`I'm here in RepoCheck v${CHECKER_VERSION_STRING}`);
+    // console.log(`I'm here in RepoCheck v${VALIDATOR_VERSION_STRING}`);
     // consoleLogObject("props", props);
     // consoleLogObject("props.classes", props.classes);
 

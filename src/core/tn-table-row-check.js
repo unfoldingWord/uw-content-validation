@@ -6,9 +6,9 @@ import checkTNLinks from './tn-links-check';
 import checkOriginalLanguageQuote from './quote-check';
 
 
-export const TABLE_LINE_VALIDATOR_VERSION = '0.3.3';
+// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.4.1';
 
-const NUM_EXPECTED_TSV_FIELDS = 9; // so expects 8 tabs per line
+const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
@@ -271,7 +271,7 @@ async function checkTN_TSVDataRow(line, bookID, C, V, givenRowLocation, optional
     const haveGoodBookID = numChaptersThisBook !== undefined;
 
     let fields = line.split('\t');
-    if (fields.length === NUM_EXPECTED_TSV_FIELDS) {
+    if (fields.length === NUM_EXPECTED_TN_TSV_FIELDS) {
         const [B, C, V, rowID, supportReference, origQuote, occurrence, GLQuote, occurrenceNote] = fields;
         // let withString = ` with '${rowID}'${inString}`;
         // let CV_withString = ` ${C}:${V}${withString}`;
@@ -395,7 +395,7 @@ async function checkTN_TSVDataRow(line, bookID, C, V, givenRowLocation, optional
             addNotice6to9({priority:274, message:"Missing OccurrenceNote field", rowID, location:ourRowLocation});
 
     } else
-        addNotice6to9({priority:861, message:`Found wrong number of TSV fields (expected ${NUM_EXPECTED_TSV_FIELDS})`, extract:`Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, location:ourRowLocation});
+        addNotice6to9({priority:861, message:`Found wrong number of TSV fields (expected ${NUM_EXPECTED_TN_TSV_FIELDS})`, extract:`Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, location:ourRowLocation});
 
         // console.log(`  checkTN_TSVDataRow returning with ${drResult.noticeList.length.toLocaleString()} notice(s).`);
         // console.log("checkTN_TSVDataRow result is", JSON.stringify(drResult));
