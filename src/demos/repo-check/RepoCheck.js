@@ -41,10 +41,12 @@ function RepoCheck(/*username, languageCode,*/ props) {
 
     const [result, setResultValue] = useState("Waiting-checkRepo");
     useEffect(() => {
+        // console.log("RepoCheck.useEffect() called with ", JSON.stringify(props));
+
         // Use an IIFE (Immediately Invoked Function Expression)
         //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
         (async () => {
-            // console.log("Started unnamedFunction()");
+            // console.log("Started RepoCheck.unnamedFunction()");
 
             // Display our "waiting" message
             setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for <b>{repoName}</b> repo…</p>);
@@ -160,7 +162,8 @@ function RepoCheck(/*username, languageCode,*/ props) {
             }
         })(); // end of async part in unnamedFunction
     // Doesn't work if we add this to next line: languageCode,username,repoName,branch,checkingOptions,props
-    }); // end of useEffect part
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // end of useEffect part
 
     // {/* <div className={classes.root}> */}
     return (

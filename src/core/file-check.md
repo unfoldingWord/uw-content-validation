@@ -8,7 +8,7 @@ These raw notice components can then be filtered and/or sorted as required by th
 
 ```js
 import React, { useState, useEffect } from 'react';
-import { checkFile } from './book-package-check';
+import { checkFileContents } from './book-package-check';
 import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 const sampleUSFM = `\\id GEN EN_ULT en_English_ltr unfoldingWord Literal Text Thu Jul 25 2019 09:33:56 GMT-0400 (EDT) tc
@@ -44,19 +44,19 @@ const data = {
   checkingOptions: {},
 }
 
-function CheckFile(props) {
+function CheckFileContents(props) {
   const { filename, fileContent, givenLocation, checkingOptions } = props.data;
 
   const [results, setResults] = useState(null);
 
-  // We need the following construction because checkFile is an ASYNC function
+  // We need the following construction because checkFileContents is an ASYNC function
   useEffect(() => {
     // Use an IIFE (Immediately Invoked Function Expression)
     //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
     (async () => {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Waiting for {filename} check results…</p>);
-      const rawResults = await checkFile(filename, fileContent, givenLocation, checkingOptions);
+      const rawResults = await checkFileContents(filename, fileContent, givenLocation, checkingOptions);
       setResults(
         <div>
           <b>Checked</b> {filename}: "{fileContent.substr(0,256)}…"<br/><br/>
@@ -67,7 +67,7 @@ function CheckFile(props) {
   }, []); // end of useEffect part
 
   return results;
-} // end of CheckFile function
+} // end of CheckFileContents function
 
-<CheckFile data={data}/>
+<CheckFileContents data={data}/>
 ```

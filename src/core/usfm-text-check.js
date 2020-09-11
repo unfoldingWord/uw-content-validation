@@ -1,7 +1,7 @@
 import * as books from '../core/books/books';
 import { isWhitespace, countOccurrences } from './text-handling-functions'
 import checkTextField from './field-text-check';
-import checkFileText from './file-text-check';
+import checkFileContents from './file-text-check';
 import { runUsfmJsCheck } from './usfm-js-check';
 import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
 import { ourParseInt } from './utilities';
@@ -126,9 +126,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cUSFM addNoticeCV8: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "cUSFM addNoticeCV8: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `cUSFM addNoticeCV8: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
-        if (bookID && bookID.length) noticeObject.bookID = bookID;
-        if (filename && filename.length) noticeObject.filename = filename;
-        result.noticeList.push(noticeObject);
+        result.noticeList.push({ ...noticeObject, bookID, filename });
     }
 
 
@@ -381,7 +379,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
         console.assert(fileText !== undefined, "cUSFM ourBasicFileChecks: 'fileText' parameter should be defined");
         console.assert(typeof fileText === 'string', `cUSFM ourBasicFileChecks: 'fileText' parameter should be a string not a '${typeof fileText}'`);
 
-        const resultObject = checkFileText(filename, fileText, fileLocation, optionalCheckingOptions);
+        const resultObject = checkFileContents(filename, fileText, fileLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field

@@ -188,22 +188,26 @@ export function RenderBCV({ bookID, C, V }) {
     return null;
 }
 
-export function RenderFileDetails({ repoName, filename, lineNumber }) {
+export function RenderFileDetails({ repoName, filename, lineNumber, rowID, fieldName }) {
     /**
     * @description - Displays the repoName and filename/lineNumber details if specified
     * @param {String} repoName - (optional) repo name string
     * @param {String} filename - (optional) filename string
-    * @param {String} lineNumber - (optional) line number integer (1-based)
+    * @param {Number} lineNumber - (optional) line number integer (1-based)
+    * @param {String} rowID - (optional) 4-character ID field
+    * @param {String} fieldName - (optional) name of field
     * @return {String} - rendered HTML for the given reference
     */
     // These are all optional parameters - they may be undefined or blank if irrelevant
-    // console.log(`RenderFileDetails(${repoName}, ${filename}, ${lineNumber})`);
+    // console.log(`RenderFileDetails(${repoName}, ${filename}, ${lineNumber}, ${rowID}, ${fieldName})`);
     if (!repoName && !filename && !lineNumber) return null; // They're all undefined or blank!
     // console.log(`RenderFileDetails2 ${repoName}, ${filename}, ${lineNumber}`);
     let result = '';
     if (repoName && repoName.length) result += ` in ${repoName} repository`;
-    if (filename && filename.length) result += ` in ${filename}`;
+    if (filename && filename.length) result += ` in file ${filename}`;
     if (lineNumber) result += ` on line ${lineNumber.toLocaleString()}`;
+    if (rowID && rowID.length) result += ` with ID ${rowID}`;
+    if (fieldName && fieldName.length) result += ` in ${fieldName} field`;
     return result;
 }
 
@@ -252,7 +256,7 @@ export function RenderProcessedArray({ arrayType, results }) {
                 return <li key={index}>
                     <b style={{ color: arrayType === 'e' ? 'red' : 'orange' }}>{listEntry.message}</b>
                     <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
-                    <RenderFileDetails repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} />
+                    <RenderFileDetails repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName}/>
                     {listEntry.characterIndex > 0 ? " (at character " + (listEntry.characterIndex + 1) + ")" : ""}
                     <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
                     {listEntry.location}
@@ -280,7 +284,7 @@ export function RenderGivenArray({ array, colour }) {
             return <li key={index}>
                 <b style={{ color: colour }}>{listEntry.message}</b>
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
-                <RenderFileDetails repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} />
+                <RenderFileDetails repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName}/>
                 {listEntry.characterIndex !== undefined && listEntry.characterIndex >= 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
                 <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
                 {listEntry.location}
@@ -318,7 +322,7 @@ export function RenderWarningsGradient({ results }) {
             return <li key={index}>
                 <b style={{ color: thisColour }}>{listEntry.message}</b>
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
-                <RenderFileDetails repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} />
+                <RenderFileDetails repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName}/>
                 {listEntry.characterIndex !== undefined && listEntry.characterIndex >= 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
                 <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
                 {listEntry.location}

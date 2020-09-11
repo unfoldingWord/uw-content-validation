@@ -73,7 +73,7 @@ let sections = [
 		// The difficulty with displaying the various functions this way
 		//	is that they all appear and run on a SINGLE web-page.
 		name: 'Sample Notice Processing Functions',
-		content: 'src/core/README.md',
+		// content: 'src/core/README.md',
 		sections: [
 			{
 				name: 'Process notices -> Errors/Warnings',

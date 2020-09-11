@@ -16,7 +16,7 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
     // console.log(`checkMarkdownText(${textName}, ${markdownText.length}, ${givenLocation})…`);
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
-    if (textName) ourLocation = ` in ${textName}${ourLocation}`;
+    // if (textName) ourLocation = ` in ${textName}${ourLocation}`;
 
     let extractLength;
     try {

@@ -1,28 +1,27 @@
 import React, { useState, useEffect } from 'react';
 // import { withStyles } from '@material-ui/core/styles';
 import * as books from '../../core/books/books';
-import { checkBookPackage } from '../../core';
+import { getRepoName, ourParseInt, fetchRepositoryZipFile, checkBookPackage } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
-import { ourParseInt } from '../../core/utilities';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-//const VALIDATOR_VERSION_STRING = '0.1.3';
+// const BP_VALIDATOR_VERSION_STRING = '0.2.1';
 
 
-function BookPackageCheck(/*username, language_code, bookID,*/ props) {
+function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
     // Check a single Bible book across many repositories
     const [result, setResultValue] = useState("Waiting-CheckBookPackage");
 
-    // console.log(`I'm here in BookPackageCheck v${VALIDATOR_VERSION_STRING}`);
+    // console.log(`I'm here in BookPackageCheck v${BP_VALIDATOR_VERSION_STRING}`);
     // consoleLogObject("props", props);
     // consoleLogObject("props.classes", props.classes);
 
     let username = props.username;
     // console.log(`username='${username}'`);
-    let language_code = props.language_code;
-    // console.log(`language_code='${language_code}'`);
+    let languageCode = props.languageCode;
+    // console.log(`languageCode='${languageCode}'`);
     let bookID = props.bookID;
     // console.log(`bookID='${bookID}'`);
     let branch = props.branch;
@@ -38,24 +37,42 @@ function BookPackageCheck(/*username, language_code, bookID,*/ props) {
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
 
     useEffect(() => {
-        const newProps = { bookID, branch, checkingOptions, language_code, cutoffPriorityLevel: props.cutoffPriorityLevel, displayType: props.displayType, errorPriorityLevel: props.errorPriorityLevel, maximumSimilarMessages: props.maximumSimilarMessages, sortBy: props.sortBy, username};
-        console.log("useEffect() called with ", newProps);
+        // const newProps = { bookID, branch, checkingOptions, languageCode, cutoffPriorityLevel: props.cutoffPriorityLevel, displayType: props.displayType, errorPriorityLevel: props.errorPriorityLevel, maximumSimilarMessages: props.maximumSimilarMessages, sortBy: props.sortBy, username};
+        // console.log("BookPackageCheck.useEffect() called with ", JSON.stringify(newProps));
 
         // Use an IIFE (Immediately Invoked Function Expression)
         //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
         (async () => {
-            // console.log("Started unnamedFunction()");
+            // console.log("Started BookPackageCheck.unnamedFunction()");
+
+            // NOTE from RJH: I can't find the correct React place for this / way to do this
+            //                  so it shows a warning for the user, and doesn't continue to try to process
+            if (bookID!=='OBS' && !books.isValidBookID(bookID)) {
+                console.log(`Invalid '${bookID}' bookID given!`)
+                setResultValue(<p style={{ color: 'red' }}>Please enter a valid USFM book identifier or 'OBS'. ('<b>{bookID}</b>' is not valid.)</p>);
+                return;
+            }
+
+            // Preload the reference repos
+            setResultValue(<p style={{ color: 'magenta' }}>Preloading TA/TQ/TW repos for {username} {languageCode}…</p>);
+            for (const repoCode of ['TA', 'TQ', 'TW']) {
+                const repoName = getRepoName(languageCode, repoCode);
+                console.log(`Preloading zip file for ${repoName}…`);
+                const zipFetchSucceeded = await fetchRepositoryZipFile({ username, repository: repoName, branch });
+                if (!zipFetchSucceeded)
+                    console.log(`checkRepo: misfetched zip file for repo with ${zipFetchSucceeded}`);
+            }
 
             // Display our "waiting" message
-            setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {language_code} <b>{bookID}</b> book package…</p>);
+            setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {languageCode} <b>{bookID}</b> book package…</p>);
 
-            const rawCBPResults = await checkBookPackage(username, language_code, bookID, setResultValue, checkingOptions);
+            const rawCBPResults = await checkBookPackage(username, languageCode, bookID, setResultValue, checkingOptions);
             // console.log("checkBookPackage() returned", typeof rawCBPResults); //, JSON.stringify(rawCBPResults));
 
             // Add some extra fields to our rawCBPResults object in case we need this information again later
             rawCBPResults.checkType = 'BookPackage';
             rawCBPResults.username = username;
-            rawCBPResults.language_code = language_code;
+            rawCBPResults.languageCode = languageCode;
             rawCBPResults.bookID = bookID;
             rawCBPResults.checkedOptions = checkingOptions;
 
@@ -80,7 +97,7 @@ function BookPackageCheck(/*username, language_code, bookID,*/ props) {
 
             function renderSummary(processedResults) {
                 return (<>
-                <p>Checked <b>{username} {language_code} {bookID}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
+                <p>Checked <b>{username} {languageCode} {bookID}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
                 <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount===1?'':'s'} from {processedResults.checkedRepoNames.length} repo{processedResults.checkedRepoNames.length===1?'':'s'}: <b>{processedResults.checkedRepoNames.join(', ')}</b>
                 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>
                 <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} />.</p>
@@ -146,10 +163,7 @@ function BookPackageCheck(/*username, language_code, bookID,*/ props) {
             // console.log("Finished rendering bit.");
         })(); // end of async part in unnamedFunction
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [bookID, branch, JSON.stringify(checkingOptions), language_code, JSON.stringify(props), username]); // end of useEffect part
-
-    if (bookID!=='OBS' && !books.isValidBookID(bookID))
-      return (<p>Please enter a valid USFM book identifier. ('{bookID}' is not valid.)</p>);
+    }, [bookID, branch, JSON.stringify(checkingOptions), languageCode, JSON.stringify(props), username]); // end of useEffect part
 
     // {/* <div className={classes.root}> */}
     return (
@@ -163,7 +177,7 @@ function BookPackageCheck(/*username, language_code, bookID,*/ props) {
 //   /** @ignore */
 //   username: PropTypes.object.isRequired,
 //   /** @ignore */
-//   language_code: PropTypes.object.isRequired,
+//   languageCode: PropTypes.object.isRequired,
 //   bookID: PropTypes.object.isRequired,
 //   props: PropTypes.object,
 // };
