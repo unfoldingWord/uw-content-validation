@@ -125,7 +125,7 @@ async function checkAnnotationTSVDataRow(annotationType, line, bookID, C, V, giv
         //  process results line by line
         for (const noticeEntry of cmtResultObject.noticeList) {
             // console.assert(Object.keys(noticeEntry).length === 5, `TL ourMarkdownTextChecks notice length=${Object.keys(noticeEntry).length}`);
-            addNotice6to9({ ...noticeEntry, rowID });
+            addNotice6to9({ ...noticeEntry, rowID, fieldName });
         }
     }
     // end of ourMarkdownTextChecks function
@@ -164,7 +164,7 @@ async function checkAnnotationTSVDataRow(annotationType, line, bookID, C, V, giv
         //  process results line by line
         for (const noticeEntry of dbtcResultObject.noticeList) {
             // console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
-            addNotice6to9({ ...noticeEntry, rowID });
+            addNotice6to9({ ...noticeEntry, rowID, fieldName });
         }
     }
     // end of ourCheckTextField function
@@ -192,7 +192,7 @@ async function checkAnnotationTSVDataRow(annotationType, line, bookID, C, V, giv
         //  process results line by line
         for (const noticeEntry of coqResultObject.noticeList) {
             // console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckTAReference notice length=${Object.keys(noticeEntry).length}`);
-            addNotice6to9({ ...noticeEntry, rowID });
+            addNotice6to9({ ...noticeEntry, rowID, fieldName });
         }
     }
     // end of ourCheckTAReference function
@@ -221,7 +221,7 @@ async function checkAnnotationTSVDataRow(annotationType, line, bookID, C, V, giv
         //  process results line by line
         for (const noticeEntry of coqResultObject.noticeList) {
             // console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckTNOriginalLanguageQuote notice length=${Object.keys(noticeEntry).length}`);
-            addNotice6to9({ ...noticeEntry, rowID });
+            addNotice6to9({ ...noticeEntry, rowID, fieldName });
         }
     }
     // end of ourCheckTNOriginalLanguageQuote function
@@ -248,7 +248,7 @@ async function checkAnnotationTSVDataRow(annotationType, line, bookID, C, V, giv
         //  process results line by line
         for (const noticeEntry of coqResultObject.noticeList) {
             // console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckTNLinks notice length=${Object.keys(noticeEntry).length}`);
-            addNotice6to9({ ...noticeEntry, rowID });
+            addNotice6to9({ ...noticeEntry, rowID, fieldName });
         }
     }
     // end of ourCheckTNLinks function
