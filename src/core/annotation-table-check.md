@@ -40,11 +40,12 @@ const data = {
   tableTextName : 'textG',
   tableText : textG,
   bookID : 'GEN',
+  filename: 'dummyFilename',
   givenLocation : 'that was supplied',
 }
 
 function CheckAnnotationRows(props) {
-  const { annotationType, bookID, tableText, tableTextName, givenLocation } = props.data;
+  const { annotationType, bookID, filename, tableText, tableTextName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
 
@@ -55,7 +56,7 @@ function CheckAnnotationRows(props) {
     (async () => {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Waiting for {annotationType} check results for {tableTextName} <b>{bookID}</b>…</p>);
-      const rawResults = await checkAnnotationTSVText(annotationType, bookID, tableText, givenLocation);
+      const rawResults = await checkAnnotationTSVText(annotationType, bookID, filename, tableText, givenLocation);
       setResults(
         <div>
           <b>Check</b> {tableTextName}: "{tableText.substr(0,256)}…"<br/><br/>

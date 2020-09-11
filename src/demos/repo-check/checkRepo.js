@@ -1,6 +1,6 @@
 // import React from 'react';
 // // import * as books from '../../core/books/books';
-// import { books, checkFile } from '../../core';
+// import { books, checkFileContents } from '../../core';
 // // import { getFilelistFromFetchedTreemaps, getFilelistFromFetchedZip } from '../helpers';
 // // import { fetchRepo, getBlobContent } from './helpers'
 // import { fetchRepositoryZipFile, getFilelistFromZip, getFile } from '../../core/getApi';
@@ -66,24 +66,24 @@
 //     }
 
 
-//     async function ourCheckFile(bookOrFileCode, cfBookID, filename, file_content, fileLocation, optionalCheckingOptions) {
+//     async function ourCheckFileContents(bookOrFileCode, cfBookID, filename, file_content, fileLocation, optionalCheckingOptions) {
 //         // We assume that checking for compulsory fields is done elsewhere
-//         // console.log(`checkRepo ourCheckFile(${filename})…`);
+//         // console.log(`checkRepo ourCheckFileContents(${filename})…`);
 
 //         // Updates the global list of notices
-//         console.assert(bookOrFileCode !== undefined, "ourCheckFile: 'bookOrFileCode' parameter should be defined");
-//         console.assert(typeof bookOrFileCode === 'string', `ourCheckFile: 'bookOrFileCode' parameter should be a string not a '${typeof bookOrFileCode}'`);
-//         console.assert(cfBookID !== undefined, "ourCheckFile: 'cfBookID' parameter should be defined");
-//         console.assert(typeof cfBookID === 'string', `ourCheckFile: 'cfBookID' parameter should be a string not a '${typeof cfBookID}'`);
-//         console.assert(filename !== undefined, "ourCheckFile: 'filename' parameter should be defined");
-//         console.assert(typeof filename === 'string', `ourCheckFile: 'filename' parameter should be a string not a '${typeof filename}'`);
-//         console.assert(file_content !== undefined, "ourCheckFile: 'file_content' parameter should be defined");
-//         console.assert(typeof file_content === 'string', `ourCheckFile: 'file_content' parameter should be a string not a '${typeof file_content}'`);
-//         console.assert(fileLocation !== undefined, "ourCheckFile: 'fileLocation' parameter should be defined");
-//         console.assert(typeof fileLocation === 'string', `ourCheckFile: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
+//         console.assert(bookOrFileCode !== undefined, "ourCheckFileContents: 'bookOrFileCode' parameter should be defined");
+//         console.assert(typeof bookOrFileCode === 'string', `ourCheckFileContents: 'bookOrFileCode' parameter should be a string not a '${typeof bookOrFileCode}'`);
+//         console.assert(cfBookID !== undefined, "ourCheckFileContents: 'cfBookID' parameter should be defined");
+//         console.assert(typeof cfBookID === 'string', `ourCheckFileContents: 'cfBookID' parameter should be a string not a '${typeof cfBookID}'`);
+//         console.assert(filename !== undefined, "ourCheckFileContents: 'filename' parameter should be defined");
+//         console.assert(typeof filename === 'string', `ourCheckFileContents: 'filename' parameter should be a string not a '${typeof filename}'`);
+//         console.assert(file_content !== undefined, "ourCheckFileContents: 'file_content' parameter should be defined");
+//         console.assert(typeof file_content === 'string', `ourCheckFileContents: 'file_content' parameter should be a string not a '${typeof file_content}'`);
+//         console.assert(fileLocation !== undefined, "ourCheckFileContents: 'fileLocation' parameter should be defined");
+//         console.assert(typeof fileLocation === 'string', `ourCheckFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
 
-//         const resultObject = await checkFile(filename, file_content, fileLocation, optionalCheckingOptions);
-//         // console.log("checkFile() returned", resultObject.successList.length, "success message(s) and", resultObject.noticeList.length, "notice(s)");
+//         const resultObject = await checkFileContents(filename, file_content, fileLocation, optionalCheckingOptions);
+//         // console.log("checkFileContents() returned", resultObject.successList.length, "success message(s) and", resultObject.noticeList.length, "notice(s)");
 //         // for (const successEntry of resultObject.successList)
 //         //     console.log("  ", successEntry);
 
@@ -96,7 +96,7 @@
 //                 characterIndex:noticeEntry.characterIndex, extract:noticeEntry.extract,
 //                 location:noticeEntry.location, extra:bookOrFileCode});
 //     }
-//     // end of ourCheckFile function
+//     // end of ourCheckFileContents function
 
 
 //     // Main code for checkRepo()
@@ -173,7 +173,7 @@
 //             }
 //             if (repoFileContent) {
 //                 // console.log(`checkRepo checking ${thisFilename}`);
-//                 await ourCheckFile(bookOrFileCode, ourBookID, thisFilename, repoFileContent, ourLocation, checkingOptions);
+//                 await ourCheckFileContents(bookOrFileCode, ourBookID, thisFilename, repoFileContent, ourLocation, checkingOptions);
 //                 checkedFileCount += 1;
 //                 checkedFilenames.push(thisFilename);
 //                 checkedFilenameExtensions.add(thisFilenameExtension);

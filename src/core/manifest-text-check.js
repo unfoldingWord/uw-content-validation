@@ -2,7 +2,7 @@ import checkYAMLText from './yaml-text-check';
 import * as books from './books';
 
 
-const MANIFEST_VALIDATOR_VERSION = '0.2.1';
+const MANIFEST_VALIDATOR_VERSION_STRING = '0.2.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -114,9 +114,9 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
 
     // addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'}${ourLocation}.`);
     if (cmtResult.noticeList)
-        addSuccessMessage(`checkManifestText v${MANIFEST_VALIDATOR_VERSION} finished with ${cmtResult.noticeList.length ? cmtResult.noticeList.length.toLocaleString() : "zero"} notice${cmtResult.noticeList.length === 1 ? '' : 's'}`);
+        addSuccessMessage(`checkManifestText v${MANIFEST_VALIDATOR_VERSION_STRING} finished with ${cmtResult.noticeList.length ? cmtResult.noticeList.length.toLocaleString() : "zero"} notice${cmtResult.noticeList.length === 1 ? '' : 's'}`);
     else
-        addSuccessMessage(`No errors or warnings found by checkManifestText v${MANIFEST_VALIDATOR_VERSION}`)
+        addSuccessMessage(`No errors or warnings found by checkManifestText v${MANIFEST_VALIDATOR_VERSION_STRING}`)
     // console.log(`  checkManifestText returning with ${cmtResult.successList.length.toLocaleString()} success(es), ${cmtResult.noticeList.length.toLocaleString()} notice(s).`);
     // console.log("checkManifestText result is", JSON.stringify(result));
     return cmtResult;

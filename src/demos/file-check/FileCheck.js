@@ -4,15 +4,14 @@ import React, { useEffect, useState } from 'react';
 // import { Paper, Button } from '@material-ui/core';
 // import { RepositoryContext, FileContext } from 'gitea-react-toolkit';
 import { withStyles } from '@material-ui/core/styles';
-// import { getFile } from '../../core/getApi';
-import { getFile, checkFile } from '../../core';
-import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../../core/notice-processing-functions';
+import { getFile, checkFileContents } from '../../core';
+import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
 import { ourParseInt } from '../../core/utilities';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-export const FILE_CHECK_VERSION_STRING = '0.1.3';
+// const FILE_CHECK_VERSION_STRING = '0.1.3';
 
 
 function FileCheck(props) {
@@ -21,6 +20,8 @@ function FileCheck(props) {
 
     const [result, setResultValue] = useState("Waiting-FileCheck");
     useEffect(() => {
+      // console.log("FileCheck.useEffect() called with ", JSON.stringify(props));
+
       // Use an IIFE (Immediately Invoked Function Expression)
       //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
       (async () => {
@@ -32,7 +33,7 @@ function FileCheck(props) {
         const fileContent = await getFile({ username: username, repository: repoName, path: filename, branch: branch });
         let rawCFResults = { noticeList:[{priority:990, message:"Unable to load file", filename}], elapsedSeconds:0 };
         if (fileContent)
-          rawCFResults = await checkFile(filename, fileContent, givenLocation, checkingOptions);
+          rawCFResults = await checkFileContents(filename, fileContent, givenLocation, checkingOptions);
         // console.log(`FileCheck got initial results with ${rawCFResults.successList.length} success message(s) and ${rawCFResults.noticeList.length} notice(s)`);
 
         // Since we know the repoName here, add it to our notices
@@ -127,7 +128,8 @@ function FileCheck(props) {
         } else setResultValue(<b style={{ color: 'red' }}>Invalid displayType='{displayType}'</b>)
       })(); // end of async part in unnamedFunction
       // Doesn't work if we add this to next line: username,repoName,branch,checkingOptions,filename,givenLocation,props
-    }); // end of useEffect part
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // end of useEffect part
 
     const username = props.username;
     // console.log(`FileCheck username='${username}'`);

@@ -3,7 +3,7 @@ import yaml from 'yaml';
 import checkTextField from './field-text-check';
 
 
-export const YAML_VALIDATOR_VERSION = '0.1.1';
+const YAML_VALIDATOR_VERSION_STRING = '0.1.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -156,9 +156,9 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
 
     addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length===1?'':'s'}${ourLocation}.`);
     if (cytResult.noticeList)
-        addSuccessMessage(`checkYAMLText v${YAML_VALIDATOR_VERSION} finished with ${cytResult.noticeList.length?cytResult.noticeList.length.toLocaleString():"zero"} notice${cytResult.noticeList.length === 1 ? '' : 's'}`);
+        addSuccessMessage(`checkYAMLText v${YAML_VALIDATOR_VERSION_STRING} finished with ${cytResult.noticeList.length?cytResult.noticeList.length.toLocaleString():"zero"} notice${cytResult.noticeList.length === 1 ? '' : 's'}`);
     else
-        addSuccessMessage(`No errors or warnings found by checkYAMLText v${YAML_VALIDATOR_VERSION}`)
+        addSuccessMessage(`No errors or warnings found by checkYAMLText v${YAML_VALIDATOR_VERSION_STRING}`)
     // console.log(`  checkYAMLText returning with ${cytResult.successList.length.toLocaleString()} success(es), ${cytResult.noticeList.length.toLocaleString()} notice(s).`);
     // console.log("checkYAMLText result is", JSON.stringify(result));
     return cytResult;

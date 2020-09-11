@@ -2,7 +2,7 @@ import { checkTextField } from './field-text-check'
 import { cachedGetURL } from './getApi';
 
 
-export const LINK_VALIDATOR_VERSION = '0.3.2';
+const LINK_VALIDATOR_VERSION_STRING = '0.3.2';
 
 // const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -11,7 +11,7 @@ async function startLiveLinksCheck(linksList, existingNoticeList, callbackFuncti
     // This (slow) function checks the targets of the given links
     //  to ensure that they actually exist
     // NOTE: no caching yet
-    console.log(`startLiveLinksCheck v${LINK_VALIDATOR_VERSION} for ${linksList.length} link(s)…`)
+    console.log(`startLiveLinksCheck v${LINK_VALIDATOR_VERSION_STRING} for ${linksList.length} link(s)…`)
     // console.log(`startLiveLinksCheck was given ${existingNoticeList.length} warnings.`)
 
     let result = { noticeList: existingNoticeList };
@@ -141,7 +141,7 @@ function checkFieldLinks(fieldName, fieldText, linkOptions, optionalFieldLocatio
         console.log("checkFieldLinks now returning initial result…");
     }
 
-    console.log(`  checkFieldLinks returning with ${result.noticeList.length} notices.`);
+    console.log(`  checkFieldLinks v${LINK_VALIDATOR_VERSION_STRING} returning with ${result.noticeList.length} notices.`);
     return result;
 }
 // end of checkFieldLinks function

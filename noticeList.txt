@@ -92,8 +92,8 @@ Got 201 notices:
   790, C,V, "Missing verse number", lineNumber:n+1, location:` after ${C}:${lastV}${withString}`}
   779, "Missing ID field", location:ourRowLocation}
   779, "Missing ID field", location:ourRowLocation}
-  778, "ID should be exactly 4 characters", location:` (not ${fieldID.length})`}
-  778, "ID should be exactly 4 characters", location:` (not ${fieldID.length})`}
+  778, "ID should be exactly 4 characters", location:` (not ${rowID.length})`}
+  778, "ID should be exactly 4 characters", location:` (not ${rowID.length})`}
   769, C, V, "Verse bridge numbers not in ascending order", lineNumber:n, characterIndex:3, extract:`${rest.substring(0, Math.max(9, extractLength))}${rest.length > extractLength ? '…' : ''} (${firstV} → ${secondV})`, location:atString}
   765, C, V, "Bridged verse numbers didn't increment correctly", lineNumber:n, characterIndex:3, extract:`${rest.substring(0, Math.max(9, extractLength))}${rest.length > extractLength ? '…' : ''} (${lastV} → ${firstV})`, location:atString}
   765, "Unexpected link", characterIndex, extract, location:ourAtString}
@@ -128,8 +128,8 @@ Got 201 notices:
   733, C,V, `Receding '${V}' verse number after '${lastV}'`, lineNumber:n+1, location:withString}
   730, C,V, "Missing ID", lineNumber:n+1, location:withString}
   730, C,V, "Missing ID", lineNumber:n+1, location:withString}
-  729, C,V, `Duplicate '${fieldID}' ID`, lineNumber:n+1, location:withString}
-  729, C,V, `Duplicate '${fieldID}' ID`, lineNumber:n+1, location:withString}
+  729, C,V, `Duplicate '${rowID}' ID`, lineNumber:n+1, location:withString}
+  729, C,V, `Duplicate '${rowID}' ID`, lineNumber:n+1, location:withString}
   724, C, V, "Unable to convert chapter number to integer", lineNumber:n, characterIndex:3, extract:`${rest.substring(0, halfLength)}${rest.length > halfLength ? '…' : ''}`, location:atString}
   723, C, V, "Unable to convert verse number to integer", lineNumber:n, characterIndex:3, extract:`${rest.substring(0, halfLength)}${rest.length > halfLength ? '…' : ''}`, location:atString}
   722, "Unable to find original language quote in verse text", extract, location:ourLocation}
@@ -179,14 +179,14 @@ Got 201 notices:
   179, "Unexpected space before ellipse character", characterIndex, extract, location:ourAtString}
   178, "Unexpected space after ellipse character", characterIndex, extract, location:ourAtString}
   177, `Unexpected doubled ${punctChar} characters`, characterIndex, extract, location:ourAtString}
-  176, "ID should start with a lowercase letter or digit", characterIndex:0, location:` (not '${fieldID[0]}')`}
-  176, "ID should start with a lowercase letter or digit", characterIndex:0, location:` (not '${fieldID[0]}')`}
-  175, "ID should end with a lowercase letter or digit", characterIndex:3, location:` (not '${fieldID[3]}')`}
-  175, "ID should end with a lowercase letter or digit", characterIndeX:3, location:` (not '${fieldID[3]}')`}
-  174, "ID characters should only be lowercase letters, digits, or hypen", characterIndex:1, location:` (not '${fieldID[1]}')`}
-  174, "ID characters should only be lowercase letters, digits, or hypen", characterIndex:1, location:` (not '${fieldID[1]}')`}
-  173, "ID characters should only be lowercase letters, digits, or hypen", characterIndex:2, location:` (not '${fieldID[2]}')`}
-  173, "ID characters should only be lowercase letters, digits, or hypen", characterIndex:2, location:` (not '${fieldID[2]}')`}
+  176, "ID should start with a lowercase letter or digit", characterIndex:0, location:` (not '${rowID[0]}')`}
+  176, "ID should start with a lowercase letter or digit", characterIndex:0, location:` (not '${rowID[0]}')`}
+  175, "ID should end with a lowercase letter or digit", characterIndex:3, location:` (not '${rowID[3]}')`}
+  175, "ID should end with a lowercase letter or digit", characterIndeX:3, location:` (not '${rowID[3]}')`}
+  174, "ID characters should only be lowercase letters, digits, or hypen", characterIndex:1, location:` (not '${rowID[1]}')`}
+  174, "ID characters should only be lowercase letters, digits, or hypen", characterIndex:1, location:` (not '${rowID[1]}')`}
+  173, "ID characters should only be lowercase letters, digits, or hypen", characterIndex:2, location:` (not '${rowID[2]}')`}
+  173, "ID characters should only be lowercase letters, digits, or hypen", characterIndex:2, location:` (not '${rowID[2]}')`}
   172, "Header levels should only increment by one", lineNumber:n, characterIndex:0, location:atString}
   163, `Mismatched ${leftChar}${rightChar} characters`, extract:`(left=${lCount.toLocaleString()}, right=${rCount.toLocaleString()})`, location:ourAtString}
   159, "Should use proper ellipse character (not periods)", characterIndex, extract, location:ourLocation}
@@ -201,4 +201,3 @@ Got 201 notices:
   103, `USFMGrammar: ${warningString.trim()}`, location}
   102, `USFMGrammar: ${warningString}`, location:fileLocation}
   101, `USFMGrammar: ${warningString}`, location:ourLocation}
-  

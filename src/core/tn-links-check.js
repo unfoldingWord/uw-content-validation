@@ -4,7 +4,7 @@ import { ourParseInt } from './utilities';
 // import { consoleLogObject } from '../core/utilities';
 
 
-export const TN_LINKS_VALIDATOR_VERSION = '0.2.1';
+// const TN_LINKS_VALIDATOR_VERSION_STRING = '0.2.1';
 
 // const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -25,7 +25,7 @@ async function checkTNLinks(bookID, fieldName, fieldText, givenLocation, optiona
     //      optionalCheckingOptions.taRepoDefaultLanguageCode
     */
 
-    // console.log(`checkTNLinks v${TN_LINKS_VALIDATOR_VERSION} ${bookID} (${fieldName}, (${fieldText.length}) '${fieldText}', ${givenLocation}, …)`);
+    // console.log(`checkTNLinks v${TN_LINKS_VALIDATOR_VERSION_STRING} ${bookID} (${fieldName}, (${fieldText.length}) '${fieldText}', ${givenLocation}, …)`);
     console.assert(bookID !== undefined, "checkTNLinks: 'bookID' parameter should be defined");
     console.assert(typeof bookID === 'string', `checkTNLinks: 'bookID' parameter should be a string not a '${typeof bookID}'`);
     console.assert(bookID.length === 3, `checkTNLinks: 'bookID' parameter should be three characters long not ${bookID.length}`);

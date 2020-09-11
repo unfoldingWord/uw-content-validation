@@ -4,12 +4,12 @@ import { checkBookPackage } from '../../core';
 // import { getFile } from '../../core/getApi';
 // import { consoleLogObject } from '../../core/utilities';
 
-export const CHECKER_VERSION_STRING = '0.2.1';
+//const VALIDATOR_VERSION_STRING = '0.2.1';
 
 
-async function checkBookPackages(username, language_code, bookIDList, setResultValue, checkingOptions) {
-    //     console.log(`I'm here in checkBookPackages v${CHECKER_VERSION_STRING}
-    //   with ${username}, ${language_code}, ${bookIDList}, ${JSON.stringify(checkingOptions)}`);
+async function checkBookPackages(username, languageCode, bookIDList, setResultValue, checkingOptions) {
+    //     console.log(`I'm here in checkBookPackages v${VALIDATOR_VERSION_STRING}
+    //   with ${username}, ${languageCode}, ${bookIDList}, ${JSON.stringify(checkingOptions)}`);
     const startTime = new Date();
 
     const checkBookPackagesResult = { successList: [], noticeList: [] };
@@ -19,9 +19,9 @@ async function checkBookPackages(username, language_code, bookIDList, setResultV
     //     checkBookPackagesResult.successList.push(successString);
     // }
 
-    function addNotice10({priority,message, bookID,C,V, lineNumber, characterIndex, extract, location, extra}) {
+    function addNotice10({priority,message, bookID,C,V, repoName, filename, rowID, lineNumber, fieldName, characterIndex, extract, location, extra}) {
         // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
-        // console.log(`checkBookPackages Notice: (priority=${priority}) ${extra} ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        console.log(`cBPs addNotice10: (priority=${priority}) ${extra} ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cBPs addNotice10: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cBPs addNotice10: 'priority' parameter should be a number not a '${typeof priority}'`);
         console.assert(message !== undefined, "cBPs addNotice10: 'message' parameter should be defined");
@@ -44,7 +44,7 @@ async function checkBookPackages(username, language_code, bookIDList, setResultV
         console.assert(typeof location === 'string', `cBPs addNotice10: 'location' parameter should be a string not a '${typeof location}'`);
         console.assert(extra !== undefined, "cBPs addNotice10: 'extra' parameter should be defined");
         console.assert(typeof extra === 'string', `cBPs addNotice10: 'extra' parameter should be a string not a '${typeof extra}'`);
-        checkBookPackagesResult.noticeList.push({priority,message, bookID,C,V, lineNumber, characterIndex, extract, location, extra});
+        checkBookPackagesResult.noticeList.push({priority,message, bookID,C,V, repoName,filename,rowID,lineNumber, fieldName, characterIndex, extract, location, extra});
     }
 
 
@@ -53,7 +53,7 @@ async function checkBookPackages(username, language_code, bookIDList, setResultV
     for (const bookID of bookIDList) {
         // console.log(`checkBookPackages bookID: ${bookID}`);
 
-        // const generalLocation = ` ${language_code} ${bookID} book packages from ${username}`;
+        // const generalLocation = ` ${languageCode} ${bookID} book packages from ${username}`;
         if (bookID !== 'OBS') {
           // eslint-disable-next-line no-unused-vars
             let bookNumberAndName; //, whichTestament;
@@ -70,7 +70,7 @@ async function checkBookPackages(username, language_code, bookIDList, setResultV
 
         // We use the generalLocation here (does not include repo name)
         //  so that we can adjust the returned strings ourselves
-        const cbpResultObject = await checkBookPackage(username, language_code, bookID, setResultValue, checkingOptions);
+        const cbpResultObject = await checkBookPackage(username, languageCode, bookID, setResultValue, checkingOptions);
         // console.log(`checkBookPackage() returned ${cbpResultObject.successList.length} success message(s) and ${cbpResultObject.noticeList.length} notice(s)`);
 
         // Concat is faster if we don't need to process each success message individually
@@ -97,7 +97,7 @@ async function checkBookPackages(username, language_code, bookIDList, setResultV
         // addSuccessMessage(`${checkedFileCount.toLocaleString()}/ Checked ${bookID} book package`);
 
         // Update our "waiting" message {checkedFileCount==1?'':'s'}
-        // setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {language_code} <b>{bookIDList}</b> book package: checked <b>{checkedFileCount.toLocaleString()}</b>/5 repos…</p>);
+        // setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {languageCode} <b>{bookIDList}</b> book package: checked <b>{checkedFileCount.toLocaleString()}</b>/5 repos…</p>);
     }
 
     // Add some extra fields to our checkFileResult object
@@ -107,7 +107,7 @@ async function checkBookPackages(username, language_code, bookIDList, setResultV
     checkBookPackagesResult.checkedFilenameExtensions = [...checkedFilenameExtensions]; // convert Set to Array
     checkBookPackagesResult.checkedFilesizes = totalCheckedSize;
     checkedRepoNames = [...checkedRepoNames]; // Convert set to Array
-    const index = checkedRepoNames.indexOf(`${username}/${language_code}_obs`);
+    const index = checkedRepoNames.indexOf(`${username}/${languageCode}_obs`);
     if (index !== -1) checkedRepoNames[index] = 'OBS'; // Looks tidier here
     checkBookPackagesResult.checkedRepoNames = checkedRepoNames;
     // checkBookPackagesResult.checkedOptions = checkingOptions; // This is done at the caller level
