@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // import { withStyles } from '@material-ui/core/styles';
 import * as books from '../../core/books/books';
-import { getRepoName, ourParseInt, fetchRepositoryZipFile, checkBookPackage } from '../../core';
+import { ourParseInt, checkBookPackage, initBookPackageCheck } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
 // import { consoleLogObject } from '../../core/utilities';
@@ -55,12 +55,9 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
 
             // Preload the reference repos
             setResultValue(<p style={{ color: 'magenta' }}>Preloading TA/TQ/TW repos for {username} {languageCode}…</p>);
-            for (const repoCode of ['TA', 'TQ', 'TW']) {
-                const repoName = getRepoName(languageCode, repoCode);
-                console.log(`Preloading zip file for ${repoName}…`);
-                const zipFetchSucceeded = await fetchRepositoryZipFile({ username, repository: repoName, branch });
-                if (!zipFetchSucceeded)
-                    console.log(`checkRepo: misfetched zip file for repo with ${zipFetchSucceeded}`);
+            const success = await initBookPackageCheck(username, languageCode, [bookID], branch = 'master');
+            if (!success) {
+              console.log(`Failed to pre-load all repos`)
             }
 
             // Display our "waiting" message

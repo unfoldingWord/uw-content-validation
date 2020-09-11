@@ -1,7 +1,7 @@
 import React from 'react';
 import * as books from './books';
 import { getRepoName } from './utilities';
-import { getFilelistFromZip, getFile, getFileCached, fetchRepositoryZipFile } from './getApi';
+import { getFilelistFromZip, getFile, getFileCached, fetchRepositoryZipFile, clearCaches } from './getApi';
 import checkUSFMText from './usfm-text-check';
 import checkMarkdownText from './markdown-text-check';
 import checkPlainText from './plain-text-check';
@@ -10,6 +10,43 @@ import checkManifestText from './manifest-text-check';
 import checkTN_TSVText from './tn-table-text-check';
 
 
+/**
+ * clears the caches of stale data and preloads repo zips, before running book package checks
+ * @param {string} username
+ * @param {string} languageCode
+ * @param {Array} bookIDList - one or more books that will be checked
+ * @param {string} branch - optional, defaults to master
+ * @return {Promise<Boolean>} resolves to true if file loads are successful
+ */
+export async function initBookPackageCheck(username, languageCode, bookIDList, branch = 'master') {
+  clearCaches(); // clear existing cached files so we know we have the latest
+  let success = true;
+  const repos = ['TA', 'TW'];
+
+  if (bookIDList && Array.isArray(bookIDList)) {
+    // make sure we have the original languages needed
+    for (const bookID of bookIDList) {
+      const whichTestament = books.testament(bookID); // returns 'old' or 'new'
+      const origLang = whichTestament === 'old' ? 'UHB' : 'UGNT';
+      if (!repos.includes( origLang)) {
+        repos.unshift(origLang);
+      }
+    }
+  }
+
+  // load all the repos need
+  for (const repoCode of repos) {
+    const repoName = getRepoName(languageCode, repoCode);
+    console.log(`Preloading zip file for ${repoName}…`);
+    const zipFetchSucceeded = await fetchRepositoryZipFile({username, repository: repoName, branch});
+    if (!zipFetchSucceeded) {
+      console.log(`checkRepo: misfetched zip file for repo with ${zipFetchSucceeded}`);
+      success = false;
+    }
+  }
+
+  return success;
+}
 
 /*
     checkRepo
@@ -514,16 +551,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0, checkedRepoNames = [];
         const origLang = whichTestament === 'old' ? 'UHB' : 'UGNT';
 
-        // NOTE: The following code probably needs to be in/controlled-by the calling program
-        // for (const repoCode of [origLang, 'TA', 'TW']) {
-        //     const repoName = getRepoName(languageCode, repoCode);
-        //     console.log(`Preloading zip file for ${repoName}…`);
-        //     const zipFetchSucceeded = await fetchRepositoryZipFile({ username, repository: repoName, branch });
-        //     if (!zipFetchSucceeded)
-        //         console.log(`checkRepo: misfetched zip file for repo with ${zipFetchSucceeded}`);
-        // }
-
-        for (const repoCode of [origLang, 'ULT', 'UST', 'TN', 'TQ']) {
+         for (const repoCode of [origLang, 'ULT', 'UST', 'TN', 'TQ']) {
             console.log(`Check ${bookID} in ${repoCode} (${languageCode} ${bookID} from ${username})`);
             const repoLocation = ` in ${repoCode.toUpperCase()}${generalLocation}`;
             const repoName = getRepoName(languageCode, repoCode);
