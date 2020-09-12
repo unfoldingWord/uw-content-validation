@@ -21,7 +21,7 @@ import checkTN_TSVText from './tn-table-text-check';
 export async function initBookPackageCheck(username, languageCode, bookIDList, branch = 'master') {
   clearCaches(); // clear existing cached files so we know we have the latest
   let success = true;
-  const repos = ['TA', 'TW'];
+  const repos = ['TA', 'TW', 'TQ'];
 
   if (bookIDList && Array.isArray(bookIDList)) {
     // make sure we have the original languages needed
