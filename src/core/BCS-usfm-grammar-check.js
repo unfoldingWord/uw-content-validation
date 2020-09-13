@@ -65,12 +65,38 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
             else ourErrorMessage = errorLine; // We only want the last one
         }
         // console.log(`  ourErrorMessage: '${ourErrorMessage}' lineNumberString=${lineNumberString} characterIndex=${characterIndex} extract='${extract}'`);
-        // NOTE: \s5 fields are not valid USFM but we degrade the priority of those warnings
-        ourErrorObject = {priority:extract==='\\s5'? 294:994, message:`USFMGrammar: ${ourErrorMessage}`,
+
+        // Some of these "errors" need to be degraded in priority
+
+        let adjustedPriority = 994;
+        if (extract==='\\s5' // Temporarily, even though \s5 fields are not valid USFM
+        || ourErrorMessage.startsWith('Expected "f*", "+"') // Might neeed a OHM schema fix?
+        )
+            adjustedPriority = 294;
+
+        ourErrorObject = {priority:adjustedPriority, message:`USFMGrammar: ${ourErrorMessage}`,
                             filename,
                             characterIndex, extract,
                             location:givenLocation};
-        if (lineNumberString && lineNumberString.length) ourErrorObject.lineNumber = Number(lineNumberString);
+
+        // Save our line number
+        if (lineNumberString && lineNumberString.length) {
+            //  but we need a temporary fix for the BCS bug which doesn't include blank lines in the count
+            let lineNumber = Number(lineNumberString)
+            let notified = false;
+            const lines = fileText.split('\n');
+            for (let n = 1; n <= lines.length; n++) {
+                if (n >= lineNumber) break; // Gone far enough
+                if (!lines[n-1]) {
+                    lineNumber += 1; // Increment error line number for each blank line
+                    if (!notified) {
+                        console.log("Adjusting BCS grammar error line number to account for blank lines");
+                        notified = true;
+                    }
+                }
+            }
+            ourErrorObject.lineNumber = lineNumber;
+        }
     }
 
     const parseWarnings = parserResult._warnings ? parserResult._warnings : ourUsfmParser.warnings;
