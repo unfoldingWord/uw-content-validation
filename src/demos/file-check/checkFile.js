@@ -14,7 +14,7 @@
 // async function checkFileDemo(filename, fileContent, givenLocation, checkingOptions) {
 //     // Determine the file type from the filename extension
 //     //  and return the results of checking that kind of file
-//     //     console.log(`I'm here in checkFile v${CHECK_FILE_VERSION_STRING}
+//     //     console.log(`I'm here in checkFileContents v${CHECK_FILE_VERSION_STRING}
 //     //   with ${filename}, ${fileContent.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)}`);
 //     const startTime = new Date();
 
@@ -27,7 +27,7 @@
 //         // console.log(`Have TSV filenameMain=${filenameMain}`);
 //         const bookID = filenameMain.substring(filenameMain.length - 3);
 //         // console.log(`Have TSV bookcode=${bookID}`);
-//         console.assert(books.isValidBookID(bookID), `checkFile: '${bookID}' is not a valid USFM book identifier`);
+//         console.assert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
 //         checkFileResult = await checkTN_TSVText(bookID, fileContent, ourCFLocation, checkingOptions);
 //     }
 //     else if (filename.toLowerCase().endsWith('.usfm')) {
@@ -35,14 +35,14 @@
 //         // console.log(`Have USFM filenameMain=${filenameMain}`);
 //         const bookID = filenameMain.substring(filenameMain.length - 3);
 //         // console.log(`Have USFM bookcode=${bookID}`);
-//         console.assert(books.isValidBookID(bookID), `checkFile: '${bookID}' is not a valid USFM book identifier`);
+//         console.assert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
 //         checkFileResult = checkUSFMText(bookID, filename, fileContent, ourCFLocation, checkingOptions);
 //     } else if (filename.toLowerCase().endsWith('.sfm')) {
 //         const filenameMain = filename.substring(0, filename.length - 4); // drop .sfm
 //         console.log(`Have SFM filenameMain=${filenameMain}`);
 //         const bookID = filenameMain.substring(2, 5);
 //         console.log(`Have SFM bookcode=${bookID}`);
-//         console.assert(books.isValidBookID(bookID), `checkFile: '${bookID}' is not a valid USFM book identifier`);
+//         console.assert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
 //         checkFileResult = checkUSFMText(bookID, filename, fileContent, ourCFLocation, checkingOptions);
 //     } else if (filename.toLowerCase().endsWith('.md'))
 //         checkFileResult = checkMarkdownText(filename, fileContent, ourCFLocation, checkingOptions);
@@ -56,7 +56,7 @@
 //         checkFileResult = checkPlainText(filename, fileContent, ourCFLocation, checkingOptions);
 //         checkFileResult.noticeList.unshift({priority:995, message:"File extension is not recognized, so treated as plain text.", location:filename});
 //     }
-//     // console.log(`checkFile got initial results with ${checkFileResult.successList.length} success message(s) and ${checkFileResult.noticeList.length} notice(s)`);
+//     // console.log(`checkFileContents got initial results with ${checkFileResult.successList.length} success message(s) and ${checkFileResult.noticeList.length} notice(s)`);
 
 //     // Add some extra fields to our checkFileResult object
 //     //  in case we need this information again later
@@ -68,6 +68,6 @@
 //     checkFileResult.elapsedSeconds = (new Date() - startTime) / 1000; // seconds
 //     return checkFileResult;
 // };
-// // end of checkFile()
+// // end of checkFileContents()
 
 // export default checkFileDemo;

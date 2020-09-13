@@ -6,7 +6,7 @@ See a list of valid book identifiers [here](http://ubsicap.github.io/usfm/identi
 
 Note that `OBS` can also be entered here as a *pseudo book identifier* in order to check an **Open Bible Stories** repo.
 
-`Book Package Check` calls `checkBookPackage()` which then calls `checkFile()` for the book file in each repo (or calls `checkRepo()` for **OBS**).
+`Book Package Check` calls `checkBookPackage()` which then calls `checkFileContents()` for the book file in each repo (or calls `checkRepo()` for **OBS**).
 
 **Warning**: Some book packages contain many files and/or very large files, and downloading them all and then checking them might slow down your browser -- maybe even causing pop-up messages asking to confirm that you want to keep waiting.
 
@@ -17,7 +17,7 @@ import BookPackageCheck from './BookPackageCheck';
 
 <BookPackageCheck
   username='unfoldingWord'
-  language_code='en'
+  languageCode='en'
   // bookID can be a USFM bookID, e.g., 'GEN', 'MAT', '3JN'
   //  and can also be 'OBS' (for Open Bible Stories)
   bookID='JUD'

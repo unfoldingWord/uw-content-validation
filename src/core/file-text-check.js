@@ -1,11 +1,11 @@
 import { isWhitespace, countOccurrences } from './text-handling-functions'
 
-//const CHECKER_VERSION_STRING = '0.1.1';
+//const VALIDATOR_VERSION_STRING = '0.1.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-export function checkFileText(filename, fileText, optionalFileLocation, optionalCheckingOptions) {
+export function checkFileContents(filename, fileText, optionalFileLocation, optionalCheckingOptions) {
     // Does basic checks for small errors like mismatched punctuation pairs, etc.
     //  (Used by usfm-text-check)
 
@@ -24,12 +24,12 @@ export function checkFileText(filename, fileText, optionalFileLocation, optional
     //      extract: a short extract of the string containing the error (or empty-string if irrelevant)
     //      location: the detailed location string
     //  (Returned in this way for more intelligent processing at a higher level)
-    // console.log(`checkFileText(${filename}, ${fileText.length.toLocaleString()} chars, ${allowedLinks}, '${optionalFileLocation}')…`);
-    console.assert(filename !== undefined, "checkFileText: 'filename' parameter should be defined");
-    console.assert(typeof filename === 'string', `checkFileText: 'filename' parameter should be a number not a '${typeof filename}': ${filename}`);
-    console.assert(fileText !== undefined, "checkFileText: 'fileText' parameter should be defined");
-    console.assert(typeof fileText === 'string', `checkFileText: 'fileText' parameter should be a number not a '${typeof fileText}': ${fileText}`);
-    // console.assert( allowedLinks===true || allowedLinks===false, "checkFileText: allowedLinks parameter must be either true or false");
+    // console.log(`checkFileContents(${filename}, ${fileText.length.toLocaleString()} chars, ${allowedLinks}, '${optionalFileLocation}')…`);
+    console.assert(filename !== undefined, "checkFileContents: 'filename' parameter should be defined");
+    console.assert(typeof filename === 'string', `checkFileContents: 'filename' parameter should be a number not a '${typeof filename}': ${filename}`);
+    console.assert(fileText !== undefined, "checkFileContents: 'fileText' parameter should be defined");
+    console.assert(typeof fileText === 'string', `checkFileContents: 'fileText' parameter should be a number not a '${typeof fileText}': ${fileText}`);
+    // console.assert( allowedLinks===true || allowedLinks===false, "checkFileContents: allowedLinks parameter must be either true or false");
 
     let result = { noticeList: [] };
 
@@ -49,7 +49,7 @@ export function checkFileText(filename, fileText, optionalFileLocation, optional
     }
 
 
-    // Main code for checkFileText()
+    // Main code for checkFileContents()
     if (!fileText) // Nothing to check
         return result;
 
@@ -123,6 +123,6 @@ export function checkFileText(filename, fileText, optionalFileLocation, optional
     // }
     return result;
 }
-// end of checkFileText function
+// end of checkFileContents function
 
-export default checkFileText;
+export default checkFileContents;

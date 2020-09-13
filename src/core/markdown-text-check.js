@@ -1,7 +1,7 @@
 import checkTextField from './field-text-check';
 
 
-export const MARKDOWN_VALIDATOR_VERSION = '0.3.1';
+const MARKDOWN_VALIDATOR_VERSION_STRING = '0.3.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -16,7 +16,7 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
     // console.log(`checkMarkdownText(${textName}, ${markdownText.length}, ${givenLocation})…`);
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
-    if (textName) ourLocation = ` in ${textName}${ourLocation}`;
+    // if (textName) ourLocation = ` in ${textName}${ourLocation}`;
 
     let extractLength;
     try {
@@ -159,9 +159,9 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
 
     addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length === 1 ? '' : 's'}${ourLocation}.`);
     if (result.noticeList)
-        addSuccessMessage(`checkMarkdownText v${MARKDOWN_VALIDATOR_VERSION} finished with ${result.noticeList.length ? result.noticeList.length.toLocaleString() : "zero"} notice${result.noticeList.length === 1 ? '' : 's'}`);
+        addSuccessMessage(`checkMarkdownText v${MARKDOWN_VALIDATOR_VERSION_STRING} finished with ${result.noticeList.length ? result.noticeList.length.toLocaleString() : "zero"} notice${result.noticeList.length === 1 ? '' : 's'}`);
     else
-        addSuccessMessage("No errors or warnings found by checkMarkdownText v" + MARKDOWN_VALIDATOR_VERSION)
+        addSuccessMessage(`No errors or warnings found by checkMarkdownText v${MARKDOWN_VALIDATOR_VERSION_STRING}`)
     // console.log(`  checkMarkdownText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
     // console.log("checkMarkdownText result is", JSON.stringify(result));
     return result;

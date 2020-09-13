@@ -12,7 +12,7 @@ See a list of valid book identifiers [here](http://ubsicap.github.io/usfm/identi
 
 Note that `OBS` can also be entered here as a *pseudo book identifier* in order to check an **Open Bible Stories** repo.
 
-`Book Package Check` calls `checkBookPackage()` which then calls `checkFile()` for the book file in each repo (or calls `checkRepo()` for **OBS**).
+`Book Package Check` calls `checkBookPackage()` which then calls `checkFileContents()` for the book file in each repo (or calls `checkRepo()` for **OBS**).
 
 **Warning**: Some book packages contain many files and/or very large files, and downloading them all and then checking them might slow down your browser -- maybe even causing pop-up messages asking to confirm that you want to keep waiting.
 
@@ -26,14 +26,14 @@ import { RenderRawResults } from '../demos/RenderProcessedResults';
 // You can put your own data into the following fields:
 const data = {
   username: 'unfoldingWord',
-  language_code : 'en',
+  languageCode : 'en',
   bookID : 'RUT',
   givenLocation : 'that was supplied',
   checkingOptions: {},
 }
 
 function CheckBookPackage(props) {
-  const { username, language_code, bookID, givenLocation, checkingOptions } = props.data;
+  const { username, languageCode, bookID, givenLocation, checkingOptions } = props.data;
 
   const [results, setResults] = useState(null);
 
@@ -43,11 +43,11 @@ function CheckBookPackage(props) {
     //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
     (async () => {
       // Display our "waiting" message
-      setResults(<p style={{ color: 'magenta' }}>Waiting for <b>{username}</b> {language_code} <b>{bookID}</b> check results…</p>);
-      const rawResults = await checkBookPackage(username, language_code, bookID, setResults, checkingOptions);
+      setResults(<p style={{ color: 'magenta' }}>Waiting for <b>{username}</b> {languageCode} <b>{bookID}</b> check results…</p>);
+      const rawResults = await checkBookPackage(username, languageCode, bookID, setResults, checkingOptions);
       setResults(
         <div>
-          <b>Checked</b> Door43 {username} {language_code} {bookID}<br/><br/>
+          <b>Checked</b> Door43 {username} {languageCode} {bookID}<br/><br/>
           <RenderRawResults results={rawResults} />
         </div>
       );
