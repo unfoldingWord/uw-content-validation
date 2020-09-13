@@ -38,11 +38,11 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
         // console.log(`checkRepo success: ${successString}`);
         checkRepoResult.successList.push(successString);
     }
-    function addNotice10({ priority, message, filename, bookID, C, V, lineNumber, characterIndex, extract, location, extra }) {
+    function addNotice10({ priority, message, bookID, C, V, filename, lineNumber, characterIndex, extract, location, extra }) {
         // Adds the notices to the result that we will later return
         // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
         // Note that bookID,C,V might all be empty strings (as some repos don't have BCV)
-        // console.log(`checkRepo addNotice10: (priority=${priority}) ${bookID} ${C}:${V} ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // console.log(`checkRepo addNotice10: ${priority}:${message} ${bookID} ${C}:${V} ${filename}:${lineNumber} ${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cR addNotice10: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cR addNotice10: 'priority' parameter should be a number not a '${typeof priority}'`);
         console.assert(message !== undefined, "cR addNotice10: 'message' parameter should be defined");
@@ -65,6 +65,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
         console.assert(typeof location === 'string', `cR addNotice10: 'location' parameter should be a string not a '${typeof location}'`);
         console.assert(extra !== undefined, "cR addNotice10: 'extra' parameter should be defined");
         console.assert(typeof extra === 'string', `cR addNotice10: 'extra' parameter should be a string not a '${typeof extra}'`);
+        // Add in the repoName from the outer scope
         checkRepoResult.noticeList.push({ priority, message, bookID, C, V, repoName, filename, lineNumber, characterIndex, extract, location, extra });
     }
 
@@ -85,15 +86,15 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
         console.assert(fileLocation !== undefined, "ourCheckFileContents: 'fileLocation' parameter should be defined");
         console.assert(typeof fileLocation === 'string', `ourCheckFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
 
-        const resultObject = await checkFileContents(filename, file_content, fileLocation, optionalCheckingOptions);
+        const cfcResultObject = await checkFileContents(filename, file_content, fileLocation, optionalCheckingOptions);
         // console.log("checkFileContents() returned", resultObject.successList.length, "success message(s) and", resultObject.noticeList.length, "notice(s)");
         // for (const successEntry of resultObject.successList)
         //     console.log("  ", successEntry);
 
         // Process results line by line,  appending the bookOrFileCode as an extra field as we go
-        for (const noticeEntry of resultObject.noticeList)
+        for (const cfcNoticeEntry of cfcResultObject.noticeList)
             // We add the bookOrFileCode as an extra value
-            addNotice10({ ...noticeEntry, bookID:cfBookID, extra:bookOrFileCode });
+            addNotice10({ ...cfcNoticeEntry, bookID:cfBookID, extra:bookOrFileCode });
     }
     // end of ourCheckFileContents function
 
@@ -171,8 +172,11 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
                 return;
             }
             if (repoFileContent) {
-                // console.log(`checkRepo checking ${thisFilename}`);
-                await ourCheckFileContents(bookOrFileCode, ourBookID, thisFilename, repoFileContent, ourLocation, checkingOptions);
+                // console.log(`checkRepo for ${repoName} checking ${thisFilename}`);
+                await ourCheckFileContents(bookOrFileCode, ourBookID,
+                                            // OBS has many files with the same name, so we have to give some of the path as well
+                                            repoName.endsWith('_obs')?thisFilepath.replace('content/','') :thisFilename,
+                                            repoFileContent, ourLocation, checkingOptions);
                 checkedFileCount += 1;
                 checkedFilenames.push(thisFilename);
                 checkedFilenameExtensions.add(thisFilenameExtension);
@@ -469,11 +473,11 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     // end of ourCheckFileContents function
 
     // Main code for checkBookPackage()
-    const generalLocation = ` in ${languageCode} ${bookID} book package from ${username}`;
-
     // No point in passing the branch through as a parameter
     //  coz if it's not 'master', it's unlikely to be common for all the repos
     const branch = 'master'
+
+    const generalLocation = ` in ${languageCode} ${bookID} book package from ${username} ${branch} branch`;
 
     if (bookID === 'OBS') {
         // We use the generalLocation here (does not include repo name)

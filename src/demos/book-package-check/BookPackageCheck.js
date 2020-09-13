@@ -27,12 +27,12 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
     let branch = props.branch;
     // console.log(`branch='${branch}'`);
 
-     // Clear cached files if we've changed repo
+    // Clear cached files if we've changed repo
     //  autoClearCache(bookID); // This technique avoids the complications of needing a button
 
-     let checkingOptions = { // Uncomment any of these to test them
+    let checkingOptions = { // Uncomment any of these to test them
         // 'extractLength': 25,
-        };
+    };
     // Or this allows the parameters to be specified as a BookPackageCheck property
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
 
@@ -47,20 +47,22 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
 
             // NOTE from RJH: I can't find the correct React place for this / way to do this
             //                  so it shows a warning for the user, and doesn't continue to try to process
-            if (bookID!=='OBS' && !books.isValidBookID(bookID)) {
+            if (bookID !== 'OBS' && !books.isValidBookID(bookID)) {
                 console.log(`Invalid '${bookID}' bookID given!`)
                 setResultValue(<p style={{ color: 'red' }}>Please enter a valid USFM book identifier or 'OBS'. ('<b>{bookID}</b>' is not valid.)</p>);
                 return;
             }
 
-            // Preload the reference repos
-            setResultValue(<p style={{ color: 'magenta' }}>Preloading TA/TQ/TW repos for {username} {languageCode} ready for <b>{bookID}</b> book package check…</p>);
-            for (const repoCode of ['TA', 'TQ', 'TW']) {
-                const repoName = getRepoName(languageCode, repoCode);
-                console.log(`Preloading zip file for ${repoName}…`);
-                const zipFetchSucceeded = await fetchRepositoryZipFile({ username, repository: repoName, branch });
-                if (!zipFetchSucceeded)
-                    console.log(`checkRepo: misfetched zip file for repo with ${zipFetchSucceeded}`);
+            if (bookID !== 'OBS') {
+                // Preload the reference repos
+                setResultValue(<p style={{ color: 'magenta' }}>Preloading TA/TQ/TW repos for {username} {languageCode} ready for <b>{bookID}</b> book package check…</p>);
+                for (const repoCode of ['TA', 'TQ', 'TW']) {
+                    const repoName = getRepoName(languageCode, repoCode);
+                    console.log(`Preloading zip file for ${repoName}…`);
+                    const zipFetchSucceeded = await fetchRepositoryZipFile({ username, repository: repoName, branch });
+                    if (!zipFetchSucceeded)
+                        console.log(`checkRepo: failed to fetch ${repoCode} zip file for repo with ${zipFetchSucceeded}`);
+                }
             }
 
             // Display our "waiting" message
@@ -97,78 +99,78 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
 
             function renderSummary(processedResults) {
                 return (<>
-                <p>Checked <b>{username} {languageCode} {bookID}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
-                <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount===1?'':'s'} from {processedResults.checkedRepoNames.length} repo{processedResults.checkedRepoNames.length===1?'':'s'}: <b>{processedResults.checkedRepoNames.join(', ')}</b>
-                <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>
-                <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} />.</p>
-                {/* <RenderRawResults results={rawCBPResults} /> */}
+                    <p>Checked <b>{username} {languageCode} {bookID}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount === 1 ? '' : 's'} from {processedResults.checkedRepoNames.length} repo{processedResults.checkedRepoNames.length === 1 ? '' : 's'}: <b>{processedResults.checkedRepoNames.join(', ')}</b>
+                        <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} />.</p>
+                    {/* <RenderRawResults results={rawCBPResults} /> */}
                 </>);
             }
 
             if (displayType === 'ErrorsWarnings') {
-            const processedResults = processNoticesToErrorsWarnings(rawCBPResults, processOptions);
-//             console.log(`BookPackageCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
-//   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
+                const processedResults = processNoticesToErrorsWarnings(rawCBPResults, processOptions);
+                //             console.log(`BookPackageCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
+                //   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
-            // console.log("Here now in rendering bit!");
+                // console.log("Here now in rendering bit!");
 
-            if (processedResults.errorList.length || processedResults.warningList.length)
-                setResultValue(<>
-                    {renderSummary(processedResults)}
+                if (processedResults.errorList.length || processedResults.warningList.length)
+                    setResultValue(<>
+                        {renderSummary(processedResults)}
                         {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}
-                    <RenderSuccessesErrorsWarnings results={processedResults} />
-                </>);
-            else // no errors or warnings
-                setResultValue(<>
-                    {renderSummary(processedResults)}
-                    {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}
-                    <RenderSuccessesErrorsWarnings results={processedResults} />
-                </>);
+                        <RenderSuccessesErrorsWarnings results={processedResults} />
+                    </>);
+                else // no errors or warnings
+                    setResultValue(<>
+                        {renderSummary(processedResults)}
+                        {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}
+                        <RenderSuccessesErrorsWarnings results={processedResults} />
+                    </>);
             } else if (displayType === 'SevereMediumLow') {
                 const processedResults = processNoticesToSevereMediumLow(rawCBPResults, processOptions);
-//             console.log(`BookPackageCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
-//   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
+                //             console.log(`BookPackageCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
+                //   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
                 if (processedResults.severeList.length || processedResults.mediumList.length || processedResults.lowList.length)
-                setResultValue(<>
-                    {renderSummary(processedResults)}
+                    setResultValue(<>
+                        {renderSummary(processedResults)}
                         {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}
                         <RenderSuccessesSevereMediumLow results={processedResults} />
                     </>);
                 else // no severe, medium, or low notices
-                setResultValue(<>
-                    {renderSummary(processedResults)}
-                    {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}
+                    setResultValue(<>
+                        {renderSummary(processedResults)}
+                        {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}
                         <RenderSuccessesSevereMediumLow results={processedResults} />
                     </>);
             } else if (displayType === 'SingleList') {
                 const processedResults = processNoticesToSingleList(rawCBPResults, processOptions);
-//             console.log(`BookPackageCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
-//   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
+                //             console.log(`BookPackageCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
+                //   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
                 if (processedResults.warningList.length)
-                setResultValue(<>
-                    {renderSummary(processedResults)}
+                    setResultValue(<>
+                        {renderSummary(processedResults)}
                         {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}
                         <RenderSuccessesWarningsGradient results={processedResults} />
                     </>);
                 else // no warnings
-                setResultValue(<>
-                    {renderSummary(processedResults)}
-                    {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}
+                    setResultValue(<>
+                        {renderSummary(processedResults)}
+                        {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}
                         <RenderSuccessesWarningsGradient results={processedResults} />
                     </>);
             } else setResultValue(<b style={{ color: 'red' }}>Invalid displayType='{displayType}'</b>)
 
             // console.log("Finished rendering bit.");
         })(); // end of async part in unnamedFunction
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [bookID, branch, JSON.stringify(checkingOptions), languageCode, JSON.stringify(props), username]); // end of useEffect part
 
     // {/* <div className={classes.root}> */}
     return (
         <div className="Fred">
-        {result}
+            {result}
         </div>
     );
 }

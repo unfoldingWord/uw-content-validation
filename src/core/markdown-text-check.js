@@ -50,7 +50,7 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
         if (extract) console.assert(typeof extract === 'string', `cMdT addNotice6: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cMdT addNotice6: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `cMdT addNotice6: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push({priority, message, lineNumber, characterIndex, extract, location});
+        result.noticeList.push({priority, message, filename:textName, lineNumber, characterIndex, extract, location});
     }
     // end of addNotice6 function
 

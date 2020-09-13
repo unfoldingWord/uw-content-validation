@@ -93,7 +93,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
 
     const standardisedNoticeList = givenNoticeObject.noticeList;
 
-    
+
     // Run a check through the noticeList to help discover any programming errors that need fixing
     // This section may be commented out of production code
     if (givenNoticeObject.noticeList && givenNoticeObject.noticeList.length) {
@@ -129,7 +129,10 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                     console.assert(thisLocation.indexOf(thisRepoName) < 0, `repoName is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
             }
             if (thisFilename) {
-                console.assert(thisFilename.indexOf(':') < 0 && thisFilename.indexOf('/') < 0 && thisFilename.indexOf('\\') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+                console.assert(thisFilename.indexOf(':') < 0 && thisFilename.indexOf('\\') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+                // NOTE: Some OBS messages have to include part of the part in the 'filename' (to prevent ambiguity) so we don't disallow forward slash
+                if (!thisRepoName || !thisRepoName.endsWith('_obs'))
+                    console.assert(thisFilename.indexOf('/') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 if (thisLocation)
                     console.assert(thisLocation.indexOf(thisFilename) < 0, `filename is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
             }
