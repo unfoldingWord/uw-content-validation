@@ -80,7 +80,7 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
       rawCBPsResults.bookIDList = bookIDList;
       rawCBPsResults.checkedOptions = checkingOptions;
 
-      console.log("Here with CBPs rawCBPsResults", typeof rawCBPsResults);
+      // console.log("Here with CBPs rawCBPsResults", typeof rawCBPsResults);
       // Now do our final handling of the result -- we have some options available
       let processOptions = { // Uncomment any of these to test them
         // 'maximumSimilarMessages': 3, // default is 2

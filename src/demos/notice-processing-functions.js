@@ -93,12 +93,16 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
 
     const standardisedNoticeList = givenNoticeObject.noticeList;
 
+    
     // Run a check through the noticeList to help discover any programming errors that need fixing
     // This section may be commented out of production code
     if (givenNoticeObject.noticeList && givenNoticeObject.noticeList.length) {
         const numberStore = {}, duplicatePriorityList = [];
         for (const thisGivenNotice of standardisedNoticeList) {
             const thisPriority = thisGivenNotice.priority, thisMsg = thisGivenNotice.message;
+            console.assert(typeof thisPriority === 'number' && thisPriority>0 && thisPriority<10000, `BAD PRIORITY for ${JSON.stringify(thisGivenNotice)}`);
+            console.assert(typeof thisMsg === 'string' && thisMsg.length>10, `BAD MESSAGE for ${JSON.stringify(thisGivenNotice)}`);
+
             // Check that notice priority numbers are unique (to detect programming errors)
             const oldMsg = numberStore[thisPriority];
             if (oldMsg && oldMsg !== thisMsg && duplicatePriorityList.indexOf(thisPriority) < 0
@@ -115,6 +119,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 console.log(`PROGRAMMING ERROR: priority ${thisPriority} has at least two different messages: '${oldMsg}' and '${thisMsg}'`);
                 duplicatePriorityList.push(thisPriority); // so that we only give the error once
             }
+
             // Check fields for bad values, and also across fields for unexpected combinations
             const thisRepoName = thisGivenNotice.repoName, thisFilename = thisGivenNotice.filename, thisLineNumber = thisGivenNotice.lineNumber,
                 thisRowID = thisGivenNotice.rowID, thisFieldName = thisGivenNotice.fieldName, thisLocation = thisGivenNotice.location
@@ -148,6 +153,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             numberStore[thisPriority] = thisMsg;
         }
     }
+
 
     const resultObject = { // inititalise with our new fields
         numIgnoredNotices: 0,
