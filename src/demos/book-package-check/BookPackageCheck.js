@@ -54,7 +54,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             }
 
             // Preload the reference repos
-            setResultValue(<p style={{ color: 'magenta' }}>Preloading TA/TQ/TW repos for {username} {languageCode}…</p>);
+            setResultValue(<p style={{ color: 'magenta' }}>Preloading TA/TQ/TW repos for {username} {languageCode} ready for <b>{bookID}</b> book package check…</p>);
             for (const repoCode of ['TA', 'TQ', 'TW']) {
                 const repoName = getRepoName(languageCode, repoCode);
                 console.log(`Preloading zip file for ${repoName}…`);
