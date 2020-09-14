@@ -3,7 +3,7 @@ import { getFile } from '../core/getApi';
 // import { consoleLogObject } from '../core/utilities';
 
 
-// const QUOTE_VALIDATOR_VERSION_STRING = '0.3.1';
+// const QUOTE_VALIDATOR_VERSION_STRING = '0.3.2';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -272,7 +272,7 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, gi
             const extract = fieldText.substring(0, halfLength) + (fieldText.length > 2*halfLength? '…':'') + fieldText.substring(fieldText.length-halfLength, fieldText.length);
             // console.log(`722 fieldText='${fieldText}'${extraText}`);
             // console.log(`722 verseText='${verseText}'`);
-            addNotice6({priority:722, message:"Unable to find original language quote in verse text", extract, location:ourLocation});
+            addNotice6({priority:912, message:"Unable to find original language quote in verse text", extract, location:ourLocation});
 
         }
     }

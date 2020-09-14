@@ -6,7 +6,7 @@ import checkTNLinks from './tn-links-check';
 import checkOriginalLanguageQuote from './quote-check';
 
 
-// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.4.1';
+// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.4.2';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -362,9 +362,9 @@ async function checkTN_TSVDataRow(line, bookID, C, V, givenRowLocation, optional
             ourCheckTextField(rowID, 'OrigQuote', origQuote, false, ourRowLocation, optionalCheckingOptions);
             await ourCheckTNOriginalLanguageQuote(rowID, 'OrigQuote', origQuote, ourRowLocation, optionalCheckingOptions);
         }
-        else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
-            if (V !== 'intro')
-                addNotice6to9({priority:276, message:"Missing OrigQuote field", rowID, location:ourRowLocation});
+        else // TODO: Find more details about when these fields are really compulsory (and when they're not, e.g., for 'intro') ???
+            if (V !== 'intro' && occurrence !== '0')
+                addNotice6to9({priority:913, message:"Missing OrigQuote field", rowID, location:ourRowLocation});
 
         if (occurrence.length) { // This should usually be a digit
             if (occurrence === '0') { // zero means that it doesn't occur
