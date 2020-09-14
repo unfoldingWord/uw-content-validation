@@ -568,7 +568,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
                     checkedRepoNames.push(repoCode);
                 } catch (cBPgfError) {
                     console.log("ERROR: Failed to load", username, repoName, filename, branch, cBPgfError + '');
-                    addNotice10({ priority: 996, message: "Failed to load", bookID, repoName, filename, location: `${repoLocation} ${filename}: ${cBPgfError}`, extra: repoCode });
+                    addNotice10({ priority: 996, message: "Failed to load", bookID, repoName, filename, location: `${repoLocation}: ${cBPgfError}`, extra: repoCode });
                     continue;
                 }
 

@@ -54,7 +54,7 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
     }
     // end of addNotice6 function
 
-    function ourCheckTextField(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
+    function ourCheckTextField(lineNumber, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
         /**
         * @description - checks the given text field and processes the returned results
         * @param {String} fieldName - name of the field being checked
@@ -69,13 +69,13 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
 
         // Updates the global list of notices
         // console.log(`cMdT ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${optionalFieldLocation}, …)`);
-        console.assert(fieldName !== undefined, "cMdT ourCheckTextField: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName === 'string', `cMdT ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        console.assert(lineNumber !== undefined, "cMdT ourCheckTextField: 'lineNumber' parameter should be defined");
+        console.assert(typeof lineNumber === 'number', `cMdT ourCheckTextField: 'lineNumber' parameter should be a number not a '${typeof lineNumber}'`);
         console.assert(fieldText !== undefined, "cMdT ourCheckTextField: 'fieldText' parameter should be defined");
         console.assert(typeof fieldText === 'string', `cMdT ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         console.assert(allowedLinks === true || allowedLinks === false, "cMdT ourCheckTextField: allowedLinks parameter must be either true or false");
 
-        const dbtcResultObject = checkTextField(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
+        const dbtcResultObject = checkTextField('', fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -87,13 +87,13 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
             if (!noticeEntry.message.startsWith("Unexpected doubled * characters") // 577 Markdown allows this
                 && !noticeEntry.message.startsWith("Unexpected * character after space") // 191
             )
-                addNotice6(noticeEntry);
+                addNotice6({ ...noticeEntry, lineNumber });
         }
     }
     // end of ourCheckTextField function
 
 
-    function checkMarkdownLineContents(lineName, lineText, lineLocation) {
+    function checkMarkdownLineContents(lineNumber, lineText, lineLocation) {
 
         // console.log(`checkMarkdownLineContents for '${lineName} ${lineText}' at${lineLocation}`);
         let thisText = lineText
@@ -115,7 +115,7 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
         // console.log(`After removing more leading spaces have '${thisText}'`);
 
         if (thisText)
-            ourCheckTextField(lineName, thisText, true, lineLocation, optionalCheckingOptions);
+            ourCheckTextField(lineNumber, thisText, true, lineLocation, optionalCheckingOptions);
     }
     // end of checkMarkdownLine function
 
@@ -145,7 +145,7 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
             if (numLeadingSpaces && lastNumLeadingSpaces && numLeadingSpaces !== lastNumLeadingSpaces)
                 addNotice6({priority:472, message:"Nesting seems confused", lineNumber:n, characterIndex:0, location:ourLocation});
 
-            checkMarkdownLineContents(`line ${n.toLocaleString()}`, line, ourLocation);
+            checkMarkdownLineContents(n, line, ourLocation);
         } else {
             // This is a blank line
             numLeadingSpaces = 0;

@@ -86,7 +86,7 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, gi
                 // console.log("Fetched file_content for", repoName, filename, typeof originalUSFM, originalUSFM.length);
             } catch (gcUHBerror) {
                 console.log("ERROR: Failed to load", username, originalLanguageRepoCode, filename, branch, gcUHBerror.message);
-                addNotice6({ priority: 996, message: "Failed to load", location: `${ourLocation} ${filename}: ${gcUHBerror}`, extra: originalLanguageRepoName });
+                addNotice6({ priority: 996, message: "Failed to load", filename, location: `${ourLocation}: ${gcUHBerror}`, extra: originalLanguageRepoName });
             }
         } else if (originalLanguageRepoCode === 'UGNT') {
             try {
@@ -94,7 +94,7 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, gi
                 // console.log("Fetched file_content for", repoName, filename, typeof originalUSFM, originalUSFM.length);
             } catch (gcUGNTerror) {
                 console.log("ERROR: Failed to load", username, originalLanguageRepoCode, filename, branch, gcUGNTerror.message);
-                addNotice6({ priority: 996, message: "Failed to load", location: `${ourLocation} ${filename}: ${gcUGNTerror}`, extra: originalLanguageRepoName });
+                addNotice6({ priority: 996, message: "Failed to load", filename, location: `${ourLocation}: ${gcUGNTerror}`, extra: originalLanguageRepoName });
             }
         }
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 // import { withStyles } from '@material-ui/core/styles';
 import * as books from '../../core/books/books';
 import { getRepoName, ourParseInt, fetchRepositoryZipFile } from '../../core';
-import checkBookPackages from './checkBookPackages';
+import checkBookPackages from '../book-packages-check/checkBookPackages';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
 // import { consoleLogObject } from '../../core/utilities';
@@ -11,11 +11,11 @@ import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSu
 // const BPS_VALIDATOR_VERSION_STRING = '0.1.1';
 
 
-function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
+function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     // Check a single Bible book across many repositories
-    const [result, setResultValue] = useState("Waiting-CheckBookPackages");
+    const [result, setResultValue] = useState("Waiting-CheckAllBookPackages");
 
-    // console.log(`I'm here in BookPackagesCheck v${BPS_VALIDATOR_VERSION_STRING}`);
+    // console.log(`I'm here in AllBookPackagesCheckBookPackagesCheck v${BPS_VALIDATOR_VERSION_STRING}`);
     // consoleLogObject("props", props);
     // consoleLogObject("props.classes", props.classes);
 
@@ -23,15 +23,17 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     // console.log(`username='${username}'`);
     let languageCode = props.languageCode;
     // console.log(`languageCode='${languageCode}'`);
-    let bookIDs = props.bookIDs;
-    // console.log(`bookIDs='${bookIDs}'`);
     let branch = props.branch;
     // console.log(`branch='${branch}'`);
 
     // Clear cached files if we've changed repo
     //  autoClearCache(bookIDs); // This technique avoids the complications of needing a button
 
-    let bookIDList = [];
+    // Enter a string containing UPPERCASE USFM book identifiers separated only by commas
+    //  and can also include OBS (for Open Bible Stories)
+    const bookIDs = 'GEN,EXO,LEV,NUM,DEU,JOS,JDG,RUT,1SA,2SA,1KI,2KI,1CH,2CH,EZR,NEH,EST,JOB,PSA,PRO,ECC,SNG,ISA,JER,LAM,EZK,DAN,HOS,JOL,AMO,OBA,JON,MIC,NAM,HAB,ZEP,HAG,ZEC,MAL,MAT,MRK,LUK,JHN,ACT,ROM,1CO,2CO,GAL,EPH,PHP,COL,1TH,2TH,1TI,2TI,TIT,PHM,HEB,JAS,1PE,2PE,1JN,2JN,3JN,JUD,REV,OBS';
+
+  let bookIDList = [];
     let bookIDInvalid;
     for (let bookID of bookIDs.split(',')) {
         bookID = bookID.trim();
@@ -58,15 +60,15 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
 
         // Preload the reference repos
         let preloadCount = 1;
-        for (const repoCode of ['UHB','UGNT', 'TA','TQ','TW']) {
-        setResultValue(<p style={{ color: 'magenta' }}>Preloading <b>{repoCode}</b> repo ({preloadCount}/5) ready for {username} {languageCode} book packages check…</p>);
+        for (const repoCode of ['UHB','UGNT', 'TA','TQ','TW', 'TN','ULT','UST','TN']) {
+        setResultValue(<p style={{ color: 'magenta' }}>Preloading <b>{repoCode}</b> repo ({preloadCount}/9) ready for {username} {languageCode} all book packages check…</p>);
             const repoName = getRepoName(languageCode, repoCode);
             console.log(`Preloading zip file for ${repoName}…`);
             const zipFetchSucceeded = await fetchRepositoryZipFile({ username, repository: repoName, branch });
             if (!zipFetchSucceeded)
-                console.log(`BookPackagesCheck: misfetched ${repoCode} zip file for repo with ${zipFetchSucceeded}`);
+                console.log(`AllBookPackagesCheck: misfetched ${repoCode} zip file for repo with ${zipFetchSucceeded}`);
             preloadCount += 1;
-            }
+          }
 
       // Display our "waiting" message
       setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {languageCode} <b>{bookIDList.join(', ')}</b> book packages…</p>);
@@ -199,4 +201,4 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
 // });
 
 //export default withStyles(styles)(BookPackagesCheck);
-export default BookPackagesCheck;
+export default AllBookPackagesCheck;

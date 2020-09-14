@@ -10,6 +10,18 @@ let sections = [
 		content: 'README.md',
 	},
 	{
+		name: 'All Book Packages Checker Demo',
+		components: () => {
+			const componentNames = [
+				'all-book-packages-check',
+			];
+			return componentNames.map(componentName => {
+				const filename = upperFirst(camelCase(componentName));
+				return path.resolve(__dirname, `src/demos/${componentName}`, `${filename}.js`)
+			});
+		}
+	},
+	{
 		name: 'Book Packages Checker Demo',
 		components: () => {
 			const componentNames = [

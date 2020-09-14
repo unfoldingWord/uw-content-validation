@@ -227,13 +227,13 @@ export function RenderFileDetails({ repoName, filename, lineNumber, rowID, field
     return result;
 }
 
-export function RenderSuccessescolored({ results }) {
+export function RenderSuccessesColored({ results }) {
     // Display our array of success message strings in a nicer format
     //
     // Expects results to contain:
     //      1/ successList
-    // console.log("In RenderSuccessescolored with ", successList);
-    // consoleLogObject('RenderSuccessescolored results', results);
+    // console.log("In RenderSuccessesColored with ", successList);
+    // consoleLogObject('RenderSuccessesColored results', results);
 
     let haveWarnings;
     try { haveWarnings = results.errorList.length || results.warningList.length; }
@@ -263,7 +263,7 @@ export function RenderProcessedArray({ arrayType, results }) {
 
     if (arrayType === 's')
         return <>
-            <RenderSuccessescolored results={results} />
+            <RenderSuccessesColored results={results} />
         </>;
     else { // not 's' (successList)
         const myList = arrayType === 'e' ? results.errorList : results.warningList;
@@ -432,7 +432,7 @@ export function RenderSuccessesErrorsWarnings({ results }) {
 
     return <>
         <b style={{ color: haveErrorsOrWarnings ? 'limegreen' : 'green' }}>{successCount.toLocaleString()} check{results.successList.length === 1 ? '' : 's'} completed</b>{results.successList.length ? ':' : ''}
-        <RenderSuccessescolored results={results} />
+        <RenderSuccessesColored results={results} />
         {haveErrorsOrWarnings ? <RenderErrorsAndWarnings results={results} /> : ""}
     </>;
 }
@@ -455,7 +455,7 @@ export function RenderSuccessesSevereMediumLow({ results }) {
 
     return <>
         <b style={{ color: haveErrorsOrWarnings ? 'limegreen' : 'green' }}>{successCount.toLocaleString()} check{results.successList.length === 1 ? '' : 's'} completed</b>{results.successList.length ? ':' : ''}
-        <RenderSuccessescolored results={results} />
+        <RenderSuccessesColored results={results} />
         {haveErrorsOrWarnings ? <RenderSevereMediumLow results={results} /> : ""}
     </>;
 }
@@ -475,7 +475,7 @@ export function RenderSuccessesWarningsGradient({ results }) {
 
     return <>
         <b style={{ color: results.warningList.length ? 'limegreen' : 'green' }}>{successCount.toLocaleString()} check{results.successList.length === 1 ? '' : 's'} completed</b>{results.successList.length ? ':' : ''}
-        <RenderSuccessescolored results={results} />
+        <RenderSuccessesColored results={results} />
         <b style={{ color: results.warningList.length ? 'orange' : 'green' }}>{results.warningList.length.toLocaleString()} warning notice{results.warningList.length === 1 ? '' : 's'}</b>{results.warningList.length ? ':' : ''}
         <small style={{ color: 'Gray' }}>{results.numSuppressedWarnings ? " (" + results.numSuppressedWarnings.toLocaleString() + " similar one" + (results.numSuppressedWarnings === 1 ? '' : 's') + " suppressed)" : ''}</small>
         {results.warningList.length ? <RenderWarningsGradient results={results} /> : ""}

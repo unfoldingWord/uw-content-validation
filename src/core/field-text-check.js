@@ -44,7 +44,7 @@ export function checkTextField(fieldName, fieldText, allowedLinks, optionalField
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `dBTCs addNotice6: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "dBTCs addNotice6: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `dBTCs addNotice6: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
-        result.noticeList.push(noticeObject);
+        result.noticeList.push({ ...noticeObject, fieldName });
     }
 
 

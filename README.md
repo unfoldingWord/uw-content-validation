@@ -81,12 +81,12 @@ However, the user is, of course, free to create their own alternative version of
 
 Still unfinished (in rough priority order):
 
-1. Standardise parameters according to best practice (i.e., dereferencing, etc.)
+1. Testing and fine-tuning of error messages (e.g., comparing with tX), especially suppression of false alarms
+1. Optimise various different file fetches and caches (incl. using zips) for the demos
 1. Document the API with (JsDoc)
 1. Checking of general markdown and naked links (esp. in plain text and markdown files)
-1. Testing and fine-tuning of error messages (e.g., comparing with tX), especially suppression of false alarms
+1. Standardise parameters according to best practice (i.e., dereferencing, etc.)
 1. Improve general documentation in the code and readMe files
-1. Optimise various different file fetches and caches (incl. using zips) for the demos
 1. Is our `RepoCheck` the same as `ResourceContainerCheck`? Or is the latter more specific?
 1. Understand and standardise React stuff in the demos, e.g., e.g., withStyles, etc.
 1. Write unit tests (especially for the core functions) and get them passing, including on GitHub push -- is it Cypress or Jest that's the right tool for this? Or Jest for the core functions? Cypress for some basic tests of the demos?
@@ -97,9 +97,9 @@ Still unfinished (in rough priority order):
 
 Known bugs:
 
-1. The `location` field may still contain information which overlaps with newer fields like fieldName, etc.
 1. Work on removing false alarms for end-users is not yet completed
-1. Work on checking links (esp. naked links) is not yet completed.
+1. Work on checking links (esp. naked links) in text files is not yet completed.
+1. Work on checking the forthcoming TSV annotation files is not yet completed.
 
 ## Functionality and Limitations
 
