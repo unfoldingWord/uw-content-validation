@@ -57,7 +57,7 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         // console.log("Started BookPackagesCheck.unnamedFunction()");
 
         // Preload the reference repos
-        setResultValue(<p style={{ color: 'magenta' }}>Preloading UHB/UGNT, and TA/TQ/TW repos for {username} {languageCode}…</p>);
+        setResultValue(<p style={{ color: 'magenta' }}>Preloading UHB/UGNT, and TA/TQ/TW repos for {username} {languageCode} book packages check…</p>);
             for (const repoCode of ['UHB','UGNT', 'TA','TQ','TW']) {
                 const repoName = getRepoName(languageCode, repoCode);
                 console.log(`Preloading zip file for ${repoName}…`);

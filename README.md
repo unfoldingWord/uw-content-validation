@@ -58,6 +58,7 @@ There are two compulsory fields in all of these notice objects:
 
 All of the following fields may be missing or undefined, i.e., they're all optional:
 
+1. `details`: More details about the notice (if relevant)
 1. `bookID`: The 3-character UPPERCASE [book identifier](http://ubsicap.github.io/usfm/identification/books.html) or [OBS](https://www.openbiblestories.org/) (if relevant)
 1. `C`: The chapter number or OBS story number (if relevant)
 1. `V`: The verse number or OBS frame number (if relevant)
@@ -80,7 +81,6 @@ However, the user is, of course, free to create their own alternative version of
 
 Still unfinished (in rough priority order):
 
-1. Finish adding lineNumber, fileName, repoName as separate optional notice fields
 1. Standardise parameters according to best practice (i.e., dereferencing, etc.)
 1. Document the API with (JsDoc)
 1. Checking of general markdown and naked links (esp. in plain text and markdown files)
@@ -97,8 +97,7 @@ Still unfinished (in rough priority order):
 
 Known bugs:
 
-1. At the moment, the relevant `repoName`, `filename`, and `lineNumber` information is not yet all properly added to the notice objects -- also the `location` field may still contain overlapping information
-1. The line number in the USFM Grammar check doesn't account for blank lines, so the real line number may be larger. (This is a bug in the BCS library.)
+1. The `location` field may still contain information which overlaps with newer fields like fieldName, etc.
 1. Work on removing false alarms for end-users is not yet completed
 1. Work on checking links (esp. naked links) is not yet completed.
 

@@ -97,7 +97,7 @@ let sections = [
 		// content: 'src/core/README.md',
 		sections: [
 			{
-				name: 'Book Package check',
+				name: 'Book Package check (with raw results)',
 				content: 'src/core/book-package-check.md',
 				// description: ''
 			}
@@ -108,7 +108,7 @@ let sections = [
 		// content: 'src/core/README.md',
 		sections: [
 			{
-				name: 'Repo check',
+				name: 'Repo check (with raw results)',
 				content: 'src/core/repo-check.md',
 				// description: ''
 			}
@@ -119,7 +119,7 @@ let sections = [
 		// content: 'src/core/README.md',
 		sections: [
 			{
-				name: 'File contents check',
+				name: 'File contents check (with raw results)',
 				content: 'src/core/file-check.md',
 				// description: ''
 			}

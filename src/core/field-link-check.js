@@ -17,7 +17,7 @@ async function startLiveLinksCheck(linksList, existingNoticeList, callbackFuncti
     let result = { noticeList: existingNoticeList };
 
     function addNotice5({priority,message, characterIndex, extract, location}) {
-        console.log(`sLLC Link Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        console.log(`sLLC Link Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority!==undefined, "sLLC addNotice5: 'priority' parameter should be defined");
         console.assert(typeof priority==='number', `sLLC addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message!==undefined, "sLLC addNotice5: 'message' parameter should be defined");
@@ -68,7 +68,7 @@ function checkFieldLinks(fieldName, fieldText, linkOptions, optionalFieldLocatio
     let result = { noticeList: [] };
 
     function addNotice5({priority,message, characterIndex, extract, location}) {
-        console.log(`cFLs addNotice5: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        console.log(`cFLs addNotice5: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority!==undefined, "cFLs addNotice5: 'priority' parameter should be defined");
         console.assert(typeof priority==='number', `cFLs addNotice5: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message!==undefined, "cFLs addNotice5: 'message' parameter should be defined");

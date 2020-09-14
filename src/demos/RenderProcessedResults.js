@@ -131,6 +131,7 @@ export function RenderRawResults({ results }) {
         { title: 'Priority', field: 'priority', type: 'numeric' },
         { title: 'Message', field: 'message' },
     ];
+    if (allPropertiesSet.has('details')) headerData = headerData.concat([{ title: 'Details', field: 'details' }]);
     if (allPropertiesSet.has('bookID')) headerData = headerData.concat([{ title: 'Book', field: 'bookID' }]);
     if (allPropertiesSet.has('C') || allPropertiesSet.has('V')) {
         let CName = '???', VName = '???';
@@ -165,6 +166,21 @@ export function RenderRawResults({ results }) {
             options={{ sorting: true, exportButton: true, exportAllData: true }}
         />
     </>;
+}
+
+
+export function RenderMessage({ color, message, details }) {
+    /**
+    * @description - Displays the message plus details if specified
+    * @param {String} color - color field for the message style
+    * @param {String} message - notice text
+    * @param {String} details - (optional) extra notice text
+    * @return {String} - rendered HTML for the given reference
+    */
+    let detailsString = '';
+    if (details && details.length)
+        detailsString = ' with ' + (details[0] === '(' ? details : `'${details}'`);
+    return <><b style={{ color: color }}>{message}</b>{detailsString}</>;
 }
 
 
@@ -211,13 +227,13 @@ export function RenderFileDetails({ repoName, filename, lineNumber, rowID, field
     return result;
 }
 
-export function RenderSuccessesColoured({ results }) {
+export function RenderSuccessescolored({ results }) {
     // Display our array of success message strings in a nicer format
     //
     // Expects results to contain:
     //      1/ successList
-    // console.log("In RenderSuccessesColoured with ", successList);
-    // consoleLogObject('RenderSuccessesColoured results', results);
+    // console.log("In RenderSuccessescolored with ", successList);
+    // consoleLogObject('RenderSuccessescolored results', results);
 
     let haveWarnings;
     try { haveWarnings = results.errorList.length || results.warningList.length; }
@@ -247,16 +263,16 @@ export function RenderProcessedArray({ arrayType, results }) {
 
     if (arrayType === 's')
         return <>
-            <RenderSuccessesColoured results={results} />
+            <RenderSuccessescolored results={results} />
         </>;
     else { // not 's' (successList)
         const myList = arrayType === 'e' ? results.errorList : results.warningList;
         return <ul>
             {myList.map(function (listEntry, index) {
                 return <li key={index}>
-                    <b style={{ color: arrayType === 'e' ? 'red' : 'orange' }}>{listEntry.message}</b>
+                    <RenderMessage color={arrayType === 'e' ? 'red' : 'orange'} message={listEntry.message} details={listEntry.details} />
                     <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
-                    <RenderFileDetails repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName}/>
+                    <RenderFileDetails repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
                     {listEntry.characterIndex > 0 ? " (at character " + (listEntry.characterIndex + 1) + ")" : ""}
                     <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
                     {listEntry.location}
@@ -268,7 +284,7 @@ export function RenderProcessedArray({ arrayType, results }) {
 }
 
 
-export function RenderGivenArray({ array, colour }) {
+export function RenderGivenArray({ array, color }) {
     // Display our array of objects in a nicer format
     //  priority (integer), message (string),
     //  plus possible optional fields:
@@ -282,9 +298,9 @@ export function RenderGivenArray({ array, colour }) {
     return <ul>
         {array.map(function (listEntry, index) {
             return <li key={index}>
-                <b style={{ color: colour }}>{listEntry.message}</b>
+                <RenderMessage color={color} message={listEntry.message} details={listEntry.details} />
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
-                <RenderFileDetails repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName}/>
+                <RenderFileDetails repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
                 {listEntry.characterIndex !== undefined && listEntry.characterIndex >= 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
                 <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
                 {listEntry.location}
@@ -295,13 +311,13 @@ export function RenderGivenArray({ array, colour }) {
 }
 
 
-export function getGradientColour(priorityValue) {
+export function getGradientcolor(priorityValue) {
     // priorityValue is in range 1..999
     //
-    // Returns a colour value from red (highest priority) to orange (lower)
+    // Returns a color value from red (highest priority) to orange (lower)
     const red = `0${Math.floor(priorityValue * 255 / 999).toString(16)}`.slice(-2);
     // const green = `0${Math.floor((1000-priorityValue) * 55 / 999).toString(16)}`.slice(-2);
-    // console.log(`getGradientColour(${priorityValue}) -> red='${red}' green='${green}'`)
+    // console.log(`getGradientcolor(${priorityValue}) -> red='${red}' green='${green}'`)
     return `#${red}0000`; // or `#${red}${green}00`
 }
 
@@ -318,11 +334,11 @@ export function RenderWarningsGradient({ results }) {
 
     return <ul>
         {results.warningList.map(function (listEntry, index) {
-            const thisColour = getGradientColour(listEntry.priority);
+            const thiscolor = getGradientcolor(listEntry.priority);
             return <li key={index}>
-                <b style={{ color: thisColour }}>{listEntry.message}</b>
+                <RenderMessage color={thiscolor} message={listEntry.message} details={listEntry.details} />
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
-                <RenderFileDetails repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName}/>
+                <RenderFileDetails repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
                 {listEntry.characterIndex !== undefined && listEntry.characterIndex >= 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
                 <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
                 {listEntry.location}
@@ -367,7 +383,7 @@ export function RenderSevere({ results }) {
     return <>
         <b style={{ color: results.severeList.length ? 'red' : 'green' }}>{results.severeList.length.toLocaleString()} severe error{results.severeList.length === 1 ? '' : 's'}</b>{results.severeList.length ? ':' : ''}
         <small style={{ color: 'Gray' }}>{results.numSevereSuppressed ? " (" + results.numSevereSuppressed.toLocaleString() + " similar one" + (results.numSevereSuppressed === 1 ? '' : 's') + " suppressed)" : ''}</small>
-        <RenderGivenArray array={results.severeList} colour='red' />
+        <RenderGivenArray array={results.severeList} color='red' />
     </>;
 }
 export function RenderMedium({ results }) {
@@ -376,7 +392,7 @@ export function RenderMedium({ results }) {
     return <>
         <b style={{ color: results.mediumList.length ? 'maroon' : 'green' }}>{results.mediumList.length.toLocaleString()} medium error{results.mediumList.length === 1 ? '' : 's'}</b>{results.mediumList.length ? ':' : ''}
         <small style={{ color: 'Gray' }}>{results.numMediumSuppressed ? " (" + results.numMediumSuppressed.toLocaleString() + " similar one" + (results.numMediumSuppressed === 1 ? '' : 's') + " suppressed)" : ''}</small>
-        <RenderGivenArray array={results.mediumList} colour='maroon' />
+        <RenderGivenArray array={results.mediumList} color='maroon' />
     </>;
 }
 export function RenderLow({ results }) {
@@ -385,7 +401,7 @@ export function RenderLow({ results }) {
     return <>
         <b style={{ color: results.lowList.length ? 'orange' : 'green' }}>{results.lowList.length.toLocaleString()} other warning{results.lowList.length === 1 ? '' : 's'}</b>{results.lowList.length ? ':' : ''}
         <small style={{ color: 'Gray' }}>{results.numLowSuppressed ? " (" + results.numLowSuppressed.toLocaleString() + " similar one" + (results.numLowSuppressed === 1 ? '' : 's') + " suppressed)" : ''}</small>
-        <RenderGivenArray array={results.lowList} colour='orange' />
+        <RenderGivenArray array={results.lowList} color='orange' />
     </>;
 }
 export function RenderSevereMediumLow({ results }) {
@@ -416,7 +432,7 @@ export function RenderSuccessesErrorsWarnings({ results }) {
 
     return <>
         <b style={{ color: haveErrorsOrWarnings ? 'limegreen' : 'green' }}>{successCount.toLocaleString()} check{results.successList.length === 1 ? '' : 's'} completed</b>{results.successList.length ? ':' : ''}
-        <RenderSuccessesColoured results={results} />
+        <RenderSuccessescolored results={results} />
         {haveErrorsOrWarnings ? <RenderErrorsAndWarnings results={results} /> : ""}
     </>;
 }
@@ -439,7 +455,7 @@ export function RenderSuccessesSevereMediumLow({ results }) {
 
     return <>
         <b style={{ color: haveErrorsOrWarnings ? 'limegreen' : 'green' }}>{successCount.toLocaleString()} check{results.successList.length === 1 ? '' : 's'} completed</b>{results.successList.length ? ':' : ''}
-        <RenderSuccessesColoured results={results} />
+        <RenderSuccessescolored results={results} />
         {haveErrorsOrWarnings ? <RenderSevereMediumLow results={results} /> : ""}
     </>;
 }
@@ -459,7 +475,7 @@ export function RenderSuccessesWarningsGradient({ results }) {
 
     return <>
         <b style={{ color: results.warningList.length ? 'limegreen' : 'green' }}>{successCount.toLocaleString()} check{results.successList.length === 1 ? '' : 's'} completed</b>{results.successList.length ? ':' : ''}
-        <RenderSuccessesColoured results={results} />
+        <RenderSuccessescolored results={results} />
         <b style={{ color: results.warningList.length ? 'orange' : 'green' }}>{results.warningList.length.toLocaleString()} warning notice{results.warningList.length === 1 ? '' : 's'}</b>{results.warningList.length ? ':' : ''}
         <small style={{ color: 'Gray' }}>{results.numSuppressedWarnings ? " (" + results.numSuppressedWarnings.toLocaleString() + " similar one" + (results.numSuppressedWarnings === 1 ? '' : 's') + " suppressed)" : ''}</small>
         {results.warningList.length ? <RenderWarningsGradient results={results} /> : ""}

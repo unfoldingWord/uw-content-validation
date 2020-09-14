@@ -30,23 +30,23 @@ async function CheckAnnotationRows(annotationType, bookID, filename, tableText, 
         // console.log(`CheckAnnotationRows success: ${successString}`);
         result.successList.push(successString);
     }
-    function addNoticeCV8({ priority, message, C, V, rowID, lineNumber, characterIndex, extract, location }) {
-        // console.log(`CheckAnnotationRows notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(priority !== undefined, "ATSV addNoticeCV8: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', `ATSV addNoticeCV8: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        console.assert(message !== undefined, "ATSV addNoticeCV8: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', `ATSV addNoticeCV8: 'message' parameter should be a string not a '${typeof message}': ${message}`);
+    function addNoticeCV8(noticeObject) {
+        // console.log(`CheckAnnotationRows notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        console.assert(noticeObject.priority !== undefined, "ATSV addNoticeCV8: 'priority' parameter should be defined");
+        console.assert(typeof noticeObject.priority === 'number', `ATSV addNoticeCV8: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        console.assert(noticeObject.message !== undefined, "ATSV addNoticeCV8: 'message' parameter should be defined");
+        console.assert(typeof noticeObject.message === 'string', `ATSV addNoticeCV8: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
         // console.assert(C !== undefined, "ATSV addNoticeCV8: 'C' parameter should be defined");
-        if (C) console.assert(typeof C === 'string', `ATSV addNoticeCV8: 'C' parameter should be a string not a '${typeof C}': ${C}`);
+        if (noticeObject.C) console.assert(typeof noticeObject.C === 'string', `ATSV addNoticeCV8: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
         // console.assert(V !== undefined, "ATSV addNoticeCV8: 'V' parameter should be defined");
-        if (V) console.assert(typeof V === 'string', `ATSV addNoticeCV8: 'V' parameter should be a string not a '${typeof V}': ${V}`);
+        if (noticeObject.V) console.assert(typeof noticeObject.V === 'string', `ATSV addNoticeCV8: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
         // console.assert(characterIndex !== undefined, "ATSV addNoticeCV8: 'characterIndex' parameter should be defined");
-        if (characterIndex) console.assert(typeof characterIndex === 'number', `ATSV addNoticeCV8: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
+        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `ATSV addNoticeCV8: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
         // console.assert(extract !== undefined, "ATSV addNoticeCV8: 'extract' parameter should be defined");
-        if (extract) console.assert(typeof extract === 'string', `ATSV addNoticeCV8: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
-        console.assert(location !== undefined, "ATSV addNoticeCV8: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', `ATSV addNoticeCV8: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push({ priority, message, bookID, C, V, filename, rowID, lineNumber, characterIndex, extract, location });
+        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `ATSV addNoticeCV8: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        console.assert(noticeObject.location !== undefined, "ATSV addNoticeCV8: 'location' parameter should be defined");
+        console.assert(typeof noticeObject.location === 'string', `ATSV addNoticeCV8: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        result.noticeList.push({ ...noticeObject, bookID, filename });
     }
 
 

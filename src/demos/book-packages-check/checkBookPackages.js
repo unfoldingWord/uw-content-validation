@@ -19,32 +19,32 @@ async function checkBookPackages(username, languageCode, bookIDList, setResultVa
     //     checkBookPackagesResult.successList.push(successString);
     // }
 
-    function addNotice10({priority,message, bookID,C,V, repoName, filename, rowID, lineNumber, fieldName, characterIndex, extract, location, extra}) {
+    function addNotice10(noticeObject) {
         // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
-        console.log(`cBPs addNotice10: (priority=${priority}) ${extra} ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(priority !== undefined, "cBPs addNotice10: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', `cBPs addNotice10: 'priority' parameter should be a number not a '${typeof priority}'`);
-        console.assert(message !== undefined, "cBPs addNotice10: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', `cBPs addNotice10: 'message' parameter should be a string not a '${typeof message}'`);
+        console.log(`cBPs addNotice10: (priority=${noticeObject.priority}) ${noticeObject.extra} ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
+        console.assert(noticeObject.priority !== undefined, "cBPs addNotice10: 'priority' parameter should be defined");
+        console.assert(typeof noticeObject.priority === 'number', `cBPs addNotice10: 'priority' parameter should be a number not a '${typeof noticeObject.priority}'`);
+        console.assert(noticeObject.message !== undefined, "cBPs addNotice10: 'message' parameter should be defined");
+        console.assert(typeof noticeObject.message === 'string', `cBPs addNotice10: 'message' parameter should be a string not a '${typeof noticeObject.message}'`);
         // console.assert(bookID !== undefined, "cBPs addNotice10: 'bookID' parameter should be defined");
-        if (bookID) {
-            console.assert(typeof bookID === 'string', `cBPs addNotice10: 'bookID' parameter should be a string not a '${typeof bookID}'`);
-            console.assert(bookID.length === 3, `cBPs addNotice10: 'bookID' parameter should be three characters long not ${bookID.length}`);
-            console.assert(books.isValidBookID(bookID), `cBPs addNotice10: '${bookID}' is not a valid USFM book identifier`);
+        if (noticeObject.bookID) {
+            console.assert(typeof noticeObject.bookID === 'string', `cBPs addNotice10: 'bookID' parameter should be a string not a '${typeof noticeObject.bookID}'`);
+            console.assert(noticeObject.bookID.length === 3, `cBPs addNotice10: 'bookID' parameter should be three characters long not ${noticeObject.bookID.length}`);
+            console.assert(books.isValidBookID(noticeObject.bookID), `cBPs addNotice10: '${noticeObject.bookID}' is not a valid USFM book identifier`);
         }
         // console.assert(C !== undefined, "cBPs addNotice10: 'C' parameter should be defined");
-        if (C) console.assert(typeof C === 'string', `cBPs addNotice10: 'C' parameter should be a string not a '${typeof C}'`);
+        if (noticeObject.C) console.assert(typeof noticeObject.C === 'string', `cBPs addNotice10: 'C' parameter should be a string not a '${typeof noticeObject.C}'`);
         // console.assert(V !== undefined, "cBPs addNotice10: 'V' parameter should be defined");
-        if (V) console.assert(typeof V === 'string', `cBPs addNotice10: 'V' parameter should be a string not a '${typeof V}'`);
+        if (noticeObject.V) console.assert(typeof noticeObject.V === 'string', `cBPs addNotice10: 'V' parameter should be a string not a '${typeof noticeObject.V}'`);
         // console.assert(characterIndex !== undefined, "cBPs addNotice10: 'characterIndex' parameter should be defined");
-        if (characterIndex) console.assert(typeof characterIndex === 'number', `cBPs addNotice10: 'characterIndex' parameter should be a number not a '${typeof characterIndex}'`);
+        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `cBPs addNotice10: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}'`);
         // console.assert(extract !== undefined, "cBPs addNotice10: 'extract' parameter should be defined");
-        if (extract) console.assert(typeof extract === 'string', `cBPs addNotice10: 'extract' parameter should be a string not a '${typeof extract}'`);
-        console.assert(location !== undefined, "cBPs addNotice10: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', `cBPs addNotice10: 'location' parameter should be a string not a '${typeof location}'`);
-        console.assert(extra !== undefined, "cBPs addNotice10: 'extra' parameter should be defined");
-        console.assert(typeof extra === 'string', `cBPs addNotice10: 'extra' parameter should be a string not a '${typeof extra}'`);
-        checkBookPackagesResult.noticeList.push({priority,message, bookID,C,V, repoName,filename,rowID,lineNumber, fieldName, characterIndex, extract, location, extra});
+        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cBPs addNotice10: 'extract' parameter should be a string not a '${typeof noticeObject.extract}'`);
+        console.assert(noticeObject.location !== undefined, "cBPs addNotice10: 'location' parameter should be defined");
+        console.assert(typeof noticeObject.location === 'string', `cBPs addNotice10: 'location' parameter should be a string not a '${typeof noticeObject.location}'`);
+        console.assert(noticeObject.extra !== undefined, "cBPs addNotice10: 'extra' parameter should be defined");
+        console.assert(typeof noticeObject.extra === 'string', `cBPs addNotice10: 'extra' parameter should be a string not a '${typeof extra}'`);
+        checkBookPackagesResult.noticeList.push(noticeObject);
     }
 
 

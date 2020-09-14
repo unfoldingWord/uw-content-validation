@@ -32,19 +32,19 @@ export function checkTextField(fieldName, fieldText, allowedLinks, optionalField
 
     let result = { noticeList: [] };
 
-    function addNotice6({ priority, message, characterIndex, extract, location }) {
-        // console.log(`dBTC Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(priority !== undefined, "dBTCs addNotice6: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', `dBTCs addNotice6: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        console.assert(message !== undefined, "dBTCs addNotice6: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', `dBTCs addNotice6: 'message' parameter should be a string not a '${typeof message}': ${message}`);
+    function addNotice6(noticeObject) {
+        // console.log(`dBTC Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        console.assert(noticeObject.priority !== undefined, "dBTCs addNotice6: 'priority' parameter should be defined");
+        console.assert(typeof noticeObject.priority === 'number', `dBTCs addNotice6: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        console.assert(noticeObject.message !== undefined, "dBTCs addNotice6: 'message' parameter should be defined");
+        console.assert(typeof noticeObject.message === 'string', `dBTCs addNotice6: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
         // console.assert(characterIndex !== undefined, "dBTCs addNotice6: 'characterIndex' parameter should be defined");
-        if (characterIndex) console.assert(typeof characterIndex === 'number', `dBTCs addNotice6: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
+        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `dBTCs addNotice6: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
         // console.assert(extract !== undefined, "dBTCs addNotice6: 'extract' parameter should be defined");
-        if (extract) console.assert(typeof extract === 'string', `dBTCs addNotice6: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
-        console.assert(location !== undefined, "dBTCs addNotice6: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', `dBTCs addNotice6: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push({ priority, message, characterIndex, extract, location });
+        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `dBTCs addNotice6: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        console.assert(noticeObject.location !== undefined, "dBTCs addNotice6: 'location' parameter should be defined");
+        console.assert(typeof noticeObject.location === 'string', `dBTCs addNotice6: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        result.noticeList.push(noticeObject);
     }
 
 
@@ -179,7 +179,7 @@ export function checkTextField(fieldName, fieldText, allowedLinks, optionalField
         const lCount = countOccurrences(fieldText, leftChar);
         const rCount = countOccurrences(fieldText, rightChar);
         if (lCount !== rCount)
-            addNotice6({ priority: 663, message: `Mismatched ${leftChar}${rightChar} characters`, extract: `(left=${lCount.toLocaleString()}, right=${rCount.toLocaleString()})`, location: ourLocation });
+            addNotice6({ priority: 663, message: `Mismatched ${leftChar}${rightChar} characters`, details: `(left=${lCount.toLocaleString()}, right=${rCount.toLocaleString()})`, location: ourLocation });
     }
 
     if (!allowedLinks) {

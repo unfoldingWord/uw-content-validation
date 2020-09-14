@@ -51,7 +51,7 @@ async function checkTN_TSVDataRow(line, bookID, C, V, givenRowLocation, optional
 
     let drResult = { noticeList: [] };
 
-    function addNotice6to9({priority, message, rowID, lineNumber, characterIndex, extract, location}) {
+    function addNotice6to9(noticeObject) {
         /**
         * @description - adds a new notice entry, adding bookID,C,V to the given fields
         * @param {Number} priority - notice priority from 1 (lowest) to 999 (highest)
@@ -63,20 +63,20 @@ async function checkTN_TSVDataRow(line, bookID, C, V, givenRowLocation, optional
         * @param {String} location - description of where the issue is located
         */
         // console.log(`Annotation TSV Row Notice: (priority=${priority}) ${message}, ${characterIndex}, ${extract}, ${location}`);
-        console.assert(priority !== undefined, "cTSVrow addNotice6to9: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', `cTSVrow addNotice6to9: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        console.assert(message !== undefined, "cTSVrow addNotice6to9: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', `cTSVrow addNotice6to9: 'message' parameter should be a string not a '${typeof message}': ${message}`);
+        console.assert(noticeObject.priority !== undefined, "cTSVrow addNotice6to9: 'priority' parameter should be defined");
+        console.assert(typeof noticeObject.priority === 'number', `cTSVrow addNotice6to9: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        console.assert(noticeObject.message !== undefined, "cTSVrow addNotice6to9: 'message' parameter should be defined");
+        console.assert(typeof noticeObject.message === 'string', `cTSVrow addNotice6to9: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
         // console.assert(lineNumber !== undefined, "cTSVrow addNotice6to9: 'lineNumber' parameter should be defined");
         // console.assert(typeof lineNumber === 'number', `cTSVrow addNotice6to9: 'lineNumber' parameter should be a number not a '${typeof lineNumber}': ${lineNumber}`);
         // console.assert(characterIndex !== undefined, "cTSVrow addNotice6to9: 'characterIndex' parameter should be defined");
-        if (characterIndex) console.assert(typeof characterIndex === 'number', `cTSVrow addNotice6to9: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
+        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `cTSVrow addNotice6to9: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
         // console.assert(extract !== undefined, "cTSVrow addNotice6to9: 'extract' parameter should be defined");
-        if (extract) console.assert(typeof extract === 'string', `cTSVrow addNotice6to9: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
-        console.assert(location !== undefined, "cTSVrow addNotice6to9: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', `cTSVrow addNotice6to9: 'location' parameter should be a string not a '${typeof location}': ${location}`);
+        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cTSVrow addNotice6to9: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        console.assert(noticeObject.location !== undefined, "cTSVrow addNotice6to9: 'location' parameter should be defined");
+        console.assert(typeof noticeObject.location === 'string', `cTSVrow addNotice6to9: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
         // Also uses the given bookID,C,V, parameters from the main function call
-        drResult.noticeList.push({ priority, message, bookID, C, V, rowID, lineNumber, characterIndex, extract, location });
+        drResult.noticeList.push({ ...noticeObject, bookID, C, V });
     }
 
     function ourMarkdownTextChecks(rowID, fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions) {
@@ -364,7 +364,7 @@ async function checkTN_TSVDataRow(line, bookID, C, V, givenRowLocation, optional
         }
         else // TODO: Find more details about when these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             if (V !== 'intro' && occurrence !== '0')
-                addNotice6to9({priority:913, message:"Missing OrigQuote field", rowID, location:ourRowLocation});
+                addNotice6to9({priority:919, message:"Missing OrigQuote field", rowID, location:ourRowLocation});
 
         if (occurrence.length) { // This should usually be a digit
             if (occurrence === '0') { // zero means that it doesn't occur

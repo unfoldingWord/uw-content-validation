@@ -4,7 +4,7 @@ import { ourParseInt } from './utilities';
 // import { consoleLogObject } from '../core/utilities';
 
 
-// const TN_LINKS_VALIDATOR_VERSION_STRING = '0.2.1';
+// const TN_LINKS_VALIDATOR_VERSION_STRING = '0.2.2';
 
 // const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -40,23 +40,22 @@ async function checkTNLinks(bookID, fieldName, fieldText, givenLocation, optiona
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
-    if (fieldName) ourLocation = ` in ${fieldName}${ourLocation}`;
 
     const ctarResult = { noticeList: [] };
 
-    function addNotice6({priority,message, lineNumber,characterIndex, extract, location}) {
-        // console.log(`checkTNLinks Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(priority !== undefined, "cTNlnk addNotice6: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', `cTNlnk addNotice6: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        console.assert(message !== undefined, "cTNlnk addNotice6: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', `cTNlnk addNotice6: 'message' parameter should be a string not a '${typeof message}': ${message}`);
+    function addNotice6(noticeObject) {
+        // console.log(`checkTNLinks Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        console.assert(noticeObject.priority !== undefined, "cTNlnk addNotice6: 'priority' parameter should be defined");
+        console.assert(typeof noticeObject.priority === 'number', `cTNlnk addNotice6: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        console.assert(noticeObject.message !== undefined, "cTNlnk addNotice6: 'message' parameter should be defined");
+        console.assert(typeof noticeObject.message === 'string', `cTNlnk addNotice6: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
         // console.assert(characterIndex !== undefined, "cTNlnk addNotice6: 'characterIndex' parameter should be defined");
-        if (characterIndex) console.assert(typeof characterIndex === 'number', `cTNlnk addNotice6: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
+        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `cTNlnk addNotice6: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
         // console.assert(extract !== undefined, "cTNlnk addNotice6: 'extract' parameter should be defined");
-        if (extract) console.assert(typeof extract === 'string', `cTNlnk addNotice6: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
-        console.assert(location !== undefined, "cTNlnk addNotice6: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', `cTNlnk addNotice6: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        ctarResult.noticeList.push({priority, message, lineNumber, characterIndex, extract, location});
+        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cTNlnk addNotice6: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        console.assert(noticeObject.location !== undefined, "cTNlnk addNotice6: 'location' parameter should be defined");
+        console.assert(typeof noticeObject.location === 'string', `cTNlnk addNotice6: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        ctarResult.noticeList.push(noticeObject);
     }
 
 

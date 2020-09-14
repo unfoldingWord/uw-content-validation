@@ -53,7 +53,7 @@
 
 //     function addNotice10({priority, message, bookID, C, V, lineNumber, characterIndex, extract, location, extra}) {
 //         // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
-//         // console.log(`checkTQbook addNotice10: (priority=${priority}) ${bookID} ${C}:${V} ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+//         // console.log(`checkTQbook addNotice10: (priority=${priority}) ${bookID} ${C}:${V} ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
 //         console.assert(priority !== undefined, "cTQ addNotice10: 'priority' parameter should be defined");
 //         console.assert(typeof priority === 'number', `cTQ addNotice10: 'priority' parameter should be a number not a '${typeof priority}'`);
 //         console.assert(message !== undefined, "cTQ addNotice10: 'message' parameter should be defined");
@@ -182,7 +182,7 @@
 
 //     function addNotice10({priority, message, bookID, C, V, lineNumber, characterIndex, extract, location, extra}) {
 //         // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
-//         // console.log(`checkBookPackage addNotice10: (priority=${priority}) ${bookID} ${C}:${V} ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+//         // console.log(`checkBookPackage addNotice10: (priority=${priority}) ${bookID} ${C}:${V} ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
 //         console.assert(priority !== undefined, "cBP addNotice10: 'priority' parameter should be defined");
 //         console.assert(typeof priority === 'number', `cBP addNotice10: 'priority' parameter should be a number not a '${typeof priority}'`);
 //         console.assert(message !== undefined, "cBP addNotice10: 'message' parameter should be defined");

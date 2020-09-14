@@ -27,7 +27,7 @@ import { RenderRawResults } from '../demos/RenderProcessedResults';
 const data = {
   username: 'unfoldingWord',
   languageCode : 'en',
-  bookID : 'RUT',
+  bookID : 'OBA',
   givenLocation : 'that was supplied',
   checkingOptions: {},
 }

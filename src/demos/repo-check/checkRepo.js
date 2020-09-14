@@ -39,7 +39,7 @@
 //         // Adds the notices to the result that we will later return
 //         // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
 //         // Note that bookID,C,V might all be empty strings (as some repos don't have BCV)
-//         // console.log(`checkRepo addNotice10: (priority=${priority}) ${bookID} ${C}:${V} ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+//         // console.log(`checkRepo addNotice10: (priority=${priority}) ${bookID} ${C}:${V} ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
 //         console.assert(priority !== undefined, "cR addNotice10: 'priority' parameter should be defined");
 //         console.assert(typeof priority === 'number', `cR addNotice10: 'priority' parameter should be a number not a '${typeof priority}'`);
 //         console.assert(message !== undefined, "cR addNotice10: 'message' parameter should be defined");

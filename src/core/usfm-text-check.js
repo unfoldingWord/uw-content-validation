@@ -111,7 +111,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
     }
     function addNoticeCV8(noticeObject) {
         // console.log("checkUSFMText addNoticeCV8:", JSON.stringify(noticeObject));
-        // console.log(`checkUSFMText addNoticeCV8: (priority=${noticeObject.priority}) ${noticeObject.C}:${noticeObject.V} ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex}${1})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
+        // console.log(`checkUSFMText addNoticeCV8: (priority=${noticeObject.priority}) ${noticeObject.C}:${noticeObject.V} ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
         console.assert(noticeObject.priority !== undefined, "cUSFM addNoticeCV8: 'priority' parameter should be defined");
         console.assert(typeof noticeObject.priority === 'number', `cUSFM addNoticeCV8: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         console.assert(noticeObject.message !== undefined, "cUSFM addNoticeCV8: 'message' parameter should be defined");

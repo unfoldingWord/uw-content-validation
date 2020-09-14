@@ -20,7 +20,7 @@ import BookPackageCheck from './BookPackageCheck';
   languageCode='en'
   // bookID can be a USFM bookID, e.g., 'GEN', 'MAT', '3JN'
   //  and can also be 'OBS' (for Open Bible Stories)
-  bookID='JUD'
+  bookID='NEH'
 
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'

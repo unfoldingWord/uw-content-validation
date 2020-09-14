@@ -40,19 +40,19 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
         // console.log(`checkYAMLText success: ${successString}`);
         cytResult.successList.push(successString);
     }
-    function addNotice6({priority,message, lineNumber,characterIndex, extract, location}) {
-        // console.log(`checkYAMLText Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(priority!==undefined, "cYt addNotice6: 'priority' parameter should be defined");
-        console.assert(typeof priority==='number', `cManT addNotice6: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        console.assert(message!==undefined, "cYt addNotice6: 'message' parameter should be defined");
-        console.assert(typeof message==='string', `cManT addNotice6: 'message' parameter should be a string not a '${typeof message}': ${message}`);
+    function addNotice6(noticeObject) {
+        // console.log(`checkYAMLText Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        console.assert(noticeObject.priority!==undefined, "cYt addNotice6: 'priority' parameter should be defined");
+        console.assert(typeof noticeObject.priority==='number', `cManT addNotice6: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        console.assert(noticeObject.message!==undefined, "cYt addNotice6: 'message' parameter should be defined");
+        console.assert(typeof noticeObject.message==='string', `cManT addNotice6: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
         // console.assert(characterIndex!==undefined, "cYt addNotice6: 'characterIndex' parameter should be defined");
-        if (characterIndex) console.assert(typeof characterIndex==='number', `cManT addNotice6: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
+        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex==='number', `cManT addNotice6: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
         // console.assert(extract!==undefined, "cYt addNotice6: 'extract' parameter should be defined");
-        if (extract) console.assert(typeof extract==='string', `cManT addNotice6: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
-        console.assert(location!==undefined, "cYt addNotice6: 'location' parameter should be defined");
-        console.assert(typeof location==='string', `cYt addNotice6: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        cytResult.noticeList.push({priority, message, lineNumber, characterIndex, extract, location});
+        if (noticeObject.extract) console.assert(typeof noticeObject.extract==='string', `cManT addNotice6: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        console.assert(noticeObject.location!==undefined, "cYt addNotice6: 'location' parameter should be defined");
+        console.assert(typeof noticeObject.location==='string', `cYt addNotice6: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        cytResult.noticeList.push(noticeObject);
     }
 
     function ourCheckTextField(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
@@ -88,7 +88,7 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
               && noticeEntry.message !== "Unexpected space after [ character"
               && (noticeEntry.message !== "Unexpected doubled - characters" || fieldText === '---')
               )
-                addNotice6({priority:noticeEntry.priority, message:noticeEntry.message, characterIndex:noticeEntry.characterIndex, extract:noticeEntry.extract, location:noticeEntry.location});
+                addNotice6(noticeEntry);
     }
 }
     // end of ourCheckTextField function
@@ -127,7 +127,7 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
     }
     catch(yamlError) {
         // console.log(`ERROR: yaml parse error: ${yamlError.message}`);
-        addNotice6({priority:916, message:yamlError.message, location:ourLocation})
+        addNotice6({priority:920, message:yamlError.message, location:ourLocation})
     }
     // Add the parsed YAML to our result
     cytResult.formData = formData;
