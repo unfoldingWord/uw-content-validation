@@ -556,8 +556,8 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
             const repoLocation = ` in ${repoCode.toUpperCase()}${generalLocation}`;
             const repoName = getRepoName(languageCode, repoCode);
 
-            // const fullRepoName = username + '/' + repoName;
-            // console.log("Let's try1", bookID, "from", fullRepoName);
+            // Update our "waiting" message
+            setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookID}</b> book package in <b>{repoCode}</b> (checked <b>{checkedRepoNames.length.toLocaleString()}</b>/5 repos)…</p>);
 
             let filename;
             if (repoCode === 'UHB' || repoCode === 'UGNT' || repoCode === 'ULT' || repoCode === 'UST') {
@@ -602,7 +602,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
             }
 
             // Update our "waiting" message
-            setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {languageCode} <b>{bookID}</b> book package: checked <b>{checkedRepoNames.length.toLocaleString()}</b>/5 repos…</p>);
+            // setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {languageCode} <b>{bookID}</b> book package: checked <b>{checkedRepoNames.length.toLocaleString()}</b>/5 repos…</p>);
         }
 
         // Add some extra fields to our checkFileResult object
