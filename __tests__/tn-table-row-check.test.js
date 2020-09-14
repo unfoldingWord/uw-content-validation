@@ -96,7 +96,7 @@ describe('checkTN_TSVDataRow()', () => {
   it('should find mismatched bookId', async() => {
     const chosenLine = "EXO\t1\t2\td7qw\tfigs-imperative\t\t0\tLet there be light\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://en/ta/man/translate/figs-imperative]])";
     const rawResults = await checkTN_TSVDataRow(chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
-    expect(rawResults.noticeList.length).toEqual(2);
+    expect(rawResults.noticeList.length).toEqual(3);
     expect(rawResults).toMatchSnapshot();
   });
 
