@@ -12,30 +12,33 @@ import checkTN_TSVText from './tn-table-text-check';
 
 /**
  * clears the caches of stale data and preloads repo zips, before running book package checks
+ *   this allows the calling app to clear cache and start loading repos in the backgound as soon as it starts up.  In this case it would not need to use await to wait for results.
+ *   TRICKY: note that even if the user is super fast in selecting books and clicking next, it will not hurt anything.  getFile() would just be fetching files directly from repo until the zips are loaded.  After that the files would be pulled out of zipStore.
  * @param {string} username
  * @param {string} languageCode
  * @param {Array} bookIDList - one or more books that will be checked
  * @param {string} branch - optional, defaults to master
+ * @param {Array} repos - optional, list of repost to pre-load
  * @return {Promise<Boolean>} resolves to true if file loads are successful
  */
-export async function initBookPackageCheck(username, languageCode, bookIDList, branch = 'master') {
+export async function initBookPackageCheck(username, languageCode, bookIDList, branch = 'master', repos = ['TA', 'TW']) {
   clearCaches(); // clear existing cached files so we know we have the latest
   let success = true;
-  const repos = ['TA', 'TW'];
+  const repos_ = [...repos];
 
   if (bookIDList && Array.isArray(bookIDList)) {
     // make sure we have the original languages needed
     for (const bookID of bookIDList) {
       const whichTestament = books.testament(bookID); // returns 'old' or 'new'
       const origLang = whichTestament === 'old' ? 'UHB' : 'UGNT';
-      if (!repos.includes( origLang)) {
-        repos.unshift(origLang);
+      if (!repos_.includes( origLang)) {
+        repos_.unshift(origLang);
       }
     }
   }
 
   // load all the repos need
-  for (const repoCode of repos) {
+  for (const repoCode of repos_) {
     const repoName = getRepoName(languageCode, repoCode);
     console.log(`Preloading zip file for ${repoName}…`);
     const zipFetchSucceeded = await fetchRepositoryZipFile({username, repository: repoName, branch});
