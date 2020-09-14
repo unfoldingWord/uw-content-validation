@@ -340,7 +340,7 @@
 //             }
 
 //             // Update our "waiting" message
-//             setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {languageCode} <b>{bookID}</b> book package: checked <b>{checkedRepoNames.length.toLocaleString()}</b>/5 repos…</p>);
+//             setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookID}</b> book package: checked <b>{checkedRepoNames.length.toLocaleString()}</b>/5 repos…</p>);
 //         }
 
 //         // Add some extra fields to our checkFileResult object

@@ -94,7 +94,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
         // Process results line by line,  appending the bookOrFileCode as an extra field as we go
         for (const cfcNoticeEntry of cfcResultObject.noticeList)
             // We add the bookOrFileCode as an extra value
-            addNotice10({ ...cfcNoticeEntry, bookID:cfBookID, extra:bookOrFileCode });
+            addNotice10({ ...cfcNoticeEntry, bookID: cfBookID, extra: bookOrFileCode });
     }
     // end of ourCheckFileContents function
 
@@ -131,7 +131,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
             // console.log(`At top of loop: thisFilepath='${thisFilepath}'`);
 
             // Update our "waiting" message
-            setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for <b>{username}/{repoName}</b> repo: checked {checkedFileCount.toLocaleString()}/{countString}…</p>);
+            setResultValue(<p style={{ color: 'magenta' }}>Checking <b>{username}/{repoName}</b> repo: checked {checkedFileCount.toLocaleString()}/{countString}…</p>);
 
             const thisFilename = thisFilepath.split('/').pop();
             // console.log(`thisFilename=${thisFilename}`);
@@ -174,9 +174,9 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
             if (repoFileContent) {
                 // console.log(`checkRepo for ${repoName} checking ${thisFilename}`);
                 await ourCheckFileContents(bookOrFileCode, ourBookID,
-                                            // OBS has many files with the same name, so we have to give some of the path as well
-                                            repoName.endsWith('_obs')?thisFilepath.replace('content/','') :thisFilename,
-                                            repoFileContent, ourLocation, checkingOptions);
+                    // OBS has many files with the same name, so we have to give some of the path as well
+                    repoName.endsWith('_obs') ? thisFilepath.replace('content/', '') : thisFilename,
+                    repoFileContent, ourLocation, checkingOptions);
                 checkedFileCount += 1;
                 checkedFilenames.push(thisFilename);
                 checkedFilenameExtensions.add(thisFilenameExtension);
@@ -345,7 +345,7 @@ export async function checkTQbook(username, repoName, branch, bookID, checkingOp
             // noticeEntry is an array of eight fields: 1=priority, 2=bookID, 3=C, 4=V, 5=msg, 6=characterIndex, 7=extract, 8=location
             // console.assert(Object.keys(noticeEntry).length === 5, `cTQ ourCheckFileContents notice length=${Object.keys(noticeEntry).length}`);
             // We add the repoCode as an extra value
-            addNotice10({ ...noticeEntry, bookID, C,V, extra:repoCode });
+            addNotice10({ ...noticeEntry, bookID, C, V, extra: repoCode });
         }
     }
     // end of ourCheckFileContents function
@@ -470,7 +470,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         for (const cfcNoticeEntry of cfcResultObject.noticeList)
             // noticeEntry is an object
             // We add the repoCode as an extra value
-            addNotice10({ ...cfcNoticeEntry, extra:repoCode });
+            addNotice10({ ...cfcNoticeEntry, extra: repoCode });
     }
     // end of ourCheckFileContents function
 
@@ -504,12 +504,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
             if (books.isValidBookID(bookID)) // must be in FRT, BAK, etc.
                 whichTestament = 'other'
             else {
-                addNotice10({
-                    priority: 902, message: "Bad function call: should be given a valid book abbreviation",
-                    bookID,
-                    extract: bookID, location: ` (not '${bookID}')${generalLocation}`
-                });
-                return checkBookPackageResult;
+                addNotice10({priority: 902, message: "Bad function call: should be given a valid book abbreviation", bookID, extract: bookID, location: ` (not '${bookID}')${generalLocation}`});                return checkBookPackageResult;
             }
         }
         // console.log(`bookNumberAndName='${bookNumberAndName}' (${whichTestament} testament)`);
@@ -580,7 +575,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
             }
 
             // Update our "waiting" message
-            // setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {languageCode} <b>{bookID}</b> book package: checked <b>{checkedRepoNames.length.toLocaleString()}</b>/5 repos…</p>);
+            // setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookID}</b> book package: checked <b>{checkedRepoNames.length.toLocaleString()}</b>/5 repos…</p>);
         }
 
         // Add some extra fields to our checkFileResult object

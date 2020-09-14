@@ -170,8 +170,7 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
     // console.log(`grammarCheckResult=${JSON.stringify(grammarCheckResult)}`);
 
     if (!grammarCheckResult.isValidUSFM)
-        addNotice6to7({priority:944, message:`USFM3 Grammar Check (${strictnessString} mode) doesn't pass`,
-                        filename, location:ourLocation});
+        addNotice6to7({priority:944, message:`USFM3 Grammar Check (${strictnessString} mode) doesn't pass`, filename, location:ourLocation});
 
     // We only get one error if it fails
     if (grammarCheckResult.error && grammarCheckResult.priority)
@@ -179,8 +178,7 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
 
     // Display these warnings but with a lowish priority
     for (const warningString of grammarCheckResult.warnings)
-        addNotice6to7({priority:101, message:`USFMGrammar: ${warningString}`,
-                        filename, location:ourLocation});
+        addNotice6to7({priority:101, message:`USFMGrammar: ${warningString}`, filename, location:ourLocation});
 
     addSuccessMessage(`Checked USFM Grammar (${strictnessString} mode) ${grammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN'T validate)"}`);
     // console.log(`  checkUSFMGrammar returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);

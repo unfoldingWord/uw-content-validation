@@ -49,7 +49,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
             // console.log("Started RepoCheck.unnamedFunction()");
 
             // Display our "waiting" message
-            setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for <b>{repoName}</b> repo…</p>);
+            setResultValue(<p style={{ color: 'magenta' }}>Checking <b>{repoName}</b> repo…</p>);
 
             // Put all this in a try/catch block coz otherwise it's difficult to debug/view errors
             try {

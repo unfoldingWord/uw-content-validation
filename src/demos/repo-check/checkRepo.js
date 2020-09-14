@@ -131,7 +131,7 @@
 //             // console.log(`At top of loop: thisFilepath='${thisFilepath}'`);
 
 //             // Update our "waiting" message
-//             setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for <b>{username}/{repoName}</b> repo: checked {checkedFileCount.toLocaleString()}/{countString}…</p>);
+//             setResultValue(<p style={{ color: 'magenta' }}>Checking <b>{username}/{repoName}</b> repo: checked {checkedFileCount.toLocaleString()}/{countString}…</p>);
 
 //             const thisFilename = thisFilepath.split('/').pop();
 //             // console.log(`thisFilename=${thisFilename}`);

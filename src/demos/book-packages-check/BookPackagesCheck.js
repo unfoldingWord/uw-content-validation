@@ -69,7 +69,7 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
             }
 
       // Display our "waiting" message
-      setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {languageCode} <b>{bookIDList.join(', ')}</b> book packages…</p>);
+      setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookIDList.join(', ')}</b> book packages…</p>);
 
       const rawCBPsResults = await checkBookPackages(username, languageCode, bookIDList, setResultValue, checkingOptions);
       // console.log("checkBookPackage() returned", typeof rawCBPsResults); //, JSON.stringify(rawCBPsResults));

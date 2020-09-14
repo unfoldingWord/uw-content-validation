@@ -55,7 +55,7 @@ function CheckAnnotationRows(props) {
     //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
     (async () => {
       // Display our "waiting" message
-      setResults(<p style={{ color: 'magenta' }}>Waiting for {annotationType} check results for {tableTextName} <b>{bookID}</b>…</p>);
+      setResults(<p style={{ color: 'magenta' }}>Checking {annotationType} for {tableTextName} <b>{bookID}</b>…</p>);
       const rawResults = await checkAnnotationTSVText(annotationType, bookID, filename, tableText, givenLocation);
       setResults(
         <div>
