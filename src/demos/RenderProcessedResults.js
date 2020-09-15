@@ -200,7 +200,8 @@ export function RenderBCV({ bookID, C, V }) {
     if (bookID && bookID.length) result = bookID;
     if (C && C.length) result = `${result}${result.length ? ' ' : ''}${C}`;
     if (V && V.length) result = `${result}${result.length ? ':' : ''}${V}`;
-    if (result.length) return ` ${V && V.length ? 'at' : 'in'} ${result}`;
+    if (result.length)
+        return <> {V && V.length ? 'at' : 'in'} <b>{result}</b></>;
     return null;
 }
 
@@ -216,15 +217,19 @@ export function RenderFileDetails({ repoName, filename, lineNumber, rowID, field
     */
     // These are all optional parameters - they may be undefined or blank if irrelevant
     // console.log(`RenderFileDetails(${repoName}, ${filename}, ${lineNumber}, ${rowID}, ${fieldName})`);
-    if (!repoName && !filename && !lineNumber) return null; // They're all undefined or blank!
+    if (!repoName && !filename && !lineNumber && !rowID && !fieldName)
+        return null; // They're all undefined or blank!
     // console.log(`RenderFileDetails2 ${repoName}, ${filename}, ${lineNumber}`);
-    let result = '';
-    if (repoName && repoName.length) result += ` in ${repoName} repository`;
-    if (filename && filename.length) result += ` in file ${filename}`;
-    if (lineNumber) result += ` on line ${lineNumber.toLocaleString()}`;
-    if (rowID && rowID.length) result += ` with ID ${rowID}`;
-    if (fieldName && fieldName.length) result += ` in ${fieldName} field`;
-    return result;
+    let resultStart = '', lineResult = '', resultEnd = '';
+    if (repoName && repoName.length) resultStart += ` in ${repoName} repository`;
+    if (filename && filename.length) resultStart += ` in file ${filename}`;
+    if (lineNumber) {
+        resultStart += ' on ';
+        lineResult = `line ${lineNumber.toLocaleString()}`;
+    }
+    if (rowID && rowID.length) resultEnd += ` with ID ${rowID}`;
+    if (fieldName && fieldName.length) resultEnd += ` in ${fieldName} field`;
+    return <>{resultStart}<b>{lineResult}</b>{resultEnd}</>;
 }
 
 export function RenderSuccessesColored({ results }) {

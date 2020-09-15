@@ -78,7 +78,7 @@ async function checkTN_TSVText(bookID, filename, tableText, givenLocation, optio
     // console.log(`  '${location}' has ${lines.length.toLocaleString()} total lines (expecting ${NUM_EXPECTED_TN_FIELDS} fields in each line)`);
 
     let lastB = '', lastC = '', lastV = '';
-    let rowID_list = [];
+    let rowIDList = [], uniqueRowList = [];
     let numVersesThisChapter = 0;
     for (let n = 0; n < lines.length; n++) {
         // console.log(`checkTN_TSVText checking line ${n}: ${JSON.stringify(lines[n])}`);
@@ -93,7 +93,7 @@ async function checkTN_TSVText(bookID, filename, tableText, givenLocation, optio
             let fields = lines[n].split('\t');
             if (fields.length === NUM_EXPECTED_TN_TSV_FIELDS) {
                 // eslint-disable-next-line no-unused-vars
-                const [B, C, V, rowID, _support_reference, _orig_quote, _occurrence, _GL_quote, _occurrenceNote] = fields;
+                const [B, C, V, rowID, supportReference, origQuote, occurrence, _GLQuote, _occurrenceNote] = fields;
 
                 // Use the row check to do most basic checks
                 const firstResult = await checkTN_TSVDataRow(lines[n], bookID, C, V, ourLocation, optionalCheckingOptions);
@@ -105,7 +105,21 @@ async function checkTN_TSVText(bookID, filename, tableText, givenLocation, optio
                 for (const noticeEntry of firstResult.noticeList)
                     addNoticeCV8({ ...noticeEntry, lineNumber: n + 1 });
 
-                // So here we only have to check against the previous and next fields for out-of-order problems
+                // So here we only have to check against the previous and next fields for out-of-order problems and duplicate problems
+                if (B !== lastB || C !== lastC || V !== lastV) {
+                    rowIDList = []; // ID's only need to be unique within each verse
+                    uniqueRowList = []; // Same for these
+                }
+
+                // TODO: Check if we need this at all (even though tC 3.0 can't display these "duplicate" notes)
+                // Check for duplicate notes
+                const uniqueID = C + V + supportReference + origQuote + occurrence; // This combination should not be repeated
+                // if (uniqueRowList.indexOf(uniqueID) >= 0)
+                //     addNoticeCV8({ priority: 880, C, V, message: `Duplicate note`, rowID, lineNumber: n + 1, location: ourLocation });
+                if (uniqueRowList.indexOf(uniqueID) >= 0)
+                    addNoticeCV8({ priority: 80, C, V, message: `Note: tC 3.0 won't display duplicate note`, rowID, lineNumber: n + 1, location: ourLocation });
+                uniqueRowList.push(uniqueID);
+
                 if (B) {
                     if (B !== bookID)
                         addNoticeCV8({ priority: 745, C, V, message: `Wrong '${B}' book identifier (expected '${bookID}')`, rowID, lineNumber: n + 1, location: ourLocation });
@@ -161,16 +175,13 @@ async function checkTN_TSVText(bookID, filename, tableText, givenLocation, optio
                     addNoticeCV8({ priority: 790, C, V, message: "Missing verse number", rowID, lineNumber: n + 1, location: ` after ${C}:${lastV}${ourLocation}` });
 
                 if (rowID) {
-                    if (rowID_list.indexOf(rowID) >= 0)
-                        addNoticeCV8({ priority: 729, C, V, message: `Duplicate '${rowID}' ID`, rowID, lineNumber: n + 1, location: ourLocation });
+                    if (rowIDList.indexOf(rowID) >= 0)
+                        addNoticeCV8({ priority: 729, C, V, message: `Duplicate '${rowID}' ID`, fieldName:'ID', rowID, lineNumber: n + 1, location: ourLocation });
                 } else
-                    addNoticeCV8({ priority: 730, C, V, message: "Missing ID", lineNumber: n + 1, location: ourLocation });
+                    addNoticeCV8({ priority: 730, C, V, message: "Missing ID", fieldName:'ID', lineNumber: n + 1, location: ourLocation });
 
 
-                if (B !== lastB || C !== lastC || V !== lastV) {
-                    rowID_list = []; // ID's only need to be unique within each verse
-                    lastB = B; lastC = C; lastV = V;
-                }
+                lastB = B; lastC = C; lastV = V;
 
             } else
                 // if (n === lines.length - 1) // it's the last line

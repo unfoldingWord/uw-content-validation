@@ -112,8 +112,9 @@ async function checkAnnotationTSVDataRow(annotationType, line, bookID, C, V, giv
         // console.log(`cATSVrow ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
         console.assert(rowID !== undefined, "cATSVrow ourMarkdownTextChecks: 'rowID' parameter should be defined");
         console.assert(typeof rowID === 'string', `cATSVrow ourMarkdownTextChecks: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        console.assert(fieldName !== undefined, "cATSVrow ourMarkdownTextChecks: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName === 'string', `cATSVrow ourMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        // console.assert(fieldName !== undefined, "cTSVrow ourMarkdownTextChecks: 'fieldName' parameter should be defined");
+        // console.assert(typeof fieldName === 'string', `cTSVrow ourMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        console.assert(fieldName === 'OccurrenceNote', "Only run this check on OccurrenceNotes")
         console.assert(fieldText !== undefined, "cATSVrow ourMarkdownTextChecks: 'fieldText' parameter should be defined");
         console.assert(typeof fieldText === 'string', `cATSVrow ourMarkdownTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         console.assert(allowedLinks === true || allowedLinks === false, "cATSVrow ourMarkdownTextChecks: allowedLinks parameter must be either true or false");
@@ -127,7 +128,12 @@ async function checkAnnotationTSVDataRow(annotationType, line, bookID, C, V, giv
         //  process results line by line
         for (const noticeEntry of cmtResultObject.noticeList) {
             // console.assert(Object.keys(noticeEntry).length === 5, `TL ourMarkdownTextChecks notice length=${Object.keys(noticeEntry).length}`);
-            addNotice6to9({ ...noticeEntry, rowID, fieldName });
+            // NOTE: Ellipses in OccurrenceNote have the normal meaning
+            //          not like the specialised meaning in the snippet fields OrigQuote and GLQuote
+            if (noticeEntry.priority !== 178 && noticeEntry.priority !== 179 // unexpected space after ellipse, ellipse after space
+            && !noticeEntry.message.startsWith("Unexpected … character after space") // 191
+            )
+                addNotice6to9({ ...noticeEntry, rowID, fieldName });
         }
     }
     // end of ourMarkdownTextChecks function
