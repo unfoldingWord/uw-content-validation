@@ -56,9 +56,11 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         (async () => {
         // console.log("Started BookPackagesCheck.unnamedFunction()");
 
+        // TODO: We need to implement BM's new function here
         // Preload the reference repos
         let preloadCount = 1;
-        for (const repoCode of ['UHB','UGNT', 'TA','TQ','TW']) {
+        // TEMP: Removed TQ
+        for (const repoCode of ['UHB','UGNT', 'TA','TW']) {
         setResultValue(<p style={{ color: 'magenta' }}>Preloading <b>{repoCode}</b> repo ({preloadCount}/5) ready for {username} {languageCode} book packages check…</p>);
             const repoName = getRepoName(languageCode, repoCode);
             console.log(`Preloading zip file for ${repoName}…`);

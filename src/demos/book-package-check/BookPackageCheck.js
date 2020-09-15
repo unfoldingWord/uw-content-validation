@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // import { withStyles } from '@material-ui/core/styles';
 import * as books from '../../core/books/books';
-import { getRepoName, ourParseInt, fetchRepositoryZipFile, checkBookPackage } from '../../core';
+import { ourParseInt, checkBookPackage, initBookPackageCheck } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
 // import { consoleLogObject } from '../../core/utilities';
@@ -55,14 +55,14 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
 
             if (bookID !== 'OBS') {
                 // Preload the reference repos
-                setResultValue(<p style={{ color: 'magenta' }}>Preloading TA/TQ/TW repos for {username} {languageCode} ready for <b>{bookID}</b> book package check…</p>);
-                for (const repoCode of ['TA', 'TQ', 'TW']) {
-                    const repoName = getRepoName(languageCode, repoCode);
-                    console.log(`Preloading zip file for ${repoName}…`);
-                    const zipFetchSucceeded = await fetchRepositoryZipFile({ username, repository: repoName, branch });
-                    if (!zipFetchSucceeded)
-                        console.log(`checkRepo: failed to fetch ${repoCode} zip file for repo with ${zipFetchSucceeded}`);
-                }
+                // RJH TODO: Doesn't the end user need control of this somehow???
+                // TEMP: Removed TQ
+                setResultValue(<p style={{ color: 'magenta' }}>Preloading TA/TW repos for {username} {languageCode} ready for <b>{bookID}</b> book package check…</p>);
+                // This call is not needed, but makes sure you don't have stale data that has been cached
+                // eslint-disable-next-line react-hooks/exhaustive-deps
+                const successFlag = await initBookPackageCheck(username, languageCode, [bookID], branch = 'master');
+                if (!successFlag)
+                    console.log(`Failed to pre-load all repos`)
             }
 
             // Display our "waiting" message
