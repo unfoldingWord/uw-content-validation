@@ -37,7 +37,7 @@ function CheckRepo(props) {
     //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
     (async () => {
       // Display our "waiting" message
-      setResults(<p style={{ color: 'magenta' }}>Waiting for {username} {repoName} {branch} check results…</p>);
+      setResults(<p style={{ color: 'magenta' }}>Checking {username} {repoName} {branch}…</p>);
       const rawResults = await checkRepo(username, repoName, branch, givenLocation, setResults, checkingOptions);
       setResults(
         <div>

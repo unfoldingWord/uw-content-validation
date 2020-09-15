@@ -1,7 +1,7 @@
 // import { displayPropertyNames, consoleLogObject } from './utilities';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.6.2';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.7.1';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -36,6 +36,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                     By default, notice priority numbers 700 and over are
                       considered `errors` and 0-699 are considered `warnings`.
                 message: The actual general description text of the notice
+                details: Extra notice information (if relevant)
                 The next three fields may be ommitted if irrelevant
                  (since BCV is not relevant to all types of files/repos)
                     bookID: book identifier 3-character UPPERCASE string
@@ -93,7 +94,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
 
     const standardisedNoticeList = givenNoticeObject.noticeList;
 
-    
+
     // Run a check through the noticeList to help discover any programming errors that need fixing
     // This section may be commented out of production code
     if (givenNoticeObject.noticeList && givenNoticeObject.noticeList.length) {
@@ -129,7 +130,10 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                     console.assert(thisLocation.indexOf(thisRepoName) < 0, `repoName is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
             }
             if (thisFilename) {
-                console.assert(thisFilename.indexOf(':') < 0 && thisFilename.indexOf('/') < 0 && thisFilename.indexOf('\\') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+                console.assert(thisFilename.indexOf(':') < 0 && thisFilename.indexOf('\\') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+                // NOTE: Some OBS messages have to include part of the part in the 'filename' (to prevent ambiguity) so we don't disallow forward slash
+                if (!thisRepoName || !thisRepoName.endsWith('_obs'))
+                    console.assert(thisFilename.indexOf('/') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 if (thisLocation)
                     console.assert(thisLocation.indexOf(thisFilename) < 0, `filename is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
             }
@@ -491,7 +495,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             if (maximumSimilarMessages > 0 && counter[thisID] === maximumSimilarMessages + 1) {
                 if (thisPriority >= severePriorityLevel) {
                     const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
-                    resultObject.severeList.push({ prioriyy: -1, message: thisMsg, location: ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
+                    resultObject.severeList.push({ priority: -1, message: thisMsg, location: ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
                     resultObject.numSevereSuppressed++;
                 } else if (thisPriority >= mediumPriorityLevel) {
                     const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;

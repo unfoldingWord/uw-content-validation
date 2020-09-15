@@ -21,34 +21,35 @@ import checkTN_TSVText from './tn-table-text-check';
  * @param {Array} repos - optional, list of repost to pre-load
  * @return {Promise<Boolean>} resolves to true if file loads are successful
  */
-export async function initBookPackageCheck(username, languageCode, bookIDList, branch = 'master', repos = ['TA', 'TW', 'TQ']) {
-  clearCaches(); // clear existing cached files so we know we have the latest
-  let success = true;
-  const repos_ = [...repos];
+// TEMP: Removed TQ from repos
+export async function initBookPackageCheck(username, languageCode, bookIDList, branch = 'master', repos = ['TA', 'TW']) {
+    clearCaches(); // clear existing cached files so we know we have the latest
+    let success = true;
+    const repos_ = [...repos];
 
-  if (bookIDList && Array.isArray(bookIDList)) {
-    // make sure we have the original languages needed
-    for (const bookID of bookIDList) {
-      const whichTestament = books.testament(bookID); // returns 'old' or 'new'
-      const origLang = whichTestament === 'old' ? 'UHB' : 'UGNT';
-      if (!repos_.includes( origLang)) {
-        repos_.unshift(origLang);
-      }
+    if (bookIDList && Array.isArray(bookIDList)) {
+        // make sure we have the original languages needed
+        for (const bookID of bookIDList) {
+            const whichTestament = books.testament(bookID); // returns 'old' or 'new'
+            const origLang = whichTestament === 'old' ? 'UHB' : 'UGNT';
+            if (!repos_.includes(origLang)) {
+                repos_.unshift(origLang);
+            }
+        }
     }
-  }
 
-  // load all the repos need
-  for (const repoCode of repos_) {
-    const repoName = getRepoName(languageCode, repoCode);
-    console.log(`Preloading zip file for ${repoName}…`);
-    const zipFetchSucceeded = await fetchRepositoryZipFile({username, repository: repoName, branch});
-    if (!zipFetchSucceeded) {
-      console.log(`checkRepo: misfetched zip file for repo with ${zipFetchSucceeded}`);
-      success = false;
+    // load all the repos need
+    for (const repoCode of repos_) {
+        const repoName = getRepoName(languageCode, repoCode);
+        console.log(`Preloading zip file for ${repoName}…`);
+        const zipFetchSucceeded = await fetchRepositoryZipFile({ username, repository: repoName, branch });
+        if (!zipFetchSucceeded) {
+            console.log(`checkRepo: misfetched zip file for repo with ${zipFetchSucceeded}`);
+            success = false;
+        }
     }
-  }
 
-  return success;
+    return success;
 }
 
 /*
@@ -78,34 +79,35 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
         // console.log(`checkRepo success: ${successString}`);
         checkRepoResult.successList.push(successString);
     }
-    function addNotice10({ priority, message, filename, bookID, C, V, lineNumber, characterIndex, extract, location, extra }) {
+    function addNotice10(noticeObject) {
         // Adds the notices to the result that we will later return
         // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
         // Note that bookID,C,V might all be empty strings (as some repos don't have BCV)
-        // console.log(`checkRepo addNotice10: (priority=${priority}) ${bookID} ${C}:${V} ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(priority !== undefined, "cR addNotice10: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', `cR addNotice10: 'priority' parameter should be a number not a '${typeof priority}'`);
-        console.assert(message !== undefined, "cR addNotice10: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', `cR addNotice10: 'message' parameter should be a string not a '${typeof message}'`);
+        // console.log(`checkRepo addNotice10: ${noticeObject.priority}:${noticeObject.message} ${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.filename}:${noticeObject.lineNumber} ${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
+        console.assert(noticeObject.priority !== undefined, "cR addNotice10: 'priority' parameter should be defined");
+        console.assert(typeof noticeObject.priority === 'number', `cR addNotice10: 'priority' parameter should be a number not a '${typeof noticeObject.priority}'`);
+        console.assert(noticeObject.message !== undefined, "cR addNotice10: 'message' parameter should be defined");
+        console.assert(typeof noticeObject.message === 'string', `cR addNotice10: 'message' parameter should be a string not a '${typeof noticeObject.message}'`);
         // console.assert(bookID !== undefined, "cR addNotice10: 'bookID' parameter should be defined");
-        if (bookID) {
-            console.assert(typeof bookID === 'string', `cR addNotice10: 'bookID' parameter should be a string not a '${typeof bookID}'`);
-            console.assert(bookID.length === 3, `cR addNotice10: 'bookID' parameter should be three characters long not ${bookID.length}`);
-            console.assert(books.isOptionalValidBookID(bookID), `cR addNotice10: '${bookID}' is not a valid USFM book identifier`);
+        if (noticeObject.bookID) {
+            console.assert(typeof noticeObject.bookID === 'string', `cR addNotice10: 'bookID' parameter should be a string not a '${typeof noticeObject.bookID}'`);
+            console.assert(noticeObject.bookID.length === 3, `cR addNotice10: 'bookID' parameter should be three characters long not ${noticeObject.bookID.length}`);
+            console.assert(books.isOptionalValidBookID(noticeObject.bookID), `cR addNotice10: '${noticeObject.bookID}' is not a valid USFM book identifier`);
         }
         // console.assert(C !== undefined, "cR addNotice10: 'C' parameter should be defined");
-        if (C) console.assert(typeof C === 'string', `cR addNotice10: 'C' parameter should be a string not a '${typeof C}'`);
+        if (noticeObject.C) console.assert(typeof noticeObject.C === 'string', `cR addNotice10: 'C' parameter should be a string not a '${typeof noticeObject.C}'`);
         // console.assert(V !== undefined, "cR addNotice10: 'V' parameter should be defined");
-        if (V) console.assert(typeof V === 'string', `cR addNotice10: 'V' parameter should be a string not a '${typeof V}'`);
+        if (noticeObject.V) console.assert(typeof noticeObject.V === 'string', `cR addNotice10: 'V' parameter should be a string not a '${typeof noticeObject.V}'`);
         // console.assert(characterIndex !== undefined, "cR addNotice10: 'characterIndex' parameter should be defined");
-        if (characterIndex) console.assert(typeof characterIndex === 'number', `cR addNotice10: 'characterIndex' parameter should be a number not a '${typeof characterIndex}'`);
+        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `cR addNotice10: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}'`);
         // console.assert(extract !== undefined, "cR addNotice10: 'extract' parameter should be defined");
-        if (extract) console.assert(typeof extract === 'string', `cR addNotice10: 'extract' parameter should be a string not a '${typeof extract}'`);
-        console.assert(location !== undefined, "cR addNotice10: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', `cR addNotice10: 'location' parameter should be a string not a '${typeof location}'`);
-        console.assert(extra !== undefined, "cR addNotice10: 'extra' parameter should be defined");
-        console.assert(typeof extra === 'string', `cR addNotice10: 'extra' parameter should be a string not a '${typeof extra}'`);
-        checkRepoResult.noticeList.push({ priority, message, bookID, C, V, repoName, filename, lineNumber, characterIndex, extract, location, extra });
+        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cR addNotice10: 'extract' parameter should be a string not a '${typeof noticeObject.extract}'`);
+        console.assert(noticeObject.location !== undefined, "cR addNotice10: 'location' parameter should be defined");
+        console.assert(typeof noticeObject.location === 'string', `cR addNotice10: 'location' parameter should be a string not a '${typeof noticeObject.location}'`);
+        console.assert(noticeObject.extra !== undefined, "cR addNotice10: 'extra' parameter should be defined");
+        console.assert(typeof noticeObject.extra === 'string', `cR addNotice10: 'extra' parameter should be a string not a '${typeof noticeObject.extra}'`);
+        // Add in the repoName from the outer scope
+        checkRepoResult.noticeList.push({ ...noticeObject, repoName });
     }
 
 
@@ -125,15 +127,15 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
         console.assert(fileLocation !== undefined, "ourCheckFileContents: 'fileLocation' parameter should be defined");
         console.assert(typeof fileLocation === 'string', `ourCheckFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
 
-        const resultObject = await checkFileContents(filename, file_content, fileLocation, optionalCheckingOptions);
+        const cfcResultObject = await checkFileContents(filename, file_content, fileLocation, optionalCheckingOptions);
         // console.log("checkFileContents() returned", resultObject.successList.length, "success message(s) and", resultObject.noticeList.length, "notice(s)");
         // for (const successEntry of resultObject.successList)
         //     console.log("  ", successEntry);
 
         // Process results line by line,  appending the bookOrFileCode as an extra field as we go
-        for (const noticeEntry of resultObject.noticeList)
+        for (const cfcNoticeEntry of cfcResultObject.noticeList)
             // We add the bookOrFileCode as an extra value
-            addNotice10({ ...noticeEntry, bookID:cfBookID, extra:bookOrFileCode });
+            addNotice10({ ...cfcNoticeEntry, bookID: cfBookID, extra: bookOrFileCode });
     }
     // end of ourCheckFileContents function
 
@@ -170,7 +172,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
             // console.log(`At top of loop: thisFilepath='${thisFilepath}'`);
 
             // Update our "waiting" message
-            setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for <b>{username}/{repoName}</b> repo: checked {checkedFileCount.toLocaleString()}/{countString}…</p>);
+            setResultValue(<p style={{ color: 'magenta' }}>Checking <b>{username}/{repoName}</b> repo: checked {checkedFileCount.toLocaleString()}/{countString}…</p>);
 
             const thisFilename = thisFilepath.split('/').pop();
             // console.log(`thisFilename=${thisFilename}`);
@@ -211,8 +213,11 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
                 return;
             }
             if (repoFileContent) {
-                // console.log(`checkRepo checking ${thisFilename}`);
-                await ourCheckFileContents(bookOrFileCode, ourBookID, thisFilename, repoFileContent, ourLocation, checkingOptions);
+                // console.log(`checkRepo for ${repoName} checking ${thisFilename}`);
+                await ourCheckFileContents(bookOrFileCode, ourBookID,
+                    // OBS has many files with the same name, so we have to give some of the path as well
+                    repoName.endsWith('_obs') ? thisFilepath.replace('content/', '') : thisFilename,
+                    repoFileContent, ourLocation, checkingOptions);
                 checkedFileCount += 1;
                 checkedFilenames.push(thisFilename);
                 checkedFilenameExtensions.add(thisFilenameExtension);
@@ -332,30 +337,30 @@ export async function checkTQbook(username, repoName, branch, bookID, checkingOp
         ctqResult.successList.push(successString);
     }
 
-    function addNotice10({ priority, message, bookID, C, V, filename, lineNumber, characterIndex, extract, location, extra }) {
+    function addNotice10(noticeObject) {
         // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
-        // console.log(`checkTQbook addNotice10: (priority=${priority}) ${bookID} ${C}:${V} ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(priority !== undefined, "cTQ addNotice10: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', `cTQ addNotice10: 'priority' parameter should be a number not a '${typeof priority}'`);
-        console.assert(message !== undefined, "cTQ addNotice10: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', `cTQ addNotice10: 'message' parameter should be a string not a '${typeof message}'`);
-        console.assert(bookID !== undefined, "cTQ addNotice10: 'bookID' parameter should be defined");
-        console.assert(typeof bookID === 'string', `cTQ addNotice10: 'bookID' parameter should be a string not a '${typeof bookID}'`);
-        console.assert(bookID.length === 3, `cTQ addNotice10: 'bookID' parameter should be three characters long not ${bookID.length}`);
-        console.assert(books.isValidBookID(bookID), `cTQ addNotice10: '${bookID}' is not a valid USFM book identifier`);
+        // console.log(`checkTQbook addNotice10: ${noticeObject.priority}:${noticeObject.message} ${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.filename}:${noticeObject.lineNumber} ${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
+        console.assert(noticeObject.priority !== undefined, "cTQ addNotice10: 'priority' parameter should be defined");
+        console.assert(typeof noticeObject.priority === 'number', `cTQ addNotice10: 'priority' parameter should be a number not a '${typeof noticeObject.priority}'`);
+        console.assert(noticeObject.message !== undefined, "cTQ addNotice10: 'message' parameter should be defined");
+        console.assert(typeof noticeObject.message === 'string', `cTQ addNotice10: 'message' parameter should be a string not a '${typeof noticeObject.message}'`);
+        console.assert(noticeObject.bookID !== undefined, "cTQ addNotice10: 'bookID' parameter should be defined");
+        console.assert(typeof noticeObject.bookID === 'string', `cTQ addNotice10: 'bookID' parameter should be a string not a '${typeof noticeObject.bookID}'`);
+        console.assert(noticeObject.bookID.length === 3, `cTQ addNotice10: 'bookID' parameter should be three characters long not ${noticeObject.bookID.length}`);
+        console.assert(books.isValidBookID(noticeObject.bookID), `cTQ addNotice10: '${noticeObject.bookID}' is not a valid USFM book identifier`);
         // console.assert(C !== undefined, "cTQ addNotice10: 'C' parameter should be defined");
-        if (C) console.assert(typeof C === 'string', `cTQ addNotice10: 'C' parameter should be a string not a '${typeof C}'`);
+        if (noticeObject.C) console.assert(typeof noticeObject.C === 'string', `cTQ addNotice10: 'C' parameter should be a string not a '${typeof noticeObject.C}'`);
         // console.assert(V !== undefined, "cTQ addNotice10: 'V' parameter should be defined");
-        if (V) console.assert(typeof V === 'string', `cTQ addNotice10: 'V' parameter should be a string not a '${typeof V}'`);
+        if (noticeObject.V) console.assert(typeof noticeObject.V === 'string', `cTQ addNotice10: 'V' parameter should be a string not a '${typeof noticeObject.V}'`);
         // console.assert(characterIndex !== undefined, "cTQ addNotice10: 'characterIndex' parameter should be defined");
-        if (characterIndex) console.assert(typeof characterIndex === 'number', `cTQ addNotice10: 'characterIndex' parameter should be a number not a '${typeof characterIndex}'`);
+        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `cTQ addNotice10: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}'`);
         // console.assert(extract !== undefined, "cTQ addNotice10: 'extract' parameter should be defined");
-        if (extract) console.assert(typeof extract === 'string', `cTQ addNotice10: 'extract' parameter should be a string not a '${typeof extract}'`);
-        console.assert(location !== undefined, "cTQ addNotice10: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', `cTQ addNotice10: 'location' parameter should be a string not a '${typeof location}'`);
-        console.assert(extra !== undefined, "cTQ addNotice10: 'extra' parameter should be defined");
-        console.assert(typeof extra === 'string', `cTQ addNotice10: 'extra' parameter should be a string not a '${typeof extra}'`);
-        ctqResult.noticeList.push({ priority, message, bookID, C, V, filename, lineNumber, characterIndex, extract, location, extra });
+        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cTQ addNotice10: 'extract' parameter should be a string not a '${typeof noticeObject.extract}'`);
+        console.assert(noticeObject.location !== undefined, "cTQ addNotice10: 'location' parameter should be defined");
+        console.assert(typeof noticeObject.location === 'string', `cTQ addNotice10: 'location' parameter should be a string not a '${typeof noticeObject.location}'`);
+        console.assert(noticeObject.extra !== undefined, "cTQ addNotice10: 'extra' parameter should be defined");
+        console.assert(typeof noticeObject.extra === 'string', `cTQ addNotice10: 'extra' parameter should be a string not a '${typeof noticeObject.extra}'`);
+        ctqResult.noticeList.push({ ...noticeObject, bookID });
     }
 
 
@@ -381,7 +386,7 @@ export async function checkTQbook(username, repoName, branch, bookID, checkingOp
             // noticeEntry is an array of eight fields: 1=priority, 2=bookID, 3=C, 4=V, 5=msg, 6=characterIndex, 7=extract, 8=location
             // console.assert(Object.keys(noticeEntry).length === 5, `cTQ ourCheckFileContents notice length=${Object.keys(noticeEntry).length}`);
             // We add the repoCode as an extra value
-            addNotice10({ ...noticeEntry, bookID, C,V, extra:repoCode });
+            addNotice10({ ...noticeEntry, bookID, C, V, extra: repoCode });
         }
     }
     // end of ourCheckFileContents function
@@ -396,9 +401,10 @@ export async function checkTQbook(username, repoName, branch, bookID, checkingOp
         // console.log("checkTQbook: Try to load", username, repoName, thisPath, branch);
 
         console.assert(thisPath.endsWith('.md'), `Expected ${thisPath} to end with .md`);
+        const filename = thisPath.split('/').pop();
         const pathParts = thisPath.slice(0, -3).split('/');
-        const C = pathParts[pathParts.length - 2].replace(/^0+(?=\d)/, '');
-        const V = pathParts[pathParts.length - 1].replace(/^0+(?=\d)/, '');
+        const C = pathParts[pathParts.length - 2].replace(/^0+(?=\d)/, ''); // Remove leading zeroes
+        const V = pathParts[pathParts.length - 1].replace(/^0+(?=\d)/, ''); // Remove leading zeroes
 
         const getFile_ = (checkingOptions && checkingOptions.getFile) ? checkingOptions.getFile : getFile;
         let tqFileContent;
@@ -409,13 +415,13 @@ export async function checkTQbook(username, repoName, branch, bookID, checkingOp
             totalCheckedSize += tqFileContent.length;
         } catch (tQerror) {
             console.log("checkTQbook failed to load", username, repoName, thisPath, branch, tQerror + '');
-            addNotice10({ priority: 996, bookID, C, V, message: "Failed to load", location: `${generalLocation} ${thisPath}: ${tQerror}`, extra: repoCode });
+            addNotice10({ priority: 996, message: "Failed to load", bookID, C, V, location: `${generalLocation} ${thisPath}: ${tQerror}`, extra: repoCode });
             continue;
         }
 
         // We use the generalLocation here (does not include repo name)
         //  so that we can adjust the returned strings ourselves
-        await ourCheckFileContents(repoCode, bookID, C, V, thisPath, tqFileContent, generalLocation, checkingOptions); // Adds the notices to checkBookPackageResult
+        await ourCheckFileContents(repoCode, bookID, C, V, filename, tqFileContent, generalLocation, checkingOptions); // Adds the notices to checkBookPackageResult
         checkedFileCount += 1;
         // addSuccessMessage(`Checked ${repoCode.toUpperCase()} file: ${thisPath}`);
     }
@@ -454,32 +460,32 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         checkBookPackageResult.successList.push(successString);
     }
 
-    function addNotice10({ priority, message, bookID, C, V, rowID, repoName, filename, lineNumber, fieldName, characterIndex, extract, location, extra }) {
+    function addNotice10(noticeObject) {
         // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
-        // console.log(`checkBookPackage addNotice10: (priority=${priority}) ${bookID} ${C}:${V} ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(priority !== undefined, "cBP addNotice10: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', `cBP addNotice10: 'priority' parameter should be a number not a '${typeof priority}'`);
-        console.assert(message !== undefined, "cBP addNotice10: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', `cBP addNotice10: 'message' parameter should be a string not a '${typeof message}'`);
+        // console.log(`checkBookPackage addNotice10: (priority=${noticeObject.priority}) ${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        console.assert(noticeObject.priority !== undefined, "cBP addNotice10: 'priority' parameter should be defined");
+        console.assert(typeof noticeObject.priority === 'number', `cBP addNotice10: 'priority' parameter should be a number not a '${typeof noticeObject.priority}'`);
+        console.assert(noticeObject.message !== undefined, "cBP addNotice10: 'message' parameter should be defined");
+        console.assert(typeof noticeObject.message === 'string', `cBP addNotice10: 'message' parameter should be a string not a '${typeof noticeObject.message}'`);
         // console.assert(bookID !== undefined, "cBP addNotice10: 'bookID' parameter should be defined");
-        if (bookID) {
-            console.assert(typeof bookID === 'string', `cBP addNotice10: 'bookID' parameter should be a string not a '${typeof bookID}'`);
-            console.assert(bookID.length === 3, `cBP addNotice10: 'bookID' parameter should be three characters long not ${bookID.length}`);
-            console.assert(books.isValidBookID(bookID), `cBP addNotice10: '${bookID}' is not a valid USFM book identifier`);
+        if (noticeObject.bookID) {
+            console.assert(typeof noticeObject.bookID === 'string', `cBP addNotice10: 'bookID' parameter should be a string not a '${typeof noticeObject.bookID}'`);
+            console.assert(noticeObject.bookID.length === 3, `cBP addNotice10: 'bookID' parameter should be three characters long not ${noticeObject.bookID.length}`);
+            console.assert(books.isValidBookID(noticeObject.bookID), `cBP addNotice10: '${noticeObject.bookID}' is not a valid USFM book identifier`);
         }
         // console.assert(C !== undefined, "cBP addNotice10: 'C' parameter should be defined");
-        if (C) console.assert(typeof C === 'string', `cBP addNotice10: 'C' parameter should be a string not a '${typeof C}'`);
+        if (noticeObject.C) console.assert(typeof noticeObject.C === 'string', `cBP addNotice10: 'C' parameter should be a string not a '${typeof noticeObject.C}'`);
         // console.assert(V !== undefined, "cBP addNotice10: 'V' parameter should be defined");
-        if (V) console.assert(typeof V === 'string', `cBP addNotice10: 'V' parameter should be a string not a '${typeof V}'`);
+        if (noticeObject.V) console.assert(typeof noticeObject.V === 'string', `cBP addNotice10: 'V' parameter should be a string not a '${typeof noticeObject.V}'`);
         // console.assert(characterIndex !== undefined, "cBP addNotice10: 'characterIndex' parameter should be defined");
-        if (characterIndex) console.assert(typeof characterIndex === 'number', `cBP addNotice10: 'characterIndex' parameter should be a number not a '${typeof characterIndex}'`);
+        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `cBP addNotice10: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}'`);
         // console.assert(extract !== undefined, "cBP addNotice10: 'extract' parameter should be defined");
-        if (extract) console.assert(typeof extract === 'string', `cBP addNotice10: 'extract' parameter should be a string not a '${typeof extract}'`);
-        console.assert(location !== undefined, "cBP addNotice10: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', `cBP addNotice10: 'location' parameter should be a string not a '${typeof location}'`);
-        console.assert(extra !== undefined, "cBP addNotice10: 'extra' parameter should be defined");
-        console.assert(typeof extra === 'string', `cBP addNotice10: 'extra' parameter should be a string not a '${typeof extra}'`);
-        checkBookPackageResult.noticeList.push({ priority, message, bookID, C, V, rowID, repoName, filename, lineNumber, fieldName, characterIndex, extract, location, extra });
+        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cBP addNotice10: 'extract' parameter should be a string not a '${typeof noticeObject.extract}'`);
+        console.assert(noticeObject.location !== undefined, "cBP addNotice10: 'location' parameter should be defined");
+        console.assert(typeof noticeObject.location === 'string', `cBP addNotice10: 'location' parameter should be a string not a '${typeof noticeObject.location}'`);
+        console.assert(noticeObject.extra !== undefined, "cBP addNotice10: 'extra' parameter should be defined");
+        console.assert(typeof noticeObject.extra === 'string', `cBP addNotice10: 'extra' parameter should be a string not a '${typeof noticeObject.extra}'`);
+        checkBookPackageResult.noticeList.push({ ...noticeObject, bookID });
     }
 
 
@@ -496,24 +502,25 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         console.assert(fileLocation !== undefined, "cBP ourCheckFileContents: 'fileLocation' parameter should be defined");
         console.assert(typeof fileLocation === 'string', `cBP ourCheckFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
 
-        const cfResultObject = await checkFileContents(cfFilename, file_content, fileLocation, optionalCheckingOptions);
+        const cfcResultObject = await checkFileContents(cfFilename, file_content, fileLocation, optionalCheckingOptions);
         // console.log("checkFileContents() returned", cfResultObject.successList.length, "success message(s) and", cfResultObject.noticeList.length, "notice(s)");
         // for (const successEntry of cfResultObject.successList) console.log("  ourCheckFileContents:", successEntry);
+        // console.log("cfcResultObject", JSON.stringify(cfcResultObject));
 
         // Process results line by line,  appending the repoCode as an extra field as we go
-        for (const noticeEntry of cfResultObject.noticeList)
+        for (const cfcNoticeEntry of cfcResultObject.noticeList)
             // noticeEntry is an object
             // We add the repoCode as an extra value
-            addNotice10({ ...noticeEntry, extra:repoCode });
+            addNotice10({ ...cfcNoticeEntry, extra: repoCode });
     }
     // end of ourCheckFileContents function
 
     // Main code for checkBookPackage()
-    const generalLocation = ` in ${languageCode} ${bookID} book package from ${username}`;
-
     // No point in passing the branch through as a parameter
     //  coz if it's not 'master', it's unlikely to be common for all the repos
-    const branch = 'master'
+    const branch = 'master';
+
+    const generalLocation = ` in ${languageCode} ${bookID} book package from ${username} ${branch} branch`;
 
     if (bookID === 'OBS') {
         // We use the generalLocation here (does not include repo name)
@@ -538,12 +545,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
             if (books.isValidBookID(bookID)) // must be in FRT, BAK, etc.
                 whichTestament = 'other'
             else {
-                addNotice10({
-                    priority: 902, message: "Bad function call: should be given a valid book abbreviation",
-                    bookID,
-                    extract: bookID, location: ` (not '${bookID}')${generalLocation}`
-                });
-                return checkBookPackageResult;
+                addNotice10({ priority: 902, message: "Bad function call: should be given a valid book abbreviation", bookID, extract: bookID, location: ` (not '${bookID}')${generalLocation}` }); return checkBookPackageResult;
             }
         }
         // console.log(`bookNumberAndName='${bookNumberAndName}' (${whichTestament} testament)`);
@@ -554,13 +556,14 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0, checkedRepoNames = [];
         const origLang = whichTestament === 'old' ? 'UHB' : 'UGNT';
 
-         for (const repoCode of [origLang, 'ULT', 'UST', 'TN', 'TQ']) {
+        // TEMP: Removed TQ
+        for (const repoCode of [origLang, 'ULT', 'UST', 'TN']) {
             console.log(`Check ${bookID} in ${repoCode} (${languageCode} ${bookID} from ${username})`);
             const repoLocation = ` in ${repoCode.toUpperCase()}${generalLocation}`;
             const repoName = getRepoName(languageCode, repoCode);
 
-            // const fullRepoName = username + '/' + repoName;
-            // console.log("Let's try1", bookID, "from", fullRepoName);
+            // Update our "waiting" message
+            setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookID}</b> book package in <b>{repoCode}</b> (checked <b>{checkedRepoNames.length.toLocaleString()}</b>/5 repos)…</p>);
 
             let filename;
             if (repoCode === 'UHB' || repoCode === 'UGNT' || repoCode === 'ULT' || repoCode === 'UST') {
@@ -593,7 +596,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
                     checkedRepoNames.push(repoCode);
                 } catch (cBPgfError) {
                     console.log("ERROR: Failed to load", username, repoName, filename, branch, cBPgfError + '');
-                    addNotice10({ priority: 996, message: "Failed to load", bookID, repoName, filename, location: `${repoLocation} ${filename}: ${cBPgfError}`, extra: repoCode });
+                    addNotice10({ priority: 996, message: "Failed to load", bookID, repoName, filename, location: `${repoLocation}: ${cBPgfError}`, extra: repoCode });
                     continue;
                 }
 
@@ -605,7 +608,8 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
             }
 
             // Update our "waiting" message
-            setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {languageCode} <b>{bookID}</b> book package: checked <b>{checkedRepoNames.length.toLocaleString()}</b>/5 repos…</p>);
+            // setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookID}</b> book package: checked <b>{checkedRepoNames.length.toLocaleString()}</b>/5 repos…</p>);
+            // setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {languageCode} <b>{bookID}</b> book package: checked <b>{checkedRepoNames.length.toLocaleString()}</b>/5 repos…</p>);
         }
 
         // Add some extra fields to our checkFileResult object

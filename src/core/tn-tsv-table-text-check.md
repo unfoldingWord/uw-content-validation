@@ -54,7 +54,7 @@ function CheckTNTSVText(props) {
     //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
     (async () => {
       // Display our "waiting" message
-      setResults(<p style={{ color: 'magenta' }}>Waiting for check results for {tableTextName} <b>{bookID}</b>…</p>);
+      setResults(<p style={{ color: 'magenta' }}>Checking {tableTextName} <b>{bookID}</b>…</p>);
       const rawResults = await checkTN_TSVText(bookID, filename, tableText, givenLocation);
       setResults(
         <div>

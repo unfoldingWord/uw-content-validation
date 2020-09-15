@@ -1,203 +1,201 @@
 ./makeNoticeList.py
-Got 201 notices:
-  newNoticeObject
-  marker === 's5' ? 111 : 809, C, V, `${marker === 's5' ? 'Deprecated' : 'Unexpected'} '\\${marker}' marker at start of line`, characterIndex:1, location:lineLocation}
-  grammarCheckResult.error.priority, grammarCheckResult.error.message,
-  grammarCheckResult.error.priority, grammarCheckResult.error.message,
-  998, "checkAnnotationTSVDataRow() is still a placeholder -- not completed yet", location:ourRowLocation}
-  997, "CheckAnnotationRows() is still a placeholder -- not completed yet", location:ourLocation}
-  996, bookID:ourBookID, "Failed to load", location:`${givenLocation} ${thisFilepath}: ${cRgfError}`, repoName}
-  996, bookID:ourBookID, "Failed to load", location:`${generalLocation} ${thisFilepath}: ${cRgfError}`, repoCode}
-  996, bookID, C, V, "Failed to load", location:`${generalLocation} ${thisPath}: ${tQerror}`, extra:repoCode}
-  996, bookID, C, V, "Failed to load", location:`${generalLocation} ${thisPath}: ${tQerror}`, extra:repoCode}
-  996, "Failed to load", location:`${ourLocation} ${filename}: ${gcUHBerror}`, extra: originalLanguageRepoName}
-  996, "Failed to load", location:`${ourLocation} ${filename}: ${gcUGNTerror}`, extra: originalLanguageRepoName}
-  996, "Failed to load", bookID, location:`${generalLocation} ${filename}: ${cBPgfError}`, extra:repoCode}
-  996, "Failed to load", bookID, location:`${generalLocation} ${filename}: ${cBPgfError}`, extra:repoCode}
-  993, "Unresolved GIT conflict", characterIndex, extract, location:ourAtString}
-  993, "Unresolved GIT conflict", characterIndex, extract, location:ourAtString}
-  992, "Unresolved GIT conflict", characterIndex, extract, location:ourAtString}
-  992, "Unresolved GIT conflict", characterIndex, extract, location:ourAtString}
-  991, "Unresolved GIT conflict", characterIndex, extract, location:ourAtString}
-  991, "Unresolved GIT conflict", characterIndex, extract, location:ourAtString}
-  988, `Wrong number of tabbed fields (expected ${NUM_EXPECTED_TN_FIELDS})`, extract:`Found ${fields.length} field${fields.length===1?'':'s'}`, lineNumber:n+1, location:inString}
-  988, `Wrong number of tabbed fields (expected ${NUM_EXPECTED_TN_FIELDS})`, extract:`Found ${fields.length} field${fields.length===1?'':'s'}`, lineNumber:n+1, location:inString}
-  987, C, V, "Expected \\id line to start with book identifier", lineNumber:n, characterIndex:4, extract, location:atString}
-  980, C, V, "Expected line to start with backslash", lineNumber:n, characterIndex:0, extract:line[0], location:atString}
-  979, "Invalid book identifier passed to checkTN_TSVDataRow", location:` '${bookID}' in first parameter: ${tlcNCerror}`}
-  979, "Invalid book identifier passed to checkTNLinks", location:` '${bookID}' in first parameter: ${tnlcError}`}
-  979, "Invalid book identifier passed to checkAnnotationTSVDataRow", location:` '${bookID}' in first parameter: ${tlcNCerror}`}
-  978, `Wrong '${B}' book identifier`, location:` (expected '${bookID}')`}
-  977, "Missing book identifier", characterIndex:0, location:ourRowLocation}
-  947, "Missing manifest.yaml", location:ourLocation, extra:'MANIFEST'}
-  947, "Missing manifest.yaml", location:ourLocation, extra:'MANIFEST'}
-  946, "Missing LICENSE.md", location:ourLocation, extra:'LICENSE'}
-  946, "Missing LICENSE.md", location:ourLocation, extra:'LICENSE'}
-  944, `USFM3 Grammar Check (${strictnessString} mode) doesn't pass`, location:ourLocation}
-  943, `USFM3 toJSON Check doesn't pass`, location:ourLocation}
-  942, "USFM Grammar check fails", location}
-  929, "'projects' key is missing", location:ourLocation}
-  928, "'dublin_core' key is missing", location:ourLocation}
-  916, yamlError.message, location:ourLocation})
-  903, "Bad function call: should be given a valid book abbreviation",
-  902, "Bad function call: should be given a valid book abbreviation",
-  901, "Bad function call: should be given a valid book abbreviation",
+Got 202 notices:
+  998, "checkAnnotationTSVDataRow() is still a placeholder -- not completed yet", location:ourRowLocation
+  997, "CheckAnnotationRows() is still a placeholder -- not completed yet", location: ourLocation
+  996, "Failed to load", filename, location: `$ourLocation: $gcUHBerror`, extra: originalLanguageRepoName
+  996, "Failed to load", filename, location: `$ourLocation: $gcUGNTerror`, extra: originalLanguageRepoName
+  996, "Failed to load", bookID: ourBookID, filename: thisFilename, location: `$givenLocation $thisFilepath: $cRgfError`, extra: repoName
+  996, "Failed to load", bookID, repoName, filename, location: `$repoLocation: $cBPgfError`, extra: repoCode
+  996, "Failed to load", bookID, C, V, location: `$generalLocation $thisPath: $tQerror`, extra: repoCode
+  993, "Unresolved GIT conflict", characterIndex, extract, location:ourLocation
+  993, "Unresolved GIT conflict", characterIndex, extract, location: ourLocation
+  992, "Unresolved GIT conflict", characterIndex, extract, location:ourLocation
+  992, "Unresolved GIT conflict", characterIndex, extract, location: ourLocation
+  991, "Unresolved GIT conflict", characterIndex, extract, location:ourLocation
+  991, "Unresolved GIT conflict", characterIndex, extract, location: ourLocation
+  988, `Wrong number of tabbed fields (expected $NUM_EXPECTED_TN_TSV_FIELDS)`, extract: `Found $fields.length field$fields.length === 1 ? '' : 's'`, lineNumber: n + 1, location: ourLocation
+  988, `Wrong number of tabbed fields (expected $NUM_EXPECTED_ANNOTATION_TSV_FIELDS)`, extract: `Found $fields.length field$fields.length === 1 ? '' : 's'`, lineNumber: n + 1, location: ourLocation
+  987, C, V, "Expected \\id line to start with book identifier", lineNumber: n, characterIndex: 4, extract, location: ourLocation
+  `"`.indexOf(line[0]) < 0 ? 980 : 280, C, V, "Expected line to start with backslash", lineNumber: n, characterIndex: 0, extract: line[0], location: ourLocation
+  979, "Invalid book identifier passed to checkTN_TSVDataRow", location:` '$bookID' in first parameter: $tlcNCerror`
+  979, "Invalid book identifier passed to checkTNLinks", location:` '$bookID' in first parameter: $tnlcError`
+  979, "Invalid book identifier passed to checkAnnotationTSVDataRow", location:` '$bookID' in first parameter: $tlcNCerror`
+  978, `Wrong '$B' book identifier`, rowID, location:` (expected '$bookID')$ourRowLocation`
+  977, "Missing book identifier", characterIndex:0, rowID, location:ourRowLocation
+  947, "Missing manifest.yaml", location: ourLocation, extra: 'MANIFEST'
+  946, "Missing LICENSE.md", location: ourLocation, extra: 'LICENSE'
+  944, `USFM3 Grammar Check ($strictnessString mode) doesn't pass`, filename, location:ourLocation
+  943, `USFM3 toJSON Check doesn't pass`, location:ourLocation
+  942, "USFM Grammar check fails", location
+  929, "'projects' key is missing", location:ourLocation
+  928, "'dublin_core' key is missing", location:ourLocation
+  920, yamlError.message, location:ourLocation)
+  919, "Missing OrigQuote field", rowID, location:ourRowLocation
+  916, "Unable to find original language quote in verse text",
+  916, "Unable to find original language quote in verse text",
+  916, "Unable to find original language quote in verse text",
+  916, "Unable to find original language quote in verse text",
+  916, "Unable to find original language quote in verse text",
+  916, "Unable to find original language quote in verse text",
+  916, "Unable to find original language quote in verse text",
+  903, "Bad function call: should be given a valid book abbreviation", extract: bookID, location: ` (not '$bookID')$ourLocation`
+  902, "Bad function call: should be given a valid book abbreviation", bookID, extract: bookID, location: ` (not '$bookID')$generalLocation`);        return checkBookPackageResult;
   900, "Bad parameter: should be given a valid book abbreviation",
-  889, `Unable to find ${fieldName} TA link`, extract:fieldText, location:`${ourLocation} ${filepath}`}
-  888, `Error loading ${fieldName} TA link`, extract:fieldText, location:`${ourLocation} ${filepath}: ${trcGCerror}`}
-  887, `Linked ${fieldName} TA article seems empty`, extract:fieldText, location:`${ourLocation} ${filepath}`}
-  886, `Unable to find ${fieldName} TA link`, extract:resultArray[0], location:`${ourLocation} ${filepath}`}
-  885, `Error loading ${fieldName} TA link`, extract:resultArray[0], location:`${ourLocation} ${filepath}: ${trcGCerror}`}
-  884, `Linked ${fieldName} TA article seems empty`, extract:resultArray[0], location:`${ourLocation} ${filepath}`}
-  883, `Unable to find ${fieldName} TW link`, extract:resultArray[0], location:`${ourLocation} ${filepath}`}
-  882, `Error loading ${fieldName} TW link`, extract:resultArray[0], location:`${ourLocation} ${filepath}: ${trcGCerror}`}
-  881, `Linked ${fieldName} TW article seems empty`, extract:resultArray[0], location:`${ourLocation} ${filepath}`}
-  873, `Mismatched ${opener}${closer} fields`, extract:`(left=${lCount.toLocaleString()}, right=${rCount.toLocaleString()})`, location:fileLocation}
-  87, C, V, "Expected \\toc3 line to follow \\toc2", lineNumber:n, characterIndex:1, extract:`(not '${lastMarker}')`, location:atString}
-  87, C, V, "Expected \\toc2 line to follow \\toc1", lineNumber:n, characterIndex:1, extract:`(not '${lastMarker}')`, location:atString}
-  869, "Chapter number out of range", C:chapterNumberString, extract:`${bookID} ${chapterNumberString}`, location:CVlocation}
-  868, "Verse number out of range", C:chapterNumberString, V:verseNumberString, extract:`${bookID} ${chapterNumberString}:${verseNumberString}`, location:CVlocation}
-  867, C:chapterNumberString, V:`${v}`, "Verse appears to be missing", location:CVlocation}
-  866, C:chapterNumberString, V:`${v}`, "Verse seems to have no text", location:CVlocation}
-  861, `Found wrong number of TSV fields (expected ${NUM_EXPECTED_TSV_FIELDS})`, extract:`Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, location:ourRowLocation}
-  861, `Found wrong number of TSV fields (expected ${NUM_EXPECTED_TSV_FIELDS})`, extract:`Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, location:ourRowLocation}
-  851, "Unable to load original language verse text", location:ourLocation}
-  843, "Invalid chapter number", extract:resultArray[4], location:`${ourLocation}`}
-  824, `Invalid zero chapter number`, extract:C, location:ourRowLocation}
-  824, `Invalid zero chapter number`, extract:C, location:ourRowLocation}
-  823, `Invalid large chapter number`, extract:C, location:ourRowLocation}
-  823, `Invalid large chapter number`, extract:C, location:ourRowLocation}
-  822, C, V, "Expected \\v field to contain an integer", characterIndex:3, extract:'\\v ' + rest, location:lineLocation}
-  822, C, V, "Expected \\c field to contain an integer", characterIndex:3, extract:'\\c ' + rest, location:lineLocation}
-  822, "Unable to check chapter number", location:` '${C}'`}
-  822, "Unable to check chapter number", location:` '${C}'`}
-  821, "Bad chapter number", location:` '${C}' with`}
-  821, "Bad chapter number", location:` '${C}' with`}
-  820, "Missing chapter number", location:` ?:${V}`}
-  820, "Missing chapter number", location:` ?:${V}`}
-  819, "Missing compulsory USFM line", extract:`missing \\${compulsoryMarker}`, location:fileLocation}
-  814, `Invalid zero '${V}' verse number`, location:ourRowLocation}
-  814, `Invalid zero '${V}' verse number`, location:ourRowLocation}
-  813, `Invalid large '${V}' verse number`, location:` for chapter ${C}`}
-  813, `Invalid large '${V}' verse number`, location:` for chapter ${C}`}
-  812, "Unable to check verse number", location:` '${V}'`}
-  812, "Unable to check verse number", location:` '${V}'`}
-  811, "Bad verse number", location:` '${V}'`}
-  811, "Bad verse number", location:` '${V}'`}
-  810, "Missing verse number", location:` after ${C}:?`}
-  810, "Missing verse number", location:` after ${C}:?`}
-  792, `Invalid '${occurrence}' occurrence field`, location:ourRowLocation}
-  792, `Invalid '${occurrence}' occurrence field`, location:ourRowLocation}
-  790, C,V, "Missing verse number", lineNumber:n+1, location:` after ${C}:${lastV}${withString}`}
-  790, C,V, "Missing verse number", lineNumber:n+1, location:` after ${C}:${lastV}${withString}`}
-  779, "Missing ID field", location:ourRowLocation}
-  779, "Missing ID field", location:ourRowLocation}
-  778, "ID should be exactly 4 characters", location:` (not ${rowID.length})`}
-  778, "ID should be exactly 4 characters", location:` (not ${rowID.length})`}
-  769, C, V, "Verse bridge numbers not in ascending order", lineNumber:n, characterIndex:3, extract:`${rest.substring(0, Math.max(9, extractLength))}${rest.length > extractLength ? '…' : ''} (${firstV} → ${secondV})`, location:atString}
-  765, C, V, "Bridged verse numbers didn't increment correctly", lineNumber:n, characterIndex:3, extract:`${rest.substring(0, Math.max(9, extractLength))}${rest.length > extractLength ? '…' : ''} (${lastV} → ${firstV})`, location:atString}
-  765, "Unexpected link", characterIndex, extract, location:ourAtString}
-  764, C, V, "Chapter number didn't increment correctly", lineNumber:n, characterIndex:3, extract:`${rest.substring(0, halfLength)}${rest.length > halfLength ? '…' : ''} (${lastC ? lastC : '0'} → ${C})`, location:atString}
-  763, C, V, "Verse number didn't increment correctly", lineNumber:n, characterIndex:3, extract:`${rest.substring(0, halfLength)}${rest.length > halfLength ? '…' : ''} (${lastV ? lastV : '0'} → ${V})`, location:atString}
-  762, C, V, "Unable to convert verse bridge numbers to integers", lineNumber:n, characterIndex:3, extract:`${rest.substring(0, Math.max(9, extractLength))}${rest.length > extractLength ? '…' : ''}`, location:atString}
-  762, "Unable to convert verse bridge numbers to integers", C:chapterNumberString, V:verseNumberString, characterIndex:3, extract:verseNumberString, location:`${CVlocation} with ${usfmVIerror}`}
-  761, C, V, "Verse number didn't increment correctly", lineNumber:n, characterIndex:3, extract:`${restRest.substring(0, halfLength)}${restRest.length > halfLength ? '…' : ''} (${lastV ? lastV : '0'} → ${V})`, location:atString}
-  747, "Bad function call: should be given a valid book abbreviation", extract:bookID, location:` (not '${bookID}')${ourLocation}`}
-  747, "Bad function call: should be given a valid book abbreviation", extract:bookID, location:` (not '${bookID}')${ourLocation}`}
-  746, "Bad TSV header", lineNumber:n+1, location:`${ourLocation}: '${lines[0]}'`}
-  746, "Bad TSV header", lineNumber:n+1, location:`${ourLocation}: '${lines[0]}'`}
-  745, C,V, `Wrong '${B}' book identifier (expected '${bookID}')`, lineNumber:n+1, location:withString}
-  744, C,V, "Missing book identifier", lineNumber:n+1, location:withString}
-  743, "Chapter numbers of Bible link don't match", extract:resultArray[0], location:`${ourLocation}`}
-  742, "Verse numbers of Bible link don't match", extract:resultArray[0], location:`${ourLocation}`}
-  739, C,V, "Missing chapter number", lineNumber:n+1, location:` after ${lastC}:${V}${withString}`}
-  739, C,V, "Missing chapter number", lineNumber:n+1, location:` after ${lastC}:${V}${withString}`}
-  738, C,V, "Bad verse number", lineNumber:n+1, location:withString}
-  738, C,V, "Bad verse number", lineNumber:n+1, location:withString}
-  737, C,V, `Invalid large '${C}' chapter number`, lineNumber:n+1, location:withString}
-  737, C,V, `Invalid large '${C}' chapter number`, lineNumber:n+1, location:withString}
-  736, C,V, `Receding '${C}' chapter number after '${lastC}'`, lineNumber:n+1, location:withString}
-  736, C,V, `Receding '${C}' chapter number after '${lastC}'`, lineNumber:n+1, location:withString}
-  735, C,V, `Advancing '${C}' chapter number after '${lastC}'`, lineNumber:n+1, location:withString}
-  735, C,V, `Advancing '${C}' chapter number after '${lastC}'`, lineNumber:n+1, location:withString}
-  734, C,V, `Invalid large '${V}' verse number for chapter ${C}`, lineNumber:n+1, location:withString}
-  734, C,V, `Invalid large '${V}' verse number for chapter ${C}`, lineNumber:n+1, location:withString}
-  734, C,V, "Bad chapter number", lineNumber:n+1, location:withString}
-  734, C,V, "Bad chapter number", lineNumber:n+1, location:withString}
-  733, C,V, `Receding '${V}' verse number after '${lastV}'`, lineNumber:n+1, location:withString}
-  733, C,V, `Receding '${V}' verse number after '${lastV}'`, lineNumber:n+1, location:withString}
-  730, C,V, "Missing ID", lineNumber:n+1, location:withString}
-  730, C,V, "Missing ID", lineNumber:n+1, location:withString}
-  729, C,V, `Duplicate '${rowID}' ID`, lineNumber:n+1, location:withString}
-  729, C,V, `Duplicate '${rowID}' ID`, lineNumber:n+1, location:withString}
-  724, C, V, "Unable to convert chapter number to integer", lineNumber:n, characterIndex:3, extract:`${rest.substring(0, halfLength)}${rest.length > halfLength ? '…' : ''}`, location:atString}
-  723, C, V, "Unable to convert verse number to integer", lineNumber:n, characterIndex:3, extract:`${rest.substring(0, halfLength)}${rest.length > halfLength ? '…' : ''}`, location:atString}
-  722, "Unable to find original language quote in verse text", extract, location:ourLocation}
-  721, "Unable to find original language quote in verse text", extract, location:ourLocation}
-  720, C, V, "Unable to convert internal verse number to integer", lineNumber:n, characterIndex:3, extract:`${restRest.substring(0, halfLength)}${restRest.length > halfLength ? '…' : ''}`, location:atString}
-  711, C, V, "Expected compulsory content", characterIndex:marker.length, location:` after \\${marker} marker${lineLocation}`}
-  703, C, V, "Unexpected CarriageReturn character", lineNumber:n, characterIndex, extract, location:atString}
-  67, C:chapterNumberString, V:`${v}`, "Verse appears to be left out", location:CVlocation}
-  663, `Mismatched ${leftChar}${rightChar} characters`, extract:`(left=${lCount.toLocaleString()}, right=${rCount.toLocaleString()})`, location:ourAtString}
-  644, `USFM3 Grammar Check (relaxed mode) doesn't pass either`, location:fileLocation}
-  638, "Only found whitespace", location:ourAtString}
-  638, "Only found whitespace", location:ourAtString}
-  621, "Seems original language quote might not finish at the end of a word", characterIndex:fieldText.length, extract, location:ourLocation}
-  620, "Seems original language quote might not start at the beginning of a word", characterIndex:0, extract, location:ourLocation}
-  600, `${regexResultsArray.length} link target${regexResultsArray.length === 1 ? ' is' : 's are'} still being checked…`}
-  583, "Unexpected newLine character", characterIndex, extract, location:ourAtString}
-  582, "Unexpected carriageReturn character", characterIndex, extract, location:ourAtString}
-  581, "Unexpected non-break space character", characterIndex, extract, location:ourAtString}
-  580, "Unexpected narrow non-break space character", characterIndex, extract, location:ourAtString}
-  552, C,V, `Invalid zero '${V}' verse number`, lineNumber:n+1, location:withString}
-  552, C,V, `Invalid zero '${V}' verse number`, lineNumber:n+1, location:withString}
-  551, C,V, `Invalid zero '${C}' chapter number`, lineNumber:n+1, location:withString}
-  551, C,V, `Invalid zero '${C}' chapter number`, lineNumber:n+1, location:withString}
-  550, "Invalid zero occurrence field when we have an original quote", location:ourRowLocation}
-  550, "Invalid zero occurrence field when we have an original quote", location:ourRowLocation}
-  519, "Missing expected USFM line", extract:`missing \\${expectedMarker}`, location:fileLocation}
-  518, "Missing expected USFM line", extract:`missing \\${expectedMarker}`, location:fileLocation}
-  517, "Missing expected USFM line", extract:`missing \\${expectedMarker}`, location:fileLocation}
-  472, "Nesting seems confused", lineNumber:n, characterIndex:0, location:atString}
-  441, `Unknown linkType parameter`, extract:linkType}
-  439, "Error fetching link", location:` ${fetchLink}`}
-  438, `Blank field / missing link (expected ${linkOptions.expectedCount} link${linkOptions.expectedCount === 1 ? "" : "s"})`, location:ourAtString}
-  401, C, V, `Unexpected content after \\${marker} marker`, characterIndex:marker.length, extract:rest, location:lineLocation}
-  399, C, V, "Useless paragraph marker", lineNumber:n, characterIndex:1, extract:`('${lastMarker}' before '${marker}')`, location:atString}
-  375, "Ellipsis without surrounding snippet", location:ourLocation}
-  301, C, V, `Unexpected whitespace after \\${marker} marker`, characterIndex:marker.length, extract:rest, location:lineLocation}
-  287, `Not enough links (expected ${linkOptions.expectedCount} link${linkOptions.expectedCount === 1 ? "" : "s"})`, location:` (only found ${regexResultsArray.length})${ourAtString}`}
-  276, "Missing Quote field", location:ourRowLocation}
-  276, "Missing OrigQuote field", location:ourRowLocation}
-  275, "Missing GLQuote field", location:ourRowLocation}
-  274, `Missing ${annotationType} Annotation field`, location:ourRowLocation}
-  274, "Missing OccurrenceNote field", location:ourRowLocation}
-  218, "Using deprecated USFM marker", extract:`\\${deprecatedMarker}`, location:fileLocation}
-  194, "Unexpected double spaces", characterIndex, extract, location:ourAtString}
-  192, `Unexpected space after ${punctChar} character`, characterIndex, extract, location:ourAtString}
-  191, `Unexpected ${punctChar} character after space`, characterIndex, extract, location:ourAtString}
-  179, "Unexpected space before ellipse character", characterIndex, extract, location:ourAtString}
-  178, "Unexpected space after ellipse character", characterIndex, extract, location:ourAtString}
-  177, `Unexpected doubled ${punctChar} characters`, characterIndex, extract, location:ourAtString}
-  176, "ID should start with a lowercase letter or digit", characterIndex:0, location:` (not '${rowID[0]}')`}
-  176, "ID should start with a lowercase letter or digit", characterIndex:0, location:` (not '${rowID[0]}')`}
-  175, "ID should end with a lowercase letter or digit", characterIndex:3, location:` (not '${rowID[3]}')`}
-  175, "ID should end with a lowercase letter or digit", characterIndeX:3, location:` (not '${rowID[3]}')`}
-  174, "ID characters should only be lowercase letters, digits, or hypen", characterIndex:1, location:` (not '${rowID[1]}')`}
-  174, "ID characters should only be lowercase letters, digits, or hypen", characterIndex:1, location:` (not '${rowID[1]}')`}
-  173, "ID characters should only be lowercase letters, digits, or hypen", characterIndex:2, location:` (not '${rowID[2]}')`}
-  173, "ID characters should only be lowercase letters, digits, or hypen", characterIndex:2, location:` (not '${rowID[2]}')`}
-  172, "Header levels should only increment by one", lineNumber:n, characterIndex:0, location:atString}
-  163, `Mismatched ${leftChar}${rightChar} characters`, extract:`(left=${lCount.toLocaleString()}, right=${rCount.toLocaleString()})`, location:ourAtString}
-  159, "Should use proper ellipse character (not periods)", characterIndex, extract, location:ourLocation}
-  158, "Unexpected space(s) beside ellipse characters", characterIndex, extract, location:ourLocation}
-  158, "Unexpected space(s) beside ellipse character", characterIndex, extract, location:ourLocation}
-  148, "'checking' key is missing", location:ourLocation}
-  111, `Bad options for checkFieldLinks: expectedCount=${linkOptions.expectedCount} but allowedCount=${linkOptions.allowedCount}`}
-  107, "Unexpected leading break", characterIndex:0, extract, location:ourAtString}
-  106, `Unexpected leading space${fieldText[1] === ' ' ? "s" : ""}`, characterIndex:0, extract, location:ourAtString}
-  105, "Unexpected trailing space(s)", characterIndex:fieldText.length - 1, extract, location:ourAtString}
-  104, "Unexpected trailing break", characterIndex:fieldText.length - 1, extract, location:ourAtString}
-  103, `USFMGrammar: ${warningString.trim()}`, location}
-  102, `USFMGrammar: ${warningString}`, location:fileLocation}
-  101, `USFMGrammar: ${warningString}`, location:ourLocation}
+  889, `Unable to find $fieldName TA link`, extract:fieldText, location:`$ourLocation $filepath`
+  888, `Error loading $fieldName TA link`, extract:fieldText, location:`$ourLocation $filepath: $trcGCerror`
+  887, `Linked $fieldName TA article seems empty`, extract:fieldText, location:`$ourLocation $filepath`
+  886, `Unable to find $fieldName TA link`, extract:resultArray[0], location:`$ourLocation $filepath`
+  885, `Error loading $fieldName TA link`, extract:resultArray[0], location:`$ourLocation $filepath: $trcGCerror`
+  884, `Linked $fieldName TA article seems empty`, extract:resultArray[0], location:`$ourLocation $filepath`
+  883, `Unable to find $fieldName TW link`, extract:resultArray[0], location:`$ourLocation $filepath`
+  882, `Error loading $fieldName TW link`, extract:resultArray[0], location:`$ourLocation $filepath: $trcGCerror`
+  881, `Linked $fieldName TW article seems empty`, extract:resultArray[0], location:`$ourLocation $filepath`
+  873, `Mismatched $opener$closer fields`, extract: `(left=$lCount.toLocaleString(), right=$rCount.toLocaleString())`, location: fileLocation
+  869, "Chapter number out of range", C: chapterNumberString, extract: `$bookID $chapterNumberString`, location: CVlocation
+  868, "Verse number out of range", C: chapterNumberString, V: verseNumberString, extract: `$bookID $chapterNumberString:$verseNumberString`, location: CVlocation
+  867, C: chapterNumberString, V: `$v`, "Verse appears to be missing", location: CVlocation
+  866, C: chapterNumberString, V: `$v`, "Verse seems to have no text", location: CVlocation
+  861, `Found wrong number of TSV fields (expected $NUM_EXPECTED_TN_TSV_FIELDS)`, extract:`Found $fields.length field$fields.length === 1 ? '' : 's'`, location:ourRowLocation
+  861, `Found wrong number of TSV fields (expected $NUM_EXPECTED_ANNOTATION_TSV_FIELDS)`, extract:`Found $fields.length field$fields.length === 1 ? '' : 's'`, location:ourRowLocation
+  851, "Unable to load original language verse text", location: ourLocation
+  843, "Invalid chapter number", extract:resultArray[4], location:`$ourLocation`
+  824, `Invalid zero chapter number`, extract:C, rowID, location:ourRowLocation
+  824, `Invalid zero chapter number`, extract:C, rowID, location:ourRowLocation
+  823, `Invalid large chapter number`, extract:C, rowID, location:ourRowLocation
+  823, `Invalid large chapter number`, extract:C, rowID, location:ourRowLocation
+  822, C, V, "Expected \\v field to contain an integer", characterIndex: 3, extract: '\\v ' + rest, location: lineLocation
+  822, "Unable to check chapter number", rowID, location:` '$C'$ourRowLocation`
+  822, "Unable to check chapter number", rowID, location:` '$C'$ourRowLocation`
+  822, "Expected \\c field to contain an integer", lineNumber, C, V, characterIndex: 3, extract: '\\c ' + rest, location: lineLocation
+  821, "Bad chapter number", rowID, location:` '$C' with$ourRowLocation`
+  821, "Bad chapter number", rowID, location:` '$C' with$ourRowLocation`
+  820, "Missing chapter number", rowID, location:` ?:$V$ourRowLocation`
+  820, "Missing chapter number", rowID, location:` ?:$V$ourRowLocation`
+  819, "Missing compulsory USFM line", extract: `missing \\$compulsoryMarker`, location: fileLocation
+  814, `Invalid zero '$V' verse number`, rowID, location:ourRowLocation
+  814, `Invalid zero '$V' verse number`, rowID, location:ourRowLocation
+  813, `Invalid large '$V' verse number`, rowID, location:` for chapter $C$ourRowLocation`
+  813, `Invalid large '$V' verse number`, rowID, location:` for chapter $C$ourRowLocation`
+  812, "Unable to check verse number", rowID, location:` '$V'$ourRowLocation`
+  812, "Unable to check verse number", rowID, location:` '$V'$ourRowLocation`
+  811, "Bad verse number", rowID, location:` '$V'$ourRowLocation`
+  811, "Bad verse number", rowID, location:` '$V'$ourRowLocation`
+  810, "Missing verse number", rowID, location:` after $C:?$ourRowLocation`
+  810, "Missing verse number", rowID, location:` after $C:?$ourRowLocation`
+  marker === 's5' ? 111 : 809, `$marker === 's5' ? 'Deprecated' : 'Unexpected' '\\$marker' marker at start of line`,C, V, lineNumber, characterIndex: 1, location: lineLocation
+  792, `Invalid '$occurrence' occurrence field`, rowID, location:ourRowLocation
+  792, `Invalid '$occurrence' occurrence field`, rowID, location:ourRowLocation
+  790, C, V, "Missing verse number", rowID, lineNumber: n + 1, location: ` after $C:$lastV$ourLocation`
+  790, C, V, "Missing verse number", rowID, lineNumber: n + 1, location: ` after $C:$lastV$ourLocation`
+  779, "Missing ID field", location:ourRowLocation
+  779, "Missing ID field", location:ourRowLocation
+  778, "ID should be exactly 4 characters", rowID, location:` (not $rowID.length)$ourRowLocation`
+  778, "ID should be exactly 4 characters", rowID, location:` (not $rowID.length)$ourRowLocation`
+  769, C, V, "Verse bridge numbers not in ascending order", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, Math.max(9, extractLength))$rest.length > extractLength ? '…' : '' ($firstV → $secondV)`, location: ourLocation
+  765, C, V, "Bridged verse numbers didn't increment correctly", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, Math.max(9, extractLength))$rest.length > extractLength ? '…' : '' ($lastV → $firstV)`, location: ourLocation
+  765, "Unexpected link", characterIndex, extract, location: ourLocation
+  764, C, V, "Chapter number didn't increment correctly", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, halfLength)$rest.length > halfLength ? '…' : '' ($lastC ? lastC : '0' → $C)`, location: ourLocation
+  763, C, V, "Verse number didn't increment correctly", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, halfLength)$rest.length > halfLength ? '…' : '' ($lastV ? lastV : '0' → $V)`, location: ourLocation
+  762, C, V, "Unable to convert verse bridge numbers to integers", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, Math.max(9, extractLength))$rest.length > extractLength ? '…' : ''`, location: ourLocation
+  762, "Unable to convert verse bridge numbers to integers", C: chapterNumberString, V: verseNumberString, characterIndex: 3, extract: verseNumberString, location: `$CVlocation with $usfmVIerror`
+  761, C, V, "Verse number didn't increment correctly", lineNumber: n, characterIndex: 3, extract: `$restRest.substring(0, halfLength)$restRest.length > halfLength ? '…' : '' ($lastV ? lastV : '0' → $V)`, location: ourLocation
+  747, "Bad function call: should be given a valid book abbreviation", extract: bookID, location: ` (not '$bookID')$ourLocation`
+  747, "Bad function call: should be given a valid book abbreviation", extract: bookID, location: ` (not '$bookID')$ourLocation`
+  746, "Bad TSV header", lineNumber: n + 1, location: `$ourLocation: '$lines[0]'`
+  746, "Bad TSV header", lineNumber: n + 1, location: `$ourLocation: '$lines[0]'`
+  745, C, V, `Wrong '$B' book identifier (expected '$bookID')`, rowID, lineNumber: n + 1, location: ourLocation
+  744, C, V, "Missing book identifier", rowID, lineNumber: n + 1, location: ourLocation
+  743, "Chapter numbers of Bible link don't match", extract:resultArray[0], location:`$ourLocation`
+  742, "Verse numbers of Bible link don't match", extract:resultArray[0], location:`$ourLocation`
+  739, C, V, "Missing chapter number", rowID, lineNumber: n + 1, location: ` after $lastC:$V$ourLocation`
+  739, C, V, "Missing chapter number", rowID, lineNumber: n + 1, location: ` after $lastC:$V$ourLocation`
+  738, C, V, "Bad verse number", rowID, lineNumber: n + 1, location: ourLocation
+  738, C, V, "Bad verse number", rowID, lineNumber: n + 1, location: ourLocation
+  737, C, V, `Invalid large '$C' chapter number`, rowID, lineNumber: n + 1, location: ourLocation
+  737, C, V, `Invalid large '$C' chapter number`, rowID, lineNumber: n + 1, location: ourLocation
+  736, C, V, `Receding '$C' chapter number after '$lastC'`, rowID, lineNumber: n + 1, location: ourLocation
+  736, C, V, `Receding '$C' chapter number after '$lastC'`, rowID, lineNumber: n + 1, location: ourLocation
+  735, C, V, `Advancing '$C' chapter number after '$lastC'`, rowID, lineNumber: n + 1, location: ourLocation
+  735, C, V, `Advancing '$C' chapter number after '$lastC'`, rowID, lineNumber: n + 1, location: ourLocation
+  734, C, V, `Invalid large '$V' verse number for chapter $C`, rowID, lineNumber: n + 1, location: ourLocation
+  734, C, V, `Invalid large '$V' verse number for chapter $C`, rowID, lineNumber: n + 1, location: ourLocation
+  734, C, V, "Bad chapter number", rowID, lineNumber: n + 1, location: ourLocation
+  734, C, V, "Bad chapter number", rowID, lineNumber: n + 1, location: ourLocation
+  733, C, V, `Receding '$V' verse number after '$lastV'`, rowID, lineNumber: n + 1, location: ourLocation
+  733, C, V, `Receding '$V' verse number after '$lastV'`, rowID, lineNumber: n + 1, location: ourLocation
+  730, C, V, "Missing ID", lineNumber: n + 1, location: ourLocation
+  730, C, V, "Missing ID", lineNumber: n + 1, location: ourLocation
+  729, C, V, `Duplicate '$rowID' ID`, rowID, lineNumber: n + 1, location: ourLocation
+  729, C, V, `Duplicate '$rowID' ID`, rowID, lineNumber: n + 1, location: ourLocation
+  724, C, V, "Unable to convert chapter number to integer", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, halfLength)$rest.length > halfLength ? '…' : ''`, location: ourLocation
+  723, C, V, "Unable to convert verse number to integer", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, halfLength)$rest.length > halfLength ? '…' : ''`, location: ourLocation
+  721, "Unable to find original language quote in verse text", extract, location: ourLocation
+  720, C, V, "Unable to convert internal verse number to integer", lineNumber: n, characterIndex: 3, extract: `$restRest.substring(0, halfLength)$restRest.length > halfLength ? '…' : ''`, location: ourLocation
+  711, "Expected compulsory content",C, V, lineNumber, characterIndex: marker.length, location: ` after \\$marker marker$lineLocation`
+  703, C, V, "Unexpected CarriageReturn character", lineNumber: n, characterIndex, extract, location: ourLocation
+  663, `Mismatched $leftChar$rightChar characters`, details: `(left=$lCount.toLocaleString(), right=$rCount.toLocaleString())`, location: ourLocation
+  644, "USFM3 Grammar Check (relaxed mode) doesn't pass either", location: fileLocation
+  638, "Only found whitespace", location:ourLocation
+  638, "Only found whitespace", location: ourLocation
+  621, "Seems original language quote might not finish at the end of a word", characterIndex: fieldText.length, extract, location: ourLocation
+  620, "Seems original language quote might not start at the beginning of a word", characterIndex: 0, extract, location: ourLocation
+  603, "USFM marker doesn't end with space", C, V, lineNumber, characterIndex, extract, location: ourLocation
+  600, `$regexResultsArray.length link target$regexResultsArray.length === 1 ? ' is' : 's are' still being checked…`, location:ourAtString
+  583, "Unexpected newLine character", characterIndex, extract, location: ourLocation
+  582, "Unexpected carriageReturn character", characterIndex, extract, location: ourLocation
+  581, "Unexpected non-break space character", characterIndex, extract, location: ourLocation
+  580, "Unexpected narrow non-break space character", characterIndex, extract, location: ourLocation
+  552, C, V, `Invalid zero '$V' verse number`, rowID, lineNumber: n + 1, location: ourLocation
+  552, C, V, `Invalid zero '$V' verse number`, rowID, lineNumber: n + 1, location: ourLocation
+  551, C, V, `Invalid zero '$C' chapter number`, rowID, lineNumber: n + 1, location: ourLocation
+  551, C, V, `Invalid zero '$C' chapter number`, rowID, lineNumber: n + 1, location: ourLocation
+  550, "Invalid zero occurrence field when we have an original quote", rowID, location:ourRowLocation
+  550, "Invalid zero occurrence field when we have an original quote", rowID, location:ourRowLocation
+  519, "Missing expected USFM line", extract: `missing \\$expectedMarker`, location: fileLocation
+  518, "Missing expected USFM line", extract: `missing \\$expectedMarker`, location: fileLocation
+  517, "Missing expected USFM line", extract: `missing \\$expectedMarker`, location: fileLocation
+  472, "Nesting seems confused", lineNumber:n, characterIndex:0, location:ourLocation
+  441, `Unknown linkType parameter`, extract:linkType
+  439, "Error fetching link", location:` $fetchLink`
+  438, `Blank field / missing link (expected $linkOptions.expectedCount link$linkOptions.expectedCount === 1 ? "" : "s")`, location:ourAtString
+  401, `Unexpected content after \\$marker marker`, C, V, lineNumber, characterIndex: marker.length, extract: rest, location: lineLocation
+  399, C, V, "Useless paragraph marker", lineNumber: n, characterIndex: 1, extract: `('$lastMarker' before '$marker')`, location: ourLocation
+  375, "Ellipsis without surrounding snippet", location: ourLocation
+  301, `Unexpected whitespace after \\$marker marker`,C, V, lineNumber, characterIndex: marker.length, extract: rest, location: lineLocation
+  287, `Not enough links (expected $linkOptions.expectedCount link$linkOptions.expectedCount === 1 ? "" : "s")`, location:` (only found $regexResultsArray.length)$ourAtString`
+  276, "Missing Quote field", rowID, location:ourRowLocation
+  275, "Missing GLQuote field", rowID, location:ourRowLocation
+  274, `Missing $annotationType Annotation field`, rowID, location:ourRowLocation
+  274, "Missing OccurrenceNote field", rowID, location:ourRowLocation
+  218, "Using deprecated USFM marker", extract: `\\$deprecatedMarker`, location: fileLocation
+  194, "Unexpected double spaces", characterIndex, extract, location: ourLocation
+  192, `Unexpected space after $punctChar character`, characterIndex, extract, location: ourLocation
+  191, `Unexpected $punctChar character after space`, characterIndex, extract, location: ourLocation
+  179, "Unexpected space before ellipse character", characterIndex, extract, location: ourLocation
+  178, "Unexpected space after ellipse character", characterIndex, extract, location: ourLocation
+  177, `Unexpected doubled $punctChar characters`, characterIndex, extract, location: ourLocation
+  176, "ID should start with a lowercase letter or digit", characterIndex:0, rowID, location:` (not '$rowID[0]')$ourRowLocation`
+  176, "ID should start with a lowercase letter or digit", characterIndex:0, rowID, location:` (not '$rowID[0]')$ourRowLocation`
+  175, "ID should end with a lowercase letter or digit", characterIndex:3, rowID, location:` (not '$rowID[3]')$ourRowLocation`
+  175, "ID should end with a lowercase letter or digit", characterIndeX:3, rowID, location:` (not '$rowID[3]')$ourRowLocation`
+  174, "ID characters should only be lowercase letters, digits, or hypen", characterIndex:1, rowID, location:` (not '$rowID[1]')$ourRowLocation`
+  174, "ID characters should only be lowercase letters, digits, or hypen", characterIndex:1, rowID, location:` (not '$rowID[1]')$ourRowLocation`
+  173, "ID characters should only be lowercase letters, digits, or hypen", characterIndex:2, rowID, location:` (not '$rowID[2]')$ourRowLocation`
+  173, "ID characters should only be lowercase letters, digits, or hypen", characterIndex:2, rowID, location:` (not '$rowID[2]')$ourRowLocation`
+  172, "Header levels should only increment by one", lineNumber:n, characterIndex:0, location:ourLocation
+  163, `Mismatched $leftChar$rightChar characters`, details:`(left=$lCount.toLocaleString(), right=$rCount.toLocaleString())`, location:ourLocation
+  159, "Should use proper ellipse character (not periods)", characterIndex, extract, location: ourLocation
+  158, "Unexpected space(s) beside ellipse characters", characterIndex, extract, location: ourLocation
+  158, "Unexpected space(s) beside ellipse character", characterIndex, extract, location: ourLocation
+  148, "'checking' key is missing", location:ourLocation
+  111, `Bad options for checkFieldLinks: expectedCount=$linkOptions.expectedCount but allowedCount=$linkOptions.allowedCount`
+  107, "Unexpected leading break", characterIndex: 0, extract, location: ourLocation
+  106, `Unexpected leading space$fieldText[1] === ' ' ? "s" : ""`, characterIndex: 0, extract, location: ourLocation
+  105, "Unexpected trailing space(s)", characterIndex: fieldText.length - 1, extract, location: ourLocation
+  104, "Unexpected trailing break", characterIndex: fieldText.length - 1, extract, location: ourLocation
+  103, `USFMGrammar: $warningString.trim()`, location
+  102, `USFMGrammar: $warningString`, location: fileLocation
+  101, `USFMGrammar: $warningString`, filename, location:ourLocation
+  87, C, V, "Expected \\toc3 line to follow \\toc2", lineNumber: n, characterIndex: 1, extract: `(not '$lastMarker')`, location: ourLocation
+  87, C, V, "Expected \\toc2 line to follow \\toc1", lineNumber: n, characterIndex: 1, extract: `(not '$lastMarker')`, location: ourLocation
+  67, C: chapterNumberString, V: `$v`, "Verse appears to be left out", location: CVlocation

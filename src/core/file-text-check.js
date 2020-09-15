@@ -33,19 +33,19 @@ export function checkFileContents(filename, fileText, optionalFileLocation, opti
 
     let result = { noticeList: [] };
 
-    function addNotice6({priority,message, lineNumber,characterIndex, extract, location}) {
-        // console.log(`dBTC Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(priority !== undefined, "dBTCs addNotice6: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', `dBTCs addNotice6: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        console.assert(message !== undefined, "dBTCs addNotice6: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', `dBTCs addNotice6: 'message' parameter should be a string not a '${typeof message}': ${message}`);
+    function addNotice6(noticeObject) {
+        // console.log(`dBTC Notice: (priority=${noticeObject.priority}) ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
+        console.assert(noticeObject.priority !== undefined, "dBTCs addNotice6: 'priority' parameter should be defined");
+        console.assert(typeof noticeObject.priority === 'number', `dBTCs addNotice6: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        console.assert(noticeObject.message !== undefined, "dBTCs addNotice6: 'message' parameter should be defined");
+        console.assert(typeof noticeObject.message === 'string', `dBTCs addNotice6: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
         // console.assert(characterIndex !== undefined, "dBTCs addNotice6: 'characterIndex' parameter should be defined");
-        if (characterIndex) console.assert(typeof characterIndex === 'number', `dBTCs addNotice6: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
+        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `dBTCs addNotice6: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
         // console.assert(extract !== undefined, "dBTCs addNotice6: 'extract' parameter should be defined");
-        if (extract) console.assert(typeof extract === 'string', `dBTCs addNotice6: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
-        console.assert(location !== undefined, "dBTCs addNotice6: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', `dBTCs addNotice6: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push({priority, message, lineNumber, characterIndex,extract, location});
+        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `dBTCs addNotice6: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        console.assert(noticeObject.location !== undefined, "dBTCs addNotice6: 'location' parameter should be defined");
+        console.assert(typeof noticeObject.location === 'string', `dBTCs addNotice6: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        result.noticeList.push(noticeObject);
     }
 
 
@@ -54,14 +54,11 @@ export function checkFileContents(filename, fileText, optionalFileLocation, opti
         return result;
 
     // Create our more detailed location string by prepending the filename
-    let ourAtString = ` in '${filename}'`;
-    if (optionalFileLocation) {
-        if (optionalFileLocation[0] !== ' ') ourAtString += ' ';
-        ourAtString += optionalFileLocation;
-    }
+    let ourLocation = optionalFileLocation;
+    if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
     if (isWhitespace(fileText)) {
-        addNotice6({priority:638, message:"Only found whitespace", location:ourAtString});
+        addNotice6({priority:638, message:"Only found whitespace", location:ourLocation});
         return result;
     }
 
@@ -83,15 +80,15 @@ export function checkFileContents(filename, fileText, optionalFileLocation, opti
     if ((characterIndex = fileText.indexOf('<<<<<<<')) >= 0) {
         const iy = characterIndex + halfLength; // Want extract to focus more on what follows
         const extract = (iy > halfLength ? '…' : '') + fileText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < fileText.length ? '…' : '')
-        addNotice6({priority:993, message:"Unresolved GIT conflict", characterIndex, extract, location:ourAtString});
+        addNotice6({priority:993, message:"Unresolved GIT conflict", characterIndex, extract, location:ourLocation});
     } else if ((characterIndex = fileText.indexOf('=======')) >= 0) {
         const iy = characterIndex + halfLength; // Want extract to focus more on what follows
         const extract = (iy > halfLength ? '…' : '') + fileText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < fileText.length ? '…' : '')
-        addNotice6({priority:992, message:"Unresolved GIT conflict", characterIndex, extract, location:ourAtString});
+        addNotice6({priority:992, message:"Unresolved GIT conflict", characterIndex, extract, location:ourLocation});
     } else if ((characterIndex = fileText.indexOf('>>>>>>>>')) >= 0) {
         const iy = characterIndex + halfLength; // Want extract to focus more on what follows
         const extract = (iy > halfLength ? '…' : '') + fileText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < fileText.length ? '…' : '')
-        addNotice6({priority:991, message:"Unresolved GIT conflict", characterIndex, extract, location:ourAtString});
+        addNotice6({priority:991, message:"Unresolved GIT conflict", characterIndex, extract, location:ourLocation});
     }
 
     // Check matched pairs
@@ -103,7 +100,7 @@ export function checkFileContents(filename, fileText, optionalFileLocation, opti
         const lCount = countOccurrences(fileText, leftChar);
         const rCount = countOccurrences(fileText, rightChar);
         if (lCount !== rCount)
-            addNotice6({priority:163, message:`Mismatched ${leftChar}${rightChar} characters`, extract:`(left=${lCount.toLocaleString()}, right=${rCount.toLocaleString()})`, location:ourAtString});
+            addNotice6({priority:163, message:`Mismatched ${leftChar}${rightChar} characters`, details:`(left=${lCount.toLocaleString()}, right=${rCount.toLocaleString()})`, location:ourLocation});
     }
 
     // if (!allowedLinks) {
