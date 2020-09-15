@@ -1,7 +1,7 @@
 import React from 'react';
 import * as books from './books';
 import { getRepoName } from './utilities';
-import { getFilelistFromZip, getFile, getFileCached, fetchRepositoryZipFile } from './getApi';
+import { getFilelistFromZip, getFile, getFileCached, fetchRepositoryZipFile, clearCaches } from './getApi';
 import checkUSFMText from './usfm-text-check';
 import checkMarkdownText from './markdown-text-check';
 import checkPlainText from './plain-text-check';
@@ -10,6 +10,46 @@ import checkManifestText from './manifest-text-check';
 import checkTN_TSVText from './tn-table-text-check';
 
 
+/**
+ * clears the caches of stale data and preloads repo zips, before running book package checks
+ *   this allows the calling app to clear cache and start loading repos in the backgound as soon as it starts up.  In this case it would not need to use await to wait for results.
+ *   TRICKY: note that even if the user is super fast in selecting books and clicking next, it will not hurt anything.  getFile() would just be fetching files directly from repo until the zips are loaded.  After that the files would be pulled out of zipStore.
+ * @param {string} username
+ * @param {string} languageCode
+ * @param {Array} bookIDList - one or more books that will be checked
+ * @param {string} branch - optional, defaults to master
+ * @param {Array} repos - optional, list of repost to pre-load
+ * @return {Promise<Boolean>} resolves to true if file loads are successful
+ */
+export async function initBookPackageCheck(username, languageCode, bookIDList, branch = 'master', repos = ['TA', 'TW', 'TQ']) {
+  clearCaches(); // clear existing cached files so we know we have the latest
+  let success = true;
+  const repos_ = [...repos];
+
+  if (bookIDList && Array.isArray(bookIDList)) {
+    // make sure we have the original languages needed
+    for (const bookID of bookIDList) {
+      const whichTestament = books.testament(bookID); // returns 'old' or 'new'
+      const origLang = whichTestament === 'old' ? 'UHB' : 'UGNT';
+      if (!repos_.includes( origLang)) {
+        repos_.unshift(origLang);
+      }
+    }
+  }
+
+  // load all the repos need
+  for (const repoCode of repos_) {
+    const repoName = getRepoName(languageCode, repoCode);
+    console.log(`Preloading zip file for ${repoName}…`);
+    const zipFetchSucceeded = await fetchRepositoryZipFile({username, repository: repoName, branch});
+    if (!zipFetchSucceeded) {
+      console.log(`checkRepo: misfetched zip file for repo with ${zipFetchSucceeded}`);
+      success = false;
+    }
+  }
+
+  return success;
+}
 
 /*
     checkRepo
@@ -514,22 +554,13 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0, checkedRepoNames = [];
         const origLang = whichTestament === 'old' ? 'UHB' : 'UGNT';
 
-        // NOTE: The following code probably needs to be in/controlled-by the calling program
-        // for (const repoCode of [origLang, 'TA', 'TW']) {
-        //     const repoName = getRepoName(languageCode, repoCode);
-        //     console.log(`Preloading zip file for ${repoName}…`);
-        //     const zipFetchSucceeded = await fetchRepositoryZipFile({ username, repository: repoName, branch });
-        //     if (!zipFetchSucceeded)
-        //         console.log(`checkRepo: misfetched zip file for repo with ${zipFetchSucceeded}`);
-        // }
-
-        for (const repoCode of [origLang, 'ULT', 'UST', 'TN', 'TQ']) {
+         for (const repoCode of [origLang, 'ULT', 'UST', 'TN', 'TQ']) {
             console.log(`Check ${bookID} in ${repoCode} (${languageCode} ${bookID} from ${username})`);
             const repoLocation = ` in ${repoCode.toUpperCase()}${generalLocation}`;
             const repoName = getRepoName(languageCode, repoCode);
 
-            // Update our "waiting" message
-            setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookID}</b> book package in <b>{repoCode}</b> (checked <b>{checkedRepoNames.length.toLocaleString()}</b>/5 repos)…</p>);
+            // const fullRepoName = username + '/' + repoName;
+            // console.log("Let's try1", bookID, "from", fullRepoName);
 
             let filename;
             if (repoCode === 'UHB' || repoCode === 'UGNT' || repoCode === 'ULT' || repoCode === 'UST') {
@@ -574,7 +605,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
             }
 
             // Update our "waiting" message
-            // setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {languageCode} <b>{bookID}</b> book package: checked <b>{checkedRepoNames.length.toLocaleString()}</b>/5 repos…</p>);
+            setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {languageCode} <b>{bookID}</b> book package: checked <b>{checkedRepoNames.length.toLocaleString()}</b>/5 repos…</p>);
         }
 
         // Add some extra fields to our checkFileResult object
