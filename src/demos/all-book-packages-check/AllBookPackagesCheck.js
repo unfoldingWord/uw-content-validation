@@ -23,6 +23,10 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     // console.log(`username='${username}'`);
     let languageCode = props.languageCode;
     // console.log(`languageCode='${languageCode}'`);
+    let testament = props.testament;
+    // console.log(`testament='${testament}'`);
+    let includeOBS = props.includeOBS;
+    // console.log(`includeOBS='${includeOBS}'`);
     let branch = props.branch;
     // console.log(`branch='${branch}'`);
 
@@ -31,9 +35,19 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
 
     // Enter a string containing UPPERCASE USFM book identifiers separated only by commas
     //  and can also include OBS (for Open Bible Stories)
-    const bookIDs = 'GEN,EXO,LEV,NUM,DEU,JOS,JDG,RUT,1SA,2SA,1KI,2KI,1CH,2CH,EZR,NEH,EST,JOB,PSA,PRO,ECC,SNG,ISA,JER,LAM,EZK,DAN,HOS,JOL,AMO,OBA,JON,MIC,NAM,HAB,ZEP,HAG,ZEC,MAL,MAT,MRK,LUK,JHN,ACT,ROM,1CO,2CO,GAL,EPH,PHP,COL,1TH,2TH,1TI,2TI,TIT,PHM,HEB,JAS,1PE,2PE,1JN,2JN,3JN,JUD,REV,OBS';
+    let originalLanguageRepoCode, bookIDs;
+    if (testament.toUpperCase() === 'OT' || testament.toUpperCase() === 'OLD'){
+        originalLanguageRepoCode = 'UHB';
+        bookIDs = 'GEN,EXO,LEV,NUM,DEU,JOS,JDG,RUT,1SA,2SA,1KI,2KI,1CH,2CH,EZR,NEH,EST,JOB,PSA,PRO,ECC,SNG,ISA,JER,LAM,EZK,DAN,HOS,JOL,AMO,OBA,JON,MIC,NAM,HAB,ZEP,HAG,ZEC,MAL';
+    }
+    else if (testament.toUpperCase() === 'NT' || testament.toUpperCase() === 'NEW') {
+        originalLanguageRepoCode = 'UGNT';
+        bookIDs = 'MAT,MRK,LUK,JHN,ACT,ROM,1CO,2CO,GAL,EPH,PHP,COL,1TH,2TH,1TI,2TI,TIT,PHM,HEB,JAS,1PE,2PE,1JN,2JN,3JN,JUD,REV';
+    }
+    if (includeOBS.toUpperCase() === 'Y' || includeOBS.toUpperCase() === 'YES')
+        bookIDs += ',OBS';
 
-  let bookIDList = [];
+    let bookIDList = [];
     let bookIDInvalid;
     for (let bookID of bookIDs.split(',')) {
         bookID = bookID.trim();
@@ -42,7 +56,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         }
         bookIDList.push(bookID);
     }
-    // console.log(`bookIDList (${bookIDList.length}) = ${bookIDList.join(', ')}`);
+    console.log(`bookIDList (${bookIDList.length}) = ${bookIDList.join(', ')}`);
 
     let checkingOptions = { // Uncomment any of these to test them
         // 'extractLength': 25,
@@ -61,7 +75,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         // Preload the reference repos
         let preloadCount = 1;
         // TEMP: Removed TQ
-        const repoCodeList = ['UHB','UGNT', 'TA','TW', 'TN','ULT','UST','TN'];
+        const repoCodeList = [originalLanguageRepoCode, 'TA','TW', 'ULT','UST','TN'];
         for (const repoCode of repoCodeList) {
         setResultValue(<p style={{ color: 'magenta' }}>Preloading <b>{repoCode}</b> repo ({preloadCount}/{repoCodeList.length}) ready for {username} {languageCode} all book packages check…</p>);
             const repoName = getRepoName(languageCode, repoCode);

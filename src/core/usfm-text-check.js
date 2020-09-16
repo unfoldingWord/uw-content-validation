@@ -225,7 +225,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
                             }
                     }
             }
-            if (gotDeep) console.assert(false, `We need to add more depth levels to hasText() for ${chapterNumberString}:${verseNumberString}`);
+            if (gotDeep) console.assert(false, `We need to add more depth levels to hasText() for ${bookID} ${chapterNumberString}:${verseNumberString}`);
             // console.log(`hasText() for ${chapterNumberString}:${verseNumberString} returning false with ${typeof verseObjects} (${verseObjects.length}): ${JSON.stringify(verseObjects)}`);
             return false;
         }

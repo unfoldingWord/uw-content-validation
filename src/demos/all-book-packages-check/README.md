@@ -14,6 +14,8 @@ import AllBookPackagesCheck from './AllBookPackagesCheck';
 <AllBookPackagesCheck
   username='unfoldingWord'
   languageCode='en'
+  testament='NT' // 'OT' or 'NT' -- sorry the browser runs out of memory for all books
+  includeOBS='N' // 'Y' or 'N' for Open Bible Stories
 
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'
@@ -21,7 +23,7 @@ import AllBookPackagesCheck from './AllBookPackagesCheck';
 
   // Specifying maximumSimilarMessages and extractLength is just to show off options
   //  -- those fields are not necessary (or normal) here
-  maximumSimilarMessages='4' // Default is 3 -- 0 means don't suppress
+  maximumSimilarMessages='2' // Default is 3 -- 0 means don't suppress
   // extractLength='13' // Default is 10
   />
 ```
