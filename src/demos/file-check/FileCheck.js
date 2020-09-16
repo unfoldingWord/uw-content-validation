@@ -50,7 +50,7 @@ function FileCheck(props) {
 
         // Now do our final handling of the result
         let processOptions = { // Uncomment any of these to test them
-          // 'maximumSimilarMessages': 3, // default is 2
+          // 'maximumSimilarMessages': 4, // default is 3  -- 0 means don't suppress
           // 'errorPriorityLevel': 800, // default is 700
           // 'cutoffPriorityLevel': 100, // default is 0
           // 'sortBy': 'ByPriority', // default is 'AsFound'

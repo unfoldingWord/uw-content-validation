@@ -60,8 +60,10 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
 
         // Preload the reference repos
         let preloadCount = 1;
-        for (const repoCode of ['UHB','UGNT', 'TA','TQ','TW', 'TN','ULT','UST','TN']) {
-        setResultValue(<p style={{ color: 'magenta' }}>Preloading <b>{repoCode}</b> repo ({preloadCount}/9) ready for {username} {languageCode} all book packages check…</p>);
+        // TEMP: Removed TQ
+        const repoCodeList = ['UHB','UGNT', 'TA','TW', 'TN','ULT','UST','TN'];
+        for (const repoCode of repoCodeList) {
+        setResultValue(<p style={{ color: 'magenta' }}>Preloading <b>{repoCode}</b> repo ({preloadCount}/{repoCodeList.length}) ready for {username} {languageCode} all book packages check…</p>);
             const repoName = getRepoName(languageCode, repoCode);
             console.log(`Preloading zip file for ${repoName}…`);
             const zipFetchSucceeded = await fetchRepositoryZipFile({ username, repository: repoName, branch });
@@ -87,7 +89,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
       // console.log("Here with CBPs rawCBPsResults", typeof rawCBPsResults);
       // Now do our final handling of the result -- we have some options available
       let processOptions = { // Uncomment any of these to test them
-        // 'maximumSimilarMessages': 3, // default is 2
+        // 'maximumSimilarMessages': 4, // default is 3 -- 0 means don't suppress
         // 'errorPriorityLevel': 800, // default is 700
         // 'cutoffPriorityLevel': 100, // default is 0
         // 'sortBy': 'ByPriority', // default is 'AsFound'

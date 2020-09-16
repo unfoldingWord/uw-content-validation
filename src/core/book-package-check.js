@@ -18,7 +18,7 @@ import checkTN_TSVText from './tn-table-text-check';
  * @param {string} languageCode
  * @param {Array} bookIDList - one or more books that will be checked
  * @param {string} branch - optional, defaults to master
- * @param {Array} repos - optional, list of repost to pre-load
+ * @param {Array} repos - optional, list of repos to pre-load
  * @return {Promise<Boolean>} resolves to true if file loads are successful
  */
 // TEMP: Removed TQ from repos
@@ -44,7 +44,7 @@ export async function initBookPackageCheck(username, languageCode, bookIDList, b
         console.log(`Preloading zip file for ${repoName}…`);
         const zipFetchSucceeded = await fetchRepositoryZipFile({ username, repository: repoName, branch });
         if (!zipFetchSucceeded) {
-            console.log(`checkRepo: misfetched zip file for repo with ${zipFetchSucceeded}`);
+            console.log(`initBookPackageCheck: misfetched zip file for ${repoCode} repo with ${zipFetchSucceeded}`);
             success = false;
         }
     }
@@ -557,13 +557,14 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         const origLang = whichTestament === 'old' ? 'UHB' : 'UGNT';
 
         // TEMP: Removed TQ
-        for (const repoCode of [origLang, 'ULT', 'UST', 'TN']) {
+        const repoCodeList = [origLang, 'ULT', 'UST', 'TN'];
+        for (const repoCode of repoCodeList) {
             console.log(`Check ${bookID} in ${repoCode} (${languageCode} ${bookID} from ${username})`);
             const repoLocation = ` in ${repoCode.toUpperCase()}${generalLocation}`;
             const repoName = getRepoName(languageCode, repoCode);
 
             // Update our "waiting" message
-            setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookID}</b> book package in <b>{repoCode}</b> (checked <b>{checkedRepoNames.length.toLocaleString()}</b>/5 repos)…</p>);
+            setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookID}</b> book package in <b>{repoCode}</b> (checked <b>{checkedRepoNames.length.toLocaleString()}</b>/{repoCodeList.length} repos)…</p>);
 
             let filename;
             if (repoCode === 'UHB' || repoCode === 'UGNT' || repoCode === 'ULT' || repoCode === 'UST') {
@@ -606,10 +607,6 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
                 checkedFileCount += 1;
                 addSuccessMessage(`Checked ${repoCode.toUpperCase()} file: ${filename}`);
             }
-
-            // Update our "waiting" message
-            // setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookID}</b> book package: checked <b>{checkedRepoNames.length.toLocaleString()}</b>/5 repos…</p>);
-            // setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for {username} {languageCode} <b>{bookID}</b> book package: checked <b>{checkedRepoNames.length.toLocaleString()}</b>/5 repos…</p>);
         }
 
         // Add some extra fields to our checkFileResult object

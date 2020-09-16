@@ -8,7 +8,7 @@ import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSu
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const BPS_VALIDATOR_VERSION_STRING = '0.1.1';
+// const BPS_VALIDATOR_VERSION_STRING = '0.1.2';
 
 
 function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
@@ -60,8 +60,9 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         // Preload the reference repos
         let preloadCount = 1;
         // TEMP: Removed TQ
-        for (const repoCode of ['UHB','UGNT', 'TA','TW']) {
-        setResultValue(<p style={{ color: 'magenta' }}>Preloading <b>{repoCode}</b> repo ({preloadCount}/5) ready for {username} {languageCode} book packages check…</p>);
+        const repoCodeList = ['UHB','UGNT', 'TA','TW'];
+        for (const repoCode of repoCodeList) {
+        setResultValue(<p style={{ color: 'magenta' }}>Preloading <b>{repoCode}</b> repo ({preloadCount}/{repoCodeList.length}) ready for {username} {languageCode} book packages check…</p>);
             const repoName = getRepoName(languageCode, repoCode);
             console.log(`Preloading zip file for ${repoName}…`);
             const zipFetchSucceeded = await fetchRepositoryZipFile({ username, repository: repoName, branch });
@@ -87,7 +88,7 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
       // console.log("Here with CBPs rawCBPsResults", typeof rawCBPsResults);
       // Now do our final handling of the result -- we have some options available
       let processOptions = { // Uncomment any of these to test them
-        // 'maximumSimilarMessages': 3, // default is 2
+        // 'maximumSimilarMessages': 4, // default is 3 -- 0 means don't suppress
         // 'errorPriorityLevel': 800, // default is 700
         // 'cutoffPriorityLevel': 100, // default is 0
         // 'sortBy': 'ByPriority', // default is 'AsFound'
@@ -103,35 +104,36 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
       let displayType = 'ErrorsWarnings'; // default
       if (props.displayType) displayType = props.displayType;
 
-      if (displayType === 'ErrorsWarnings') {
+      function renderSummary(processedResults) {
+        return (<>
+          <p>Checked <b>{username} {languageCode} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
+          <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount===1?'':'s'} from {username} {processedResults.checkedRepoNames.join(', ')}
+            <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>
+          <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} />.</p>
+          {/* <RenderRawResults results={rawCBPsResults} /> */}
+        </>);
+      }
+
+    if (displayType === 'ErrorsWarnings') {
         const processedResults = processNoticesToErrorsWarnings(rawCBPsResults, processOptions);
         console.log(`BookPackagesCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
         // console.log("Here now in rendering bit!");
 
-        function renderSummary() {
-          return (<>
-            <p>Checked <b>{username} {languageCode} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
-            <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount===1?'':'s'} from {username} {processedResults.checkedRepoNames.join(', ')}
-              <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>
-            <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} />.</p>
-            {/* <RenderRawResults results={rawCBPsResults} /> */}
-          </>);
-        }
-
         if (processedResults.errorList.length || processedResults.warningList.length)
           setResultValue(<>
-            <p>{renderSummary()}
+            <p>{renderSummary(processedResults)}
               {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</p>
             <RenderSuccessesErrorsWarnings results={processedResults} />
           </>);
         else // no errors or warnings
           setResultValue(<>
-            <p>{renderSummary()}
+            <p>{renderSummary(processedResults)}
               {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</p>
             <RenderSuccessesErrorsWarnings results={processedResults} />
           </>);
+
       } else if (displayType === 'SevereMediumLow') {
         const processedResults = processNoticesToSevereMediumLow(rawCBPsResults, processOptions);
 //                 console.log(`FileCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
@@ -139,16 +141,17 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
 
         if (processedResults.severeList.length || processedResults.mediumList.length || processedResults.lowList.length)
           setResultValue(<>
-            <p>Checked <b>{username} {languageCode} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
+            <p>{renderSummary(processedResults)}
               {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</p>
             <RenderSuccessesSevereMediumLow results={processedResults} />
           </>);
         else // no severe, medium, or low notices
           setResultValue(<>
-            <p>Checked <b>{username} {languageCode} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
+            <p>{renderSummary(processedResults)}
               {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</p>
             <RenderSuccessesSevereMediumLow results={processedResults} />
           </>);
+
       } else if (displayType === 'SingleList') {
         const processedResults = processNoticesToSingleList(rawCBPsResults, processOptions);
         console.log(`FileCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
@@ -156,13 +159,13 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
 
         if (processedResults.warningList.length)
           setResultValue(<>
-            <p>Checked <b>{username} {languageCode} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
+            <p>{renderSummary(processedResults)}
               {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</p>
             <RenderSuccessesWarningsGradient results={processedResults} />
           </>);
         else // no warnings
           setResultValue(<>
-            <p>Checked <b>{username} {languageCode} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
+            <p>{renderSummary(processedResults)}
               {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</p>
             <RenderSuccessesWarningsGradient results={processedResults} />
           </>);

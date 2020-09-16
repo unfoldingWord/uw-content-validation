@@ -32,7 +32,7 @@ import RepoCheck from './RepoCheck';
   // Specifying maximumSimilarMessages and extractLength is just to show off options
   //  -- those fields are not necessary (or normal) here
   // The location field appears in check messages to help the user locate the issue
-  maximumSimilarMessages='2'
+  maximumSimilarMessages='4' // Default is 3 -- 0 means don't suppress
   // extractLength='13' // Default is 10
   location="as specified in repo-check/README.md"
 />

@@ -503,7 +503,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
             if (rest && MARKERS_WITHOUT_CONTENT.indexOf(marker) >= 0)
                 if (isWhitespace(rest))
                     addNoticeCV8({priority: 301, message: `Unexpected whitespace after \\${marker} marker`,C, V, lineNumber, characterIndex: marker.length, extract: rest, location: lineLocation});
-                else
+                else if (rest !== 'ס') // in UHB NEH 3:20
                     addNoticeCV8({priority: 401, message: `Unexpected content after \\${marker} marker`, C, V, lineNumber, characterIndex: marker.length, extract: rest, location: lineLocation});
             else if (MARKERS_WITH_COMPULSORY_CONTENT.indexOf(marker) >= 0 && !rest)
                 addNoticeCV8({priority: 711, message: "Expected compulsory content",C, V, lineNumber, characterIndex: marker.length, location: ` after \\${marker} marker${lineLocation}`});

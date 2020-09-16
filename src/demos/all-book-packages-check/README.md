@@ -21,7 +21,7 @@ import AllBookPackagesCheck from './AllBookPackagesCheck';
 
   // Specifying maximumSimilarMessages and extractLength is just to show off options
   //  -- those fields are not necessary (or normal) here
-  maximumSimilarMessages='2'
+  maximumSimilarMessages='4' // Default is 3 -- 0 means don't suppress
   // extractLength='13' // Default is 10
   />
 ```

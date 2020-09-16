@@ -46,7 +46,7 @@ and then validates the content of one file selected from the repo.
 
     // Specifying maximumSimilarMessages and extractLength is just to show off options
     //  -- those fields are not necessary (or normal) here
-    maximumSimilarMessages='4'
+    maximumSimilarMessages='0' // Default is 3 -- 0 means don't suppress
     extractLength='12' // Default is 10
     />
 ```
