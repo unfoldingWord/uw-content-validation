@@ -1,5 +1,98 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`checkTN_TSVDataRow() empty line should fail 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "extract": "Found 1 field",
+      "location": " that was supplied",
+      "message": "Found wrong number of TSV fields (expected 9)",
+      "priority": 861,
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() invalid Original Language 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "details": "",
+      "extract": "00",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Unable to find original language quote in verse text",
+      "priority": 916,
+      "rowID": "f2mg",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() should fail invalid first link 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "extract": "[[rc://en/ta/man/translate/figs-activepassivez]]",
+      "fieldName": "OccurrenceNote",
+      "location": " that was supplied translate/figs-activepassivez/01.md: Could not find __tests__/fixtures/unfoldingWord/en_ta/translate/figs-activepassivez/01.md",
+      "message": "Error loading OccurrenceNote TA link",
+      "priority": 885,
+      "rowID": "zu6f",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "extract": "[[rc://en/ta/man/translate/figs-activepassivez]]",
+      "fieldName": "OccurrenceNote",
+      "location": " that was supplied translate/figs-activepassivez/01.md",
+      "message": "Unable to find OccurrenceNote TA link",
+      "priority": 886,
+      "rowID": "zu6f",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() should fail invalid second link 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "extract": "[[rc://en/ta/man/translate/figs-imperativez]]",
+      "fieldName": "OccurrenceNote",
+      "location": " that was supplied translate/figs-imperativez/01.md: Could not find __tests__/fixtures/unfoldingWord/en_ta/translate/figs-imperativez/01.md",
+      "message": "Error loading OccurrenceNote TA link",
+      "priority": 885,
+      "rowID": "zu6f",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "extract": "[[rc://en/ta/man/translate/figs-imperativez]]",
+      "fieldName": "OccurrenceNote",
+      "location": " that was supplied translate/figs-imperativez/01.md",
+      "message": "Unable to find OccurrenceNote TA link",
+      "priority": 886,
+      "rowID": "zu6f",
+    },
+  ],
+}
+`;
+
 exports[`checkTN_TSVDataRow() should fail to find OrigLang Quote 1`] = `
 Object {
   "noticeList": Array [
