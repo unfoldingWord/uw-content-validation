@@ -55,7 +55,7 @@ function CheckFileContents(props) {
     //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
     (async () => {
       // Display our "waiting" message
-      setResults(<p style={{ color: 'magenta' }}>Waiting for {filename} check results…</p>);
+      setResults(<p style={{ color: 'magenta' }}>Checking {filename}…</p>);
       const rawResults = await checkFileContents(filename, fileContent, givenLocation, checkingOptions);
       setResults(
         <div>

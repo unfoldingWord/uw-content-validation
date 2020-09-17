@@ -50,7 +50,7 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, opti
         * @param {String} extract - short extract from the line centred on the problem (if available)
         * @param {String} location - description of where the issue is located
         */
-        // console.log(`checkUSFMToJSON notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // console.log(`checkUSFMToJSON notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cUSFMjs addNotice6to7: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cUSFMjs addNotice6to7: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message !== undefined, "cUSFMjs addNotice6to7: 'message' parameter should be defined");

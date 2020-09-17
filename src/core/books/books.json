@@ -5,7 +5,7 @@
   "num": {"id": "num", "title": "Numbers", "usfm": "04-NUM", "testament": "old", "verseCount": 1288, "chapters": [54, 34, 51, 49, 31, 27, 89, 26, 23, 36, 35, 16, 33, 45, 41, 50, 13, 32, 22, 29, 35, 41, 30, 25, 18, 65, 23, 31, 40, 16, 54, 42, 56, 29, 34, 13]},
   "deu": {"id": "deu", "title": "Deuteronomy", "usfm": "05-DEU", "testament": "old", "verseCount": 959, "chapters": [46, 37, 29, 49, 33, 25, 26, 20, 29, 22, 32, 32, 18, 29, 23, 22, 20, 22, 21, 20, 23, 30, 25, 22, 19, 19, 26, 68, 29, 20, 30, 52, 29, 12]},
   "jos": {"id": "jos", "title": "Joshua", "usfm": "06-JOS", "testament": "old", "verseCount": 658, "chapters": [18, 24, 17, 24, 15, 27, 26, 35, 27, 43, 23, 24, 33, 15, 63, 10, 18, 28, 51, 9, 45, 34, 16, 33]},
-  "jdg": {"id": "jdg", "title": "Judges", "usfm": "07-JDJ", "testament": "old", "verseCount": 618, "chapters": [36, 23, 31, 24, 31, 40, 25, 35, 57, 18, 40, 15, 25, 20, 20, 31, 13, 31, 30, 48, 25]},
+  "jdg": {"id": "jdg", "title": "Judges", "usfm": "07-JDG", "testament": "old", "verseCount": 618, "chapters": [36, 23, 31, 24, 31, 40, 25, 35, 57, 18, 40, 15, 25, 20, 20, 31, 13, 31, 30, 48, 25]},
   "rut": {"id": "rut", "title": "Ruth", "usfm": "08-RUT", "testament": "old", "verseCount": 85, "chapters": [22, 23, 18, 22]},
   "1sa": {"id": "1sa", "title": "1 Samuel", "usfm": "09-1SA", "testament": "old", "verseCount": 810, "chapters": [28, 36, 21, 22, 12, 21, 17, 22, 27, 27, 15, 25, 23, 52, 35, 23, 58, 30, 24, 42, 15, 23, 29, 22, 44, 25, 12, 25, 11, 31, 13]},
   "2sa": {"id": "2sa", "title": "2 Samuel", "usfm": "10-2SA", "testament": "old", "verseCount": 695, "chapters": [27, 32, 39, 12, 25, 23, 29, 18, 13, 19, 27, 31, 39, 33, 37, 23, 29, 33, 43, 26, 22, 51, 39, 25]},

@@ -1,2 +1,2 @@
-export * from './checkBookPackage';
-export * from './BookPackageCheck';
+//export * from './checkBookPackage';
+export {default} from './BookPackageCheck';

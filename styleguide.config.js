@@ -10,6 +10,18 @@ let sections = [
 		content: 'README.md',
 	},
 	{
+		name: 'All Book Packages Checker Demo',
+		components: () => {
+			const componentNames = [
+				'all-book-packages-check',
+			];
+			return componentNames.map(componentName => {
+				const filename = upperFirst(camelCase(componentName));
+				return path.resolve(__dirname, `src/demos/${componentName}`, `${filename}.js`)
+			});
+		}
+	},
+	{
 		name: 'Book Packages Checker Demo',
 		components: () => {
 			const componentNames = [
@@ -97,7 +109,7 @@ let sections = [
 		// content: 'src/core/README.md',
 		sections: [
 			{
-				name: 'Book Package check',
+				name: 'Book Package check (with raw results)',
 				content: 'src/core/book-package-check.md',
 				// description: ''
 			}
@@ -108,7 +120,7 @@ let sections = [
 		// content: 'src/core/README.md',
 		sections: [
 			{
-				name: 'Repo check',
+				name: 'Repo check (with raw results)',
 				content: 'src/core/repo-check.md',
 				// description: ''
 			}
@@ -119,7 +131,7 @@ let sections = [
 		// content: 'src/core/README.md',
 		sections: [
 			{
-				name: 'File contents check',
+				name: 'File contents check (with raw results)',
 				content: 'src/core/file-check.md',
 				// description: ''
 			}

@@ -90,7 +90,7 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
                 if (!lines[n-1]) {
                     lineNumber += 1; // Increment error line number for each blank line
                     if (!notified) {
-                        console.log("Adjusting BCS grammar error line number to account for blank lines");
+                        console.log("Temporarily adjusting BCS grammar error line number to account for blank lines");
                         notified = true;
                     }
                 }
@@ -138,7 +138,7 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
         // console.log(`checkUSFMGrammar success: ${successString}`);
         cugResult.successList.push(successString);
     }
-    function addNotice6to7({priority, message, lineNumber, characterIndex, extract, location}) {
+    function addNotice6to7(noticeObject) {
         /**
         * @description - adds a new notice entry, adding bookID,C,V to the given fields
         * @param {Number} priority - notice priority from 1 (lowest) to 999 (highest)
@@ -147,18 +147,18 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
         * @param {String} extract - short extract from the line centred on the problem (if available)
         * @param {String} location - description of where the issue is located
         */
-        // console.log(`checkUSFMGrammar notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(priority !== undefined, "cUSFMgr addNotice6to7: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', `cUSFMgr addNotice6to7: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        console.assert(message !== undefined, "cUSFMgr addNotice6to7: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', `cUSFMgr addNotice6to7: 'message' parameter should be a string not a '${typeof message}': ${message}`);
+        // console.log(`checkUSFMGrammar notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        console.assert(noticeObject.priority !== undefined, "cUSFMgr addNotice6to7: 'priority' parameter should be defined");
+        console.assert(typeof noticeObject.priority === 'number', `cUSFMgr addNotice6to7: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        console.assert(noticeObject.message !== undefined, "cUSFMgr addNotice6to7: 'message' parameter should be defined");
+        console.assert(typeof noticeObject.message === 'string', `cUSFMgr addNotice6to7: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
         // console.assert(characterIndex !== undefined, "cUSFMgr addNotice6to7: 'characterIndex' parameter should be defined");
-        if (characterIndex) console.assert(typeof characterIndex === 'number', `cUSFMgr addNotice6to7: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
+        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `cUSFMgr addNotice6to7: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
         // console.assert(extract !== undefined, "cUSFMgr addNotice6to7: 'extract' parameter should be defined");
-        if (extract) console.assert(typeof extract === 'string', `cUSFMgr addNotice6to7: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
-        console.assert(location !== undefined, "cUSFMgr addNotice6to7: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', `cUSFMgr addNotice6to7: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        cugResult.noticeList.push({priority,message, bookID,filename,lineNumber, characterIndex,extract, location});
+        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cUSFMgr addNotice6to7: 'extract' parameter should be a string not a '${typeof extract}': ${noticeObject.extract}`);
+        console.assert(noticeObject.location !== undefined, "cUSFMgr addNotice6to7: 'location' parameter should be defined");
+        console.assert(typeof noticeObject.location === 'string', `cUSFMgr addNotice6to7: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        cugResult.noticeList.push({ ...noticeObject, bookID,filename });
     }
 
 
@@ -170,8 +170,7 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
     // console.log(`grammarCheckResult=${JSON.stringify(grammarCheckResult)}`);
 
     if (!grammarCheckResult.isValidUSFM)
-        addNotice6to7({priority:944, message:`USFM3 Grammar Check (${strictnessString} mode) doesn't pass`,
-                        filename, location:ourLocation});
+        addNotice6to7({priority:944, message:`USFM3 Grammar Check (${strictnessString} mode) doesn't pass`, filename, location:ourLocation});
 
     // We only get one error if it fails
     if (grammarCheckResult.error && grammarCheckResult.priority)
@@ -179,8 +178,7 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
 
     // Display these warnings but with a lowish priority
     for (const warningString of grammarCheckResult.warnings)
-        addNotice6to7({priority:101, message:`USFMGrammar: ${warningString}`,
-                        filename, location:ourLocation});
+        addNotice6to7({priority:101, message:`USFMGrammar: ${warningString}`, filename, location:ourLocation});
 
     addSuccessMessage(`Checked USFM Grammar (${strictnessString} mode) ${grammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN'T validate)"}`);
     // console.log(`  checkUSFMGrammar returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);

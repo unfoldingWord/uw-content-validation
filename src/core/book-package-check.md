@@ -27,7 +27,7 @@ import { RenderRawResults } from '../demos/RenderProcessedResults';
 const data = {
   username: 'unfoldingWord',
   languageCode : 'en',
-  bookID : 'RUT',
+  bookID : 'OBA',
   givenLocation : 'that was supplied',
   checkingOptions: {},
 }
@@ -43,7 +43,7 @@ function CheckBookPackage(props) {
     //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
     (async () => {
       // Display our "waiting" message
-      setResults(<p style={{ color: 'magenta' }}>Waiting for <b>{username}</b> {languageCode} <b>{bookID}</b> check results…</p>);
+      setResults(<p style={{ color: 'magenta' }}>Checking <b>{username}</b> {languageCode} <b>{bookID}</b>…</p>);
       const rawResults = await checkBookPackage(username, languageCode, bookID, setResults, checkingOptions);
       setResults(
         <div>

@@ -58,6 +58,7 @@ There are two compulsory fields in all of these notice objects:
 
 All of the following fields may be missing or undefined, i.e., they're all optional:
 
+1. `details`: More details about the notice (if relevant)
 1. `bookID`: The 3-character UPPERCASE [book identifier](http://ubsicap.github.io/usfm/identification/books.html) or [OBS](https://www.openbiblestories.org/) (if relevant)
 1. `C`: The chapter number or OBS story number (if relevant)
 1. `V`: The verse number or OBS frame number (if relevant)
@@ -80,13 +81,12 @@ However, the user is, of course, free to create their own alternative version of
 
 Still unfinished (in rough priority order):
 
-1. Finish adding lineNumber, fileName, repoName as separate optional notice fields
-1. Standardise parameters according to best practice (i.e., dereferencing, etc.)
+1. Testing and fine-tuning of error messages (e.g., comparing with tX), especially suppression of false alarms
+1. Optimise various different file fetches and caches (incl. using zips) for the demos
 1. Document the API with (JsDoc)
 1. Checking of general markdown and naked links (esp. in plain text and markdown files)
-1. Testing and fine-tuning of error messages (e.g., comparing with tX), especially suppression of false alarms
+1. Standardise parameters according to best practice (i.e., dereferencing, etc.)
 1. Improve general documentation in the code and readMe files
-1. Optimise various different file fetches and caches (incl. using zips) for the demos
 1. Is our `RepoCheck` the same as `ResourceContainerCheck`? Or is the latter more specific?
 1. Understand and standardise React stuff in the demos, e.g., e.g., withStyles, etc.
 1. Write unit tests (especially for the core functions) and get them passing, including on GitHub push -- is it Cypress or Jest that's the right tool for this? Or Jest for the core functions? Cypress for some basic tests of the demos?
@@ -97,10 +97,9 @@ Still unfinished (in rough priority order):
 
 Known bugs:
 
-1. At the moment, the relevant `repoName`, `filename`, and `lineNumber` information is not yet all properly added to the notice objects -- also the `location` field may still contain overlapping information
-1. The line number in the USFM Grammar check doesn't account for blank lines, so the real line number may be larger. (This is a bug in the BCS library.)
 1. Work on removing false alarms for end-users is not yet completed
-1. Work on checking links (esp. naked links) is not yet completed.
+1. Work on checking links (esp. naked links) in text files is not yet completed.
+1. Work on checking the forthcoming TSV annotation files is not yet completed.
 
 ## Functionality and Limitations
 

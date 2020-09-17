@@ -63,7 +63,7 @@ async function checkAnnotationTSVDataRow(annotationType, line, bookID, C, V, giv
 
     let adrResult = { noticeList: [] };
 
-    function addNotice6to9({priority, message, rowID, lineNumber, characterIndex, extract, location}) {
+    function addNotice6to9(noticeObject) {
         /**
         * @description - adds a new notice entry, adding bookID,C,V to the given fields
         * @param {Number} priority - notice priority from 1 (lowest) to 999 (highest)
@@ -74,21 +74,21 @@ async function checkAnnotationTSVDataRow(annotationType, line, bookID, C, V, giv
         * @param {String} extract - short extract from the line centred on the problem (if available)
         * @param {String} location - description of where the issue is located
         */
-        // console.log(`Annotation TSV Row Notice: (priority=${priority}) ${message}, ${characterIndex}, ${extract}, ${location}`);
-        console.assert(priority !== undefined, "cATSVrow addNotice6to9: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', `cATSVrow addNotice6to9: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        console.assert(message !== undefined, "cATSVrow addNotice6to9: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', `cATSVrow addNotice6to9: 'message' parameter should be a string not a '${typeof message}': ${message}`);
+        // console.log(`Annotation TSV Row Notice: ${noticeObject.priority}:${noticeObject.message} ${JSON.stringify(noticeObject)}`);
+        console.assert(noticeObject.priority !== undefined, "cATSVrow addNotice6to9: 'priority' parameter should be defined");
+        console.assert(typeof noticeObject.priority === 'number', `cATSVrow addNotice6to9: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        console.assert(noticeObject.message !== undefined, "cATSVrow addNotice6to9: 'message' parameter should be defined");
+        console.assert(typeof noticeObject.message === 'string', `cATSVrow addNotice6to9: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
         // console.assert(lineNumber !== undefined, "cATSVrow addNotice6to9: 'lineNumber' parameter should be defined");
         // console.assert(typeof lineNumber === 'number', `cATSVrow addNotice6to9: 'lineNumber' parameter should be a number not a '${typeof lineNumber}': ${lineNumber}`);
         // console.assert(characterIndex !== undefined, "cATSVrow addNotice6to9: 'characterIndex' parameter should be defined");
-        if (characterIndex) console.assert(typeof characterIndex === 'number', `cATSVrow addNotice6to9: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
+        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `cATSVrow addNotice6to9: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
         // console.assert(extract !== undefined, "cATSVrow addNotice6to9: 'extract' parameter should be defined");
-        if (extract) console.assert(typeof extract === 'string', `cATSVrow addNotice6to9: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
-        console.assert(location !== undefined, "cATSVrow addNotice6to9: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', `cATSVrow addNotice6to9: 'location' parameter should be a string not a '${typeof location}': ${location}`);
+        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cATSVrow addNotice6to9: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        console.assert(noticeObject.location !== undefined, "cATSVrow addNotice6to9: 'location' parameter should be defined");
+        console.assert(typeof noticeObject.location === 'string', `cATSVrow addNotice6to9: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
         // Also uses the given bookID,C,V, parameters from the main function call
-        adrResult.noticeList.push({ priority, message, bookID, C, V, rowID, lineNumber, characterIndex, extract, location });
+        adrResult.noticeList.push({ ...noticeObject, bookID, C, V });
     }
 
     function ourMarkdownTextChecks(rowID, fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions) {
@@ -112,8 +112,9 @@ async function checkAnnotationTSVDataRow(annotationType, line, bookID, C, V, giv
         // console.log(`cATSVrow ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
         console.assert(rowID !== undefined, "cATSVrow ourMarkdownTextChecks: 'rowID' parameter should be defined");
         console.assert(typeof rowID === 'string', `cATSVrow ourMarkdownTextChecks: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        console.assert(fieldName !== undefined, "cATSVrow ourMarkdownTextChecks: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName === 'string', `cATSVrow ourMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        // console.assert(fieldName !== undefined, "cTSVrow ourMarkdownTextChecks: 'fieldName' parameter should be defined");
+        // console.assert(typeof fieldName === 'string', `cTSVrow ourMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        console.assert(fieldName === 'OccurrenceNote', "Only run this check on OccurrenceNotes")
         console.assert(fieldText !== undefined, "cATSVrow ourMarkdownTextChecks: 'fieldText' parameter should be defined");
         console.assert(typeof fieldText === 'string', `cATSVrow ourMarkdownTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         console.assert(allowedLinks === true || allowedLinks === false, "cATSVrow ourMarkdownTextChecks: allowedLinks parameter must be either true or false");
@@ -127,7 +128,12 @@ async function checkAnnotationTSVDataRow(annotationType, line, bookID, C, V, giv
         //  process results line by line
         for (const noticeEntry of cmtResultObject.noticeList) {
             // console.assert(Object.keys(noticeEntry).length === 5, `TL ourMarkdownTextChecks notice length=${Object.keys(noticeEntry).length}`);
-            addNotice6to9({ ...noticeEntry, rowID, fieldName });
+            // NOTE: Ellipses in OccurrenceNote have the normal meaning
+            //          not like the specialised meaning in the snippet fields OrigQuote and GLQuote
+            if (noticeEntry.priority !== 178 && noticeEntry.priority !== 179 // unexpected space after ellipse, ellipse after space
+            && !noticeEntry.message.startsWith("Unexpected … character after space") // 191
+            )
+                addNotice6to9({ ...noticeEntry, rowID, fieldName });
         }
     }
     // end of ourMarkdownTextChecks function

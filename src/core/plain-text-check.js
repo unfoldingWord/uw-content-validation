@@ -39,7 +39,7 @@ function checkPlainText(textName, plainText, givenLocation, optionalCheckingOpti
     /*
     function addNotice9({priority,message, bookID,C,V, lineNumber, characterIndex, extract, location}) {
         // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
-        // console.log(`checkPlainText notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // console.log(`checkPlainText notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority!==undefined, "cPT addNotice9: 'priority' parameter should be defined");
         console.assert(typeof priority==='number', `cPT addNotice9: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message!==undefined, "cPT addNotice9: 'message' parameter should be defined");

@@ -38,23 +38,23 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
         // console.log("checkMarkdownText success: " + successString);
         result.successList.push(successString);
     }
-    function addNotice6({priority,message, lineNumber,characterIndex, extract, location}) {
-        // console.log(`checkMarkdownText addNotice6: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? " " + extract : ""}${location}`);
-        console.assert(priority !== undefined, "cMdT addNotice6: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', `cMdT addNotice6: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        console.assert(message !== undefined, "cMdT addNotice6: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', `cMdT addNotice6: 'message' parameter should be a string not a '${typeof message}': ${message}`);
+    function addNotice6(noticeObject) {
+        // console.log(`checkMarkdownText addNotice6: (priority=${noticeObject.priority}) ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? " " + extract : ""}${noticeObject.location}`);
+        console.assert(noticeObject.priority !== undefined, "cMdT addNotice6: 'priority' parameter should be defined");
+        console.assert(typeof noticeObject.priority === 'number', `cMdT addNotice6: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        console.assert(noticeObject.message !== undefined, "cMdT addNotice6: 'message' parameter should be defined");
+        console.assert(typeof noticeObject.message === 'string', `cMdT addNotice6: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
         // console.assert(characterIndex !== undefined, "cMdT addNotice6: 'characterIndex' parameter should be defined");
-        if (characterIndex) console.assert(typeof characterIndex === 'number', `cMdT addNotice6: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
+        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `cMdT addNotice6: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
         // console.assert(extract !== undefined, "cMdT addNotice6: 'extract' parameter should be defined");
-        if (extract) console.assert(typeof extract === 'string', `cMdT addNotice6: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
-        console.assert(location !== undefined, "cMdT addNotice6: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', `cMdT addNotice6: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push({priority, message, lineNumber, characterIndex, extract, location});
+        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cMdT addNotice6: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        console.assert(noticeObject.location !== undefined, "cMdT addNotice6: 'location' parameter should be defined");
+        console.assert(typeof noticeObject.location === 'string', `cMdT addNotice6: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        result.noticeList.push({ ...noticeObject, filename:textName });
     }
     // end of addNotice6 function
 
-    function ourCheckTextField(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
+    function ourCheckTextField(lineNumber, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
         /**
         * @description - checks the given text field and processes the returned results
         * @param {String} fieldName - name of the field being checked
@@ -69,13 +69,13 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
 
         // Updates the global list of notices
         // console.log(`cMdT ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${optionalFieldLocation}, …)`);
-        console.assert(fieldName !== undefined, "cMdT ourCheckTextField: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName === 'string', `cMdT ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        console.assert(lineNumber !== undefined, "cMdT ourCheckTextField: 'lineNumber' parameter should be defined");
+        console.assert(typeof lineNumber === 'number', `cMdT ourCheckTextField: 'lineNumber' parameter should be a number not a '${typeof lineNumber}'`);
         console.assert(fieldText !== undefined, "cMdT ourCheckTextField: 'fieldText' parameter should be defined");
         console.assert(typeof fieldText === 'string', `cMdT ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         console.assert(allowedLinks === true || allowedLinks === false, "cMdT ourCheckTextField: allowedLinks parameter must be either true or false");
 
-        const dbtcResultObject = checkTextField(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
+        const dbtcResultObject = checkTextField('', fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -87,15 +87,13 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
             if (!noticeEntry.message.startsWith("Unexpected doubled * characters") // 577 Markdown allows this
                 && !noticeEntry.message.startsWith("Unexpected * character after space") // 191
             )
-                addNotice6({priority:noticeEntry.priority, message:noticeEntry.message,
-                    characterIndex:noticeEntry.characterIndex, extract:noticeEntry.extract,
-                    location:noticeEntry.location});
+                addNotice6({ ...noticeEntry, lineNumber });
         }
     }
     // end of ourCheckTextField function
 
 
-    function checkMarkdownLineContents(lineName, lineText, lineLocation) {
+    function checkMarkdownLineContents(lineNumber, lineText, lineLocation) {
 
         // console.log(`checkMarkdownLineContents for '${lineName} ${lineText}' at${lineLocation}`);
         let thisText = lineText
@@ -117,7 +115,7 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
         // console.log(`After removing more leading spaces have '${thisText}'`);
 
         if (thisText)
-            ourCheckTextField(lineName, thisText, true, lineLocation, optionalCheckingOptions);
+            ourCheckTextField(lineNumber, thisText, true, lineLocation, optionalCheckingOptions);
     }
     // end of checkMarkdownLine function
 
@@ -147,7 +145,7 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
             if (numLeadingSpaces && lastNumLeadingSpaces && numLeadingSpaces !== lastNumLeadingSpaces)
                 addNotice6({priority:472, message:"Nesting seems confused", lineNumber:n, characterIndex:0, location:ourLocation});
 
-            checkMarkdownLineContents(`line ${n.toLocaleString()}`, line, ourLocation);
+            checkMarkdownLineContents(n, line, ourLocation);
         } else {
             // This is a blank line
             numLeadingSpaces = 0;

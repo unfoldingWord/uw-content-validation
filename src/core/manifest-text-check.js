@@ -41,7 +41,7 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
     }
     function addNotice9({priority,message, bookID,C,V, lineNumber, characterIndex, extract, location}) {
         // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
-        // console.log(`checkManifestText Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex}${1})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // console.log(`checkManifestText Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cManT addNotice9: 'priority' parameter should be defined");
         console.assert(typeof priority === 'number', `cManT addNotice9: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         console.assert(message !== undefined, "cManT addNotice9: 'message' parameter should be defined");

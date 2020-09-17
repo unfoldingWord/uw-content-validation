@@ -28,7 +28,7 @@ function FileCheck(props) {
         // console.log("Started FileCheck.unnamedFunction()");
 
         // Display our "waiting" message
-        setResultValue(<p style={{ color: 'magenta' }}>Waiting for check results for <b>{filename}</b>…</p>);
+        setResultValue(<p style={{ color: 'magenta' }}>Checking <b>{filename}</b>…</p>);
         // console.log(`About to call getFile(${username}, ${repoName}, ${filename}, ${branch})…`);
         const fileContent = await getFile({ username: username, repository: repoName, path: filename, branch: branch });
         let rawCFResults = { noticeList:[{priority:990, message:"Unable to load file", filename}], elapsedSeconds:0 };
