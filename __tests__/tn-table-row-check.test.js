@@ -18,9 +18,16 @@ const optionalCheckingOptions = {
 describe('checkTN_TSVDataRow()', () => {
 
   it('should fail invalid doublet link', async() => {
-    const chosenLine = "RUT\t2\t12\tgnn5\tfigs-parallelism\tוּ⁠תְהִ֨י מַשְׂכֻּרְתֵּ֜⁠ךְ שְׁלֵמָ֗ה מֵ⁠עִ֤ם יְהוָה֙֙\t1\tmay your full wages come from Yahweh	This is a poetic expression that is very similar to the previous sentence. Alternate translation: “May Yahweh fully give to you everything that you deserve” (See: [[rc://en/ta/man/translate/figs-parallelism]], [Doublet](../figs-doublet/01.md))";
+    const chosenLine = "RUT\t2\t12\tgnn5\tfigs-parallelism\tשְׁלֵמָ֗ה\t1\tmay your full wages come from Yahweh	This is a poetic expression that is very similar to the previous sentence. Alternate translation: “May Yahweh fully give to you everything that you deserve” (See: [[rc://en/ta/man/translate/figs-parallelism]], [Doublet](../figs-doublet/01.md))";
+    const rawResults = await checkTN_TSVDataRow(chosenLine, 'RUT','2','12', 'that was supplied', optionalCheckingOptions);
+    expect(rawResults.noticeList.length).toEqual(1);
+    expect(rawResults).toMatchSnapshot();
+  });
+
+  it('should fail if SupportReference link differs from link in OccurrenceNote', async() => {
+    const chosenLine = "GEN\t1\t6\turb3\tfigs-imperative\t\t0\tLet there be an expanse…let it divide\tThese are commands. By commanding that the expanse should exist and that it divide the waters, God made it exist and divide the waters. (See: [[rc://en/ta/man/figs-parallelism]])";
     const rawResults = await checkTN_TSVDataRow(chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
-    expect(rawResults.noticeList.length).toEqual(3);
+    expect(rawResults.noticeList.length).toEqual(1);
     expect(rawResults).toMatchSnapshot();
   });
 
