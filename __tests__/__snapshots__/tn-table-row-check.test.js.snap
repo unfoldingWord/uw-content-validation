@@ -35,6 +35,34 @@ Object {
 }
 `;
 
+exports[`checkTN_TSVDataRow() should fail invalid doublet link 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "location": " (expected 'GEN') that was supplied",
+      "message": "Wrong 'RUT' book identifier",
+      "priority": 978,
+      "rowID": "gnn5",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "details": "",
+      "extract": "וּ⁠תְ…הוָה֙",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Unable to find original language quote in verse text",
+      "priority": 916,
+      "rowID": "gnn5",
+    },
+  ],
+}
+`;
+
 exports[`checkTN_TSVDataRow() should fail invalid first link 1`] = `
 Object {
   "noticeList": Array [
