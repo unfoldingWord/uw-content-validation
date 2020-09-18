@@ -10,7 +10,7 @@ const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOr
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-async function checkTN_TSVText(bookID, filename, tableText, givenLocation, optionalCheckingOptions) {
+async function checkTN_TSVText(languageCode, bookID, filename, tableText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all rows.
 
       It also has the advantage of being able to compare one row with the previous one.
@@ -96,7 +96,7 @@ async function checkTN_TSVText(bookID, filename, tableText, givenLocation, optio
                 const [B, C, V, rowID, supportReference, origQuote, occurrence, _GLQuote, _occurrenceNote] = fields;
 
                 // Use the row check to do most basic checks
-                const firstResult = await checkTN_TSVDataRow(lines[n], bookID, C, V, ourLocation, optionalCheckingOptions);
+                const firstResult = await checkTN_TSVDataRow(languageCode, lines[n], bookID, C, V, ourLocation, optionalCheckingOptions);
                 // Choose only ONE of the following
                 // This is the fast way of append the results from this field
                 // result.noticeList = result.noticeList.concat(firstResult.noticeList);
@@ -116,8 +116,8 @@ async function checkTN_TSVText(bookID, filename, tableText, givenLocation, optio
                 const uniqueID = C + V + supportReference + origQuote + occurrence; // This combination should not be repeated
                 // if (uniqueRowList.indexOf(uniqueID) >= 0)
                 //     addNoticeCV8({ priority: 880, C, V, message: `Duplicate note`, rowID, lineNumber: n + 1, location: ourLocation });
-                if (uniqueRowList.indexOf(uniqueID) >= 0)
-                    addNoticeCV8({ priority: 80, C, V, message: `Note: tC 3.0 won't display duplicate note`, rowID, lineNumber: n + 1, location: ourLocation });
+                // if (uniqueRowList.indexOf(uniqueID) >= 0)
+                //     addNoticeCV8({ priority: 80, C, V, message: `Note: tC 3.0 won't display duplicate note`, rowID, lineNumber: n + 1, location: ourLocation });
                 uniqueRowList.push(uniqueID);
 
                 if (B) {

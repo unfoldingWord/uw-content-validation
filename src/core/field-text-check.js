@@ -170,16 +170,17 @@ export function checkTextField(fieldName, fieldText, allowedLinks, optionalField
         }
     }
 
-    // Check matched pairs
+    // Check matched pairs in the field
     for (const punctSet of [['[', ']'], ['(', ')'], ['{', '}'],
     ['<', '>'], ['⟨', '⟩'], ['“', '”'],
     ['‹', '›'], ['«', '»'], ['**_', '_**']]) {
         // Can't check '‘’' coz they might be used as apostrophe
         const leftChar = punctSet[0], rightChar = punctSet[1];
-        const lCount = countOccurrences(fieldText, leftChar);
-        const rCount = countOccurrences(fieldText, rightChar);
-        if (lCount !== rCount)
-            addNotice6({ priority: 663, message: `Mismatched ${leftChar}${rightChar} characters`, details: `(left=${lCount.toLocaleString()}, right=${rCount.toLocaleString()})`, location: ourLocation });
+        const leftCount = countOccurrences(fieldText, leftChar);
+        const rightCount = countOccurrences(fieldText, rightChar);
+        if (leftCount !== rightCount)
+            // NOTE: These are higher priority than similar checks in a whole file which is less specific
+            addNotice6({ priority: leftChar === '“' ? 163 : 563, message: `Mismatched ${leftChar}${rightChar} characters`, details: `(left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()})`, location: ourLocation });
     }
 
     if (!allowedLinks) {

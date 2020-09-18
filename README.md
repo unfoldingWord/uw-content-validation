@@ -65,8 +65,8 @@ All of the following fields may be missing or undefined, i.e., they're all optio
 1. `repoName`: repository name (if available)
 1. `filename`: filename string (if available)
 1. `lineNumber`: A one-based line number in the file (if available)
-1. `characterIndex`: A zero-based integer character index which indicates the position of the error in the given text (line or field) (if available)
-1. `extract`: An extract (if available) of the checked text which indicates the area containing the problem. Where helpful, some character substitutions have already been made, for example, if the notice is about spaces, it is generally helpful to display spaces as a visible character in an attempt to best highlight the issue to the user. (The length of the extract defaults to ten characters, but is settable as an option.)
+1. `characterIndex`: A **zero-based** integer character index which indicates the position of the error in the given text (line or field) (if available)
+1. `extract`: An excerpt (if available) from the checked text which indicates the area containing the problem. Where helpful, some character substitutions have already been made, for example, if the notice is about spaces, it is generally helpful to display spaces as a visible character in an attempt to best highlight the issue to the user. (The length of the extract defaults to ten characters, but is settable as an option.)
 1. `location`: A string indicating the context of the notice, e.g., "in line 17 of 'someBook.usfm'". (Still not completely sure what should be left in this string now that we have added optional `filename`, `repoName`, `lineNumber` fields.)
 
 Keeping our notices in this format, rather than the simplicity of just saving an array of single strings, allows the above *notice components* to be processed at a higher level, e.g., to allow user-controlled filtering, sorting, etc. The default is to funnel them all through the supplied `processNoticesToErrorsWarnings` function (in demos/notice-processing-functions.fs) which does the following:

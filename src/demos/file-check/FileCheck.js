@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 // import { Paper, Button } from '@material-ui/core';
 // import { RepositoryContext, FileContext } from 'gitea-react-toolkit';
 import { withStyles } from '@material-ui/core/styles';
-import { getFile, checkFileContents } from '../../core';
+import { getFileCached, checkFileContents } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
 import { ourParseInt } from '../../core/utilities';
@@ -29,11 +29,13 @@ function FileCheck(props) {
 
         // Display our "waiting" message
         setResultValue(<p style={{ color: 'magenta' }}>Checking <b>{filename}</b>…</p>);
-        // console.log(`About to call getFile(${username}, ${repoName}, ${filename}, ${branch})…`);
-        const fileContent = await getFile({ username: username, repository: repoName, path: filename, branch: branch });
+        // console.log(`About to call getFileCached(${username}, ${repoName}, ${filename}, ${branch})…`);
+        const fileContent = await getFileCached({ username: username, repository: repoName, path: filename, branch: branch });
         let rawCFResults = { noticeList:[{priority:990, message:"Unable to load file", filename}], elapsedSeconds:0 };
-        if (fileContent)
-          rawCFResults = await checkFileContents(filename, fileContent, givenLocation, checkingOptions);
+        if (fileContent) {
+          const languageCode = repoName.split('_')[0];
+          rawCFResults = await checkFileContents(languageCode, filename, fileContent, givenLocation, checkingOptions);
+        }
         // console.log(`FileCheck got initial results with ${rawCFResults.successList.length} success message(s) and ${rawCFResults.noticeList.length} notice(s)`);
 
         // Since we know the repoName here, add it to our notices
@@ -50,7 +52,7 @@ function FileCheck(props) {
 
         // Now do our final handling of the result
         let processOptions = { // Uncomment any of these to test them
-          // 'maximumSimilarMessages': 3, // default is 2
+          // 'maximumSimilarMessages': 4, // default is 3  -- 0 means don't suppress
           // 'errorPriorityLevel': 800, // default is 700
           // 'cutoffPriorityLevel': 100, // default is 0
           // 'sortBy': 'ByPriority', // default is 'AsFound'
@@ -67,11 +69,11 @@ function FileCheck(props) {
         if (props.displayType) displayType = props.displayType;
 
         function renderSummary(processedResults) {
-          return (<>
+          return (<div>
             <p>Checked <b>{filename}</b> (from {username} {repoName} <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)</p>
-            <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} />.</p>
+            <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCFResults.noticeList.length===0?'no':rawCFResults.noticeList.length} notice{rawCFResults.noticeList.length===1?'':'s'}.</p>
             {/* <RenderRawResults results={rawCFResults} /> */}
-          </>);
+          </div>);
         }
 
         if (displayType === 'ErrorsWarnings') {

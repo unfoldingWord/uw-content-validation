@@ -1,5 +1,5 @@
 import * as books from '../core/books/books';
-import { getFile } from '../core/getApi';
+import { getFileCached } from '../core/getApi';
 // import { consoleLogObject } from '../core/utilities';
 
 
@@ -79,22 +79,22 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, gi
 
         let originalUSFM;
         // console.log(`Need to check against ${originalLanguageRepoCode}`);
-        const getFile_ = (optionalCheckingOptions && optionalCheckingOptions.getFile) ? optionalCheckingOptions.getFile : getFile;
+        const getFileCached_ = (optionalCheckingOptions && optionalCheckingOptions.getFileCached) ? optionalCheckingOptions.getFileCached : getFileCached;
         if (originalLanguageRepoCode === 'UHB') {
             try {
-                originalUSFM = await getFile_({ username, repository: originalLanguageRepoName, path: filename, branch });
+                originalUSFM = await getFileCached_({ username, repository: originalLanguageRepoName, path: filename, branch });
                 // console.log("Fetched file_content for", repoName, filename, typeof originalUSFM, originalUSFM.length);
             } catch (gcUHBerror) {
                 console.log("ERROR: Failed to load", username, originalLanguageRepoCode, filename, branch, gcUHBerror.message);
-                addNotice6({ priority: 996, message: "Failed to load", filename, location: `${ourLocation}: ${gcUHBerror}`, extra: originalLanguageRepoName });
+                addNotice6({ priority: 601, message: "Failed to load", filename, location: `${ourLocation}: ${gcUHBerror}`, extra: originalLanguageRepoName });
             }
         } else if (originalLanguageRepoCode === 'UGNT') {
             try {
-                originalUSFM = await getFile_({ username, repository: originalLanguageRepoName, path: filename, branch });
+                originalUSFM = await getFileCached_({ username, repository: originalLanguageRepoName, path: filename, branch });
                 // console.log("Fetched file_content for", repoName, filename, typeof originalUSFM, originalUSFM.length);
             } catch (gcUGNTerror) {
                 console.log("ERROR: Failed to load", username, originalLanguageRepoCode, filename, branch, gcUGNTerror.message);
-                addNotice6({ priority: 996, message: "Failed to load", filename, location: `${ourLocation}: ${gcUGNTerror}`, extra: originalLanguageRepoName });
+                addNotice6({ priority: 601, message: "Failed to load", filename, location: `${ourLocation}: ${gcUGNTerror}`, extra: originalLanguageRepoName });
             }
         }
 
@@ -249,7 +249,7 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, gi
                 remainingBits = [remainingBits[0], remainingBits.slice(1).join('…')];
             console.assert(remainingBits.length === 2, `remaining bits are ${remainingBits.length}`);
             // Note: There's some Hebrew (RTL) characters at the beginning of the following regex
-            if (remainingBits[0] && remainingBits[0].slice(-1).search(/[^־A-Za-z\s*(]/) !== -1) {
+            if (remainingBits[0] && remainingBits[0].slice(-1).search(/[^־A-Za-z\s*[(]/) !== -1) {
                 // const badChar = remainingBits[0].slice(-1);
                 // const badCharString = ` by '{badChar}' {unicodedata.name(badChar)}={hex(ord(badChar))}`;
                 // console.log(`Seems '${fieldText}' might not start at the beginning of a word—it's preceded ${badCharString} in '${verseText}'`);

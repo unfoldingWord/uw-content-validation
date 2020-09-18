@@ -10,24 +10,27 @@ The code below requests some info and then checks a Door43 repository.You can en
 
 **Warning**: Some repos contain many files and/or very large files, and downloading them all and then checking them might slow down your browser -- maybe even causing pop-up messages asking to confirm that you want to keep waiting.
 
+**NOTE: Caching is temporarily disabled.**
 **Note**: This demonstration uses cached values of files stored inside the local browser. This makes reruns of the checks much faster, but it won't notice if you have updated the files on Door43. If you want to clear the local caches, use the `Clear Cache` function.
 
 ```js
 import React, { useState, useEffect } from 'react';
+import { getRepoName, clearCacheAndPreloadRepos } from './getApi';
 import { checkRepo } from './book-package-check';
 import { RenderRawResults } from '../demos/RenderProcessedResults';
 
 // You can put your own data into the following fields:
 const data = {
   username: 'unfoldingWord',
-  repoName : 'fr_ulb',
+  languageCode : 'fr',
+  repoCode : 'ULB',
   branch : 'master',
   givenLocation : 'that was supplied',
   checkingOptions: {},
 }
 
 function CheckRepo(props) {
-  const { username, repoName, branch, givenLocation, checkingOptions } = props.data;
+  const { username, languageCode, repoCode, branch, givenLocation, checkingOptions } = props.data;
 
   const [results, setResults] = useState(null);
 
@@ -36,7 +39,16 @@ function CheckRepo(props) {
     // Use an IIFE (Immediately Invoked Function Expression)
     //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
     (async () => {
+
+      // TODO: See if this preloading is really helping at all???
+      // This call is not needed, but makes sure you don't have stale data that has been cached
+      setResults(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for repo check…</p>);
+      const successFlag = await clearCacheAndPreloadRepos(username, languageCode, ['GEN','MAT'], branch, [repoCode]);
+      if (!successFlag)
+          console.log(`CheckRepo error: Failed to pre-load all repos`)
+
       // Display our "waiting" message
+      const repoName = getRepoName(languageCode, repoCode);
       setResults(<p style={{ color: 'magenta' }}>Checking {username} {repoName} {branch}…</p>);
       const rawResults = await checkRepo(username, repoName, branch, givenLocation, setResults, checkingOptions);
       setResults(

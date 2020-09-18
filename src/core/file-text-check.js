@@ -5,7 +5,7 @@ import { isWhitespace, countOccurrences } from './text-handling-functions'
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-export function checkFileContents(filename, fileText, optionalFileLocation, optionalCheckingOptions) {
+export function checkTextfileContents(languageCode, filename, fileText, optionalFileLocation, optionalCheckingOptions) {
     // Does basic checks for small errors like mismatched punctuation pairs, etc.
     //  (Used by usfm-text-check)
 
@@ -24,12 +24,12 @@ export function checkFileContents(filename, fileText, optionalFileLocation, opti
     //      extract: a short extract of the string containing the error (or empty-string if irrelevant)
     //      location: the detailed location string
     //  (Returned in this way for more intelligent processing at a higher level)
-    // console.log(`checkFileContents(${filename}, ${fileText.length.toLocaleString()} chars, ${allowedLinks}, '${optionalFileLocation}')…`);
-    console.assert(filename !== undefined, "checkFileContents: 'filename' parameter should be defined");
-    console.assert(typeof filename === 'string', `checkFileContents: 'filename' parameter should be a number not a '${typeof filename}': ${filename}`);
-    console.assert(fileText !== undefined, "checkFileContents: 'fileText' parameter should be defined");
-    console.assert(typeof fileText === 'string', `checkFileContents: 'fileText' parameter should be a number not a '${typeof fileText}': ${fileText}`);
-    // console.assert( allowedLinks===true || allowedLinks===false, "checkFileContents: allowedLinks parameter must be either true or false");
+    // console.log(`checkTextfileContents(${filename}, ${fileText.length.toLocaleString()} chars, ${allowedLinks}, '${optionalFileLocation}')…`);
+    console.assert(filename !== undefined, "checkTextfileContents: 'filename' parameter should be defined");
+    console.assert(typeof filename === 'string', `checkTextfileContents: 'filename' parameter should be a number not a '${typeof filename}': ${filename}`);
+    console.assert(fileText !== undefined, "checkTextfileContents: 'fileText' parameter should be defined");
+    console.assert(typeof fileText === 'string', `checkTextfileContents: 'fileText' parameter should be a number not a '${typeof fileText}': ${fileText}`);
+    // console.assert( allowedLinks===true || allowedLinks===false, "checkTextfileContents: allowedLinks parameter must be either true or false");
 
     let result = { noticeList: [] };
 
@@ -49,7 +49,7 @@ export function checkFileContents(filename, fileText, optionalFileLocation, opti
     }
 
 
-    // Main code for checkFileContents()
+    // Main code for checkTextfileContents()
     if (!fileText) // Nothing to check
         return result;
 
@@ -58,7 +58,7 @@ export function checkFileContents(filename, fileText, optionalFileLocation, opti
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
     if (isWhitespace(fileText)) {
-        addNotice6({priority:638, message:"Only found whitespace", location:ourLocation});
+        addNotice6({ priority: 638, message: "Only found whitespace", location: ourLocation });
         return result;
     }
 
@@ -71,7 +71,7 @@ export function checkFileContents(filename, fileText, optionalFileLocation, opti
         // console.log(`Using default extractLength=${extractLength}`);
     }
     // else
-        // console.log(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
+    // console.log(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
     const halfLength = Math.floor(extractLength / 2); // rounded down
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
     // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
@@ -80,27 +80,29 @@ export function checkFileContents(filename, fileText, optionalFileLocation, opti
     if ((characterIndex = fileText.indexOf('<<<<<<<')) >= 0) {
         const iy = characterIndex + halfLength; // Want extract to focus more on what follows
         const extract = (iy > halfLength ? '…' : '') + fileText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < fileText.length ? '…' : '')
-        addNotice6({priority:993, message:"Unresolved GIT conflict", characterIndex, extract, location:ourLocation});
+        addNotice6({ priority: 993, message: "Unresolved GIT conflict", characterIndex, extract, location: ourLocation });
     } else if ((characterIndex = fileText.indexOf('=======')) >= 0) {
         const iy = characterIndex + halfLength; // Want extract to focus more on what follows
         const extract = (iy > halfLength ? '…' : '') + fileText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < fileText.length ? '…' : '')
-        addNotice6({priority:992, message:"Unresolved GIT conflict", characterIndex, extract, location:ourLocation});
+        addNotice6({ priority: 992, message: "Unresolved GIT conflict", characterIndex, extract, location: ourLocation });
     } else if ((characterIndex = fileText.indexOf('>>>>>>>>')) >= 0) {
         const iy = characterIndex + halfLength; // Want extract to focus more on what follows
         const extract = (iy > halfLength ? '…' : '') + fileText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < fileText.length ? '…' : '')
-        addNotice6({priority:991, message:"Unresolved GIT conflict", characterIndex, extract, location:ourLocation});
+        addNotice6({ priority: 991, message: "Unresolved GIT conflict", characterIndex, extract, location: ourLocation });
     }
 
-    // Check matched pairs
+    // Check matched pairs in the file
     for (const punctSet of [['[', ']'], ['(', ')'], ['{', '}'],
     ['<', '>'], ['⟨', '⟩'], ['“', '”'],
     ['‹', '›'], ['«', '»'], ['**_', '_**']]) {
         // Can't check '‘’' coz they might be used as apostrophe
         const leftChar = punctSet[0], rightChar = punctSet[1];
-        const lCount = countOccurrences(fileText, leftChar);
-        const rCount = countOccurrences(fileText, rightChar);
-        if (lCount !== rCount)
-            addNotice6({priority:163, message:`Mismatched ${leftChar}${rightChar} characters`, details:`(left=${lCount.toLocaleString()}, right=${rCount.toLocaleString()})`, location:ourLocation});
+        const leftCount = countOccurrences(fileText, leftChar);
+        const rightCount = countOccurrences(fileText, rightChar);
+        if (leftCount !== rightCount)
+            // NOTE: These are lower priority than similar checks in a field
+            //          since they occur only within the entire file
+            addNotice6({ priority: leftChar === '“' ? 162 : 462, message: `Mismatched ${leftChar}${rightChar} characters`, details: `(left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()})`, location: ourLocation });
     }
 
     // if (!allowedLinks) {
@@ -120,6 +122,6 @@ export function checkFileContents(filename, fileText, optionalFileLocation, opti
     // }
     return result;
 }
-// end of checkFileContents function
+// end of checkTextfileContents function
 
-export default checkFileContents;
+export default checkTextfileContents;

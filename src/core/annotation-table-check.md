@@ -8,7 +8,7 @@ These raw notice components can then be filtered and/or sorted as required by th
 
 ```js
 import React, { useState, useEffect } from 'react';
-import checkAnnotationTSVText from './annotation-table-check';
+import checkAnnotationRows from './annotation-table-check';
 import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Text samples
@@ -36,6 +36,7 @@ const lineA9 = "1:9\tha33\t\t\t\t0\t“It happened like that” or “That is wh
 const data = {
   // You can choose any of the above lines here
   //  (to demonstrate differing results)
+  languageCode: 'en',
   annotationType: 'TN',
   tableTextName : 'textG',
   tableText : textG,
@@ -45,18 +46,18 @@ const data = {
 }
 
 function CheckAnnotationRows(props) {
-  const { annotationType, bookID, filename, tableText, tableTextName, givenLocation } = props.data;
+  const { languageCode, annotationType, bookID, filename, tableText, tableTextName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
 
-  // We need the following construction because checkAnnotationTSVText is an ASYNC function
+  // We need the following construction because checkAnnotationRows is an ASYNC function
   useEffect(() => {
     // Use an IIFE (Immediately Invoked Function Expression)
     //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
     (async () => {
       // Display our "waiting" message
-      setResults(<p style={{ color: 'magenta' }}>Checking {annotationType} for {tableTextName} <b>{bookID}</b>…</p>);
-      const rawResults = await checkAnnotationTSVText(annotationType, bookID, filename, tableText, givenLocation);
+      setResults(<p style={{ color: 'magenta' }}>Checking {languageCode} {annotationType} for {tableTextName} <b>{bookID}</b>…</p>);
+      const rawResults = await checkAnnotationRows(languageCode, annotationType, bookID, filename, tableText, givenLocation);
       setResults(
         <div>
           <b>Check</b> {tableTextName}: "{tableText.substr(0,256)}…"<br/><br/>

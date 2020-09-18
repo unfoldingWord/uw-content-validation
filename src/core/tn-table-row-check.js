@@ -14,7 +14,7 @@ const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOr
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-async function checkTN_TSVDataRow(line, bookID, C, V, givenRowLocation, optionalCheckingOptions) {
+async function checkTN_TSVDataRow(languageCode, line, bookID, C, V, givenRowLocation, optionalCheckingOptions) {
     /**
     * @description - Checks one TSV data row of translation notes (TN)
     * @param {String} line - the TSV line to be checked
@@ -63,18 +63,18 @@ async function checkTN_TSVDataRow(line, bookID, C, V, givenRowLocation, optional
         * @param {String} location - description of where the issue is located
         */
         // console.log(`Annotation TSV Row Notice: (priority=${priority}) ${message}, ${characterIndex}, ${extract}, ${location}`);
-        console.assert(noticeObject.priority !== undefined, "cTSVrow addNotice6to9: 'priority' parameter should be defined");
-        console.assert(typeof noticeObject.priority === 'number', `cTSVrow addNotice6to9: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        console.assert(noticeObject.message !== undefined, "cTSVrow addNotice6to9: 'message' parameter should be defined");
-        console.assert(typeof noticeObject.message === 'string', `cTSVrow addNotice6to9: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // console.assert(lineNumber !== undefined, "cTSVrow addNotice6to9: 'lineNumber' parameter should be defined");
-        // console.assert(typeof lineNumber === 'number', `cTSVrow addNotice6to9: 'lineNumber' parameter should be a number not a '${typeof lineNumber}': ${lineNumber}`);
-        // console.assert(characterIndex !== undefined, "cTSVrow addNotice6to9: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `cTSVrow addNotice6to9: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // console.assert(extract !== undefined, "cTSVrow addNotice6to9: 'extract' parameter should be defined");
-        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cTSVrow addNotice6to9: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
-        console.assert(noticeObject.location !== undefined, "cTSVrow addNotice6to9: 'location' parameter should be defined");
-        console.assert(typeof noticeObject.location === 'string', `cTSVrow addNotice6to9: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        console.assert(noticeObject.priority !== undefined, "checkTN_TSVDataRow addNotice6to9: 'priority' parameter should be defined");
+        console.assert(typeof noticeObject.priority === 'number', `checkTN_TSVDataRow addNotice6to9: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        console.assert(noticeObject.message !== undefined, "checkTN_TSVDataRow addNotice6to9: 'message' parameter should be defined");
+        console.assert(typeof noticeObject.message === 'string', `checkTN_TSVDataRow addNotice6to9: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+        // console.assert(lineNumber !== undefined, "checkTN_TSVDataRow addNotice6to9: 'lineNumber' parameter should be defined");
+        // console.assert(typeof lineNumber === 'number', `checkTN_TSVDataRow addNotice6to9: 'lineNumber' parameter should be a number not a '${typeof lineNumber}': ${lineNumber}`);
+        // console.assert(characterIndex !== undefined, "checkTN_TSVDataRow addNotice6to9: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `checkTN_TSVDataRow addNotice6to9: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        // console.assert(extract !== undefined, "checkTN_TSVDataRow addNotice6to9: 'extract' parameter should be defined");
+        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `checkTN_TSVDataRow addNotice6to9: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        console.assert(noticeObject.location !== undefined, "checkTN_TSVDataRow addNotice6to9: 'location' parameter should be defined");
+        console.assert(typeof noticeObject.location === 'string', `checkTN_TSVDataRow addNotice6to9: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
         // Also uses the given bookID,C,V, parameters from the main function call
         drResult.noticeList.push({ ...noticeObject, bookID, C, V });
     }
@@ -97,15 +97,16 @@ async function checkTN_TSVDataRow(line, bookID, C, V, givenRowLocation, optional
 
         // We don't currently use the allowedLinks parameter
 
-        // console.log(`cTSVrow ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
-        console.assert(rowID !== undefined, "cTSVrow ourMarkdownTextChecks: 'rowID' parameter should be defined");
-        console.assert(typeof rowID === 'string', `cTSVrow ourMarkdownTextChecks: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        // console.assert(fieldName !== undefined, "cTSVrow ourMarkdownTextChecks: 'fieldName' parameter should be defined");
-        // console.assert(typeof fieldName === 'string', `cTSVrow ourMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        console.assert(fieldName === 'OccurrenceNote', "Only run this check on OccurrenceNotes")
-        console.assert(fieldText !== undefined, "cTSVrow ourMarkdownTextChecks: 'fieldText' parameter should be defined");
-        console.assert(typeof fieldText === 'string', `cTSVrow ourMarkdownTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-        console.assert(allowedLinks === true || allowedLinks === false, "cTSVrow ourMarkdownTextChecks: allowedLinks parameter must be either true or false");
+        // console.log(`checkTN_TSVDataRow ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
+        console.assert(rowID !== undefined, "checkTN_TSVDataRow ourMarkdownTextChecks: 'rowID' parameter should be defined");
+        console.assert(typeof rowID === 'string', `checkTN_TSVDataRow ourMarkdownTextChecks: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+        // console.assert(fieldName !== undefined, "checkTN_TSVDataRow ourMarkdownTextChecks: 'fieldName' parameter should be defined");
+        // console.assert(typeof fieldName === 'string', `checkTN_TSVDataRow ourMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        console.assert(fieldName === 'OccurrenceNote', "checkTN_TSVDataRow ourMarkdownTextChecks: Only run this check on OccurrenceNotes")
+        console.assert(fieldText !== undefined, "checkTN_TSVDataRow ourMarkdownTextChecks: 'fieldText' parameter should be defined");
+        console.assert(typeof fieldText === 'string', `checkTN_TSVDataRow ourMarkdownTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+        console.assert(allowedLinks === true || allowedLinks === false, "checkTN_TSVDataRow ourMarkdownTextChecks: allowedLinks parameter must be either true or false");
+        console.assert(rowLocation.indexOf(fieldName) < 0, `checkTN_TSVDataRow ourMarkdownTextChecks: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
         const cmtResultObject = checkMarkdownText(fieldName, fieldText, rowLocation, optionalCheckingOptions);
 
@@ -119,10 +120,10 @@ async function checkTN_TSVDataRow(line, bookID, C, V, givenRowLocation, optional
             // NOTE: Ellipses in OccurrenceNote have the normal meaning
             //          not like the specialised meaning in the snippet fields OrigQuote and GLQuote
             if (noticeEntry.priority !== 178 && noticeEntry.priority !== 179 // unexpected space after ellipse, ellipse after space
-            && !noticeEntry.message.startsWith("Unexpected … character after space") // 191
+                && !noticeEntry.message.startsWith("Unexpected … character after space") // 191
             )
                 addNotice6to9({ ...noticeEntry, rowID, fieldName });
-            }
+        }
     }
     // end of ourMarkdownTextChecks function
 
@@ -142,14 +143,15 @@ async function checkTN_TSVDataRow(line, bookID, C, V, givenRowLocation, optional
 
         // Updates the global list of notices
 
-        // console.log(`cTSVrow ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
-        console.assert(rowID !== undefined, "cTSVrow ourCheckTextField: 'rowID' parameter should be defined");
-        console.assert(typeof rowID === 'string', `cTSVrow ourCheckTextField: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        console.assert(fieldName !== undefined, "cTSVrow ourCheckTextField: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName === 'string', `cTSVrow ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        console.assert(fieldText !== undefined, "cTSVrow ourCheckTextField: 'fieldText' parameter should be defined");
-        console.assert(typeof fieldText === 'string', `cTSVrow ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-        console.assert(allowedLinks === true || allowedLinks === false, "cTSVrow ourCheckTextField: allowedLinks parameter must be either true or false");
+        // console.log(`checkTN_TSVDataRow ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
+        console.assert(rowID !== undefined, "checkTN_TSVDataRow ourCheckTextField: 'rowID' parameter should be defined");
+        console.assert(typeof rowID === 'string', `checkTN_TSVDataRow ourCheckTextField: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+        console.assert(fieldName !== undefined, "checkTN_TSVDataRow ourCheckTextField: 'fieldName' parameter should be defined");
+        console.assert(typeof fieldName === 'string', `checkTN_TSVDataRow ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        console.assert(fieldText !== undefined, "checkTN_TSVDataRow ourCheckTextField: 'fieldText' parameter should be defined");
+        console.assert(typeof fieldText === 'string', `checkTN_TSVDataRow ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+        console.assert(allowedLinks === true || allowedLinks === false, "checkTN_TSVDataRow ourCheckTextField: allowedLinks parameter must be either true or false");
+        console.assert(rowLocation.indexOf(fieldName) < 0, `checkTN_TSVDataRow ourCheckTextField: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
         const dbtcResultObject = checkTextField(fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions);
 
@@ -170,15 +172,16 @@ async function checkTN_TSVDataRow(line, bookID, C, V, givenRowLocation, optional
 
         // Updates the global list of notices
 
-        // console.log(`cTSVrow ourCheckTAReference(${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
-        console.assert(rowID !== undefined, "cTSVrow ourCheckTAReference: 'rowID' parameter should be defined");
-        console.assert(typeof rowID === 'string', `cTSVrow ourCheckTAReference: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        console.assert(fieldName !== undefined, "cTSVrow ourCheckTAReference: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName === 'string', `cTSVrow ourCheckTAReference: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        console.assert(taLinkText !== undefined, "cTSVrow ourCheckTAReference: 'taLinkText' parameter should be defined");
-        console.assert(typeof taLinkText === 'string', `cTSVrow ourCheckTAReference: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
+        // console.log(`checkTN_TSVDataRow ourCheckTAReference(${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
+        console.assert(rowID !== undefined, "checkTN_TSVDataRow ourCheckTAReference: 'rowID' parameter should be defined");
+        console.assert(typeof rowID === 'string', `checkTN_TSVDataRow ourCheckTAReference: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+        console.assert(fieldName !== undefined, "checkTN_TSVDataRow ourCheckTAReference: 'fieldName' parameter should be defined");
+        console.assert(typeof fieldName === 'string', `checkTN_TSVDataRow ourCheckTAReference: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        console.assert(taLinkText !== undefined, "checkTN_TSVDataRow ourCheckTAReference: 'taLinkText' parameter should be defined");
+        console.assert(typeof taLinkText === 'string', `checkTN_TSVDataRow ourCheckTAReference: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
+        console.assert(rowLocation.indexOf(fieldName) < 0, `checkTN_TSVDataRow ourCheckTAReference: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const coqResultObject = await checkTAReference(fieldName, taLinkText, rowLocation, optionalCheckingOptions);
+        const coqResultObject = await checkTAReference(fieldName, taLinkText, rowLocation, { ...optionalCheckingOptions, taRepoLanguageCode: languageCode });
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -199,13 +202,14 @@ async function checkTN_TSVDataRow(line, bookID, C, V, givenRowLocation, optional
 
         // Updates the global list of notices
 
-        // console.log(`cTSVrow ourCheckTNOriginalLanguageQuote(${fieldName}, (${fieldText.length}) '${fieldText}', ${rowLocation}, …)`);
-        console.assert(rowID !== undefined, "cTSVrow ourMarkdownTextChecks: 'rowID' parameter should be defined");
-        console.assert(typeof rowID === 'string', `cTSVrow ourMarkdownTextChecks: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        console.assert(fieldName !== undefined, "cTSVrow ourMarkdownTextChecks: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName === 'string', `cTSVrow ourMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        console.assert(fieldText !== undefined, "cTSVrow ourCheckTNOriginalLanguageQuote: 'fieldText' parameter should be defined");
-        console.assert(typeof fieldText === 'string', `cTSVrow ourCheckTNOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+        // console.log(`checkTN_TSVDataRow ourCheckTNOriginalLanguageQuote(${fieldName}, (${fieldText.length}) '${fieldText}', ${rowLocation}, …)`);
+        console.assert(rowID !== undefined, "checkTN_TSVDataRow ourMarkdownTextChecks: 'rowID' parameter should be defined");
+        console.assert(typeof rowID === 'string', `checkTN_TSVDataRow ourMarkdownTextChecks: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+        console.assert(fieldName !== undefined, "checkTN_TSVDataRow ourMarkdownTextChecks: 'fieldName' parameter should be defined");
+        console.assert(typeof fieldName === 'string', `checkTN_TSVDataRow ourMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        console.assert(fieldText !== undefined, "checkTN_TSVDataRow ourCheckTNOriginalLanguageQuote: 'fieldText' parameter should be defined");
+        console.assert(typeof fieldText === 'string', `checkTN_TSVDataRow ourCheckTNOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+        console.assert(rowLocation.indexOf(fieldName) < 0, `checkTN_TSVDataRow ourCheckTNOriginalLanguageQuote: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
         const coqResultObject = await checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, rowLocation, optionalCheckingOptions);
 
@@ -226,13 +230,13 @@ async function checkTN_TSVDataRow(line, bookID, C, V, givenRowLocation, optional
 
         // Updates the global list of notices
 
-        // console.log(`cTSVrow ourCheckTNLinks(${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
-        console.assert(rowID !== undefined, "cTSVrow ourCheckTNLinks: 'rowID' parameter should be defined");
-        console.assert(typeof rowID === 'string', `cTSVrow ourCheckTNLinks: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        console.assert(fieldName !== undefined, "cTSVrow ourCheckTNLinks: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName === 'string', `cTSVrow ourCheckTNLinks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        console.assert(taLinkText !== undefined, "cTSVrow ourCheckTNLinks: 'taLinkText' parameter should be defined");
-        console.assert(typeof taLinkText === 'string', `cTSVrow ourCheckTNLinks: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
+        // console.log(`checkTN_TSVDataRow ourCheckTNLinks(${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
+        console.assert(rowID !== undefined, "checkTN_TSVDataRow ourCheckTNLinks: 'rowID' parameter should be defined");
+        console.assert(typeof rowID === 'string', `checkTN_TSVDataRow ourCheckTNLinks: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+        console.assert(fieldName !== undefined, "checkTN_TSVDataRow ourCheckTNLinks: 'fieldName' parameter should be defined");
+        console.assert(typeof fieldName === 'string', `checkTN_TSVDataRow ourCheckTNLinks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        console.assert(taLinkText !== undefined, "checkTN_TSVDataRow ourCheckTNLinks: 'taLinkText' parameter should be defined");
+        console.assert(typeof taLinkText === 'string', `checkTN_TSVDataRow ourCheckTNLinks: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
 
         const coqResultObject = await checkTNLinks(bookID, fieldName, taLinkText, rowLocation, optionalCheckingOptions);
 
@@ -357,7 +361,7 @@ async function checkTN_TSVDataRow(line, bookID, C, V, givenRowLocation, optional
                 addNotice6to9({ priority: 173, message: "ID characters should only be lowercase letters, digits, or hypen", characterIndex: 2, rowID, location: ` (not '${rowID[2]}')${ourRowLocation}` });
         }
 
-        if (supportReference.length) { // need to check UTN against UTA
+        if (supportReference.length) { // need to check TN against TA
             ourCheckTextField(rowID, 'SupportReference', supportReference, true, ourRowLocation, optionalCheckingOptions);
             await ourCheckTAReference(rowID, 'SupportReference', supportReference, ourRowLocation, optionalCheckingOptions);
         }

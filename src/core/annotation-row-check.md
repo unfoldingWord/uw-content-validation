@@ -39,6 +39,7 @@ const lineA9 = "1:9\tha33\t\t\t0\tIt was so\t“It happened like that” or “T
 const data = {
   // You can choose any of the above lines here
   //  (to demonstrate differing results)
+  languageCode: 'en',
   annotationType: 'TN',
   tableLineName : 'lineA9',
   tableLine : lineA9,
@@ -47,7 +48,7 @@ const data = {
 }
 
 function CheckAnnotationRow(props) {
-  const { annotationType, bookID, C, V, tableLine, tableLineName, givenLocation } = props.data;
+  const { languageCode, annotationType, bookID, C, V, tableLine, tableLineName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
 
@@ -58,7 +59,7 @@ function CheckAnnotationRow(props) {
     (async () => {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {tableLineName} <b>{bookID}</b>…</p>);
-      const rawResults = await checkAnnotationTSVDataRow(annotationType, tableLine, bookID, C, V, givenLocation);
+      const rawResults = await checkAnnotationTSVDataRow(languageCode, annotationType, tableLine, bookID, C, V, givenLocation);
       setResults(
         <div>
           <b>Check</b> {tableLineName}: "{tableLine.substr(0,256)}…"<br/><br/>

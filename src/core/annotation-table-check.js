@@ -10,7 +10,7 @@ const EXPECTED_TN_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\t
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-async function CheckAnnotationRows(annotationType, bookID, filename, tableText, givenLocation, optionalCheckingOptions) {
+async function CheckAnnotationRows(languageCode, annotationType, bookID, filename, tableText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all rows.
 
       It also has the advantage of being able to compare one row with the previous one.
@@ -19,7 +19,7 @@ async function CheckAnnotationRows(annotationType, bookID, filename, tableText, 
 
      Returns a result object containing a successList and a noticeList
      */
-    // console.log(`CheckAnnotationRows(${annotationType}, ${bookID}, ${tableText.length}, ${location},${JSON.stringify(optionalCheckingOptions)})…`);
+    // console.log(`CheckAnnotationRows(${languageCode}, ${annotationType}, ${bookID}, ${tableText.length}, ${givenLocation},${JSON.stringify(optionalCheckingOptions)})…`);
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     // if (bookID) ourLocation = ` in ${bookID}${ourLocation}`;
@@ -99,7 +99,7 @@ async function CheckAnnotationRows(annotationType, bookID, filename, tableText, 
                 const [C, V] = reference.split(':')
 
                 // Use the row check to do most basic checks
-                const firstResult = await checkAnnotationTSVDataRow(annotationType, lines[n], bookID, C, V, ourLocation, optionalCheckingOptions);
+                const firstResult = await checkAnnotationTSVDataRow(languageCode, annotationType, lines[n], bookID, C, V, ourLocation, optionalCheckingOptions);
                 // Choose only ONE of the following
                 // This is the fast way of append the results from this field
                 // result.noticeList = result.noticeList.concat(firstResult.noticeList);

@@ -68,22 +68,6 @@ export function ourParseInt(givenString) {
 }
 
 
-export function getRepoName(languageCode, repoCode) {
-    /**
-    * @description - Creates and returns a Door43 repoName string
-    * @param {String} languageCode - the language code, e.g., 'en'
-    * @param {String} repoCode - the repo code, e.g., 'TQ'
-    * @return {String} - the Door43 repoName string
-    */
-//    console.log(`getRepoName('${languageCode}', '${repoCode}')…`);
-   let repo_languageCode = languageCode;
-    if (repoCode === 'UHB') repo_languageCode = 'hbo';
-    else if (repoCode === 'UGNT') repo_languageCode = 'el-x-koine';
-    const repoName = `${repo_languageCode}_${repoCode.toLowerCase()}`;
-    return repoName;
-}
-
-
 /*
 // function to convert an array to an object
 // with keys being 0..n
