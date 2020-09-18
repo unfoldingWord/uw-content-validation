@@ -552,7 +552,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
 
         // So now we want to work through checking this one specified Bible book in various repos:
         //  UHB/UGNT, ULT, UST, TN, TQ
-        const getFile_ = (checkingOptions && checkingOptions.getFile) ? checkingOptions.getFile : getFile;
+        const getFile_ = (newCheckingOptions && newCheckingOptions.getFile) ? newCheckingOptions.getFile : getFile;
         let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0, checkedRepoNames = [];
         const origLang = whichTestament === 'old' ? 'UHB' : 'UGNT';
 
@@ -619,7 +619,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         checkBookPackageResult.checkedFilenameExtensions = [...checkedFilenameExtensions]; // convert Set to Array
         checkBookPackageResult.checkedFilesizes = totalCheckedSize;
         checkBookPackageResult.checkedRepoNames = checkedRepoNames;
-        // checkBookPackageResult.checkedOptions = checkingOptions; // This is done at the caller level
+        // checkBookPackageResult.checkedOptions = newCheckingOptions; // This is done at the caller level
     }
 
     checkBookPackageResult.elapsedSeconds = (new Date() - startTime) / 1000; // seconds
