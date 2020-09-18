@@ -1,6 +1,6 @@
 /* eslint-env jest */
 
-import { checkBookPackage } from '../src/core/book-package-check';
+import { checkBookPackage } from '../core/book-package-check';
 import Path from "path";
 import fs from 'fs-extra';
 
@@ -9,7 +9,7 @@ let testFiles = {};
 const optionalCheckingOptions = {
   getFile: params => {
     const { username, repository, path, branch } = params;
-    const filePath = Path.join('./__tests__/fixtures', username, repository, path);
+    const filePath = Path.join('./src/__tests__/fixtures', username, repository, path);
 
     if (testFiles.hasOwnProperty(filePath)) { // see if we have a test file to use
       if (testFiles[filePath] !== null) {  // if file content not null, then return contents.  Otherwise will throw exception

@@ -1,13 +1,13 @@
 /* eslint-env jest */
 
-import checkTN_TSVDataRow from '../src/core/tn-table-row-check';
+import checkTN_TSVDataRow from '../core/tn-table-row-check';
 import Path from "path";
 import fs from 'fs-extra';
 
 const optionalCheckingOptions = {
   getFile: params => {
     const { username, repository, path, branch } = params;
-    const filePath = Path.join('./__tests__/fixtures', username, repository, path);
+    const filePath = Path.join('./src/__tests__/fixtures', username, repository, path);
     if (fs.existsSync(filePath)) {
       return fs.readFileSync(filePath).toString();
     }
