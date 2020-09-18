@@ -1,7 +1,7 @@
 import * as books from '../core/books/books';
 import { isWhitespace, countOccurrences } from './text-handling-functions'
 import checkTextField from './field-text-check';
-import checkFileContents from './file-text-check';
+import checkTextfileContents from './file-text-check';
 import { runUsfmJsCheck } from './usfm-js-check';
 import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
 import { ourParseInt } from './utilities';
@@ -76,7 +76,7 @@ const EXPECTED_BIBLE_BOOK_MARKERS = ['h', 'toc1', 'toc2', 'toc3'];
 const EXPECTED_PERIPHERAL_BOOK_MARKERS = ['periph'];
 
 
-function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheckingOptions) {
+function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
     bookID is a three-character UPPERCASE USFM book identifier.
@@ -85,7 +85,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
 
      Returns a result object containing a successList and a noticeList
      */
-    // console.log(`checkUSFMText(${bookID}, ${givenText.length.toLocaleString()} chars, '${location}')…`);
+    // console.log(`checkUSFMText(${languageCode}, ${bookID}, ${givenText.length.toLocaleString()} chars, '${givenLocation}', ${JSON.stringify(optionalCheckingOptions)})…`);
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
@@ -396,7 +396,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
         console.assert(fileText !== undefined, "cUSFM ourBasicFileChecks: 'fileText' parameter should be defined");
         console.assert(typeof fileText === 'string', `cUSFM ourBasicFileChecks: 'fileText' parameter should be a string not a '${typeof fileText}'`);
 
-        const resultObject = checkFileContents(filename, fileText, fileLocation, optionalCheckingOptions);
+        const resultObject = checkTextfileContents(languageCode, filename, fileText, fileLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field

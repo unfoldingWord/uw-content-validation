@@ -1,8 +1,8 @@
-import { getFile } from '../core/getApi';
+import { getFileCached } from '../core/getApi';
 // import { consoleLogObject } from '../core/utilities';
 
 
-// const TA_REFERENCE_VALIDATOR_VERSION_STRING = '0.2.1';
+// const TA_REFERENCE_VALIDATOR_VERSION_STRING = '0.2.2';
 
 // const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -26,10 +26,11 @@ async function checkTAReference(fieldName, fieldText, givenLocation, optionalChe
     console.assert(givenLocation !== undefined, "checkTAReference: 'fieldText' parameter should be defined");
     console.assert(typeof givenLocation === 'string', `checkTAReference: 'fieldText' parameter should be a string not a '${typeof givenLocation}'`);
     console.assert(fieldName === 'SupportReference', `Unexpected checkTAReference fieldName='${fieldName}'`); // so far
+    console.assert(givenLocation.indexOf(fieldName) < 0, `checkTAReference: 'givenLocation' parameter should be not contain fieldName=${fieldName}`);
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
-    if (fieldName) ourLocation = ` in ${fieldName}${ourLocation}`;
+    // if (fieldName) ourLocation = ` in ${fieldName}${ourLocation}`;
 
     const ctarResult = { noticeList: [] };
 
@@ -92,8 +93,8 @@ async function checkTAReference(fieldName, fieldText, givenLocation, optionalChe
     // console.log(`Need to check against ${taRepoName}`);
     let taFileContent; // Not really used here -- just to show that we got something valid
     try {
-        const getFile_ = (optionalCheckingOptions && optionalCheckingOptions.getFile) ? optionalCheckingOptions.getFile : getFile;
-        taFileContent = await getFile_({ username, repository: taRepoName, path: filepath, branch });
+        const getFileCached_ = (optionalCheckingOptions && optionalCheckingOptions.getFileCached) ? optionalCheckingOptions.getFileCached : getFileCached;
+        taFileContent = await getFileCached_({ username, repository: taRepoName, path: filepath, branch });
         // console.log("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
     } catch (trcGCerror) {
         console.log("ERROR: Failed to load", username, taRepoName, filepath, branch, trcGCerror.message);

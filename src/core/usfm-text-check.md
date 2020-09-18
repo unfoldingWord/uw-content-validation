@@ -181,7 +181,7 @@ const textB = `\\id GEN Bad USFM test
 const chosenText = textH;
 
 // Second (unused) parameter is filename
-const rawResults = checkUSFMText('GEN', '', chosenText, 'that was supplied');
+const rawResults = checkUSFMText('en', 'GEN', '', chosenText, 'that was supplied');
 if (!rawResults.successList || !rawResults.successList.length)
     rawResults.successList = ["Done USFM text checks"];
 

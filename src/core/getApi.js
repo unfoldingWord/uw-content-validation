@@ -3,6 +3,7 @@ import Path from 'path';
 import localforage from 'localforage';
 import { setup } from 'axios-cache-adapter';
 import JSZip from 'jszip';
+import * as books from './books';
 // import { consoleLogObject } from '../core/utilities';
 
 
@@ -51,9 +52,10 @@ let cachedUnzippedFiles = {};
  * @param {String} branch
  * @return {Promise<*>}
  */
+// This is the function that we call the most from the outside
 export async function getFileCached({ username, repository, path, branch }) {
-  const filePath = Path.join(repository, path, branch);
   // console.log(`getFileCached(${username}, ${repository}, ${path}, ${branch})…`);
+  const filePath = Path.join(repository, path, branch);
   if (cachedUnzippedFiles[filePath]) {
     // console.log(`in cache - ${filePath}`);
     return cachedUnzippedFiles[filePath];
@@ -82,57 +84,67 @@ export async function clearCaches() {
 }
 
 
-/*
-const resourceRepositories = ({languageId}) => {
-  return {
-    obs: languageId + '_obs',
-    'obs-tn': languageId + '_obs-tn',
-    'obs-tq': languageId + '_obs-tq',
-    'obs-sn': languageId + '_obs-sn',
-    'obs-sq': languageId + '_obs-sq',
-    ult: languageId + '_ult',
-    ust: languageId + '_ust',
-    irv: languageId + '_irv',
-    ulb: languageId + '_ulb',
-    udb: languageId + '_udb',
-    tn: languageId + '_tn',
-    ta: languageId + '_ta',
-    tw: languageId + '_tw',
-    ugnt: 'el-x-koine_ugnt',
-    uhb: 'hbo_uhb',
-    ugl: languageId + '_ugl',
-    uhal: languageId + '_uhal',
-  };
-};
-*/
-
-/*
-async function fetchResourceManifests({username, languageId}) {
-  let manifests = {};
-  const _resourceRepositories = resourceRepositories({languageId});
-  const resourceIds = Object.keys(_resourceRepositories);
-  const promises = resourceIds.map(resourceId => {
-    const repository = _resourceRepositories[resourceId];
-    const _username = ['ugnt','uhb'].includes(resourceId) ? 'unfoldingword' : username;
-    return fetchManifest({username: _username, repository})
-  });
-  const manifestArray = await Promise.all(promises);
-  resourceIds.forEach((resourceId, index) => {
-    manifests[resourceId] = manifestArray[index];
-  });
-  return manifests;
-};
+export function getRepoName(languageCode, repoCode) {
+  /**
+  * @description - Creates and returns a Door43 repoName string
+  * @param {String} languageCode - the language code, e.g., 'en'
+  * @param {String} repoCode - the repo code, e.g., 'TQ'
+  * @return {String} - the Door43 repoName string
+  */
+//    console.log(`getRepoName('${languageCode}', '${repoCode}')…`);
+ let repo_languageCode = languageCode;
+  if (repoCode === 'UHB') repo_languageCode = 'hbo';
+  else if (repoCode === 'UGNT') repo_languageCode = 'el-x-koine';
+  const repoName = `${repo_languageCode}_${repoCode.toLowerCase()}`;
+  return repoName;
+}
 
 
-async function fetchManifest({username, repository}) {
-  console.log(`fetchManifest(${username}, ${repository})…`);
-  const yaml = await getFile({username, repository, path: 'manifest.yaml'});
-  const json = (yaml) ? YAML.safeLoad(yaml) : null;
-  return json;
-};
-*/
+/**
+ * clears the caches of stale data and preloads repo zips, before running book package checks
+ *   this allows the calling app to clear cache and start loading repos in the backgound as soon as it starts up.  In this case it would not need to use await to wait for results.
+ *   TRICKY: note that even if the user is super fast in selecting books and clicking next, it will not hurt anything.  getFile() would just be fetching files directly from repo until the zips are loaded.  After that the files would be pulled out of zipStore.
+ * @param {string} username
+ * @param {string} languageCode
+ * @param {Array} bookIDList - one or more books that will be checked
+ * @param {string} branch - optional, defaults to master
+ * @param {Array} repos - optional, list of repos to pre-load
+ * @return {Promise<Boolean>} resolves to true if file loads are successful
+ */
+// TEMP: Removed TQ from default repos
+export async function clearCacheAndPreloadRepos(username, languageCode, bookIDList, branch = 'master', repos = ['TA', 'TW']) {
+  console.log(`clearCacheAndPreloadRepos(${username}, ${languageCode}, ${bookIDList}, ${branch}, ${repos})…`);
+  clearCaches(); // clear existing cached files so we know we have the latest
+  let success = true;
+  const repos_ = [...repos];
 
-// https://git.door43.org/unfoldingword/en_ult/raw/branch/master/manifest.yaml
+  if (bookIDList && Array.isArray(bookIDList)) {
+    // make sure we have the original languages needed
+    for (const bookID of bookIDList) {
+      if (bookID !== 'OBS') {
+        const whichTestament = books.testament(bookID); // returns 'old' or 'new'
+        const origLang = whichTestament === 'old' ? 'UHB' : 'UGNT';
+        if (!repos_.includes(origLang))
+          repos_.unshift(origLang);
+      }
+    }
+  }
+
+  // load all the repos need
+  for (const repoCode of repos_) {
+    const repoName = getRepoName(languageCode, repoCode);
+    console.log(`clearCacheAndPreloadRepos: preloading zip file for ${repoName}…`);
+    const zipFetchSucceeded = await fetchRepositoryZipFile({ username, repository: repoName, branch });
+    if (!zipFetchSucceeded) {
+      console.log(`clearCacheAndPreloadRepos: misfetched zip file for ${repoCode} repo with ${zipFetchSucceeded}`);
+      success = false;
+    }
+  }
+
+  return success;
+}
+
+
 async function fetchFileFromServer({ username, repository, path, branch = 'master' }) {
   // console.log(`fetchFileFromServer(${username}, ${repository}, ${path}, ${branch})…`);
   const repoExists = await repositoryExists({ username, repository });
@@ -151,20 +163,20 @@ async function fetchFileFromServer({ username, repository, path, branch = 'maste
       return data;
     }
     catch (fffsError) {
-      // console.log(`ERROR: fetchFileFromServer could not fetch ${path}: ${fffsError}`)
+      console.log(`ERROR: fetchFileFromServer could not fetch ${path}: ${fffsError}`)
       /* await */ failedStore.setItem(uri, fffsError.message);
       return null;
     }
   } else {
-    // console.log(`ERROR: fetchFileFromServer repo '${repository}' does not exist!`);
+    console.log(`ERROR: fetchFileFromServer repo '${repository}' does not exist!`);
     /* await */ failedStore.setItem(uri, `Repo '${repository}' does not exist!`);
     return null;
   }
 };
 
-// This is the function that we call the most from the outside
-export async function getFile({ username, repository, path, branch }) {
-  // console.log(`getFile(${username}, ${repository}, ${path}, ${branch})…`);
+
+async function getFile({ username, repository, path, branch }) {
+  console.log(`getFile(${username}, ${repository}, ${path}, ${branch})…`);
   let file;
   file = await getFileFromZip({ username, repository, path, branch });
   if (!file) {

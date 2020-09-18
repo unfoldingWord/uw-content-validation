@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // import { withStyles } from '@material-ui/core/styles';
 import * as books from '../../core/books/books';
-import { getRepoName, ourParseInt, fetchRepositoryZipFile } from '../../core';
+import { ourParseInt, clearCacheAndPreloadRepos } from '../../core';
 import checkBookPackages from '../book-packages-check/checkBookPackages';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
@@ -35,13 +35,11 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
 
     // Enter a string containing UPPERCASE USFM book identifiers separated only by commas
     //  and can also include OBS (for Open Bible Stories)
-    let originalLanguageRepoCode, bookIDs;
+    let bookIDs;
     if (testament.toUpperCase() === 'OT' || testament.toUpperCase() === 'OLD'){
-        originalLanguageRepoCode = 'UHB';
         bookIDs = 'GEN,EXO,LEV,NUM,DEU,JOS,JDG,RUT,1SA,2SA,1KI,2KI,1CH,2CH,EZR,NEH,EST,JOB,PSA,PRO,ECC,SNG,ISA,JER,LAM,EZK,DAN,HOS,JOL,AMO,OBA,JON,MIC,NAM,HAB,ZEP,HAG,ZEC,MAL';
     }
     else if (testament.toUpperCase() === 'NT' || testament.toUpperCase() === 'NEW') {
-        originalLanguageRepoCode = 'UGNT';
         bookIDs = 'MAT,MRK,LUK,JHN,ACT,ROM,1CO,2CO,GAL,EPH,PHP,COL,1TH,2TH,1TI,2TI,TIT,PHM,HEB,JAS,1PE,2PE,1JN,2JN,3JN,JUD,REV';
     }
     if (includeOBS.toUpperCase() === 'Y' || includeOBS.toUpperCase() === 'YES')
@@ -73,18 +71,25 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         // console.log("Started BookPackagesCheck.unnamedFunction()");
 
         // Preload the reference repos
-        let preloadCount = 1;
-        // TEMP: Removed TQ
-        const repoCodeList = [originalLanguageRepoCode, 'TA','TW', 'ULT','UST','TN'];
-        for (const repoCode of repoCodeList) {
-        setResultValue(<p style={{ color: 'magenta' }}>Preloading <b>{repoCode}</b> repo ({preloadCount}/{repoCodeList.length}) ready for {username} {languageCode} all book packages check…</p>);
-            const repoName = getRepoName(languageCode, repoCode);
-            console.log(`Preloading zip file for ${repoName}…`);
-            const zipFetchSucceeded = await fetchRepositoryZipFile({ username, repository: repoName, branch });
-            if (!zipFetchSucceeded)
-                console.log(`AllBookPackagesCheck: misfetched ${repoCode} zip file for repo with ${zipFetchSucceeded}`);
-            preloadCount += 1;
-          }
+        // let preloadCount = 1;
+        // // TEMP: Removed TQ
+        // const repoCodeList = [originalLanguageRepoCode, 'TA','TW', 'ULT','UST','TN'];
+        // for (const repoCode of repoCodeList) {
+        // setResultValue(<p style={{ color: 'magenta' }}>Preloading <b>{repoCode}</b> repo ({preloadCount}/{repoCodeList.length}) ready for {username} {languageCode} all book packages check…</p>);
+        //     const repoName = getRepoName(languageCode, repoCode);
+        //     console.log(`AllBookPackagesCheck: preloading zip file for ${repoName}…`);
+        //     const zipFetchSucceeded = await fetchRepositoryZipFile({ username, repository: repoName, branch });
+        //     if (!zipFetchSucceeded)
+        //         console.log(`AllBookPackagesCheck: misfetched ${repoCode} zip file for repo with ${zipFetchSucceeded}`);
+        //     preloadCount += 1;
+        //   }
+
+        // This call is not needed, but makes sure you don't have stale data that has been cached
+        setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for all book packages check…</p>);
+        const successFlag = await clearCacheAndPreloadRepos(username, languageCode, bookIDList, branch, ['TA','TW', 'ULT','UST','TN']);
+        if (!successFlag)
+            console.log(`AllBookPackagesCheck error: Failed to pre-load all repos`)
+
 
       // Display our "waiting" message
       setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookIDList.join(', ')}</b> book packages…</p>);
@@ -127,25 +132,25 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         // console.log("Here now in rendering bit!");
 
         function renderSummary() {
-          return (<>
+          return (<div>
             <p>Checked <b>{username} {languageCode} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
             <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount===1?'':'s'} from {username} {processedResults.checkedRepoNames.join(', ')}
               <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>
-            <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} />.</p>
+            <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCBPsResults.noticeList.length===0?'no':rawCBPsResults.noticeList.length} notice{rawCBPsResults.noticeList.length===1?'':'s'}.</p>
             {/* <RenderRawResults results={rawCBPsResults} /> */}
-          </>);
+          </div>);
         }
 
         if (processedResults.errorList.length || processedResults.warningList.length)
           setResultValue(<>
-            <p>{renderSummary()}
-              {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</p>
+            <div>{renderSummary()}
+              {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
             <RenderSuccessesErrorsWarnings results={processedResults} />
           </>);
         else // no errors or warnings
           setResultValue(<>
-            <p>{renderSummary()}
-              {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</p>
+            <div>{renderSummary()}
+              {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
             <RenderSuccessesErrorsWarnings results={processedResults} />
           </>);
       } else if (displayType === 'SevereMediumLow') {

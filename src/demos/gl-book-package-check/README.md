@@ -1,12 +1,12 @@
-## Door43 Book Packages Check - Readme
+## Door43 Gateway Language Book Package Check - Readme
 
-The code below requests some info and then checks the given Bible books across several repos. This is convenient to see all these check results collected into one place.
+The code below requests some info and then checks the single specified Bible book in several repos. This is convenient to see all these check results collected into one place.
 
 See a list of valid book identifiers [here](http://ubsicap.github.io/usfm/identification/books.html), although only `GEN` to `REV` from that list are useful here.
 
 Note that `OBS` can also be entered here as a *pseudo book identifier* in order to check an **Open Bible Stories** repo.
 
-`Book Packages Check` calls `checkBookPackages()` which then calls `checkBookPackage()` for each given book identifier, which in turn calls `checkFileContents()` for the book file in each repo (or calls `checkRepo()` for **OBS**).
+`GL Book Packages Check` calls `checkBookPackage()` for each language and each given book identifier, which in turn calls `checkFileContents()` for the book file in each repo (or calls `checkRepo()` for **OBS**).
 
 **Warning**: Some book packages contain many files and/or very large files, and downloading them all and then checking them might slow down your browser -- maybe even causing pop-up messages asking to confirm that you want to keep waiting.
 
@@ -14,14 +14,14 @@ Note that `OBS` can also be entered here as a *pseudo book identifier* in order 
 **Note**: This demonstration uses cached values of files stored inside the local browser. This makes reruns of the checks much faster, but it won't notice if you have updated the files on Door43. If you want to clear the local caches, use the `Clear Cache` function.
 
 ```js
-import BookPackagesCheck from './BookPackagesCheck';
+import GlBookPackageCheck from './GlBookPackageCheck';
 
-<BookPackagesCheck
-  username='unfoldingWord'
-  languageCode='en'
-  // Enter a string containing UPPERCASE USFM book identifiers separated only by commas
-  //  and can also include OBS (for Open Bible Stories)
-  bookIDs='RUT,NEH,EST,OBA,JON,EPH,TIT,3JN,OBS'
+<GlBookPackageCheck
+  username='Door43-Catalog'
+  languageCode='hi'
+  // bookID can be a USFM bookID, e.g., 'GEN', 'MAT', '3JN'
+  //  and can also be 'OBS' (for Open Bible Stories)
+  bookID='TIT'
 
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'
@@ -29,7 +29,7 @@ import BookPackagesCheck from './BookPackagesCheck';
 
   // Specifying maximumSimilarMessages and extractLength is just to show off options
   //  -- those fields are not necessary (or normal) here
-  maximumSimilarMessages='4' // Default is 3 -- 0 means don't suppress
+  maximumSimilarMessages='2' // Default is 3 -- 0 means don't suppress
   // extractLength='13' // Default is 10
   />
 ```

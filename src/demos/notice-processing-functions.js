@@ -148,10 +148,10 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                     console.assert(thisLocation.indexOf(thisFieldName) < 0, `fieldName is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
             }
             if (thisLineNumber) {
-                // console.log("thisLineNumber", thisLineNumber);
-                // Note: lineNumber can occur in location, e.g., in 3 in '3JN' so have to take extra care not to give false alarms
                 console.assert(typeof thisLineNumber === 'number' && thisLineNumber > 0, `lineNumber '${thisLineNumber}' contains unexpected value in ${JSON.stringify(thisGivenNotice)}`);
-                if (thisLocation && (!thisGivenNotice.bookID || thisGivenNotice.bookID.indexOf(thisLineNumber + '') < 0))
+                // Note: lineNumber can occur in location, e.g., in 3 in '3JN' or 'Door43' so have to take extra care not to give false alarms
+                if (thisLocation && thisLineNumber > 4 && thisLineNumber!==43)
+                    // && (!thisGivenNotice.bookID || thisGivenNotice.bookID.indexOf(thisLineNumber + '') < 0)
                     console.assert(thisLocation.indexOf(thisLineNumber + '') < 0 && thisLocation.indexOf(thisLineNumber.toLocaleString()) < 0, `lineNumber might be repeated in location in ${JSON.stringify(thisGivenNotice)}`);
             }
             numberStore[thisPriority] = thisMsg;
