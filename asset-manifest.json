@@ -1,13 +1,13 @@
 {
   "files": {
-    "build/0.95081cfe.js": "/uw-content-validation/build/0.95081cfe.js",
-    "main.js": "/uw-content-validation/build/main.b90d8c99.js",
+    "build/0.dba67d1d.js": "/uw-content-validation/build/0.dba67d1d.js",
+    "main.js": "/uw-content-validation/build/main.f0c126a2.js",
     "runtime-main.js": "/uw-content-validation/build/bundle.105de5e2.js",
     "index.html": "/uw-content-validation/index.html"
   },
   "entrypoints": [
     "build/bundle.105de5e2.js",
-    "build/0.95081cfe.js",
-    "build/main.b90d8c99.js"
+    "build/0.dba67d1d.js",
+    "build/main.f0c126a2.js"
   ]
 }
