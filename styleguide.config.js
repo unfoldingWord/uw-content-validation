@@ -10,6 +10,18 @@ let sections = [
 		content: 'README.md',
 	},
 	{
+		name: 'GL Book Package Checker Demo',
+		components: () => {
+			const componentNames = [
+				'gl-book-package-check',
+			];
+			return componentNames.map(componentName => {
+				const filename = upperFirst(camelCase(componentName));
+				return path.resolve(__dirname, `src/demos/${componentName}`, `${filename}.js`)
+			});
+		}
+	},
+	{
 		name: 'All Book Packages Checker Demo',
 		components: () => {
 			const componentNames = [

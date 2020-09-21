@@ -38,13 +38,14 @@ const data = {
   //  (to demonstrate differing results)
   tableTextName : 'textG',
   tableText : textG,
+  languageCode : 'en',
   bookID : 'GEN',
   filename: 'dummyFilename',
   givenLocation : 'that was supplied',
 }
 
 function CheckTNTSVText(props) {
-  const { bookID, filename, tableText, tableTextName, givenLocation } = props.data;
+  const { languageCode, bookID, filename, tableText, tableTextName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
 
@@ -55,7 +56,7 @@ function CheckTNTSVText(props) {
     (async () => {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {tableTextName} <b>{bookID}</b>…</p>);
-      const rawResults = await checkTN_TSVText(bookID, filename, tableText, givenLocation);
+      const rawResults = await checkTN_TSVText(languageCode, bookID, filename, tableText, givenLocation);
       setResults(
         <div>
           <b>Check</b> {tableTextName}: "{tableText.substr(0,256)}…"<br/><br/>

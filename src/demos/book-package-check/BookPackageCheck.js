@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // import { withStyles } from '@material-ui/core/styles';
 import * as books from '../../core/books/books';
-import { ourParseInt, checkBookPackage, initBookPackageCheck } from '../../core';
+import { ourParseInt, checkBookPackage, clearCacheAndPreloadRepos } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
 // import { consoleLogObject } from '../../core/utilities';
@@ -57,12 +57,11 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
                 // Preload the reference repos
                 // RJH TODO: Doesn't the end user need control of this somehow???
                 // TEMP: Removed TQ
-                setResultValue(<p style={{ color: 'magenta' }}>Preloading TA/TW repos for {username} {languageCode} ready for <b>{bookID}</b> book package check…</p>);
+                setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for <b>{bookID}</b> book package check…</p>);
                 // This call is not needed, but makes sure you don't have stale data that has been cached
-                // eslint-disable-next-line react-hooks/exhaustive-deps
-                const successFlag = await initBookPackageCheck(username, languageCode, [bookID], branch = 'master');
+                const successFlag = await clearCacheAndPreloadRepos(username, languageCode, [bookID], branch);
                 if (!successFlag)
-                    console.log(`Failed to pre-load all repos`)
+                    console.log(`BookPackageCheck error: Failed to pre-load all repos`)
             }
 
             // Display our "waiting" message
@@ -81,7 +80,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             // console.log("Here with CBP rawCBPResults", typeof rawCBPResults);
             // Now do our final handling of the result -- we have some options available
             let processOptions = { // Uncomment any of these to test them
-                // 'maximumSimilarMessages': 3, // default is 2
+                // 'maximumSimilarMessages': 4, // default is 3 -- 0 means don't suppress
                 // 'errorPriorityLevel': 800, // default is 700
                 // 'cutoffPriorityLevel': 100, // default is 0
                 // 'sortBy': 'ByPriority', // default is 'AsFound'
@@ -98,13 +97,13 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             if (props.displayType) displayType = props.displayType;
 
             function renderSummary(processedResults) {
-                return (<>
+                return (<div>
                     <p>Checked <b>{username} {languageCode} {bookID}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
                     <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount === 1 ? '' : 's'} from {processedResults.checkedRepoNames.length} repo{processedResults.checkedRepoNames.length === 1 ? '' : 's'}: <b>{processedResults.checkedRepoNames.join(', ')}</b>
                         <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>
-                    <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} />.</p>
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCBPResults.noticeList.length===0?'no':rawCBPResults.noticeList.length} notice{rawCBPResults.noticeList.length===1?'':'s'}.</p>
                     {/* <RenderRawResults results={rawCBPResults} /> */}
-                </>);
+                </div>);
             }
 
             if (displayType === 'ErrorsWarnings') {

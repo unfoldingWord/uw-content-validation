@@ -1,7 +1,7 @@
 import * as books from '../core/books/books';
 import { isWhitespace, countOccurrences } from './text-handling-functions'
 import checkTextField from './field-text-check';
-import checkFileContents from './file-text-check';
+import checkTextfileContents from './file-text-check';
 import { runUsfmJsCheck } from './usfm-js-check';
 import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
 import { ourParseInt } from './utilities';
@@ -76,7 +76,7 @@ const EXPECTED_BIBLE_BOOK_MARKERS = ['h', 'toc1', 'toc2', 'toc3'];
 const EXPECTED_PERIPHERAL_BOOK_MARKERS = ['periph'];
 
 
-function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheckingOptions) {
+function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
     bookID is a three-character UPPERCASE USFM book identifier.
@@ -85,7 +85,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
 
      Returns a result object containing a successList and a noticeList
      */
-    // console.log(`checkUSFMText(${bookID}, ${givenText.length.toLocaleString()} chars, '${location}')…`);
+    // console.log(`checkUSFMText(${languageCode}, ${bookID}, ${givenText.length.toLocaleString()} chars, '${givenLocation}', ${JSON.stringify(optionalCheckingOptions)})…`);
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
@@ -163,7 +163,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
             const relaxedGrammarCheckResult = runBCSGrammarCheck('relaxed', fileText, filename, fileLocation);
             addSuccessMessage(`Checked USFM Grammar (relaxed mode) ${relaxedGrammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN'T validate)"}`);
             if (!relaxedGrammarCheckResult.isValidUSFM)
-                addNoticeCV8({priority: 644, message: "USFM3 Grammar Check (relaxed mode) doesn't pass either", location: fileLocation});
+                addNoticeCV8({ priority: 644, message: "USFM3 Grammar Check (relaxed mode) doesn't pass either", location: fileLocation });
         }
     }
     // end of ourRunBCSGrammarCheck function
@@ -219,13 +219,21 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
                                             return true;
                                         if (someSubSubSubobject['type'] === 'word' && someSubSubSubobject['text'].length > 2)
                                             return true;
-                                        if (someSubSubSubobject['type'] === 'milestone') gotDeep = true;
-                                        // console.assert(someSubSubSubobject['type'] !== 'milestone', `We need to add more depth levels to hasText() for ${chapterNumberString}:${verseNumberString}`);
+                                        if (someSubSubSubobject['type'] === 'milestone')
+                                            for (const someSubSubSubSubobject of someSubSubSubobject['children']) {
+                                                // console.log("someSubSubSubSubobject", JSON.stringify(someSubSubSubSubobject));
+                                                if (someSubSubSubSubobject['type'] === 'text' && someSubSubSubSubobject['text'].length > 5)
+                                                    return true;
+                                                if (someSubSubSubSubobject['type'] === 'word' && someSubSubSubSubobject['text'].length > 2)
+                                                    return true;
+                                                if (someSubSubSubSubobject['type'] === 'milestone') gotDeep = true;
+                                                // console.assert(someSubSubSubobject['type'] !== 'milestone', `We need to add more depth levels to hasText() for ${chapterNumberString}:${verseNumberString}`);
+                                            }
                                     }
                             }
                     }
             }
-            if (gotDeep) console.assert(false, `We need to add more depth levels to hasText() for ${chapterNumberString}:${verseNumberString}`);
+            if (gotDeep) console.assert(false, `We need to add more depth levels to hasText() for ${bookID} ${chapterNumberString}:${verseNumberString}`);
             // console.log(`hasText() for ${chapterNumberString}:${verseNumberString} returning false with ${typeof verseObjects} (${verseObjects.length}): ${JSON.stringify(verseObjects)}`);
             return false;
         }
@@ -296,7 +304,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
                         }
 
                         if (verseInt < 1 || verseInt > expectedVersesPerChapterList[chapterInt - 1])
-                            addNoticeCV8({priority: 868, message: "Verse number out of range", C: chapterNumberString, V: verseNumberString, extract: `${bookID} ${chapterNumberString}:${verseNumberString}`, location: CVlocation});
+                            addNoticeCV8({ priority: 868, message: "Verse number out of range", C: chapterNumberString, V: verseNumberString, extract: `${bookID} ${chapterNumberString}:${verseNumberString}`, location: CVlocation });
 
                         if (verseHasText)
                             discoveredVerseWithTextList.push(verseInt);
@@ -388,7 +396,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
         console.assert(fileText !== undefined, "cUSFM ourBasicFileChecks: 'fileText' parameter should be defined");
         console.assert(typeof fileText === 'string', `cUSFM ourBasicFileChecks: 'fileText' parameter should be a string not a '${typeof fileText}'`);
 
-        const resultObject = checkFileContents(filename, fileText, fileLocation, optionalCheckingOptions);
+        const resultObject = checkTextfileContents(languageCode, filename, fileText, fileLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -502,14 +510,14 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
         if (ALLOWED_LINE_START_MARKERS.indexOf(marker) >= 0 || marker === 'SPECIAL1') {
             if (rest && MARKERS_WITHOUT_CONTENT.indexOf(marker) >= 0)
                 if (isWhitespace(rest))
-                    addNoticeCV8({priority: 301, message: `Unexpected whitespace after \\${marker} marker`,C, V, lineNumber, characterIndex: marker.length, extract: rest, location: lineLocation});
-                else
-                    addNoticeCV8({priority: 401, message: `Unexpected content after \\${marker} marker`, C, V, lineNumber, characterIndex: marker.length, extract: rest, location: lineLocation});
-            else if (MARKERS_WITH_COMPULSORY_CONTENT.indexOf(marker) >= 0 && !rest)
-                addNoticeCV8({priority: 711, message: "Expected compulsory content",C, V, lineNumber, characterIndex: marker.length, location: ` after \\${marker} marker${lineLocation}`});
+                    addNoticeCV8({ priority: 301, message: `Unexpected whitespace after \\${marker} marker`, C, V, lineNumber, characterIndex: marker.length, extract: rest, location: lineLocation });
+                else if (rest !== 'ס') // in UHB NEH 3:20
+                    addNoticeCV8({ priority: 401, message: `Unexpected content after \\${marker} marker`, C, V, lineNumber, characterIndex: marker.length, extract: rest, location: lineLocation });
+                else if (MARKERS_WITH_COMPULSORY_CONTENT.indexOf(marker) >= 0 && !rest)
+                    addNoticeCV8({ priority: 711, message: "Expected compulsory content", C, V, lineNumber, characterIndex: marker.length, location: ` after \\${marker} marker${lineLocation}` });
         } else // it's not a recognised line marker
             // Lower priority of deprecated \s5 markers (compared to all other unknown markers)
-            addNoticeCV8({priority: marker === 's5' ? 111 : 809, message: `${marker === 's5' ? 'Deprecated' : 'Unexpected'} '\\${marker}' marker at start of line`,C, V, lineNumber, characterIndex: 1, location: lineLocation});
+            addNoticeCV8({ priority: marker === 's5' ? 111 : 809, message: `${marker === 's5' ? 'Deprecated' : 'Unexpected'} '\\${marker}' marker at start of line`, C, V, lineNumber, characterIndex: 1, location: lineLocation });
         if (rest) checkUSFMLineInternals(lineNumber, marker, rest, lineLocation);
     }
     // end of checkUSFMLineContents function
@@ -529,7 +537,7 @@ function checkUSFMText(bookID, filename, givenText, givenLocation, optionalCheck
         }
         catch {
             if (!books.isValidBookID(bookID)) // must not be in FRT, BAK, etc.
-                addNoticeCV8({priority: 903, message: "Bad function call: should be given a valid book abbreviation", extract: bookID, location: ` (not '${bookID}')${ourLocation}`});
+                addNoticeCV8({ priority: 903, message: "Bad function call: should be given a valid book abbreviation", extract: bookID, location: ` (not '${bookID}')${ourLocation}` });
         }
 
         function findStartMarker(C, V, lineNumber, USFMline) {

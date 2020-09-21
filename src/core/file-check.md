@@ -38,6 +38,7 @@ const sampleUSFM = `\\id GEN EN_ULT en_English_ltr unfoldingWord Literal Text Th
 `;
 
 const data = {
+  languageCode: 'en',
   filename: 'sample_GEN.usfm',
   fileContent : sampleUSFM,
   givenLocation : 'that was supplied',
@@ -45,7 +46,7 @@ const data = {
 }
 
 function CheckFileContents(props) {
-  const { filename, fileContent, givenLocation, checkingOptions } = props.data;
+  const { languageCode, filename, fileContent, givenLocation, checkingOptions } = props.data;
 
   const [results, setResults] = useState(null);
 
@@ -56,7 +57,7 @@ function CheckFileContents(props) {
     (async () => {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {filename}…</p>);
-      const rawResults = await checkFileContents(filename, fileContent, givenLocation, checkingOptions);
+      const rawResults = await checkFileContents(languageCode, filename, fileContent, givenLocation, checkingOptions);
       setResults(
         <div>
           <b>Checked</b> {filename}: "{fileContent.substr(0,256)}…"<br/><br/>

@@ -41,12 +41,13 @@ const data = {
   //  (to demonstrate differing results)
   tableLineName : 'lineA9',
   tableLine : lineA9,
+  languageCode : 'en',
   bookID : 'GEN', C:'1', V:'2',
   givenLocation : 'that was supplied',
 }
 
 function CheckTNTSVRow(props) {
-  const { bookID, C, V, tableLine, tableLineName, givenLocation } = props.data;
+  const { languageCode, bookID, C, V, tableLine, tableLineName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
 
@@ -57,7 +58,7 @@ function CheckTNTSVRow(props) {
     (async () => {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {tableLineName} <b>{bookID}</b>…</p>);
-      const rawResults = await checkTN_TSVDataRow(tableLine, bookID, C, V, givenLocation);
+      const rawResults = await checkTN_TSVDataRow(languageCode, tableLine, bookID, C, V, givenLocation);
       setResults(
         <div>
           <b>Check</b> {tableLineName}: "{tableLine.substr(0,256)}…"<br/><br/>

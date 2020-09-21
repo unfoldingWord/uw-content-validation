@@ -1,7 +1,5 @@
-// import React from 'react';
 import * as books  from '../../core/books/books';
 import { checkBookPackage } from '../../core';
-// import { getFile } from '../../core/getApi';
 // import { consoleLogObject } from '../../core/utilities';
 
 //const VALIDATOR_VERSION_STRING = '0.2.1';
@@ -95,9 +93,6 @@ async function checkBookPackages(username, languageCode, bookIDList, setResultVa
         checkedRepoNames = new Set([...checkedRepoNames, ...cbpResultObject.checkedRepoNames]);
 
         // addSuccessMessage(`${checkedFileCount.toLocaleString()}/ Checked ${bookID} book package`);
-
-        // Update our "waiting" message {checkedFileCount==1?'':'s'}
-        // setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookIDList}</b> book package: checked <b>{checkedFileCount.toLocaleString()}</b>/5 repos…</p>);
     }
 
     // Add some extra fields to our checkFileResult object
