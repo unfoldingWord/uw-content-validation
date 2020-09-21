@@ -1,6 +1,6 @@
 import React from 'react';
 import * as books from './books';
-import { getRepoName, getFilelistFromZip, getFile, getFileCached, fetchRepositoryZipFile, clearCaches } from './getApi';
+import { getRepoName, getFilelistFromZip, getFileCached, fetchRepositoryZipFile } from './getApi';
 import checkUSFMText from './usfm-text-check';
 import checkMarkdownText from './markdown-text-check';
 import checkPlainText from './plain-text-check';

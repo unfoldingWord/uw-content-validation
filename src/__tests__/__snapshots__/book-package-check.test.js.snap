@@ -55,6 +55,80 @@ Object {
 }
 `;
 
+exports[`checkBookPackage() tit should fail on missing repo 1`] = `
+Object {
+  "checkedFilenames": Array [
+    "57-TIT.usfm",
+    "57-TIT.usfm",
+    "en_tn_57-TIT.tsv",
+  ],
+  "checkedRepoNames": Array [
+    "UGNT",
+    "UST",
+    "TN",
+  ],
+  "noticeList": Array [
+    Object {
+      "bookID": "tit",
+      "extra": "ULT",
+      "filename": "57-TIT.usfm",
+      "location": " in ULT in en tit book package from unfoldingWord master branch: Simulated error - Could not find src/__tests__/fixtures/unfoldingWord/en_ult/57-TIT.usfm",
+      "message": "Failed to load",
+      "priority": 996,
+      "repoName": "en_ult",
+    },
+  ],
+  "successList": Array [
+    "Checked UGNT file: 57-TIT.usfm",
+    "Checked UST file: 57-TIT.usfm",
+    "Checked TN file: en_tn_57-TIT.tsv",
+  ],
+}
+`;
+
+exports[`checkBookPackage() tit should fail on unsupported language 1`] = `
+Object {
+  "checkedFilenames": Array [
+    "57-TIT.usfm",
+  ],
+  "checkedRepoNames": Array [
+    "UGNT",
+  ],
+  "noticeList": Array [
+    Object {
+      "bookID": "tit",
+      "extra": "GLT",
+      "filename": "57-TIT.usfm",
+      "location": " in GLT in zzz tit book package from unfoldingWord master branch: Could not find src/__tests__/fixtures/unfoldingWord/zzz_glt/57-TIT.usfm",
+      "message": "Failed to load",
+      "priority": 996,
+      "repoName": "zzz_glt",
+    },
+    Object {
+      "bookID": "tit",
+      "extra": "GST",
+      "filename": "57-TIT.usfm",
+      "location": " in GST in zzz tit book package from unfoldingWord master branch: Could not find src/__tests__/fixtures/unfoldingWord/zzz_gst/57-TIT.usfm",
+      "message": "Failed to load",
+      "priority": 996,
+      "repoName": "zzz_gst",
+    },
+    Object {
+      "bookID": "tit",
+      "extra": "TN",
+      "filename": "zzz_tn_57-TIT.tsv",
+      "location": " in TN in zzz tit book package from unfoldingWord master branch: Could not find src/__tests__/fixtures/unfoldingWord/zzz_tn/zzz_tn_57-TIT.tsv",
+      "message": "Failed to load",
+      "priority": 996,
+      "repoName": "zzz_tn",
+    },
+  ],
+  "successList": Array [
+    "Checked UGNT file: 57-TIT.usfm",
+  ],
+}
+`;
+
 exports[`checkBookPackage() tit should pass 1`] = `
 Object {
   "checkedFilenames": Array [
