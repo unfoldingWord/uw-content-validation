@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`checkBookPackage() rut should pass 1`] = `
+exports[`checkBookPackage() -  rut should pass 1`] = `
 Object {
   "checkedFilenames": Array [
     "08-RUT.usfm",
@@ -55,7 +55,7 @@ Object {
 }
 `;
 
-exports[`checkBookPackage() tit should fail on missing repo 1`] = `
+exports[`checkBookPackage() -  tit should fail on missing repo 1`] = `
 Object {
   "checkedFilenames": Array [
     "57-TIT.usfm",
@@ -86,7 +86,7 @@ Object {
 }
 `;
 
-exports[`checkBookPackage() tit should fail on unsupported language 1`] = `
+exports[`checkBookPackage() -  tit should fail on unsupported language 1`] = `
 Object {
   "checkedFilenames": Array [
     "57-TIT.usfm",
@@ -129,7 +129,7 @@ Object {
 }
 `;
 
-exports[`checkBookPackage() tit should pass 1`] = `
+exports[`checkBookPackage() -  tit should pass 1`] = `
 Object {
   "checkedFilenames": Array [
     "57-TIT.usfm",

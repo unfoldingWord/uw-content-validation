@@ -1,22 +1,34 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`checkTN_TSVDataRow() empty line should fail 1`] = `
+exports[`checkTN_TSVDataRow() -  Occurrence Note tests -  should find bad ellipse 1`] = `
 Object {
   "noticeList": Array [
     Object {
       "C": "1",
       "V": "2",
       "bookID": "GEN",
-      "extract": "Found 1 field",
       "location": " that was supplied",
-      "message": "Found wrong number of TSV fields (expected 9)",
-      "priority": 861,
+      "message": "Missing OrigQuote field",
+      "priority": 919,
+      "rowID": "w3r5",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": 11,
+      "extract": "…lipse...",
+      "fieldName": "GLQuote",
+      "location": " that was supplied",
+      "message": "Unexpected doubled . characters",
+      "priority": 177,
+      "rowID": "w3r5",
     },
   ],
 }
 `;
 
-exports[`checkTN_TSVDataRow() invalid Original Language 1`] = `
+exports[`checkTN_TSVDataRow() -  Original Quote tests -  invalid Original Language 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -35,7 +47,90 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() should fail invalid first link 1`] = `
+exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail to find OrigLang Quote 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "details": "",
+      "extract": "וְ⁠חֹ֖שֶךְ",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Unable to find original language quote in verse text",
+      "priority": 916,
+      "rowID": "d7qw",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  Original Quote tests -  should find missing Original Quote 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "location": " that was supplied",
+      "message": "Missing OrigQuote field",
+      "priority": 919,
+      "rowID": "d7qw",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  TSV format tests -  empty line should fail 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "extract": "Found 1 field",
+      "location": " that was supplied",
+      "message": "Found wrong number of TSV fields (expected 9)",
+      "priority": 861,
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  TSV format tests -  should fail not TSV 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "extract": "Found 1 field",
+      "location": " that was supplied",
+      "message": "Found wrong number of TSV fields (expected 9)",
+      "priority": 861,
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  TSV format tests -  should find wrong row count 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "extract": "Found 8 fields",
+      "location": " that was supplied",
+      "message": "Found wrong number of TSV fields (expected 9)",
+      "priority": 861,
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  link tests -  should fail invalid first link 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -64,7 +159,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() should fail invalid second link 1`] = `
+exports[`checkTN_TSVDataRow() -  link tests -  should fail invalid second link 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -93,54 +188,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() should fail to find OrigLang Quote 1`] = `
-Object {
-  "noticeList": Array [
-    Object {
-      "C": "1",
-      "V": "2",
-      "bookID": "GEN",
-      "details": "",
-      "extract": "וְ⁠חֹ֖שֶךְ",
-      "fieldName": "OrigQuote",
-      "location": " that was supplied",
-      "message": "Unable to find original language quote in verse text",
-      "priority": 916,
-      "rowID": "d7qw",
-    },
-  ],
-}
-`;
-
-exports[`checkTN_TSVDataRow() should find bad ellipse 1`] = `
-Object {
-  "noticeList": Array [
-    Object {
-      "C": "1",
-      "V": "2",
-      "bookID": "GEN",
-      "location": " that was supplied",
-      "message": "Missing OrigQuote field",
-      "priority": 919,
-      "rowID": "w3r5",
-    },
-    Object {
-      "C": "1",
-      "V": "2",
-      "bookID": "GEN",
-      "characterIndex": 11,
-      "extract": "…lipse...",
-      "fieldName": "GLQuote",
-      "location": " that was supplied",
-      "message": "Unexpected doubled . characters",
-      "priority": 177,
-      "rowID": "w3r5",
-    },
-  ],
-}
-`;
-
-exports[`checkTN_TSVDataRow() should find invalid Book ID, chapter number, ID, SupportReference, quotes, OccurrenceNote 1`] = `
+exports[`checkTN_TSVDataRow() -  should find invalid Book ID, chapter number, ID, SupportReference, quotes, OccurrenceNote 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -278,7 +326,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() should find invalid SupportReference and missing quotes 1`] = `
+exports[`checkTN_TSVDataRow() -  should find invalid SupportReference and missing quotes 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -316,7 +364,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() should find mismatched bookId 1`] = `
+exports[`checkTN_TSVDataRow() -  should find mismatched bookId 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -327,54 +375,6 @@ Object {
       "message": "Wrong 'EXO' book identifier",
       "priority": 978,
       "rowID": "d7qw",
-    },
-  ],
-}
-`;
-
-exports[`checkTN_TSVDataRow() should find missing Original Quote 1`] = `
-Object {
-  "noticeList": Array [
-    Object {
-      "C": "1",
-      "V": "2",
-      "bookID": "GEN",
-      "location": " that was supplied",
-      "message": "Missing OrigQuote field",
-      "priority": 919,
-      "rowID": "d7qw",
-    },
-  ],
-}
-`;
-
-exports[`checkTN_TSVDataRow() should find not TSV 1`] = `
-Object {
-  "noticeList": Array [
-    Object {
-      "C": "1",
-      "V": "2",
-      "bookID": "GEN",
-      "extract": "Found 1 field",
-      "location": " that was supplied",
-      "message": "Found wrong number of TSV fields (expected 9)",
-      "priority": 861,
-    },
-  ],
-}
-`;
-
-exports[`checkTN_TSVDataRow() should find wrong row count 1`] = `
-Object {
-  "noticeList": Array [
-    Object {
-      "C": "1",
-      "V": "2",
-      "bookID": "GEN",
-      "extract": "Found 8 fields",
-      "location": " that was supplied",
-      "message": "Found wrong number of TSV fields (expected 9)",
-      "priority": 861,
     },
   ],
 }

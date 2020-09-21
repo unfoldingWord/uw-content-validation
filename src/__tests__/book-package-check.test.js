@@ -23,7 +23,7 @@ const optionalCheckingOptions = {
   }
 }
 
-describe('checkBookPackage()', () => {
+describe('checkBookPackage() - ', () => {
   beforeEach(() => {
     testFiles = {}; // reset test files
   });
