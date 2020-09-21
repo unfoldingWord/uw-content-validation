@@ -1,6 +1,22 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`checkTN_TSVDataRow() -  Occurrence Note tests -  should find bad ellipse 1`] = `
+exports[`checkTN_TSVDataRow() -  BookID tests -  should find wrong book ID 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "location": " (expected 'GEN') that was supplied",
+      "message": "Wrong 'RUT' book identifier",
+      "priority": 978,
+      "rowID": "d7qw",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  GL Note tests -  should find bad ellipse 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -23,6 +39,43 @@ Object {
       "message": "Unexpected doubled . characters",
       "priority": 177,
       "rowID": "w3r5",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  Occurrence Note tests -  should find empty note 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "location": " that was supplied",
+      "message": "Missing OccurrenceNote field",
+      "priority": 274,
+      "rowID": "d7qw",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  Occurrence Note tests -  should find missing end quote 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": 9,
+      "extract": "… is a \\"com…",
+      "fieldName": "OccurrenceNote",
+      "filename": "OccurrenceNote",
+      "lineNumber": 1,
+      "location": " that was supplied",
+      "message": "Unexpected \\" character after space",
+      "priority": 191,
+      "rowID": "d7q3",
     },
   ],
 }
@@ -66,6 +119,182 @@ Object {
 }
 `;
 
+exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail with leading space 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": 0,
+      "extract": "␣וְ⁠חֹ֖שֶׁ…",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Unexpected leading space",
+      "priority": 106,
+      "rowID": "d7qw",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": 0,
+      "extract": "(ּ=D1468/H5bc) וְ⁠חֹ֖…",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Seems original language quote might not start at the beginning of a word",
+      "priority": 620,
+      "rowID": "d7qw",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail with leading word joiner 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "details": "quote which starts with 'word joiner'",
+      "extract": "",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Unable to find original language quote in verse text",
+      "priority": 916,
+      "rowID": "d7qw",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail with leading zero width joiner 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "details": "quote which starts with 'zero-width joiner'",
+      "extract": "",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Unable to find original language quote in verse text",
+      "priority": 916,
+      "rowID": "d7qw",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail with leading zero width non-joiner 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "details": "",
+      "extract": "‌וְ⁠ח…שֶׁךְ",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Unable to find original language quote in verse text",
+      "priority": 916,
+      "rowID": "d7qw",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail with trailing space 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": 11,
+      "extract": "…⁠חֹ֖שֶׁךְ␣",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Unexpected trailing space(s)",
+      "priority": 105,
+      "rowID": "d7qw",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": 12,
+      "extract": "…֖שֶׁךְ (ע=D1506/H5e2)",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Seems original language quote might not finish at the end of a word",
+      "priority": 621,
+      "rowID": "d7qw",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail with trailing word joiner 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "details": "quote which ends with 'word joiner'",
+      "extract": "…",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Unable to find original language quote in verse text",
+      "priority": 916,
+      "rowID": "d7qw",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail with trailing zero width joiner 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "details": "quote which ends with 'zero-width joiner'",
+      "extract": "…",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Unable to find original language quote in verse text",
+      "priority": 916,
+      "rowID": "d7qw",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail with trailing zero width non-joiner 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "details": "",
+      "extract": "וְ⁠חֹ…ֶׁךְ‌",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Unable to find original language quote in verse text",
+      "priority": 916,
+      "rowID": "d7qw",
+    },
+  ],
+}
+`;
+
 exports[`checkTN_TSVDataRow() -  Original Quote tests -  should find missing Original Quote 1`] = `
 Object {
   "noticeList": Array [
@@ -77,6 +306,53 @@ Object {
       "message": "Missing OrigQuote field",
       "priority": 919,
       "rowID": "d7qw",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  SupportReference tests -  should find long SupportReference 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "location": " (not 5) that was supplied",
+      "message": "ID should be exactly 4 characters",
+      "priority": 778,
+      "rowID": "d7q33",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  SupportReference tests -  should find missing SupportReference 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "location": " that was supplied",
+      "message": "Missing ID field",
+      "priority": 779,
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  SupportReference tests -  should find short SupportReference 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "location": " (not 3) that was supplied",
+      "message": "ID should be exactly 4 characters",
+      "priority": 778,
+      "rowID": "d7q",
     },
   ],
 }
