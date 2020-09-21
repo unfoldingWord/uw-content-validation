@@ -77,7 +77,7 @@ async function checkTNLinks(bookID, fieldName, fieldText, givenLocation, optiona
     // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
     */
 
-  const getFileCached_ = (optionalCheckingOptions && optionalCheckingOptions.getFileCached) ? optionalCheckingOptions.getFileCached : getFileCached;
+  const getFile_ = (optionalCheckingOptions && optionalCheckingOptions.getFile) ? optionalCheckingOptions.getFile : getFileCached;
   let username;
     try {
         username = optionalCheckingOptions.taRepoUsername;
@@ -113,7 +113,7 @@ async function checkTNLinks(bookID, fieldName, fieldText, givenLocation, optiona
         // console.log(`Need to check against ${taRepoName}`);
         let taFileContent; // Not really used here -- just to show that we got something valid
         try {
-            taFileContent = await getFileCached_({ username, repository: taRepoName, path: filepath, branch });
+            taFileContent = await getFile_({ username, repository: taRepoName, path: filepath, branch });
             // console.log("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
         } catch (trcGCerror) {
             console.log("ERROR: Failed to load", username, taRepoName, filepath, branch, trcGCerror.message);
@@ -142,7 +142,7 @@ async function checkTNLinks(bookID, fieldName, fieldText, givenLocation, optiona
         // console.log(`Need to check against ${twRepoName}`);
         let taFileContent; // Not really used here -- just to show that we got something valid
         try {
-            taFileContent = await getFileCached_({ username, repository: twRepoName, path: filepath, branch });
+            taFileContent = await getFile_({ username, repository: twRepoName, path: filepath, branch });
             // console.log("Fetched fileContent for", twRepoName, filepath, typeof fileContent, fileContent.length);
         } catch (trcGCerror) {
             console.log("ERROR: Failed to load", username, twRepoName, filepath, branch, trcGCerror.message);
