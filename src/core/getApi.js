@@ -55,12 +55,13 @@ let cachedUnzippedFiles = {};
 // This is the function that we call the most from the outside
 export async function getFileCached({ username, repository, path, branch }) {
   // console.log(`getFileCached(${username}, ${repository}, ${path}, ${branch})…`);
-  const filePath = Path.join(repository, path, branch);
+  const filePath = Path.join(username, repository, path, branch);
   if (cachedUnzippedFiles[filePath]) {
     // console.log(`in cache - ${filePath}`);
     return cachedUnzippedFiles[filePath];
   }
 
+  // NOTE: getFile() below will look for a downloaded zip first
   let file = await getFile({ username, repository, path, branch });
 
   if (file) {
@@ -146,14 +147,14 @@ export async function clearCacheAndPreloadRepos(username, languageCode, bookIDLi
 
 
 async function fetchFileFromServer({ username, repository, path, branch = 'master' }) {
-  // console.log(`fetchFileFromServer(${username}, ${repository}, ${path}, ${branch})…`);
+  console.log(`fetchFileFromServer(${username}, ${repository}, ${path}, ${branch})…`);
   const repoExists = await repositoryExists({ username, repository });
   let uri;
   if (repoExists) {
     uri = Path.join(username, repository, 'raw/branch', branch, path);
     const failMessage = await failedStore.getItem(uri);
     if (failMessage) {
-      // console.log(`fetchFileFromServer failed previously for ${uri}: ${failMessage}`);
+      console.log(`fetchFileFromServer failed previously for ${uri}: ${failMessage}`);
       return null;
     }
     try {
@@ -176,7 +177,7 @@ async function fetchFileFromServer({ username, repository, path, branch = 'maste
 
 
 async function getFile({ username, repository, path, branch }) {
-  console.log(`getFile(${username}, ${repository}, ${path}, ${branch})…`);
+  // console.log(`getFile(${username}, ${repository}, ${path}, ${branch})…`);
   let file;
   file = await getFileFromZip({ username, repository, path, branch });
   if (!file) {
@@ -327,9 +328,9 @@ async function getFileFromZip({ username, repository, path, branch }) {
       file = await zip.file(zipPath).async('string');
       // console.log(`    Got zipBlob ${file.length} bytes`);
     }
-    // else console.log("  No zipBlob");
+    // else console.log(`  No zipBlob for getFileFromZip(${username}, ${repository}, ${path}, ${branch})`);
   } catch (error) {
-    console.log(`ERROR: getFileFromZip for ${username} ${repository} ${path} ${branch} got: ${error.message}`);
+    console.log(`ERROR: getFileFromZip(${username}, ${repository}, ${path}, ${branch}) got: ${error.message}`);
     file = null;
   }
   return file;

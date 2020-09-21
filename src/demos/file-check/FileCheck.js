@@ -28,9 +28,11 @@ function FileCheck(props) {
         // console.log("Started FileCheck.unnamedFunction()");
 
         // Display our "waiting" message
-        setResultValue(<p style={{ color: 'magenta' }}>Checking <b>{filename}</b>…</p>);
+        setResultValue(<p style={{ color: 'magenta' }}>Fetching {username} {repoName} <b>{filename}</b>…</p>);
         // console.log(`About to call getFileCached(${username}, ${repoName}, ${filename}, ${branch})…`);
         const fileContent = await getFileCached({ username: username, repository: repoName, path: filename, branch: branch });
+
+        setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {repoName} <b>{filename}</b>…</p>);
         let rawCFResults = { noticeList:[{priority:990, message:"Unable to load file", filename}], elapsedSeconds:0 };
         if (fileContent) {
           const languageCode = repoName.split('_')[0];
