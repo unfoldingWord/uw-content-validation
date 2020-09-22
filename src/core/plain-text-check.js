@@ -121,26 +121,32 @@ function checkPlainText(textName, plainText, givenLocation, optionalCheckingOpti
             checkPlainLineContents(n, line, ourLocation);
 
             // Check for nested brackets and quotes, etc.
-            for (let x = 0; x < line.length; x++) {
-                const char = line[x];
+            for (let characterIndex = 0; characterIndex < line.length; characterIndex++) {
+                const char = line[characterIndex];
                 let which;
                 if (openers.indexOf(char) >= 0) {
                     // console.log(`Saving ${openMarkers.length} '${char}' ${n} ${x}`);
-                    openMarkers.push({ char, n, x });
+                    openMarkers.push({ char, n, x: characterIndex });
                 } else if ((which = closers.indexOf(char)) >= 0) {
                     // console.log(`Found '${char}' ${n} ${x}`);
                     // console.log(`Which: ${which} '${openers.charAt(which)}'`)
-                    const [lastEntry] = openMarkers.slice(-1);
-                    // console.log(`  Recovered lastEntry=${JSON.stringify(lastEntry)}`);
-                    // console.log(`  Comparing found '${char}' with (${which}) '${openers.charAt(which)}' from '${lastEntry.char}'`);
-                    if (lastEntry.char === openers.charAt(which)) {
-                        // console.log(`  Matched '${char}' with  '${openers.charAt(which)}' ${n} ${x}`);
-                        openMarkers.pop();
-                    } else {
-                        const extract = (x > halfLength ? '…' : '') + line.substring(x - halfLength, x + halfLengthPlus).replace(/ /g, '␣') + (x + halfLengthPlus < line.length ? '…' : '')
-                        const details = `'${openMarkers[which]}' opened on line ${lastEntry.n} character ${lastEntry.x + 1}`;
-                        addNotice({ priority: 777, message: "Mismatched characters", details, lineNumber: n, characterIndex: x, extract, location: ourLocation });
-                        console.log(`  ERROR: mismatched characters: ${details}`);
+                    if (openMarkers.length) {
+                        const [lastEntry] = openMarkers.slice(-1);
+                        // console.log(`  Recovered lastEntry=${JSON.stringify(lastEntry)}`);
+                        // console.log(`  Comparing found '${char}' with (${which}) '${openers.charAt(which)}' from '${lastEntry.char}'`);
+                        if (lastEntry.char === openers.charAt(which)) {
+                            // console.log(`  Matched '${char}' with  '${openers.charAt(which)}' ${n} ${x}`);
+                            openMarkers.pop();
+                        } else {
+                            const extract = (characterIndex > halfLength ? '…' : '') + line.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < line.length ? '…' : '')
+                            const details = `'${openMarkers[which]}' opened on line ${lastEntry.n} character ${lastEntry.x + 1}`;
+                            addNotice({ priority: 777, message: "Mismatched characters", details, lineNumber: n, characterIndex, extract, location: ourLocation });
+                            console.log(`  ERROR 777: mismatched characters: ${details}`);
+                        }
+                    } else { // Closed something without an opener
+                        const extract = (characterIndex > halfLength ? '…' : '') + line.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < line.length ? '…' : '')
+                        addNotice({ priority: 774, message: "Unexpected closing character", lineNumber: n, characterIndex, extract, location: ourLocation });
+                        console.log(`  ERROR 774: closed with nothing open: ${char}`);
                     }
                 }
 

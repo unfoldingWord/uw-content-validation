@@ -45,7 +45,7 @@ const Door43Api = setup({
 let cachedUnzippedFiles = {};
 
 /**
- * adds caching of uncompressed files, calls getFile() if file is not cached
+ * adds caching of uncompressed files, calls getFileFromZipOrServer() if file is not cached
  * @param {String} username
  * @param {String} repository
  * @param {String} path
@@ -61,8 +61,8 @@ export async function getFileCached({ username, repository, path, branch }) {
     return cachedUnzippedFiles[filePath];
   }
 
-  // NOTE: getFile() below will look for a downloaded zip first
-  let file = await getFile({ username, repository, path, branch });
+  // NOTE: getFileFromZipOrServer() below will look for a downloaded zip first
+  let file = await getFileFromZipOrServer({ username, repository, path, branch });
 
   if (file) {
     cachedUnzippedFiles[filePath] = file;
@@ -104,7 +104,7 @@ export function getRepoName(languageCode, repoCode) {
 /**
  * clears the caches of stale data and preloads repo zips, before running book package checks
  *   this allows the calling app to clear cache and start loading repos in the backgound as soon as it starts up.  In this case it would not need to use await to wait for results.
- *   TRICKY: note that even if the user is super fast in selecting books and clicking next, it will not hurt anything.  getFile() would just be fetching files directly from repo until the zips are loaded.  After that the files would be pulled out of zipStore.
+ *   TRICKY: note that even if the user is super fast in selecting books and clicking next, it will not hurt anything.  getFileFromZipOrServer() would just be fetching files directly from repo until the zips are loaded.  After that the files would be pulled out of zipStore.
  * @param {string} username
  * @param {string} languageCode
  * @param {Array} bookIDList - one or more books that will be checked
@@ -176,8 +176,8 @@ async function fetchFileFromServer({ username, repository, path, branch = 'maste
 };
 
 
-async function getFile({ username, repository, path, branch }) {
-  // console.log(`getFile(${username}, ${repository}, ${path}, ${branch})…`);
+async function getFileFromZipOrServer({ username, repository, path, branch }) {
+  // console.log(`getFileFromZipOrServer(${username}, ${repository}, ${path}, ${branch})…`);
   let file;
   file = await getFileFromZip({ username, repository, path, branch });
   if (!file) {

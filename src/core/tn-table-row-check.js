@@ -1,3 +1,4 @@
+import { isWhitespace } from './text-handling-functions'
 import * as books from './books/books';
 import checkTextField from './field-text-check';
 import checkMarkdownText from './markdown-text-check';
@@ -6,7 +7,7 @@ import checkTNLinks from './tn-links-check';
 import checkOriginalLanguageQuote from './quote-check';
 
 
-// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.4.2';
+// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.4.3';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -51,7 +52,7 @@ async function checkTN_TSVDataRow(languageCode, line, bookID, C, V, givenRowLoca
 
     let drResult = { noticeList: [] };
 
-    function addNotice6to9(noticeObject) {
+    function addNoticePartial(noticeObject) {
         /**
         * @description - adds a new notice entry, adding bookID,C,V to the given fields
         * @param {Number} priority - notice priority from 1 (lowest) to 999 (highest)
@@ -63,18 +64,18 @@ async function checkTN_TSVDataRow(languageCode, line, bookID, C, V, givenRowLoca
         * @param {String} location - description of where the issue is located
         */
         // console.log(`Annotation TSV Row Notice: (priority=${priority}) ${message}, ${characterIndex}, ${extract}, ${location}`);
-        console.assert(noticeObject.priority !== undefined, "checkTN_TSVDataRow addNotice6to9: 'priority' parameter should be defined");
-        console.assert(typeof noticeObject.priority === 'number', `checkTN_TSVDataRow addNotice6to9: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        console.assert(noticeObject.message !== undefined, "checkTN_TSVDataRow addNotice6to9: 'message' parameter should be defined");
-        console.assert(typeof noticeObject.message === 'string', `checkTN_TSVDataRow addNotice6to9: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // console.assert(lineNumber !== undefined, "checkTN_TSVDataRow addNotice6to9: 'lineNumber' parameter should be defined");
-        // console.assert(typeof lineNumber === 'number', `checkTN_TSVDataRow addNotice6to9: 'lineNumber' parameter should be a number not a '${typeof lineNumber}': ${lineNumber}`);
-        // console.assert(characterIndex !== undefined, "checkTN_TSVDataRow addNotice6to9: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `checkTN_TSVDataRow addNotice6to9: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // console.assert(extract !== undefined, "checkTN_TSVDataRow addNotice6to9: 'extract' parameter should be defined");
-        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `checkTN_TSVDataRow addNotice6to9: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
-        console.assert(noticeObject.location !== undefined, "checkTN_TSVDataRow addNotice6to9: 'location' parameter should be defined");
-        console.assert(typeof noticeObject.location === 'string', `checkTN_TSVDataRow addNotice6to9: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        console.assert(noticeObject.priority !== undefined, "checkTN_TSVDataRow addNoticePartial: 'priority' parameter should be defined");
+        console.assert(typeof noticeObject.priority === 'number', `checkTN_TSVDataRow addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        console.assert(noticeObject.message !== undefined, "checkTN_TSVDataRow addNoticePartial: 'message' parameter should be defined");
+        console.assert(typeof noticeObject.message === 'string', `checkTN_TSVDataRow addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+        // console.assert(lineNumber !== undefined, "checkTN_TSVDataRow addNoticePartial: 'lineNumber' parameter should be defined");
+        // console.assert(typeof lineNumber === 'number', `checkTN_TSVDataRow addNoticePartial: 'lineNumber' parameter should be a number not a '${typeof lineNumber}': ${lineNumber}`);
+        // console.assert(characterIndex !== undefined, "checkTN_TSVDataRow addNoticePartial: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `checkTN_TSVDataRow addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        // console.assert(extract !== undefined, "checkTN_TSVDataRow addNoticePartial: 'extract' parameter should be defined");
+        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `checkTN_TSVDataRow addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        console.assert(noticeObject.location !== undefined, "checkTN_TSVDataRow addNoticePartial: 'location' parameter should be defined");
+        console.assert(typeof noticeObject.location === 'string', `checkTN_TSVDataRow addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
         // Also uses the given bookID,C,V, parameters from the main function call
         drResult.noticeList.push({ ...noticeObject, bookID, C, V });
     }
@@ -113,7 +114,7 @@ async function checkTN_TSVDataRow(languageCode, line, bookID, C, V, givenRowLoca
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
         // result.noticeList = result.noticeList.concat(cmtResultObject.noticeList);
-        // If we need to put everything through addNotice6to9, e.g., for debugging or filtering
+        // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of cmtResultObject.noticeList) {
             // console.assert(Object.keys(noticeEntry).length === 5, `TL ourMarkdownTextChecks notice length=${Object.keys(noticeEntry).length}`);
@@ -122,7 +123,7 @@ async function checkTN_TSVDataRow(languageCode, line, bookID, C, V, givenRowLoca
             if (noticeEntry.priority !== 178 && noticeEntry.priority !== 179 // unexpected space after ellipse, ellipse after space
                 && !noticeEntry.message.startsWith("Unexpected … character after space") // 191
             )
-                addNotice6to9({ ...noticeEntry, rowID, fieldName });
+                addNoticePartial({ ...noticeEntry, rowID, fieldName });
         }
     }
     // end of ourMarkdownTextChecks function
@@ -158,11 +159,11 @@ async function checkTN_TSVDataRow(languageCode, line, bookID, C, V, givenRowLoca
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
         // result.noticeList = result.noticeList.concat(dbtcResultObject.noticeList);
-        // If we need to put everything through addNotice6to9, e.g., for debugging or filtering
+        // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of dbtcResultObject.noticeList) {
             // console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
-            addNotice6to9({ ...noticeEntry, rowID, fieldName });
+            addNoticePartial({ ...noticeEntry, rowID, fieldName });
         }
     }
     // end of ourCheckTextField function
@@ -186,11 +187,11 @@ async function checkTN_TSVDataRow(languageCode, line, bookID, C, V, givenRowLoca
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
         // result.noticeList = result.noticeList.concat(coqResultObject.noticeList);
-        // If we need to put everything through addNotice6to9, e.g., for debugging or filtering
+        // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of coqResultObject.noticeList) {
             // console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckTAReference notice length=${Object.keys(noticeEntry).length}`);
-            addNotice6to9({ ...noticeEntry, rowID, fieldName });
+            addNoticePartial({ ...noticeEntry, rowID, fieldName });
         }
     }
     // end of ourCheckTAReference function
@@ -216,11 +217,11 @@ async function checkTN_TSVDataRow(languageCode, line, bookID, C, V, givenRowLoca
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
         // result.noticeList = result.noticeList.concat(coqResultObject.noticeList);
-        // If we need to put everything through addNotice6to9, e.g., for debugging or filtering
+        // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of coqResultObject.noticeList) {
             // console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckTNOriginalLanguageQuote notice length=${Object.keys(noticeEntry).length}`);
-            addNotice6to9({ ...noticeEntry, rowID, fieldName });
+            addNoticePartial({ ...noticeEntry, rowID, fieldName });
         }
     }
     // end of ourCheckTNOriginalLanguageQuote function
@@ -243,11 +244,11 @@ async function checkTN_TSVDataRow(languageCode, line, bookID, C, V, givenRowLoca
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
         // result.noticeList = result.noticeList.concat(coqResultObject.noticeList);
-        // If we need to put everything through addNotice6to9, e.g., for debugging or filtering
+        // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of coqResultObject.noticeList) {
             // console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckTNLinks notice length=${Object.keys(noticeEntry).length}`);
-            addNotice6to9({ ...noticeEntry, rowID, fieldName });
+            addNoticePartial({ ...noticeEntry, rowID, fieldName });
         }
     }
     // end of ourCheckTNLinks function
@@ -276,7 +277,7 @@ async function checkTN_TSVDataRow(languageCode, line, bookID, C, V, givenRowLoca
     try {
         numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
     } catch (tlcNCerror) {
-        addNotice6to9({ priority: 979, message: "Invalid book identifier passed to checkTN_TSVDataRow", location: ` '${bookID}' in first parameter: ${tlcNCerror}` });
+        addNoticePartial({ priority: 979, message: "Invalid book identifier passed to checkTN_TSVDataRow", location: ` '${bookID}' in first parameter: ${tlcNCerror}` });
     }
     const haveGoodBookID = numChaptersThisBook !== undefined;
 
@@ -290,10 +291,10 @@ async function checkTN_TSVDataRow(languageCode, line, bookID, C, V, givenRowLoca
         // Check the fields one-by-one
         if (B.length) {
             if (B !== bookID)
-                addNotice6to9({ priority: 978, message: `Wrong '${B}' book identifier`, rowID, location: ` (expected '${bookID}')${ourRowLocation}` });
+                addNoticePartial({ priority: 978, message: `Wrong '${B}' book identifier`, rowID, location: ` (expected '${bookID}')${ourRowLocation}` });
         }
         else
-            addNotice6to9({ priority: 977, message: "Missing book identifier", characterIndex: 0, rowID, location: ourRowLocation });
+            addNoticePartial({ priority: 977, message: "Missing book identifier", characterIndex: 0, rowID, location: ourRowLocation });
 
         let numVersesThisChapter, haveGoodChapterNumber;
         if (C.length) {
@@ -301,12 +302,12 @@ async function checkTN_TSVDataRow(languageCode, line, bookID, C, V, givenRowLoca
             else if (/^\d+$/.test(C)) {
                 let intC = Number(C);
                 if (intC === 0) {
-                    addNotice6to9({ priority: 824, message: `Invalid zero chapter number`, extract: C, rowID, location: ourRowLocation });
+                    addNoticePartial({ priority: 824, message: `Invalid zero chapter number`, extract: C, rowID, location: ourRowLocation });
                     haveGoodChapterNumber = false;
                 }
                 // TODO: Does this next section need rewriting (see verse check below)???
                 else if (intC > numChaptersThisBook) {
-                    addNotice6to9({ priority: 823, message: `Invalid large chapter number`, extract: C, rowID, location: ourRowLocation });
+                    addNoticePartial({ priority: 823, message: `Invalid large chapter number`, extract: C, rowID, location: ourRowLocation });
                     haveGoodChapterNumber = false;
                 }
                 try {
@@ -314,51 +315,51 @@ async function checkTN_TSVDataRow(languageCode, line, bookID, C, V, givenRowLoca
                     haveGoodChapterNumber = true;
                 } catch (tlcNVerror) {
                     if (!haveGoodBookID)
-                        // addNotice6to9({priority:500, "Invalid chapter number", rowLocation);
+                        // addNoticePartial({priority:500, "Invalid chapter number", rowLocation);
                         // else
-                        addNotice6to9({ priority: 822, message: "Unable to check chapter number", rowID, location: ` '${C}'${ourRowLocation}` });
+                        addNoticePartial({ priority: 822, message: "Unable to check chapter number", rowID, location: ` '${C}'${ourRowLocation}` });
                     haveGoodChapterNumber = false;
                 }
             }
             else
-                addNotice6to9({ priority: 821, message: "Bad chapter number", rowID, location: ` '${C}' with${ourRowLocation}` });
+                addNoticePartial({ priority: 821, message: "Bad chapter number", rowID, location: ` '${C}' with${ourRowLocation}` });
         }
         else
-            addNotice6to9({ priority: 820, message: "Missing chapter number", rowID, location: ` ?:${V}${ourRowLocation}` });
+            addNoticePartial({ priority: 820, message: "Missing chapter number", rowID, location: ` ?:${V}${ourRowLocation}` });
 
         if (V.length) {
             if (V === 'intro') { }
             else if (/^\d+$/.test(V)) {
                 let intV = Number(V);
                 if (intV === 0)
-                    addNotice6to9({ priority: 814, message: `Invalid zero '${V}' verse number`, rowID, location: ourRowLocation });
+                    addNoticePartial({ priority: 814, message: `Invalid zero '${V}' verse number`, rowID, location: ourRowLocation });
                 else {
                     if (haveGoodChapterNumber) {
                         if (intV > numVersesThisChapter)
-                            addNotice6to9({ priority: 813, message: `Invalid large '${V}' verse number`, rowID, location: ` for chapter ${C}${ourRowLocation}` });
+                            addNoticePartial({ priority: 813, message: `Invalid large '${V}' verse number`, rowID, location: ` for chapter ${C}${ourRowLocation}` });
                     } else
-                        addNotice6to9({ priority: 812, message: "Unable to check verse number", rowID, location: ` '${V}'${ourRowLocation}` });
+                        addNoticePartial({ priority: 812, message: "Unable to check verse number", rowID, location: ` '${V}'${ourRowLocation}` });
                 }
             }
             else
-                addNotice6to9({ priority: 811, message: "Bad verse number", rowID, location: ` '${V}'${ourRowLocation}` });
+                addNoticePartial({ priority: 811, message: "Bad verse number", rowID, location: ` '${V}'${ourRowLocation}` });
         }
         else
-            addNotice6to9({ priority: 810, message: "Missing verse number", rowID, location: ` after ${C}:?${ourRowLocation}` });
+            addNoticePartial({ priority: 810, message: "Missing verse number", rowID, location: ` after ${C}:?${ourRowLocation}` });
 
         if (!rowID.length)
-            addNotice6to9({ priority: 779, message: "Missing ID field", location: ourRowLocation });
+            addNoticePartial({ priority: 779, message: "Missing ID field", location: ourRowLocation });
         else {
             if (rowID.length !== 4)
-                addNotice6to9({ priority: 778, message: "ID should be exactly 4 characters", rowID, location: ` (not ${rowID.length})${ourRowLocation}` });
+                addNoticePartial({ priority: 778, message: "ID should be exactly 4 characters", rowID, location: ` (not ${rowID.length})${ourRowLocation}` });
             else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(rowID[0]) < 0)
-                addNotice6to9({ priority: 176, message: "ID should start with a lowercase letter or digit", characterIndex: 0, rowID, location: ` (not '${rowID[0]}')${ourRowLocation}` });
+                addNoticePartial({ priority: 176, message: "ID should start with a lowercase letter or digit", characterIndex: 0, rowID, location: ` (not '${rowID[0]}')${ourRowLocation}` });
             else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(rowID[3]) < 0)
-                addNotice6to9({ priority: 175, message: "ID should end with a lowercase letter or digit", characterIndeX: 3, rowID, location: ` (not '${rowID[3]}')${ourRowLocation}` });
+                addNoticePartial({ priority: 175, message: "ID should end with a lowercase letter or digit", characterIndeX: 3, rowID, location: ` (not '${rowID[3]}')${ourRowLocation}` });
             else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(rowID[1]) < 0)
-                addNotice6to9({ priority: 174, message: "ID characters should only be lowercase letters, digits, or hypen", characterIndex: 1, rowID, location: ` (not '${rowID[1]}')${ourRowLocation}` });
+                addNoticePartial({ priority: 174, message: "ID characters should only be lowercase letters, digits, or hypen", characterIndex: 1, rowID, location: ` (not '${rowID[1]}')${ourRowLocation}` });
             else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(rowID[2]) < 0)
-                addNotice6to9({ priority: 173, message: "ID characters should only be lowercase letters, digits, or hypen", characterIndex: 2, rowID, location: ` (not '${rowID[2]}')${ourRowLocation}` });
+                addNoticePartial({ priority: 173, message: "ID characters should only be lowercase letters, digits, or hypen", characterIndex: 2, rowID, location: ` (not '${rowID[2]}')${ourRowLocation}` });
         }
 
         if (supportReference.length) { // need to check TN against TA
@@ -367,7 +368,7 @@ async function checkTN_TSVDataRow(languageCode, line, bookID, C, V, givenRowLoca
         }
         // // TODO: Check if this is really required????
         // else if (/^\d+$/.test(C) && /^\d+$/.test(V)) // C:V are both digits
-        //     addNotice6to9({ priority: 877, message: "Missing SupportReference field", fieldName: 'SupportReference', rowID, location: ourRowLocation });
+        //     addNoticePartial({ priority: 877, message: "Missing SupportReference field", fieldName: 'SupportReference', rowID, location: ourRowLocation });
 
         if (origQuote.length) { // need to check UTN against UHB and UGNT
             ourCheckTextField(rowID, 'OrigQuote', origQuote, false, ourRowLocation, optionalCheckingOptions);
@@ -375,19 +376,19 @@ async function checkTN_TSVDataRow(languageCode, line, bookID, C, V, givenRowLoca
         }
         else // TODO: Find more details about when these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             if (V !== 'intro' && occurrence !== '0')
-                addNotice6to9({ priority: 919, message: "Missing OrigQuote field", rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 919, message: "Missing OrigQuote field", rowID, location: ourRowLocation });
 
         if (occurrence.length) { // This should usually be a digit
             if (occurrence === '0') { // zero means that it doesn't occur
                 if (origQuote.length)
-                    addNotice6to9({ priority: 550, message: "Invalid zero occurrence field when we have an original quote", rowID, location: ourRowLocation });
+                    addNoticePartial({ priority: 550, message: "Invalid zero occurrence field when we have an original quote", rowID, location: ourRowLocation });
                 // if (V !== 'intro')
-                //     addNotice6to9({priority:500, message:"Invalid zero occurrence field", rowID, location:rowLocation);
+                //     addNoticePartial({priority:500, message:"Invalid zero occurrence field", rowID, location:rowLocation);
             }
             else if (occurrence === '-1') // TODO check the special conditions when this can occur???
                 ;
             else if ('12345'.indexOf(occurrence) < 0) // it's not one of these integers
-                addNotice6to9({ priority: 792, message: `Invalid '${occurrence}' occurrence field`, rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 792, message: `Invalid '${occurrence}' occurrence field`, rowID, location: ourRowLocation });
         }
 
         if (GLQuote.length) { // TODO: need to check UTN against ULT
@@ -396,17 +397,20 @@ async function checkTN_TSVDataRow(languageCode, line, bookID, C, V, givenRowLoca
         }
         // else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
         //     if (V !== 'intro')
-        //         addNotice6to9({ priority: 275, message: "Missing GLQuote field", rowID, location: ourRowLocation });
+        //         addNoticePartial({ priority: 275, message: "Missing GLQuote field", rowID, location: ourRowLocation });
 
-        if (occurrenceNote.length) {
-            ourMarkdownTextChecks(rowID, 'OccurrenceNote', occurrenceNote, true, ourRowLocation, optionalCheckingOptions);
-            await ourCheckTNLinks(rowID, 'OccurrenceNote', occurrenceNote, ourRowLocation, optionalCheckingOptions);
-        }
+        if (occurrenceNote.length)
+            if (isWhitespace(occurrenceNote))
+                addNoticePartial({ priority: 374, message: "OccurrenceNote field is only whitespace", rowID, location: ourRowLocation });
+            else { // More than just whitespace
+                ourMarkdownTextChecks(rowID, 'OccurrenceNote', occurrenceNote, true, ourRowLocation, optionalCheckingOptions);
+                await ourCheckTNLinks(rowID, 'OccurrenceNote', occurrenceNote, ourRowLocation, optionalCheckingOptions);
+            }
         else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
-            addNotice6to9({ priority: 274, message: "Missing OccurrenceNote field", rowID, location: ourRowLocation });
+            addNoticePartial({ priority: 274, message: "Missing OccurrenceNote field", rowID, location: ourRowLocation });
 
     } else
-        addNotice6to9({ priority: 861, message: `Found wrong number of TSV fields (expected ${NUM_EXPECTED_TN_TSV_FIELDS})`, extract: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, location: ourRowLocation });
+        addNoticePartial({ priority: 861, message: `Found wrong number of TSV fields (expected ${NUM_EXPECTED_TN_TSV_FIELDS})`, extract: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, location: ourRowLocation });
 
     // console.log(`  checkTN_TSVDataRow returning with ${drResult.noticeList.length.toLocaleString()} notice(s).`);
     // console.log("checkTN_TSVDataRow result is", JSON.stringify(drResult));

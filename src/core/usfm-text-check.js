@@ -7,7 +7,7 @@ import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
 import { ourParseInt } from './utilities';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.6.2';
+// const USFM_VALIDATOR_VERSION_STRING = '0.6.3';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -369,7 +369,7 @@ function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation,
         //  for this particular kind of text field
         for (const noticeEntry of dbtcResultObject.noticeList) {
             // console.log("Notice keys", JSON.stringify(Object.keys(noticeEntry)));
-            console.assert(Object.keys(noticeEntry).length >= 5, `USFM ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
+            console.assert(Object.keys(noticeEntry).length >= 4, `USFM ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
             if (!noticeEntry.message.startsWith("Mismatched () characters") // 663 Mismatched left/right chars -- suppress these misleading warnings coz open quote can occur in one verse and close in another
                 && !noticeEntry.message.startsWith("Mismatched [] characters")
                 && !noticeEntry.message.startsWith("Mismatched “” characters")
@@ -405,20 +405,19 @@ function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation,
 
         const resultObject = checkTextfileContents(languageCode, filename, fileText, fileLocation, optionalCheckingOptions);
 
-        // Choose only ONE of the following
-        // This is the fast way of append the results from this field
-        // result.noticeList = result.noticeList.concat(resultObject.noticeList);
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of resultObject.noticeList) {
-            console.assert(Object.keys(noticeEntry).length >= 5, `USFM ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
+            console.assert(Object.keys(noticeEntry).length >= 5, `USFM ourBasicFileChecks notice length=${Object.keys(noticeEntry).length}`);
             if (!noticeEntry.message.startsWith("Mismatched () characters") // 663 Mismatched left/right chars -- suppress these misleading warnings coz open quote can occur in one verse and close in another
                 && !noticeEntry.message.startsWith("Mismatched [] characters")
                 && !noticeEntry.message.startsWith("Mismatched “” characters")
                 && !noticeEntry.message.startsWith("Mismatched «» characters")
+                && (!noticeEntry.message.startsWith("Unexpected space after | character") || fileText.indexOf('zaln-s') < 0) // inside \zaln-s fields
                 && (!noticeEntry.message.startsWith("Unexpected | character after space") || fileText.indexOf('x-lemma') < 0) // inside \zaln-s fields
                 && (!noticeEntry.message.startsWith("Unexpected doubled , characters") || fileText.indexOf('x-morph') < 0) // inside \w fields
                 && (!noticeEntry.message.startsWith('Unexpected doubled " characters') || fileText.indexOf('x-morph') < 0) // inside \w fields
+                && (!noticeEntry.message.startsWith('Unexpected link') || fileText.indexOf('x-tw') < 0) // inside original language \w fields
             ) {
                 // const newNoticeObject = { priority:noticeEntry.priority, message:noticeEntry.message }
                 // if (C !== undefined && C.length) newNoticeObject.C = C;
@@ -437,6 +436,7 @@ function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation,
     function checkUSFMCharacterFields(filename, fileText, fileLocation) {
         // Check matched pairs
         for (const punctSet of [
+            // TODO: Why do we have these here -- should be using the constants at the top of the file!!!
             // Character formatting
             ['\\add ', '\\add*'], ['\\addpn ', '\\addpn*'],
             ['\\bd ', '\\bd*'], ['\\bdit ', '\\bdit*'],
@@ -515,8 +515,9 @@ function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation,
         // console.log(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
         // console.log(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}=${rest.length} chars, ${lineLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
 
-        // Remove any self-closed milestones
+        // Remove any self-closed milestones and internal \v markers
         let adjustedRest = rest.replaceAll('\\zaln-e\\*', '').replaceAll('\\ts\\*', '').replaceAll('\\k-e\\*', '')
+            .replaceAll('\\v ', '')
             .replace(/\\k-s[^\\]+\\\*/g, '');
 
         // Remove any simple character markers
@@ -528,7 +529,7 @@ function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation,
 
 
         let ixEnd;
-        if (marker === 'w') { // Remove first \w field (if marker == w)
+        if (marker === 'w') { // Handle first \w field (i.e., if marker==w) -- there may be more \w fields in rest
             const ixWordEnd = adjustedRest.indexOf('|');
             console.assert(ixWordEnd >= 0, `Why1 is w| = ${ixWordEnd}?`);
             ixEnd = adjustedRest.indexOf('\\w*');
@@ -545,7 +546,18 @@ function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation,
             if (ixEnd >= 0)
                 adjustedRest = adjustedRest.substring(ixEnd + 2, adjustedRest.length);
             else console.assert(false, `Why is k-s ixEnd = ${ixEnd}?`);
+        } else if (marker === 'f') { // Handle first footnote (if marker == f)
+            ixEnd = adjustedRest.indexOf('\\f*');
+            const startIndex = adjustedRest.startsWith('+ ') ? 2 : 0;
+            if (ixEnd >= 0)
+                adjustedRest = adjustedRest.substring(startIndex, ixEnd) + adjustedRest.substring(ixEnd + 3, adjustedRest.length);
+            else console.assert(false, `Why is k-s ixEnd = ${ixEnd}?`);
+            // console.log(`After removing f field: '${adjustedRest}' from '${rest}'`);
         }
+        else if (marker === 'va')
+            adjustedRest = adjustedRest.replace('\\va*', '');
+        else if (marker === 'ca')
+            adjustedRest = adjustedRest.replace('\\ca*', '');
 
         // Remove any other \zaln-s fields in the line
         // if (adjustedRest.indexOf('\\z') >= 0) console.log(`checkUSFMLineText here first at ${lineNumber} ${C}:${V} with ${marker}='${adjustedRest}'`);
@@ -598,20 +610,23 @@ function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation,
             if ((characterIndex = adjustedRest.indexOf('"')) >= 0) {
                 const extract = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
                 addNoticePartial({ priority: 776, message: 'Unexpected " straight quote character', lineNumber, C, V, extract, location: lineLocation });
-                console.log(`ERROR 776: in ${marker} '${adjustedRest}' from '${rest}'`);
+                // console.log(`ERROR 776: in ${marker} '${adjustedRest}' from '${rest}'`);
             }
             if ((characterIndex = adjustedRest.indexOf("'")) >= 0) {
                 const extract = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
                 addNoticePartial({ priority: 775, message: "Unexpected ' straight quote character", lineNumber, C, V, extract, location: lineLocation });
-                console.log(`ERROR 775: in ${marker} '${adjustedRest}' from '${rest}'`);
+                // console.log(`ERROR 775: in ${marker} '${adjustedRest}' from '${rest}'`);
             }
             if (adjustedRest.indexOf('\\') >= 0 || adjustedRest.indexOf('|') >= 0) {
-                console.log("A", adjustedRest.indexOf('\\'), "B", adjustedRest.indexOf('|'));
-                console.log(`checkUSFMLineText ${lineNumber} ${C}:${V} somehow ended up with ${marker}='${adjustedRest}'`);
+                // console.log(`checkUSFMLineText ${languageCode} ${filename} ${lineNumber} ${C}:${V} somehow ended up with ${marker}='${adjustedRest}'`);
+                characterIndex = adjustedRest.indexOf('\\');
+                if (characterIndex === -1) characterIndex = adjustedRest.indexOf('|');
+                const extract = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
+                addNoticePartial({ priority: 875, message: "Unexpected USFM field", lineNumber, C, V, extract, location: lineLocation });
             }
             if (adjustedRest !== rest) // Only re-check if line has changed (because original is checked in checkUSFMLineInternals())
                 // Note: false (below) is for allowedLinks flag
-                ourCheckTextField(lineNumber, C, V, `from \\${marker}`, adjustedRest, false, ` field ${lineLocation}`, optionalCheckingOptions);
+                ourCheckTextField(lineNumber, C, V, `from \\${marker}`, adjustedRest, false, ` TEXT ${lineLocation}`, optionalCheckingOptions);
         }
     }
     // end of checkUSFMLineText function
@@ -631,10 +646,10 @@ function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation,
 
         if (rest) checkUSFMLineText(lineNumber, C, V, marker, rest, lineLocation, optionalCheckingOptions);
 
-        const allowedLinks = (marker === 'w' || marker === 'k-s' || marker === 'SPECIAL1')
+        const allowedLinks = (marker === 'w' || marker === 'k-s' || marker === 'f' || marker === 'SPECIAL1')
             // (because we don't know what marker SPECIAL1 is, so default to "no false alarms")
             && rest.indexOf('x-tw') >= 0;
-        if (rest) ourCheckTextField(lineNumber, C, V, `\\${marker}`, rest, allowedLinks, ` field ${lineLocation}`, optionalCheckingOptions);
+        if (rest) ourCheckTextField(lineNumber, C, V, `\\${marker}`, rest, allowedLinks, ` INTERNALS ${lineLocation}`, optionalCheckingOptions);
     }
     // end of checkUSFMLineInternals function
 
@@ -785,7 +800,7 @@ function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation,
                     if (intSecondV <= intFirstV)
                         addNoticePartial({ priority: 769, C, V, message: "Verse bridge numbers not in ascending order", lineNumber: n, characterIndex: 3, extract: `${rest.substring(0, Math.max(9, extractLength))}${rest.length > extractLength ? '…' : ''} (${firstV} → ${secondV})`, location: ourLocation });
                     else if (firstV === lastV || (intFirstV > 0 && intFirstV !== lastIntV + 1))
-                        addNoticePartial({ priority: 765, C, V, message: "Bridged verse numbers didn't increment correctly", lineNumber: n, characterIndex: 3, extract: `${rest.substring(0, Math.max(9, extractLength))}${rest.length > extractLength ? '…' : ''} (${lastV} → ${firstV})`, location: ourLocation });
+                        addNoticePartial({ priority: 766, C, V, message: "Bridged verse numbers didn't increment correctly", lineNumber: n, characterIndex: 3, extract: `${rest.substring(0, Math.max(9, extractLength))}${rest.length > extractLength ? '…' : ''} (${lastV} → ${firstV})`, location: ourLocation });
                     lastV = secondV; lastIntV = intSecondV;
                 }
             } else if ((vIndex = rest.indexOf('\\v ')) >= 0) {

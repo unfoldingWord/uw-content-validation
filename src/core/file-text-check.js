@@ -1,6 +1,6 @@
 import checkPlainText from './plain-text-check';
 
-//const FILE_TEXT_VALIDATOR_VERSION_STRING = '0.2.1';
+//const FILE_TEXT_VALIDATOR_VERSION_STRING = '0.2.2';
 
 // const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -51,10 +51,8 @@ export function checkTextfileContents(languageCode, filename, fileText, optional
         function ourCheckPlainText(plainText, givenLocation, optionalCheckingOptions) {
         /**
         * @description - checks the given text field and processes the returned results
-        * @param {String} fieldName - name of the field being checked
-        * @param {String} fieldText - the actual text of the field being checked
-        * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
-        * @param {String} optionalFieldLocation - description of where the field is located
+        * @param {String} plainText - the actual text of the field being checked
+        * @param {String} givenLocation - description of where the field is located
         * @param {Object} optionalCheckingOptions - parameters that might affect the check
         */
         // Does basic checks for small errors like leading/trailing spaces, etc.
