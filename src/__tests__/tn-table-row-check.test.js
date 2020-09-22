@@ -188,37 +188,6 @@ describe('checkTN_TSVDataRow() - ', () => {
       expect(rawResults).toMatchSnapshot();
     });
 
-    // TODO re-enable test when fixed
-    it.skip('should pass valid quote', async() => {
-      const chosenLine = "GEN\t1\t2\td7q3\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\t1\tDarkness\tThis is a \"command\". By commanding that light should exist, God made it exist. (See: [[rc://en/ta/man/translate/figs-imperative]])";
-      const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(1);
-      expect(rawResults).toMatchSnapshot();
-    });
-
-    it('should find missing end quote', async() => {
-      const chosenLine = "GEN\t1\t2\td7q3\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\t1\tDarkness\tThis is a \"command. By commanding that light should exist, God made it exist. (See: [[rc://en/ta/man/translate/figs-imperative]])";
-      const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(1);
-      expect(rawResults).toMatchSnapshot();
-    });
-
-    // TODO re-enable test when fixed
-    it.skip('should find missing start quote', async() => {
-      const chosenLine = "GEN\t1\t2\td7q3\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\t1\tDarkness\tThis is a command\". By commanding that light should exist, God made it exist. (See: [[rc://en/ta/man/translate/figs-imperative]])";
-      const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(1);
-      expect(rawResults).toMatchSnapshot();
-    });
-
-    // TODO re-enable test when fixed
-    it.skip('should pass valid single quote', async() => {
-      const chosenLine = "GEN\t1\t2\td7q3\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\t1\tDarkness\tThis is a 'command'. By commanding that light should exist, God made it exist. (See: [[rc://en/ta/man/translate/figs-imperative]])";
-      const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(2);
-      expect(rawResults).toMatchSnapshot();
-    });
-
   });
 
   describe('GL Note tests - ', () => {
