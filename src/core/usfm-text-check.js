@@ -414,10 +414,10 @@ function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation,
                 && !noticeEntry.message.startsWith("Mismatched [] characters")
                 && !noticeEntry.message.startsWith("Mismatched “” characters")
                 && !noticeEntry.message.startsWith("Mismatched «» characters")
-                && (!noticeEntry.message.startsWith("Unexpected space after | character") || fileText.indexOf('zaln-s') < 0) // inside \zaln-s fields
-                && (!noticeEntry.message.startsWith("Unexpected | character after space") || fileText.indexOf('x-lemma') < 0) // inside \zaln-s fields
+                && (!noticeEntry.message.startsWith("Unexpected space after | character") || fileText.indexOf('zaln-s') < 0) // 192 inside \zaln-s fields
+                && (!noticeEntry.message.startsWith("Unexpected | character after space") || fileText.indexOf('lemma=') < 0) // 191 inside \zaln-s and \k-s fields
                 && (!noticeEntry.message.startsWith("Unexpected doubled , characters") || fileText.indexOf('x-morph') < 0) // inside \w fields
-                && (!noticeEntry.message.startsWith('Unexpected doubled " characters') || fileText.indexOf('x-morph') < 0) // inside \w fields
+                && (!noticeEntry.message.startsWith('Unexpected doubled " characters') || fileText.indexOf('x-morph') < 0) // inside \w fields with empty lemma
                 && (!noticeEntry.message.startsWith('Unexpected link') || fileText.indexOf('x-tw') < 0) // inside original language \w fields
             ) {
                 // const newNoticeObject = { priority:noticeEntry.priority, message:noticeEntry.message }
