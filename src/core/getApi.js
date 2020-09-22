@@ -112,7 +112,7 @@ export function getRepoName(languageCode, repoCode) {
  * @return {Promise<Boolean>} resolves to true if file loads are successful
  */
 // TEMP: Removed TQ from default repos
-export async function clearCacheAndPreloadRepos(username, languageCode, bookIDList, branch = 'master', repos = ['TA', 'TW']) {
+export async function clearCacheAndPreloadRepos(username, languageCode, bookIDList, branch = 'master', repos = ['TA', 'TW', 'TQ']) {
   console.log(`clearCacheAndPreloadRepos(${username}, ${languageCode}, ${bookIDList}, ${branch}, ${repos})…`);
   clearCaches(); // clear existing cached files so we know we have the latest
   let success = true;

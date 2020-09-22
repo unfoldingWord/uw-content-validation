@@ -518,8 +518,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     const ULT = languageCode === 'en' ? 'ULT' : 'GLT';
     const UST = languageCode === 'en' ? 'UST' : 'GST';
 
-    // TEMP: Removed TQ
-    const repoCodeList = [origLang, ULT, UST, 'TN'];
+    const repoCodeList = [origLang, ULT, UST, 'TN', 'TQ'];
     for (const repoCode of repoCodeList) {
       console.log(`Check ${bookID} in ${repoCode} (${languageCode} ${bookID} from ${username})`);
       const repoLocation = ` in ${repoCode.toUpperCase()}${generalLocation}`;
@@ -540,7 +539,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
 
       if (repoCode === 'TQ') {
         // This resource might eventually be converted to TSV tables
-        const tqResultObject = await checkTQbook(username, repoName, branch, bookID, newCheckingOptions);
+        const tqResultObject = await checkTQbook(username, languageCode, repoName, branch, bookID, newCheckingOptions);
         checkBookPackageResult.successList = checkBookPackageResult.successList.concat(tqResultObject.successList);
         checkBookPackageResult.noticeList = checkBookPackageResult.noticeList.concat(tqResultObject.noticeList);
         checkedFilenames = checkedFilenames.concat(tqResultObject.checkedFilenames);
