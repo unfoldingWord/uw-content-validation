@@ -375,7 +375,7 @@ function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation,
                 && !noticeEntry.message.startsWith("Mismatched {} characters") // Start/end of implied text can be on different lines
                 && !noticeEntry.message.startsWith("Mismatched “” characters")
                 && !noticeEntry.message.startsWith("Mismatched «» characters")
-                && (!noticeEntry.message.startsWith("Unexpected | character after space") || fieldText.indexOf('x-lemma') < 0) // inside \zaln-s fields
+                && (!noticeEntry.message.startsWith("Unexpected | character after space") || (fieldText.indexOf('x-lemma')<0 && fieldText.indexOf('x-tw')<0)) // 191 inside \zaln-s and \k-s fields
                 && (!noticeEntry.message.startsWith("Unexpected doubled , characters") || fieldText.indexOf('x-morph') < 0) // inside \w fields
                 && (!noticeEntry.message.startsWith('Unexpected doubled " characters') || fieldText.indexOf('x-morph') < 0) // inside \w fields
             ) {
@@ -415,7 +415,7 @@ function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation,
                 && !noticeEntry.message.startsWith("Mismatched “” characters")
                 && !noticeEntry.message.startsWith("Mismatched «» characters")
                 && (!noticeEntry.message.startsWith("Unexpected space after | character") || fileText.indexOf('zaln-s') < 0) // 192 inside \zaln-s fields
-                && (!noticeEntry.message.startsWith("Unexpected | character after space") || fileText.indexOf('lemma=') < 0) // 191 inside \zaln-s and \k-s fields
+                && (!noticeEntry.message.startsWith("Unexpected | character after space") || (fileText.indexOf('x-lemma')<0 && fileText.indexOf('x-tw')<0)) // 191 inside \zaln-s and \k-s fields
                 && (!noticeEntry.message.startsWith("Unexpected doubled , characters") || fileText.indexOf('x-morph') < 0) // inside \w fields
                 && (!noticeEntry.message.startsWith('Unexpected doubled " characters') || fileText.indexOf('x-morph') < 0) // inside \w fields with empty lemma
                 && (!noticeEntry.message.startsWith('Unexpected link') || fileText.indexOf('x-tw') < 0) // inside original language \w fields
@@ -627,7 +627,7 @@ function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation,
             }
             if (adjustedRest !== rest) // Only re-check if line has changed (because original is checked in checkUSFMLineInternals())
                 // Note: false (below) is for allowedLinks flag
-                ourCheckTextField(lineNumber, C, V, `from \\${marker}`, adjustedRest, false, ` TEXT ${lineLocation}`, optionalCheckingOptions);
+                ourCheckTextField(lineNumber, C, V, `from \\${marker}`, adjustedRest, false, lineLocation, optionalCheckingOptions);
         }
     }
     // end of checkUSFMLineText function
@@ -650,7 +650,7 @@ function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation,
         const allowedLinks = (marker === 'w' || marker === 'k-s' || marker === 'f' || marker === 'SPECIAL1')
             // (because we don't know what marker SPECIAL1 is, so default to "no false alarms")
             && rest.indexOf('x-tw') >= 0;
-        if (rest) ourCheckTextField(lineNumber, C, V, `\\${marker}`, rest, allowedLinks, ` INTERNALS ${lineLocation}`, optionalCheckingOptions);
+        if (rest) ourCheckTextField(lineNumber, C, V, `\\${marker}`, rest, allowedLinks, lineLocation, optionalCheckingOptions);
     }
     // end of checkUSFMLineInternals function
 
