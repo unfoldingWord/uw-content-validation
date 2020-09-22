@@ -22,9 +22,12 @@ const optionalCheckingOptions = {
     throw `Could not find ${filePath}`;
   },
   getFilelistFromZip: params => {
-    const { username, repository } = params;
+    const { username, repository, optionalPrefix } = params;
     const filePath = Path.join('./src/__tests__/fixtures', username, repository);
-    const files = getAllFiles(filePath);
+    let files = getAllFiles(filePath);
+    if (optionalPrefix) {
+      files = files.filter(file => file.toLowerCase().startsWith(optionalPrefix)); // filter just for current book
+    }
     return files;
   }
 }

@@ -363,8 +363,6 @@ export async function checkTQbook(username, languageCode, repoName, branch, book
     addNotice10({ priority: 996, message: "Failed to load", bookID, C: '', V: '', location: `${generalLocation}`, extra: repoCode });
   } else {
 
-    pathList = pathList.filter(file => file.toLowerCase().indexOf(bookIdLc) === 0); // filter just for current book
-
     // console.log(`  Got ${pathList.length} pathList entries`)
     for (const thisPath of pathList) {
       // console.log("checkTQbook: Try to load", username, repoName, thisPath, branch);
