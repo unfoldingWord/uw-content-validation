@@ -1,13 +1,13 @@
 {
   "files": {
     "build/0.d4803761.js": "/uw-content-validation/build/0.d4803761.js",
-    "main.js": "/uw-content-validation/build/main.3e7a7fef.js",
+    "main.js": "/uw-content-validation/build/main.f2593df8.js",
     "runtime-main.js": "/uw-content-validation/build/bundle.105de5e2.js",
     "index.html": "/uw-content-validation/index.html"
   },
   "entrypoints": [
     "build/bundle.105de5e2.js",
     "build/0.d4803761.js",
-    "build/main.3e7a7fef.js"
+    "build/main.f2593df8.js"
   ]
 }
