@@ -1,0 +1,515 @@
+---
+
+dublin_core:
+  conformsto: 'rc0.2'
+  contributor:
+  - 'Larry Sallee (Th.M Dallas Theological Seminary, D.Min. Columbia Biblical Seminary)'
+  - 'Perry Oakes (BA Biblical Studies, Taylor University; MA Theology, Fuller Seminary; MA Linguistics, University of Texas at Arlington; PhD Old Testament, Southwestern Baptist Theological Seminary)'
+  - 'Joel D. Ruark (M.A.Th. Gordon-Conwell Theological Seminary; Th.M.  Stellenbosch University; Ph.D. Candidate in Old Testament Studies, Stellenbosch University)'
+  - 'Jesse Griffin (BA Biblical Studies, Liberty University; MA Biblical Languages, Gordon-Conwell Theological Seminary)'
+  - 'Susan Quigley, MA in Linguistics'
+  - 'Jerrell Hein'
+  - 'Cheryl Stauter'
+  - 'Deb Richey'
+  - 'Don Ritchey'
+  - 'Gena Schottmuller'
+  - 'Irene Little'
+  - 'Marsha Rogne'
+  - 'Pat Naber'
+  - 'Randy Stauter'
+  - 'Russ Isham'
+  - 'Vickey DeKraker'
+  - 'Door43 World Missions Community'
+  creator: 'Door43 World Missions Community'
+  description: 'Comprehension and theological questions for each chapter of the Bible. It enables translators and translation checkers to confirm that the intended meaning of their translations is clearly communicated to the speakers of that language.'
+  format: 'text/markdown'
+  identifier: 'tq'
+  issued: '2020-07-24'
+  language:
+    direction: 'ltr'
+    identifier: 'en'
+    title: 'English'
+  modified: '2020-07-24'
+  publisher: 'unfoldingWord'
+  relation:
+    - 'en/ult'
+    - 'en/ust'
+  rights: 'CC BY-SA 4.0'
+  source:
+    -
+      identifier: 'tq'
+      language: 'en'
+      version: '16'
+  subject: 'Translation Questions'
+  title: 'unfoldingWord® Translation Questions'
+  type: 'help'
+  version: '17'
+
+checking:
+  checking_entity:
+    - 'unfoldingWord'
+  checking_level: '3'
+
+projects:
+  -
+    title: 'Genesis'
+    identifier: 'gen'
+    sort: 1
+    path: './gen'
+    categories: [ 'bible-ot'  ]
+    versification: 
+  -
+    title: 'Exodus'
+    identifier: 'exo'
+    sort: 2
+    path: './exo'
+    categories: [ 'bible-ot'  ]
+    versification: 
+  -
+    title: 'Leviticus'
+    identifier: 'lev'
+    sort: 3
+    path: './lev'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Numbers'
+    identifier: 'num'
+    sort: 4
+    path: './num'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Deuteronomy'
+    identifier: 'deu'
+    sort: 5
+    path: './deu'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Joshua'
+    identifier: 'jos'
+    sort: 6
+    path: './jos'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Judges'
+    identifier: 'jdg'
+    sort: 7
+    path: './jdg'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Ruth'
+    identifier: 'rut'
+    sort: 8
+    path: './rut'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: '1 Samuel'
+    identifier: '1sa'
+    sort: 9
+    path: './1sa'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: '2 Samuel'
+    identifier: '2sa'
+    sort: 10
+    path: './2sa'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: '1 Kings'
+    identifier: '1ki'
+    sort: 11
+    path: './1ki'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: '2 Kings'
+    identifier: '2ki'
+    sort: 12
+    path: './2ki'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: '1 Chronicles'
+    identifier: '1ch'
+    sort: 13
+    path: './1ch'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: '2 Chronicles'
+    identifier: '2ch'
+    sort: 14
+    path: './2ch'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Ezra'
+    identifier: 'ezr'
+    sort: 15
+    path: './ezr'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Nehemiah'
+    identifier: 'neh'
+    sort: 16
+    path: './neh'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Esther'
+    identifier: 'est'
+    sort: 17
+    path: './est'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Job'
+    identifier: 'job'
+    sort: 18
+    path: './job'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Psalms'
+    identifier: 'psa'
+    sort: 19
+    path: './psa'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Proverbs'
+    identifier: 'pro'
+    sort: 20
+    path: './pro'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Ecclesiastes'
+    identifier: 'ecc'
+    sort: 21
+    path: './ecc'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Song of Solomon'
+    identifier: 'sng'
+    sort: 22
+    path: './sng'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Isaiah'
+    identifier: 'isa'
+    sort: 23
+    path: './isa'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Jeremiah'
+    identifier: 'jer'
+    sort: 24
+    path: './jer'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Lamentations'
+    identifier: 'lam'
+    sort: 25
+    path: './lam'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Ezekiel'
+    identifier: 'ezk'
+    sort: 26
+    path: './ezk'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Daniel'
+    identifier: 'dan'
+    sort: 27
+    path: './dan'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Hosea'
+    identifier: 'hos'
+    sort: 28
+    path: './hos'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Joel'
+    identifier: 'jol'
+    sort: 29
+    path: './jol'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Amos'
+    identifier: 'amo'
+    sort: 30
+    path: './amo'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Obadiah'
+    identifier: 'oba'
+    sort: 31
+    path: './oba'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Jonah'
+    identifier: 'jon'
+    sort: 32
+    path: './jon'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Micah'
+    identifier: 'mic'
+    sort: 33
+    path: './mic'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Nahum'
+    identifier: 'nam'
+    sort: 34
+    path: './nam'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Habakkuk'
+    identifier: 'hab'
+    sort: 35
+    path: './hab'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Zephaniah'
+    identifier: 'zep'
+    sort: 36
+    path: './zep'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Haggai'
+    identifier: 'hag'
+    sort: 37
+    path: './hag'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Zechariah'
+    identifier: 'zec'
+    sort: 38
+    path: './zec'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Malachi'
+    identifier: 'mal'
+    sort: 39
+    path: './mal'
+    categories: [ 'bible-ot' ]
+    versification: 
+  -
+    title: 'Matthew'
+    identifier: 'mat'
+    sort: 40
+    path: './mat'
+    categories: [ 'bible-nt' ]
+    versification: 
+  -
+    title: 'Mark'
+    identifier: 'mrk'
+    sort: 41
+    path: './mrk'
+    categories: [ 'bible-nt' ]
+    versification: 
+  -
+    title: 'Luke'
+    identifier: 'luk'
+    sort: 42
+    path: './luk'
+    categories: [ 'bible-nt' ]
+    versification: 
+  -
+    title: 'John'
+    identifier: 'jhn'
+    sort: 43
+    path: './jhn'
+    categories: [ 'bible-nt' ]
+    versification: 
+  -
+    title: 'Acts'
+    identifier: 'act'
+    sort: 44
+    path: './act'
+    categories: [ 'bible-nt' ]
+    versification: 
+  -
+    title: 'Romans'
+    identifier: 'rom'
+    sort: 45
+    path: './rom'
+    categories: [ 'bible-nt' ]
+    versification: 
+  -
+    title: '1 Corinthians'
+    identifier: '1co'
+    sort: 46
+    path: './1co'
+    categories: [ 'bible-nt' ]
+    versification: 
+  -
+    title: '2 Corinthians'
+    identifier: '2co'
+    sort: 47
+    path: './2co'
+    categories: [ 'bible-nt' ]
+    versification: 
+  -
+    title: 'Galatians'
+    identifier: 'gal'
+    sort: 48
+    path: './gal'
+    categories: [ 'bible-nt' ]
+    versification: 
+  -
+    title: 'Ephesians'
+    identifier: 'eph'
+    sort: 49
+    path: './eph'
+    categories: [ 'bible-nt' ]
+    versification: 
+  -
+    title: 'Philippians'
+    identifier: 'php'
+    sort: 50
+    path: './php'
+    categories: [ 'bible-nt' ]
+    versification: 
+  -
+    title: 'Colossians'
+    identifier: 'col'
+    sort: 51
+    path: './col'
+    categories: [ 'bible-nt' ]
+    versification: 
+  -
+    title: '1 Thessalonians'
+    identifier: '1th'
+    sort: 52
+    path: './1th'
+    categories: [ 'bible-nt' ]
+    versification: 
+  -
+    title: '2 Thessalonians'
+    identifier: '2th'
+    sort: 53
+    path: './2th'
+    categories: [ 'bible-nt' ]
+    versification: 
+  -
+    title: '1 Timothy'
+    identifier: '1ti'
+    sort: 54
+    path: './1ti'
+    categories: [ 'bible-nt' ]
+    versification: 
+  -
+    title: '2 Timothy'
+    identifier: '2ti'
+    sort: 55
+    path: './2ti'
+    categories: [ 'bible-nt' ]
+    versification: 
+  -
+    title: 'Titus'
+    identifier: 'tit'
+    sort: 56
+    path: './tit'
+    categories: [ 'bible-nt' ]
+    versification: 
+  -
+    title: 'Philemon'
+    identifier: 'phm'
+    sort: 57
+    path: './phm'
+    categories: [ 'bible-nt' ]
+    versification: 
+  -
+    title: 'Hebrews'
+    identifier: 'heb'
+    sort: 58
+    path: './heb'
+    categories: [ 'bible-nt' ]
+    versification: 
+  -
+    title: 'James'
+    identifier: 'jas'
+    sort: 59
+    path: './jas'
+    categories: [ 'bible-nt' ]
+    versification: 
+  -
+    title: '1 Peter'
+    identifier: '1pe'
+    sort: 60
+    path: './1pe'
+    categories: [ 'bible-nt' ]
+    versification: 
+  -
+    title: '2 Peter'
+    identifier: '2pe'
+    sort: 61
+    path: './2pe'
+    categories: [ 'bible-nt' ]
+    versification: 
+  -
+    title: '1 John'
+    identifier: '1jn'
+    sort: 62
+    path: './1jn'
+    categories: [ 'bible-nt' ]
+    versification: 
+  -
+    title: '2 John'
+    identifier: '2jn'
+    sort: 63
+    path: './2jn'
+    categories: [ 'bible-nt' ]
+    versification: 
+  -
+    title: '3 John'
+    identifier: '3jn'
+    sort: 64
+    path: './3jn'
+    categories: [ 'bible-nt' ]
+    versification: 
+  -
+    title: 'Jude'
+    identifier: 'jud'
+    sort: 65
+    path: './jud'
+    categories: [ 'bible-nt' ]
+    versification: 
+  -
+    title: 'Revelation'
+    identifier: 'rev'
+    sort: 66
+    path: './rev'
+    categories: [ 'bible-nt' ]
+    versification:

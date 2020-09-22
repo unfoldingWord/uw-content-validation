@@ -20,6 +20,12 @@ const optionalCheckingOptions = {
       return fs.readFileSync(filePath).toString();
     }
     throw `Could not find ${filePath}`;
+  },
+  getFilelistFromZip: params => {
+    const { username, repository } = params;
+    const filePath = Path.join('./src/__tests__/fixtures', username, repository);
+    const files = getAllFiles(filePath);
+    return files;
   }
 }
 
@@ -82,7 +88,7 @@ describe('checkBookPackage() - ', () => {
     const languageCode = 'en';
     const bookID = 'rut';
     const rawResults = await checkBookPackage(username, languageCode, bookID, () => {}, optionalCheckingOptions);
-    expect(rawResults.noticeList.length).toEqual(2);
+    expect(rawResults.noticeList.length).toEqual(4);
     const filteredResults = {
       successList: rawResults.successList,
       noticeList: rawResults.noticeList,
@@ -93,3 +99,34 @@ describe('checkBookPackage() - ', () => {
   });
 
 })
+
+//
+// Helper functions
+//
+
+/**
+ * recursively get a file list
+ * @param {string} dirPath
+ * @param {string} subPath
+ * @param {Array} arrayOfFiles
+ * @return {Array}
+ */
+const getAllFiles = function(dirPath, subPath, arrayOfFiles) {
+  arrayOfFiles = arrayOfFiles || [];
+  subPath = subPath || '.';
+  const fullPath = Path.join(dirPath, subPath);
+  if (fs.existsSync(fullPath)) {
+    const files = fs.readdirSync(fullPath);
+
+    files.forEach(function (file) {
+      const fullSubPath_ = Path.join(fullPath, file);
+      if (fs.statSync(fullSubPath_).isDirectory()) {
+        arrayOfFiles = getAllFiles(dirPath, Path.join(subPath, file), arrayOfFiles);
+      } else {
+        arrayOfFiles.push(Path.join(subPath, file));
+      }
+    })
+  }
+  return arrayOfFiles
+}
+
