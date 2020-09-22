@@ -15,13 +15,13 @@ const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOr
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-async function checkTN_TSVDataRow(languageCode, line, bookID, C, V, givenRowLocation, optionalCheckingOptions) {
+async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, givenV, givenRowLocation, optionalCheckingOptions) {
     /**
     * @description - Checks one TSV data row of translation notes (TN)
     * @param {String} line - the TSV line to be checked
     * @param {String} bookID - 3-character UPPERCASE USFM book identifier
-    * @param {String} C - chapter number string
-    * @param {String} V - verse number string
+    * @param {String} givenC - chapter number string
+    * @param {String} givenV - verse number string
     * @param {String} givenRowLocation - description of where the line is located
     * @param {Object} optionalCheckingOptions - may contain extractLength parameter
     * @return {Object} - containing noticeList
@@ -40,10 +40,10 @@ async function checkTN_TSVDataRow(languageCode, line, bookID, C, V, givenRowLoca
     console.assert(typeof bookID === 'string', `checkTN_TSVDataRow: 'bookID' parameter should be a string not a '${typeof bookID}'`);
     console.assert(bookID.length === 3, `checkTN_TSVDataRow: 'bookID' parameter should be three characters long not ${bookID.length}`);
     console.assert(books.isValidBookID(bookID), `checkTN_TSVDataRow: '${bookID}' is not a valid USFM book identifier`);
-    // console.assert(C !== undefined, "checkTN_TSVDataRow: 'C' parameter should be defined");
-    if (C) console.assert(typeof C === 'string', `checkTN_TSVDataRow: 'C' parameter should be a string not a '${typeof C}'`);
-    // console.assert(V !== undefined, "checkTN_TSVDataRow: 'V' parameter should be defined");
-    if (V) console.assert(typeof V === 'string', `checkTN_TSVDataRow: 'V' parameter should be a string not a '${typeof V}'`);
+    // console.assert(givenC !== undefined, "checkTN_TSVDataRow: 'givenC' parameter should be defined");
+    if (givenC) console.assert(typeof givenC === 'string', `checkTN_TSVDataRow: 'givenC' parameter should be a string not a '${typeof givenC}'`);
+    // console.assert(givenV !== undefined, "checkTN_TSVDataRow: 'givenV' parameter should be defined");
+    if (givenV) console.assert(typeof givenV === 'string', `checkTN_TSVDataRow: 'givenV' parameter should be a string not a '${typeof givenV}'`);
     console.assert(givenRowLocation !== undefined, "checkTN_TSVDataRow: 'givenRowLocation' parameter should be defined");
     console.assert(typeof givenRowLocation === 'string', `checkTN_TSVDataRow: 'givenRowLocation' parameter should be a string not a '${typeof givenRowLocation}'`);
 
@@ -77,7 +77,7 @@ async function checkTN_TSVDataRow(languageCode, line, bookID, C, V, givenRowLoca
         console.assert(noticeObject.location !== undefined, "checkTN_TSVDataRow addNoticePartial: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `checkTN_TSVDataRow addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
         // Also uses the given bookID,C,V, parameters from the main function call
-        drResult.noticeList.push({ ...noticeObject, bookID, C, V });
+        drResult.noticeList.push({ ...noticeObject, bookID, C: givenC, V: givenV });
     }
 
     function ourMarkdownTextChecks(rowID, fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions) {
@@ -212,7 +212,7 @@ async function checkTN_TSVDataRow(languageCode, line, bookID, C, V, givenRowLoca
         console.assert(typeof fieldText === 'string', `checkTN_TSVDataRow ourCheckTNOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         console.assert(rowLocation.indexOf(fieldName) < 0, `checkTN_TSVDataRow ourCheckTNOriginalLanguageQuote: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const coqResultObject = await checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, rowLocation, optionalCheckingOptions);
+        const coqResultObject = await checkOriginalLanguageQuote(fieldName, fieldText, bookID, givenC, givenV, rowLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -291,13 +291,15 @@ async function checkTN_TSVDataRow(languageCode, line, bookID, C, V, givenRowLoca
         // Check the fields one-by-one
         if (B.length) {
             if (B !== bookID)
-                addNoticePartial({ priority: 978, message: `Wrong '${B}' book identifier`, rowID, location: ` (expected '${bookID}')${ourRowLocation}` });
+                addNoticePartial({ priority: 978, message: `Wrong '${B}' book identifier`, details: `(expected '${bookID}')`, rowID, location: ourRowLocation });
         }
         else
             addNoticePartial({ priority: 977, message: "Missing book identifier", characterIndex: 0, rowID, location: ourRowLocation });
 
         let numVersesThisChapter, haveGoodChapterNumber;
         if (C.length) {
+            if (C !== givenC)
+                addNoticePartial({ priority: 976, message: `Wrong '${C}' chapter number`, details: `(expected '${givenC}')`, rowID, location: ourRowLocation });
             if (C === 'front') { }
             else if (/^\d+$/.test(C)) {
                 let intC = Number(C);
@@ -328,6 +330,8 @@ async function checkTN_TSVDataRow(languageCode, line, bookID, C, V, givenRowLoca
             addNoticePartial({ priority: 820, message: "Missing chapter number", rowID, location: ` ?:${V}${ourRowLocation}` });
 
         if (V.length) {
+            if (V !== givenV)
+                addNoticePartial({ priority: 975, message: `Wrong '${V}' verse number`, details: `(expected '${givenV}')`, rowID, location: ourRowLocation });
             if (V === 'intro') { }
             else if (/^\d+$/.test(V)) {
                 let intV = Number(V);
