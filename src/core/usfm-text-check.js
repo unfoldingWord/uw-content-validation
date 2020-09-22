@@ -371,7 +371,8 @@ function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation,
             // console.log("Notice keys", JSON.stringify(Object.keys(noticeEntry)));
             console.assert(Object.keys(noticeEntry).length >= 4, `USFM ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
             if (!noticeEntry.message.startsWith("Mismatched () characters") // 663 Mismatched left/right chars -- suppress these misleading warnings coz open quote can occur in one verse and close in another
-                && !noticeEntry.message.startsWith("Mismatched [] characters")
+                && !noticeEntry.message.startsWith("Mismatched [] characters") // Start/end of questionable text can be on different lines
+                && !noticeEntry.message.startsWith("Mismatched {} characters") // Start/end of implied text can be on different lines
                 && !noticeEntry.message.startsWith("Mismatched “” characters")
                 && !noticeEntry.message.startsWith("Mismatched «» characters")
                 && (!noticeEntry.message.startsWith("Unexpected | character after space") || fieldText.indexOf('x-lemma') < 0) // inside \zaln-s fields

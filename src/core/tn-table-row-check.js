@@ -3,7 +3,7 @@ import * as books from './books/books';
 import checkTextField from './field-text-check';
 import checkMarkdownText from './markdown-text-check';
 import checkTAReference from './ta-reference-check';
-import checkTNLinks from './tn-links-check';
+import checkTNLinksToOutside from './tn-links-check';
 import checkOriginalLanguageQuote from './quote-check';
 
 
@@ -226,20 +226,20 @@ async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, givenV, gi
     }
     // end of ourCheckTNOriginalLanguageQuote function
 
-    async function ourCheckTNLinks(rowID, fieldName, taLinkText, rowLocation, optionalCheckingOptions) {
-        // Checks that the TA reference can be found
+    async function ourCheckTNLinksToOutside(rowID, fieldName, taLinkText, rowLocation, optionalCheckingOptions) {
+        // Checks that the TA/TW/Bible reference can be found
 
         // Updates the global list of notices
 
-        // console.log(`checkTN_TSVDataRow ourCheckTNLinks(${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
-        console.assert(rowID !== undefined, "checkTN_TSVDataRow ourCheckTNLinks: 'rowID' parameter should be defined");
-        console.assert(typeof rowID === 'string', `checkTN_TSVDataRow ourCheckTNLinks: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        console.assert(fieldName !== undefined, "checkTN_TSVDataRow ourCheckTNLinks: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName === 'string', `checkTN_TSVDataRow ourCheckTNLinks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        console.assert(taLinkText !== undefined, "checkTN_TSVDataRow ourCheckTNLinks: 'taLinkText' parameter should be defined");
-        console.assert(typeof taLinkText === 'string', `checkTN_TSVDataRow ourCheckTNLinks: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
+        // console.log(`checkTN_TSVDataRow ourCheckTNLinksToOutside(${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
+        console.assert(rowID !== undefined, "checkTN_TSVDataRow ourCheckTNLinksToOutside: 'rowID' parameter should be defined");
+        console.assert(typeof rowID === 'string', `checkTN_TSVDataRow ourCheckTNLinksToOutside: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+        console.assert(fieldName !== undefined, "checkTN_TSVDataRow ourCheckTNLinksToOutside: 'fieldName' parameter should be defined");
+        console.assert(typeof fieldName === 'string', `checkTN_TSVDataRow ourCheckTNLinksToOutside: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        console.assert(taLinkText !== undefined, "checkTN_TSVDataRow ourCheckTNLinksToOutside: 'taLinkText' parameter should be defined");
+        console.assert(typeof taLinkText === 'string', `checkTN_TSVDataRow ourCheckTNLinksToOutside: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
 
-        const coqResultObject = await checkTNLinks(bookID, fieldName, taLinkText, rowLocation, optionalCheckingOptions);
+        const coqResultObject = await checkTNLinksToOutside(bookID, fieldName, taLinkText, rowLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -247,11 +247,11 @@ async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, givenV, gi
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of coqResultObject.noticeList) {
-            // console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckTNLinks notice length=${Object.keys(noticeEntry).length}`);
+            // console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckTNLinksToOutside notice length=${Object.keys(noticeEntry).length}`);
             addNoticePartial({ ...noticeEntry, rowID, fieldName });
         }
     }
-    // end of ourCheckTNLinks function
+    // end of ourCheckTNLinksToOutside function
 
 
     // Main code for checkTN_TSVDataRow function
@@ -408,7 +408,7 @@ async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, givenV, gi
                 addNoticePartial({ priority: 374, message: "OccurrenceNote field is only whitespace", rowID, location: ourRowLocation });
             else { // More than just whitespace
                 ourMarkdownTextChecks(rowID, 'OccurrenceNote', occurrenceNote, true, ourRowLocation, optionalCheckingOptions);
-                await ourCheckTNLinks(rowID, 'OccurrenceNote', occurrenceNote, ourRowLocation, optionalCheckingOptions);
+                await ourCheckTNLinksToOutside(rowID, 'OccurrenceNote', occurrenceNote, ourRowLocation, optionalCheckingOptions);
             }
         else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             addNoticePartial({ priority: 274, message: "Missing OccurrenceNote field", rowID, location: ourRowLocation });

@@ -18,7 +18,7 @@ Got 202 notices:
   987, C, V, "Expected \\id line to start with book identifier", lineNumber: n, characterIndex: 4, extract, location: ourLocation
   `"`.indexOf(line[0]) < 0 ? 980 : 280, C, V, "Expected line to start with backslash", lineNumber: n, characterIndex: 0, extract: line[0], location: ourLocation
   979, "Invalid book identifier passed to checkTN_TSVDataRow", location:` '$bookID' in first parameter: $tlcNCerror`
-  979, "Invalid book identifier passed to checkTNLinks", location:` '$bookID' in first parameter: $tnlcError`
+  979, "Invalid book identifier passed to checkTNLinksToOutside", location:` '$bookID' in first parameter: $tnlcError`
   979, "Invalid book identifier passed to checkAnnotationTSVDataRow", location:` '$bookID' in first parameter: $tlcNCerror`
   978, `Wrong '$B' book identifier`, rowID, location:` (expected '$bookID')$ourRowLocation`
   977, "Missing book identifier", characterIndex:0, rowID, location:ourRowLocation

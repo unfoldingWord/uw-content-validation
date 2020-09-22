@@ -79,10 +79,10 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, gi
 
         let originalUSFM;
         // console.log(`Need to check against ${originalLanguageRepoCode}`);
-        const getFileCached_ = (optionalCheckingOptions && optionalCheckingOptions.getFileCached) ? optionalCheckingOptions.getFileCached : getFileCached;
+        const getFile_ = (optionalCheckingOptions && optionalCheckingOptions.getFile) ? optionalCheckingOptions.getFile : getFileCached;
         if (originalLanguageRepoCode === 'UHB') {
             try {
-                originalUSFM = await getFileCached_({ username, repository: originalLanguageRepoName, path: filename, branch });
+                originalUSFM = await getFile_({ username, repository: originalLanguageRepoName, path: filename, branch });
                 // console.log("Fetched file_content for", repoName, filename, typeof originalUSFM, originalUSFM.length);
             } catch (gcUHBerror) {
                 console.log("ERROR: Failed to load", username, originalLanguageRepoCode, filename, branch, gcUHBerror.message);
@@ -90,7 +90,7 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, gi
             }
         } else if (originalLanguageRepoCode === 'UGNT') {
             try {
-                originalUSFM = await getFileCached_({ username, repository: originalLanguageRepoName, path: filename, branch });
+                originalUSFM = await getFile_({ username, repository: originalLanguageRepoName, path: filename, branch });
                 // console.log("Fetched file_content for", repoName, filename, typeof originalUSFM, originalUSFM.length);
             } catch (gcUGNTerror) {
                 console.log("ERROR: Failed to load", username, originalLanguageRepoCode, filename, branch, gcUGNTerror.message);
