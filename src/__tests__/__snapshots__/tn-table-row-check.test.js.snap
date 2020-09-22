@@ -1,0 +1,768 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`checkTN_TSVDataRow() -  BookID tests -  should find wrong book ID 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "location": " (expected 'GEN') that was supplied",
+      "message": "Wrong 'RUT' book identifier",
+      "priority": 978,
+      "rowID": "d7qw",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  GL Note tests -  should find bad ellipse 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "location": " that was supplied",
+      "message": "Missing OrigQuote field",
+      "priority": 919,
+      "rowID": "w3r5",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": 11,
+      "extract": "…lipse...",
+      "fieldName": "GLQuote",
+      "location": " that was supplied",
+      "message": "Unexpected doubled . characters",
+      "priority": 177,
+      "rowID": "w3r5",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  Occurrence Note tests -  should find empty note 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "location": " that was supplied",
+      "message": "Missing OccurrenceNote field",
+      "priority": 274,
+      "rowID": "d7qw",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  Original Quote tests -  invalid Original Language 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "details": "",
+      "extract": "00",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Unable to find original language quote in verse text",
+      "priority": 916,
+      "rowID": "f2mg",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail to find OrigLang Quote 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "details": "",
+      "extract": "וְ⁠חֹ֖שֶךְ",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Unable to find original language quote in verse text",
+      "priority": 916,
+      "rowID": "d7qw",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail with leading space 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": 0,
+      "extract": "␣וְ⁠חֹ֖שֶׁ…",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Unexpected leading space",
+      "priority": 106,
+      "rowID": "d7qw",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": 0,
+      "extract": "(ּ=D1468/H5bc) וְ⁠חֹ֖…",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Seems original language quote might not start at the beginning of a word",
+      "priority": 620,
+      "rowID": "d7qw",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail with leading word joiner 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "details": "quote which starts with 'word joiner'",
+      "extract": "",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Unable to find original language quote in verse text",
+      "priority": 916,
+      "rowID": "d7qw",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail with leading zero width joiner 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "details": "quote which starts with 'zero-width joiner'",
+      "extract": "",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Unable to find original language quote in verse text",
+      "priority": 916,
+      "rowID": "d7qw",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail with leading zero width non-joiner 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "details": "",
+      "extract": "‌וְ⁠ח…שֶׁךְ",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Unable to find original language quote in verse text",
+      "priority": 916,
+      "rowID": "d7qw",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail with trailing space 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": 11,
+      "extract": "…⁠חֹ֖שֶׁךְ␣",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Unexpected trailing space(s)",
+      "priority": 105,
+      "rowID": "d7qw",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": 12,
+      "extract": "…֖שֶׁךְ (ע=D1506/H5e2)",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Seems original language quote might not finish at the end of a word",
+      "priority": 621,
+      "rowID": "d7qw",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail with trailing word joiner 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "details": "quote which ends with 'word joiner'",
+      "extract": "…",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Unable to find original language quote in verse text",
+      "priority": 916,
+      "rowID": "d7qw",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail with trailing zero width joiner 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "details": "quote which ends with 'zero-width joiner'",
+      "extract": "…",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Unable to find original language quote in verse text",
+      "priority": 916,
+      "rowID": "d7qw",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail with trailing zero width non-joiner 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "details": "",
+      "extract": "וְ⁠חֹ…ֶׁךְ‌",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Unable to find original language quote in verse text",
+      "priority": 916,
+      "rowID": "d7qw",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  Original Quote tests -  should find missing Original Quote 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "location": " that was supplied",
+      "message": "Missing OrigQuote field",
+      "priority": 919,
+      "rowID": "d7qw",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  SupportReference tests -  should find long SupportReference 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "location": " (not 5) that was supplied",
+      "message": "ID should be exactly 4 characters",
+      "priority": 778,
+      "rowID": "d7q33",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  SupportReference tests -  should find missing SupportReference 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "location": " that was supplied",
+      "message": "Missing ID field",
+      "priority": 779,
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  SupportReference tests -  should find short SupportReference 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "location": " (not 3) that was supplied",
+      "message": "ID should be exactly 4 characters",
+      "priority": 778,
+      "rowID": "d7q",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  TSV format tests -  empty line should fail 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "extract": "Found 1 field",
+      "location": " that was supplied",
+      "message": "Found wrong number of TSV fields (expected 9)",
+      "priority": 861,
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  TSV format tests -  should fail not TSV 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "extract": "Found 1 field",
+      "location": " that was supplied",
+      "message": "Found wrong number of TSV fields (expected 9)",
+      "priority": 861,
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  TSV format tests -  should find wrong row count 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "extract": "Found 8 fields",
+      "location": " that was supplied",
+      "message": "Found wrong number of TSV fields (expected 9)",
+      "priority": 861,
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  link tests -  should fail broken link end 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "2",
+      "V": "12",
+      "bookID": "RUT",
+      "details": "(left=2, right=1)",
+      "fieldName": "OccurrenceNote",
+      "filename": "OccurrenceNote",
+      "lineNumber": 1,
+      "location": " that was supplied",
+      "message": "Mismatched [] characters",
+      "priority": 563,
+      "rowID": "gnn5",
+    },
+    Object {
+      "C": "2",
+      "V": "12",
+      "bookID": "RUT",
+      "details": "(left=1, right=0)",
+      "fieldName": "OccurrenceNote",
+      "filename": "OccurrenceNote",
+      "lineNumber": 1,
+      "location": " that was supplied",
+      "message": "Mismatched () characters",
+      "priority": 563,
+      "rowID": "gnn5",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  link tests -  should fail broken link start 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "2",
+      "V": "12",
+      "bookID": "RUT",
+      "details": "(left=1, right=2)",
+      "fieldName": "OccurrenceNote",
+      "filename": "OccurrenceNote",
+      "lineNumber": 1,
+      "location": " that was supplied",
+      "message": "Mismatched [] characters",
+      "priority": 563,
+      "rowID": "gnn5",
+    },
+    Object {
+      "C": "2",
+      "V": "12",
+      "bookID": "RUT",
+      "details": "(left=1, right=0)",
+      "fieldName": "OccurrenceNote",
+      "filename": "OccurrenceNote",
+      "lineNumber": 1,
+      "location": " that was supplied",
+      "message": "Mismatched () characters",
+      "priority": 563,
+      "rowID": "gnn5",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  link tests -  should fail double broken link end 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "2",
+      "V": "12",
+      "bookID": "RUT",
+      "details": "(left=2, right=0)",
+      "fieldName": "OccurrenceNote",
+      "filename": "OccurrenceNote",
+      "lineNumber": 1,
+      "location": " that was supplied",
+      "message": "Mismatched [] characters",
+      "priority": 563,
+      "rowID": "gnn5",
+    },
+    Object {
+      "C": "2",
+      "V": "12",
+      "bookID": "RUT",
+      "details": "(left=1, right=0)",
+      "fieldName": "OccurrenceNote",
+      "filename": "OccurrenceNote",
+      "lineNumber": 1,
+      "location": " that was supplied",
+      "message": "Mismatched () characters",
+      "priority": 563,
+      "rowID": "gnn5",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  link tests -  should fail double broken link start 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "2",
+      "V": "12",
+      "bookID": "RUT",
+      "details": "(left=0, right=2)",
+      "fieldName": "OccurrenceNote",
+      "filename": "OccurrenceNote",
+      "lineNumber": 1,
+      "location": " that was supplied",
+      "message": "Mismatched [] characters",
+      "priority": 563,
+      "rowID": "gnn5",
+    },
+    Object {
+      "C": "2",
+      "V": "12",
+      "bookID": "RUT",
+      "details": "(left=1, right=0)",
+      "fieldName": "OccurrenceNote",
+      "filename": "OccurrenceNote",
+      "lineNumber": 1,
+      "location": " that was supplied",
+      "message": "Mismatched () characters",
+      "priority": 563,
+      "rowID": "gnn5",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  link tests -  should fail invalid first link 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "extract": "[[rc://en/ta/man/translate/figs-activepassivez]]",
+      "fieldName": "OccurrenceNote",
+      "location": " that was supplied translate/figs-activepassivez/01.md: Could not find src/__tests__/fixtures/unfoldingWord/en_ta/translate/figs-activepassivez/01.md",
+      "message": "Error loading OccurrenceNote TA link",
+      "priority": 885,
+      "rowID": "zu6f",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "extract": "[[rc://en/ta/man/translate/figs-activepassivez]]",
+      "fieldName": "OccurrenceNote",
+      "location": " that was supplied translate/figs-activepassivez/01.md",
+      "message": "Unable to find OccurrenceNote TA link",
+      "priority": 886,
+      "rowID": "zu6f",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  link tests -  should fail invalid second link 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "extract": "[[rc://en/ta/man/translate/figs-imperativez]]",
+      "fieldName": "OccurrenceNote",
+      "location": " that was supplied translate/figs-imperativez/01.md: Could not find src/__tests__/fixtures/unfoldingWord/en_ta/translate/figs-imperativez/01.md",
+      "message": "Error loading OccurrenceNote TA link",
+      "priority": 885,
+      "rowID": "zu6f",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "extract": "[[rc://en/ta/man/translate/figs-imperativez]]",
+      "fieldName": "OccurrenceNote",
+      "location": " that was supplied translate/figs-imperativez/01.md",
+      "message": "Unable to find OccurrenceNote TA link",
+      "priority": 886,
+      "rowID": "zu6f",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  should find invalid Book ID, chapter number, ID, SupportReference, quotes, OccurrenceNote 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "location": " (expected 'GEN') that was supplied",
+      "message": "Wrong 'GIN' book identifier",
+      "priority": 978,
+      "rowID": "W-3r5",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "extract": "200",
+      "location": " that was supplied",
+      "message": "Invalid large chapter number",
+      "priority": 823,
+      "rowID": "W-3r5",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "location": " '9' that was supplied",
+      "message": "Unable to check verse number",
+      "priority": 812,
+      "rowID": "W-3r5",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "location": " (not 5) that was supplied",
+      "message": "ID should be exactly 4 characters",
+      "priority": 778,
+      "rowID": "W-3r5",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "extract": "Laugh",
+      "fieldName": "SupportReference",
+      "location": " that was supplied translate/Laugh/01.md: Could not find src/__tests__/fixtures/unfoldingWord/en_ta/translate/Laugh/01.md",
+      "message": "Error loading SupportReference TA link",
+      "priority": 888,
+      "rowID": "W-3r5",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "extract": "Laugh",
+      "fieldName": "SupportReference",
+      "location": " that was supplied translate/Laugh/01.md",
+      "message": "Unable to find SupportReference TA link",
+      "priority": 889,
+      "rowID": "W-3r5",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "location": " that was supplied",
+      "message": "Missing OrigQuote field",
+      "priority": 919,
+      "rowID": "W-3r5",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "location": " that was supplied",
+      "message": "Invalid '17' occurrence field",
+      "priority": 792,
+      "rowID": "W-3r5",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": 11,
+      "extract": "…lipse...",
+      "fieldName": "GLQuote",
+      "location": " that was supplied",
+      "message": "Unexpected doubled . characters",
+      "priority": 177,
+      "rowID": "W-3r5",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": 0,
+      "extract": "<br>Boo ho…",
+      "fieldName": "OccurrenceNote",
+      "filename": "OccurrenceNote",
+      "lineNumber": 1,
+      "location": " that was supplied",
+      "message": "Unexpected leading break",
+      "priority": 107,
+      "rowID": "W-3r5",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": 11,
+      "extract": "…o hoo,,<br…",
+      "fieldName": "OccurrenceNote",
+      "filename": "OccurrenceNote",
+      "lineNumber": 1,
+      "location": " that was supplied",
+      "message": "Unexpected doubled , characters",
+      "priority": 177,
+      "rowID": "W-3r5",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": 30,
+      "extract": "… shoe !",
+      "fieldName": "OccurrenceNote",
+      "filename": "OccurrenceNote",
+      "lineNumber": 1,
+      "location": " that was supplied",
+      "message": "Unexpected ! character after space",
+      "priority": 191,
+      "rowID": "W-3r5",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  should find invalid SupportReference and missing quotes 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "extract": "Laugh",
+      "fieldName": "SupportReference",
+      "location": " that was supplied translate/Laugh/01.md: Could not find src/__tests__/fixtures/unfoldingWord/en_ta/translate/Laugh/01.md",
+      "message": "Error loading SupportReference TA link",
+      "priority": 888,
+      "rowID": "w3r5",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "extract": "Laugh",
+      "fieldName": "SupportReference",
+      "location": " that was supplied translate/Laugh/01.md",
+      "message": "Unable to find SupportReference TA link",
+      "priority": 889,
+      "rowID": "w3r5",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "location": " that was supplied",
+      "message": "Missing OrigQuote field",
+      "priority": 919,
+      "rowID": "w3r5",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  should find mismatched bookId 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "location": " (expected 'GEN') that was supplied",
+      "message": "Wrong 'EXO' book identifier",
+      "priority": 978,
+      "rowID": "d7qw",
+    },
+  ],
+}
+`;

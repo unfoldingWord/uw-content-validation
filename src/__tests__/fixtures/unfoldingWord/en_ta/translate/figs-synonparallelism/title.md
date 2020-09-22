@@ -1,0 +1,1 @@
+Parallelism with the Same Meaning

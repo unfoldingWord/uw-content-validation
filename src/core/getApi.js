@@ -54,8 +54,8 @@ let cachedUnzippedFiles = {};
  */
 // This is the function that we call the most from the outside
 export async function getFileCached({ username, repository, path, branch }) {
+  const filePath = Path.join(username, repository, path, branch);
   // console.log(`getFileCached(${username}, ${repository}, ${path}, ${branch})…`);
-  const filePath = Path.join(repository, path, branch);
   if (cachedUnzippedFiles[filePath]) {
     // console.log(`in cache - ${filePath}`);
     return cachedUnzippedFiles[filePath];

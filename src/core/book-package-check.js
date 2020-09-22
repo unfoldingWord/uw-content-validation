@@ -355,37 +355,45 @@ export async function checkTQbook(username, languageCode, repoName, branch, book
   // Main code for checkTQbook
   // We need to find an check all the markdown folders/files for this book
   let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(['md']), totalCheckedSize = 0;
-  const pathList = await getFilelistFromZip({ username, repository: repoName, branch, optionalPrefix: `${bookID.toLowerCase()}/` });
-  // console.log(`  Got ${pathList.length} pathList entries`)
-  for (const thisPath of pathList) {
-    // console.log("checkTQbook: Try to load", username, repoName, thisPath, branch);
+  let filelistFromZip_ = checkingOptions && checkingOptions.getFilelistFromZip ? checkingOptions.getFilelistFromZip : getFilelistFromZip;
+  let bookIdLc = bookID.toLowerCase();
+  let pathList = await filelistFromZip_({ username, repository: repoName, branch, optionalPrefix: `${bookIdLc}/` });
+  if (!Array.isArray(pathList) || !pathList.length) {
+    console.log("checkTQrepo failed to load", username, repoName, branch);
+    addNotice10({ priority: 996, message: "Failed to load", bookID, C: '', V: '', location: `${generalLocation}`, extra: repoCode });
+  } else {
 
-    console.assert(thisPath.endsWith('.md'), `Expected ${thisPath} to end with .md`);
-    const filename = thisPath.split('/').pop();
-    const pathParts = thisPath.slice(0, -3).split('/');
-    const C = pathParts[pathParts.length - 2].replace(/^0+(?=\d)/, ''); // Remove leading zeroes
-    const V = pathParts[pathParts.length - 1].replace(/^0+(?=\d)/, ''); // Remove leading zeroes
+    // console.log(`  Got ${pathList.length} pathList entries`)
+    for (const thisPath of pathList) {
+      // console.log("checkTQbook: Try to load", username, repoName, thisPath, branch);
 
-    const getFile_ = (checkingOptions && checkingOptions.getFile) ? checkingOptions.getFile : getFileCached;
-    let tqFileContent;
-    try {
-      tqFileContent = await getFile_({ username, repository: repoName, path: thisPath, branch });
-      // console.log("Fetched file_content for", repoName, thisPath, typeof tqFileContent, tqFileContent.length);
-      checkedFilenames.push(thisPath);
-      totalCheckedSize += tqFileContent.length;
-    } catch (tQerror) {
-      console.log("checkTQbook failed to load", username, repoName, thisPath, branch, tQerror + '');
-      addNotice10({ priority: 996, message: "Failed to load", bookID, C, V, location: `${generalLocation} ${thisPath}: ${tQerror}`, extra: repoCode });
-      continue;
+      console.assert(thisPath.endsWith('.md'), `Expected ${thisPath} to end with .md`);
+      const filename = thisPath.split('/').pop();
+      const pathParts = thisPath.slice(0, -3).split('/');
+      const C = pathParts[pathParts.length - 2].replace(/^0+(?=\d)/, ''); // Remove leading zeroes
+      const V = pathParts[pathParts.length - 1].replace(/^0+(?=\d)/, ''); // Remove leading zeroes
+
+      const getFile_ = (checkingOptions && checkingOptions.getFile) ? checkingOptions.getFile : getFileCached;
+      let tqFileContent;
+      try {
+        tqFileContent = await getFile_({username, repository: repoName, path: thisPath, branch});
+        // console.log("Fetched file_content for", repoName, thisPath, typeof tqFileContent, tqFileContent.length);
+        checkedFilenames.push(thisPath);
+        totalCheckedSize += tqFileContent.length;
+      } catch (tQerror) {
+        console.log("checkTQbook failed to load", username, repoName, thisPath, branch, tQerror + '');
+        addNotice10({ priority: 996, message: "Failed to load", bookID, C, V, location: `${generalLocation} ${thisPath}: ${tQerror}`, extra: repoCode });
+        continue;
+      }
+
+      // We use the generalLocation here (does not include repo name)
+      //  so that we can adjust the returned strings ourselves
+      await ourCheckFileContents(repoCode, bookID, C, V, filename, tqFileContent, generalLocation, checkingOptions); // Adds the notices to checkBookPackageResult
+      checkedFileCount += 1;
+      // addSuccessMessage(`Checked ${repoCode.toUpperCase()} file: ${thisPath}`);
     }
-
-    // We use the generalLocation here (does not include repo name)
-    //  so that we can adjust the returned strings ourselves
-    await ourCheckFileContents(repoCode, bookID, C, V, filename, tqFileContent, generalLocation, checkingOptions); // Adds the notices to checkBookPackageResult
-    checkedFileCount += 1;
-    // addSuccessMessage(`Checked ${repoCode.toUpperCase()} file: ${thisPath}`);
+    addSuccessMessage(`Checked ${checkedFileCount.toLocaleString()} ${repoCode.toUpperCase()} file${checkedFileCount === 1 ? '' : 's'}`);
   }
-  addSuccessMessage(`Checked ${checkedFileCount.toLocaleString()} ${repoCode.toUpperCase()} file${checkedFileCount === 1 ? '' : 's'}`);
 
   ctqResult.checkedFileCount = checkedFileCount;
   ctqResult.checkedFilenames = checkedFilenames;
@@ -512,14 +520,13 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
 
     // So now we want to work through checking this one specified Bible book in various repos:
     //  UHB/UGNT, ULT/GLT, UST/GST, TN, TQ
-    const getFile_ = (checkingOptions && checkingOptions.getFile) ? checkingOptions.getFile : getFileCached;
+    const getFile_ = (newCheckingOptions && newCheckingOptions.getFile) ? newCheckingOptions.getFile : getFileCached;
     let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0, checkedRepoNames = [];
     const origLang = whichTestament === 'old' ? 'UHB' : 'UGNT';
     const ULT = languageCode === 'en' ? 'ULT' : 'GLT';
     const UST = languageCode === 'en' ? 'UST' : 'GST';
 
-    // TEMP: Removed TQ
-    const repoCodeList = [origLang, ULT, UST, 'TN'];
+    const repoCodeList = [origLang, ULT, UST, 'TN', 'TQ'];
     for (const repoCode of repoCodeList) {
       console.log(`Check ${bookID} in ${repoCode} (${languageCode} ${bookID} from ${username})`);
       const repoLocation = ` in ${repoCode.toUpperCase()}${generalLocation}`;
@@ -540,7 +547,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
 
       if (repoCode === 'TQ') {
         // This resource might eventually be converted to TSV tables
-        const tqResultObject = await checkTQbook(username, repoName, branch, bookID, newCheckingOptions);
+        const tqResultObject = await checkTQbook(username, languageCode, repoName, branch, bookID, newCheckingOptions);
         checkBookPackageResult.successList = checkBookPackageResult.successList.concat(tqResultObject.successList);
         checkBookPackageResult.noticeList = checkBookPackageResult.noticeList.concat(tqResultObject.noticeList);
         checkedFilenames = checkedFilenames.concat(tqResultObject.checkedFilenames);
@@ -578,7 +585,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     checkBookPackageResult.checkedFilenameExtensions = [...checkedFilenameExtensions]; // convert Set to Array
     checkBookPackageResult.checkedFilesizes = totalCheckedSize;
     checkBookPackageResult.checkedRepoNames = checkedRepoNames;
-    // checkBookPackageResult.checkedOptions = checkingOptions; // This is done at the caller level
+    // checkBookPackageResult.checkedOptions = newCheckingOptions; // This is done at the caller level
   }
 
   checkBookPackageResult.elapsedSeconds = (new Date() - startTime) / 1000; // seconds

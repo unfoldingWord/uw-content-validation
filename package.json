@@ -20,8 +20,8 @@
     "start": "yarn styleguide:start",
     "styleguide:start": "styleguidist server",
     "styleguide:build": "styleguidist build",
-    "test:unit": "eslint ./src && jest __tests__",
-    "test": "yarn test:unit && cat ./coverage/lcov.info | coveralls",
+    "test:unit": "eslint ./src && jest --watchAll=false --coverage",
+    "test": "yarn test:unit",
     "create-coverage-badge": "bash scripts/create-badge-json.sh"
   },
   "dependencies": {
@@ -49,7 +49,6 @@
     "@types/jest": "24.0.22",
     "babel-eslint": "^10.1.0",
     "coveralls": "^3.0.9",
-    "eslint": "^5.12.1",
     "eslint-config-google": "^0.12.0",
     "eslint-config-react-app": "^5.2.1",
     "eslint-plugin-flowtype": "^5.2.0",
@@ -60,6 +59,7 @@
     "eslint-plugin-react-hooks": "^4.1.0",
     "fs-extra": "4.0.3",
     "gh-pages": "^3.1.0",
+    "jest": "^24.9.0",
     "react": "^16.8.6",
     "react-docgen": "4.1.1",
     "react-dom": "^16.8.6",
