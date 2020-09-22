@@ -73,7 +73,7 @@ function FileCheck(props) {
         function renderSummary(processedResults) {
           return (<div>
             <p>Checked <b>{filename}</b> (from {username} {repoName} <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)</p>
-            <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCFResults.noticeList.length===0?'no':rawCFResults.noticeList.length} notice{rawCFResults.noticeList.length===1?'':'s'}.</p>
+            <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCFResults.noticeList.length===0?'no':rawCFResults.noticeList.length.toLocaleString()} notice{rawCFResults.noticeList.length===1?'':'s'}.</p>
             {/* <RenderRawResults results={rawCFResults} /> */}
           </div>);
         }

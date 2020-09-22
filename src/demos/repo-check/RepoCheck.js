@@ -92,7 +92,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
                         <p>Checked <b>{username} {repoName}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)</p>
                         <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount === 1 ? '' : 's'} from {repoName}: {processedResults.checkedFilenames.join(', ')}
                             <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>
-                        <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCRResults.noticeList.length===0?'no':rawCRResults.noticeList.length} notice{rawCRResults.noticeList.length===1?'':'s'}.</p>
+                        <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCRResults.noticeList.length===0?'no':rawCRResults.noticeList.length.toLocaleString()} notice{rawCRResults.noticeList.length===1?'':'s'}.</p>
                         {/* <RenderRawResults results={rawCRResults} /> */}
                     </div>);
                 }

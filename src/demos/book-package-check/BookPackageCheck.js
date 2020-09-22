@@ -101,7 +101,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
                     <p>Checked <b>{username} {languageCode} {bookID}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
                     <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount === 1 ? '' : 's'} from {processedResults.checkedRepoNames.length} repo{processedResults.checkedRepoNames.length === 1 ? '' : 's'}: <b>{processedResults.checkedRepoNames.join(', ')}</b>
                         <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>
-                    <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCBPResults.noticeList.length===0?'no':rawCBPResults.noticeList.length} notice{rawCBPResults.noticeList.length===1?'':'s'}.</p>
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCBPResults.noticeList.length===0?'no':rawCBPResults.noticeList.length.toLocaleString()} notice{rawCBPResults.noticeList.length===1?'':'s'}.</p>
                     {/* <RenderRawResults results={rawCBPResults} /> */}
                 </div>);
             }
