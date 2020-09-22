@@ -92,8 +92,8 @@ export function getRepoName(languageCode, repoCode) {
   * @param {String} repoCode - the repo code, e.g., 'TQ'
   * @return {String} - the Door43 repoName string
   */
-//    console.log(`getRepoName('${languageCode}', '${repoCode}')…`);
- let repo_languageCode = languageCode;
+  //    console.log(`getRepoName('${languageCode}', '${repoCode}')…`);
+  let repo_languageCode = languageCode;
   if (repoCode === 'UHB') repo_languageCode = 'hbo';
   else if (repoCode === 'UGNT') repo_languageCode = 'el-x-koine';
   const repoName = `${repo_languageCode}_${repoCode.toLowerCase()}`;

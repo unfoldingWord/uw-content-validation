@@ -1,0 +1,1 @@
+What translating decision should I make when I see “Alternate Translation:” in the notes?

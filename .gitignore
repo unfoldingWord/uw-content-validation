@@ -49,6 +49,9 @@ typings/
 # VSCode
 .vscode
 
+# Intellij
+.idea
+
 # Optional npm cache directory
 .npm
 .yalc/

@@ -1,0 +1,1 @@
+Biblical Imagery - Common Metonymies
