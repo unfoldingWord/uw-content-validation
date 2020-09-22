@@ -60,27 +60,6 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  Occurrence Note tests -  should find missing end quote 1`] = `
-Object {
-  "noticeList": Array [
-    Object {
-      "C": "1",
-      "V": "2",
-      "bookID": "GEN",
-      "characterIndex": 9,
-      "extract": "… is a \\"com…",
-      "fieldName": "OccurrenceNote",
-      "filename": "OccurrenceNote",
-      "lineNumber": 1,
-      "location": " that was supplied",
-      "message": "Unexpected \\" character after space",
-      "priority": 191,
-      "rowID": "d7q3",
-    },
-  ],
-}
-`;
-
 exports[`checkTN_TSVDataRow() -  Original Quote tests -  invalid Original Language 1`] = `
 Object {
   "noticeList": Array [
@@ -401,6 +380,138 @@ Object {
       "location": " that was supplied",
       "message": "Found wrong number of TSV fields (expected 9)",
       "priority": 861,
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  link tests -  should fail broken link end 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "2",
+      "V": "12",
+      "bookID": "RUT",
+      "details": "(left=2, right=1)",
+      "fieldName": "OccurrenceNote",
+      "filename": "OccurrenceNote",
+      "lineNumber": 1,
+      "location": " that was supplied",
+      "message": "Mismatched [] characters",
+      "priority": 563,
+      "rowID": "gnn5",
+    },
+    Object {
+      "C": "2",
+      "V": "12",
+      "bookID": "RUT",
+      "details": "(left=1, right=0)",
+      "fieldName": "OccurrenceNote",
+      "filename": "OccurrenceNote",
+      "lineNumber": 1,
+      "location": " that was supplied",
+      "message": "Mismatched () characters",
+      "priority": 563,
+      "rowID": "gnn5",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  link tests -  should fail broken link start 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "2",
+      "V": "12",
+      "bookID": "RUT",
+      "details": "(left=1, right=2)",
+      "fieldName": "OccurrenceNote",
+      "filename": "OccurrenceNote",
+      "lineNumber": 1,
+      "location": " that was supplied",
+      "message": "Mismatched [] characters",
+      "priority": 563,
+      "rowID": "gnn5",
+    },
+    Object {
+      "C": "2",
+      "V": "12",
+      "bookID": "RUT",
+      "details": "(left=1, right=0)",
+      "fieldName": "OccurrenceNote",
+      "filename": "OccurrenceNote",
+      "lineNumber": 1,
+      "location": " that was supplied",
+      "message": "Mismatched () characters",
+      "priority": 563,
+      "rowID": "gnn5",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  link tests -  should fail double broken link end 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "2",
+      "V": "12",
+      "bookID": "RUT",
+      "details": "(left=2, right=0)",
+      "fieldName": "OccurrenceNote",
+      "filename": "OccurrenceNote",
+      "lineNumber": 1,
+      "location": " that was supplied",
+      "message": "Mismatched [] characters",
+      "priority": 563,
+      "rowID": "gnn5",
+    },
+    Object {
+      "C": "2",
+      "V": "12",
+      "bookID": "RUT",
+      "details": "(left=1, right=0)",
+      "fieldName": "OccurrenceNote",
+      "filename": "OccurrenceNote",
+      "lineNumber": 1,
+      "location": " that was supplied",
+      "message": "Mismatched () characters",
+      "priority": 563,
+      "rowID": "gnn5",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  link tests -  should fail double broken link start 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "2",
+      "V": "12",
+      "bookID": "RUT",
+      "details": "(left=0, right=2)",
+      "fieldName": "OccurrenceNote",
+      "filename": "OccurrenceNote",
+      "lineNumber": 1,
+      "location": " that was supplied",
+      "message": "Mismatched [] characters",
+      "priority": 563,
+      "rowID": "gnn5",
+    },
+    Object {
+      "C": "2",
+      "V": "12",
+      "bookID": "RUT",
+      "details": "(left=1, right=0)",
+      "fieldName": "OccurrenceNote",
+      "filename": "OccurrenceNote",
+      "lineNumber": 1,
+      "location": " that was supplied",
+      "message": "Mismatched () characters",
+      "priority": 563,
+      "rowID": "gnn5",
     },
   ],
 }

@@ -27,6 +27,34 @@ describe('checkTN_TSVDataRow() - ', () => {
       expect(rawResults).toMatchSnapshot();
     });
 
+    it('should fail broken link start', async() => {
+      const chosenLine = "RUT\t2\t12\tgnn5\tfigs-parallelism\tשְׁלֵמָ֗ה\t1\tmay your full wages come from Yahweh	This is a poetic expression that is very similar to the previous sentence. Alternate translation: “May Yahweh fully give to you everything that you deserve” (See: [rc://en/ta/man/translate/figs-parallelism]]";
+      const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'RUT','2','12', 'that was supplied', optionalCheckingOptions);
+      expect(rawResults.noticeList.length).toEqual(2);
+      expect(rawResults).toMatchSnapshot();
+    });
+
+    it('should fail broken link end', async() => {
+      const chosenLine = "RUT\t2\t12\tgnn5\tfigs-parallelism\tשְׁלֵמָ֗ה\t1\tmay your full wages come from Yahweh	This is a poetic expression that is very similar to the previous sentence. Alternate translation: “May Yahweh fully give to you everything that you deserve” (See: [[rc://en/ta/man/translate/figs-parallelism]";
+      const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'RUT','2','12', 'that was supplied', optionalCheckingOptions);
+      expect(rawResults.noticeList.length).toEqual(2);
+      expect(rawResults).toMatchSnapshot();
+    });
+
+    it('should fail double broken link start', async() => {
+      const chosenLine = "RUT\t2\t12\tgnn5\tfigs-parallelism\tשְׁלֵמָ֗ה\t1\tmay your full wages come from Yahweh	This is a poetic expression that is very similar to the previous sentence. Alternate translation: “May Yahweh fully give to you everything that you deserve” (See: rc://en/ta/man/translate/figs-parallelism]]";
+      const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'RUT','2','12', 'that was supplied', optionalCheckingOptions);
+      expect(rawResults.noticeList.length).toEqual(2);
+      expect(rawResults).toMatchSnapshot();
+    });
+
+    it('should fail double broken link end', async() => {
+      const chosenLine = "RUT\t2\t12\tgnn5\tfigs-parallelism\tשְׁלֵמָ֗ה\t1\tmay your full wages come from Yahweh	This is a poetic expression that is very similar to the previous sentence. Alternate translation: “May Yahweh fully give to you everything that you deserve” (See: [[rc://en/ta/man/translate/figs-parallelism";
+      const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'RUT','2','12', 'that was supplied', optionalCheckingOptions);
+      expect(rawResults.noticeList.length).toEqual(2);
+      expect(rawResults).toMatchSnapshot();
+    });
+
     // TODO re-enable test when fixed
     it.skip('should fail if SupportReference link differs from link in OccurrenceNote', async() => {
       const chosenLine = "GEN\t1\t6\turb3\tfigs-imperative\t\t0\tLet there be an expanse…let it divide\tThese are commands. By commanding that the expanse should exist and that it divide the waters, God made it exist and divide the waters. (See: [[rc://en/ta/man/figs-parallelism]])";
