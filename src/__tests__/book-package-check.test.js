@@ -15,10 +15,12 @@ const optionalCheckingOptions = {
       if (testFiles[filePath] !== null) {  // if file content not null, then return contents.  Otherwise will throw exception
         return testFiles[filePath];
       }
+      // eslint-disable-next-line no-throw-literal
       throw `Simulated error - Could not find ${filePath}`;
     } else if (fs.existsSync(filePath)) {
       return fs.readFileSync(filePath).toString();
     }
+    // eslint-disable-next-line no-throw-literal
     throw `Could not find ${filePath}`;
   },
   getFilelistFromZip: params => {

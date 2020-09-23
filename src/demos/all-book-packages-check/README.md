@@ -6,7 +6,6 @@ The code below requests some info and then checks Open Bible Stories plus all Bi
 
 **Warning**: Some book packages contain many files and/or very large files, and downloading them all and then checking them might slow down your browser -- maybe even causing pop-up messages asking to confirm that you want to keep waiting.
 
-**NOTE: Caching is temporarily disabled.**
 **Note**: This demonstration uses cached values of files stored inside the local browser. This makes reruns of the checks much faster, but it won't notice if you have updated the files on Door43. If you want to clear the local caches, use the `Clear Cache` function.
 
 ```js

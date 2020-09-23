@@ -1,5 +1,5 @@
 import { checkTextField } from './field-text-check'
-import { cachedGetURL } from './getApi';
+import { cachedGetFileUsingFullURL } from './getApi';
 
 
 const LINK_VALIDATOR_VERSION_STRING = '0.3.2';
@@ -37,7 +37,7 @@ async function startLiveLinksCheck(linksList, existingNoticeList, callbackFuncti
         const fetchLink = linkEntry[1]? linkEntry[1]: linkEntry[2]; // Why ??? !!!
         console.log("startLiveLinksCheck attempting to fetch", fetchLink, '…');
         try {
-            let response = await cachedGetURL(fetchLink);
+            let response = await cachedGetFileUsingFullURL(fetchLink);
             const reponseText = response.text();
             console.log("startLiveLinksCheck got response: ", reponseText.length, reponseText);
         } catch (lcError) {

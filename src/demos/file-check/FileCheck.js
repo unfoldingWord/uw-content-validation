@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 // import { Paper, Button } from '@material-ui/core';
 // import { RepositoryContext, FileContext } from 'gitea-react-toolkit';
 import { withStyles } from '@material-ui/core/styles';
-import { getFileCached, checkFileContents } from '../../core';
+import { cachedGetFile, checkFileContents } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
 import { ourParseInt } from '../../core/utilities';
@@ -29,8 +29,8 @@ function FileCheck(props) {
 
         // Display our "waiting" message
         setResultValue(<p style={{ color: 'magenta' }}>Fetching {username} {repoName} <b>{filename}</b>…</p>);
-        // console.log(`About to call getFileCached(${username}, ${repoName}, ${filename}, ${branch})…`);
-        const fileContent = await getFileCached({ username: username, repository: repoName, path: filename, branch: branch });
+        // console.log(`About to call cachedGetFile(${username}, ${repoName}, ${filename}, ${branch})…`);
+        const fileContent = await cachedGetFile({ username: username, repository: repoName, path: filename, branch: branch });
 
         setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {repoName} <b>{filename}</b>…</p>);
         let rawCFResults = { noticeList:[{priority:990, message:"Unable to load file", filename}], elapsedSeconds:0 };

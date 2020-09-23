@@ -517,14 +517,19 @@ function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation,
         // console.log(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}=${rest.length} chars, ${lineLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
 
         // Remove any self-closed milestones and internal \v markers
-        let adjustedRest = rest.replaceAll('\\zaln-e\\*', '').replaceAll('\\ts\\*', '').replaceAll('\\k-e\\*', '')
-            .replaceAll('\\v ', '')
-            .replace(/\\k-s[^\\]+\\\*/g, '');
+        // NOTE: replaceAll() is not generally available in browsers yet, so need to use RegExps
+        let adjustedRest = rest.replace(/\\zaln-e\\\*/g, '').replace(/\\ts\\\*/g, '').replace(/\\k-e\\\*/g, '')
+            .replace(/\\v /g, '')
+            .replace(/\\k-s[^\\]+\\\*/g, ''); // This last one is a genuine RegExp because it includes the field contents
 
         // Remove any simple character markers
+        // NOTE: replaceAll() is not generally available in browsers yet, so need to use RegExps
         for (const charMarker of SIMPLE_INTERNAL_MARKERS) {
-            adjustedRest = adjustedRest.replaceAll(`\\${charMarker} `, '')
-                .replaceAll(`\\${charMarker}*`, '');
+            // TODO: Move the regEx creation so it's only done once -- not for every line!!!
+            const startRegex= new RegExp(`\\${charMarker} `, 'g');
+            // eslint-disable-next-line no-useless-escape
+            const endRegex= new RegExp(`\\${charMarker}\*`, 'g');
+            adjustedRest = adjustedRest.replace(startRegex, '').replace(endRegex, '');
         }
         // if (adjustedRest !== rest) {console.log(`Still Got \n'${adjustedRest}' from \n'${rest}'`); return;}
 

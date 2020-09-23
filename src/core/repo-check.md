@@ -10,12 +10,11 @@ The code below requests some info and then checks a Door43 repository.You can en
 
 **Warning**: Some repos contain many files and/or very large files, and downloading them all and then checking them might slow down your browser -- maybe even causing pop-up messages asking to confirm that you want to keep waiting.
 
-**NOTE: Caching is temporarily disabled.**
 **Note**: This demonstration uses cached values of files stored inside the local browser. This makes reruns of the checks much faster, but it won't notice if you have updated the files on Door43. If you want to clear the local caches, use the `Clear Cache` function.
 
 ```js
 import React, { useState, useEffect } from 'react';
-import { getRepoName, clearCacheAndPreloadRepos } from './getApi';
+import { getRepoName, preloadReposIfNecessary } from './getApi';
 import { checkRepo } from './book-package-check';
 import { RenderRawResults } from '../demos/RenderProcessedResults';
 
@@ -43,7 +42,7 @@ function CheckRepo(props) {
       // TODO: See if this preloading is really helping at all???
       // This call is not needed, but makes sure you don't have stale data that has been cached
       setResults(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for repo check…</p>);
-      const successFlag = await clearCacheAndPreloadRepos(username, languageCode, ['GEN','MAT'], branch, [repoCode]);
+      const successFlag = await preloadReposIfNecessary(username, languageCode, ['GEN','MAT'], branch, [repoCode]);
       if (!successFlag)
           console.log(`CheckRepo error: Failed to pre-load all repos`)
 

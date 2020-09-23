@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // import { withStyles } from '@material-ui/core/styles';
 import * as books from '../../core/books/books';
-import { ourParseInt, clearCacheAndPreloadRepos } from '../../core';
+import { ourParseInt, preloadReposIfNecessary } from '../../core';
 import checkBookPackages from './checkBookPackages';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
@@ -48,6 +48,9 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     // Or this allows the parameters to be specified as a BookPackagesCheck property
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
 
+    let preloadList = ['TA', 'TW', 'TQ'];
+    if (bookIDList.length > 5) { preloadList.push('LT'); preloadList.push('ST'); preloadList.push('TN'); }
+
     useEffect(() => {
         // console.log("BookPackagesCheck.useEffect() called with ", JSON.stringify(props));
 
@@ -56,24 +59,9 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         (async () => {
         // console.log("Started BookPackagesCheck.unnamedFunction()");
 
-        // // TODO: We need to implement BM's new function here
-        // // Preload the reference repos
-        // let preloadCount = 1;
-        // // TEMP: Removed TQ
-        // const repoCodeList = ['UHB','UGNT', 'TA','TW'];
-        // for (const repoCode of repoCodeList) {
-        // setResultValue(<p style={{ color: 'magenta' }}>Preloading <b>{repoCode}</b> repo ({preloadCount}/{repoCodeList.length}) ready for {username} {languageCode} book packages check…</p>);
-        //     const repoName = getRepoName(languageCode, repoCode);
-        //     console.log(`BookPackagesCheck: preloading zip file for ${repoName}…`);
-        //     const zipFetchSucceeded = await fetchRepositoryZipFile({ username, repository: repoName, branch });
-        //     if (!zipFetchSucceeded)
-        //         console.log(`BookPackagesCheck: misfetched ${repoCode} zip file for repo with ${zipFetchSucceeded}`);
-        //     preloadCount += 1;
-        //     }
-
         // This call is not needed, but makes sure you don't have stale data that has been cached
         setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for book packages check…</p>);
-        const successFlag = await clearCacheAndPreloadRepos(username, languageCode, bookIDList, branch);
+        const successFlag = await preloadReposIfNecessary(username, languageCode, bookIDList, branch, preloadList);
         if (!successFlag)
             console.log(`BookPackagesCheck error: Failed to pre-load all repos`)
 

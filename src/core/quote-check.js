@@ -1,5 +1,5 @@
 import * as books from '../core/books/books';
-import { getFileCached } from '../core/getApi';
+import { cachedGetFile } from '../core/getApi';
 // import { consoleLogObject } from '../core/utilities';
 
 
@@ -79,7 +79,7 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, gi
 
         let originalUSFM;
         // console.log(`Need to check against ${originalLanguageRepoCode}`);
-        const getFile_ = (optionalCheckingOptions && optionalCheckingOptions.getFile) ? optionalCheckingOptions.getFile : getFileCached;
+        const getFile_ = (optionalCheckingOptions && optionalCheckingOptions.getFile) ? optionalCheckingOptions.getFile : cachedGetFile;
         if (originalLanguageRepoCode === 'UHB') {
             try {
                 originalUSFM = await getFile_({ username, repository: originalLanguageRepoName, path: filename, branch });

@@ -7,7 +7,8 @@ Object {
       "C": "1",
       "V": "2",
       "bookID": "GEN",
-      "location": " (expected 'GEN') that was supplied",
+      "details": "(expected 'GEN')",
+      "location": " that was supplied",
       "message": "Wrong 'RUT' book identifier",
       "priority": 978,
       "rowID": "d7qw",
@@ -20,8 +21,8 @@ exports[`checkTN_TSVDataRow() -  GL Note tests -  should find bad ellipse 1`] = 
 Object {
   "noticeList": Array [
     Object {
-      "C": "1",
-      "V": "2",
+      "C": "2",
+      "V": "3",
       "bookID": "GEN",
       "location": " that was supplied",
       "message": "Missing OrigQuote field",
@@ -29,8 +30,8 @@ Object {
       "rowID": "w3r5",
     },
     Object {
-      "C": "1",
-      "V": "2",
+      "C": "2",
+      "V": "3",
       "bookID": "GEN",
       "characterIndex": 11,
       "extract": "…lipse...",
@@ -65,7 +66,7 @@ Object {
   "noticeList": Array [
     Object {
       "C": "1",
-      "V": "2",
+      "V": "1",
       "bookID": "GEN",
       "details": "",
       "extract": "00",
@@ -279,7 +280,7 @@ Object {
   "noticeList": Array [
     Object {
       "C": "1",
-      "V": "2",
+      "V": "3",
       "bookID": "GEN",
       "location": " that was supplied",
       "message": "Missing OrigQuote field",
@@ -522,24 +523,13 @@ Object {
   "noticeList": Array [
     Object {
       "C": "1",
-      "V": "2",
+      "V": "9",
       "bookID": "GEN",
-      "extract": "[[rc://en/ta/man/translate/figs-activepassivez]]",
+      "extract": "[[rc://*/ta/man/translate/figs-activepassivez]]",
       "fieldName": "OccurrenceNote",
       "location": " that was supplied translate/figs-activepassivez/01.md: Could not find src/__tests__/fixtures/unfoldingWord/en_ta/translate/figs-activepassivez/01.md",
       "message": "Error loading OccurrenceNote TA link",
       "priority": 885,
-      "rowID": "zu6f",
-    },
-    Object {
-      "C": "1",
-      "V": "2",
-      "bookID": "GEN",
-      "extract": "[[rc://en/ta/man/translate/figs-activepassivez]]",
-      "fieldName": "OccurrenceNote",
-      "location": " that was supplied translate/figs-activepassivez/01.md",
-      "message": "Unable to find OccurrenceNote TA link",
-      "priority": 886,
       "rowID": "zu6f",
     },
   ],
@@ -551,25 +541,31 @@ Object {
   "noticeList": Array [
     Object {
       "C": "1",
-      "V": "2",
+      "V": "9",
       "bookID": "GEN",
-      "extract": "[[rc://en/ta/man/translate/figs-imperativez]]",
+      "extract": "[[rc://*/ta/man/translate/figs-imperativez]]",
       "fieldName": "OccurrenceNote",
       "location": " that was supplied translate/figs-imperativez/01.md: Could not find src/__tests__/fixtures/unfoldingWord/en_ta/translate/figs-imperativez/01.md",
       "message": "Error loading OccurrenceNote TA link",
       "priority": 885,
       "rowID": "zu6f",
     },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  link tests -  should fail invalid verse link 1`] = `
+Object {
+  "noticeList": Array [
     Object {
       "C": "1",
       "V": "2",
       "bookID": "GEN",
-      "extract": "[[rc://en/ta/man/translate/figs-imperativez]]",
-      "fieldName": "OccurrenceNote",
-      "location": " that was supplied translate/figs-imperativez/01.md",
-      "message": "Unable to find OccurrenceNote TA link",
-      "priority": 886,
-      "rowID": "zu6f",
+      "details": "(expected '2')",
+      "location": " that was supplied",
+      "message": "Wrong '9' verse number",
+      "priority": 975,
+      "rowID": "ha33",
     },
   ],
 }
@@ -582,9 +578,20 @@ Object {
       "C": "1",
       "V": "2",
       "bookID": "GEN",
-      "location": " (expected 'GEN') that was supplied",
+      "details": "(expected 'GEN')",
+      "location": " that was supplied",
       "message": "Wrong 'GIN' book identifier",
       "priority": 978,
+      "rowID": "W-3r5",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "details": "(expected '1')",
+      "location": " that was supplied",
+      "message": "Wrong '200' chapter number",
+      "priority": 976,
       "rowID": "W-3r5",
     },
     Object {
@@ -595,6 +602,16 @@ Object {
       "location": " that was supplied",
       "message": "Invalid large chapter number",
       "priority": 823,
+      "rowID": "W-3r5",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "details": "(expected '2')",
+      "location": " that was supplied",
+      "message": "Wrong '9' verse number",
+      "priority": 975,
       "rowID": "W-3r5",
     },
     Object {
@@ -717,8 +734,8 @@ exports[`checkTN_TSVDataRow() -  should find invalid SupportReference and missin
 Object {
   "noticeList": Array [
     Object {
-      "C": "1",
-      "V": "2",
+      "C": "2",
+      "V": "3",
       "bookID": "GEN",
       "extract": "Laugh",
       "fieldName": "SupportReference",
@@ -728,8 +745,8 @@ Object {
       "rowID": "w3r5",
     },
     Object {
-      "C": "1",
-      "V": "2",
+      "C": "2",
+      "V": "3",
       "bookID": "GEN",
       "extract": "Laugh",
       "fieldName": "SupportReference",
@@ -739,13 +756,33 @@ Object {
       "rowID": "w3r5",
     },
     Object {
-      "C": "1",
-      "V": "2",
+      "C": "2",
+      "V": "3",
       "bookID": "GEN",
       "location": " that was supplied",
       "message": "Missing OrigQuote field",
       "priority": 919,
       "rowID": "w3r5",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  should find language code instead of asterisk 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "EXO",
+      "characterIndex": 90,
+      "details": "(not 'en')",
+      "extract": "…rc://en/ta…",
+      "fieldName": "OccurrenceNote",
+      "location": " that was supplied",
+      "message": "Resource container link should have '*' language code",
+      "priority": 450,
+      "rowID": "d7qw",
     },
   ],
 }
@@ -758,7 +795,8 @@ Object {
       "C": "1",
       "V": "2",
       "bookID": "GEN",
-      "location": " (expected 'GEN') that was supplied",
+      "details": "(expected 'GEN')",
+      "location": " that was supplied",
       "message": "Wrong 'EXO' book identifier",
       "priority": 978,
       "rowID": "d7qw",

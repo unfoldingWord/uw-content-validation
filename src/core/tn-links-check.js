@@ -1,5 +1,5 @@
 import * as books from '../core/books/books';
-import { getFileCached } from '../core/getApi';
+import { cachedGetFile } from '../core/getApi';
 import { ourParseInt } from './utilities';
 // import { consoleLogObject } from '../core/utilities';
 
@@ -75,7 +75,7 @@ async function checkTNLinksToOutside(bookID, fieldName, fieldText, givenLocation
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
     // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
-    const getFile_ = (optionalCheckingOptions && optionalCheckingOptions.getFile) ? optionalCheckingOptions.getFile : getFileCached;
+    const getFile_ = (optionalCheckingOptions && optionalCheckingOptions.getFile) ? optionalCheckingOptions.getFile : cachedGetFile;
     let username;
     try {
         username = optionalCheckingOptions.taRepoUsername;
@@ -118,14 +118,14 @@ async function checkTNLinksToOutside(bookID, fieldName, fieldText, givenLocation
         try {
             taFileContent = await getFile_({ username, repository: taRepoName, path: filepath, branch });
             // console.log("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
+            if (!taFileContent)
+                addNotice({ priority: 886, message: `Unable to find ${fieldName} TA link`, extract: resultArray[0], location: `${ourLocation} ${filepath}` });
+            else if (taFileContent.length < 10)
+                addNotice({ priority: 884, message: `Linked ${fieldName} TA article seems empty`, extract: resultArray[0], location: `${ourLocation} ${filepath}` });
         } catch (trcGCerror) {
             console.log("ERROR: Failed to load", username, taRepoName, filepath, branch, trcGCerror.message);
             addNotice({ priority: 885, message: `Error loading ${fieldName} TA link`, extract: resultArray[0], location: `${ourLocation} ${filepath}: ${trcGCerror}` });
         }
-        if (!taFileContent)
-            addNotice({ priority: 886, message: `Unable to find ${fieldName} TA link`, extract: resultArray[0], location: `${ourLocation} ${filepath}` });
-        else if (taFileContent.length < 10)
-            addNotice({ priority: 884, message: `Linked ${fieldName} TA article seems empty`, extract: resultArray[0], location: `${ourLocation} ${filepath}` });
     }
 
     // Check TW links like [[rc://en/tw/dict/bible/other/death]]
