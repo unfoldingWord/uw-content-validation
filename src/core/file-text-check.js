@@ -48,7 +48,7 @@ export function checkTextfileContents(languageCode, filename, fileText, optional
         result.noticeList.push(noticeObject);
     }
 
-        function ourCheckPlainText(plainText, givenLocation, optionalCheckingOptions) {
+    function ourCheckPlainText(plainText, givenLocation, optionalCheckingOptions) {
         /**
         * @description - checks the given text field and processes the returned results
         * @param {String} plainText - the actual text of the field being checked
@@ -122,5 +122,3 @@ export function checkTextfileContents(languageCode, filename, fileText, optional
     return result;
 }
 // end of checkTextfileContents function
-
-export default checkTextfileContents;

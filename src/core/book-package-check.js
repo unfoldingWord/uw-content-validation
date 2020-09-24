@@ -1,12 +1,12 @@
 import React from 'react';
 import * as books from './books';
 import { getRepoName, getFileListFromZip, cachedGetFile, cachedGetRepositoryZipFile } from './getApi';
-import checkUSFMText from './usfm-text-check';
-import checkMarkdownText from './markdown-text-check';
-import checkPlainText from './plain-text-check';
-import checkYAMLText from './yaml-text-check';
-import checkManifestText from './manifest-text-check';
-import checkTN_TSVText from './tn-table-text-check';
+import {checkUSFMText} from './usfm-text-check';
+import {checkMarkdownText} from './markdown-text-check';
+import {checkPlainText} from './plain-text-check';
+import {checkYAMLText} from './yaml-text-check';
+import {checkManifestText} from './manifest-text-check';
+import {checkTN_TSVText} from './tn-table-text-check';
 
 
 /*

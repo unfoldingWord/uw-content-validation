@@ -1,4 +1,4 @@
-import checkTextField from './field-text-check';
+import { checkTextField } from './field-text-check';
 import { isWhitespace, countOccurrences } from './text-handling-functions'
 
 
@@ -7,7 +7,7 @@ const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.2.1';
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-function checkPlainText(textName, plainText, givenLocation, optionalCheckingOptions) {
+export function checkPlainText(textName, plainText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire text, i.e., all lines.
         It is used in checkFileContents() in book-package-check.js
 
@@ -197,6 +197,3 @@ function checkPlainText(textName, plainText, givenLocation, optionalCheckingOpti
     return cptResult;
 }
 // end of checkPlainText function
-
-
-export default checkPlainText;

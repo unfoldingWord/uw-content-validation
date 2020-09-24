@@ -1,6 +1,6 @@
 /* eslint-env jest */
 
-import checkTN_TSVDataRow from '../core/tn-table-row-check';
+import {checkTN_TSVDataRow} from '../core/tn-table-row-check';
 import Path from "path";
 import fs from 'fs-extra';
 

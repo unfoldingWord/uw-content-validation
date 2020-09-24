@@ -13,7 +13,7 @@ export function runUsfmJsCheck(fileText, convertOptions) {
     // console.log(`  jsonResult: ${JSON.stringify(jsonResult)}`)
     // NOTE: We don't know how to get the errors out yet
 
-    return { isValidUSFM: numJSONkeys >= 2, returnedJSON:jsonResult }; // Expect 'headers', 'chapters'
+    return { isValidUSFM: numJSONkeys >= 2, returnedJSON: jsonResult }; // Expect 'headers', 'chapters'
 }
 // end of runUsfmJsCheck function
 
@@ -41,7 +41,7 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, opti
         // console.log(`checkUSFMToJSON success: ${successString}`);
         result.successList.push(successString);
     }
-    function addNotice6to7({priority, message, lineNumber, characterIndex, extract, location}) {
+    function addNotice6to7({ priority, message, lineNumber, characterIndex, extract, location }) {
         /**
         * @description - adds a new notice entry, adding bookID,C,V to the given fields
         * @param {Number} priority - notice priority from 1 (lowest) to 999 (highest)
@@ -61,7 +61,7 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, opti
         if (extract) console.assert(typeof extract === 'string', `cUSFMjs addNotice6to7: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cUSFMjs addNotice6to7: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `cUSFMjs addNotice6to7: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push({priority,message, bookID, lineNumber, characterIndex, extract, location});
+        result.noticeList.push({ priority, message, bookID, lineNumber, characterIndex, extract, location });
     }
 
 
@@ -70,12 +70,12 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, opti
         'chunk': true,
         'content-source': ourLocation,
         'convertToInt': []
-        };
+    };
     const convertCheckResult = runUsfmJsCheck(givenText, ourLocation, convertOptions);
     // NOTE: We haven't figured out how to get ERRORS out of this parser yet
 
     if (!convertCheckResult.isValidUSFM)
-        addNotice6to7({priority:943, message:`USFM3 toJSON Check doesn't pass`, location:ourLocation});
+        addNotice6to7({ priority: 943, message: `USFM3 toJSON Check doesn't pass`, location: ourLocation });
 
     addSuccessMessage(`Checked USFM-JS`);
     // console.log(`  checkUSFMToJSON returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
@@ -83,6 +83,3 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, opti
     return result;
 }
 // end of checkUSFMToJSON function
-
-
-export default checkUSFMToJSON;

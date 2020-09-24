@@ -204,5 +204,3 @@ export function checkTextField(fieldName, fieldText, allowedLinks, optionalField
     return result;
 }
 // end of checkTextField function
-
-export default checkTextField;

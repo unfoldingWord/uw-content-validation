@@ -8,7 +8,7 @@ import { cachedGetFile } from '../core/getApi';
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, givenLocation, optionalCheckingOptions) {
+export async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, givenLocation, optionalCheckingOptions) {
     // Checks that the Hebrew/Greek quote can be found in the original texts
 
     // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
@@ -272,25 +272,25 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, gi
             // console.log(`722 verseText='${verseText}'`);
             if (fieldText[0] === '\u2060') { // Word joiner
                 const extract = fieldText.substring(0, extractLength) + fieldText.length > extractLength ? '…' : '';
-                addNotice6({ priority: 916, message: "Unable to find original language quote in verse text", details:"quote which starts with 'word joiner'" + (noBreakSpaceText? ' '+ noBreakSpaceText:''), extract, location: ourLocation });
+                addNotice6({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which starts with 'word joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation });
             } else if (fieldText.endsWith('\u2060')) { // Word joiner
-                const extract = fieldText.length > extractLength ? '…' : '' + fieldText.substring(fieldText.length-extractLength, fieldText.length);
-                addNotice6({ priority: 916, message: "Unable to find original language quote in verse text", details:"quote which ends with 'word joiner'" + (noBreakSpaceText? ' '+ noBreakSpaceText:''), extract, location: ourLocation });
+                const extract = fieldText.length > extractLength ? '…' : '' + fieldText.substring(fieldText.length - extractLength, fieldText.length);
+                addNotice6({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which ends with 'word joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation });
             } else if (fieldText[0] === '\u200B') { // Zero-width space
                 const extract = fieldText.substring(0, extractLength) + fieldText.length > extractLength ? '…' : '';
-                addNotice6({ priority: 916, message: "Unable to find original language quote in verse text", details:"quote which starts with 'zero-width space'" + (noBreakSpaceText? ' '+ noBreakSpaceText:''), extract, location: ourLocation });
+                addNotice6({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which starts with 'zero-width space'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation });
             } else if (fieldText.endsWith('\u200B')) { // Zero-width space
-                const extract = fieldText.length > extractLength ? '…' : '' + fieldText.substring(fieldText.length-extractLength, fieldText.length);
-                addNotice6({ priority: 916, message: "Unable to find original language quote in verse text", details:"quote which ends with 'zero-width space'" + (noBreakSpaceText? ' '+ noBreakSpaceText:''), extract, location: ourLocation });
+                const extract = fieldText.length > extractLength ? '…' : '' + fieldText.substring(fieldText.length - extractLength, fieldText.length);
+                addNotice6({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which ends with 'zero-width space'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation });
             } else if (fieldText[0] === '\u200D') { // Zero-width joiner
                 const extract = fieldText.substring(0, extractLength) + fieldText.length > extractLength ? '…' : '';
-                addNotice6({ priority: 916, message: "Unable to find original language quote in verse text", details:"quote which starts with 'zero-width joiner'" + (noBreakSpaceText? ' '+ noBreakSpaceText:''), extract, location: ourLocation });
+                addNotice6({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which starts with 'zero-width joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation });
             } else if (fieldText.endsWith('\u200D')) { // Zero-width joiner
-                const extract = fieldText.length > extractLength ? '…' : '' + fieldText.substring(fieldText.length-extractLength, fieldText.length);
-                addNotice6({ priority: 916, message: "Unable to find original language quote in verse text", details:"quote which ends with 'zero-width joiner'" + (noBreakSpaceText? ' '+ noBreakSpaceText:''), extract, location: ourLocation });
+                const extract = fieldText.length > extractLength ? '…' : '' + fieldText.substring(fieldText.length - extractLength, fieldText.length);
+                addNotice6({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which ends with 'zero-width joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation });
             } else {
                 const extract = fieldText.substring(0, halfLength) + (fieldText.length > 2 * halfLength ? '…' : '') + fieldText.substring(fieldText.length - halfLength, fieldText.length);
-                addNotice6({ priority: 916, message: "Unable to find original language quote in verse text", details:noBreakSpaceText, extract, location: ourLocation });
+                addNotice6({ priority: 916, message: "Unable to find original language quote in verse text", details: noBreakSpaceText, extract, location: ourLocation });
             }
         }
     }
@@ -299,6 +299,3 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, gi
     return colqResult;
 }
 // end of checkOriginalLanguageQuote function
-
-
-export default checkOriginalLanguageQuote;

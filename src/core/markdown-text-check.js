@@ -1,4 +1,4 @@
-import checkTextField from './field-text-check';
+import { checkTextField } from './field-text-check';
 
 
 const MARKDOWN_VALIDATOR_VERSION_STRING = '0.3.1';
@@ -6,7 +6,7 @@ const MARKDOWN_VALIDATOR_VERSION_STRING = '0.3.1';
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-function checkMarkdownText(textName, markdownText, givenLocation, optionalCheckingOptions) {
+export function checkMarkdownText(textName, markdownText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire markdown file, i.e., all lines.
 
     Note: This function does not check that any link targets in the markdown are valid links.
@@ -27,7 +27,7 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
         // console.log("Using default extractLength=" + extractLength);
     }
     // else
-        // console.log("Using supplied extractLength=" + extractLength, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
+    // console.log("Using supplied extractLength=" + extractLength, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
     // const halfLength = Math.floor(extractLength / 2); // rounded down
     // const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
     // console.log("Using halfLength=" + halfLength, `halfLengthPlus=${halfLengthPlus}`);
@@ -50,7 +50,7 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cMdT addNotice6: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "cMdT addNotice6: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `cMdT addNotice6: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
-        result.noticeList.push({ ...noticeObject, filename:textName });
+        result.noticeList.push({ ...noticeObject, filename: textName });
     }
     // end of addNotice6 function
 
@@ -136,14 +136,14 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
             const thisHeaderLevel = line.match(/^#*/)[0].length;
             // console.log(`Got thisHeaderLevel=${thisHeaderLevel} for ${line}${atString}`);
             if (thisHeaderLevel > headerLevel + 1)
-                addNotice6({priority:172, message:"Header levels should only increment by one", lineNumber:n, characterIndex:0, location:ourLocation});
+                addNotice6({ priority: 172, message: "Header levels should only increment by one", lineNumber: n, characterIndex: 0, location: ourLocation });
             if (thisHeaderLevel > 0)
                 headerLevel = thisHeaderLevel;
 
             numLeadingSpaces = line.match(/^ */)[0].length;
             // console.log(`Got numLeadingSpaces=${numLeadingSpaces} for ${line}${atString}`);
             if (numLeadingSpaces && lastNumLeadingSpaces && numLeadingSpaces !== lastNumLeadingSpaces)
-                addNotice6({priority:472, message:"Nesting seems confused", lineNumber:n, characterIndex:0, location:ourLocation});
+                addNotice6({ priority: 472, message: "Nesting seems confused", lineNumber: n, characterIndex: 0, location: ourLocation });
 
             checkMarkdownLineContents(n, line, ourLocation);
         } else {
@@ -165,6 +165,3 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
     return result;
 }
 // end of checkMarkdownText function
-
-
-export default checkMarkdownText;

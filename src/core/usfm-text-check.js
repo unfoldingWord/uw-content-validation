@@ -1,7 +1,7 @@
 import * as books from '../core/books/books';
 import { isWhitespace, countOccurrences } from './text-handling-functions'
-import checkTextField from './field-text-check';
-import checkTextfileContents from './file-text-check';
+import { checkTextField } from './field-text-check';
+import { checkTextfileContents } from './file-text-check';
 import { runUsfmJsCheck } from './usfm-js-check';
 import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
 import { ourParseInt } from './utilities';
@@ -81,7 +81,7 @@ const ANY_TEXT_MARKERS = [].concat(INTRO_LINE_START_MARKERS).concat(HEADING_TYPE
     .concat(NOTE_MARKERS).concat(SPECIAL_MARKERS);
 
 
-function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation, optionalCheckingOptions) {
+export function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
     bookID is a three-character UPPERCASE USFM book identifier.
@@ -375,7 +375,7 @@ function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation,
                 && !noticeEntry.message.startsWith("Mismatched {} characters") // Start/end of implied text can be on different lines
                 && !noticeEntry.message.startsWith("Mismatched “” characters")
                 && !noticeEntry.message.startsWith("Mismatched «» characters")
-                && (!noticeEntry.message.startsWith("Unexpected | character after space") || (fieldText.indexOf('x-lemma')<0 && fieldText.indexOf('x-tw')<0)) // 191 inside \zaln-s and \k-s fields
+                && (!noticeEntry.message.startsWith("Unexpected | character after space") || (fieldText.indexOf('x-lemma') < 0 && fieldText.indexOf('x-tw') < 0)) // 191 inside \zaln-s and \k-s fields
                 && (!noticeEntry.message.startsWith("Unexpected doubled , characters") || fieldText.indexOf('x-morph') < 0) // inside \w fields
                 && (!noticeEntry.message.startsWith('Unexpected doubled " characters') || fieldText.indexOf('x-morph') < 0) // inside \w fields
             ) {
@@ -415,7 +415,7 @@ function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation,
                 && !noticeEntry.message.startsWith("Mismatched “” characters")
                 && !noticeEntry.message.startsWith("Mismatched «» characters")
                 && (!noticeEntry.message.startsWith("Unexpected space after | character") || fileText.indexOf('zaln-s') < 0) // 192 inside \zaln-s fields
-                && (!noticeEntry.message.startsWith("Unexpected | character after space") || (fileText.indexOf('x-lemma')<0 && fileText.indexOf('x-tw')<0)) // 191 inside \zaln-s and \k-s fields
+                && (!noticeEntry.message.startsWith("Unexpected | character after space") || (fileText.indexOf('x-lemma') < 0 && fileText.indexOf('x-tw') < 0)) // 191 inside \zaln-s and \k-s fields
                 && (!noticeEntry.message.startsWith("Unexpected doubled , characters") || fileText.indexOf('x-morph') < 0) // inside \w fields
                 && (!noticeEntry.message.startsWith('Unexpected doubled " characters') || fileText.indexOf('x-morph') < 0) // inside \w fields with empty lemma
                 && (!noticeEntry.message.startsWith('Unexpected link') || fileText.indexOf('x-tw') < 0) // inside original language \w fields
@@ -526,9 +526,9 @@ function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation,
         // NOTE: replaceAll() is not generally available in browsers yet, so need to use RegExps
         for (const charMarker of SIMPLE_INTERNAL_MARKERS) {
             // TODO: Move the regEx creation so it's only done once -- not for every line!!!
-            const startRegex= new RegExp(`\\${charMarker} `, 'g');
+            const startRegex = new RegExp(`\\${charMarker} `, 'g');
             // eslint-disable-next-line no-useless-escape
-            const endRegex= new RegExp(`\\${charMarker}\*`, 'g');
+            const endRegex = new RegExp(`\\${charMarker}\*`, 'g');
             adjustedRest = adjustedRest.replace(startRegex, '').replace(endRegex, '');
         }
         // if (adjustedRest !== rest) {console.log(`Still Got \n'${adjustedRest}' from \n'${rest}'`); return;}
@@ -897,6 +897,3 @@ function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation,
     return result;
 }
 // end of checkUSFMText function
-
-
-export default checkUSFMText;

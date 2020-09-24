@@ -1,10 +1,10 @@
 import { isWhitespace } from './text-handling-functions'
 import * as books from './books/books';
-import checkTextField from './field-text-check';
-import checkMarkdownText from './markdown-text-check';
-import checkTAReference from './ta-reference-check';
-import checkTNLinksToOutside from './tn-links-check';
-import checkOriginalLanguageQuote from './quote-check';
+import { checkTextField } from './field-text-check';
+import { checkMarkdownText } from './markdown-text-check';
+import { checkTAReference } from './ta-reference-check';
+import { checkTNLinksToOutside } from './tn-links-check';
+import { checkOriginalLanguageQuote } from './quote-check';
 
 
 // const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.4.3';
@@ -15,7 +15,7 @@ const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOr
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, givenV, givenRowLocation, optionalCheckingOptions) {
+export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, givenV, givenRowLocation, optionalCheckingOptions) {
     /**
     * @description - Checks one TSV data row of translation notes (TN)
     * @param {String} line - the TSV line to be checked
@@ -421,5 +421,3 @@ async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, givenV, gi
     return drResult; // object with noticeList only
 }
 // end of checkTN_TSVDataRow function
-
-export default checkTN_TSVDataRow;

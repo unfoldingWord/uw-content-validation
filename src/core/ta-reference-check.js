@@ -7,7 +7,7 @@ import { cachedGetFile } from '../core/getApi';
 // const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-async function checkTAReference(fieldName, fieldText, givenLocation, optionalCheckingOptions) {
+export async function checkTAReference(fieldName, fieldText, givenLocation, optionalCheckingOptions) {
     // This is for the case of the full SupportReference field being the article link
     //  which is assumed to be in the translate part of the TA manual.
 
@@ -98,17 +98,14 @@ async function checkTAReference(fieldName, fieldText, givenLocation, optionalChe
         // console.log("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
     } catch (trcGCerror) {
         console.log("ERROR: Failed to load", username, taRepoName, filepath, branch, trcGCerror.message);
-        addNotice6({priority:888, message:`Error loading ${fieldName} TA link`, extract:fieldText, location:`${ourLocation} ${filepath}: ${trcGCerror}`});
+        addNotice6({ priority: 888, message: `Error loading ${fieldName} TA link`, extract: fieldText, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
     }
     if (!taFileContent)
-        addNotice6({priority:889, message:`Unable to find ${fieldName} TA link`, extract:fieldText, location:`${ourLocation} ${filepath}`});
-    else if ( taFileContent.length < 10)
-        addNotice6({priority:887, message:`Linked ${fieldName} TA article seems empty`, extract:fieldText, location:`${ourLocation} ${filepath}`});
+        addNotice6({ priority: 889, message: `Unable to find ${fieldName} TA link`, extract: fieldText, location: `${ourLocation} ${filepath}` });
+    else if (taFileContent.length < 10)
+        addNotice6({ priority: 887, message: `Linked ${fieldName} TA article seems empty`, extract: fieldText, location: `${ourLocation} ${filepath}` });
 
     // console.log(`checkTAReference is returning ${JSON.stringify(ctarResult)}`);
     return ctarResult;
 }
 // end of checkTAReference function
-
-
-export default checkTAReference;

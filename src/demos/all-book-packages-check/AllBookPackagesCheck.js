@@ -210,5 +210,4 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
 //   },
 // });
 
-//export default withStyles(styles)(BookPackagesCheck);
 export default AllBookPackagesCheck;

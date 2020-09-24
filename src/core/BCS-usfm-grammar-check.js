@@ -69,15 +69,17 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
         // Some of these "errors" need to be degraded in priority
 
         let adjustedPriority = 994;
-        if (extract==='\\s5' // Temporarily, even though \s5 fields are not valid USFM
-        || ourErrorMessage.startsWith('Expected "f*", "+"') // Might neeed a OHM schema fix?
+        if (extract === '\\s5' // Temporarily, even though \s5 fields are not valid USFM
+            || ourErrorMessage.startsWith('Expected "f*", "+"') // Might neeed a OHM schema fix?
         )
             adjustedPriority = 294;
 
-        ourErrorObject = {priority:adjustedPriority, message:`USFMGrammar: ${ourErrorMessage}`,
-                            filename,
-                            characterIndex, extract,
-                            location:givenLocation};
+        ourErrorObject = {
+            priority: adjustedPriority, message: `USFMGrammar: ${ourErrorMessage}`,
+            filename,
+            characterIndex, extract,
+            location: givenLocation
+        };
 
         // Save our line number
         if (lineNumberString && lineNumberString.length) {
@@ -87,7 +89,7 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
             const lines = fileText.split('\n');
             for (let n = 1; n <= lines.length; n++) {
                 if (n >= lineNumber) break; // Gone far enough
-                if (!lines[n-1]) {
+                if (!lines[n - 1]) {
                     lineNumber += 1; // Increment error line number for each blank line
                     if (!notified) {
                         console.log("Temporarily adjusting BCS grammar error line number to account for blank lines");
@@ -158,7 +160,7 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cUSFMgr addNotice6to7: 'extract' parameter should be a string not a '${typeof extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "cUSFMgr addNotice6to7: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `cUSFMgr addNotice6to7: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
-        cugResult.noticeList.push({ ...noticeObject, bookID,filename });
+        cugResult.noticeList.push({ ...noticeObject, bookID, filename });
     }
 
 
@@ -170,7 +172,7 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
     // console.log(`grammarCheckResult=${JSON.stringify(grammarCheckResult)}`);
 
     if (!grammarCheckResult.isValidUSFM)
-        addNotice6to7({priority:944, message:`USFM3 Grammar Check (${strictnessString} mode) doesn't pass`, filename, location:ourLocation});
+        addNotice6to7({ priority: 944, message: `USFM3 Grammar Check (${strictnessString} mode) doesn't pass`, filename, location: ourLocation });
 
     // We only get one error if it fails
     if (grammarCheckResult.error && grammarCheckResult.priority)
@@ -178,7 +180,7 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
 
     // Display these warnings but with a lowish priority
     for (const warningString of grammarCheckResult.warnings)
-        addNotice6to7({priority:101, message:`USFMGrammar: ${warningString}`, filename, location:ourLocation});
+        addNotice6to7({ priority: 101, message: `USFMGrammar: ${warningString}`, filename, location: ourLocation });
 
     addSuccessMessage(`Checked USFM Grammar (${strictnessString} mode) ${grammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN'T validate)"}`);
     // console.log(`  checkUSFMGrammar returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
@@ -186,6 +188,3 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
     return cugResult;
 }
 // end of checkUSFMGrammar function
-
-
-export default checkUSFMGrammar;

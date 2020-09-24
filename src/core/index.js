@@ -3,6 +3,7 @@ export * from './utilities';
 export * from './getApi';
 export * from './text-handling-functions';
 export * from './field-text-check';
+export * from './file-text-check';
 export * from './markdown-text-check';
 export * from './plain-text-check';
 export * from './tn-table-row-check';

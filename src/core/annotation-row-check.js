@@ -1,9 +1,9 @@
 import * as books from './books/books';
-import checkTextField from './field-text-check';
-import checkMarkdownText from './markdown-text-check';
-import checkTAReference from './ta-reference-check';
-import checkTNLinksToOutside from './tn-links-check';
-import checkOriginalLanguageQuote from './quote-check';
+import { checkTextField } from './field-text-check';
+import { checkMarkdownText } from './markdown-text-check';
+import { checkTAReference } from './ta-reference-check';
+import { checkTNLinksToOutside } from './tn-links-check';
+import { checkOriginalLanguageQuote } from './quote-check';
 
 
 // const ANNOTATION_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.4.1';
@@ -14,7 +14,7 @@ const EXPECTED_TN_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\t
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-async function checkAnnotationTSVDataRow(languageCode, annotationType, line, bookID, C, V, givenRowLocation, optionalCheckingOptions) {
+export async function checkAnnotationTSVDataRow(languageCode, annotationType, line, bookID, C, V, givenRowLocation, optionalCheckingOptions) {
     /**
     * @description - Checks one TSV data row of translation notes (TN)
     * @param {String} annotationType - TN, TQ, TWL, SN, or SQ -- allows more specific checks
@@ -132,7 +132,7 @@ async function checkAnnotationTSVDataRow(languageCode, annotationType, line, boo
             // NOTE: Ellipses in OccurrenceNote have the normal meaning
             //          not like the specialised meaning in the snippet fields OrigQuote and GLQuote
             if (noticeEntry.priority !== 178 && noticeEntry.priority !== 179 // unexpected space after ellipse, ellipse after space
-            && !noticeEntry.message.startsWith("Unexpected … character after space") // 191
+                && !noticeEntry.message.startsWith("Unexpected … character after space") // 191
             )
                 addNoticePartial({ ...noticeEntry, rowID, fieldName });
         }
@@ -223,7 +223,7 @@ async function checkAnnotationTSVDataRow(languageCode, annotationType, line, boo
         console.assert(fieldText !== undefined, "checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'fieldText' parameter should be defined");
         console.assert(typeof fieldText === 'string', `checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
 
-        const coqResultObject = await checkOriginalLanguageQuote(fieldName,fieldText, bookID,C,V, rowLocation, optionalCheckingOptions);
+        const coqResultObject = await checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, rowLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -269,7 +269,7 @@ async function checkAnnotationTSVDataRow(languageCode, annotationType, line, boo
     if (line === EXPECTED_TN_HEADING_LINE) // Assume it must be ok
         return adrResult; // We can't detect if it's in the wrong place
 
-    addNoticePartial({priority:998, message:"checkAnnotationTSVDataRow() is still a placeholder -- not completed yet", location:ourRowLocation});
+    addNoticePartial({ priority: 998, message: "checkAnnotationTSVDataRow() is still a placeholder -- not completed yet", location: ourRowLocation });
 
     let extractLength;
     try {
@@ -291,7 +291,7 @@ async function checkAnnotationTSVDataRow(languageCode, annotationType, line, boo
         try {
             numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
         } catch (tlcNCerror) {
-            addNoticePartial({priority:979, message:"Invalid book identifier passed to checkAnnotationTSVDataRow", location:` '${bookID}' in first parameter: ${tlcNCerror}`});
+            addNoticePartial({ priority: 979, message: "Invalid book identifier passed to checkAnnotationTSVDataRow", location: ` '${bookID}' in first parameter: ${tlcNCerror}` });
         }
     }
     const haveBibleBookID = numChaptersThisBook !== undefined;
@@ -311,12 +311,12 @@ async function checkAnnotationTSVDataRow(languageCode, annotationType, line, boo
             else if (/^\d+$/.test(C)) {
                 let intC = Number(C);
                 if (intC === 0) {
-                    addNoticePartial({priority:824, message:`Invalid zero chapter number`, extract:C, rowID, location:ourRowLocation});
+                    addNoticePartial({ priority: 824, message: `Invalid zero chapter number`, extract: C, rowID, location: ourRowLocation });
                     haveGoodChapterNumber = false;
                 }
                 // TODO: Does this next section need rewriting (see verse check below)???
                 else if (intC > numChaptersThisBook) {
-                    addNoticePartial({priority:823, message:`Invalid large chapter number`, extract:C, rowID, location:ourRowLocation});
+                    addNoticePartial({ priority: 823, message: `Invalid large chapter number`, extract: C, rowID, location: ourRowLocation });
                     haveGoodChapterNumber = false;
                 }
                 try {
@@ -326,49 +326,49 @@ async function checkAnnotationTSVDataRow(languageCode, annotationType, line, boo
                     if (!haveBibleBookID)
                         // addNoticePartial({priority:500, message:"Invalid chapter number", rowLocation);
                         // else
-                        addNoticePartial({priority:822, message:"Unable to check chapter number", rowID, location:` '${C}'${ourRowLocation}`});
+                        addNoticePartial({ priority: 822, message: "Unable to check chapter number", rowID, location: ` '${C}'${ourRowLocation}` });
                     haveGoodChapterNumber = false;
                 }
             }
             else
-                addNoticePartial({priority:821, message:"Bad chapter number", rowID, location:` '${C}' with${ourRowLocation}`});
+                addNoticePartial({ priority: 821, message: "Bad chapter number", rowID, location: ` '${C}' with${ourRowLocation}` });
         }
         else
-            addNoticePartial({priority:820, message:"Missing chapter number", rowID, location:` ?:${V}${ourRowLocation}`});
+            addNoticePartial({ priority: 820, message: "Missing chapter number", rowID, location: ` ?:${V}${ourRowLocation}` });
 
         if (V.length) {
             if (V === 'intro') { }
             else if (/^\d+$/.test(V)) {
                 let intV = Number(V);
                 if (intV === 0)
-                    addNoticePartial({priority:814, message:`Invalid zero '${V}' verse number`, rowID, location:ourRowLocation});
+                    addNoticePartial({ priority: 814, message: `Invalid zero '${V}' verse number`, rowID, location: ourRowLocation });
                 else {
                     if (haveGoodChapterNumber) {
                         if (intV > numVersesThisChapter)
-                            addNoticePartial({priority:813, message:`Invalid large '${V}' verse number`, rowID, location:` for chapter ${C}${ourRowLocation}`});
+                            addNoticePartial({ priority: 813, message: `Invalid large '${V}' verse number`, rowID, location: ` for chapter ${C}${ourRowLocation}` });
                     } else
-                        addNoticePartial({priority:812, message:"Unable to check verse number", rowID, location:` '${V}'${ourRowLocation}`});
+                        addNoticePartial({ priority: 812, message: "Unable to check verse number", rowID, location: ` '${V}'${ourRowLocation}` });
                 }
             }
             else
-                addNoticePartial({priority:811, message:"Bad verse number", rowID, location:` '${V}'${ourRowLocation}`});
+                addNoticePartial({ priority: 811, message: "Bad verse number", rowID, location: ` '${V}'${ourRowLocation}` });
         }
         else
-            addNoticePartial({priority:810, message:"Missing verse number", rowID, location:` after ${C}:?${ourRowLocation}`});
+            addNoticePartial({ priority: 810, message: "Missing verse number", rowID, location: ` after ${C}:?${ourRowLocation}` });
 
         if (!rowID.length)
-            addNoticePartial({priority:779, message:"Missing ID field", location:ourRowLocation});
+            addNoticePartial({ priority: 779, message: "Missing ID field", location: ourRowLocation });
         else {
             if (rowID.length !== 4)
-                addNoticePartial({priority:778, message:"ID should be exactly 4 characters", rowID, location:` (not ${rowID.length})${ourRowLocation}`});
+                addNoticePartial({ priority: 778, message: "ID should be exactly 4 characters", rowID, location: ` (not ${rowID.length})${ourRowLocation}` });
             else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(rowID[0]) < 0)
-                addNoticePartial({priority:176, message:"ID should start with a lowercase letter or digit", characterIndex:0, rowID, location:` (not '${rowID[0]}')${ourRowLocation}`});
+                addNoticePartial({ priority: 176, message: "ID should start with a lowercase letter or digit", characterIndex: 0, rowID, location: ` (not '${rowID[0]}')${ourRowLocation}` });
             else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(rowID[3]) < 0)
-                addNoticePartial({priority:175, message:"ID should end with a lowercase letter or digit", characterIndex:3, rowID, location:` (not '${rowID[3]}')${ourRowLocation}`});
+                addNoticePartial({ priority: 175, message: "ID should end with a lowercase letter or digit", characterIndex: 3, rowID, location: ` (not '${rowID[3]}')${ourRowLocation}` });
             else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(rowID[1]) < 0)
-                addNoticePartial({priority:174, message:"ID characters should only be lowercase letters, digits, or hypen", characterIndex:1, rowID, location:` (not '${rowID[1]}')${ourRowLocation}`});
+                addNoticePartial({ priority: 174, message: "ID characters should only be lowercase letters, digits, or hypen", characterIndex: 1, rowID, location: ` (not '${rowID[1]}')${ourRowLocation}` });
             else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(rowID[2]) < 0)
-                addNoticePartial({priority:173, message:"ID characters should only be lowercase letters, digits, or hypen", characterIndex:2, rowID, location:` (not '${rowID[2]}')${ourRowLocation}`});
+                addNoticePartial({ priority: 173, message: "ID characters should only be lowercase letters, digits, or hypen", characterIndex: 2, rowID, location: ` (not '${rowID[2]}')${ourRowLocation}` });
         }
 
         if (tags.length)
@@ -387,19 +387,19 @@ async function checkAnnotationTSVDataRow(languageCode, annotationType, line, boo
         }
         else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             if (V !== 'intro')
-                addNoticePartial({priority:276, message:"Missing Quote field", rowID, location:ourRowLocation});
+                addNoticePartial({ priority: 276, message: "Missing Quote field", rowID, location: ourRowLocation });
 
         if (occurrence.length) { // This should usually be a digit
             if (occurrence === '0') { // zero means that it doesn't occur
                 if (quote.length)
-                    addNoticePartial({priority:550, message:"Invalid zero occurrence field when we have an original quote", rowID, location:ourRowLocation});
+                    addNoticePartial({ priority: 550, message: "Invalid zero occurrence field when we have an original quote", rowID, location: ourRowLocation });
                 // if (V !== 'intro')
                 //     addNoticePartial({priority:500, message:"Invalid zero occurrence field", rowID, location:rowLocation);
             }
             else if (occurrence === '-1') // TODO check the special conditions when this can occur???
                 ;
             else if ('12345'.indexOf(occurrence) < 0) // it's not one of these integers
-                addNoticePartial({priority:792, message:`Invalid '${occurrence}' occurrence field`, rowID, location:ourRowLocation});
+                addNoticePartial({ priority: 792, message: `Invalid '${occurrence}' occurrence field`, rowID, location: ourRowLocation });
         }
 
         if (annotation.length) {
@@ -407,15 +407,13 @@ async function checkAnnotationTSVDataRow(languageCode, annotationType, line, boo
             await ourCheckTNLinksToOutside(rowID, 'Annotation', annotation, ourRowLocation, optionalCheckingOptions);
         }
         else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
-            addNoticePartial({priority:274, message:`Missing ${annotationType} Annotation field`, rowID, location:ourRowLocation});
+            addNoticePartial({ priority: 274, message: `Missing ${annotationType} Annotation field`, rowID, location: ourRowLocation });
 
     } else
-        addNoticePartial({priority:861, message:`Found wrong number of TSV fields (expected ${NUM_EXPECTED_ANNOTATION_TSV_FIELDS})`, extract:`Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, location:ourRowLocation});
+        addNoticePartial({ priority: 861, message: `Found wrong number of TSV fields (expected ${NUM_EXPECTED_ANNOTATION_TSV_FIELDS})`, extract: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, location: ourRowLocation });
 
     // console.log(`  checkAnnotationTSVDataRow returning with ${drResult.noticeList.length.toLocaleString()} notice(s).`);
     // console.log("checkAnnotationTSVDataRow result is", JSON.stringify(drResult));
     return adrResult; // object with noticeList only
 }
 // end of checkAnnotationTSVDataRow function
-
-export default checkAnnotationTSVDataRow;

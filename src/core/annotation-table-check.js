@@ -1,5 +1,5 @@
 import * as books from './books/books';
-import checkAnnotationTSVDataRow from './annotation-row-check';
+import { checkAnnotationTSVDataRow } from './annotation-row-check';
 
 
 const ANNOTATION_TABLE_VALIDATOR_VERSION_STRING = '0.2.3';
@@ -10,7 +10,7 @@ const EXPECTED_TN_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\t
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-async function CheckAnnotationRows(languageCode, annotationType, bookID, filename, tableText, givenLocation, optionalCheckingOptions) {
+export async function CheckAnnotationRows(languageCode, annotationType, bookID, filename, tableText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all rows.
 
       It also has the advantage of being able to compare one row with the previous one.
@@ -186,6 +186,3 @@ async function CheckAnnotationRows(languageCode, annotationType, bookID, filenam
     return result;
 }
 // end of CheckAnnotationRows function
-
-
-export default CheckAnnotationRows;
