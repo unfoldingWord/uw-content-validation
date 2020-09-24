@@ -8,7 +8,7 @@ import { getFileCached } from '../core/getApi';
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, givenLocation, optionalCheckingOptions) {
+export async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, givenLocation, optionalCheckingOptions) {
     // Checks that the Hebrew/Greek quote can be found in the original texts
 
     // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
@@ -301,4 +301,4 @@ async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C, V, gi
 // end of checkOriginalLanguageQuote function
 
 
-export default checkOriginalLanguageQuote;
+//export default checkOriginalLanguageQuote;

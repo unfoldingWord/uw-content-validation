@@ -188,4 +188,4 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
 // end of checkUSFMGrammar function
 
 
-export default checkUSFMGrammar;
+//export default checkUSFMGrammar;

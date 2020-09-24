@@ -124,4 +124,4 @@ export function checkTextfileContents(languageCode, filename, fileText, optional
 }
 // end of checkTextfileContents function
 
-export default checkTextfileContents;
+//export default checkTextfileContents;

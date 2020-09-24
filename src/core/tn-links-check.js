@@ -9,7 +9,7 @@ import { ourParseInt } from './utilities';
 // const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-async function checkTNLinks(bookID, fieldName, fieldText, givenLocation, optionalCheckingOptions) {
+export async function checkTNLinks(bookID, fieldName, fieldText, givenLocation, optionalCheckingOptions) {
     /* This is for the case of the OccurrenceNote field containing markdown links
 
     bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
@@ -214,4 +214,4 @@ async function checkTNLinks(bookID, fieldName, fieldText, givenLocation, optiona
 // end of checkTNLinks function
 
 
-export default checkTNLinks;
+//export default checkTNLinks;

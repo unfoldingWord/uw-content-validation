@@ -1,4 +1,4 @@
-import checkTextField from './field-text-check';
+import {checkTextField} from './field-text-check';
 
 
 const MARKDOWN_VALIDATOR_VERSION_STRING = '0.3.1';
@@ -6,7 +6,7 @@ const MARKDOWN_VALIDATOR_VERSION_STRING = '0.3.1';
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-function checkMarkdownText(textName, markdownText, givenLocation, optionalCheckingOptions) {
+export function checkMarkdownText(textName, markdownText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire markdown file, i.e., all lines.
 
     Note: This function does not check that any link targets in the markdown are valid links.
@@ -167,4 +167,4 @@ function checkMarkdownText(textName, markdownText, givenLocation, optionalChecki
 // end of checkMarkdownText function
 
 
-export default checkMarkdownText;
+//export default checkMarkdownText;

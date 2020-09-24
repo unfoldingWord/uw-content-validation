@@ -7,7 +7,7 @@ const LINK_VALIDATOR_VERSION_STRING = '0.3.2';
 // const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-async function startLiveLinksCheck(linksList, existingNoticeList, callbackFunction) {
+export async function startLiveLinksCheck(linksList, existingNoticeList, callbackFunction) {
     // This (slow) function checks the targets of the given links
     //  to ensure that they actually exist
     // NOTE: no caching yet
@@ -146,4 +146,4 @@ function checkFieldLinks(fieldName, fieldText, linkOptions, optionalFieldLocatio
 }
 // end of checkFieldLinks function
 
-export default checkFieldLinks;
+//export default checkFieldLinks;

@@ -85,4 +85,4 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, opti
 // end of checkUSFMToJSON function
 
 
-export default checkUSFMToJSON;
+//export default checkUSFMToJSON;

@@ -1,7 +1,7 @@
 import * as books from '../core/books/books';
 import { isWhitespace, countOccurrences } from './text-handling-functions'
-import checkTextField from './field-text-check';
-import checkTextfileContents from './file-text-check';
+import {checkTextField} from './field-text-check';
+import {checkTextfileContents} from './file-text-check';
 import { runUsfmJsCheck } from './usfm-js-check';
 import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
 import { ourParseInt } from './utilities';
@@ -76,7 +76,7 @@ const EXPECTED_BIBLE_BOOK_MARKERS = ['h', 'toc1', 'toc2', 'toc3'];
 const EXPECTED_PERIPHERAL_BOOK_MARKERS = ['periph'];
 
 
-function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation, optionalCheckingOptions) {
+export function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
     bookID is a three-character UPPERCASE USFM book identifier.
@@ -743,4 +743,4 @@ function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation,
 // end of checkUSFMText function
 
 
-export default checkUSFMText;
+//export default checkUSFMText;
