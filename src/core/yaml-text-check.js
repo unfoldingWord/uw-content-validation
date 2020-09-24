@@ -1,6 +1,6 @@
 // import { isWhitespace, countOccurrences } from './text-handling-functions'
 import yaml from 'yaml';
-import checkTextField from './field-text-check';
+import {checkTextField} from './field-text-check';
 
 
 const YAML_VALIDATOR_VERSION_STRING = '0.1.1';
@@ -8,7 +8,7 @@ const YAML_VALIDATOR_VERSION_STRING = '0.1.1';
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOptions) {
+export function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
      Returns a result object containing a successList and a noticeList,
@@ -166,4 +166,4 @@ function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOption
 // end of checkYAMLText function
 
 
-export default checkYAMLText;
+//export default checkYAMLText;

@@ -1,9 +1,9 @@
 import * as books from './books/books';
-import checkTextField from './field-text-check';
-import checkMarkdownText from './markdown-text-check';
-import checkTAReference from './ta-reference-check';
-import checkTNLinks from './tn-links-check';
-import checkOriginalLanguageQuote from './quote-check';
+import {checkTextField} from './field-text-check';
+import {checkMarkdownText} from './markdown-text-check';
+import {checkTAReference} from './ta-reference-check';
+import {checkTNLinks} from './tn-links-check';
+import {checkOriginalLanguageQuote} from './quote-check';
 
 
 // const ANNOTATION_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.4.1';
@@ -14,7 +14,7 @@ const EXPECTED_TN_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\t
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-async function checkAnnotationTSVDataRow(languageCode, annotationType, line, bookID, C, V, givenRowLocation, optionalCheckingOptions) {
+export async function checkAnnotationTSVDataRow(languageCode, annotationType, line, bookID, C, V, givenRowLocation, optionalCheckingOptions) {
     /**
     * @description - Checks one TSV data row of translation notes (TN)
     * @param {String} annotationType - TN, TQ, TWL, SN, or SQ -- allows more specific checks
@@ -418,4 +418,4 @@ async function checkAnnotationTSVDataRow(languageCode, annotationType, line, boo
 }
 // end of checkAnnotationTSVDataRow function
 
-export default checkAnnotationTSVDataRow;
+//export default checkAnnotationTSVDataRow;

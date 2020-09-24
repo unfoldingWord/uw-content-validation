@@ -1,4 +1,4 @@
-import checkTextField from './field-text-check';
+import {checkTextField} from './field-text-check';
 
 
 const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.1.1';
@@ -6,7 +6,7 @@ const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.1.1';
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-function checkPlainText(textName, plainText, givenLocation, optionalCheckingOptions) {
+export function checkPlainText(textName, plainText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire text, i.e., all lines.
 
      Returns a result object containing a successList and a noticeList
@@ -127,4 +127,4 @@ function checkPlainText(textName, plainText, givenLocation, optionalCheckingOpti
 // end of checkPlainText function
 
 
-export default checkPlainText;
+//export default checkPlainText;

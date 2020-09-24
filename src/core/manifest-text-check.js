@@ -1,4 +1,4 @@
-import checkYAMLText from './yaml-text-check';
+import {checkYAMLText} from './yaml-text-check';
 import * as books from './books';
 
 
@@ -7,7 +7,7 @@ const MANIFEST_VALIDATOR_VERSION_STRING = '0.2.1';
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-function checkManifestText(textName, manifestText, givenLocation, optionalCheckingOptions) {
+export function checkManifestText(textName, manifestText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
     See the specification at https://resource-container.readthedocs.io/en/latest/manifest.html.
@@ -124,4 +124,4 @@ function checkManifestText(textName, manifestText, givenLocation, optionalChecki
 // end of checkManifestText function
 
 
-export default checkManifestText;
+//export default checkManifestText;

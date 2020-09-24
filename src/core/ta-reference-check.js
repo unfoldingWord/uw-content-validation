@@ -7,7 +7,7 @@ import { getFileCached } from '../core/getApi';
 // const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-async function checkTAReference(fieldName, fieldText, givenLocation, optionalCheckingOptions) {
+export async function checkTAReference(fieldName, fieldText, givenLocation, optionalCheckingOptions) {
     // This is for the case of the full SupportReference field being the article link
     //  which is assumed to be in the translate part of the TA manual.
 
@@ -111,4 +111,4 @@ async function checkTAReference(fieldName, fieldText, givenLocation, optionalChe
 // end of checkTAReference function
 
 
-export default checkTAReference;
+//export default checkTAReference;

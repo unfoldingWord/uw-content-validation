@@ -1,5 +1,5 @@
 import * as books from './books/books';
-import checkTN_TSVDataRow from './tn-table-row-check';
+import {checkTN_TSVDataRow} from './tn-table-row-check';
 
 
 const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.2.3';
@@ -10,7 +10,7 @@ const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOr
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-async function checkTN_TSVText(languageCode, bookID, filename, tableText, givenLocation, optionalCheckingOptions) {
+export async function checkTN_TSVText(languageCode, bookID, filename, tableText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all rows.
 
       It also has the advantage of being able to compare one row with the previous one.
@@ -203,4 +203,4 @@ async function checkTN_TSVText(languageCode, bookID, filename, tableText, givenL
 // end of checkTN_TSVText function
 
 
-export default checkTN_TSVText;
+//export default checkTN_TSVText;
