@@ -7,7 +7,7 @@ const LINK_VALIDATOR_VERSION_STRING = '0.3.2';
 // const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-async function startLiveLinksCheck(linksList, existingNoticeList, callbackFunction) {
+async function startLiveLinksCheck(linksList, existingNoticeList, callbackFunction, cachedGetURL) {
     // This (slow) function checks the targets of the given links
     //  to ensure that they actually exist
     // NOTE: no caching yet
@@ -136,7 +136,8 @@ function checkFieldLinks(fieldName, fieldText, linkOptions, optionalFieldLocatio
         addNotice5({priority:287, message:`Not enough links (expected ${linkOptions.expectedCount} link${linkOptions.expectedCount === 1 ? "" : "s"})`, location:` (only found ${regexResultsArray.length})${ourAtString}`});
 
     if (linkOptions.checkTargets && linkOptions.callbackFunction && regexResultsArray) {
-        startLiveLinksCheck(regexResultsArray, result.noticeList.slice(0), linkOptions.callbackFunction);
+      const cachedGetURL_ = (optionalCheckingOptions && optionalCheckingOptions.cachedGetURL) ? optionalCheckingOptions.cachedGetURL : cachedGetURL;
+        startLiveLinksCheck(regexResultsArray, result.noticeList.slice(0), linkOptions.callbackFunction, cachedGetURL_);
         addNotice5({priority:600, message:`${regexResultsArray.length} link target${regexResultsArray.length === 1 ? ' is' : 's are'} still being checked…`, location:ourAtString});
         console.log("checkFieldLinks now returning initial result…");
     }

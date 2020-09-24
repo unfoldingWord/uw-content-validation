@@ -175,7 +175,7 @@ async function fetchFileFromServer({ username, repository, path, branch = 'maste
 };
 
 
-async function getFile({ username, repository, path, branch }) {
+export async function getFile({ username, repository, path, branch }) {
   console.log(`getFile(${username}, ${repository}, ${path}, ${branch})…`);
   let file;
   file = await getFileFromZip({ username, repository, path, branch });
@@ -230,7 +230,6 @@ export async function cachedGetURL({ uri, params }) {
   return data;
 };
 
-
 /*
 function fetchRepositoriesZipFiles({username, languageId, branch}) {
   const repositories = resourceRepositories({languageId});
@@ -243,13 +242,32 @@ function fetchRepositoriesZipFiles({username, languageId, branch}) {
 */
 
 
-// https://git.door43.org/{username}/{repository}/archive/{branch}.zip
-export async function fetchRepositoryZipFile({ username, repository, branch }) {
+/**
+ * retrieve repo as zip file
+ * @param {string} username
+ * @param {string} repository
+ * @param {string} branch
+ * @param {boolean} forceLoad - if not true, then use existing repo in zipstore
+ * @return {Promise<[]|*[]>} resolves to true if downloaded
+ */
+export async function fetchRepositoryZipFile({ username, repository, branch }, forceLoad= false) {
+  // https://git.door43.org/{username}/{repository}/archive/{branch}.zip
   console.log(`fetchRepositoryZipFile(${username}, ${repository}, ${branch})…`);
+
+  if (!forceLoad) { // see if we already have in zipStore
+    const zipBlob = await getZip(username, repository, branch);
+    if (zipBlob) {
+      console.log(`fetchRepositoryZipFile(${username}, ${repository}, ${branch})… - already loaded`);
+      return true;
+    }
+  }
+
   const repoExists = await repositoryExists({ username, repository });
   if (!repoExists) {
-    return null;
+    console.log(`fetchRepositoryZipFile(${username}, ${repository}, ${branch}) - repo doesn't exist`, { username, repository });
+    return false;
   }
+
   const uri = zipUri({ username, repository, branch });
   const response = await fetch(uri);
   if (response.status === 200 || response.status === 0) {
@@ -257,17 +275,24 @@ export async function fetchRepositoryZipFile({ username, repository, branch }) {
     await zipStore.setItem(uri, zipArrayBuffer);
     return true;
   } else {
-    console.log(`ERROR: fetchRepositoryZipFile got response status: ${response.status}`);
+    console.log(`fetchRepositoryZipFile(${username}, ${repository}, ${branch}) - got response status: ${response.status}`);
     return false;
   }
 };
 
-
+/**
+ * pull repo from zipstore and get a file list
+ * @param {string} username
+ * @param {string} repository
+ * @param {string} branch
+ * @param {string} optionalPrefix - to filter by book, etc.
+ * @return {Promise<[]|*[]>}  resolves to file list
+ */
 export async function getFilelistFromZip({ username, repository, branch, optionalPrefix }) {
   // console.log(`getFilelistFromZip(${username}, ${repository}, ${branch}, ${optionalPrefix})…`);
 
   const uri = zipUri({ username, repository, branch });
-  let zipBlob = await zipStore.getItem(uri);
+  let zipBlob = await getZip(username, repository, branch);
 
   if (!zipBlob) { // Seems that we need to load the zip file first
     const response = await fetch(uri);
@@ -312,12 +337,31 @@ export async function getFilelistFromZip({ username, repository, branch, optiona
   return pathList;
 }
 
+/**
+ * try to get zip file from cache
+ * @param {string} username
+ * @param {string} repository
+ * @param {string} branch
+ * @return {Promise<unknown>} resolves to null if not found
+ */
+export async function getZip(username, repository, branch) {
+  const uri = zipUri({username, repository, branch});
+  const zipBlob = await zipStore.getItem(uri);
+  return zipBlob;
+}
 
+/**
+ * pull repo from zipstore and get the unzipped file
+ * @param {string} username
+ * @param {string} repository
+ * @param {string} branch
+ * @param {object} optionalPrefix
+ * @return {Promise<[]|*[]>} resolves to unzipped file if found or null
+ */
 async function getFileFromZip({ username, repository, path, branch }) {
   // console.log(`getFileFromZip(${username}, ${repository}, ${path}, ${branch})…`);
   let file;
-  const uri = zipUri({ username, repository, branch });
-  const zipBlob = await zipStore.getItem(uri);
+  const zipBlob = await getZip(username, repository, branch);
   try {
     if (zipBlob) {
       // console.log(`  Got zipBlob for uri=${uri}`);

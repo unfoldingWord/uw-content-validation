@@ -113,7 +113,8 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
 
     // Let's fetch the zipped repo since it should be much more efficient than individual fetches
     // console.log(`checkRepo: fetch zip file for ${repoName}…`);
-    const zipFetchSucceeded = await fetchRepositoryZipFile({ username, repository: repoName, branch });
+    const fetchRepositoryZipFile_ = (checkingOptions && checkingOptions.fetchRepositoryZipFile) ? checkingOptions.fetchRepositoryZipFile : fetchRepositoryZipFile;
+    const zipFetchSucceeded = await fetchRepositoryZipFile_({ username, repository: repoName, branch });
     if (!zipFetchSucceeded)
       console.log(`checkRepo: misfetched zip file for repo with ${zipFetchSucceeded}`);
     if (!zipFetchSucceeded) return checkRepoResult;
@@ -122,7 +123,8 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
     // Now we need to fetch the list of files from the repo
     setResultValue(<p style={{ color: 'magenta' }}>Preprocessing file list from <b>{username}/{repoName}</b> repository…</p>);
     // const pathList = await getFilelistFromFetchedTreemaps(username, repoName, branch);
-    const pathList = await getFilelistFromZip({ username, repository: repoName, branch });
+    const getFilelistFromZip_ = checkingOptions && checkingOptions.getFilelistFromZip ? checkingOptions.getFilelistFromZip : getFilelistFromZip;
+    const pathList = await getFilelistFromZip_({ username, repository: repoName, branch });
     // console.log(`Got pathlist (${pathList.length}) = ${pathList}`);
 
     // So now we want to work through checking all the files in this repo
@@ -355,9 +357,9 @@ export async function checkTQbook(username, languageCode, repoName, branch, book
   // Main code for checkTQbook
   // We need to find an check all the markdown folders/files for this book
   let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(['md']), totalCheckedSize = 0;
-  let filelistFromZip_ = checkingOptions && checkingOptions.getFilelistFromZip ? checkingOptions.getFilelistFromZip : getFilelistFromZip;
+  const getFilelistFromZip_ = checkingOptions && checkingOptions.getFilelistFromZip ? checkingOptions.getFilelistFromZip : getFilelistFromZip;
   let bookIdLc = bookID.toLowerCase();
-  let pathList = await filelistFromZip_({ username, repository: repoName, branch, optionalPrefix: `${bookIdLc}/` });
+  let pathList = await getFilelistFromZip_({ username, repository: repoName, branch, optionalPrefix: `${bookIdLc}/` });
   if (!Array.isArray(pathList) || !pathList.length) {
     console.log("checkTQrepo failed to load", username, repoName, branch);
     addNotice10({ priority: 996, message: "Failed to load", bookID, C: '', V: '', location: `${generalLocation}`, extra: repoCode });
