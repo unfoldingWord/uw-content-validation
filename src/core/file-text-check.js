@@ -1,4 +1,4 @@
-import checkPlainText from './plain-text-check';
+import { checkPlainText } from './plain-text-check';
 
 //const FILE_TEXT_VALIDATOR_VERSION_STRING = '0.2.2';
 

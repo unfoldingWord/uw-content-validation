@@ -407,6 +407,14 @@ export async function checkTQbook(username, languageCode, repoName, branch, book
 /*
     checkBookPackage
 */
+/**
+ *
+ * @param {string} username
+ * @param {string} languageCode
+ * @param {string} bookID
+ * @param {Function} setResultValue
+ * @param {Object} checkingOptions
+ */
 export async function checkBookPackage(username, languageCode, bookID, setResultValue, checkingOptions) {
   /*
   Note: You may want to run clearCaches() before running this function???

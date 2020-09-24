@@ -1,4 +1,4 @@
-import { checkTextField } from './field-text-check'
+// import { checkTextField } from './field-text-check'
 import { cachedGetFileUsingFullURL } from './getApi';
 
 
@@ -8,7 +8,7 @@ const LINK_VALIDATOR_VERSION_STRING = '0.3.2';
 
 
 export async function startLiveLinksCheck(linksList, existingNoticeList, callbackFunction) {
-    // This (slow) function checks the targets of the given links
+    // This (IO bound) function checks the targets of the given links
     //  to ensure that they actually exist
     // NOTE: no caching yet
     console.log(`startLiveLinksCheck v${LINK_VALIDATOR_VERSION_STRING} for ${linksList.length} link(s)…`)
@@ -50,6 +50,8 @@ export async function startLiveLinksCheck(linksList, existingNoticeList, callbac
     callbackFunction(result);
 }
 
+// TODO: Finish link testing -- why is this function never called????
+/*
 function checkFieldLinks(fieldName, fieldText, linkOptions, optionalFieldLocation, optionalCheckingOptions) {
     // Does basic checks for fields that are links or that contain links
 
@@ -145,3 +147,4 @@ function checkFieldLinks(fieldName, fieldText, linkOptions, optionalFieldLocatio
     return result;
 }
 // end of checkFieldLinks function
+*/
