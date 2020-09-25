@@ -53,11 +53,8 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
                 return;
             }
 
-            if (bookID !== 'OBS') {
-                // Preload the reference repos
-                // RJH TODO: Doesn't the end user need control of this somehow???
+            if (bookID !== 'OBS') { // Preload the reference repos
                 setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for <b>{bookID}</b> book package check…</p>);
-                // This call is not needed, but makes sure you don't have stale data that has been cached
                 const successFlag = await preloadReposIfNecessary(username, languageCode, [bookID], branch);
                 if (!successFlag)
                     console.log(`BookPackageCheck error: Failed to pre-load all repos`)

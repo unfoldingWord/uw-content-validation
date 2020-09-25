@@ -44,8 +44,6 @@ function CheckBookPackage(props) {
     //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
     (async () => {
 
-      // TODO: See if this preloading is really helping at all???
-      // This call is not needed, but makes sure you don't have stale data that has been cached
       setResults(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for <b>{bookID}</b> book package check…</p>);
       const successFlag = await preloadReposIfNecessary(username, languageCode, [bookID]);
       if (!successFlag)

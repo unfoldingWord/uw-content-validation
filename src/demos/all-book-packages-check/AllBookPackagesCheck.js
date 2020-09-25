@@ -73,7 +73,6 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         (async () => {
         // console.log("Started BookPackagesCheck.unnamedFunction()");
 
-        // This call is not needed, but makes sure you don't have stale data that has been cached
         setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for all book packages check…</p>);
         const successFlag = await preloadReposIfNecessary(username, languageCode, bookIDList, branch, preloadList);
         if (!successFlag)

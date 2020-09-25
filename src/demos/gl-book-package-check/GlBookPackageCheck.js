@@ -44,7 +44,7 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
         (async () => {
             // console.log("Started GlBookPackageCheck.unnamedFunction()");
 
-            // NOTE from RJH: I can't find the correct React place for this / way to do this
+            // NOTE from RJH: I can't find the correct React place for this or way to do this
             //                  so it shows a warning for the user, and doesn't continue to try to process
             if (bookID !== 'OBS' && !books.isValidBookID(bookID)) {
                 console.log(`Invalid '${bookID}' bookID given!`)
@@ -52,7 +52,6 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
                 return;
             }
 
-            // This call is not needed, but makes sure you don't have stale data that has been cached
             setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for GL book package check…</p>);
             const successFlag = await preloadReposIfNecessary(username, languageCode, [bookID], branch);
             if (!successFlag)

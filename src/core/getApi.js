@@ -126,7 +126,8 @@ export function formRepoName(languageCode, repoCode) {
   */
   //    console.log(`formRepoName('${languageCode}', '${repoCode}')…`);
 
-  // TODO: Should we also check the username here???
+  // TODO: Should we also check the username 'unfoldingWord' and/or 'Door43-Catalog' here???
+  //        (We don't currently have the username available in this function.)
   if (repoCode === 'LT') repoCode = languageCode === 'en' ? 'ULT' : 'GLT';
   if (repoCode === 'ST') repoCode = languageCode === 'en' ? 'UST' : 'GST';
 
