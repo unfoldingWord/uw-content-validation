@@ -14,7 +14,7 @@ The code below requests some info and then checks a Door43 repository.You can en
 
 ```js
 import React, { useState, useEffect } from 'react';
-import { getRepoName, preloadReposIfNecessary } from './getApi';
+import { formRepoName, preloadReposIfNecessary } from './getApi';
 import { checkRepo } from './book-package-check';
 import { RenderRawResults } from '../demos/RenderProcessedResults';
 
@@ -47,7 +47,7 @@ function CheckRepo(props) {
           console.log(`CheckRepo error: Failed to pre-load all repos`)
 
       // Display our "waiting" message
-      const repoName = getRepoName(languageCode, repoCode);
+      const repoName = formRepoName(languageCode, repoCode);
       setResults(<p style={{ color: 'magenta' }}>Checking {username} {repoName} {branch}…</p>);
       const rawResults = await checkRepo(username, repoName, branch, givenLocation, setResults, checkingOptions);
       setResults(

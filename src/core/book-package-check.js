@@ -1,12 +1,12 @@
 import React from 'react';
 import * as books from './books';
-import { getRepoName, getFileListFromZip, cachedGetFile, cachedGetRepositoryZipFile } from './getApi';
-import {checkUSFMText} from './usfm-text-check';
-import {checkMarkdownText} from './markdown-text-check';
-import {checkPlainText} from './plain-text-check';
-import {checkYAMLText} from './yaml-text-check';
-import {checkManifestText} from './manifest-text-check';
-import {checkTN_TSVText} from './tn-table-text-check';
+import { formRepoName, getFileListFromZip, cachedGetFile, cachedGetRepositoryZipFile, cachedGetBookFilenameFromManifest } from './getApi';
+import { checkUSFMText } from './usfm-text-check';
+import { checkMarkdownText } from './markdown-text-check';
+import { checkPlainText } from './plain-text-check';
+import { checkYAMLText } from './yaml-text-check';
+import { checkManifestText } from './manifest-text-check';
+import { checkTN_TSVText } from './tn-table-text-check';
 
 
 /*
@@ -535,7 +535,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     for (const repoCode of repoCodeList) {
       console.log(`Check ${bookID} in ${repoCode} (${languageCode} ${bookID} from ${username})`);
       const repoLocation = ` in ${repoCode.toUpperCase()}${generalLocation}`;
-      const repoName = getRepoName(languageCode, repoCode);
+      const repoName = formRepoName(languageCode, repoCode);
 
       // Update our "waiting" message
       setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookID}</b> book package in <b>{repoCode}</b> (checked <b>{checkedRepoNames.length.toLocaleString()}</b>/{repoCodeList.length} repos)…</p>);
@@ -548,8 +548,9 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         checkedFilenameExtensions.add('usfm');
       }
       else if (repoCode === 'TN') {
-        // TODO: Need to fetch the manifest and find the filename there (to cover for tC Create naming issue)
-        filename = `${languageCode}_tn_${bookNumberAndName}.tsv`;
+        filename = await cachedGetBookFilenameFromManifest({ username, repository: repoName, branch, bookID: bookID.toLowerCase() });
+        console.assert(filename.startsWith(`${languageCode}_`), `Expected TN filename '${filename}' to start with the language code '${languageCode}_'`);
+        console.assert(filename.endsWith('.tsv'), `Expected TN filename '${filename}' to end with '.tsv'`);
         checkedFilenameExtensions.add('tsv');
       }
 

@@ -1,5 +1,6 @@
 import Path from 'path';
 // import YAML from 'js-yaml-parser';
+import yaml from 'yaml';
 import localforage from 'localforage';
 import { setup } from 'axios-cache-adapter';
 import JSZip from 'jszip';
@@ -64,14 +65,43 @@ export async function cachedGetFile({ username, repository, path, branch }) {
   }
 
   // NOTE: cachedGetFileFromZipOrServer() below will look for a downloaded zip first
-  let file = await cachedGetFileFromZipOrServer({ username, repository, path, branch });
+  const fileContents = await cachedGetFileFromZipOrServer({ username, repository, path, branch });
 
-  if (file) {
-    cachedUnzippedFiles[filePath] = file;
+  if (fileContents) {
+    cachedUnzippedFiles[filePath] = fileContents;
     // console.log(`saving to cache - ${filePath}`);
   }
 
-  return file;
+  return fileContents;
+}
+
+
+export async function cachedGetManifest({ username, repository, branch }) {
+  // console.log(`cachedGetManifest(${username}, ${repository}, ${branch})…`);
+
+  const manifestContents = await cachedGetFile({ username, repository, path: 'manifest.yaml', branch });
+  let formData;
+  try {
+    formData = yaml.parse(manifestContents);
+    // console.log("yaml.parse(YAMLText) got formData", JSON.stringify(formData));
+  }
+  catch (yamlError) {
+    console.log(`ERROR: ${username} ${repository} ${branch} manifest yaml parse error: ${yamlError.message}`);
+  }
+  return formData;
+}
+
+
+export async function cachedGetBookFilenameFromManifest({ username, repository, branch, bookID }) {
+  // console.log(`cachedGetBookFilenameFromManifest(${username}, ${repository}, ${branch}, ${bookID})…`);
+  const manifestJSON = await cachedGetManifest({ username, repository, branch });
+  for (const projectEntry of manifestJSON.projects) {
+    if (projectEntry.identifier === bookID) {
+      let bookPath = projectEntry.path;
+      if (bookPath.startsWith('./')) bookPath = bookPath.substring(2);
+      return bookPath;
+    }
+  }
 }
 
 
@@ -87,14 +117,14 @@ export async function clearCaches() {
 }
 
 
-export function getRepoName(languageCode, repoCode) {
+export function formRepoName(languageCode, repoCode) {
   /**
   * @description - Creates and returns a Door43 repoName string
   * @param {String} languageCode - the language code, e.g., 'en'
   * @param {String} repoCode - the repo code, e.g., 'TQ'
   * @return {String} - the Door43 repoName string
   */
-  //    console.log(`getRepoName('${languageCode}', '${repoCode}')…`);
+  //    console.log(`formRepoName('${languageCode}', '${repoCode}')…`);
 
   // TODO: Should we also check the username here???
   if (repoCode === 'LT') repoCode = languageCode === 'en' ? 'ULT' : 'GLT';
@@ -146,7 +176,7 @@ export async function clearCacheAndPreloadRepos(username, languageCode, bookIDLi
   // Fetch zipped versions of all the repos needing to be preloaded
   console.log(`Need to preload ${repos_.length} repos: ${repos_}`)
   for (const repoCode of repos_) {
-    const repoName = getRepoName(languageCode, repoCode);
+    const repoName = formRepoName(languageCode, repoCode);
     console.log(`clearCacheAndPreloadRepos: preloading zip file for ${repoName}…`);
     const zipFetchSucceeded = await cachedGetRepositoryZipFile({ username, repository: repoName, branch });
     if (!zipFetchSucceeded) {
@@ -197,7 +227,7 @@ export async function preloadReposIfNecessary(username, languageCode, bookIDList
   // console.log(`Check if need to preload ${repos_.length} repos: ${repos_}`)
   // const newRepoList = [];
   // for (const repoCode of repos_) {
-  //   const repoName = getRepoName(languageCode, repoCode);
+  //   const repoName = formRepoName(languageCode, repoCode);
   //   // console.log(`preloadReposIfNecessary: checking zip file for ${repoName}…`);
   //   const uri = zipUri({ username, repository: repoName, branch });
   //   const zipBlob = await zipStore.getItem(uri);
@@ -207,7 +237,7 @@ export async function preloadReposIfNecessary(username, languageCode, bookIDList
   // if (newRepoList.length) { // Fetch zipped versions of all the repos needing to be preloaded
   //   console.log(`Need to preload ${newRepoList.length} repos: ${newRepoList}`)
   //   for (const repoCode of newRepoList) {
-  //     const repoName = getRepoName(languageCode, repoCode);
+  //     const repoName = formRepoName(languageCode, repoCode);
   //     console.log(`preloadReposIfNecessary: preloading zip file for ${repoName}…`);
   //     const zipFetchSucceeded = await cachedGetRepositoryZipFile({ username, repository: repoName, branch });
   //     if (!zipFetchSucceeded) {
@@ -219,7 +249,7 @@ export async function preloadReposIfNecessary(username, languageCode, bookIDList
   // else console.log("All repos were cached already!");
 
   for (const repoCode of repos_) {
-    const repoName = getRepoName(languageCode, repoCode);
+    const repoName = formRepoName(languageCode, repoCode);
     // console.log(`preloadReposIfNecessary: preloading zip file for ${repoName}…`);
     const zipFetchSucceeded = await cachedGetRepositoryZipFile({ username, repository: repoName, branch });
     if (!zipFetchSucceeded) {
