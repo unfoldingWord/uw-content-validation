@@ -70,7 +70,7 @@ export async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C
         try {
             username = optionalCheckingOptions.originalLanguageRepoUsername;
         } catch (qcoError) { }
-        if (!username) username = 'unfoldingWord'; // or Door43-Catalog ???
+        if (!username) username = 'Door43-Catalog'; // or unfoldingWord ???
         let branch;
         try {
             branch = optionalCheckingOptions.originalLanguageRepoBranch;

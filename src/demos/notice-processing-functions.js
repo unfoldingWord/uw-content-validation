@@ -116,6 +116,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 && !thisMsg.startsWith('USFMGrammar: ')
                 && !thisMsg.endsWith(' character after space')
                 && !thisMsg.endsWith(' marker at start of line')
+                && !thisMsg.endsWith(' closing character (no matching opener)')
+                && !thisMsg.endsWith(' closing character doesn\'t match')
             ) {
                 console.log(`PROGRAMMING ERROR: priority ${thisPriority} has at least two different messages: '${oldMsg}' and '${thisMsg}'`);
                 duplicatePriorityList.push(thisPriority); // so that we only give the error once

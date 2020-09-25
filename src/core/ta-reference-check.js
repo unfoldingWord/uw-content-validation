@@ -71,7 +71,7 @@ export async function checkTAReference(fieldName, fieldText, givenLocation, opti
     try {
         username = optionalCheckingOptions.taRepoUsername;
     } catch (trcUNerror) { }
-    if (!username) username = 'unfoldingWord'; // or Door43-Catalog ???
+    if (!username) username = 'Door43-Catalog'; // or unfoldingWord ???
     let branch;
     try {
         branch = optionalCheckingOptions.taRepoBranch;

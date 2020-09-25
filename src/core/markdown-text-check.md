@@ -8,7 +8,7 @@ These raw notice components can then be filtered and/or sorted as required by th
 
 ```js
 import Markdown from 'react-markdown'
-import checkMarkdownText from './markdown-text-check';
+import { checkMarkdownText } from './markdown-text-check';
 import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Markdown text samples

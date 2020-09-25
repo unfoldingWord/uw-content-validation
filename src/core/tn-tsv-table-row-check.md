@@ -8,7 +8,7 @@ These raw notice components can then be filtered and/or sorted as required by th
 
 ```js
 import React, { useState, useEffect } from 'react';
-import checkTN_TSVDataRow from './tn-table-row-check';
+import { checkTN_TSVDataRow } from './tn-table-row-check';
 import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Empty, Header, Nonsense, Good, Bad, Very bad, and Actual line samples

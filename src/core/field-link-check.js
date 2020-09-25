@@ -1,8 +1,8 @@
-// import { checkTextField } from './field-text-check'
+import { checkTextField } from './field-text-check'
 import { cachedGetFileUsingFullURL } from './getApi';
 
 
-const LINK_VALIDATOR_VERSION_STRING = '0.3.2';
+const LINK_VALIDATOR_VERSION_STRING = '0.3.3';
 
 // const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -50,9 +50,8 @@ export async function startLiveLinksCheck(linksList, existingNoticeList, callbac
     callbackFunction(result);
 }
 
-// TODO: Finish link testing -- why is this function never called????
-/*
-function checkFieldLinks(fieldName, fieldText, linkOptions, optionalFieldLocation, optionalCheckingOptions) {
+
+export function checkFieldLinks(fieldName, fieldText, linkOptions, optionalFieldLocation, optionalCheckingOptions) {
     // Does basic checks for fields that are links or that contain links
 
     // We assume that checking for compulsory fields is done elsewhere
@@ -147,4 +146,3 @@ function checkFieldLinks(fieldName, fieldText, linkOptions, optionalFieldLocatio
     return result;
 }
 // end of checkFieldLinks function
-*/

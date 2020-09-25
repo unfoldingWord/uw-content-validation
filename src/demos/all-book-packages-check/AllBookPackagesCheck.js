@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 // import { withStyles } from '@material-ui/core/styles';
 import * as books from '../../core/books/books';
 import { ourParseInt, preloadReposIfNecessary } from '../../core';
-import checkBookPackages from '../book-packages-check/checkBookPackages';
+import { checkBookPackages } from '../book-packages-check/checkBookPackages';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
 // import { consoleLogObject } from '../../core/utilities';
@@ -35,13 +35,14 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
 
     // Enter a string containing UPPERCASE USFM book identifiers separated only by commas
     //  and can also include OBS (for Open Bible Stories)
-    let bookIDs;
+    let bookIDs = '';
     if (testament.toUpperCase() === 'OT' || testament.toUpperCase() === 'OLD'){
         bookIDs = 'GEN,EXO,LEV,NUM,DEU,JOS,JDG,RUT,1SA,2SA,1KI,2KI,1CH,2CH,EZR,NEH,EST,JOB,PSA,PRO,ECC,SNG,ISA,JER,LAM,EZK,DAN,HOS,JOL,AMO,OBA,JON,MIC,NAM,HAB,ZEP,HAG,ZEC,MAL';
     }
     else if (testament.toUpperCase() === 'NT' || testament.toUpperCase() === 'NEW') {
         bookIDs = 'MAT,MRK,LUK,JHN,ACT,ROM,1CO,2CO,GAL,EPH,PHP,COL,1TH,2TH,1TI,2TI,TIT,PHM,HEB,JAS,1PE,2PE,1JN,2JN,3JN,JUD,REV';
-    }
+    } else
+      setResultValue(<p style={{ color: 'red' }}>No testament selected (Good because check will likely crash your browser)</p>);
     if (includeOBS.toUpperCase() === 'Y' || includeOBS.toUpperCase() === 'YES')
         bookIDs += ',OBS';
 
@@ -78,11 +79,11 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         if (!successFlag)
             console.log(`AllBookPackagesCheck error: Failed to pre-load all repos`)
 
-
       // Display our "waiting" message
       setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookIDList.join(', ')}</b> book packages…</p>);
 
-      const rawCBPsResults = await checkBookPackages(username, languageCode, bookIDList, setResultValue, checkingOptions);
+      let rawCBPsResults = {};
+      if (bookIDList.length) rawCBPsResults = await checkBookPackages(username, languageCode, bookIDList, setResultValue, checkingOptions);
       // console.log("checkBookPackage() returned", typeof rawCBPsResults); //, JSON.stringify(rawCBPsResults));
 
       // Add some extra fields to our rawCBPsResults object in case we need this information again later

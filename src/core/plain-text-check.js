@@ -139,13 +139,13 @@ export function checkPlainText(textName, plainText, givenLocation, optionalCheck
                             openMarkers.pop();
                         } else {
                             const extract = (characterIndex > halfLength ? '…' : '') + line.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < line.length ? '…' : '')
-                            const details = `'${openMarkers[which]}' opened on line ${lastEntry.n} character ${lastEntry.x + 1}`;
-                            addNotice({ priority: 777, message: `Unexpected ${char} character doesn't match`, details, lineNumber: n, characterIndex, extract, location: ourLocation });
-                            console.log(`  ERROR 777: mismatched characters: ${details}`);
+                            const details = `'${openers.charAt(which)}' opened on line ${lastEntry.n} character ${lastEntry.x + 1}`;
+                            addNotice({ priority: 777, message: `Unexpected ${char} closing character doesn't match`, details, lineNumber: n, characterIndex, extract, location: ourLocation });
+                            // console.log(`  ERROR 777: mismatched characters: ${details}`);
                         }
                     } else { // Closed something without an opener
                         const extract = (characterIndex > halfLength ? '…' : '') + line.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < line.length ? '…' : '')
-                        addNotice({ priority: 774, message: `Unexpected ${char} closing character`, lineNumber: n, characterIndex, extract, location: ourLocation });
+                        addNotice({ priority: 774, message: `Unexpected ${char} closing character (no matching opener)`, lineNumber: n, characterIndex, extract, location: ourLocation });
                         // console.log(`  ERROR 774: closed with nothing open: ${char}`);
                     }
                 }

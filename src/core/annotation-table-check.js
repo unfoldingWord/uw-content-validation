@@ -2,7 +2,7 @@ import * as books from './books/books';
 import { checkAnnotationTSVDataRow } from './annotation-row-check';
 
 
-const ANNOTATION_TABLE_VALIDATOR_VERSION_STRING = '0.2.3';
+const ANNOTATION_TABLE_VALIDATOR_VERSION_STRING = '0.2.4';
 
 const NUM_EXPECTED_ANNOTATION_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tAnnotation';
@@ -10,7 +10,7 @@ const EXPECTED_TN_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\t
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
-export async function CheckAnnotationRows(languageCode, annotationType, bookID, filename, tableText, givenLocation, optionalCheckingOptions) {
+export async function checkAnnotationRows(languageCode, annotationType, bookID, filename, tableText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all rows.
 
       It also has the advantage of being able to compare one row with the previous one.
@@ -19,7 +19,7 @@ export async function CheckAnnotationRows(languageCode, annotationType, bookID, 
 
      Returns a result object containing a successList and a noticeList
      */
-    // console.log(`CheckAnnotationRows(${languageCode}, ${annotationType}, ${bookID}, ${tableText.length}, ${givenLocation},${JSON.stringify(optionalCheckingOptions)})…`);
+    // console.log(`checkAnnotationRows(${languageCode}, ${annotationType}, ${bookID}, ${tableText.length}, ${givenLocation},${JSON.stringify(optionalCheckingOptions)})…`);
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     // if (bookID) ourLocation = ` in ${bookID}${ourLocation}`;
@@ -27,11 +27,11 @@ export async function CheckAnnotationRows(languageCode, annotationType, bookID, 
     const result = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        // console.log(`CheckAnnotationRows success: ${successString}`);
+        // console.log(`checkAnnotationRows success: ${successString}`);
         result.successList.push(successString);
     }
     function addNoticeCV8(noticeObject) {
-        // console.log(`CheckAnnotationRows notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // console.log(`checkAnnotationRows notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(noticeObject.priority !== undefined, "ATSV addNoticeCV8: 'priority' parameter should be defined");
         console.assert(typeof noticeObject.priority === 'number', `ATSV addNoticeCV8: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         console.assert(noticeObject.message !== undefined, "ATSV addNoticeCV8: 'message' parameter should be defined");
@@ -50,7 +50,7 @@ export async function CheckAnnotationRows(languageCode, annotationType, bookID, 
     }
 
 
-    addNoticeCV8({ priority: 997, message: "CheckAnnotationRows() is still a placeholder -- not completed yet", location: ourLocation });
+    addNoticeCV8({ priority: 997, message: "checkAnnotationRows() is still a placeholder -- not completed yet", location: ourLocation });
 
     let extractLength;
     try {
@@ -83,7 +83,7 @@ export async function CheckAnnotationRows(languageCode, annotationType, bookID, 
     let rowID_list = [];
     let numVersesThisChapter = 0;
     for (let n = 0; n < lines.length; n++) {
-        // console.log(`CheckAnnotationRows checking line ${n}: ${JSON.stringify(lines[n])}`);
+        // console.log(`checkAnnotationRows checking line ${n}: ${JSON.stringify(lines[n])}`);
         if (n === 0) {
             if (lines[0] === EXPECTED_TN_HEADING_LINE)
                 addSuccessMessage(`Checked TSV header ${ourLocation}`);
@@ -178,11 +178,11 @@ export async function CheckAnnotationRows(languageCode, annotationType, bookID, 
     }
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}.`);
     if (result.noticeList)
-        addSuccessMessage(`CheckAnnotationRows v${ANNOTATION_TABLE_VALIDATOR_VERSION_STRING} finished with ${result.noticeList.length ? result.noticeList.length.toLocaleString() : "zero"} notice${result.noticeList.length === 1 ? '' : 's'}`);
+        addSuccessMessage(`checkAnnotationRows v${ANNOTATION_TABLE_VALIDATOR_VERSION_STRING} finished with ${result.noticeList.length ? result.noticeList.length.toLocaleString() : "zero"} notice${result.noticeList.length === 1 ? '' : 's'}`);
     else
-        addSuccessMessage(`No errors or warnings found by CheckAnnotationRows v${ANNOTATION_TABLE_VALIDATOR_VERSION_STRING}`)
-    // console.log(`  CheckAnnotationRows returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
-    // console.log("CheckAnnotationRows result is", JSON.stringify(result));
+        addSuccessMessage(`No errors or warnings found by checkAnnotationRows v${ANNOTATION_TABLE_VALIDATOR_VERSION_STRING}`)
+    // console.log(`  checkAnnotationRows returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
+    // console.log("checkAnnotationRows result is", JSON.stringify(result));
     return result;
 }
-// end of CheckAnnotationRows function
+// end of checkAnnotationRows function

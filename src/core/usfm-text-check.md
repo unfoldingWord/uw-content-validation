@@ -13,7 +13,7 @@ Note that unfoldingWord has three distinct forms of USFM files (and these functi
 1. Some of our USFM Bible books simply contain the (normal) Bible text. (Of course, these files are much smaller and quicker to validate.)
 
 ```js
-import checkUSFMText from './usfm-text-check';
+import { checkUSFMText } from './usfm-text-check';
 import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // USFM samples

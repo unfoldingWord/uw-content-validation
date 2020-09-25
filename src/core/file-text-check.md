@@ -9,7 +9,7 @@ This generic function returns a list/array of notices, that can then be post-pro
 This demonstration doesn't display the raw notices, but rather displays the processed and formatted lists of errors and warnings.
 
 ```js
-import checkTextfileContents from './file-text-check';
+import { checkTextfileContents } from './file-text-check';
 import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Empty, space, good, and bad samples

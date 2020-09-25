@@ -50,6 +50,9 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
     let ourRowLocation = givenRowLocation;
     if (ourRowLocation && ourRowLocation[0] !== ' ') ourRowLocation = ` ${ourRowLocation}`;
 
+    const linkCheckingOptions = { ...optionalCheckingOptions };
+    linkCheckingOptions.taRepoLanguageCode = languageCode;
+
     let drResult = { noticeList: [] };
 
     function addNoticePartial(noticeObject) {
@@ -408,7 +411,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
                 addNoticePartial({ priority: 374, message: "OccurrenceNote field is only whitespace", rowID, location: ourRowLocation });
             else { // More than just whitespace
                 ourMarkdownTextChecks(rowID, 'OccurrenceNote', occurrenceNote, true, ourRowLocation, optionalCheckingOptions);
-                await ourCheckTNLinksToOutside(rowID, 'OccurrenceNote', occurrenceNote, ourRowLocation, optionalCheckingOptions);
+                await ourCheckTNLinksToOutside(rowID, 'OccurrenceNote', occurrenceNote, ourRowLocation, linkCheckingOptions);
             }
         else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             addNoticePartial({ priority: 274, message: "Missing OccurrenceNote field", rowID, location: ourRowLocation });

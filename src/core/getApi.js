@@ -280,12 +280,12 @@ async function cachedFetchFileFromServer({ username, repository, path, branch = 
       return data;
     }
     catch (fffsError) {
-      console.log(`ERROR: cachedFetchFileFromServer could not fetch ${path}: ${fffsError}`)
+      console.log(`ERROR: cachedFetchFileFromServer could not fetch ${username} ${repository} ${branch} ${path}: ${fffsError}`)
       /* await */ failedStore.setItem(uri, fffsError.message);
       return null;
     }
   } else {
-    console.log(`ERROR: cachedFetchFileFromServer repo '${repository}' does not exist!`);
+    console.log(`ERROR: cachedFetchFileFromServer repo ${username} '${repository}' does not exist!`);
     /* await */ failedStore.setItem(uri, `Repo '${repository}' does not exist!`);
     return null;
   }
@@ -452,9 +452,9 @@ async function getFileFromZip({ username, repository, path, branch }) {
       // console.log(`  Got zipBlob for uri=${uri}`);
       const zip = await JSZip.loadAsync(zipBlob);
       const zipPath = Path.join(repository.toLowerCase(), path);
-      // console.log(`  zipPath=${zipPath}`);
+      // console.log(`  getFileFromZip: zipPath=${zipPath}`);
       file = await zip.file(zipPath).async('string');
-      // console.log(`    Got zipBlob ${file.length} bytes`);
+      // console.log(`    getFileFromZip: Got zipBlob ${file.length} bytes`);
     }
     // else console.log(`  No zipBlob for getFileFromZip(${username}, ${repository}, ${path}, ${branch})`);
   } catch (error) {
