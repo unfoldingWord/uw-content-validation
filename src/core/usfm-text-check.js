@@ -1,5 +1,5 @@
 import * as books from '../core/books/books';
-import { isWhitespace, countOccurrences } from './text-handling-functions'
+import { isWhitespace, countOccurrences, ourDeleteAll } from './text-handling-functions'
 import { checkTextField } from './field-text-check';
 import { checkTextfileContents } from './file-text-check';
 import { runUsfmJsCheck } from './usfm-js-check';
@@ -13,6 +13,11 @@ const DEFAULT_EXTRACT_LENGTH = 10;
 
 
 // See http://ubsicap.github.io/usfm/master/index.html
+const COMPULSORY_MARKERS = ['id', 'ide'];
+const EXPECTED_MARKERS = ['usfm', 'mt1'];
+const EXPECTED_BIBLE_BOOK_MARKERS = ['h', 'toc1', 'toc2', 'toc3'];
+const EXPECTED_PERIPHERAL_BOOK_MARKERS = ['periph'];
+
 const INTRO_LINE_START_MARKERS = ['id', 'usfm', 'ide', 'h',
     'toc1', 'toc2', 'toc3',
     'mt', 'mt1', 'mt2',
@@ -58,27 +63,58 @@ const DEPRECATED_MARKERS = [
     'addpn', 'pro', 'fdc', 'xdc'];
 const MARKERS_WITH_COMPULSORY_CONTENT = [].concat(INTRO_LINE_START_MARKERS).concat(HEADING_TYPE_MARKERS)
     .concat(CV_MARKERS).concat(NOTE_MARKERS).concat(SPECIAL_MARKERS);
+const FOOTNOTE_INTERNAL_MARKERS = ['fr', 'fq', 'fqa', 'fk', 'fl', 'fw', 'fp', 'fv', 'ft', 'fdc', 'fm', 'xt'];
+const XREF_INTERNAL_MARKERS = ['xo', 'xk', 'xq', 'xt', 'xta', 'xop', 'xot', 'xnt', 'xdc', 'rq'];
 const SIMPLE_CHARACTER_MARKERS = ['add', 'bk', 'dc', 'k', 'nd', 'ord', 'pn', 'png', 'addpn',
     'qt', 'sig', 'sls', 'tl', 'wj',
-    'rq', 'ior', 'iqt',
+    'ior', 'iqt', // TODO: What/Why was 'rq' in here???
     'em', 'bd', 'it', 'bdit', 'no', 'sc', 'sup',
     'ndx', 'rb', 'pro', 'wg', 'wh', 'wa',
     'litl', 'lik',
     'liv', 'liv1', 'liv2', 'liv3', 'liv4'];
 const CHARACTER_MARKERS = ['fig', 'w'].concat(SIMPLE_CHARACTER_MARKERS); // NOTE that we have \w in TWO places
-const FOOTNOTE_INTERNAL_MARKERS = ['fr', 'fq', 'fqa', 'fk', 'fl', 'fw', 'fp', 'fv', 'ft', 'fdc', 'fm', 'xt'];
-const XREF_INTERNAL_MARKERS = ['xo', 'xk', 'xq', 'xt', 'xta', 'xop', 'xot', 'xnt', 'xdc', 'rq'];
 const SIMPLE_INTERNAL_MARKERS = [SIMPLE_CHARACTER_MARKERS].concat().concat(FOOTNOTE_INTERNAL_MARKERS).concat(XREF_INTERNAL_MARKERS)
-const COMPULSORY_MARKERS = ['id', 'ide'];
-const EXPECTED_MARKERS = ['usfm', 'mt1'];
-const EXPECTED_BIBLE_BOOK_MARKERS = ['h', 'toc1', 'toc2', 'toc3'];
-const EXPECTED_PERIPHERAL_BOOK_MARKERS = ['periph'];
 // eslint-disable-next-line no-unused-vars
 const CANONICAL_TEXT_MARKERS = ['d'].concat(PARAGRAPH_MARKERS).concat(CHARACTER_MARKERS);
 // eslint-disable-next-line no-unused-vars
 const ANY_TEXT_MARKERS = [].concat(INTRO_LINE_START_MARKERS).concat(HEADING_TYPE_MARKERS)
     .concat(PARAGRAPH_MARKERS).concat(CHARACTER_MARKERS)
     .concat(NOTE_MARKERS).concat(SPECIAL_MARKERS);
+const MATCHED_CHARACTER_FORMATTING_PAIRS = [
+    ['\\add ', '\\add*'], ['\\addpn ', '\\addpn*'],
+    ['\\bd ', '\\bd*'], ['\\bdit ', '\\bdit*'],
+    ['\\bk ', '\\bk*'],
+    ['\\dc ', '\\dc*'],
+    ['\\em ', '\\em*'],
+    ['\\fig ', '\\fig*'],
+    ['\\ior ', '\\ior*'],
+    ['\\iqt ', '\\iqt*'],
+    ['\\it ', '\\it*'],
+    ['\\k ', '\\k*'],
+    ['\\litl ', '\\litl*'],
+    ['\\lik ', '\\lik*'],
+    ['\\liv ', '\\liv*'], ['\\liv1 ', '\\liv1*'], ['\\liv2 ', '\\liv2*'], ['\\liv3 ', '\\liv3*'], ['\\liv4 ', '\\liv4*'],
+    ['\\nd ', '\\nd*'], ['\\ndx ', '\\ndx*'],
+    ['\\no ', '\\no*'],
+    ['\\ord ', '\\ord*'],
+    ['\\pn ', '\\pn*'], ['\\png ', '\\png*'],
+    ['\\pro ', '\\pro*'],
+    ['\\qt ', '\\qt*'],
+    ['\\rb ', '\\rb*'],
+    ['\\sc ', '\\sc*'],
+    ['\\sig ', '\\sig*'],
+    ['\\sls ', '\\sls*'],
+    ['\\sup ', '\\sup*'],
+    ['\\tl ', '\\tl*'],
+    ['\\w ', '\\w*'],
+    ['\\wa ', '\\wa*'], ['\\wg ', '\\wg*'], ['\\wh ', '\\wh*'],
+    ['\\wj ', '\\wj*'],
+
+    ['\\ca ', '\\ca*'], ['\\va ', '\\va*'],
+
+    ['\\f ', '\\f*'], ['\\x ', '\\x*'],
+];
+
 
 
 export function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation, optionalCheckingOptions) {
@@ -436,35 +472,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
 
     function checkUSFMCharacterFields(filename, fileText, fileLocation) {
         // Check matched pairs
-        for (const punctSet of [
-            // TODO: Why do we have these here -- should be using the constants at the top of the file!!!
-            // Character formatting
-            ['\\add ', '\\add*'], ['\\addpn ', '\\addpn*'],
-            ['\\bd ', '\\bd*'], ['\\bdit ', '\\bdit*'],
-            ['\\bk ', '\\bk*'],
-            ['\\dc ', '\\dc*'],
-            ['\\em ', '\\em*'],
-            ['\\fig ', '\\fig*'],
-            ['\\it ', '\\it*'],
-            ['\\k ', '\\k*'],
-            ['\\nd ', '\\nd*'], ['\\ndx ', '\\ndx*'],
-            ['\\no ', '\\no*'],
-            ['\\ord ', '\\ord*'],
-            ['\\pn ', '\\pn*'],
-            ['\\pro ', '\\pro*'],
-            ['\\qt ', '\\qt*'],
-            ['\\sc ', '\\sc*'],
-            ['\\sig ', '\\sig*'],
-            ['\\sls ', '\\sls*'],
-            ['\\tl ', '\\tl*'],
-            ['\\w ', '\\w*'],
-            ['\\wg ', '\\wg*'], ['\\wh ', '\\wh*'],
-            ['\\wj ', '\\wj*'],
-
-            ['\\ca ', '\\ca*'], ['\\va ', '\\va*'],
-
-            ['\\f ', '\\f*'], ['\\x ', '\\x*'],
-        ]) {
+        for (const punctSet of MATCHED_CHARACTER_FORMATTING_PAIRS) {
             const opener = punctSet[0], closer = punctSet[1];
             const lCount = countOccurrences(fileText, opener);
             const rCount = countOccurrences(fileText, closer);
@@ -525,11 +533,13 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
         // Remove any simple character markers
         // NOTE: replaceAll() is not generally available in browsers yet, so need to use RegExps
         for (const charMarker of SIMPLE_INTERNAL_MARKERS) {
-            // TODO: Move the regEx creation so it's only done once -- not for every line!!!
-            const startRegex = new RegExp(`\\${charMarker} `, 'g');
-            // eslint-disable-next-line no-useless-escape
-            const endRegex = new RegExp(`\\${charMarker}\*`, 'g');
-            adjustedRest = adjustedRest.replace(startRegex, '').replace(endRegex, '');
+            // oldTODO: Move the regEx creation so it's only done once -- not for every line!!!
+            // const startRegex = new RegExp(`\\${charMarker} `, 'g');
+            // // eslint-disable-next-line no-useless-escape
+            // const endRegex = new RegExp(`\\${charMarker}\*`, 'g');
+            // adjustedRest = adjustedRest.replace(startRegex, '').replace(endRegex, '');
+            adjustedRest = ourDeleteAll(adjustedRest, `\\${charMarker} `);
+            adjustedRest = ourDeleteAll(adjustedRest, `\\${charMarker}*`);
         }
         // if (adjustedRest !== rest) {console.log(`Still Got \n'${adjustedRest}' from \n'${rest}'`); return;}
 
