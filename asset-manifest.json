@@ -1,13 +1,13 @@
 {
   "files": {
     "build/0.cf172136.js": "/uw-content-validation/build/0.cf172136.js",
-    "main.js": "/uw-content-validation/build/main.59352c65.js",
+    "main.js": "/uw-content-validation/build/main.416a4209.js",
     "runtime-main.js": "/uw-content-validation/build/bundle.105de5e2.js",
     "index.html": "/uw-content-validation/index.html"
   },
   "entrypoints": [
     "build/bundle.105de5e2.js",
     "build/0.cf172136.js",
-    "build/main.59352c65.js"
+    "build/main.416a4209.js"
   ]
 }
