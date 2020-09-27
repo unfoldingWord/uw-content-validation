@@ -40,9 +40,13 @@ function FileCheck(props) {
         }
         // console.log(`FileCheck got initial results with ${rawCFResults.successList.length} success message(s) and ${rawCFResults.noticeList.length} notice(s)`);
 
-        // Since we know the repoName here, add it to our notices
-        for (const thisNotice of rawCFResults.noticeList)
-          thisNotice.repoName = repoName; // Add in this info that we know
+        // Because we know here that we're only checking one file, we don't need the filename field in the notices
+        function deleteFilenameField(notice) { delete notice.filename; return notice; }
+        rawCFResults.noticeList = rawCFResults.noticeList.map(deleteFilenameField);
+
+        // // Since we know the repoName here, add it to our notices
+        // for (const thisNotice of rawCFResults.noticeList)
+        //   thisNotice.repoName = repoName; // Add in this info that we know
 
         // Add some extra fields to our rawCFResults object in case we need this information again later
         rawCFResults.checkType = 'File';

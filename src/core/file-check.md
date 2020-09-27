@@ -58,6 +58,11 @@ function CheckFileContents(props) {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {filename}…</p>);
       const rawResults = await checkFileContents(languageCode, filename, fileContent, givenLocation, checkingOptions);
+
+      // Because we know here that we're only checking one file, we don't need the filename field in the notices
+      function deleteFilenameField(notice) { delete notice.filename; return notice; }
+      rawResults.noticeList = rawResults.noticeList.map(deleteFilenameField);
+
       setResults(
         <div>
           <b>Checked</b> {filename}: "{fileContent.substr(0,256)}…"<br/><br/>
