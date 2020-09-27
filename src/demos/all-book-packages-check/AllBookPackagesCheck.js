@@ -8,7 +8,10 @@ import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSu
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const BPS_VALIDATOR_VERSION_STRING = '0.1.1';
+// const BPS_VALIDATOR_VERSION_STRING = '0.2.1';
+
+const OLD_TESTAMENT_BOOK_CODES = 'GEN,EXO,LEV,NUM,DEU,JOS,JDG,RUT,1SA,2SA,1KI,2KI,1CH,2CH,EZR,NEH,EST,JOB,PSA,PRO,ECC,SNG,ISA,JER,LAM,EZK,DAN,HOS,JOL,AMO,OBA,JON,MIC,NAM,HAB,ZEP,HAG,ZEC,MAL';
+const NEW_TESTAMENT_BOOK_CODES = 'MAT,MRK,LUK,JHN,ACT,ROM,1CO,2CO,GAL,EPH,PHP,COL,1TH,2TH,1TI,2TI,TIT,PHM,HEB,JAS,1PE,2PE,1JN,2JN,3JN,JUD,REV';
 
 
 function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
@@ -36,15 +39,16 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     // Enter a string containing UPPERCASE USFM book identifiers separated only by commas
     //  and can also include OBS (for Open Bible Stories)
     let bookIDs = '';
-    if (testament.toUpperCase() === 'OT' || testament.toUpperCase() === 'OLD'){
-        bookIDs = 'GEN,EXO,LEV,NUM,DEU,JOS,JDG,RUT,1SA,2SA,1KI,2KI,1CH,2CH,EZR,NEH,EST,JOB,PSA,PRO,ECC,SNG,ISA,JER,LAM,EZK,DAN,HOS,JOL,AMO,OBA,JON,MIC,NAM,HAB,ZEP,HAG,ZEC,MAL';
-    }
-    else if (testament.toUpperCase() === 'NT' || testament.toUpperCase() === 'NEW') {
-        bookIDs = 'MAT,MRK,LUK,JHN,ACT,ROM,1CO,2CO,GAL,EPH,PHP,COL,1TH,2TH,1TI,2TI,TIT,PHM,HEB,JAS,1PE,2PE,1JN,2JN,3JN,JUD,REV';
-    } else
-      setResultValue(<p style={{ color: 'red' }}>No testament selected (Good because check will likely crash your browser)</p>);
+    if (testament.toUpperCase() === 'OT' || testament.toUpperCase() === 'OLD')
+      bookIDs = OLD_TESTAMENT_BOOK_CODES;
+    else if (testament.toUpperCase() === 'NT' || testament.toUpperCase() === 'NEW')
+      bookIDs = NEW_TESTAMENT_BOOK_CODES;
+    else if (testament.toUpperCase() === 'ALL')
+      bookIDs = `${OLD_TESTAMENT_BOOK_CODES},${NEW_TESTAMENT_BOOK_CODES}`;
+    else
+      setResultValue(<p style={{ color: 'red' }}>No testament selected</p>);
     if (includeOBS.toUpperCase() === 'Y' || includeOBS.toUpperCase() === 'YES')
-        bookIDs += ',OBS';
+      bookIDs += ',OBS';
 
     let bookIDList = [];
     let bookIDInvalid;

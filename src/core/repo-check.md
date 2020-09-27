@@ -52,7 +52,7 @@ function CheckRepo(props) {
       // Because we know here that we're only checking one repo, we don't need the repoName field in the notices
       function deleteRepoNameField(notice) { delete notice.repoName; return notice; }
       rawResults.noticeList = rawResults.noticeList.map(deleteRepoNameField);
-      
+
       setResults(
         <div>
           <b>Checked</b> Door43 {username} {repoName} {branch}<br/><br/>

@@ -1,8 +1,6 @@
 ## Door43 All Book Packages Check - Readme
 
-**WARNING**: Loading these checks (even for just NT) will probably crash your browser!!! It takes too much memory. Thus the test is currently disabled with 'XX' set for `testament` below.
-
-The code below requests some info and then checks Open Bible Stories plus all Bible books across several repos. This is convenient to see all these check results collected into one place.
+The code below requests some info and then checks the requested Bible books -- NT or OT or ALL across several repos. OBS (Open Bible Stories) can also be added. This is convenient to see all these check results collected into one place.
 
 `All Book Packages Check` calls `checkBookPackages()` which then calls `checkBookPackage()` for each given book identifier, which in turn calls `checkFileContents()` for the book file in each repo (or calls `checkRepo()` for **OBS**).
 
@@ -16,8 +14,8 @@ import AllBookPackagesCheck from './AllBookPackagesCheck';
 <AllBookPackagesCheck
   username='unfoldingWord'
   languageCode='en'
-  testament='XX' // 'OT' or 'NT' -- sorry the browser runs out of memory for all books
   includeOBS='N' // 'Y' or 'N' for Open Bible Stories
+  testament='XX' // 'OT' or 'NT' or 'ALL' to start check
 
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'

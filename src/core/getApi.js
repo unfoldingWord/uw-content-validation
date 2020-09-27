@@ -1,5 +1,4 @@
 import Path from 'path';
-// import YAML from 'js-yaml-parser';
 import yaml from 'yaml';
 import localforage from 'localforage';
 import { setup } from 'axios-cache-adapter';
@@ -8,25 +7,37 @@ import * as books from './books';
 // import { consoleLogObject } from '../core/utilities';
 
 
+const MAX_INDIVIDUAL_FILES_TO_DOWNLOAD = 5; // More than this and it downloads the zipfile for the entire repo
+
 const baseURL = 'https://git.door43.org/';
 const apiPath = 'api/v1';
 
 
+// caches failed http file fetches so we don't waste time with repeated attempts
 const failedStore = localforage.createInstance({
   driver: [localforage.INDEXEDDB],
-  name: 'failed-store',
+  name: 'CV-failed-store',
 });
 
+// caches zip file fetches done by cachedGetRepositoryZipFile()
 const zipStore = localforage.createInstance({
   driver: [localforage.INDEXEDDB],
-  name: 'zip-store',
+  name: 'CV-zip-store',
 });
 
+// caches http file fetches done by cachedFetchFileFromServer()
 const cacheStore = localforage.createInstance({
   driver: [localforage.INDEXEDDB],
-  name: 'web-cache',
+  name: 'CV-web-cache',
 });
 
+// caches the unzipped files requested so we don't do repeated unzipping of the same file which is slow in JS
+const unzipStore = localforage.createInstance({
+  driver: [localforage.INDEXEDDB],
+  name: 'CV-unzip-store',
+});
+
+// API for http requests
 // NOTE: Even if data expires in this AxiosCacheAdapter, the localforage caches don't have the same / any expiry ages
 //        (We expect the users of the demos to manually clear the caches when an update is required.)
 const Door43Api = setup({
@@ -45,11 +56,75 @@ const Door43Api = setup({
 });
 
 
-let cachedUnzippedFiles = {};
+/**
+ * clear all the stores
+ * @return {Promise<void>}
+ */
+export async function clearCaches() {
+  console.log("Clearing CV localforage.INDEXEDDB zipStore and cacheStore caches…");
+  // const tasks = [zipStore, cacheStore].map(localforage.clear);
+  // const results = await Promise.all(tasks);
+  // results.forEach(x => console.log("Done it", x));
+  await failedStore.clear();
+  await zipStore.clear();
+  await cacheStore.clear(); // This should clear the Axion Door43Api cache also hopefully
+  await unzipStore.clear();
+}
+
 
 /**
- * adds caching of uncompressed files, calls cachedGetFileFromZipOrServer() if file is not cached
- * @param {String} username
+ * @description - Forms and returns a Door43 repoName string
+ * @param {String} languageCode - the language code, e.g., 'en'
+ * @param {String} repoCode - the repo code, e.g., 'TQ'
+ * @return {String} - the Door43 repoName string
+ */
+export function formRepoName(languageCode, repoCode) {
+  //    console.log(`formRepoName('${languageCode}', '${repoCode}')…`);
+
+  // TODO: Should we also check the username 'unfoldingWord' and/or 'Door43-Catalog' here???
+  //        (We don't currently have the username available in this function.)
+  if (repoCode === 'LT') repoCode = languageCode === 'en' ? 'ULT' : 'GLT';
+  if (repoCode === 'ST') repoCode = languageCode === 'en' ? 'UST' : 'GST';
+
+  let repo_languageCode = languageCode;
+  if (repoCode === 'UHB') repo_languageCode = 'hbo';
+  else if (repoCode === 'UGNT') repo_languageCode = 'el-x-koine';
+  const repoName = `${repo_languageCode}_${repoCode.toLowerCase()}`;
+  return repoName;
+}
+
+
+/**
+ * add new repo to list if missing
+ * @param repos
+ * @param newRepo
+ */
+/*
+function addToListIfMissing(repos, newRepo) {
+  if (!repos.includes(newRepo)) {
+    repos.unshift(newRepo);
+  }
+}
+*/
+
+
+/**
+ * try to get previously unzipped file from cache
+ * @param {string} path
+ * @return {Promise<unknown>} resolves to file contents or null if not found
+ */
+async function getUnZippedFile(path) {
+  // console.log(`getUnZippedFile(${path})`);
+  const contents = await unzipStore.getItem(path.toLowerCase());
+  return contents;
+}
+
+
+/**
+ * searches for files in this order:
+ *   - cache of uncompressed files (unzipStore)
+ *   - cache of zipped repos (zipStore)
+ *   - and finally calls cachedFetchFileFromServer() which first checks in cacheStore to see if already fetched. * @param {String} username
  * @param {String} repository
  * @param {String} path
  * @param {String} branch
@@ -57,26 +132,43 @@ let cachedUnzippedFiles = {};
  */
 // This is the function that we call the most from the outside
 export async function cachedGetFile({ username, repository, path, branch }) {
-  // console.log(`cachedGetFile(${username}, ${repository}, ${path}, ${branch})…`);
+  // if (repository==='en_ta') console.log(`cachedGetFile(${username}, ${repository}, ${path}, ${branch})…`);
   const filePath = Path.join(username, repository, path, branch);
-  if (cachedUnzippedFiles[filePath]) {
-    // console.log(`in cache - ${filePath}`);
-    return cachedUnzippedFiles[filePath];
+  let contents = await getUnZippedFile(filePath);
+  if (contents) {
+    // console.log(`cachedGetFile got ${filePath} from unzipped cache`);
+    return contents;
   }
 
-  // NOTE: cachedGetFileFromZipOrServer() below will look for a downloaded zip first
-  const fileContents = await cachedGetFileFromZipOrServer({ username, repository, path, branch });
-
-  if (fileContents) {
-    cachedUnzippedFiles[filePath] = fileContents;
-    // console.log(`saving to cache - ${filePath}`);
+  contents = await getFileFromZip({ username, repository, path, branch });
+  // if (contents)
+  //   if (filePath.indexOf('_tq/') < 0) // Don't log for TQ files coz too many
+  //     console.log(`  cachedGetFile got ${filePath} from zipfile`);
+  if (!contents) {
+    contents = await cachedFetchFileFromServer({ username, repository, path, branch });
   }
 
-  return fileContents;
+  if (contents) {
+    // save unzipped file in cache to speed later retrieval
+    await unzipStore.setItem(filePath.toLowerCase(), contents);
+    // if (filePath.indexOf('_tq/') < 0) // Don't log for TQ files coz too many
+    //   console.log(`cachedGetFile saved ${filePath} to cache for next time`);
+  } else {
+    console.log(`ERROR: cachedGetFile(${username}, ${repository}, ${path}, ${branch}) - failed to get file`);
+  }
+
+  return contents;
 }
 
 
-export async function cachedGetManifest({ username, repository, branch }) {
+/**
+ * Retrieve manifest.yaml from requested repo
+ * @param {string} username
+ * @param {string} repository
+ * @param {string} branch
+ * @return {Promise<[]|*[]>} resolves to manifest contents if downloaded (else undefined)
+ */
+async function cachedGetManifest({ username, repository, branch }) {
   // console.log(`cachedGetManifest(${username}, ${repository}, ${branch})…`);
 
   const manifestContents = await cachedGetFile({ username, repository, path: 'manifest.yaml', branch });
@@ -92,6 +184,14 @@ export async function cachedGetManifest({ username, repository, branch }) {
 }
 
 
+/**
+ * Retrieve manifest.yaml from requested repo
+ * @param {string} username
+ * @param {string} repository
+ * @param {string} branch
+ * @param {string} bookID -- 3-character USFM book code
+ * @return {Promise<[]|*[]>} resolves to filename from the manifest for the book (else undefined)
+ */
 export async function cachedGetBookFilenameFromManifest({ username, repository, branch, bookID }) {
   // console.log(`cachedGetBookFilenameFromManifest(${username}, ${repository}, ${branch}, ${bookID})…`);
   const manifestJSON = await cachedGetManifest({ username, repository, branch });
@@ -102,40 +202,6 @@ export async function cachedGetBookFilenameFromManifest({ username, repository, 
       return bookPath;
     }
   }
-}
-
-
-export async function clearCaches() {
-  console.log("Clearing localforage.INDEXEDDB zipStore and cacheStore caches…");
-  // const tasks = [zipStore, cacheStore].map(localforage.clear);
-  // const results = await Promise.all(tasks);
-  // results.forEach(x => console.log("Done it", x));
-  await failedStore.clear();
-  await zipStore.clear();
-  await cacheStore.clear(); // This should clear the Axion Door43Api cache also hopefully
-  cachedUnzippedFiles = {};
-}
-
-
-export function formRepoName(languageCode, repoCode) {
-  /**
-  * @description - Creates and returns a Door43 repoName string
-  * @param {String} languageCode - the language code, e.g., 'en'
-  * @param {String} repoCode - the repo code, e.g., 'TQ'
-  * @return {String} - the Door43 repoName string
-  */
-  //    console.log(`formRepoName('${languageCode}', '${repoCode}')…`);
-
-  // TODO: Should we also check the username 'unfoldingWord' and/or 'Door43-Catalog' here???
-  //        (We don't currently have the username available in this function.)
-  if (repoCode === 'LT') repoCode = languageCode === 'en' ? 'ULT' : 'GLT';
-  if (repoCode === 'ST') repoCode = languageCode === 'en' ? 'UST' : 'GST';
-
-  let repo_languageCode = languageCode;
-  if (repoCode === 'UHB') repo_languageCode = 'hbo';
-  else if (repoCode === 'UGNT') repo_languageCode = 'el-x-koine';
-  const repoName = `${repo_languageCode}_${repoCode.toLowerCase()}`;
-  return repoName;
 }
 
 
@@ -153,7 +219,8 @@ export function formRepoName(languageCode, repoCode) {
  * @param {Array} repos - optional, list of repos to pre-load
  * @return {Promise<Boolean>} resolves to true if file loads are successful
  */
-export async function clearCacheAndPreloadRepos(username, languageCode, bookIDList, branch = 'master', repos = ['TA', 'TW', 'TQ']) {
+/*
+async function clearCacheAndPreloadRepos(username, languageCode, bookIDList, branch = 'master', repos = ['TA', 'TW', 'TQ']) {
   // NOTE: We preload TA and TW by default because we are likely to have many links to those repos
   //        We preload TQ by default because it has thousands of files (17,337), so individual file fetches might be slow
   //          even for one book which might have several hundred files.
@@ -162,7 +229,7 @@ export async function clearCacheAndPreloadRepos(username, languageCode, bookIDLi
   let success = true;
 
   const repos_ = [...repos];
-  if (bookIDList && Array.isArray(bookIDList) && bookIDList.length > 5) { // Fetch individually if checking less books
+  if (bookIDList && Array.isArray(bookIDList) && bookIDList.length > MAX_INDIVIDUAL_FILES_TO_DOWNLOAD) { // Fetch individually if checking less books
     // make sure we have the original languages needed
     for (const bookID of bookIDList) {
       if (bookID !== 'OBS') {
@@ -188,6 +255,56 @@ export async function clearCacheAndPreloadRepos(username, languageCode, bookIDLi
 
   return success;
 }
+*/
+
+
+/**
+ * preloads repo zips, before running book package checks.
+ *   TRICKY: note that even if the user is super fast in selecting books and clicking next, it will not hurt anything.  getFile() would just be fetching files directly from repo until the zips are loaded.  After that the files would be pulled out of zipStore.
+ * @param {string} username
+ * @param {string} languageCode
+ * @param {Array} bookIDList - one or more books that will be preloaded
+ * @param {string} branch - optional, defaults to master
+ * @param {Array} repos - optional, list of additional repos to pre-load
+ * @param {boolean} loadOriginalLangs - if true will download original language books
+ * @return {Promise<Boolean>} resolves to true if file loads are successful
+ */
+/*
+async function PreLoadRepos(username, languageCode, bookIDList, branch = 'master', repos = [], loadOriginalLangs = false) {
+  console.log(`PreLoadRepos(${username}, ${languageCode}, ${bookIDList}, ${branch}, ${repos}, ${loadOriginalLangs})…`);
+
+  let success = true;
+  const repos_ = repos.map((repo) => (formRepoName(languageCode, repo)));
+
+  if (loadOriginalLangs) {
+    // make sure we have the original languages needed
+    for (const origLangBibles of [ 'UHB', 'UGNT' ]) {
+      addToListIfMissing(repos_, formRepoName(languageCode, origLangBibles));
+    }
+  }
+
+  if (bookIDList && Array.isArray(bookIDList)) {
+    for (const bookID of bookIDList) {
+      if (bookID !== 'OBS') {
+        addToListIfMissing(repos_, formRepoName(languageCode, 'LT'));
+        addToListIfMissing(repos_, formRepoName(languageCode, 'ST'));
+      }
+    }
+  }
+
+  // load all the repos needed
+  for (const repoName of repos_) {
+    console.log(`PreLoadRepos: preloading zip file for ${repoName}…`);
+    const zipFetchSucceeded = await cachedGetRepositoryZipFile({ username, repository: repoName, branch });
+    if (!zipFetchSucceeded) {
+      console.log(`PreLoadRepos: misfetched zip file for ${repoName} repo with ${zipFetchSucceeded}`);
+      success = false;
+    }
+  }
+
+  return success;
+}
+*/
 
 
 /**
@@ -212,7 +329,7 @@ export async function preloadReposIfNecessary(username, languageCode, bookIDList
   let success = true;
 
   const repos_ = [...repos];
-  if (bookIDList && Array.isArray(bookIDList) && bookIDList.length > 5) { // Fetch individually if checking less books
+  if (bookIDList && Array.isArray(bookIDList) && bookIDList.length > MAX_INDIVIDUAL_FILES_TO_DOWNLOAD) { // Fetch individually if checking less books
     // make sure we have the original languages needed
     for (const bookID of bookIDList) {
       if (bookID !== 'OBS') {
@@ -231,7 +348,7 @@ export async function preloadReposIfNecessary(username, languageCode, bookIDList
   //   const repoName = formRepoName(languageCode, repoCode);
   //   // console.log(`preloadReposIfNecessary: checking zip file for ${repoName}…`);
   //   const uri = zipUri({ username, repository: repoName, branch });
-  //   const zipBlob = await zipStore.getItem(uri);
+  //   const zipBlob = await zipStore.getItem(uri.toLowerCase());
   //   if (!zipBlob) newRepoList.push(repoCode);
   // }
 
@@ -262,15 +379,24 @@ export async function preloadReposIfNecessary(username, languageCode, bookIDList
 }
 
 
+/**
+ * does http file fetch from server  uses cacheStore to minimize repeated fetches of same file
+ * @param {string} username
+ * @param {string} repository
+ * @param {string} path
+ * @param {string} branch
+ * @return {Promise<null|any>} resolves to file content
+ */
 async function cachedFetchFileFromServer({ username, repository, path, branch = 'master' }) {
   // console.log(`cachedFetchFileFromServer(${username}, ${repository}, ${path}, ${branch})…`);
+  // TODO: Check how slow this next call is -- can it be avoided or cached?
   const repoExistsOnDoor43 = await repositoryExistsOnDoor43({ username, repository });
   let uri;
   if (repoExistsOnDoor43) {
     uri = Path.join(username, repository, 'raw/branch', branch, path);
-    const failMessage = await failedStore.getItem(uri);
+    const failMessage = await failedStore.getItem(uri.toLowerCase());
     if (failMessage) {
-      // console.log(`cachedFetchFileFromServer failed previously for ${uri}: ${failMessage}`);
+      console.log(`cachedFetchFileFromServer failed previously for ${uri}: ${failMessage}`);
       return null;
     }
     try {
@@ -281,17 +407,26 @@ async function cachedFetchFileFromServer({ username, repository, path, branch = 
     }
     catch (fffsError) {
       console.log(`ERROR: cachedFetchFileFromServer could not fetch ${username} ${repository} ${branch} ${path}: ${fffsError}`)
-      /* await */ failedStore.setItem(uri, fffsError.message);
+      /* await */ failedStore.setItem(uri.toLowerCase(), fffsError.message);
       return null;
     }
   } else {
     console.log(`ERROR: cachedFetchFileFromServer repo ${username} '${repository}' does not exist!`);
-    /* await */ failedStore.setItem(uri, `Repo '${repository}' does not exist!`);
+    /* await */ failedStore.setItem(uri.toLowerCase(), `Repo '${repository}' does not exist!`);
     return null;
   }
 };
 
 
+/**
+ *  older getFile without that doesn't use the unzipStore
+ * @param {string} username
+ * @param {string} repository
+ * @param {string} path
+ * @param {string} branch
+ * @return {Promise<*>}
+ */
+/*
 async function cachedGetFileFromZipOrServer({ username, repository, path, branch }) {
   // console.log(`cachedGetFileFromZipOrServer(${username}, ${repository}, ${path}, ${branch})…`);
   let file;
@@ -301,7 +436,7 @@ async function cachedGetFileFromZipOrServer({ username, repository, path, branch
   }
   return file;
 }
-
+*/
 
 async function getUID({ username }) {
   // console.log(`getUID(${username})…`);
@@ -336,7 +471,7 @@ async function cachedGetFileUsingPartialURL({ uri, params }) {
   // console.log(`cachedGetFileUsingPartialURL(${uri}, ${JSON.stringify(params)})…`);
   // console.log(`  get querying: ${baseURL+uri}`);
   const response = await Door43Api.get(baseURL + uri, { params });
-  if (response.request.fromCache !== true) console.log(`  Downloaded ${uri}`);
+  if (response.request.fromCache !== true) console.log(`  Api downloaded Door43 ${uri}`);
   // console.log(`  cachedGetFileUsingPartialURL returning: ${JSON.stringify(response.data)}`);
   return response.data;
 };
@@ -344,7 +479,7 @@ async function cachedGetFileUsingPartialURL({ uri, params }) {
 export async function cachedGetFileUsingFullURL({ uri, params }) {
   // console.log(`cachedGetFileUsingFullURL(${uri}, ${params})…`);
   const response = await Door43Api.get(uri, { params });
-  if (response.request.fromCache !== true) console.log(`  Downloaded ${uri}`);
+  if (response.request.fromCache !== true) console.log(`  Api downloaded ${uri}`);
   // console.log(`  cachedGetFileUsingFullURL returning: ${response.data}`);
   return response.data;
 };
@@ -362,47 +497,71 @@ function fetchRepositoriesZipFiles({username, languageId, branch}) {
 */
 
 
-export async function cachedGetRepositoryZipFile({ username, repository, branch }) {
-  // console.log(`cachedGetRepositoryZipFile(${username}, ${repository}, ${branch})…`);
-  const uri = zipUri({ username, repository, branch });
-  const zipBlob = await zipStore.getItem(uri);
-  if (zipBlob) return true;
-  // else
+/**
+ * retrieve repo as zip file
+ * @param {string} username
+ * @param {string} repository
+ * @param {string} branch
+ * @param {boolean} forceLoad - if not true, then use existing repo in zipstore
+ * @return {Promise<[]|*[]>} resolves to true if downloaded
+ */
+export async function cachedGetRepositoryZipFile({ username, repository, branch }, forceLoad = false) {
+  // https://git.door43.org/{username}/{repository}/archive/{branch}.zip
+  // console.log(`cachedGetRepositoryZipFile(${username}, ${repository}, ${branch}, ${forceLoad})…`);
+
+  if (!forceLoad) { // see if we already have in zipStore
+    const zipBlob = await getZipFromStore(username, repository, branch);
+    if (zipBlob) {
+      // console.log(`cachedGetRepositoryZipFile for ${username}, ${repository}, ${branch} -- already loaded`);
+      return true;
+    }
+  }
   return downloadRepositoryZipFile({ username, repository, branch });
-}
+};
 
 
 async function downloadRepositoryZipFile({ username, repository, branch }) {
   console.log(`downloadRepositoryZipFile(${username}, ${repository}, ${branch})…`);
   const repoExists = await repositoryExistsOnDoor43({ username, repository });
   if (!repoExists) {
+    console.log(`ERROR: downloadRepositoryZipFile(${username}, ${repository}, ${branch}) -- repo doesn't even exist`);
     return null;
   }
+
   // Template is https://git.door43.org/{username}/{repository}/archive/{branch}.zip
   const uri = zipUri({ username, repository, branch });
   const response = await fetch(uri);
   if (response.status === 200 || response.status === 0) {
     const zipArrayBuffer = await response.arrayBuffer(); // blob storage not supported on mobile
-    await zipStore.setItem(uri, zipArrayBuffer);
+    await zipStore.setItem(uri.toLowerCase(), zipArrayBuffer);
+    // console.log(`  downloadRepositoryZipFile(${username}, ${repository}, ${branch}) -- saved zip: ${uri}`);
     return true;
   } else {
-    console.log(`ERROR: downloadRepositoryZipFile got response status: ${response.status}`);
+    console.log(`ERROR: downloadRepositoryZipFile(${username}, ${repository}, ${branch}) -- got response status: ${response.status}`);
     return false;
   }
 };
 
 
+/**
+ * pull repo from zipstore and get a file list
+ * @param {string} username
+ * @param {string} repository
+ * @param {string} branch
+ * @param {string} optionalPrefix - to filter by book, etc.
+ * @return {Promise<[]|*[]>}  resolves to file list
+ */
 export async function getFileListFromZip({ username, repository, branch, optionalPrefix }) {
   // console.log(`getFileListFromZip(${username}, ${repository}, ${branch}, ${optionalPrefix})…`);
 
   const uri = zipUri({ username, repository, branch });
-  let zipBlob = await zipStore.getItem(uri);
+  let zipBlob = await getZipFromStore(username, repository, branch);
 
   if (!zipBlob) { // Seems that we need to load the zip file first
     const response = await fetch(uri);
     if (response.status === 200 || response.status === 0) {
       const zipArrayBuffer = await response.arrayBuffer(); // blob storage not supported on mobile
-      zipBlob = await zipStore.setItem(uri, zipArrayBuffer);
+      zipBlob = await zipStore.setItem(uri.toLowerCase(), zipArrayBuffer);
     } else {
       console.log(`ERROR: getFileListFromZip got response status: ${response.status}`);
       return [];
@@ -442,30 +601,54 @@ export async function getFileListFromZip({ username, repository, branch, optiona
 }
 
 
+/**
+ * try to get zip file from cache
+ * @param {string} username
+ * @param {string} repository
+ * @param {string} branch
+ * @return {Promise<unknown>} resolves to null if not found
+ */
+async function getZipFromStore(username, repository, branch) {
+  // console.log(`getZipFromStore(${username}, ${repository}, ${branch})…`);
+  const uri = zipUri({ username, repository, branch });
+  // console.log(`  uri=${uri}`);
+  const zipBlob = await zipStore.getItem(uri.toLowerCase());
+  // console.log(`  getZipFromStore(${uri} -- empty: ${!zipBlob}`);
+  return zipBlob;
+}
+
+
+/**
+ * pull repo from zipstore and get the unzipped file
+ * @param {string} username
+ * @param {string} repository
+ * @param {string} branch
+ * @param {object} optionalPrefix
+ * @return {Promise<[]|*[]>} resolves to unzipped file if found or null
+ */
 async function getFileFromZip({ username, repository, path, branch }) {
   // console.log(`getFileFromZip(${username}, ${repository}, ${path}, ${branch})…`);
   let file;
-  const uri = zipUri({ username, repository, branch });
-  const zipBlob = await zipStore.getItem(uri);
+  const zipBlob = await getZipFromStore(username, repository, branch);
   try {
     if (zipBlob) {
       // console.log(`  Got zipBlob for uri=${uri}`);
       const zip = await JSZip.loadAsync(zipBlob);
       const zipPath = Path.join(repository.toLowerCase(), path);
-      // console.log(`  getFileFromZip: zipPath=${zipPath}`);
+      // console.log(`  zipPath=${zipPath}`);
       file = await zip.file(zipPath).async('string');
-      // console.log(`    getFileFromZip: Got zipBlob ${file.length} bytes`);
+      // console.log(`    Got zipBlob ${file.length} bytes`);
     }
-    // else console.log(`  No zipBlob for getFileFromZip(${username}, ${repository}, ${path}, ${branch})`);
+    // else console.log("  No zipBlob");
   } catch (error) {
-    console.log(`ERROR: getFileFromZip(${username}, ${repository}, ${path}, ${branch}) got: ${error.message}`);
+    console.log(`ERROR: getFileFromZip for ${username} ${repository} ${path} ${branch} got: ${error.message}`);
     file = null;
   }
   return file;
 };
 
 
-export function zipUri({ username, repository, branch = 'master' }) {
+function zipUri({ username, repository, branch = 'master' }) {
   // console.log(`zipUri(${username}, ${repository}, ${branch})…`);
   const zipPath = Path.join(username, repository, 'archive', `${branch}.zip`);
   const zipUri = baseURL + zipPath;
@@ -473,24 +656,24 @@ export function zipUri({ username, repository, branch = 'master' }) {
 };
 
 
-export async function fetchTree({ username, repository, sha = 'master' }) {
-  // console.log(`fetchTree(${username}, ${repository}, ${sha})…`);
-  let data;
-  try {
-    const uri = Path.join('api/v1/repos', username, repository, 'git/trees', sha);
-    // console.log(`  uri='${uri}'`);
-    data = await cachedGetFileUsingPartialURL({ uri });
-    // console.log(`  data (${typeof data})`);
-    return data;
-    // const tree = JSON.parse(data); // RJH: Why was this here???
-    // console.log(`  tree (${typeof tree})`);
-    // return tree;
-  } catch (error) {
-    console.log(`ERROR: fetchTree got: ${error.message}`);
-    console.log(`  Data was: ${JSON.stringify(data)}`);
-    return null;
-  }
-};
+// async function fetchTree({ username, repository, sha = 'master' }) {
+//   // console.log(`fetchTree(${username}, ${repository}, ${sha})…`);
+//   let data;
+//   try {
+//     const uri = Path.join('api/v1/repos', username, repository, 'git/trees', sha);
+//     // console.log(`  uri='${uri}'`);
+//     data = await cachedGetFileUsingPartialURL({ uri });
+//     // console.log(`  data (${typeof data})`);
+//     return data;
+//     // const tree = JSON.parse(data); // RJH: Why was this here???
+//     // console.log(`  tree (${typeof tree})`);
+//     // return tree;
+//   } catch (error) {
+//     console.log(`ERROR: fetchTree got: ${error.message}`);
+//     console.log(`  Data was: ${JSON.stringify(data)}`);
+//     return null;
+//   }
+// };
 
 
 /*

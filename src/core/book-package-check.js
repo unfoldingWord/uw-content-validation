@@ -113,16 +113,20 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
 
     // Let's fetch the zipped repo since it should be much more efficient than individual fetches
     // console.log(`checkRepo: fetch zip file for ${repoName}…`);
-    const zipFetchSucceeded = await cachedGetRepositoryZipFile({ username, repository: repoName, branch });
-    if (!zipFetchSucceeded)
+    const fetchRepositoryZipFile_ = (checkingOptions && checkingOptions.fetchRepositoryZipFile) ? checkingOptions.fetchRepositoryZipFile : cachedGetRepositoryZipFile;
+    const zipFetchSucceeded = await fetchRepositoryZipFile_({ username, repository: repoName, branch });
+    if (!zipFetchSucceeded) {
       console.log(`checkRepo: misfetched zip file for repo with ${zipFetchSucceeded}`);
-    if (!zipFetchSucceeded) return checkRepoResult;
-    // Note: We don't stop for failure coz the code below will still work (fetching each file individually)
+      setResultValue(<p style={{ color: 'red' }}>Failed to fetching zipped files from <b>{username}/{repoName}</b> repository</p>);
+      addNoticePartial({ priority: 999, message: "Failed to find/load repository", location: ourLocation });
+      return checkRepoResult;
+    }
 
     // Now we need to fetch the list of files from the repo
     setResultValue(<p style={{ color: 'magenta' }}>Preprocessing file list from <b>{username}/{repoName}</b> repository…</p>);
     // const pathList = await getFilelistFromFetchedTreemaps(username, repoName, branch);
-    const pathList = await getFileListFromZip({ username, repository: repoName, branch });
+    const getFileListFromZip_ = checkingOptions && checkingOptions.getFileListFromZip ? checkingOptions.getFileListFromZip : getFileListFromZip;
+    const pathList = await getFileListFromZip_({ username, repository: repoName, branch });
     // console.log(`Got pathlist (${pathList.length}) = ${pathList}`);
 
     // So now we want to work through checking all the files in this repo
@@ -208,7 +212,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
   } catch (cRerror) {
     console.log(`checkRepo main code block got error: ${cRerror.message}`);
     setResultValue(<>
-      <p style={{ color: 'Red' }}>checkRepo main code block got error: <b>{cRerror.message}</b></p>
+      <p style={{ color: 'red' }}>checkRepo main code block got error: <b>{cRerror.message}</b></p>
     </>);
 
   }
@@ -288,7 +292,7 @@ export async function checkFileContents(languageCode, filename, fileContent, giv
 export async function checkTQbook(username, languageCode, repoName, branch, bookID, checkingOptions) {
   // console.log(`checkTQbook(${username}, ${repoName}, ${branch}, ${bookID}, ${JSON.stringify(checkingOptions)})…`)
   const repoCode = 'TQ';
-  const generalLocation = ` in ${username} ${repoName} (${branch})`;
+  const generalLocation = ` in ${username} (${branch})`;
 
   const ctqResult = { successList: [], noticeList: [] };
 
@@ -320,7 +324,7 @@ export async function checkTQbook(username, languageCode, repoName, branch, book
     console.assert(typeof noticeObject.location === 'string', `cTQ addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}'`);
     console.assert(noticeObject.extra !== undefined, "cTQ addNoticePartial: 'extra' parameter should be defined");
     console.assert(typeof noticeObject.extra === 'string', `cTQ addNoticePartial: 'extra' parameter should be a string not a '${typeof noticeObject.extra}'`);
-    ctqResult.noticeList.push({ ...noticeObject, bookID });
+    ctqResult.noticeList.push({ ...noticeObject, repoName, bookID });
   }
 
 
@@ -429,6 +433,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   const newCheckingOptions = checkingOptions ? { ...checkingOptions } : {}; // clone before modify
   const getFile_ = newCheckingOptions.getFile ? newCheckingOptions.getFile : cachedGetFile; // default to using caching of files
   newCheckingOptions.getFile = getFile_; // use same getFile_ when we call core functions
+  newCheckingOptions.taRepoUsername = username;
 
   function addSuccessMessage(successString) {
     // console.log(`checkBookPackage success: ${successString}`);
@@ -599,6 +604,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
 
   checkBookPackageResult.elapsedSeconds = (new Date() - startTime) / 1000; // seconds
   // console.log("checkBookPackageResult:", JSON.stringify(checkBookPackageResult));
+  console.log(`checkBookPackageResult(${bookID}): elapsedSeconds = ${checkBookPackageResult.elapsedSeconds}, notices count = ${checkBookPackageResult.noticeList.length}`);
   return checkBookPackageResult;
 };
 // end of checkBookPackage()

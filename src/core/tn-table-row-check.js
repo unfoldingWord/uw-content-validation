@@ -199,6 +199,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
     }
     // end of ourCheckTAReference function
 
+
     async function ourCheckTNOriginalLanguageQuote(rowID, fieldName, fieldText, rowLocation, optionalCheckingOptions) {
         // Checks that the Hebrew/Greek quote can be found in the original texts
 
@@ -229,6 +230,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
     }
     // end of ourCheckTNOriginalLanguageQuote function
 
+    
     async function ourCheckTNLinksToOutside(rowID, fieldName, taLinkText, rowLocation, optionalCheckingOptions) {
         // Checks that the TA/TW/Bible reference can be found
 
