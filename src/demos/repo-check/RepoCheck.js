@@ -58,7 +58,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
                     rawCRResults = await checkRepo(username, repoName, branch, "", setResultValue, checkingOptions);
                 } catch (checkRepoError) {
                     rawCRResults = { successList: [], noticeList: [] };
-                    rawCRResults.noticeList.push({priority:999, message:"checkRepo function FAILED", repoName, extract:checkRepoError, location:repoName});
+                    rawCRResults.noticeList.push({ priority: 999, message: "checkRepo function FAILED", repoName, extract: checkRepoError, location: repoName });
                 }
                 // console.log("checkRepo() returned", typeof rawCRResults); //, JSON.stringify(rawCRResults));
 
@@ -67,6 +67,10 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 rawCRResults.username = username;
                 rawCRResults.languageCode = languageCode;
                 rawCRResults.checkedOptions = checkingOptions;
+
+                // Because we know here that we're only checking one repo, we don't need the repoName field in the notices
+                function deleteRepoNameField(notice) { delete notice.repoName; return notice; }
+                rawCRResults.noticeList = rawCRResults.noticeList.map(deleteRepoNameField);
 
                 // console.log("Here with RC rawCRResults", typeof rawCRResults);
                 // Now do our final handling of the result -- we have some options available
@@ -92,7 +96,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
                         <p>Checked <b>{username} {repoName}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)</p>
                         <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount === 1 ? '' : 's'} from {repoName}: {processedResults.checkedFilenames.join(', ')}
                             <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>
-                        <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCRResults.noticeList.length===0?'no':rawCRResults.noticeList.length.toLocaleString()} notice{rawCRResults.noticeList.length===1?'':'s'}.</p>
+                        <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCRResults.noticeList.length === 0 ? 'no' : rawCRResults.noticeList.length.toLocaleString()} notice{rawCRResults.noticeList.length === 1 ? '' : 's'}.</p>
                         {/* <RenderRawResults results={rawCRResults} /> */}
                     </div>);
                 }
@@ -157,12 +161,12 @@ function RepoCheck(/*username, languageCode,*/ props) {
             } catch (rcError) {
                 console.log(`RepoCheck main code block got error: ${rcError.message}`);
                 setResultValue(<>
-                    <p style={{ color: 'Red' }}>RepoCheck main code block got error: <b>{rcError.message}</b></p>
+                    <p style={{ color: 'red' }}>RepoCheck main code block got error: <b>{rcError.message}</b></p>
                 </>);
             }
         })(); // end of async part in unnamedFunction
-    // Doesn't work if we add this to next line: languageCode,username,repoName,branch,checkingOptions,props
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // Doesn't work if we add this to next line: languageCode,username,repoName,branch,checkingOptions,props
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []); // end of useEffect part
 
     // {/* <div className={classes.root}> */}

@@ -48,6 +48,11 @@ function CheckRepo(props) {
       const repoName = formRepoName(languageCode, repoCode);
       setResults(<p style={{ color: 'magenta' }}>Checking {username} {repoName} {branch}…</p>);
       const rawResults = await checkRepo(username, repoName, branch, givenLocation, setResults, checkingOptions);
+
+      // Because we know here that we're only checking one repo, we don't need the repoName field in the notices
+      function deleteRepoNameField(notice) { delete notice.repoName; return notice; }
+      rawResults.noticeList = rawResults.noticeList.map(deleteRepoNameField);
+      
       setResults(
         <div>
           <b>Checked</b> Door43 {username} {repoName} {branch}<br/><br/>
