@@ -1,6 +1,6 @@
 ## Notice Processing 3 Sandbox
 
-### Single colour-graded list
+### Single colour-graded list sorted by priority
 
 This `processNoticesToSingleList()` function is passed an object that contains a list of success messages (e.g., "Checked GEN", "Checked MAT" type stuff) and a list of notices that each contain a priority number. Using the priorities, it processes the notices into a list of warnings that can be displayed with the priority indicated by the colour/redness of the message.
 

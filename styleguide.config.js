@@ -100,8 +100,8 @@ let sections = [
 		// content: 'src/core/README.md',
 		sections: [
 			{
-				name: 'Process notices -> Errors/Warnings',
-				content: 'src/demos/notice-processing1.md',
+				name: 'Process notices -> Prioritised with Colour Gradient',
+				content: 'src/demos/notice-processing3.md',
 				// description: ''
 			},
 			{
@@ -110,10 +110,10 @@ let sections = [
 				// description: ''
 			},
 			{
-				name: 'Process notices -> colour gradient',
-				content: 'src/demos/notice-processing3.md',
+				name: 'Process notices -> Errors/Warnings',
+				content: 'src/demos/notice-processing1.md',
 				// description: ''
-			}
+			},
 		]
 	},
 	{
