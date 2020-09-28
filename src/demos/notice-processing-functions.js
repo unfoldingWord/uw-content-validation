@@ -116,6 +116,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 && !thisMsg.startsWith('USFMGrammar: ')
                 && !thisMsg.endsWith(' character after space')
                 && !thisMsg.endsWith(' marker at start of line')
+                && !thisMsg.endsWith(' closing character (no matching opener)')
+                && !thisMsg.endsWith(' closing character doesn\'t match')
             ) {
                 console.log(`PROGRAMMING ERROR: priority ${thisPriority} has at least two different messages: '${oldMsg}' and '${thisMsg}'`);
                 duplicatePriorityList.push(thisPriority); // so that we only give the error once
@@ -143,7 +145,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                     console.assert(thisLocation.indexOf(thisRowID) < 0, `rowID is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
             }
             if (thisFieldName) {
-                console.assert(thisFieldName.indexOf(' ') < 0 && thisFieldName.indexOf('/') < 0 && thisFieldName.indexOf('\\') < 0, `fieldName '${thisFieldName}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+                // NOTE: fieldName can be a USFM marker, e.g., 'from \w'
+                console.assert(thisFieldName.indexOf('/') < 0, `fieldName '${thisFieldName}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 if (thisLocation)
                     console.assert(thisLocation.indexOf(thisFieldName) < 0, `fieldName is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
             }
@@ -319,7 +322,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     if (sortBy === 'ByPriority')
         remainingNoticeList.sort(function (a, b) { return b.priority - a.priority });
     else if (sortBy !== 'AsFound')
-        console.log(`ERROR: Sorting '${sortBy}' is not implemented yet!!!`);
+        console.error(`Sorting '${sortBy}' is not implemented yet!!!`);
 
     /*
     // Add additional information fields to the location

@@ -2,10 +2,10 @@ import * as books  from '../../core/books/books';
 import { checkBookPackage } from '../../core';
 // import { consoleLogObject } from '../../core/utilities';
 
-//const VALIDATOR_VERSION_STRING = '0.2.1';
+//const VALIDATOR_VERSION_STRING = '0.2.2';
 
 
-async function checkBookPackages(username, languageCode, bookIDList, setResultValue, checkingOptions) {
+export async function checkBookPackages(username, languageCode, bookIDList, setResultValue, checkingOptions) {
     //     console.log(`I'm here in checkBookPackages v${VALIDATOR_VERSION_STRING}
     //   with ${username}, ${languageCode}, ${bookIDList}, ${JSON.stringify(checkingOptions)}`);
     const startTime = new Date();
@@ -112,5 +112,3 @@ async function checkBookPackages(username, languageCode, bookIDList, setResultVa
     return checkBookPackagesResult;
 };
 // end of checkBookPackages()
-
-export default checkBookPackages;

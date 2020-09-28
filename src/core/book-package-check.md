@@ -16,12 +16,11 @@ Note that `OBS` can also be entered here as a *pseudo book identifier* in order 
 
 **Warning**: Some book packages contain many files and/or very large files, and downloading them all and then checking them might slow down your browser -- maybe even causing pop-up messages asking to confirm that you want to keep waiting.
 
-**NOTE: Caching is temporarily disabled.**
 **Note**: This demonstration uses cached values of files stored inside the local browser. This makes reruns of the checks much faster, but it won't notice if you have updated the files on Door43. If you want to clear the local caches, use the `Clear Cache` function.
 
 ```js
 import React, { useState, useEffect } from 'react';
-import { clearCacheAndPreloadRepos } from './getApi';
+import { preloadReposIfNecessary } from './getApi';
 import { checkBookPackage } from './book-package-check';
 import { RenderRawResults } from '../demos/RenderProcessedResults';
 
@@ -45,12 +44,10 @@ function CheckBookPackage(props) {
     //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
     (async () => {
 
-      // TODO: See if this preloading is really helping at all???
-      // This call is not needed, but makes sure you don't have stale data that has been cached
       setResults(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for <b>{bookID}</b> book package check…</p>);
-      const successFlag = await clearCacheAndPreloadRepos(username, languageCode, [bookID]);
+      const successFlag = await preloadReposIfNecessary(username, languageCode, [bookID]);
       if (!successFlag)
-          console.log(`CheckBookPackage error: Failed to pre-load all repos`)
+          console.error(`CheckBookPackage error: Failed to pre-load all repos`)
 
 
       // Display our "waiting" message

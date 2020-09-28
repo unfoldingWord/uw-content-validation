@@ -8,7 +8,7 @@ These raw notice components can then be filtered and/or sorted as required by th
 
 ```js
 import React, { useState, useEffect } from 'react';
-import checkTN_TSVText from './tn-table-text-check';
+import { checkTN_TSVText } from './tn-table-text-check';
 import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Text samples

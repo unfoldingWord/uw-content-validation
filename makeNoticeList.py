@@ -19,9 +19,11 @@ for root, dirs, files in os.walk('.'):
                         # print("\n", os.path.join(root, name), strippedLine)
                         if strippedLine.endswith(');'): strippedLine = strippedLine[:-2]
                         if not strippedLine.startswith('//'):
-                            cleanedLine = strippedLine.replace('addNotice6to9','').replace('addNotice6to7','') \
+                            cleanedLine = strippedLine.replace('addNoticePartial','') \
+                                                .replace('addNotice6to7','') \
                                                 .replace('addNotice5','').replace('addNotice6','').replace('addNotice8','').replace('addNotice9','') \
-                                                .replace('addNoticeCV8','').replace('addNotice10','')
+                                                .replace('addNoticeCV8','').replace('addNotice10','') \
+                                                .replace('addNotice','')
                             if cleanedLine.startswith('('): cleanedLine = cleanedLine[1:]
                             cleanedLine = cleanedLine.replace('{','').replace('}','')
                             adjustedLine = cleanedLine.replace(', ourAtString','').replace(', atString','') \

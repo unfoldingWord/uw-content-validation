@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 // import { withStyles } from '@material-ui/core/styles';
 import * as books from '../../core/books/books';
-import { ourParseInt, clearCacheAndPreloadRepos } from '../../core';
-import checkBookPackages from '../book-packages-check/checkBookPackages';
+import { ourParseInt, preloadReposIfNecessary } from '../../core';
+import { checkBookPackages } from '../book-packages-check/checkBookPackages';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const BPS_VALIDATOR_VERSION_STRING = '0.1.1';
+// const BPS_VALIDATOR_VERSION_STRING = '0.2.1';
+
+const OLD_TESTAMENT_BOOK_CODES = 'GEN,EXO,LEV,NUM,DEU,JOS,JDG,RUT,1SA,2SA,1KI,2KI,1CH,2CH,EZR,NEH,EST,JOB,PSA,PRO,ECC,SNG,ISA,JER,LAM,EZK,DAN,HOS,JOL,AMO,OBA,JON,MIC,NAM,HAB,ZEP,HAG,ZEC,MAL';
+const NEW_TESTAMENT_BOOK_CODES = 'MAT,MRK,LUK,JHN,ACT,ROM,1CO,2CO,GAL,EPH,PHP,COL,1TH,2TH,1TI,2TI,TIT,PHM,HEB,JAS,1PE,2PE,1JN,2JN,3JN,JUD,REV';
 
 
 function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
@@ -35,15 +38,17 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
 
     // Enter a string containing UPPERCASE USFM book identifiers separated only by commas
     //  and can also include OBS (for Open Bible Stories)
-    let bookIDs;
-    if (testament.toUpperCase() === 'OT' || testament.toUpperCase() === 'OLD'){
-        bookIDs = 'GEN,EXO,LEV,NUM,DEU,JOS,JDG,RUT,1SA,2SA,1KI,2KI,1CH,2CH,EZR,NEH,EST,JOB,PSA,PRO,ECC,SNG,ISA,JER,LAM,EZK,DAN,HOS,JOL,AMO,OBA,JON,MIC,NAM,HAB,ZEP,HAG,ZEC,MAL';
-    }
-    else if (testament.toUpperCase() === 'NT' || testament.toUpperCase() === 'NEW') {
-        bookIDs = 'MAT,MRK,LUK,JHN,ACT,ROM,1CO,2CO,GAL,EPH,PHP,COL,1TH,2TH,1TI,2TI,TIT,PHM,HEB,JAS,1PE,2PE,1JN,2JN,3JN,JUD,REV';
-    }
+    let bookIDs = '';
+    if (testament.toUpperCase() === 'OT' || testament.toUpperCase() === 'OLD')
+      bookIDs = OLD_TESTAMENT_BOOK_CODES;
+    else if (testament.toUpperCase() === 'NT' || testament.toUpperCase() === 'NEW')
+      bookIDs = NEW_TESTAMENT_BOOK_CODES;
+    else if (testament.toUpperCase() === 'ALL')
+      bookIDs = `${OLD_TESTAMENT_BOOK_CODES},${NEW_TESTAMENT_BOOK_CODES}`;
+    else
+      setResultValue(<p style={{ color: 'red' }}>No testament selected</p>);
     if (includeOBS.toUpperCase() === 'Y' || includeOBS.toUpperCase() === 'YES')
-        bookIDs += ',OBS';
+      bookIDs += ',OBS';
 
     let bookIDList = [];
     let bookIDInvalid;
@@ -62,6 +67,9 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     // Or this allows the parameters to be specified as a BookPackagesCheck property
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
 
+    let preloadList = ['TA', 'TW', 'TQ'];
+    if (bookIDList.length > 5) { preloadList.push('LT'); preloadList.push('ST'); preloadList.push('TN'); }
+
     useEffect(() => {
         // console.log("BookPackagesCheck.useEffect() called with ", JSON.stringify(props));
 
@@ -70,31 +78,16 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         (async () => {
         // console.log("Started BookPackagesCheck.unnamedFunction()");
 
-        // Preload the reference repos
-        // let preloadCount = 1;
-        // // TEMP: Removed TQ
-        // const repoCodeList = [originalLanguageRepoCode, 'TA','TW', 'ULT','UST','TN'];
-        // for (const repoCode of repoCodeList) {
-        // setResultValue(<p style={{ color: 'magenta' }}>Preloading <b>{repoCode}</b> repo ({preloadCount}/{repoCodeList.length}) ready for {username} {languageCode} all book packages check…</p>);
-        //     const repoName = getRepoName(languageCode, repoCode);
-        //     console.log(`AllBookPackagesCheck: preloading zip file for ${repoName}…`);
-        //     const zipFetchSucceeded = await fetchRepositoryZipFile({ username, repository: repoName, branch });
-        //     if (!zipFetchSucceeded)
-        //         console.log(`AllBookPackagesCheck: misfetched ${repoCode} zip file for repo with ${zipFetchSucceeded}`);
-        //     preloadCount += 1;
-        //   }
-
-        // This call is not needed, but makes sure you don't have stale data that has been cached
         setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for all book packages check…</p>);
-        const successFlag = await clearCacheAndPreloadRepos(username, languageCode, bookIDList, branch, ['TA','TW', 'ULT','UST','TN']);
+        const successFlag = await preloadReposIfNecessary(username, languageCode, bookIDList, branch, preloadList);
         if (!successFlag)
             console.log(`AllBookPackagesCheck error: Failed to pre-load all repos`)
-
 
       // Display our "waiting" message
       setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookIDList.join(', ')}</b> book packages…</p>);
 
-      const rawCBPsResults = await checkBookPackages(username, languageCode, bookIDList, setResultValue, checkingOptions);
+      let rawCBPsResults = {};
+      if (bookIDList.length) rawCBPsResults = await checkBookPackages(username, languageCode, bookIDList, setResultValue, checkingOptions);
       // console.log("checkBookPackage() returned", typeof rawCBPsResults); //, JSON.stringify(rawCBPsResults));
 
       // Add some extra fields to our rawCBPsResults object in case we need this information again later
@@ -136,7 +129,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
             <p>Checked <b>{username} {languageCode} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
             <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount===1?'':'s'} from {username} {processedResults.checkedRepoNames.join(', ')}
               <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>
-            <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCBPsResults.noticeList.length===0?'no':rawCBPsResults.noticeList.length} notice{rawCBPsResults.noticeList.length===1?'':'s'}.</p>
+            <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCBPsResults.noticeList.length===0?'no':rawCBPsResults.noticeList.length.toLocaleString()} notice{rawCBPsResults.noticeList.length===1?'':'s'}.</p>
             {/* <RenderRawResults results={rawCBPsResults} /> */}
           </div>);
         }
@@ -156,7 +149,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
       } else if (displayType === 'SevereMediumLow') {
         const processedResults = processNoticesToSevereMediumLow(rawCBPsResults, processOptions);
 //                 console.log(`FileCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
-//   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()}`, `numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()}`, `numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
+//   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
         if (processedResults.severeList.length || processedResults.mediumList.length || processedResults.lowList.length)
           setResultValue(<>
@@ -172,8 +165,8 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
           </>);
       } else if (displayType === 'SingleList') {
         const processedResults = processNoticesToSingleList(rawCBPsResults, processOptions);
-        console.log(`FileCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
-  numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()}`, `numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()}`, `numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
+        console.log(`FileCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s) and ${processedResults.warningList.length.toLocaleString()} notice(s)
+  numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
         if (processedResults.warningList.length)
           setResultValue(<>
@@ -221,5 +214,4 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
 //   },
 // });
 
-//export default withStyles(styles)(BookPackagesCheck);
 export default AllBookPackagesCheck;

@@ -1,2 +1,2 @@
 //export {checkBookPackages} from './checkBookPackages';
-export {default} from './BookPackagesCheck';
+export { default } from './BookPackagesCheck';
