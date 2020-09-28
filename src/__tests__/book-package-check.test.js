@@ -9,6 +9,7 @@ let testFiles = {};
 const optionalCheckingOptions = {
   getFile: params => {
     const { username, repository, path } = params;
+    console.log(`book-package-check.test getFile(${username}, ${repository}, ${path})`)
     const filePath = Path.join('./src/__tests__/fixtures', username, repository, path);
 
     if (testFiles.hasOwnProperty(filePath)) { // see if we have a test file to use
@@ -25,6 +26,7 @@ const optionalCheckingOptions = {
   },
   getFileListFromZip: params => {
     const { username, repository, optionalPrefix } = params;
+    console.log(`book-package-check.test getFileListFromZip(${username}, ${repository}, ${optionalPrefix})`)
     const filePath = Path.join('./src/__tests__/fixtures', username, repository);
     let files = getAllFiles(filePath);
     if (optionalPrefix) {
@@ -117,6 +119,7 @@ describe('checkBookPackage() - ', () => {
  * @return {Array}
  */
 const getAllFiles = function(dirPath, subPath, arrayOfFiles) {
+  console.log(`getAllFiles(${dirPath}, ${subPath}, ${arrayOfFiles}`);
   arrayOfFiles = arrayOfFiles || [];
   subPath = subPath || '.';
   const fullPath = Path.join(dirPath, subPath);

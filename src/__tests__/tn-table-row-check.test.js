@@ -5,14 +5,17 @@ import Path from "path";
 import fs from 'fs-extra';
 
 const optionalCheckingOptions = {
+  originalLanguageRepoUsername: 'unfoldingWord',
+  taRepoUsername: 'unfoldingWord',
   getFile: params => {
     const { username, repository, path } = params;
+    // console.log(`tn-table-row-check.test getFile(${username}, ${repository}, ${path})`)
     const filePath = Path.join('./src/__tests__/fixtures', username, repository, path);
     if (fs.existsSync(filePath)) {
       return fs.readFileSync(filePath).toString();
     }
     // eslint-disable-next-line no-throw-literal
-    throw `Could not find ${filePath}`;
+    throw `tn-table-row-check.test getFile(): Could not find ${filePath}`;
   }
 }
 

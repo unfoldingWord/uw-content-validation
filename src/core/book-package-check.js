@@ -425,7 +425,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
 
   Note that bookID here can also be the 'OBS' pseudo bookID.
   */
-  // console.log(`checkBookPackage(${username}, ${languageCode}, ${bookID}, …)…`)
+  // console.log(`checkBookPackage(${username}, ${languageCode}, ${bookID}, …, ${JSON.stringify(checkingOptions)})…`)
   const startTime = new Date();
 
   let checkBookPackageResult = { successList: [], noticeList: [] };
@@ -433,12 +433,21 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   const newCheckingOptions = checkingOptions ? { ...checkingOptions } : {}; // clone before modify
   const getFile_ = newCheckingOptions.getFile ? newCheckingOptions.getFile : cachedGetFile; // default to using caching of files
   newCheckingOptions.getFile = getFile_; // use same getFile_ when we call core functions
-  newCheckingOptions.taRepoUsername = username;
+  if (!newCheckingOptions.originalLanguageRepoUsername) newCheckingOptions.originalLanguageRepoUsername = username;
+  if (!newCheckingOptions.taRepoUsername) newCheckingOptions.taRepoUsername = username;
+
+  // No point in passing the branch through as a parameter
+  //  coz if it's not 'master', it's unlikely to be common for all the repos
+  const branch = 'master';
+
+  const generalLocation = ` in ${languageCode} ${bookID} book package from ${username} ${branch} branch`;
+
 
   function addSuccessMessage(successString) {
     // console.log(`checkBookPackage success: ${successString}`);
     checkBookPackageResult.successList.push(successString);
   }
+
 
   function addNoticePartial(noticeObject) {
     // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
@@ -491,17 +500,13 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     for (const cfcNoticeEntry of cfcResultObject.noticeList)
       // noticeEntry is an object
       // We add the repoCode as an extra value
-      addNoticePartial({ ...cfcNoticeEntry, extra: repoCode });
+      addNoticePartial({ ...cfcNoticeEntry, filename: cfFilename, extra: repoCode });
   }
   // end of ourCheckBPFileContents function
 
+
   // Main code for checkBookPackage()
-  // No point in passing the branch through as a parameter
-  //  coz if it's not 'master', it's unlikely to be common for all the repos
-  const branch = 'master';
-
-  const generalLocation = ` in ${languageCode} ${bookID} book package from ${username} ${branch} branch`;
-
+  // console.log("checkBookPackage() main code…");
   if (bookID === 'OBS') {
     // We use the generalLocation here (does not include repo name)
     //  so that we can adjust the returned strings ourselves
@@ -525,7 +530,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       if (books.isValidBookID(bookID)) // must be in FRT, BAK, etc.
         whichTestament = 'other'
       else {
-        addNoticePartial({ priority: 902, message: "Bad function call: should be given a valid book abbreviation", bookID, extract: bookID, location: ` (not '${bookID}')${generalLocation}` }); return checkBookPackageResult;
+        addNoticePartial({ priority: 902, message: "Bad function call: should be given a valid book abbreviation", extract: bookID, location: ` (not '${bookID}')${generalLocation}` }); return checkBookPackageResult;
       }
     }
     // console.log(`bookNumberAndName='${bookNumberAndName}' (${whichTestament} testament)`);
@@ -580,7 +585,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
           checkedRepoNames.push(repoCode);
         } catch (cBPgfError) {
           console.log("ERROR: Failed to load", username, repoName, filename, branch, cBPgfError + '');
-          addNoticePartial({ priority: 996, message: "Failed to load", bookID, repoName, filename, location: `${repoLocation}: ${cBPgfError}`, extra: repoCode });
+          addNoticePartial({ priority: 996, message: "Failed to load", repoName, filename, location: `${repoLocation}: ${cBPgfError}`, extra: repoCode });
           continue;
         }
 
