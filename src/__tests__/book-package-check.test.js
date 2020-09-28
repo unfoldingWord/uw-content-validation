@@ -1,6 +1,6 @@
 /* eslint-env jest */
 
-import { checkBookPackage } from '../core/book-package-check';
+import { checkBookPackage } from '../demos/book-package-check/checkBookPackage';
 import Path from "path";
 import fs from 'fs-extra';
 

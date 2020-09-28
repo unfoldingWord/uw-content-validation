@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 // import { withStyles } from '@material-ui/core/styles';
 import * as books from '../../core/books/books';
-import { preloadReposIfNecessary, ourParseInt, checkBookPackage } from '../../core';
+import { preloadReposIfNecessary, ourParseInt } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
+import { checkBookPackage } from '../book-package-check/checkBookPackage';
 // import { consoleLogObject } from '../../core/utilities';
 
 

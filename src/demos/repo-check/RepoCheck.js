@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { checkRepo } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
 import { ourParseInt } from '../../core/utilities';
+import { checkRepo } from './checkRepo';
 // import { consoleLogObject, displayPropertyNames } from '../../core/utilities';
 
 

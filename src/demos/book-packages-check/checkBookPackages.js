@@ -1,5 +1,5 @@
 import * as books  from '../../core/books/books';
-import { checkBookPackage } from '../../core';
+import { checkBookPackage } from '../book-package-check/checkBookPackage';
 // import { consoleLogObject } from '../../core/utilities';
 
 //const VALIDATOR_VERSION_STRING = '0.2.2';

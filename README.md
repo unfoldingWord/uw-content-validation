@@ -59,7 +59,7 @@ There are two compulsory fields in all of these notice objects:
 
 All of the following fields may be missing or undefined, i.e., they're all optional:
 
-1. `details`: More details about the notice (if relevant)
+1. `details`: More details about the notice (if applicable)
 1. `bookID`: The 3-character UPPERCASE [book identifier](http://ubsicap.github.io/usfm/identification/books.html) or [OBS](https://www.openbiblestories.org/) (if relevant)
 1. `C`: The chapter number or OBS story number (if relevant)
 1. `V`: The verse number or OBS frame number (if relevant)

@@ -4,10 +4,10 @@ import React, { useEffect, useState } from 'react';
 // import { Paper, Button } from '@material-ui/core';
 // import { RepositoryContext, FileContext } from 'gitea-react-toolkit';
 import { withStyles } from '@material-ui/core/styles';
-import { cachedGetFile, checkFileContents } from '../../core';
+import { ourParseInt, cachedGetFile  } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
-import { ourParseInt } from '../../core/utilities';
+import { checkFileContents } from './checkFileContents';
 // import { consoleLogObject } from '../../core/utilities';
 
 
