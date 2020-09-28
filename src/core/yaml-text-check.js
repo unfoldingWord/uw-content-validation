@@ -126,7 +126,7 @@ export function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckin
         // console.log("yaml.parse(YAMLText) got formData", JSON.stringify(formData));
     }
     catch (yamlError) {
-        // console.log(`ERROR: yaml parse error: ${yamlError.message}`);
+        // console.error(`yaml parse error: ${yamlError.message}`);
         addNotice6({ priority: 920, message: yamlError.message, location: ourLocation })
     }
     // Add the parsed YAML to our result

@@ -123,7 +123,7 @@ export async function checkTNLinksToOutside(bookID, fieldName, fieldText, givenL
             else if (taFileContent.length < 10)
                 addNotice({ priority: 884, message: `Linked ${fieldName} TA article seems empty`, extract: resultArray[0], location: `${ourLocation} ${filepath}` });
         } catch (trcGCerror) {
-            console.log("ERROR: Failed to load", username, taRepoName, filepath, branch, trcGCerror.message);
+            console.error("Failed to load", username, taRepoName, filepath, branch, trcGCerror.message);
             addNotice({ priority: 885, message: `Error loading ${fieldName} TA link`, extract: resultArray[0], location: `${ourLocation} ${filepath}: ${trcGCerror}` });
         }
     }
@@ -148,7 +148,7 @@ export async function checkTNLinksToOutside(bookID, fieldName, fieldText, givenL
             taFileContent = await getFile_({ username, repository: twRepoName, path: filepath, branch });
             // console.log("Fetched fileContent for", twRepoName, filepath, typeof fileContent, fileContent.length);
         } catch (trcGCerror) {
-            console.log("ERROR: Failed to load", username, twRepoName, filepath, branch, trcGCerror.message);
+            console.error("Failed to load", username, twRepoName, filepath, branch, trcGCerror.message);
             addNotice({ priority: 882, message: `Error loading ${fieldName} TW link`, extract: resultArray[0], location: `${ourLocation} ${filepath}: ${trcGCerror}` });
         }
         if (!taFileContent)

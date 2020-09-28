@@ -42,7 +42,7 @@ function CheckRepo(props) {
       setResults(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for repo check…</p>);
       const successFlag = await preloadReposIfNecessary(username, languageCode, ['GEN','MAT'], branch, [repoCode]);
       if (!successFlag)
-          console.log(`CheckRepo error: Failed to pre-load all repos`)
+          console.error(`CheckRepo error: Failed to pre-load all repos`)
 
       // Display our "waiting" message
       const repoName = formRepoName(languageCode, repoCode);

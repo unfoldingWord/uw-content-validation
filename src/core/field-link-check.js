@@ -41,7 +41,7 @@ export async function startLiveLinksCheck(linksList, existingNoticeList, callbac
             const reponseText = response.text();
             console.log("startLiveLinksCheck got response: ", reponseText.length, reponseText);
         } catch (lcError) {
-            console.log(`startLiveLinksCheck had an error fetching '${fetchLink}': ${lcError}`);
+            console.error(`startLiveLinksCheck had an error fetching '${fetchLink}': ${lcError}`);
             addNotice5({ priority: 439, message: "Error fetching link", location: ` ${fetchLink}` });
         }
     }

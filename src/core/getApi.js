@@ -154,7 +154,7 @@ export async function cachedGetFile({ username, repository, path, branch }) {
     // if (filePath.indexOf('_tq/') < 0) // Don't log for TQ files coz too many
     //   console.log(`cachedGetFile saved ${filePath} to cache for next time`);
   }
-  // else console.log(`ERROR: cachedGetFile(${username}, ${repository}, ${path}, ${branch}) -- failed to get file`);
+  // else console.error(`cachedGetFile(${username}, ${repository}, ${path}, ${branch}) -- failed to get file`);
 
   return contents;
 }
@@ -177,7 +177,7 @@ async function cachedGetManifest({ username, repository, branch }) {
     // console.log("yaml.parse(YAMLText) got formData", JSON.stringify(formData));
   }
   catch (yamlError) {
-    console.log(`ERROR: ${username} ${repository} ${branch} manifest yaml parse error: ${yamlError.message}`);
+    console.error(`${username} ${repository} ${branch} manifest yaml parse error: ${yamlError.message}`);
   }
   return formData;
 }
@@ -296,7 +296,7 @@ async function PreLoadRepos(username, languageCode, bookIDList, branch = 'master
     console.log(`PreLoadRepos: preloading zip file for ${repoName}…`);
     const zipFetchSucceeded = await cachedGetRepositoryZipFile({ username, repository: repoName, branch });
     if (!zipFetchSucceeded) {
-      console.log(`PreLoadRepos: misfetched zip file for ${repoName} repo with ${zipFetchSucceeded}`);
+      console.error(`PreLoadRepos: misfetched zip file for ${repoName} repo with ${zipFetchSucceeded}`);
       success = false;
     }
   }
@@ -370,7 +370,7 @@ export async function preloadReposIfNecessary(username, languageCode, bookIDList
     // console.log(`preloadReposIfNecessary: preloading zip file for ${repoName}…`);
     const zipFetchSucceeded = await cachedGetRepositoryZipFile({ username, repository: repoName, branch });
     if (!zipFetchSucceeded) {
-      console.log(`ERROR: preloadReposIfNecessary() misfetched zip file for ${repoCode} repo with ${zipFetchSucceeded}`);
+      console.error(`preloadReposIfNecessary() misfetched zip file for ${repoCode} repo with ${zipFetchSucceeded}`);
       success = false;
     }
   }
@@ -405,12 +405,12 @@ async function cachedFetchFileFromServer({ username, repository, path, branch = 
       return data;
     }
     catch (fffsError) {
-      console.log(`ERROR: cachedFetchFileFromServer could not fetch ${username} ${repository} ${branch} ${path}: ${fffsError}`)
+      console.error(`cachedFetchFileFromServer could not fetch ${username} ${repository} ${branch} ${path}: ${fffsError}`)
       /* await */ failedStore.setItem(uri.toLowerCase(), fffsError.message);
       return null;
     }
   } else {
-    console.log(`ERROR: cachedFetchFileFromServer repo ${username} '${repository}' does not exist!`);
+    console.error(`cachedFetchFileFromServer repo ${username} '${repository}' does not exist!`);
     /* await */ failedStore.setItem(uri.toLowerCase(), `Repo '${repository}' does not exist!`);
     return null;
   }
@@ -523,7 +523,7 @@ async function downloadRepositoryZipFile({ username, repository, branch }) {
   console.log(`downloadRepositoryZipFile(${username}, ${repository}, ${branch})…`);
   const repoExists = await repositoryExistsOnDoor43({ username, repository });
   if (!repoExists) {
-    console.log(`ERROR: downloadRepositoryZipFile(${username}, ${repository}, ${branch}) -- repo doesn't even exist`);
+    console.error(`downloadRepositoryZipFile(${username}, ${repository}, ${branch}) -- repo doesn't even exist`);
     return null;
   }
 
@@ -536,7 +536,7 @@ async function downloadRepositoryZipFile({ username, repository, branch }) {
     // console.log(`  downloadRepositoryZipFile(${username}, ${repository}, ${branch}) -- saved zip: ${uri}`);
     return true;
   } else {
-    console.log(`ERROR: downloadRepositoryZipFile(${username}, ${repository}, ${branch}) -- got response status: ${response.status}`);
+    console.error(`downloadRepositoryZipFile(${username}, ${repository}, ${branch}) -- got response status: ${response.status}`);
     return false;
   }
 };
@@ -562,7 +562,7 @@ export async function getFileListFromZip({ username, repository, branch, optiona
       const zipArrayBuffer = await response.arrayBuffer(); // blob storage not supported on mobile
       zipBlob = await zipStore.setItem(uri.toLowerCase(), zipArrayBuffer);
     } else {
-      console.log(`ERROR: getFileListFromZip got response status: ${response.status}`);
+      console.error(`getFileListFromZip got response status: ${response.status}`);
       return [];
     }
   }
@@ -592,7 +592,7 @@ export async function getFileListFromZip({ username, repository, branch, optiona
     }
     // else console.log("  getFileListFromZip: No zipBlob");
   } catch (error) {
-    console.log(`ERROR: getFileListFromZip got: ${error.message}`);
+    console.error(`getFileListFromZip got: ${error.message}`);
   }
 
   // console.log(`getFileListFromZip is returning (${pathList.length}) entries: ${pathList}`);
@@ -641,7 +641,7 @@ async function getFileFromZip({ username, repository, path, branch }) {
     // else console.log("  No zipBlob");
   } catch (error) {
     if (error.message.indexOf(' is null') < 0)
-      console.log(`ERROR: getFileFromZip for ${username} ${repository} ${path} ${branch} got: ${error.message}`);
+      console.error(`getFileFromZip for ${username} ${repository} ${path} ${branch} got: ${error.message}`);
     file = null;
   }
   return file;
@@ -669,7 +669,7 @@ function zipUri({ username, repository, branch = 'master' }) {
 //     // console.log(`  tree (${typeof tree})`);
 //     // return tree;
 //   } catch (error) {
-//     console.log(`ERROR: fetchTree got: ${error.message}`);
+//     console.error(`fetchTree got: ${error.message}`);
 //     console.log(`  Data was: ${JSON.stringify(data)}`);
 //     return null;
 //   }

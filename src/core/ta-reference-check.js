@@ -97,7 +97,7 @@ export async function checkTAReference(fieldName, fieldText, givenLocation, opti
         taFileContent = await getFile_({ username, repository: taRepoName, path: filepath, branch });
         // console.log("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
     } catch (trcGCerror) {
-        console.log("ERROR: Failed to load", username, taRepoName, filepath, branch, trcGCerror.message);
+        console.error("Failed to load", username, taRepoName, filepath, branch, trcGCerror.message);
         addNotice6({ priority: 888, message: `Error loading ${fieldName} TA link`, extract: fieldText, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
     }
     if (!taFileContent)

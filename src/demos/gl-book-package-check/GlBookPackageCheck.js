@@ -55,7 +55,7 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
             setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for GL book package check…</p>);
             const successFlag = await preloadReposIfNecessary(username, languageCode, [bookID], branch);
             if (!successFlag)
-                console.log(`AllBookPackagesCheck error: Failed to pre-load all repos`)
+                console.error(`AllBookPackagesCheck error: Failed to pre-load all repos`)
 
             // Display our "waiting" message
             setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookID}</b> book packages…</p>);

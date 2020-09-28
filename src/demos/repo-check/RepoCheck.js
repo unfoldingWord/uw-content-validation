@@ -159,7 +159,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
 
                 // console.log("Finished rendering bit.");
             } catch (rcError) {
-                console.log(`RepoCheck main code block got error: ${rcError.message}`);
+                console.error(`RepoCheck main code block got error: ${rcError.message}`);
                 setResultValue(<>
                     <p style={{ color: 'red' }}>RepoCheck main code block got error: <b>{rcError.message}</b></p>
                 </>);

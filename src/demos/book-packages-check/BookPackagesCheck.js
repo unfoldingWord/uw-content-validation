@@ -62,7 +62,7 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for book packages check…</p>);
         const successFlag = await preloadReposIfNecessary(username, languageCode, bookIDList, branch, preloadList);
         if (!successFlag)
-            console.log(`BookPackagesCheck error: Failed to pre-load all repos`)
+            console.error(`BookPackagesCheck error: Failed to pre-load all repos`)
 
       // Display our "waiting" message
       setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookIDList.join(', ')}</b> book packages…</p>);

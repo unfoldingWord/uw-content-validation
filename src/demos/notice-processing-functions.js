@@ -322,7 +322,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     if (sortBy === 'ByPriority')
         remainingNoticeList.sort(function (a, b) { return b.priority - a.priority });
     else if (sortBy !== 'AsFound')
-        console.log(`ERROR: Sorting '${sortBy}' is not implemented yet!!!`);
+        console.error(`Sorting '${sortBy}' is not implemented yet!!!`);
 
     /*
     // Add additional information fields to the location
