@@ -1,9 +1,9 @@
 import * as books from '../core/books/books';
-import { getFileCached } from '../core/getApi';
+import { cachedGetFile } from '../core/getApi';
 // import { consoleLogObject } from '../core/utilities';
 
 
-// const QUOTE_VALIDATOR_VERSION_STRING = '0.4.1';
+// const QUOTE_VALIDATOR_VERSION_STRING = '0.4.2';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -41,18 +41,18 @@ export async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C
 
     const colqResult = { noticeList: [] };
 
-    function addNotice6(noticeObject) {
+    function addNotice(noticeObject) {
         // console.log(`checkOriginalLanguageQuote Notice: (priority=${noticeObject.priority}) ${noticeObject.message}${characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
-        console.assert(noticeObject.priority !== undefined, "cOLQ addNotice6: 'priority' parameter should be defined");
-        console.assert(typeof noticeObject.priority === 'number', `cOLQ addNotice6: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        console.assert(noticeObject.message !== undefined, "cOLQ addNotice6: 'message' parameter should be defined");
-        console.assert(typeof noticeObject.message === 'string', `cOLQ addNotice6: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // console.assert(characterIndex !== undefined, "cOLQ addNotice6: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `cOLQ addNotice6: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // console.assert(extract !== undefined, "cOLQ addNotice6: 'extract' parameter should be defined");
-        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cOLQ addNotice6: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
-        console.assert(noticeObject.location !== undefined, "cOLQ addNotice6: 'location' parameter should be defined");
-        console.assert(typeof noticeObject.location === 'string', `cOLQ addNotice6: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        console.assert(noticeObject.priority !== undefined, "cOLQ addNotice: 'priority' parameter should be defined");
+        console.assert(typeof noticeObject.priority === 'number', `cOLQ addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        console.assert(noticeObject.message !== undefined, "cOLQ addNotice: 'message' parameter should be defined");
+        console.assert(typeof noticeObject.message === 'string', `cOLQ addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+        // console.assert(characterIndex !== undefined, "cOLQ addNotice: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `cOLQ addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        // console.assert(extract !== undefined, "cOLQ addNotice: 'extract' parameter should be defined");
+        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cOLQ addNotice: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        console.assert(noticeObject.location !== undefined, "cOLQ addNotice: 'location' parameter should be defined");
+        console.assert(typeof noticeObject.location === 'string', `cOLQ addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
         colqResult.noticeList.push(noticeObject);
     }
 
@@ -70,7 +70,7 @@ export async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C
         try {
             username = optionalCheckingOptions.originalLanguageRepoUsername;
         } catch (qcoError) { }
-        if (!username) username = 'unfoldingWord'; // or Door43-Catalog ???
+        if (!username) username = 'Door43-Catalog'; // or unfoldingWord ???
         let branch;
         try {
             branch = optionalCheckingOptions.originalLanguageRepoBranch;
@@ -79,24 +79,26 @@ export async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C
 
         let originalUSFM;
         // console.log(`Need to check against ${originalLanguageRepoCode}`);
-        const getFile_ = (optionalCheckingOptions && optionalCheckingOptions.getFile) ? optionalCheckingOptions.getFile : getFileCached;
+        const getFile_ = (optionalCheckingOptions && optionalCheckingOptions.getFile) ? optionalCheckingOptions.getFile : cachedGetFile;
         if (originalLanguageRepoCode === 'UHB') {
             try {
                 originalUSFM = await getFile_({ username, repository: originalLanguageRepoName, path: filename, branch });
                 // console.log("Fetched file_content for", repoName, filename, typeof originalUSFM, originalUSFM.length);
             } catch (gcUHBerror) {
-                console.log("ERROR: Failed to load", username, originalLanguageRepoCode, filename, branch, gcUHBerror.message);
-                addNotice6({ priority: 601, message: "Failed to load", filename, location: `${ourLocation}: ${gcUHBerror}`, extra: originalLanguageRepoName });
+                console.error("Failed to load", username, originalLanguageRepoCode, filename, branch, gcUHBerror.message);
+                addNotice({ priority: 601, message: "Failed to load", filename, location: `${ourLocation}: ${gcUHBerror}`, extra: originalLanguageRepoName });
             }
         } else if (originalLanguageRepoCode === 'UGNT') {
             try {
                 originalUSFM = await getFile_({ username, repository: originalLanguageRepoName, path: filename, branch });
                 // console.log("Fetched file_content for", repoName, filename, typeof originalUSFM, originalUSFM.length);
             } catch (gcUGNTerror) {
-                console.log("ERROR: Failed to load", username, originalLanguageRepoCode, filename, branch, gcUGNTerror.message);
-                addNotice6({ priority: 601, message: "Failed to load", filename, location: `${ourLocation}: ${gcUGNTerror}`, extra: originalLanguageRepoName });
+                console.error("Failed to load", username, originalLanguageRepoCode, filename, branch, gcUGNTerror.message);
+                addNotice({ priority: 601, message: "Failed to load", filename, location: `${ourLocation}: ${gcUGNTerror}`, extra: originalLanguageRepoName });
             }
         }
+        if (!originalUSFM) return '';
+
 
         // Do global fixes
         originalUSFM = originalUSFM.replace(/\\k-e\\\*/g, ''); // Remove \k-e self-closed milestones
@@ -178,16 +180,16 @@ export async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C
 
 
     // if fieldText.lstrip() !== fieldText:
-    //     addNotice6({priority:0, message:`Unexpected whitespace at start of {TNid} '{fieldText}'")
+    //     addNotice({priority:0, message:`Unexpected whitespace at start of {TNid} '{fieldText}'")
     // if fieldText.rstrip() !== fieldText:
-    //     addNotice6({priority:0, message:`Unexpected whitespace at end of {TNid} '{fieldText}'")
+    //     addNotice({priority:0, message:`Unexpected whitespace at end of {TNid} '{fieldText}'")
     // fieldText = fieldText.strip() # so we don't get consequential errors
 
     let characterIndex;
     if ((characterIndex = fieldText.indexOf('...')) >= 0) {
         // console.log(`Bad ellipse characters in '${fieldText}'`);
         const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '');
-        addNotice6({ priority: 159, message: "Should use proper ellipse character (not periods)", characterIndex, extract, location: ourLocation });
+        addNotice({ priority: 159, message: "Should use proper ellipse character (not periods)", characterIndex, extract, location: ourLocation });
     }
 
     let quoteBits;
@@ -196,14 +198,14 @@ export async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C
         if ((characterIndex = fieldText.indexOf(' …')) >= 0 || (characterIndex = fieldText.indexOf('… ')) >= 0) {
             // console.log(`Unexpected space(s) beside ellipse in '${fieldText}'`);
             const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '');
-            addNotice6({ priority: 158, message: "Unexpected space(s) beside ellipse character", characterIndex, extract, location: ourLocation });
+            addNotice({ priority: 158, message: "Unexpected space(s) beside ellipse character", characterIndex, extract, location: ourLocation });
         }
     } else if (fieldText.indexOf('...') >= 0) { // Yes, we still actually allow this
         quoteBits = fieldText.split('...');
         if ((characterIndex = fieldText.indexOf(' ...')) >= 0 || (characterIndex = fieldText.indexOf('... ')) >= 0) {
             // console.log(`Unexpected space(s) beside ellipse characters in '${fieldText}'`);
             const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '');
-            addNotice6({ priority: 158, message: "Unexpected space(s) beside ellipse characters", characterIndex, extract, location: ourLocation });
+            addNotice({ priority: 158, message: "Unexpected space(s) beside ellipse characters", characterIndex, extract, location: ourLocation });
         }
     }
     // console.log(`Got quoteBits=${quoteBits}`);
@@ -216,7 +218,7 @@ export async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C
     if (!verseText) // not supplied, so then we need to get it ourselves
         verseText = await getPassage(bookID, C, V, optionalCheckingOptions);
     if (!verseText) {
-        addNotice6({ priority: 851, message: "Unable to load original language verse text", location: ourLocation });
+        addNotice({ priority: 851, message: "Unable to load original language verse text", location: ourLocation });
         return colqResult; // nothing else we can do here
     }
 
@@ -234,11 +236,11 @@ export async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C
                     else partDescription = `middle${numQuoteBits > 3 ? bitIndex : ''}`;
                     // console.log(`721 Unable to find '${fieldText}' ${numQuoteBits === 1? '': `'${quoteBits[bitIndex]}' `}${partDescription? '('+partDescription+') ':''}in '${verseText}'`);
                     const extract = `${quoteBits[bitIndex]}' ${partDescription ? '(' + partDescription + ')' : ''}`;
-                    addNotice6({ priority: 721, message: "Unable to find original language quote in verse text", extract, location: ourLocation });
+                    addNotice({ priority: 721, message: "Unable to find original language quote in verse text", extract, location: ourLocation });
                 }
             }
         } else // < 2
-            addNotice6({ priority: 375, message: "Ellipsis without surrounding snippet", location: ourLocation });
+            addNotice({ priority: 375, message: "Ellipsis without surrounding snippet", location: ourLocation });
     } else { // Only a single quote (no ellipsis)
         if (verseText.indexOf(fieldText) >= 0) {
             // Double check that it doesn't start/stop in the middle of a word
@@ -254,7 +256,7 @@ export async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C
                 // const badCharString = ` by '{badChar}' {unicodedata.name(badChar)}={hex(ord(badChar))}`;
                 // console.log(`Seems '${fieldText}' might not start at the beginning of a word—it's preceded ${badCharString} in '${verseText}'`);
                 const extract = `(${remainingBits[0].slice(-1)}=D${remainingBits[0].slice(-1).charCodeAt()}/H${remainingBits[0].slice(-1).charCodeAt().toString(16)})` + fieldText.substring(0, extractLength - 3) + (fieldText.length > extractLength - 3 ? '…' : '');
-                addNotice6({ priority: 620, message: "Seems original language quote might not start at the beginning of a word", characterIndex: 0, extract, location: ourLocation });
+                addNotice({ priority: 620, message: "Seems original language quote might not start at the beginning of a word", characterIndex: 0, extract, location: ourLocation });
             }
             // Note: There's some Hebrew (RTL) characters at the beginning of the following regex
             if (remainingBits[1] && remainingBits[1][0].search(/[^׃־A-Za-z\s.,:;?!–)]/) !== -1) {
@@ -262,7 +264,7 @@ export async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C
                 // const badCharString = ` by '${badChar}' {unicodedata.name(badChar)}={hex(ord(badChar))}`;
                 // console.log(`Seems '${fieldText}' might not finish at the end of a word—it's followed ${badCharString} in '${verseText}'`);
                 const extract = (fieldText.length > extractLength - 3 ? '…' : '') + fieldText.substring(fieldText.length - extractLength + 3, fieldText.length) + `(${remainingBits[1][0]}=D${remainingBits[1].charCodeAt(0)}/H${remainingBits[1].charCodeAt(0).toString(16)})`;
-                addNotice6({ priority: 621, message: "Seems original language quote might not finish at the end of a word", characterIndex: fieldText.length, extract, location: ourLocation });
+                addNotice({ priority: 621, message: "Seems original language quote might not finish at the end of a word", characterIndex: fieldText.length, extract, location: ourLocation });
             }
         } else { // can't find the given text
             // console.log(`Unable to find '${fieldText}' in '${verseText}'`);
@@ -272,25 +274,25 @@ export async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C
             // console.log(`722 verseText='${verseText}'`);
             if (fieldText[0] === '\u2060') { // Word joiner
                 const extract = fieldText.substring(0, extractLength) + fieldText.length > extractLength ? '…' : '';
-                addNotice6({ priority: 916, message: "Unable to find original language quote in verse text", details:"quote which starts with 'word joiner'" + (noBreakSpaceText? ' '+ noBreakSpaceText:''), extract, location: ourLocation });
+                addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which starts with 'word joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation });
             } else if (fieldText.endsWith('\u2060')) { // Word joiner
-                const extract = fieldText.length > extractLength ? '…' : '' + fieldText.substring(fieldText.length-extractLength, fieldText.length);
-                addNotice6({ priority: 916, message: "Unable to find original language quote in verse text", details:"quote which ends with 'word joiner'" + (noBreakSpaceText? ' '+ noBreakSpaceText:''), extract, location: ourLocation });
+                const extract = fieldText.length > extractLength ? '…' : '' + fieldText.substring(fieldText.length - extractLength, fieldText.length);
+                addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which ends with 'word joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation });
             } else if (fieldText[0] === '\u200B') { // Zero-width space
                 const extract = fieldText.substring(0, extractLength) + fieldText.length > extractLength ? '…' : '';
-                addNotice6({ priority: 916, message: "Unable to find original language quote in verse text", details:"quote which starts with 'zero-width space'" + (noBreakSpaceText? ' '+ noBreakSpaceText:''), extract, location: ourLocation });
+                addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which starts with 'zero-width space'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation });
             } else if (fieldText.endsWith('\u200B')) { // Zero-width space
-                const extract = fieldText.length > extractLength ? '…' : '' + fieldText.substring(fieldText.length-extractLength, fieldText.length);
-                addNotice6({ priority: 916, message: "Unable to find original language quote in verse text", details:"quote which ends with 'zero-width space'" + (noBreakSpaceText? ' '+ noBreakSpaceText:''), extract, location: ourLocation });
+                const extract = fieldText.length > extractLength ? '…' : '' + fieldText.substring(fieldText.length - extractLength, fieldText.length);
+                addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which ends with 'zero-width space'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation });
             } else if (fieldText[0] === '\u200D') { // Zero-width joiner
                 const extract = fieldText.substring(0, extractLength) + fieldText.length > extractLength ? '…' : '';
-                addNotice6({ priority: 916, message: "Unable to find original language quote in verse text", details:"quote which starts with 'zero-width joiner'" + (noBreakSpaceText? ' '+ noBreakSpaceText:''), extract, location: ourLocation });
+                addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which starts with 'zero-width joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation });
             } else if (fieldText.endsWith('\u200D')) { // Zero-width joiner
-                const extract = fieldText.length > extractLength ? '…' : '' + fieldText.substring(fieldText.length-extractLength, fieldText.length);
-                addNotice6({ priority: 916, message: "Unable to find original language quote in verse text", details:"quote which ends with 'zero-width joiner'" + (noBreakSpaceText? ' '+ noBreakSpaceText:''), extract, location: ourLocation });
+                const extract = fieldText.length > extractLength ? '…' : '' + fieldText.substring(fieldText.length - extractLength, fieldText.length);
+                addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which ends with 'zero-width joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation });
             } else {
                 const extract = fieldText.substring(0, halfLength) + (fieldText.length > 2 * halfLength ? '…' : '') + fieldText.substring(fieldText.length - halfLength, fieldText.length);
-                addNotice6({ priority: 916, message: "Unable to find original language quote in verse text", details:noBreakSpaceText, extract, location: ourLocation });
+                addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: noBreakSpaceText, extract, location: ourLocation });
             }
         }
     }
@@ -299,6 +301,3 @@ export async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C
     return colqResult;
 }
 // end of checkOriginalLanguageQuote function
-
-
-//export default checkOriginalLanguageQuote;

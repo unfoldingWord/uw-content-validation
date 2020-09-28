@@ -1,4 +1,4 @@
-import {checkYAMLText} from './yaml-text-check';
+import { checkYAMLText } from './yaml-text-check';
 import * as books from './books';
 
 
@@ -28,7 +28,7 @@ export function checkManifestText(textName, manifestText, givenLocation, optiona
         // console.log(`Using default extractLength=${extractLength}`);
     }
     // else
-        // console.log(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
+    // console.log(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
     // const halfLength = Math.floor(extractLength / 2); // rounded down
     // const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
     // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
@@ -39,7 +39,7 @@ export function checkManifestText(textName, manifestText, givenLocation, optiona
         // console.log(`checkManifestText success: ${successString}`);
         cmtResult.successList.push(successString);
     }
-    function addNotice9({priority,message, bookID,C,V, lineNumber, characterIndex, extract, location}) {
+    function addNotice9({ priority, message, bookID, C, V, lineNumber, characterIndex, extract, location }) {
         // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
         // console.log(`checkManifestText Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         console.assert(priority !== undefined, "cManT addNotice9: 'priority' parameter should be defined");
@@ -60,7 +60,7 @@ export function checkManifestText(textName, manifestText, givenLocation, optiona
         if (extract) console.assert(typeof extract === 'string', `cManT addNotice9: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cManT addNotice9: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `cManT addNotice9: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        cmtResult.noticeList.push({priority,message, bookID,C,V, lineNumber, characterIndex,extract, location});
+        cmtResult.noticeList.push({ priority, message, bookID, C, V, lineNumber, characterIndex, extract, location });
     }
 
 
@@ -105,11 +105,11 @@ export function checkManifestText(textName, manifestText, givenLocation, optiona
         // console.log("formData keys", JSON.stringify(formDataKeys));
 
         if (formDataKeys.indexOf('dublin_core') < 0)
-            addNotice9({priority:928, message:"'dublin_core' key is missing", location:ourLocation});
+            addNotice9({ priority: 928, message: "'dublin_core' key is missing", location: ourLocation });
         if (formDataKeys.indexOf('projects') < 0)
-            addNotice9({priority:929, message:"'projects' key is missing", location:ourLocation});
+            addNotice9({ priority: 929, message: "'projects' key is missing", location: ourLocation });
         if (formDataKeys.indexOf('checking') < 0)
-            addNotice9({priority:148, message:"'checking' key is missing", location:ourLocation});
+            addNotice9({ priority: 148, message: "'checking' key is missing", location: ourLocation });
     }
 
     // addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'}${ourLocation}.`);
@@ -122,6 +122,3 @@ export function checkManifestText(textName, manifestText, givenLocation, optiona
     return cmtResult;
 }
 // end of checkManifestText function
-
-
-//export default checkManifestText;

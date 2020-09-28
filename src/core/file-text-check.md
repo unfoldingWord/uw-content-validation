@@ -9,7 +9,7 @@ This generic function returns a list/array of notices, that can then be post-pro
 This demonstration doesn't display the raw notices, but rather displays the processed and formatted lists of errors and warnings.
 
 ```js
-import checkTextfileContents from './file-text-check';
+import { checkTextfileContents } from './file-text-check';
 import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Empty, space, good, and bad samples
@@ -25,6 +25,11 @@ const chosenTextName = "textB";
 const chosenText = textB;
 
 const rawResults = checkTextfileContents('en', 'Sample', chosenText, 'in '+chosenTextName+' that was supplied');
+
+// Because we know here that we're only checking one file, we don't need the filename field in the notices
+function deleteFilenameField(notice) { delete notice.filename; return notice; }
+rawResults.noticeList = rawResults.noticeList.map(deleteFilenameField);
+
 if (!rawResults.successList || !rawResults.successList.length)
     rawResults.successList = ["Done basic file checks"];
 

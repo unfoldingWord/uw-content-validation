@@ -1,6 +1,6 @@
 ## Notice Processing 3 Sandbox
 
-### Single colour-graded list
+### Single colour-graded list sorted by priority
 
 This `processNoticesToSingleList()` function is passed an object that contains a list of success messages (e.g., "Checked GEN", "Checked MAT" type stuff) and a list of notices that each contain a priority number. Using the priorities, it processes the notices into a list of warnings that can be displayed with the priority indicated by the colour/redness of the message.
 
@@ -20,7 +20,7 @@ Note below that the optional `processOptions` object allows the user to adjust t
 Although this demonstration here formats and colour the warning list, it's expected that the encapsulating program will format and use the fields as desired. Because they are returned as an array of fields rather than simply strings, it's certainly possible for the encapsulating program to sort or filter the messages as desired.
 
 ```js
-import checkTextField from '../core/field-text-check';
+import { checkTextField } from '../core/field-text-check';
 import { processNoticesToSingleList } from './notice-processing-functions';
 import { RenderRawResults, RenderObject, RenderSuccessesWarningsGradient } from '../demos/RenderProcessedResults';
 

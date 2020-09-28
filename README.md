@@ -38,11 +38,12 @@ This code is designed to thoroughly check various types of Bible-related content
 
 1. [Unified Standard Format Marker](ubsicap.github.io/usfm/) (USFM) Bible content files, including original language Bibles and Bible translations aligned by word/phrase to the original words/phrases
 1. Translation Notes (TN) tables in Tab-Separated Values (TSV) files
+1. General annotation tables in Tab-Separated Values (TSV) files (work-in-progress)
 1. Markdown files (and markdown fields in TSV files)
 1. Plain-text files
 1. Metadata (manifest) YAML files
 
-Note: There is also a separate function for checking individual TN/TSV lines which is intended to be able to provide instant user feedback if built into a TSV editor.
+Note: There is also a separate function for checking individual TN/TSV lines which is intended to be able to provide immediate user feedback if built into a TSV editor.
 
 The top-level checking demonstrations:
 
@@ -64,10 +65,12 @@ All of the following fields may be missing or undefined, i.e., they're all optio
 1. `V`: The verse number or OBS frame number (if relevant)
 1. `repoName`: repository name (if available)
 1. `filename`: filename string (if available)
+1. `rowID`: 4-character ID field for TSV row (if relevant)
 1. `lineNumber`: A one-based line number in the file (if available)
+1. `fieldName`: name of TSV field (if relevant)
 1. `characterIndex`: A **zero-based** integer character index which indicates the position of the error in the given text (line or field) (if available)
 1. `extract`: An excerpt (if available) from the checked text which indicates the area containing the problem. Where helpful, some character substitutions have already been made, for example, if the notice is about spaces, it is generally helpful to display spaces as a visible character in an attempt to best highlight the issue to the user. (The length of the extract defaults to ten characters, but is settable as an option.)
-1. `location`: A string indicating the context of the notice, e.g., "in line 17 of 'someBook.usfm'". (Still not completely sure what should be left in this string now that we have added optional `filename`, `repoName`, `lineNumber` fields.)
+1. `location`: A string indicating the context of the notice, e.g., "in line 17 of 'someBook.usfm'". (Still not completely sure what should be left in this string now that we have added optional `repoName`, `filename`, `rowID`, `lineNumber`, `fieldName` fields.)
 
 Keeping our notices in this format, rather than the simplicity of just saving an array of single strings, allows the above *notice components* to be processed at a higher level, e.g., to allow user-controlled filtering, sorting, etc. The default is to funnel them all through the supplied `processNoticesToErrorsWarnings` function (in demos/notice-processing-functions.fs) which does the following:
 
@@ -81,24 +84,25 @@ However, the user is, of course, free to create their own alternative version of
 
 Still unfinished (in rough priority order):
 
-1. Testing and fine-tuning of error messages (e.g., comparing with tX), especially suppression of false alarms
-1. Optimise various different file fetches and caches (incl. using zips) for the demos
-1. Document the API with (JsDoc)
+1. Add manifest read and parsing functions to determine filenames to check
 1. Checking of general markdown and naked links (esp. in plain text and markdown files)
-1. Standardise parameters according to best practice (i.e., dereferencing, etc.)
+1. Write the correct checks for the forthcoming new TSV annotation formats
+1. Work through all [Issues](https://github.com/unfoldingWord/uw-content-validation/issues)
+1. Work through all `ToDo`s in code
+1. Standardise parameters according to best practice (i.e., dereferencing, etc.) -- might be too late now???
+1. Testing and fine-tuning of error messages (e.g., comparing with tX), especially suppression of false alarms
+1. Document the API with (JsDoc)
 1. Improve general documentation in the code and readMe files
 1. Is our `RepoCheck` the same as `ResourceContainerCheck`? Or is the latter more specific?
 1. Understand and standardise React stuff in the demos, e.g., e.g., withStyles, etc.
-1. Write unit tests (especially for the core functions) and get them passing, including on GitHub push -- is it Cypress or Jest that's the right tool for this? Or Jest for the core functions? Cypress for some basic tests of the demos?
-1. Write the correct checks for the forthcoming new TSV annotation formats
 1. Check for and remove left-over (but unused) code from the source projects that the original code was copied from
 1. Remove all debug code and console logging, and to consider possible speed and memory optimizations
-1. Add a Scripture Burrito check (once Door43 has that available)
+1. Add a Scripture Burrito check (once Door43 has that available).
 
 Known bugs:
 
 1. Work on removing false alarms for end-users is not yet completed
-1. Work on checking links (esp. naked links) in text files is not yet completed.
+1. Work on checking links (esp. naked links) in text files is not yet completed
 1. Work on checking the forthcoming TSV annotation files is not yet completed.
 
 ## Functionality and Limitations

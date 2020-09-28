@@ -1,13 +1,13 @@
-import { isWhitespace, countOccurrences } from './text-handling-functions'
+import { checkPlainText } from './plain-text-check';
 
-//const VALIDATOR_VERSION_STRING = '0.1.1';
+//const FILE_TEXT_VALIDATOR_VERSION_STRING = '0.2.2';
 
-const DEFAULT_EXTRACT_LENGTH = 10;
+// const DEFAULT_EXTRACT_LENGTH = 10;
 
 
 export function checkTextfileContents(languageCode, filename, fileText, optionalFileLocation, optionalCheckingOptions) {
     // Does basic checks for small errors like mismatched punctuation pairs, etc.
-    //  (Used by usfm-text-check)
+    //  (Used by ourBasicFileChecks() in checkUSFMText() in usfm-text-check.js)
 
     // filename (str): Used for identification
     // fileText (str): The field being checked
@@ -26,27 +26,57 @@ export function checkTextfileContents(languageCode, filename, fileText, optional
     //  (Returned in this way for more intelligent processing at a higher level)
     // console.log(`checkTextfileContents(${filename}, ${fileText.length.toLocaleString()} chars, ${allowedLinks}, '${optionalFileLocation}')…`);
     console.assert(filename !== undefined, "checkTextfileContents: 'filename' parameter should be defined");
-    console.assert(typeof filename === 'string', `checkTextfileContents: 'filename' parameter should be a number not a '${typeof filename}': ${filename}`);
+    console.assert(typeof filename === 'string', `checkTextfileContents: 'filename' parameter should be a string not a '${typeof filename}': ${filename}`);
     console.assert(fileText !== undefined, "checkTextfileContents: 'fileText' parameter should be defined");
-    console.assert(typeof fileText === 'string', `checkTextfileContents: 'fileText' parameter should be a number not a '${typeof fileText}': ${fileText}`);
+    console.assert(typeof fileText === 'string', `checkTextfileContents: 'fileText' parameter should be a string not a '${typeof fileText}': ${fileText}`);
     // console.assert( allowedLinks===true || allowedLinks===false, "checkTextfileContents: allowedLinks parameter must be either true or false");
 
     let result = { noticeList: [] };
 
-    function addNotice6(noticeObject) {
+    function addNotice(noticeObject) {
         // console.log(`dBTC Notice: (priority=${noticeObject.priority}) ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
-        console.assert(noticeObject.priority !== undefined, "dBTCs addNotice6: 'priority' parameter should be defined");
-        console.assert(typeof noticeObject.priority === 'number', `dBTCs addNotice6: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        console.assert(noticeObject.message !== undefined, "dBTCs addNotice6: 'message' parameter should be defined");
-        console.assert(typeof noticeObject.message === 'string', `dBTCs addNotice6: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // console.assert(characterIndex !== undefined, "dBTCs addNotice6: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `dBTCs addNotice6: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // console.assert(extract !== undefined, "dBTCs addNotice6: 'extract' parameter should be defined");
-        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `dBTCs addNotice6: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
-        console.assert(noticeObject.location !== undefined, "dBTCs addNotice6: 'location' parameter should be defined");
-        console.assert(typeof noticeObject.location === 'string', `dBTCs addNotice6: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        console.assert(noticeObject.priority !== undefined, "dBTCs addNotice: 'priority' parameter should be defined");
+        console.assert(typeof noticeObject.priority === 'number', `dBTCs addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        console.assert(noticeObject.message !== undefined, "dBTCs addNotice: 'message' parameter should be defined");
+        console.assert(typeof noticeObject.message === 'string', `dBTCs addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+        // console.assert(characterIndex !== undefined, "dBTCs addNotice: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `dBTCs addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        // console.assert(extract !== undefined, "dBTCs addNotice: 'extract' parameter should be defined");
+        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `dBTCs addNotice: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        console.assert(noticeObject.location !== undefined, "dBTCs addNotice: 'location' parameter should be defined");
+        console.assert(typeof noticeObject.location === 'string', `dBTCs addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
         result.noticeList.push(noticeObject);
     }
+
+    function ourCheckPlainText(plainText, givenLocation, optionalCheckingOptions) {
+        /**
+        * @description - checks the given text field and processes the returned results
+        * @param {String} plainText - the actual text of the field being checked
+        * @param {String} givenLocation - description of where the field is located
+        * @param {Object} optionalCheckingOptions - parameters that might affect the check
+        */
+        // Does basic checks for small errors like leading/trailing spaces, etc.
+
+        // We assume that checking for compulsory fields is done elsewhere
+
+        // Updates the global list of notices
+        // console.log(`cPT ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${fieldLocation}, …)`);
+        // console.assert(textName !== undefined, "cPT ourCheckTextField: 'textName' parameter should be defined");
+        // console.assert(typeof textName === 'string', `cPT ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof textName}'`);
+        console.assert(plainText !== undefined, "cPT ourCheckTextField: 'plainText' parameter should be defined");
+        console.assert(typeof plainText === 'string', `cPT ourCheckTextField: 'plainText' parameter should be a string not a '${typeof plainText}'`);
+
+        const resultObject = checkPlainText('', plainText, givenLocation, optionalCheckingOptions);
+
+        // Choose only ONE of the following
+        // This is the fast way of append the results from this field
+        // cptResult.noticeList = cptResult.noticeList.concat(resultObject.noticeList);
+        // If we need to put everything through addNotice9, e.g., for debugging or filtering
+        //  process results line by line
+        for (const noticeEntry of resultObject.noticeList)
+            addNotice({ ...noticeEntry, filename });
+    }
+    // end of ourCheckTextField function
 
 
     // Main code for checkTextfileContents()
@@ -57,11 +87,7 @@ export function checkTextfileContents(languageCode, filename, fileText, optional
     let ourLocation = optionalFileLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
-    if (isWhitespace(fileText)) {
-        addNotice6({ priority: 638, message: "Only found whitespace", location: ourLocation });
-        return result;
-    }
-
+    /*
     let extractLength;
     try {
         extractLength = optionalCheckingOptions.extractLength;
@@ -75,37 +101,10 @@ export function checkTextfileContents(languageCode, filename, fileText, optional
     const halfLength = Math.floor(extractLength / 2); // rounded down
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
     // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    */
 
-    let characterIndex;
-    if ((characterIndex = fileText.indexOf('<<<<<<<')) >= 0) {
-        const iy = characterIndex + halfLength; // Want extract to focus more on what follows
-        const extract = (iy > halfLength ? '…' : '') + fileText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < fileText.length ? '…' : '')
-        addNotice6({ priority: 993, message: "Unresolved GIT conflict", characterIndex, extract, location: ourLocation });
-    } else if ((characterIndex = fileText.indexOf('=======')) >= 0) {
-        const iy = characterIndex + halfLength; // Want extract to focus more on what follows
-        const extract = (iy > halfLength ? '…' : '') + fileText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < fileText.length ? '…' : '')
-        addNotice6({ priority: 992, message: "Unresolved GIT conflict", characterIndex, extract, location: ourLocation });
-    } else if ((characterIndex = fileText.indexOf('>>>>>>>>')) >= 0) {
-        const iy = characterIndex + halfLength; // Want extract to focus more on what follows
-        const extract = (iy > halfLength ? '…' : '') + fileText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < fileText.length ? '…' : '')
-        addNotice6({ priority: 991, message: "Unresolved GIT conflict", characterIndex, extract, location: ourLocation });
-    }
+    ourCheckPlainText(fileText, ourLocation, optionalCheckingOptions);
 
-    // Check matched pairs in the file
-    for (const punctSet of [['[', ']'], ['(', ')'], ['{', '}'],
-    ['<', '>'], ['⟨', '⟩'], ['“', '”'],
-    ['‹', '›'], ['«', '»'], ['**_', '_**']]) {
-        // Can't check '‘’' coz they might be used as apostrophe
-        const leftChar = punctSet[0], rightChar = punctSet[1];
-        const leftCount = countOccurrences(fileText, leftChar);
-        const rightCount = countOccurrences(fileText, rightChar);
-        if (leftCount !== rightCount)
-            // NOTE: These are lower priority than similar checks in a field
-            //          since they occur only within the entire file
-            addNotice6({ priority: leftChar === '“' ? 162 : 462, message: `Mismatched ${leftChar}${rightChar} characters`, details: `(left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()})`, location: ourLocation });
-    }
-
-    // if (!allowedLinks) {
     //     // Simple check that there aren't any
     //     ix = fileText.indexOf('://');
     //     if (ix === -1) ix = fileText.indexOf('http');
@@ -117,11 +116,9 @@ export function checkTextfileContents(languageCode, filename, fileText, optional
     //     if (ix === -1) ix = fileText.indexOf('.bible');
     //     if (ix >= 0) {
     //         let extract = (ix>halfLength ? '…' : '') + fileText.substring(ix-halfLength, ix+halfLengthPlus) + (ix+halfLengthPlus < fileText.length ? '…' : '')
-    //         addNotice6({765, "Unexpected link", ix,extract, ourAtString});
+    //         addNotice({765, "Unexpected link", ix,extract, ourAtString});
     //     }
     // }
     return result;
 }
 // end of checkTextfileContents function
-
-//export default checkTextfileContents;

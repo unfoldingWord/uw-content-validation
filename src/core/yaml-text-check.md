@@ -9,7 +9,7 @@ These raw notice components can then be filtered and/or sorted as required by th
 Note that we have a more specialised function for checking `manifest.yaml` files.
 
 ```js
-import checkYAMLText from './yaml-text-check';
+import { checkYAMLText } from './yaml-text-check';
 import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // YAML empty, good and bad text samples

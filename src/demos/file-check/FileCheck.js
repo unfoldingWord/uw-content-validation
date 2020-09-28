@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 // import { Paper, Button } from '@material-ui/core';
 // import { RepositoryContext, FileContext } from 'gitea-react-toolkit';
 import { withStyles } from '@material-ui/core/styles';
-import { getFileCached, checkFileContents } from '../../core';
+import { cachedGetFile, checkFileContents } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
 import { ourParseInt } from '../../core/utilities';
@@ -28,9 +28,11 @@ function FileCheck(props) {
         // console.log("Started FileCheck.unnamedFunction()");
 
         // Display our "waiting" message
-        setResultValue(<p style={{ color: 'magenta' }}>Checking <b>{filename}</b>…</p>);
-        // console.log(`About to call getFileCached(${username}, ${repoName}, ${filename}, ${branch})…`);
-        const fileContent = await getFileCached({ username: username, repository: repoName, path: filename, branch: branch });
+        setResultValue(<p style={{ color: 'magenta' }}>Fetching {username} {repoName} <b>{filename}</b>…</p>);
+        // console.log(`About to call cachedGetFile(${username}, ${repoName}, ${filename}, ${branch})…`);
+        const fileContent = await cachedGetFile({ username: username, repository: repoName, path: filename, branch: branch });
+
+        setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {repoName} <b>{filename}</b>…</p>);
         let rawCFResults = { noticeList:[{priority:990, message:"Unable to load file", filename}], elapsedSeconds:0 };
         if (fileContent) {
           const languageCode = repoName.split('_')[0];
@@ -38,9 +40,13 @@ function FileCheck(props) {
         }
         // console.log(`FileCheck got initial results with ${rawCFResults.successList.length} success message(s) and ${rawCFResults.noticeList.length} notice(s)`);
 
-        // Since we know the repoName here, add it to our notices
-        for (const thisNotice of rawCFResults.noticeList)
-          thisNotice.repoName = repoName; // Add in this info that we know
+        // Because we know here that we're only checking one file, we don't need the filename field in the notices
+        function deleteFilenameField(notice) { delete notice.filename; return notice; }
+        rawCFResults.noticeList = rawCFResults.noticeList.map(deleteFilenameField);
+
+        // // Since we know the repoName here, add it to our notices
+        // for (const thisNotice of rawCFResults.noticeList)
+        //   thisNotice.repoName = repoName; // Add in this info that we know
 
         // Add some extra fields to our rawCFResults object in case we need this information again later
         rawCFResults.checkType = 'File';
@@ -71,7 +77,7 @@ function FileCheck(props) {
         function renderSummary(processedResults) {
           return (<div>
             <p>Checked <b>{filename}</b> (from {username} {repoName} <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)</p>
-            <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCFResults.noticeList.length===0?'no':rawCFResults.noticeList.length} notice{rawCFResults.noticeList.length===1?'':'s'}.</p>
+            <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCFResults.noticeList.length===0?'no':rawCFResults.noticeList.length.toLocaleString()} notice{rawCFResults.noticeList.length===1?'':'s'}.</p>
             {/* <RenderRawResults results={rawCFResults} /> */}
           </div>);
         }
@@ -112,8 +118,8 @@ function FileCheck(props) {
             </>);
         } else if (displayType === 'SingleList') {
           const processedResults = processNoticesToSingleList(rawCFResults, processOptions);
-  //                 console.log(`FileCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
-  //   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
+          console.log(`FileCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s) and ${processedResults.warningList.length.toLocaleString()} notice(s)
+    numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
           if (processedResults.warningList.length)
             setResultValue(<>

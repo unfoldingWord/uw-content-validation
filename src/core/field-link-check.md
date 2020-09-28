@@ -3,7 +3,7 @@
 This function is for checking text fields that are links, or that contain links.
 
 ```js
-import checkFieldLinks from './field-link-check';
+import { checkFieldLinks } from './field-link-check';
 import { processNoticesToErrorsWarnings } from '../demos/notice-processing-functions';
 import { RenderLines, RenderRawResults, RenderSuccessesErrorsWarnings } from '../demos/RenderProcessedResults';
 

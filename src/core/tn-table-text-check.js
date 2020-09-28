@@ -1,5 +1,5 @@
 import * as books from './books/books';
-import {checkTN_TSVDataRow} from './tn-table-row-check';
+import { checkTN_TSVDataRow } from './tn-table-row-check';
 
 
 const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.2.3';
@@ -176,9 +176,9 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
 
                 if (rowID) {
                     if (rowIDList.indexOf(rowID) >= 0)
-                        addNoticeCV8({ priority: 729, C, V, message: `Duplicate '${rowID}' ID`, fieldName:'ID', rowID, lineNumber: n + 1, location: ourLocation });
+                        addNoticeCV8({ priority: 729, C, V, message: `Duplicate '${rowID}' ID`, fieldName: 'ID', rowID, lineNumber: n + 1, location: ourLocation });
                 } else
-                    addNoticeCV8({ priority: 730, C, V, message: "Missing ID", fieldName:'ID', lineNumber: n + 1, location: ourLocation });
+                    addNoticeCV8({ priority: 730, C, V, message: "Missing ID", fieldName: 'ID', lineNumber: n + 1, location: ourLocation });
 
 
                 lastB = B; lastC = C; lastV = V;
@@ -201,6 +201,3 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
     return result;
 }
 // end of checkTN_TSVText function
-
-
-//export default checkTN_TSVText;

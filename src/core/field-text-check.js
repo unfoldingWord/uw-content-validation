@@ -25,25 +25,26 @@ export function checkTextField(fieldName, fieldText, allowedLinks, optionalField
     //  (Returned in this way for more intelligent processing at a higher level)
     // console.log(`checkTextField(${fieldName}, ${fieldText.length.toLocaleString()} chars, ${allowedLinks}, '${optionalFieldLocation}')…`);
     console.assert(fieldName !== undefined, "checkTextField: 'fieldName' parameter should be defined");
-    console.assert(typeof fieldName === 'string', `checkTextField: 'fieldName' parameter should be a number not a '${typeof fieldName}': ${fieldName}`);
+    console.assert(typeof fieldName === 'string', `checkTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}': ${fieldName}`);
     console.assert(fieldText !== undefined, "checkTextField: 'fieldText' parameter should be defined");
-    console.assert(typeof fieldText === 'string', `checkTextField: 'fieldText' parameter should be a number not a '${typeof fieldText}': ${fieldText}`);
+    console.assert(typeof fieldText === 'string', `checkTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}': ${fieldText}`);
     console.assert(allowedLinks === true || allowedLinks === false, "checkTextField: allowedLinks parameter must be either true or false");
 
     let result = { noticeList: [] };
 
-    function addNotice6(noticeObject) {
+    function addNoticePartial(noticeObject) {
+        // We add the fieldName here
         // console.log(`dBTC Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(noticeObject.priority !== undefined, "dBTCs addNotice6: 'priority' parameter should be defined");
-        console.assert(typeof noticeObject.priority === 'number', `dBTCs addNotice6: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        console.assert(noticeObject.message !== undefined, "dBTCs addNotice6: 'message' parameter should be defined");
-        console.assert(typeof noticeObject.message === 'string', `dBTCs addNotice6: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // console.assert(characterIndex !== undefined, "dBTCs addNotice6: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `dBTCs addNotice6: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // console.assert(extract !== undefined, "dBTCs addNotice6: 'extract' parameter should be defined");
-        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `dBTCs addNotice6: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
-        console.assert(noticeObject.location !== undefined, "dBTCs addNotice6: 'location' parameter should be defined");
-        console.assert(typeof noticeObject.location === 'string', `dBTCs addNotice6: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        console.assert(noticeObject.priority !== undefined, "dBTCs addNoticePartial: 'priority' parameter should be defined");
+        console.assert(typeof noticeObject.priority === 'number', `dBTCs addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        console.assert(noticeObject.message !== undefined, "dBTCs addNoticePartial: 'message' parameter should be defined");
+        console.assert(typeof noticeObject.message === 'string', `dBTCs addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+        // console.assert(characterIndex !== undefined, "dBTCs addNoticePartial: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `dBTCs addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        // console.assert(extract !== undefined, "dBTCs addNoticePartial: 'extract' parameter should be defined");
+        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `dBTCs addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        console.assert(noticeObject.location !== undefined, "dBTCs addNoticePartial: 'location' parameter should be defined");
+        console.assert(typeof noticeObject.location === 'string', `dBTCs addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
         result.noticeList.push({ ...noticeObject, fieldName });
     }
 
@@ -57,7 +58,7 @@ export function checkTextField(fieldName, fieldText, allowedLinks, optionalField
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
     if (isWhitespace(fieldText)) {
-        addNotice6({ priority: 638, message: "Only found whitespace", location: ourLocation });
+        addNoticePartial({ priority: 638, message: "Only found whitespace", location: ourLocation });
         return result;
     }
 
@@ -79,66 +80,68 @@ export function checkTextField(fieldName, fieldText, allowedLinks, optionalField
     if (characterIndex >= 0) {
         const iy = characterIndex + halfLength; // Want extract to focus more on what follows
         const extract = (iy > halfLength ? '…' : '') + fieldText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < fieldText.length ? '…' : '')
-        addNotice6({ priority: 993, message: "Unresolved GIT conflict", characterIndex, extract, location: ourLocation });
+        addNoticePartial({ priority: 993, message: "Unresolved GIT conflict", characterIndex, extract, location: ourLocation });
     } else {
         characterIndex = fieldText.indexOf('=======');
         if (characterIndex >= 0) {
             const iy = characterIndex + halfLength; // Want extract to focus more on what follows
             const extract = (iy > halfLength ? '…' : '') + fieldText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < fieldText.length ? '…' : '')
-            addNotice6({ priority: 992, message: "Unresolved GIT conflict", characterIndex, extract, location: ourLocation });
+            addNoticePartial({ priority: 992, message: "Unresolved GIT conflict", characterIndex, extract, location: ourLocation });
         } else {
             characterIndex = fieldText.indexOf('>>>>>>>>');
             if (characterIndex >= 0) {
                 const iy = characterIndex + halfLength; // Want extract to focus more on what follows
                 const extract = (iy > halfLength ? '…' : '') + fieldText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < fieldText.length ? '…' : '')
-                addNotice6({ priority: 991, message: "Unresolved GIT conflict", characterIndex, extract, location: ourLocation });
+                addNoticePartial({ priority: 991, message: "Unresolved GIT conflict", characterIndex, extract, location: ourLocation });
             }
         }
     }
 
     if (fieldText[0] === ' ') {
         const extract = fieldText.substring(0, extractLength).replace(/ /g, '␣') + (fieldText.length > extractLength ? '…' : '');
-        addNotice6({ priority: 106, message: `Unexpected leading space${fieldText[1] === ' ' ? "s" : ""}`, characterIndex: 0, extract, location: ourLocation });
+        addNoticePartial({ priority: 106, message: `Unexpected leading space${fieldText[1] === ' ' ? "s" : ""}`, characterIndex: 0, extract, location: ourLocation });
     }
-    if (fieldText.substring(0, 4) === '<br>' || fieldText.substring(0, 5) === '<br/>' || fieldText.substring(0, 6) === '<br />') {
+
+    const fieldTextLower = fieldText.toLowerCase();
+    if (fieldTextLower.substring(0, 4) === '<br>' || fieldTextLower.substring(0, 5) === '<br/>' || fieldTextLower.substring(0, 6) === '<br />') {
         const extract = fieldText.substring(0, extractLength) + (fieldText.length > extractLength ? '…' : '');
-        addNotice6({ priority: 107, message: "Unexpected leading break", characterIndex: 0, extract, location: ourLocation });
+        addNoticePartial({ priority: 107, message: "Unexpected leading break", characterIndex: 0, extract, location: ourLocation });
     }
     if (fieldText[fieldText.length - 1] === ' ') {
         const extract = (fieldText.length > extractLength ? '…' : '') + fieldText.substring(fieldText.length - 10).replace(/ /g, '␣');
-        addNotice6({ priority: 105, message: "Unexpected trailing space(s)", characterIndex: fieldText.length - 1, extract, location: ourLocation });
+        addNoticePartial({ priority: 105, message: "Unexpected trailing space(s)", characterIndex: fieldText.length - 1, extract, location: ourLocation });
     }
-    if (fieldText.substring(fieldText.length - 4) === '<br>' || fieldText.substring(fieldText.length - 5) === '<br/>' || fieldText.substring(fieldText.length - 6) === '<br />') {
+    if (fieldTextLower.substring(fieldTextLower.length - 4) === '<br>' || fieldTextLower.substring(fieldTextLower.length - 5) === '<br/>' || fieldTextLower.substring(fieldTextLower.length - 6) === '<br />') {
         const extract = (fieldText.length > extractLength ? '…' : '') + fieldText.substring(fieldText.length - 10);
-        addNotice6({ priority: 104, message: "Unexpected trailing break", characterIndex: fieldText.length - 1, extract, location: ourLocation });
+        addNoticePartial({ priority: 104, message: "Unexpected trailing break", characterIndex: fieldText.length - 1, extract, location: ourLocation });
     }
     if ((characterIndex = fieldText.indexOf('  ')) >= 0) {
         const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
-        addNotice6({ priority: 194, message: "Unexpected double spaces", characterIndex, extract, location: ourLocation });
+        addNoticePartial({ priority: 194, message: "Unexpected double spaces", characterIndex, extract, location: ourLocation });
     }
     if ((characterIndex = fieldText.indexOf('\n')) >= 0) {
         const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
-        addNotice6({ priority: 583, message: "Unexpected newLine character", characterIndex, extract, location: ourLocation });
+        addNoticePartial({ priority: 583, message: "Unexpected newLine character", characterIndex, extract, location: ourLocation });
     }
     if ((characterIndex = fieldText.indexOf('\r')) >= 0) {
         const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
-        addNotice6({ priority: 582, message: "Unexpected carriageReturn character", characterIndex, extract, location: ourLocation });
+        addNoticePartial({ priority: 582, message: "Unexpected carriageReturn character", characterIndex, extract, location: ourLocation });
     }
     if ((characterIndex = fieldText.indexOf('\xA0')) >= 0) { // non-break space
         const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/\xA0/g, '⍽') + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
-        addNotice6({ priority: 581, message: "Unexpected non-break space character", characterIndex, extract, location: ourLocation });
+        addNoticePartial({ priority: 581, message: "Unexpected non-break space character", characterIndex, extract, location: ourLocation });
     }
     if ((characterIndex = fieldText.indexOf('\u202F')) >= 0) { // narrow non-break space
         const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/\u202F/g, '⍽') + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
-        addNotice6({ priority: 580, message: "Unexpected narrow non-break space character", characterIndex, extract, location: ourLocation });
+        addNoticePartial({ priority: 580, message: "Unexpected narrow non-break space character", characterIndex, extract, location: ourLocation });
     }
     if ((characterIndex = fieldText.indexOf(' …')) >= 0) {
         const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
-        addNotice6({ priority: 179, message: "Unexpected space before ellipse character", characterIndex, extract, location: ourLocation });
+        addNoticePartial({ priority: 179, message: "Unexpected space before ellipse character", characterIndex, extract, location: ourLocation });
     }
     if ((characterIndex = fieldText.indexOf('… ')) >= 0) {
         const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
-        addNotice6({ priority: 178, message: "Unexpected space after ellipse character", characterIndex, extract, location: ourLocation });
+        addNoticePartial({ priority: 178, message: "Unexpected space after ellipse character", characterIndex, extract, location: ourLocation });
     }
     // Check for doubled punctuation chars (international)
     // Doesn't check for doubled forward slash coz that might occur in a link, e.g., https://etc…
@@ -149,7 +152,7 @@ export function checkTextField(fieldName, fieldText, allowedLinks, optionalField
         characterIndex = fieldText.indexOf(punctChar + punctChar);
         if (characterIndex >= 0) {
             let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
-            addNotice6({ priority: 177, message: `Unexpected doubled ${punctChar} characters`, characterIndex, extract, location: ourLocation });
+            addNoticePartial({ priority: 177, message: `Unexpected doubled ${punctChar} characters`, characterIndex, extract, location: ourLocation });
         }
     }
     // Check for punctuation chars following space
@@ -157,7 +160,7 @@ export function checkTextField(fieldName, fieldText, allowedLinks, optionalField
         characterIndex = fieldText.indexOf(' ' + punctChar);
         if (characterIndex >= 0) {
             let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
-            addNotice6({ priority: 191, message: `Unexpected ${punctChar} character after space`, characterIndex, extract, location: ourLocation });
+            addNoticePartial({ priority: 191, message: `Unexpected ${punctChar} character after space`, characterIndex, extract, location: ourLocation });
         }
     }
     // Check for punctuation chars before space
@@ -166,7 +169,7 @@ export function checkTextField(fieldName, fieldText, allowedLinks, optionalField
         characterIndex = fieldText.indexOf(punctChar + ' ');
         if (characterIndex >= 0) {
             let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
-            addNotice6({ priority: 192, message: `Unexpected space after ${punctChar} character`, characterIndex, extract, location: ourLocation });
+            addNoticePartial({ priority: 192, message: `Unexpected space after ${punctChar} character`, characterIndex, extract, location: ourLocation });
         }
     }
 
@@ -180,7 +183,7 @@ export function checkTextField(fieldName, fieldText, allowedLinks, optionalField
         const rightCount = countOccurrences(fieldText, rightChar);
         if (leftCount !== rightCount)
             // NOTE: These are higher priority than similar checks in a whole file which is less specific
-            addNotice6({ priority: leftChar === '“' ? 163 : 563, message: `Mismatched ${leftChar}${rightChar} characters`, details: `(left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()})`, location: ourLocation });
+            addNoticePartial({ priority: leftChar === '“' ? 163 : 563, message: `Mismatched ${leftChar}${rightChar} characters`, details: `(left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()})`, location: ourLocation });
     }
 
     if (!allowedLinks) {
@@ -195,11 +198,9 @@ export function checkTextField(fieldName, fieldText, allowedLinks, optionalField
         if (characterIndex === -1) characterIndex = fieldText.indexOf('.bible');
         if (characterIndex >= 0) {
             let extract = `${characterIndex > halfLength ? '…' : ''}${fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus)}${characterIndex + halfLengthPlus < fieldText.length ? '…' : ''}`
-            addNotice6({ priority: 765, message: "Unexpected link", characterIndex, extract, location: ourLocation });
+            addNoticePartial({ priority: 765, message: "Unexpected link", characterIndex, extract, location: ourLocation });
         }
     }
     return result;
 }
 // end of checkTextField function
-
-//export default checkTextField;

@@ -1,12 +1,11 @@
 ## Door43 All Book Packages Check - Readme
 
-The code below requests some info and then checks Open Bible Stories plus all Bible books across several repos. This is convenient to see all these check results collected into one place.
+The code below requests some info and then checks the requested Bible books -- NT or OT or ALL across several repos. OBS (Open Bible Stories) can also be added. This is convenient to see all these check results collected into one place.
 
 `All Book Packages Check` calls `checkBookPackages()` which then calls `checkBookPackage()` for each given book identifier, which in turn calls `checkFileContents()` for the book file in each repo (or calls `checkRepo()` for **OBS**).
 
 **Warning**: Some book packages contain many files and/or very large files, and downloading them all and then checking them might slow down your browser -- maybe even causing pop-up messages asking to confirm that you want to keep waiting.
 
-**NOTE: Caching is temporarily disabled.**
 **Note**: This demonstration uses cached values of files stored inside the local browser. This makes reruns of the checks much faster, but it won't notice if you have updated the files on Door43. If you want to clear the local caches, use the `Clear Cache` function.
 
 ```js
@@ -15,12 +14,12 @@ import AllBookPackagesCheck from './AllBookPackagesCheck';
 <AllBookPackagesCheck
   username='unfoldingWord'
   languageCode='en'
-  testament='NT' // 'OT' or 'NT' -- sorry the browser runs out of memory for all books
   includeOBS='N' // 'Y' or 'N' for Open Bible Stories
+  testament='XX' // 'OT' or 'NT' or 'ALL' to start check
 
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'
-  displayType='SevereMediumLow'
+  displayType='SingleList'
 
   // Specifying maximumSimilarMessages and extractLength is just to show off options
   //  -- those fields are not necessary (or normal) here

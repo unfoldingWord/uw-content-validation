@@ -25,3 +25,19 @@ export function countOccurrences(mainString, subString, allowOverlapping = false
     return n;
 }
 // end of countOccurrences function
+
+
+export function ourReplaceAll(givenString, findString, replaceString) {
+    let resultString = givenString;
+    while (resultString.indexOf(findString) >= 0)
+        resultString = resultString.replace(findString, replaceString);
+    return resultString;
+}
+
+
+export function ourDeleteAll(givenString, findString) {
+    let resultString = givenString;
+    while (resultString.indexOf(findString) >= 0)
+        resultString = resultString.replace(findString, '');
+    return resultString;
+}
