@@ -153,9 +153,8 @@ export async function cachedGetFile({ username, repository, path, branch }) {
     await unzipStore.setItem(filePath.toLowerCase(), contents);
     // if (filePath.indexOf('_tq/') < 0) // Don't log for TQ files coz too many
     //   console.log(`cachedGetFile saved ${filePath} to cache for next time`);
-  } else {
-    console.log(`ERROR: cachedGetFile(${username}, ${repository}, ${path}, ${branch}) - failed to get file`);
   }
+  // else console.log(`ERROR: cachedGetFile(${username}, ${repository}, ${path}, ${branch}) -- failed to get file`);
 
   return contents;
 }
@@ -396,7 +395,7 @@ async function cachedFetchFileFromServer({ username, repository, path, branch = 
     uri = Path.join(username, repository, 'raw/branch', branch, path);
     const failMessage = await failedStore.getItem(uri.toLowerCase());
     if (failMessage) {
-      console.log(`cachedFetchFileFromServer failed previously for ${uri}: ${failMessage}`);
+      // console.log(`  cachedFetchFileFromServer failed previously for ${uri}: ${failMessage}`);
       return null;
     }
     try {
@@ -641,7 +640,8 @@ async function getFileFromZip({ username, repository, path, branch }) {
     }
     // else console.log("  No zipBlob");
   } catch (error) {
-    console.log(`ERROR: getFileFromZip for ${username} ${repository} ${path} ${branch} got: ${error.message}`);
+    if (error.message.indexOf(' is null') < 0)
+      console.log(`ERROR: getFileFromZip for ${username} ${repository} ${path} ${branch} got: ${error.message}`);
     file = null;
   }
   return file;

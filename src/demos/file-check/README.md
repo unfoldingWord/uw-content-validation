@@ -11,7 +11,7 @@ and then validates the content of one file selected from the repo.
 
     // repoName='hbo_uhb' // OT books only
     // repoName='el-x-koine_ugnt' // NT books only
-    repoName='en_ult' // Can use ult or ust here
+    repoName='en_ust' // Can use ult or ust here
     // repoName='en_tn'
 
     // If we don't put the branch here, the default branch is used
@@ -22,9 +22,10 @@ and then validates the content of one file selected from the repo.
     // filename= '08-RUT.usfm' // e.g., for UHB, ULT, or UST
     // filename= '41-MAT.usfm' // e.g., for UGNT, ULT, or UST
     // filename= '42-MRK.usfm' // e.g., for UGNT, ULT, or UST
+    filename= '43-LUK.usfm' // e.g., for UGNT, ULT, or UST
     // filename= '45-ACT.usfm' // e.g., for UGNT, ULT, or UST
     // filename= '48-2CO.usfm' // e.g., for UGNT, ULT, or UST
-    filename= '50-EPH.usfm' // e.g., for UGNT, ULT, or UST
+    // filename= '50-EPH.usfm' // e.g., for UGNT, ULT, or UST
     // filename= '65-3JN.usfm' // e.g., for UGNT, ULT, or UST
     // filename= '67-REV.usfm' // e.g., for UGNT, ULT, or UST
     // filename= 'en_tn_01-GEN.tsv' // for TN

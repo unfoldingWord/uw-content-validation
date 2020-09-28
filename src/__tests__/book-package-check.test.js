@@ -23,7 +23,7 @@ const optionalCheckingOptions = {
     // eslint-disable-next-line no-throw-literal
     throw `Could not find ${filePath}`;
   },
-  getFilelistFromZip: params => {
+  getFileListFromZip: params => {
     const { username, repository, optionalPrefix } = params;
     const filePath = Path.join('./src/__tests__/fixtures', username, repository);
     let files = getAllFiles(filePath);

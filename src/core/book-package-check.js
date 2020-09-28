@@ -124,7 +124,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
 
     // Now we need to fetch the list of files from the repo
     setResultValue(<p style={{ color: 'magenta' }}>Preprocessing file list from <b>{username}/{repoName}</b> repository…</p>);
-    // const pathList = await getFilelistFromFetchedTreemaps(username, repoName, branch);
+    // const pathList = await getFileListFromFetchedTreemaps(username, repoName, branch);
     const getFileListFromZip_ = checkingOptions && checkingOptions.getFileListFromZip ? checkingOptions.getFileListFromZip : getFileListFromZip;
     const pathList = await getFileListFromZip_({ username, repository: repoName, branch });
     // console.log(`Got pathlist (${pathList.length}) = ${pathList}`);

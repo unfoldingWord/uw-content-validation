@@ -7,7 +7,7 @@ import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
 import { ourParseInt } from './utilities';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.6.3';
+// const USFM_VALIDATOR_VERSION_STRING = '0.6.34';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -231,44 +231,79 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
         let chapterNumberString, verseNumberString;
 
 
+        const MINIMUM_TEXT_WORDS = 4;
+        const MINIMUM_WORD_LENGTH = 2;
         function hasText(verseObjects) {
             let gotDeep = false;
             for (const someObject of verseObjects) {
                 // console.log("someObject", JSON.stringify(someObject));
-                if (someObject['type'] === 'text' && someObject['text'].length > 5)
+                if (someObject['type'] === 'text' && someObject['text'].length > MINIMUM_TEXT_WORDS)
                     return true;
-                if (someObject['type'] === 'word' && someObject['text'].length > 2)
+                if (someObject['type'] === 'word' && someObject['text'].length > MINIMUM_WORD_LENGTH)
                     return true;
                 if (someObject['type'] === 'milestone')
                     for (const someSubobject of someObject['children']) {
                         // console.log("someSubobject", JSON.stringify(someSubobject));
-                        if (someSubobject['type'] === 'text' && someSubobject['text'].length > 5)
+                        if (someSubobject['type'] === 'text' && someSubobject['text'].length > MINIMUM_TEXT_WORDS)
                             return true;
-                        if (someSubobject['type'] === 'word' && someSubobject['text'].length > 2)
+                        if (someSubobject['type'] === 'word' && someSubobject['text'].length > MINIMUM_WORD_LENGTH)
                             return true;
                         if (someSubobject['type'] === 'milestone')
-                            for (const someSubSubobject of someSubobject['children']) {
-                                // console.log("someSubSubobject", JSON.stringify(someSubSubobject));
-                                if (someSubSubobject['type'] === 'text' && someSubSubobject['text'].length > 5)
+                            for (const someSub2object of someSubobject['children']) {
+                                // console.log("someSub2object", JSON.stringify(someSub2object));
+                                if (someSub2object['type'] === 'text' && someSub2object['text'].length > MINIMUM_TEXT_WORDS)
                                     return true;
-                                if (someSubSubobject['type'] === 'word' && someSubSubobject['text'].length > 2)
+                                if (someSub2object['type'] === 'word' && someSub2object['text'].length > MINIMUM_WORD_LENGTH)
                                     return true;
-                                if (someSubSubobject['type'] === 'milestone')
-                                    for (const someSubSubSubobject of someSubSubobject['children']) {
-                                        // console.log("someSubSubSubobject", JSON.stringify(someSubSubSubobject));
-                                        if (someSubSubSubobject['type'] === 'text' && someSubSubSubobject['text'].length > 5)
+                                if (someSub2object['type'] === 'milestone')
+                                    for (const someSub3object of someSub2object['children']) {
+                                        // console.log("someSub3object", JSON.stringify(someSub3object));
+                                        if (someSub3object['type'] === 'text' && someSub3object['text'].length > MINIMUM_TEXT_WORDS)
                                             return true;
-                                        if (someSubSubSubobject['type'] === 'word' && someSubSubSubobject['text'].length > 2)
+                                        if (someSub3object['type'] === 'word' && someSub3object['text'].length > MINIMUM_WORD_LENGTH)
                                             return true;
-                                        if (someSubSubSubobject['type'] === 'milestone')
-                                            for (const someSubSubSubSubobject of someSubSubSubobject['children']) {
-                                                // console.log("someSubSubSubSubobject", JSON.stringify(someSubSubSubSubobject));
-                                                if (someSubSubSubSubobject['type'] === 'text' && someSubSubSubSubobject['text'].length > 5)
+                                        if (someSub3object['type'] === 'milestone')
+                                            for (const someSub4object of someSub3object['children']) {
+                                                // console.log("someSub4object", JSON.stringify(someSub4object));
+                                                if (someSub4object['type'] === 'text' && someSub4object['text'].length > MINIMUM_TEXT_WORDS)
                                                     return true;
-                                                if (someSubSubSubSubobject['type'] === 'word' && someSubSubSubSubobject['text'].length > 2)
+                                                if (someSub4object['type'] === 'word' && someSub4object['text'].length > MINIMUM_WORD_LENGTH)
                                                     return true;
-                                                if (someSubSubSubSubobject['type'] === 'milestone') gotDeep = true;
-                                                // console.assert(someSubSubSubobject['type'] !== 'milestone', `We need to add more depth levels to hasText() for ${chapterNumberString}:${verseNumberString}`);
+                                                if (someSub4object['type'] === 'milestone')
+                                                    for (const someSub5object of someSub4object['children']) {
+                                                        // console.log("someSub5object", JSON.stringify(someSub5object));
+                                                        if (someSub5object['type'] === 'text' && someSub5object['text'].length > MINIMUM_TEXT_WORDS)
+                                                            return true;
+                                                        if (someSub5object['type'] === 'word' && someSub5object['text'].length > MINIMUM_WORD_LENGTH)
+                                                            return true;
+                                                        if (someSub5object['type'] === 'milestone')
+                                                            for (const someSub6object of someSub5object['children']) {
+                                                                // console.log("someSub6object", bookID, CVlocation, JSON.stringify(someSub6object));
+                                                                if (someSub6object['type'] === 'text' && someSub6object['text'].length > MINIMUM_TEXT_WORDS)
+                                                                    return true;
+                                                                if (someSub6object['type'] === 'word' && someSub6object['text'].length > MINIMUM_WORD_LENGTH)
+                                                                    return true;
+                                                                if (someSub6object['type'] === 'milestone')
+                                                                    for (const someSub7object of someSub6object['children']) {
+                                                                        // console.log("someSub7object", bookID, CVlocation, JSON.stringify(someSub7object));
+                                                                        if (someSub7object['type'] === 'text' && someSub7object['text'].length > MINIMUM_TEXT_WORDS)
+                                                                            return true;
+                                                                        if (someSub7object['type'] === 'word' && someSub7object['text'].length > MINIMUM_WORD_LENGTH)
+                                                                            return true;
+                                                                        if (someSub7object['type'] === 'milestone')
+                                                                            // UST Luke 15:3 has eight levels of nesting !!!
+                                                                            for (const someSub8object of someSub7object['children']) {
+                                                                                // console.log("someSub8object", bookID, CVlocation, JSON.stringify(someSub8object));
+                                                                                if (someSub8object['type'] === 'text' && someSub8object['text'].length > MINIMUM_TEXT_WORDS)
+                                                                                    return true;
+                                                                                if (someSub8object['type'] === 'word' && someSub8object['text'].length > MINIMUM_WORD_LENGTH)
+                                                                                    return true;
+                                                                                if (someSub8object['type'] === 'milestone') gotDeep = true;
+                                                                                // console.assert(someSub5object['type'] !== 'milestone', `We need to add more depth levels to hasText() for ${chapterNumberString}:${verseNumberString}`);
+                                                                            }
+                                                                    }
+                                                            }
+                                                    }
                                             }
                                     }
                             }
