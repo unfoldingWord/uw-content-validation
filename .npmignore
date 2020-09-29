@@ -1,1 +1,15 @@
-./src/demos
+# We don't need any of the demo stuff in the NPM package
+./src/demos/
+
+# We don't need the testing stuff in the NPM package
+./cypress/
+./src/__tests__/
+
+# Nor do we need any of the styleguidist stuff from the core
+./styleguide.*
+./src/code/*.md
+
+# Nor do we need some of the extra stuff
+./scripts/
+./makeNoticeList.py
+./noticeList.txt
