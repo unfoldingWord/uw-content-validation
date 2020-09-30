@@ -45,10 +45,12 @@ This code is designed to thoroughly check various types of Bible-related content
 
 Note: There is also a separate function for checking individual TN/TSV lines which is intended to be able to provide immediate user feedback if built into a TSV editor.
 
-The top-level checking demonstrations:
+The top-level checking demonstrations return:
 
 1. A list of things that were checked (successList)
 1. Typically a list of (higher-priority) errors and a list of (lower-priority) warnings, but other formats for display of messages are also demonstrated.
+
+### Notice Objects (in noticeList)
 
 However, the lower-level checking functions provide only the list of success message strings and one list of `notices` (i.e., warnings/errors combined) typically consisting of an object with some or all of the following fields (as available/relevant):
 
@@ -82,9 +84,40 @@ There is a second version of the function which splits into `Severe`, `Medium`, 
 
 However, the user is, of course, free to create their own alternative version of these functions. This is possibly also the place to consider localisation of all the notices into different interface languages???
 
+## User-settable Options
+
+There is provision for checking to be altered and/or sped-up when the calling app sets some or all of the following fields in `optionalCheckingOptions`:
+
+- extractLength: an integer which defines how long excerpts of lines containing errors should be -- the default is 10 characters -- the package attempts to place the error in the middle of the extract
+- getFile: a function which takes the four parameters ({username, repository, path, branch}) and returns the full text of the relevant Door43 file -- default is to use our own function and associated caching
+- fetchRepositoryZipFile: a function which takes the three parameters ({username, repository, branch}) and returns the contents of the zip file containing all the Door43 files -- default is to use our own function and associated caching
+- getFileListFromZip: takes the same three parameters and returns a list/array containing the filepaths of all the files in the zip file from Door43 -- default is to use our own function and associated caching
+- originalLanguageVerseText: the Hebrew/Aramaic or Greek original language text for the book/chapter/verse of the TSV line being checked -- this enables `OrigQuote` fields to be checked without needing to load and parse the actual USFM file
+- originalLanguageRepoUsername and originalLanguageRepoBranch: these two fields can be used to specify the username/organisation and/or the branch/tag name for fetching the UHB and UGNT files for checking
+- taRepoUsername, taRepoBranchName: these two fields can be used to specify the username/organisation and/or the branch/tag name for fetching the TA files for checking
+- taRepoLanguageCode, and taRepoSectionName: can be used to specify how the `SupportReference` field is checked in TA -- defaults are 'en' and 'translate'
+- twRepoUsername, twRepoBranchName: these two fields can be used to specify the username/organisation and/or the branch/tag name for fetching the TW files for checking
+
+Most of the high-level demonstrations allow a choice of one of three display formats for notices:
+
+- 'SingleList': sorts notices by priority (highest first) then colours the highest ones bright red, slowly fading to black for the lowest priorities
+- 'ErrorsWarnings': arbitrarily divides notices into a list of *errors* and a list of *warnings*, each displayed in different colours
+- 'SevereMediumLow': divides notices into three lists which are displayed in different colours
+
+In addition, there are some options in the display of notices for the demonstrations, set in `optionalProcessingOptions` used by the sample notice processing functions:
+
+- ignorePriorityNumberList: a list (array) of integers that causes of notices with these priority values to be dropped during notice processing
+- sortBy: a string which can be set to 'ByPriority' -- the default is 'AsFound', i.e., unsorted
+- errorPriorityLevel: an integer which can define *errors* (vs *warnings*) (if relevant) -- defaults to 700 (and above)
+- severePriorityLevel: an integer which can define *severe* errors (if relevant) -- defaults to 800 (and above)
+- mediumPriorityLevel: an integer which can define *medium* errors (if relevant) -- defaults to 600 (and up to `severePriorityLevel`)
+- cutoffPriorityLevel: an integer which can define notices to be dropped/ignored -- defaults to 0 so none are dropped
+- maximumSimilarMessages: an integer which defines how many of a certain notice to display, before summarising and saying something like *99 similar errors suppressed* -- zero means don't ever summarise notices -- defaults to 3
+
+## Still To Do
+
 Still unfinished (in rough priority order):
 
-1. Add manifest read and parsing functions to determine filenames to check
 1. Checking of general markdown and naked links (esp. in plain text and markdown files)
 1. Write the correct checks for the forthcoming new TSV annotation formats
 1. Work through all [Issues](https://github.com/unfoldingWord/uw-content-validation/issues)
