@@ -63,7 +63,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
   }
 
 
-  async function ourCheckRepoFileContents(bookOrFileCode, cfBookID, filename, file_content, fileLocation, optionalCheckingOptions) {
+  async function ourCheckRepoFileContents(bookOrFileCode, cfBookID, filename, fileContent, fileLocation, optionalCheckingOptions) {
     // We assume that checking for compulsory fields is done elsewhere
     // console.log(`checkRepo ourCheckRepoFileContents(${filename})…`);
 
@@ -74,12 +74,12 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
     console.assert(typeof cfBookID === 'string', `ourCheckRepoFileContents: 'cfBookID' parameter should be a string not a '${typeof cfBookID}'`);
     console.assert(filename !== undefined, "ourCheckRepoFileContents: 'filename' parameter should be defined");
     console.assert(typeof filename === 'string', `ourCheckRepoFileContents: 'filename' parameter should be a string not a '${typeof filename}'`);
-    console.assert(file_content !== undefined, "ourCheckRepoFileContents: 'file_content' parameter should be defined");
-    console.assert(typeof file_content === 'string', `ourCheckRepoFileContents: 'file_content' parameter should be a string not a '${typeof file_content}'`);
+    console.assert(fileContent !== undefined, "ourCheckRepoFileContents: 'fileContent' parameter should be defined");
+    console.assert(typeof fileContent === 'string', `ourCheckRepoFileContents: 'fileContent' parameter should be a string not a '${typeof fileContent}'`);
     console.assert(fileLocation !== undefined, "ourCheckRepoFileContents: 'fileLocation' parameter should be defined");
     console.assert(typeof fileLocation === 'string', `ourCheckRepoFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
 
-    const cfcResultObject = await checkFileContents(languageCode, filename, file_content, fileLocation, optionalCheckingOptions);
+    const cfcResultObject = await checkFileContents(languageCode, filename, fileContent, fileLocation, optionalCheckingOptions);
     // console.log("checkFileContents() returned", resultObject.successList.length, "success message(s) and", resultObject.noticeList.length, "notice(s)");
     // for (const successEntry of resultObject.successList)
     //     console.log("  ", successEntry);
@@ -162,9 +162,9 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
       let repoFileContent;
       try {
         repoFileContent = await getFile_({ username, repository: repoName, path: thisFilepath, branch });
-        // console.log("Fetched file_content for", repoName, thisPath, typeof repoFileContent, repoFileContent.length);
+        // console.log("Fetched fileContent for", repoName, thisPath, typeof repoFileContent, repoFileContent.length);
       } catch (cRgfError) {
-        console.error("Failed to load", username, repoName, thisFilepath, branch, `${cRgfError}`);
+        console.error(`checkRepo(${username}, ${repoName}, ${branch}, ${givenLocation}, (fn), ${JSON.stringify(checkingOptions)})) failed to load`, thisFilepath, branch, `${cRgfError}`);
         addNoticePartial({ priority: 996, message: "Failed to load", details: `username=${username}`, bookID: ourBookID, filename: thisFilename, location: `${givenLocation} ${thisFilepath}: ${cRgfError}`, extra: repoName });
         return;
       }

@@ -133,6 +133,11 @@ async function getUnZippedFile(path) {
 // This is the function that we call the most from the outside
 export async function cachedGetFile({ username, repository, path, branch }) {
   // if (repository==='en_ta') console.log(`cachedGetFile(${username}, ${repository}, ${path}, ${branch})…`);
+  console.assert(typeof username === 'string' && username.length, `cachedGetFile: username parameter should be a string`);
+  console.assert(typeof repository === 'string' && repository.length, `cachedGetFile: repository parameter should be a string`);
+  console.assert(typeof path === 'string' && path.length, `cachedGetFile: path parameter should be a string`);
+  console.assert(typeof branch === 'string' && branch.length, `cachedGetFile: branch parameter should be a string`);
+
   const filePath = Path.join(username, repository, path, branch);
   let contents = await getUnZippedFile(filePath);
   if (contents) {

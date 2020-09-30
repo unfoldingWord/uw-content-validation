@@ -96,8 +96,12 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
 
 
     // Run a check through the noticeList to help discover any programming errors that need fixing
-    // This section may be commented out of production code
+    // This entire section may be commented out of production code
     if (givenNoticeObject.noticeList && givenNoticeObject.noticeList.length) {
+        const ALL_TSV_FIELDNAMES = ['Book', 'Chapter', 'Verse',
+            'ID', 'SupportReference', 'OrigQuote',
+            'Occurrence', 'GLQuote', 'OccurrenceNote',
+            'Reference', 'Tag', 'Quote', 'Annotation'];
         const numberStore = {}, duplicatePriorityList = [];
         for (const thisGivenNotice of standardisedNoticeList) {
             const thisPriority = thisGivenNotice.priority, thisMsg = thisGivenNotice.message;
@@ -119,7 +123,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 && !thisMsg.endsWith(' closing character (no matching opener)')
                 && !thisMsg.endsWith(' closing character doesn\'t match')
             ) {
-                console.log(`PROGRAMMING ERROR: priority ${thisPriority} has at least two different messages: '${oldMsg}' and '${thisMsg}'`);
+                console.error(`PROGRAMMING ERROR: priority ${thisPriority} has at least two different messages: '${oldMsg}' and '${thisMsg}'`);
                 duplicatePriorityList.push(thisPriority); // so that we only give the error once
             }
 
@@ -133,6 +137,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             }
             if (thisFilename) {
                 console.assert(thisFilename.indexOf(':') < 0 && thisFilename.indexOf('\\') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+                console.assert(ALL_TSV_FIELDNAMES.indexOf(thisFilename) < 0, `filename '${thisFilename}' contains a TSV fieldName!`);
                 // NOTE: Some OBS messages have to include part of the part in the 'filename' (to prevent ambiguity) so we don't disallow forward slash
                 if (!thisRepoName || !thisRepoName.endsWith('_obs'))
                     console.assert(thisFilename.indexOf('/') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
@@ -153,7 +158,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             if (thisLineNumber) {
                 console.assert(typeof thisLineNumber === 'number' && thisLineNumber > 0, `lineNumber '${thisLineNumber}' contains unexpected value in ${JSON.stringify(thisGivenNotice)}`);
                 // Note: lineNumber can occur in location, e.g., in 3 in '3JN' or 'Door43' so have to take extra care not to give false alarms
-                if (thisLocation && thisLineNumber > 4 && thisLineNumber!==43)
+                if (thisLocation && thisLineNumber > 4 && thisLineNumber !== 43)
                     // && (!thisGivenNotice.bookID || thisGivenNotice.bookID.indexOf(thisLineNumber + '') < 0)
                     console.assert(thisLocation.indexOf(thisLineNumber + '') < 0 && thisLocation.indexOf(thisLineNumber.toLocaleString()) < 0, `lineNumber might be repeated in location in ${JSON.stringify(thisGivenNotice)}`);
             }

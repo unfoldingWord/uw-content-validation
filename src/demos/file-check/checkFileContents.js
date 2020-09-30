@@ -2,9 +2,10 @@ import * as books from '../../core/books/books';
 import { checkUSFMText, checkMarkdownText, checkPlainText, checkYAMLText, checkManifestText, checkTN_TSVText } from '../../core';
 
 
-/*
-    checkFileContents
-*/
+// const CHECK_FILE_CONTENTS_VERSION_STRING = '0.2.1';
+
+
+/** */
 export async function checkFileContents(languageCode, filename, fileContent, givenLocation, checkingOptions) {
   // Determine the file type from the filename extension
   //  and return the results of checking that kind of file text
@@ -42,14 +43,18 @@ export async function checkFileContents(languageCode, filename, fileContent, giv
   else if (filename.toLowerCase().endsWith('.txt'))
     checkFileResult = checkPlainText(filename, fileContent, ourCFLocation, checkingOptions);
   else if (filename.toLowerCase() === 'manifest.yaml')
-    checkFileResult = checkManifestText(filename, fileContent, ourCFLocation, checkingOptions);
+    checkFileResult = checkManifestText('', fileContent, ourCFLocation, checkingOptions);
   else if (filename.toLowerCase().endsWith('.yaml'))
-    checkFileResult = checkYAMLText(filename, fileContent, ourCFLocation, checkingOptions);
+    checkFileResult = checkYAMLText('', fileContent, ourCFLocation, checkingOptions);
   else {
     checkFileResult = checkPlainText(filename, fileContent, ourCFLocation, checkingOptions);
     checkFileResult.noticeList.unshift({ priority: 995, message: "File extension is not recognized, so treated as plain text.", filename, location: filename });
   }
   // console.log(`checkFileContents got initial results with ${checkFileResult.successList.length} success message(s) and ${checkFileResult.noticeList.length} notice(s)`);
+
+  // Make sure that we have the filename in all of our notices (in case other files are being checked as well)
+  function addFilenameField(notice) { return { ...notice, filename }; }
+  checkFileResult.noticeList = checkFileResult.noticeList.map(addFilenameField);
 
   // Add some extra fields to our checkFileResult object
   //  in case we need this information again later
