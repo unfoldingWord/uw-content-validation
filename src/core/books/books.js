@@ -1,4 +1,4 @@
-const data = { "gen": {"id": "gen", "title": "Genesis", "usfm": "01-GEN", "testament": "old", "verseCount": 1533, "chapters": [31, 25, 24, 26, 32, 22, 24, 22, 29, 32, 32, 20, 18, 24, 21, 16, 27, 33, 38, 18, 34, 24, 20, 67, 34, 35, 46, 22, 35, 43, 55, 32, 20, 31, 29, 43, 36, 30, 23, 23, 57, 38, 34, 34, 28, 34, 31, 22, 33, 26]},
+const BibleBookData = { "gen": {"id": "gen", "title": "Genesis", "usfm": "01-GEN", "testament": "old", "verseCount": 1533, "chapters": [31, 25, 24, 26, 32, 22, 24, 22, 29, 32, 32, 20, 18, 24, 21, 16, 27, 33, 38, 18, 34, 24, 20, 67, 34, 35, 46, 22, 35, 43, 55, 32, 20, 31, 29, 43, 36, 30, 23, 23, 57, 38, 34, 34, 28, 34, 31, 22, 33, 26]},
 "exo": {"id": "exo", "title": "Exodus", "usfm": "02-EXO", "testament": "old", "verseCount": 1213, "chapters": [22, 25, 22, 31, 23, 30, 25, 32, 35, 29, 10, 51, 22, 31, 27, 36, 16, 27, 25, 26, 36, 31, 33, 18, 40, 37, 21, 43, 46, 38, 18, 35, 23, 35, 35, 38, 29, 31, 43, 38]},
 "lev": {"id": "lev", "title": "Leviticus", "usfm": "03-LEV", "testament": "old", "verseCount": 859, "chapters": [17, 16, 17, 35, 19, 30, 38, 36, 24, 20, 47, 8, 59, 57, 33, 34, 16, 30, 37, 27, 24, 33, 44, 23, 55, 46, 34]},
 "num": {"id": "num", "title": "Numbers", "usfm": "04-NUM", "testament": "old", "verseCount": 1288, "chapters": [54, 34, 51, 49, 31, 27, 89, 26, 23, 36, 35, 16, 33, 45, 41, 50, 13, 32, 22, 29, 35, 41, 30, 25, 18, 65, 23, 31, 40, 16, 54, 42, 56, 29, 34, 13]},
@@ -66,120 +66,7 @@ const data = { "gen": {"id": "gen", "title": "Genesis", "usfm": "01-GEN", "testa
 "rev": {"id": "rev", "title": "Revelation", "usfm": "67-REV", "testament": "new", "verseCount": 404, "chapters": [20, 29, 22, 11, 14, 17, 17, 13, 21, 11, 19, 17, 18, 20, 8, 21, 18, 24, 21, 15, 27, 21]}
 }
 
-//import data from './books.json';
-// import * as opt from './optimize'
-
-// export interface bookDataIF {
-//   "id";
-//   "title";
-//   "usfm";
-//   "testament";
-//   "verseCount": number;
-//   "chapters": number[];
-// }
-
-const extraBookList = ['FRT','BAK'];
-export const isValidBookID = (bookId) => {
-  return bookId.toLowerCase() in data || extraBookList.indexOf(bookId) >= 0;
-}
-export const isOptionalValidBookID = (bookId) => {
-  return !bookId || bookId.toLowerCase() in data || extraBookList.indexOf(bookId) >= 0;
-}
-export const isExtraBookID = (bookId) => {
-  return extraBookList.indexOf(bookId) >= 0;
-}
-
-
-export const usfmNumberName = (bookId) => {
-  try {return data[bookId.toLowerCase()].usfm;}
-  catch(err) {throw new Error(`usfmNumberName() given invalid bookId: '${bookId}'`);}
-}
-
-export const chaptersInBook = (bookId) => {
-  let chapters;
-  try {
-    chapters = data[bookId.toLowerCase()].chapters;
-  } catch (err) {
-    throw new Error(`chaptersInBook() given invalid bookId: '${bookId}'`);
-  }
-  if (chapters === undefined) {
-    throw new Error(`chaptersInBook(): Invalid bookId: '${bookId}'`);
-  }
-  return chapters;
-};
-
-export const versesInChapter = (bookId, chapter) => {
-  const verses = chaptersInBook(bookId)[chapter - 1];
-  if (verses === undefined) {
-    throw new Error(`versesInChapter(${bookId}) given invalid chapter: ${chapter}`);
-  }
-  return verses;
-};
-
-// export const bookData = (bookId) => {
-//   const _bookData: bookDataIF = data.filter(row => row.id === bookId)[0];
-//   return _bookData;
-// };
-
-export const testament = (bookId) => {
-  const _testament = data[bookId.toLowerCase()].testament;
-  return _testament;
-};
-
-// export const newTestament = () => {
-//   let list[] = [];
-//   for (const i=0; i < data.length; i++) {
-//     if ( data[i].testament === "new" ) {
-//       list.push( data[i].title )
-//     }
-//   }
-//   return list;
-// }
-
-// export const oldTestament = () => {
-//   let list[] = [];
-//   for (const i=0; i < data.length; i++) {
-//     if ( data[i].testament === "old" ) {
-//       list.push( data[i].title )
-//     }
-//   }
-//   return list;
-// }
-
-// export const bookDataTitles = () => {
-//   let list[] = [];
-//   for (const i=0; i < data.length; i++) {
-//       list.push( data[i].title )
-//   }
-//   return list;
-// }
-
-// export const titlesToBoolean = () => {
-//   let ob: opt.bpStateIF = {};
-//   let list = bookDataTitles();
-//   list.forEach((v,k) => {ob[v]= [false,false]});
-//   return ob;
-// }
-
-// export const bookIdByTitle = (title) => {
-//   for (const i=0; i < data.length; i++) {
-//     if ( data[i].title === title ) {
-//       return data[i].id;
-//     }
-//   }
-//   return "";
-// }
-
-export const bookTitleById = (id) => {
-  for (let i=0; i < data.length; i++) {
-    if ( data[i].id === id ) {
-      return data[i].title;
-    }
-  }
-  return "";
-}
-
-const oftenMissingList = [
+const oftenMissingBCVList = [
   // See https://en.wikipedia.org/wiki/List_of_New_Testament_verses_not_included_in_modern_English_translations
   ['NEH', 7, 68], // ?
   ['MAT', 16, 3],
@@ -216,8 +103,82 @@ const oftenMissingList = [
 ];
 
 
+// import * as opt from './optimize'
+
+// export interface bookDataIF {
+//   "id";
+//   "title";
+//   "usfm";
+//   "testament";
+//   "verseCount": number;
+//   "chapters": number[];
+// }
+
+const extraBookList = ['FRT','BAK'];
+export const isValidBookID = (bookId) => {
+  return bookId.toLowerCase() in BibleBookData || extraBookList.indexOf(bookId) >= 0;
+}
+export const isOptionalValidBookID = (bookId) => {
+  return !bookId || bookId.toLowerCase() in BibleBookData || extraBookList.indexOf(bookId) >= 0;
+}
+export const isExtraBookID = (bookId) => {
+  return extraBookList.indexOf(bookId) >= 0;
+}
+
+
+export const usfmNumberName = (bookId) => {
+  try {return BibleBookData[bookId.toLowerCase()].usfm;}
+  catch(err) {throw new Error(`usfmNumberName() given invalid bookId: '${bookId}'`);}
+}
+
+export const chaptersInBook = (bookId) => {
+  let chapters;
+  try {
+    chapters = BibleBookData[bookId.toLowerCase()].chapters;
+  } catch (err) {
+    throw new Error(`chaptersInBook() given invalid bookId: '${bookId}'`);
+  }
+  if (chapters === undefined) {
+    throw new Error(`chaptersInBook(): Invalid bookId: '${bookId}'`);
+  }
+  return chapters;
+};
+
+export const versesInChapter = (bookId, chapter) => {
+  const verses = chaptersInBook(bookId)[chapter - 1];
+  if (verses === undefined) {
+    throw new Error(`versesInChapter(${bookId}) given invalid chapter: ${chapter}`);
+  }
+  return verses;
+};
+
+export const testament = (bookId) => {
+  const _testament = BibleBookData[bookId.toLowerCase()].testament;
+  return _testament;
+};
+
+export function getEnglishBookName(bookId) {
+  return BibleBookData[bookId.toLowerCase()].title;
+}
+
+export function isGoodEnglishBookName(givenBookName) {
+  // console.log(`isGoodEnglishBookName(${givenBookName})…`);
+  const partialMatches = [];
+  const givenBookNameLower = givenBookName.toLowerCase();
+  for (const bk in BibleBookData) {
+    const thisBookName = BibleBookData[bk].title;
+    // console.log("thisBookName", thisBookName);
+    if (thisBookName===givenBookName) return true;
+    const thisBookNameLower = thisBookName.toLowerCase();
+    if (thisBookNameLower===givenBookNameLower) return 1;
+    if (thisBookNameLower.startsWith(givenBookNameLower)) partialMatches.push(thisBookName);
+  }
+  if (partialMatches.length === 1) return 2; // We got an unambiguous partial match, e.g., Gen for Genesis
+  return false;
+}
+
 export function isOftenMissing(bookID,C,V) {
   function matchBCV(entry) { return entry[0]===bookID && entry[1]===C && entry[2]===V; }
 
-  return oftenMissingList.find(matchBCV) !== undefined;
+  return oftenMissingBCVList.find(matchBCV) !== undefined;
 }

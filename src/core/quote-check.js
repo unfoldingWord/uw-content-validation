@@ -83,17 +83,17 @@ export async function checkOriginalLanguageQuote(fieldName, fieldText, bookID, C
         if (originalLanguageRepoCode === 'UHB') {
             try {
                 originalUSFM = await getFile_({ username, repository: originalLanguageRepoName, path: filename, branch });
-                // console.log("Fetched file_content for", repoName, filename, typeof originalUSFM, originalUSFM.length);
+                // console.log("Fetched fileContent for", repoName, filename, typeof originalUSFM, originalUSFM.length);
             } catch (gcUHBerror) {
-                console.error("Failed to load", username, originalLanguageRepoCode, filename, branch, gcUHBerror.message);
+                console.error(`getPassage(${bookID}, ${C}:${V}, ${JSON.stringify(optionalCheckingOptions)}) failed to load UHB`, username, originalLanguageRepoCode, filename, branch, gcUHBerror.message);
                 addNotice({ priority: 601, message: "Failed to load", filename, location: `${ourLocation}: ${gcUHBerror}`, extra: originalLanguageRepoName });
             }
         } else if (originalLanguageRepoCode === 'UGNT') {
             try {
                 originalUSFM = await getFile_({ username, repository: originalLanguageRepoName, path: filename, branch });
-                // console.log("Fetched file_content for", repoName, filename, typeof originalUSFM, originalUSFM.length);
+                // console.log("Fetched fileContent for", repoName, filename, typeof originalUSFM, originalUSFM.length);
             } catch (gcUGNTerror) {
-                console.error("Failed to load", username, originalLanguageRepoCode, filename, branch, gcUGNTerror.message);
+                console.error(`getPassage(${bookID}, ${C}:${V}, ${JSON.stringify(optionalCheckingOptions)}) failed to load UGNT`, username, originalLanguageRepoCode, filename, branch, gcUGNTerror.message);
                 addNotice({ priority: 601, message: "Failed to load", filename, location: `${ourLocation}: ${gcUGNTerror}`, extra: originalLanguageRepoName });
             }
         }

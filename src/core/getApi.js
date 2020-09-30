@@ -44,7 +44,7 @@ const Door43Api = setup({
   baseURL: baseURL,
   cache: {
     store: cacheStore,
-    maxAge: 4 * 60 * 60 * 1000, // 4 hours (unless they manually clear the cache)
+    maxAge: 1 * 60 * 60 * 1000, // 1 hour (unless they manually clear the cache)
     exclude: { query: false },
     key: req => {
       // if (req.params) debugger
@@ -57,17 +57,17 @@ const Door43Api = setup({
 
 
 /**
- * clear all the stores
+ * Clear all the localforage.INDEXEDDB stores
  * @return {Promise<void>}
  */
 export async function clearCaches() {
-  console.log("Clearing CV localforage.INDEXEDDB zipStore and cacheStore caches…");
+  console.log("Clearing all four CV localforage.INDEXEDDB caches…");
   // const tasks = [zipStore, cacheStore].map(localforage.clear);
   // const results = await Promise.all(tasks);
   // results.forEach(x => console.log("Done it", x));
   await failedStore.clear();
   await zipStore.clear();
-  await cacheStore.clear(); // This should clear the Axion Door43Api cache also hopefully
+  await cacheStore.clear(); // This is the one used by the Axion Door43Api
   await unzipStore.clear();
 }
 
@@ -133,6 +133,11 @@ async function getUnZippedFile(path) {
 // This is the function that we call the most from the outside
 export async function cachedGetFile({ username, repository, path, branch }) {
   // if (repository==='en_ta') console.log(`cachedGetFile(${username}, ${repository}, ${path}, ${branch})…`);
+  console.assert(typeof username === 'string' && username.length, `cachedGetFile: username parameter should be a string`);
+  console.assert(typeof repository === 'string' && repository.length, `cachedGetFile: repository parameter should be a string`);
+  console.assert(typeof path === 'string' && path.length, `cachedGetFile: path parameter should be a string`);
+  console.assert(typeof branch === 'string' && branch.length, `cachedGetFile: branch parameter should be a string`);
+
   const filePath = Path.join(username, repository, path, branch);
   let contents = await getUnZippedFile(filePath);
   if (contents) {
@@ -470,7 +475,7 @@ async function cachedGetFileUsingPartialURL({ uri, params }) {
   // console.log(`cachedGetFileUsingPartialURL(${uri}, ${JSON.stringify(params)})…`);
   // console.log(`  get querying: ${baseURL+uri}`);
   const response = await Door43Api.get(baseURL + uri, { params });
-  if (response.request.fromCache !== true) console.log(`  Api downloaded Door43 ${uri}`);
+  if (response.request.fromCache !== true) console.log(`  Door43Api downloaded Door43 ${uri}`);
   // console.log(`  cachedGetFileUsingPartialURL returning: ${JSON.stringify(response.data)}`);
   return response.data;
 };
@@ -478,7 +483,7 @@ async function cachedGetFileUsingPartialURL({ uri, params }) {
 export async function cachedGetFileUsingFullURL({ uri, params }) {
   // console.log(`cachedGetFileUsingFullURL(${uri}, ${params})…`);
   const response = await Door43Api.get(uri, { params });
-  if (response.request.fromCache !== true) console.log(`  Api downloaded ${uri}`);
+  if (response.request.fromCache !== true) console.log(`  Door43Api downloaded ${uri}`);
   // console.log(`  cachedGetFileUsingFullURL returning: ${response.data}`);
   return response.data;
 };

@@ -99,7 +99,10 @@ export function checkTextField(fieldName, fieldText, allowedLinks, optionalField
 
     if (fieldText[0] === ' ') {
         const extract = fieldText.substring(0, extractLength).replace(/ /g, '␣') + (fieldText.length > extractLength ? '…' : '');
-        addNoticePartial({ priority: 106, message: `Unexpected leading space${fieldText[1] === ' ' ? "s" : ""}`, characterIndex: 0, extract, location: ourLocation });
+        if (fieldText[1] === ' ') // spaces plural
+            addNoticePartial({ priority: 110, message: `Unexpected leading spaces`, characterIndex: 0, extract, location: ourLocation });
+        else
+            addNoticePartial({ priority: 109, message: `Unexpected leading space`, characterIndex: 0, extract, location: ourLocation });
     }
 
     const fieldTextLower = fieldText.toLowerCase();

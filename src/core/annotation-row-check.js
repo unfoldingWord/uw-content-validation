@@ -1,7 +1,7 @@
 import * as books from './books/books';
 import { checkTextField } from './field-text-check';
 import { checkMarkdownText } from './markdown-text-check';
-import { checkTAReference } from './ta-reference-check';
+import { checkSupportReferenceInTA } from './ta-reference-check';
 import { checkTNLinksToOutside } from './tn-links-check';
 import { checkOriginalLanguageQuote } from './quote-check';
 
@@ -41,7 +41,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
 
         Returns an object containing the noticeList.
     */
-    // console.log(`checkAnnotationTSVDataRow(${annotationType}, ${line}, ${bookID} ${C}:${V} ${givenRowLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
+    // console.log(`checkAnnotationTSVDataRow(${languageCode}, ${annotationType}, ${line}, ${bookID} ${C}:${V} ${givenRowLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
     console.assert(annotationType !== undefined, "checkAnnotationTSVDataRow: 'annotationType' parameter should be defined");
     console.assert(typeof annotationType === 'string', `checkAnnotationTSVDataRow: 'annotationType' parameter should be a string not a '${typeof annotationType}'`);
     console.assert(annotationType.length === 2 || annotationType.length === 3, `checkAnnotationTSVDataRow: 'annotationType' parameter should be 2-3 characters long not ${annotationType.length}`);
@@ -180,21 +180,21 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
     // end of ourCheckTextField function
 
 
-    async function ourCheckTAReference(rowID, fieldName, taLinkText, rowLocation, optionalCheckingOptions) {
+    async function ourCheckSupportReferenceInTA(rowID, fieldName, taLinkText, rowLocation, optionalCheckingOptions) {
         // Checks that the TA reference can be found
 
         // Updates the global list of notices
 
-        // console.log(`checkAnnotationTSVDataRow ourCheckTAReference(${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
-        console.assert(rowID !== undefined, "checkAnnotationTSVDataRow ourCheckTAReference: 'rowID' parameter should be defined");
-        console.assert(typeof rowID === 'string', `checkAnnotationTSVDataRow ourCheckTAReference: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        console.assert(fieldName !== undefined, "checkAnnotationTSVDataRow ourCheckTAReference: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName === 'string', `checkAnnotationTSVDataRow ourCheckTAReference: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        console.assert(taLinkText !== undefined, "checkAnnotationTSVDataRow ourCheckTAReference: 'taLinkText' parameter should be defined");
-        console.assert(typeof taLinkText === 'string', `checkAnnotationTSVDataRow ourCheckTAReference: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
-        console.assert(rowLocation.indexOf(fieldName) < 0, `checkAnnotationTSVDataRow ourCheckTAReference: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
+        // console.log(`checkAnnotationTSVDataRow ourCheckSupportReferenceInTA(${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
+        console.assert(rowID !== undefined, "checkAnnotationTSVDataRow ourCheckSupportReferenceInTA: 'rowID' parameter should be defined");
+        console.assert(typeof rowID === 'string', `checkAnnotationTSVDataRow ourCheckSupportReferenceInTA: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+        console.assert(fieldName !== undefined, "checkAnnotationTSVDataRow ourCheckSupportReferenceInTA: 'fieldName' parameter should be defined");
+        console.assert(typeof fieldName === 'string', `checkAnnotationTSVDataRow ourCheckSupportReferenceInTA: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        console.assert(taLinkText !== undefined, "checkAnnotationTSVDataRow ourCheckSupportReferenceInTA: 'taLinkText' parameter should be defined");
+        console.assert(typeof taLinkText === 'string', `checkAnnotationTSVDataRow ourCheckSupportReferenceInTA: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
+        console.assert(rowLocation.indexOf(fieldName) < 0, `checkAnnotationTSVDataRow ourCheckSupportReferenceInTA: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const coqResultObject = await checkTAReference(fieldName, taLinkText, rowLocation, { ...optionalCheckingOptions, taRepoLanguageCode: languageCode });
+        const coqResultObject = await checkSupportReferenceInTA(fieldName, taLinkText, rowLocation, { ...optionalCheckingOptions, taRepoLanguageCode: languageCode });
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -202,11 +202,11 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of coqResultObject.noticeList) {
-            // console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckTAReference notice length=${Object.keys(noticeEntry).length}`);
+            // console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckSupportReferenceInTA notice length=${Object.keys(noticeEntry).length}`);
             addNoticePartial({ ...noticeEntry, rowID, fieldName });
         }
     }
-    // end of ourCheckTAReference function
+    // end of ourCheckSupportReferenceInTA function
 
     async function ourCheckTNOriginalLanguageQuote(rowID, fieldName, fieldText, rowLocation, optionalCheckingOptions) {
         // Checks that the Hebrew/Greek quote can be found in the original texts
@@ -242,7 +242,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
 
         // Updates the global list of notices
 
-        // console.log(`checkAnnotationTSVDataRow ourCheckTNLinksToOutside(${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
+        // console.log(`checkAnnotationTSVDataRow ourCheckTNLinksToOutside(${rowID}, ${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
         console.assert(rowID !== undefined, "checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'rowID' parameter should be defined");
         console.assert(typeof rowID === 'string', `checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'rowID' parameter should be a string not a '${typeof rowID}'`);
         console.assert(fieldName !== undefined, "checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'fieldName' parameter should be defined");
@@ -250,7 +250,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         console.assert(taLinkText !== undefined, "checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'taLinkText' parameter should be defined");
         console.assert(typeof taLinkText === 'string', `checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
 
-        const coqResultObject = await checkTNLinksToOutside(bookID, fieldName, taLinkText, rowLocation, optionalCheckingOptions);
+        const coqResultObject = await checkTNLinksToOutside(bookID, fieldName, taLinkText, rowLocation, { ...optionalCheckingOptions, defaultLanguageCode: languageCode });
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -376,7 +376,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
 
         if (supportReference.length) { // need to check UTN against UTA
             ourCheckTextField(rowID, 'SupportReference', supportReference, true, ourRowLocation, optionalCheckingOptions);
-            await ourCheckTAReference(rowID, 'SupportReference', supportReference, ourRowLocation, optionalCheckingOptions);
+            await ourCheckSupportReferenceInTA(rowID, 'SupportReference', supportReference, ourRowLocation, optionalCheckingOptions);
         }
         // else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
         //     addNoticePartial({priority:277, message:"Missing SupportReference field", location:ourRowLocation});

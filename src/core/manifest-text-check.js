@@ -14,7 +14,7 @@ export function checkManifestText(textName, manifestText, givenLocation, optiona
 
     Returns a result object containing a successList and a noticeList
     */
-    // console.log(`checkManifestText(${textName}, ${manifestText.length}, ${givenLocation})…`);
+    // console.log(`checkManifestText(${textName}, ${manifestText.length} chars, ${givenLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     if (textName) ourLocation = ` in ${textName}${ourLocation}`;
@@ -110,6 +110,23 @@ export function checkManifestText(textName, manifestText, givenLocation, optiona
             addNotice9({ priority: 929, message: "'projects' key is missing", location: ourLocation });
         if (formDataKeys.indexOf('checking') < 0)
             addNotice9({ priority: 148, message: "'checking' key is missing", location: ourLocation });
+
+        // Check Dublin Core stuff
+        // const DublinCoreData = formData.dublin_core
+        // console.log("checkManifestText DublinCoreData", JSON.stringify(DublinCoreData));
+
+        // TODO: We could add a lot more checking here
+        // for (const mainKey in formData) {
+        //     console.log("mainKey", typeof mainKey, mainKey);
+        //     const mainSection = formData[mainKey];
+        //     console.log("mainSection", typeof mainSection, JSON.stringify(mainSection));
+        //     for (const key2 in mainSection) {
+        //         console.log(mainKey, "key2", typeof key2, key2);
+        //         const section2 = mainSection[key2];
+        //         console.log(mainKey, "section2", typeof section2, JSON.stringify(section2));
+
+        //     }
+        // }
     }
 
     // addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'}${ourLocation}.`);

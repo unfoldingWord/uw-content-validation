@@ -1,7 +1,7 @@
 import { checkTextField } from './field-text-check';
 
 
-const MARKDOWN_VALIDATOR_VERSION_STRING = '0.3.1';
+const MARKDOWN_VALIDATOR_VERSION_STRING = '0.3.2';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -38,21 +38,21 @@ export function checkMarkdownText(textName, markdownText, givenLocation, optiona
         // console.log("checkMarkdownText success: " + successString);
         result.successList.push(successString);
     }
-    function addNotice6(noticeObject) {
-        // console.log(`checkMarkdownText addNotice6: (priority=${noticeObject.priority}) ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? " " + extract : ""}${noticeObject.location}`);
-        console.assert(noticeObject.priority !== undefined, "cMdT addNotice6: 'priority' parameter should be defined");
-        console.assert(typeof noticeObject.priority === 'number', `cMdT addNotice6: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        console.assert(noticeObject.message !== undefined, "cMdT addNotice6: 'message' parameter should be defined");
-        console.assert(typeof noticeObject.message === 'string', `cMdT addNotice6: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // console.assert(characterIndex !== undefined, "cMdT addNotice6: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `cMdT addNotice6: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // console.assert(extract !== undefined, "cMdT addNotice6: 'extract' parameter should be defined");
-        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cMdT addNotice6: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
-        console.assert(noticeObject.location !== undefined, "cMdT addNotice6: 'location' parameter should be defined");
-        console.assert(typeof noticeObject.location === 'string', `cMdT addNotice6: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
-        result.noticeList.push({ ...noticeObject, filename: textName });
+    function addNotice(noticeObject) {
+        // console.log(`checkMarkdownText addNotice: (priority=${noticeObject.priority}) ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? " " + extract : ""}${noticeObject.location}`);
+        console.assert(noticeObject.priority !== undefined, "cMdT addNotice: 'priority' parameter should be defined");
+        console.assert(typeof noticeObject.priority === 'number', `cMdT addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        console.assert(noticeObject.message !== undefined, "cMdT addNotice: 'message' parameter should be defined");
+        console.assert(typeof noticeObject.message === 'string', `cMdT addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+        // console.assert(characterIndex !== undefined, "cMdT addNotice: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `cMdT addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        // console.assert(extract !== undefined, "cMdT addNotice: 'extract' parameter should be defined");
+        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cMdT addNotice: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        console.assert(noticeObject.location !== undefined, "cMdT addNotice: 'location' parameter should be defined");
+        console.assert(typeof noticeObject.location === 'string', `cMdT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        result.noticeList.push(noticeObject); // Used to have filename: textName, but that isn't always a filename !!!
     }
-    // end of addNotice6 function
+    // end of addNotice function
 
     function ourCheckTextField(lineNumber, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
         /**
@@ -80,14 +80,14 @@ export function checkMarkdownText(textName, markdownText, givenLocation, optiona
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
         // result.noticeList = result.noticeList.concat(dbtcResultObject.noticeList);
-        // If we need to put everything through addNotice6, e.g., for debugging or filtering
+        // If we need to put everything through addNotice, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of dbtcResultObject.noticeList) {
             // console.assert(Object.keys(noticeEntry).length === 5, `MD ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
             if (!noticeEntry.message.startsWith("Unexpected doubled * characters") // 577 Markdown allows this
                 && !noticeEntry.message.startsWith("Unexpected * character after space") // 191
             )
-                addNotice6({ ...noticeEntry, lineNumber });
+                addNotice({ ...noticeEntry, lineNumber });
         }
     }
     // end of ourCheckTextField function
@@ -136,14 +136,14 @@ export function checkMarkdownText(textName, markdownText, givenLocation, optiona
             const thisHeaderLevel = line.match(/^#*/)[0].length;
             // console.log(`Got thisHeaderLevel=${thisHeaderLevel} for ${line}${atString}`);
             if (thisHeaderLevel > headerLevel + 1)
-                addNotice6({ priority: 172, message: "Header levels should only increment by one", lineNumber: n, characterIndex: 0, location: ourLocation });
+                addNotice({ priority: 172, message: "Header levels should only increment by one", lineNumber: n, characterIndex: 0, location: ourLocation });
             if (thisHeaderLevel > 0)
                 headerLevel = thisHeaderLevel;
 
             numLeadingSpaces = line.match(/^ */)[0].length;
             // console.log(`Got numLeadingSpaces=${numLeadingSpaces} for ${line}${atString}`);
             if (numLeadingSpaces && lastNumLeadingSpaces && numLeadingSpaces !== lastNumLeadingSpaces)
-                addNotice6({ priority: 472, message: "Nesting seems confused", lineNumber: n, characterIndex: 0, location: ourLocation });
+                addNotice({ priority: 472, message: "Nesting seems confused", lineNumber: n, characterIndex: 0, location: ourLocation });
 
             checkMarkdownLineContents(n, line, ourLocation);
         } else {

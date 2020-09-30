@@ -14,7 +14,7 @@ Got 212 notices:
   991, "Unresolved GIT conflict", characterIndex, extract, location: ourLocation
   988, `Wrong number of tabbed fields (expected $NUM_EXPECTED_TN_TSV_FIELDS)`, extract: `Found $fields.length field$fields.length === 1 ? '' : 's'`, lineNumber: n + 1, location: ourLocation
   988, `Wrong number of tabbed fields (expected $NUM_EXPECTED_ANNOTATION_TSV_FIELDS)`, extract: `Found $fields.length field$fields.length === 1 ? '' : 's'`, lineNumber: n + 1, location: ourLocation
-  `"`.indexOf(line[0]) < 0 ? 980 : 280, C, V, "Expected line to start with backslash", lineNumber: n, characterIndex: 0, extract: line[0], location: ourLocation
+  `"`.indexOf(line[0]) < 0 ? 880 : 280, C, V, "Expected line to start with backslash", lineNumber: n, characterIndex: 0, extract: line[0], location: ourLocation
   987, C, V, "Expected \\id line to start with book identifier", lineNumber: n, characterIndex: 4, extract, location: ourLocation
   979, "Invalid book identifier passed to checkTN_TSVDataRow", location: ` '$bookID' in first parameter: $tlcNCerror`
   979, "Invalid book identifier passed to checkTNLinksToOutside", location: ` '$bookID' in first parameter: $tnlcError`
