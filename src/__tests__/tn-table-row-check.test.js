@@ -312,7 +312,7 @@ describe('checkTN_TSVDataRow() - ', () => {
   it('should find invalid SupportReference and missing quotes', async() => {
     const chosenLine = "GEN\t2\t3\tw3r5\tLaugh\t\t1\t\tNote5";
     const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','2','3', 'that was supplied', optionalCheckingOptions);
-    expect(rawResults.noticeList.length).toEqual(3);
+    expect(rawResults.noticeList.length).toEqual(2);
     expect(rawResults).toMatchSnapshot();
   });
 
@@ -325,7 +325,7 @@ describe('checkTN_TSVDataRow() - ', () => {
   it('should find invalid Book ID, chapter number, ID, SupportReference, quotes, OccurrenceNote', async() => {
     const chosenLine = "GIN\t200\t9\tW-3r5\tLaugh\t\t17\tBad ellipse...\t<br>Boo hoo,,<br> lost my shoe !";
     const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
-    expect(rawResults.noticeList.length).toEqual(14);
+    expect(rawResults.noticeList.length).toEqual(13);
     expect(rawResults).toMatchSnapshot();
   });
 
