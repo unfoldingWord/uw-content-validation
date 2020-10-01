@@ -98,14 +98,14 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
         const getFile_ = (optionalCheckingOptions && optionalCheckingOptions.getFile) ? optionalCheckingOptions.getFile : cachedGetFile;
         taFileContent = await getFile_({ username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch });
         // console.log("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
+        if (!taFileContent)
+            addNoticePartial({ priority: 889, message: `Unable to find ${fieldName} TA link`, extract: fieldText, location: `${ourLocation} ${filepath}` });
+        else if (taFileContent.length < 10)
+            addNoticePartial({ priority: 887, message: `Linked ${fieldName} TA article seems empty`, extract: fieldText, location: `${ourLocation} ${filepath}` });
     } catch (trcGCerror) {
         console.error("checkSupportReferenceInTA() failed to load", taRepoUsername, taRepoName, filepath, taRepoBranch, trcGCerror.message);
         addNoticePartial({ priority: 888, message: `Error loading ${fieldName} TA link`, extract: fieldText, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
     }
-    if (!taFileContent)
-        addNoticePartial({ priority: 889, message: `Unable to find ${fieldName} TA link`, extract: fieldText, location: `${ourLocation} ${filepath}` });
-    else if (taFileContent.length < 10)
-        addNoticePartial({ priority: 887, message: `Linked ${fieldName} TA article seems empty`, extract: fieldText, location: `${ourLocation} ${filepath}` });
 
     // console.log(`checkSupportReferenceInTA is returning ${JSON.stringify(ctarResult)}`);
     return ctarResult;

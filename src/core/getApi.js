@@ -394,31 +394,32 @@ export async function preloadReposIfNecessary(username, languageCode, bookIDList
 async function cachedFetchFileFromServer({ username, repository, path, branch = 'master' }) {
   // console.log(`cachedFetchFileFromServer(${username}, ${repository}, ${path}, ${branch})…`);
   // TODO: Check how slow this next call is -- can it be avoided or cached?
-  const repoExistsOnDoor43 = await repositoryExistsOnDoor43({ username, repository });
-  let uri;
-  if (repoExistsOnDoor43) {
-    uri = Path.join(username, repository, 'raw/branch', branch, path);
-    const failMessage = await failedStore.getItem(uri.toLowerCase());
-    if (failMessage) {
-      // console.log(`  cachedFetchFileFromServer failed previously for ${uri}: ${failMessage}`);
-      return null;
-    }
-    try {
-      // console.log("URI=",uri);
-      const data = await cachedGetFileUsingPartialURL({ uri });
-      // console.log("Got data", data);
-      return data;
-    }
-    catch (fffsError) {
-      console.error(`cachedFetchFileFromServer could not fetch ${username} ${repository} ${branch} ${path}: ${fffsError}`)
-      /* await */ failedStore.setItem(uri.toLowerCase(), fffsError.message);
-      return null;
-    }
-  } else {
-    console.error(`cachedFetchFileFromServer repo ${username} '${repository}' does not exist!`);
-    /* await */ failedStore.setItem(uri.toLowerCase(), `Repo '${repository}' does not exist!`);
+  // RJH removed this 2Oct2020 -- what's the point -- it just slows things down --
+  //      if it needs to be checked, should be checked before this point
+  // const repoExistsOnDoor43 = await repositoryExistsOnDoor43({ username, repository });
+  // let uri;
+  const uri = Path.join(username, repository, 'raw/branch', branch, path);
+  const failMessage = await failedStore.getItem(uri.toLowerCase());
+  if (failMessage) {
+    // console.log(`  cachedFetchFileFromServer failed previously for ${uri}: ${failMessage}`);
     return null;
   }
+  try {
+    // console.log("URI=",uri);
+    const data = await cachedGetFileUsingPartialURL({ uri });
+    // console.log("Got data", data);
+    return data;
+  }
+  catch (fffsError) {
+    console.error(`cachedFetchFileFromServer could not fetch ${username} ${repository} ${branch} ${path}: ${fffsError}`)
+      /* await */ failedStore.setItem(uri.toLowerCase(), fffsError.message);
+    return null;
+  }
+  // } else { // ! repoExistsOnDoor43
+  //   console.error(`cachedFetchFileFromServer repo ${username} '${repository}' does not exist!`);
+  //   /* await */ failedStore.setItem(uri.toLowerCase(), `Repo '${repository}' does not exist!`);
+  //   return null;
+  // }
 };
 
 
@@ -452,22 +453,46 @@ async function getUID({ username }) {
   // console.log(`  getUID returning: ${uid}`);
   return uid;
 }
-async function repositoryExistsOnDoor43({ username, repository }) {
+
+export async function repositoryExistsOnDoor43({ username, repository }) {
   // console.log(`repositoryExistsOnDoor43(${username}, ${repository})…`);
-  const uid = await getUID({ username });
+  let uid;
+  try {
+    uid = await getUID({ username });
+  } catch (uidError) {
+    console.error(`repositoryExistsOnDoor43(${username}, ${repository}) - invalid username`, uidError.message);
+    return false;
+  }
   // console.log(`repositoryExistsOnDoor43 uid=${uid}`);
   // Default limit is 10 -- way too small
   const params = { q: repository, limit: 500, uid }; // Documentation says limit is 50, but larger numbers seem to work ok
-  // console.log(`repositoryExistsOnDoor43 params=${JSON.stringify(params)}`);
   const uri = Path.join(apiPath, 'repos', `search`);
   // console.log(`repositoryExistsOnDoor43 uri=${uri}`);
-  const { data: repos } = await cachedGetFileUsingPartialURL({ uri, params });
-  // console.log(`repositoryExistsOnDoor43 repos (${repos.length})=${repos}`);
-  // for (const thisRepo of repos) console.log(`  thisRepo (${JSON.stringify(Object.keys(thisRepo))}) =${JSON.stringify(thisRepo.name)}`);
-  const repo = repos.filter(repo => repo.name === repository)[0];
-  // console.log(`repositoryExistsOnDoor43 repo=${repo}`);
-  // console.log(`  repositoryExistsOnDoor43 returning: ${!!repo}`);
-  return !!repo;
+  let retrievedRepoList;
+  try {
+    const { data: retrievedRepoListData } = await cachedGetFileUsingPartialURL({ uri, params });
+    retrievedRepoList = retrievedRepoListData;
+  }
+  catch (rEE) {
+    console.error(`repositoryExistsOnDoor43(${username}, ${repository}) - error fetching repo list`, rEE.message);
+    return false;
+  }
+  // console.log("retrievedRepoList.length", retrievedRepoList.length);
+  if (retrievedRepoList.length < 1) {
+    console.log(`repositoryExistsOnDoor43(${username}, ${repository}) - no repos found`, retrievedRepoList);
+    return false;
+  }
+  // console.log(`repositoryExistsOnDoor43 retrievedRepoList (${retrievedRepoList.length})=${JSON.stringify(retrievedRepoList)}`);
+  // for (const thisRepo of retrievedRepoList) console.log(`  thisRepo (${JSON.stringify(Object.keys(thisRepo))}) =${JSON.stringify(thisRepo.name)}`);
+  const desiredMatch = `${username}/${repository}`.toLowerCase();
+  const filteredRepoList = retrievedRepoList.filter(repo => repo.full_name.toLowerCase() === desiredMatch);
+  if (filteredRepoList.length < 1) {
+    console.log(`repositoryExistsOnDoor43(${username}, ${repository}) - repo not found`, retrievedRepoList.length, filteredRepoList.length);
+    return false;
+  }
+  // const foundRepo = filteredRepoList[0];
+  // console.log(`repositoryExistsOnDoor43 foundRepo=${JSON.stringify(foundRepo)}`);
+  return true;
 };
 
 
@@ -526,11 +551,13 @@ export async function cachedGetRepositoryZipFile({ username, repository, branch 
 
 async function downloadRepositoryZipFile({ username, repository, branch }) {
   console.log(`downloadRepositoryZipFile(${username}, ${repository}, ${branch})…`);
-  const repoExists = await repositoryExistsOnDoor43({ username, repository });
-  if (!repoExists) {
-    console.error(`downloadRepositoryZipFile(${username}, ${repository}, ${branch}) -- repo doesn't even exist`);
-    return null;
-  }
+  // RJH removed this 2Oct2020 -- what's the point -- it just slows things down --
+  //      if it needs to be checked, should be checked before this point
+  // const repoExists = await repositoryExistsOnDoor43({ username, repository });
+  // if (!repoExists) {
+  //   console.error(`downloadRepositoryZipFile(${username}, ${repository}, ${branch}) -- repo doesn't even exist`);
+  //   return null;
+  // }
 
   // Template is https://git.door43.org/{username}/{repository}/archive/{branch}.zip
   const uri = zipUri({ username, repository, branch });
