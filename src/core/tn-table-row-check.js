@@ -373,8 +373,12 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         }
 
         if (supportReference.length) { // need to check TN against TA
-            ourCheckTextField(rowID, 'SupportReference', supportReference, true, ourRowLocation, optionalCheckingOptions);
-            await ourCheckSupportReferenceInTA(rowID, 'SupportReference', supportReference, ourRowLocation, optionalCheckingOptions);
+            if (isWhitespace(occurrenceNote))
+                addNoticePartial({ priority: 374, message: "Field is only whitespace", fieldName: 'SupportReference', rowID, location: ourRowLocation });
+            else { // More than just whitespace
+                ourCheckTextField(rowID, 'SupportReference', supportReference, true, ourRowLocation, optionalCheckingOptions);
+                await ourCheckSupportReferenceInTA(rowID, 'SupportReference', supportReference, ourRowLocation, optionalCheckingOptions);
+            }
         }
         // // TODO: Check if this is really required????
         // else if (/^\d+$/.test(C) && /^\d+$/.test(V)) // C:V are both digits
@@ -411,7 +415,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
 
         if (occurrenceNote.length)
             if (isWhitespace(occurrenceNote))
-                addNoticePartial({ priority: 374, message: "OccurrenceNote field is only whitespace", rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 374, message: "Field is only whitespace", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation });
             else { // More than just whitespace
                 ourMarkdownTextChecks(rowID, 'OccurrenceNote', occurrenceNote, true, ourRowLocation, optionalCheckingOptions);
                 await ourCheckTNLinksToOutside(rowID, 'OccurrenceNote', occurrenceNote, ourRowLocation, linkCheckingOptions);
