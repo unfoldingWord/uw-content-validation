@@ -373,7 +373,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         }
 
         if (supportReference.length) { // need to check TN against TA
-            if (isWhitespace(occurrenceNote))
+            if (isWhitespace(supportReference))
                 addNoticePartial({ priority: 374, message: "Field is only whitespace", fieldName: 'SupportReference', rowID, location: ourRowLocation });
             else { // More than just whitespace
                 ourCheckTextField(rowID, 'SupportReference', supportReference, true, ourRowLocation, optionalCheckingOptions);
