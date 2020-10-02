@@ -374,6 +374,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       if (numCheckedCharacters > 0) {
         checkedFileCount += 1;
         checkedFilenames.push('manifest.yaml');
+        checkedFilenameExtensions.add('yaml');
         totalCheckedSize += numCheckedCharacters;
         addSuccessMessage(`Checked ${repoName} manifest file`);
       }

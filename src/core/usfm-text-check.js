@@ -167,6 +167,8 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cUSFM addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "cUSFM addNoticePartial: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `cUSFM addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+
+        console.assert(noticeObject.message.indexOf('Mismatched {}') < 0, `checkUSFMText addNoticePartial: got bad notice: ${JSON.stringify(noticeObject)}`);
         result.noticeList.push({ ...noticeObject, bookID, filename });
     }
 
@@ -409,17 +411,17 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
     // end of CVCheck function
 
 
+    /**
+    * @description - checks the given text field and processes the returned results
+    * @param {String} C - chapter number of the text being checked
+    * @param {String} V - verse number of the text being checked
+    * @param {String} fieldName - name of the field being checked
+    * @param {String} fieldText - the actual text of the field being checked
+    * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
+    * @param {String} fieldLocation - description of where the field is located
+    * @param {Object} optionalCheckingOptions - parameters that might affect the check
+    */
     function ourCheckTextField(lineNumber, C, V, fieldName, fieldText, allowedLinks, fieldLocation, optionalCheckingOptions) {
-        /**
-        * @description - checks the given text field and processes the returned results
-        * @param {String} C - chapter number of the text being checked
-        * @param {String} V - verse number of the text being checked
-        * @param {String} fieldName - name of the field being checked
-        * @param {String} fieldText - the actual text of the field being checked
-        * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
-        * @param {String} fieldLocation - description of where the field is located
-        * @param {Object} optionalCheckingOptions - parameters that might affect the check
-        */
         // Does basic checks for small errors like leading/trailing spaces, etc.
 
         // We assume that checking for compulsory fields is done elsewhere
@@ -483,6 +485,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
             console.assert(Object.keys(noticeEntry).length >= 5, `USFM ourBasicFileChecks notice length=${Object.keys(noticeEntry).length}`);
             if (!noticeEntry.message.startsWith("Mismatched () characters") // 663 Mismatched left/right chars -- suppress these misleading warnings coz open quote can occur in one verse and close in another
                 && !noticeEntry.message.startsWith("Mismatched [] characters")
+                && !noticeEntry.message.startsWith("Mismatched {} characters") // Start/end of implied text can be on different lines
                 && !noticeEntry.message.startsWith("Mismatched “” characters")
                 && !noticeEntry.message.startsWith("Mismatched «» characters")
                 && (!noticeEntry.message.startsWith("Unexpected space after | character") || fileText.indexOf('zaln-s') < 0) // 192 inside \zaln-s fields
