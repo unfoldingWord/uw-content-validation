@@ -239,6 +239,13 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   // end of ourCheckBPFileContents function
 
 
+  /**
+   *
+   * @param {string} repoCode, e.g., TA
+   * @param {string} repoName, e.g., en_ta
+   * @param {string} manifestLocation
+   * @param {Object} optionalCheckingOptions
+   */
   async function ourCheckManifest(repoCode, repoName, manifestLocation, optionalCheckingOptions) {
     // console.log(`checkBookPackage ourCheckManifest(${repoCode}, ${repoName}, ${manifestLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
     // Updates the global list of notices
@@ -258,7 +265,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     }
     if (manifestFileContent) {
       const cmtResultObject = checkManifestText('Manifest', manifestFileContent, manifestLocation, optionalCheckingOptions);
-      console.log(`ourCheckManifest checkManifestText(${repoName}) returned ${cmtResultObject.successList.length} success message(s) and ${cmtResultObject.noticeList.length} notice(s)`);
+      // console.log(`ourCheckManifest checkManifestText(${repoName}) returned ${cmtResultObject.successList.length} success message(s) and ${cmtResultObject.noticeList.length} notice(s)`);
       // NOTE: We ignore the returned success messages here
       // for (const successEntry of cfResultObject.successList) console.log("  ourCheckBPFileContents:", successEntry);
       // console.log("cfcResultObject", JSON.stringify(cfcResultObject));
