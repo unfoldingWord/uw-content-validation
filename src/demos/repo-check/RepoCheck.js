@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
-import { ourParseInt } from '../../core/utilities';
+import { preloadReposIfNecessary, ourParseInt } from '../../core';
 import { checkRepo } from './checkRepo';
 // import { consoleLogObject, displayPropertyNames } from '../../core/utilities';
 
@@ -30,14 +30,12 @@ function RepoCheck(/*username, languageCode,*/ props) {
     // console.log(`branch='${branch}'`);
     if (branch === undefined) branch = 'master';
 
-    const languageCode = repoName.split('_', 1)[0];
-    // console.log(`languageCode='${languageCode}'`);
-
     const checkingOptions = { // Uncomment any of these to test them
         // extractLength: 25,
     };
     // Or this allows the parameters to be specified as a RepoCheck property
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
+
 
     const [result, setResultValue] = useState("Waiting-checkRepo");
     useEffect(() => {
@@ -47,6 +45,21 @@ function RepoCheck(/*username, languageCode,*/ props) {
         //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
         (async () => {
             // console.log("Started RepoCheck.unnamedFunction()");
+
+            if (!repoName) {
+                setResultValue(<p style={{ color: 'red' }}>No <b>repoName</b> set!</p>);
+                return;
+            }
+            let [languageCode,repoCode] = repoName.split('_');
+            repoCode = repoCode.toUpperCase();
+            console.log(`languageCode='${languageCode}' repoCode='${repoCode}'`);
+
+            setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for {repoName} repo check…</p>);
+            const repoList = ['TA', 'TW'];
+            if (repoCode !== 'TA' && repoCode !== 'TW') repoList.push(repoCode);
+            const successFlag = await preloadReposIfNecessary(username, languageCode, [], branch, repoList);
+            if (!successFlag)
+                console.error(`RepoCheck error: Failed to pre-load all repos`)
 
             // Display our "waiting" message
             setResultValue(<p style={{ color: 'magenta' }}>Checking <b>{repoName}</b> repo…</p>);

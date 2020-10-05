@@ -143,7 +143,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
 
         // Default to the main filename without the extensions
         let bookOrFileCode = thisFilename.substring(0, thisFilename.length - thisFilenameExtension.length - 1);
-        let ourBookID = "";
+        let ourBookID = '';
         if (thisFilenameExtension === 'usfm') {
           // const filenameMain = thisFilename.substring(0, thisFilename.length - 5); // drop .usfm
           // console.log(`Have USFM filenameMain=${bookOrFileCode}`);
