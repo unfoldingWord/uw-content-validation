@@ -156,7 +156,7 @@ function FileCheck(props) {
     if (givenLocation && givenLocation[0] !== ' ') givenLocation = ` ${givenLocation}`;
 
     const checkingOptions = { // Uncomment any of these to test them
-        // 'extractLength': 25,
+        // extractLength: 25,
     };
     // Or this allows the parameters to be specified as a FileCheck property
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);

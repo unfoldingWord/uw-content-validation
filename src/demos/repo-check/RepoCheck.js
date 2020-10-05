@@ -34,7 +34,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
     // console.log(`languageCode='${languageCode}'`);
 
     const checkingOptions = { // Uncomment any of these to test them
-        // 'extractLength': 25,
+        // extractLength: 25,
     };
     // Or this allows the parameters to be specified as a RepoCheck property
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
@@ -91,11 +91,18 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 let displayType = 'ErrorsWarnings'; // default
                 if (props.displayType) displayType = props.displayType;
 
+                function renderSuccesses(processedResults) {
+                    if (processedResults.checkedFileCount > 0)
+                        return (<p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount === 1 ? '' : 's'} from {username} {processedResults.checkedRepoNames.join(', ')}
+                            <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>);
+                    else
+                        return (<p>&nbsp;&nbsp;&nbsp;&nbsp;No files checked!</p>);
+                }
+
                 function renderSummary(processedResults) {
                     return (<div>
                         <p>Checked <b>{username} {repoName}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)</p>
-                        <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount === 1 ? '' : 's'} from {repoName}: {processedResults.checkedFilenames.join(', ')}
-                            <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>
+                        {renderSuccesses(processedResults)}
                         <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCRResults.noticeList.length === 0 ? 'no' : rawCRResults.noticeList.length.toLocaleString()} notice{rawCRResults.noticeList.length === 1 ? '' : 's'}.</p>
                         {/* <RenderRawResults results={rawCRResults} /> */}
                     </div>);
