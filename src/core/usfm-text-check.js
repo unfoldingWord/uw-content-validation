@@ -7,7 +7,7 @@ import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
 import { ourParseInt } from './utilities';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.6.34';
+// const USFM_VALIDATOR_VERSION_STRING = '0.6.35';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -878,17 +878,20 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
                 const extract = `${rest.substring(0, thisLength)}${rest.length > thisLength ? '…' : ''}`;
                 addNoticePartial({ priority: 987, C, V, message: "Expected \\id line to start with book identifier", lineNumber: n, characterIndex: 4, extract, location: ourLocation });
             }
+
             // Check the order of markers
             // In headers
             if (marker === 'toc2' && lastMarker !== 'toc1')
-                addNoticePartial({ priority: 87, C, V, message: "Expected \\toc2 line to follow \\toc1", lineNumber: n, characterIndex: 1, extract: `(not '${lastMarker}')`, location: ourLocation });
+                addNoticePartial({ priority: 87, C, V, message: "Expected \\toc2 line to follow \\toc1", lineNumber: n, characterIndex: 1, details: `(not '${lastMarker}')`, location: ourLocation });
             else if (marker === 'toc3' && lastMarker !== 'toc2')
-                addNoticePartial({ priority: 87, C, V, message: "Expected \\toc3 line to follow \\toc2", lineNumber: n, characterIndex: 1, extract: `(not '${lastMarker}')`, location: ourLocation });
+                addNoticePartial({ priority: 87, C, V, message: "Expected \\toc3 line to follow \\toc2", lineNumber: n, characterIndex: 1, details: `(not '${lastMarker}')`, location: ourLocation });
             // In chapters
             else if ((PARAGRAPH_MARKERS.indexOf(marker) >= 0 || marker === 's5' || marker === 'ts\\*')
                 && PARAGRAPH_MARKERS.indexOf(lastMarker) >= 0
                 && !lastRest)
-                addNoticePartial({ priority: 399, C, V, message: "Useless paragraph marker", lineNumber: n, characterIndex: 1, extract: `('${lastMarker}' before '${marker}')`, location: ourLocation });
+                addNoticePartial({ priority: 399, C, V, message: "Useless paragraph marker", lineNumber: n, characterIndex: 1, details: `('${lastMarker}' before '${marker}')`, location: ourLocation });
+            else if (['c','ca','cl'].indexOf(lastMarker) > 0 && marker === 'v')
+                addNoticePartial({ priority: C==='1'? 657:457, C, V, message: "Paragraph marker expected before first verse", lineNumber: n, characterIndex: 1, details: `('${marker}' after '${lastMarker}')`, location: ourLocation });
 
             // Do general checks
             checkUSFMLineContents(n, C, V, marker, rest, ourLocation, optionalCheckingOptions);
