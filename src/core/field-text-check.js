@@ -1,6 +1,7 @@
 import { isWhitespace, countOccurrences } from './text-handling-functions'
 
-//const VALIDATOR_VERSION_STRING = '0.1.1';
+
+//const VALIDATOR_VERSION_STRING = '0.1.2';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -57,6 +58,8 @@ export function checkTextField(fieldName, fieldText, allowedLinks, optionalField
     let ourLocation = optionalFieldLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
+    if (fieldText.indexOf('\u200B') >= 0)
+        addNoticePartial({ priority: 639, message: "Field contains zero-width space(s)", location: ourLocation });
     if (isWhitespace(fieldText)) {
         addNoticePartial({ priority: 638, message: "Only found whitespace", location: ourLocation });
         return result;
