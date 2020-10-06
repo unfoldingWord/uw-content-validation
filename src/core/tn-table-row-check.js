@@ -7,7 +7,7 @@ import { checkTNLinksToOutside } from './tn-links-check';
 import { checkOriginalLanguageQuote } from './quote-check';
 
 
-// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.4.4';
+// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.4.5';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -252,10 +252,28 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         // result.noticeList = result.noticeList.concat(coqResultObject.noticeList);
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
-        for (const noticeEntry of coqResultObject.noticeList) {
-            // console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckTNLinksToOutside notice length=${Object.keys(noticeEntry).length}`);
-            addNoticePartial({ ...noticeEntry, rowID, fieldName });
+        for (const coqNoticeEntry of coqResultObject.noticeList) {
+            if (coqNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN check
+                drResult.noticeList.push(coqNoticeEntry); // Just copy the complete notice as is
+            else // For our direct checks, we add the repoCode as an extra value
+                addNoticePartial({ ...coqNoticeEntry, rowID, fieldName });
         }
+        // The following is needed coz we might be checking the linked TA and/or TW articles
+        if (coqResultObject.checkedFileCount && coqResultObject.checkedFileCount > 0)
+            if (typeof drResult.checkedFileCount === 'number') drResult.checkedFileCount += coqResultObject.checkedFileCount;
+            else drResult.checkedFileCount = coqResultObject.checkedFileCount;
+        if (coqResultObject.checkedFilesizes && coqResultObject.checkedFilesizes > 0)
+            if (typeof drResult.checkedFilesizes === 'number') drResult.checkedFilesizes += coqResultObject.checkedFilesizes;
+            else drResult.checkedFilesizes = coqResultObject.checkedFilesizes;
+        if (coqResultObject.checkedRepoNames && coqResultObject.checkedRepoNames.length > 0)
+            for (const checkedRepoName of coqResultObject.checkedRepoNames)
+                try { if (drResult.checkedRepoNames.indexOf(checkedRepoName) < 0) drResult.checkedRepoNames.push(checkedRepoName); }
+                catch { drResult.checkedRepoNames = [checkedRepoName]; }
+        if (coqResultObject.checkedFilenameExtensions && coqResultObject.checkedFilenameExtensions.length > 0)
+            for (const checkedFilenameExtension of coqResultObject.checkedFilenameExtensions)
+                try { if (drResult.checkedFilenameExtensions.indexOf(checkedFilenameExtension) < 0) drResult.checkedFilenameExtensions.push(checkedFilenameExtension); }
+                catch { drResult.checkedFilenameExtensions = [checkedFilenameExtension]; }
+        // if (drResult.checkedFilenameExtensions) console.log("drResult", JSON.stringify(drResult));
     }
     // end of ourCheckTNLinksToOutside function
 
@@ -373,8 +391,14 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         }
 
         if (supportReference.length) { // need to check TN against TA
-            ourCheckTextField(rowID, 'SupportReference', supportReference, true, ourRowLocation, optionalCheckingOptions);
-            await ourCheckSupportReferenceInTA(rowID, 'SupportReference', supportReference, ourRowLocation, optionalCheckingOptions);
+            if (isWhitespace(supportReference))
+                addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'SupportReference', rowID, location: ourRowLocation });
+            else { // More than just whitespace
+                ourCheckTextField(rowID, 'SupportReference', supportReference, true, ourRowLocation, optionalCheckingOptions);
+                await ourCheckSupportReferenceInTA(rowID, 'SupportReference', supportReference, ourRowLocation, optionalCheckingOptions);
+            }
+            if (supportReference.indexOf('\u200B') >= 0)
+                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", fieldName: 'SupportReference', rowID, location: ourRowLocation });
         }
         // // TODO: Check if this is really required????
         // else if (/^\d+$/.test(C) && /^\d+$/.test(V)) // C:V are both digits
@@ -402,20 +426,28 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         }
 
         if (GLQuote.length) { // TODO: need to check UTN against ULT
-            if (V !== 'intro')
-                ourCheckTextField(rowID, 'GLQuote', GLQuote, false, ourRowLocation, optionalCheckingOptions);
+            if (GLQuote.indexOf('\u200B') >= 0)
+                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", fieldName: 'GLQuote', rowID, location: ourRowLocation });
+            if (isWhitespace(GLQuote))
+                addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'GLQuote', rowID, location: ourRowLocation });
+            else // More than just whitespace
+                if (V !== 'intro')
+                    ourCheckTextField(rowID, 'GLQuote', GLQuote, false, ourRowLocation, optionalCheckingOptions);
         }
         // else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
         //     if (V !== 'intro')
         //         addNoticePartial({ priority: 275, message: "Missing GLQuote field", rowID, location: ourRowLocation });
 
-        if (occurrenceNote.length)
+        if (occurrenceNote.length) {
+            if (occurrenceNote.indexOf('\u200B') >= 0)
+                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation });
             if (isWhitespace(occurrenceNote))
-                addNoticePartial({ priority: 374, message: "OccurrenceNote field is only whitespace", rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation });
             else { // More than just whitespace
                 ourMarkdownTextChecks(rowID, 'OccurrenceNote', occurrenceNote, true, ourRowLocation, optionalCheckingOptions);
                 await ourCheckTNLinksToOutside(rowID, 'OccurrenceNote', occurrenceNote, ourRowLocation, linkCheckingOptions);
             }
+        }
         else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             addNoticePartial({ priority: 274, message: "Missing OccurrenceNote field", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation });
 

@@ -1,7 +1,7 @@
 // import { displayPropertyNames, consoleLogObject } from './utilities';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.7.2';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.8.1';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -209,6 +209,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     // resultObject.errorList.push({999, "Cutoff level must not be higher than error level", extract:`(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
 
 
+    // Adjust the list of success notices to combine multiple similar messages, e.g., Checked this book, Checked that book
+    //  into one summary message, e.g., Checked this and that books.
     if (givenNoticeObject.successList)
         // Handle the successList
         if (givenNoticeObject.successList.length < 5)
@@ -216,51 +218,70 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         else { // successList is fairly long -- maybe we can shorten it by combining multiple similar messages
             const BibleRegex = /\d\d-(\w\w\w).usfm/; // "Checked JUD file: 66-JUD.usfm"
             const NotesRegex = /\d\d-(\w\w\w).tsv/; // "Checked EN_TN_01-GEN.TSV file: en_tn_01-GEN.tsv"
+            const manifestRegex = /Checked ([\w\-_]{2,25}) manifest file/;
             resultObject.successList = [];
-            const UHBBookList = [], UGNTBookList = [], ULTBookList = [], USTBookList = [], TNBookList = [];
-            const USFMBookList = [], TSVNotesList = []
+            const UHBBookList = [], UGNTBookList = [], LTBookList = [], STBookList = [], TNBookList = [];
+            const USFMBookList = [], TSVNotesList = [], manifestsList = [];
             for (const thisParticularSuccessMsg of givenNoticeObject.successList) {
                 // console.log("thisParticularSuccessMessage", thisParticularSuccessMessage);
                 let regexResult;
                 if (thisParticularSuccessMsg.startsWith('Checked UHB file: '))
                     UHBBookList.push(thisParticularSuccessMsg.substring(18, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked UGNT file: '))
-                    UHBBookList.push(thisParticularSuccessMsg.substring(19, thisParticularSuccessMsg.length))
-                else if (thisParticularSuccessMsg.startsWith('Checked ULT file: '))
-                    ULTBookList.push(thisParticularSuccessMsg.substring(18, thisParticularSuccessMsg.length))
-                else if (thisParticularSuccessMsg.startsWith('Checked UST file: '))
-                    USTBookList.push(thisParticularSuccessMsg.substring(18, thisParticularSuccessMsg.length))
+                UGNTBookList.push(thisParticularSuccessMsg.substring(19, thisParticularSuccessMsg.length))
+                else if (thisParticularSuccessMsg.startsWith('Checked LT file: '))
+                    LTBookList.push(thisParticularSuccessMsg.substring(18, thisParticularSuccessMsg.length))
+                else if (thisParticularSuccessMsg.startsWith('Checked ST file: '))
+                    STBookList.push(thisParticularSuccessMsg.substring(18, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked TN file: '))
                     TNBookList.push(thisParticularSuccessMsg.substring(17, thisParticularSuccessMsg.length))
                 else if ((regexResult = BibleRegex.exec(thisParticularSuccessMsg)) !== null
                     // but don't do it for Book Package checks (in different repos)
-                    && thisParticularSuccessMsg.startsWith(`Checked ${regexResult[1]} file`)) {
-                    // console.log("regexResult", JSON.stringify(regexResult));
+                    && thisParticularSuccessMsg.startsWith(`Checked ${regexResult[1]} file`))
                     USFMBookList.push(regexResult[1]);
-                }
                 else if ((regexResult = NotesRegex.exec(thisParticularSuccessMsg)) !== null
                     // but don't do it for Book Package checks (in different repos)
-                    && thisParticularSuccessMsg.startsWith(`Checked ${regexResult[1]} file`)) {
-                    // console.log("regexResult", JSON.stringify(regexResult));
+                    && thisParticularSuccessMsg.startsWith(`Checked ${regexResult[1]} file`))
                     TSVNotesList.push(regexResult[1]);
-                }
+                else if ((regexResult = manifestRegex.exec(thisParticularSuccessMsg)) !== null)
+                    manifestsList.push(regexResult[1]);
                 else
                     resultObject.successList.push(thisParticularSuccessMsg); // Just copy it across
             }
-            // Put summary messages at the beginning of the list
-            if (TSVNotesList.length)
+            // Recreate original messages if exactly one found
+            if (UHBBookList.length === 1)
+                resultObject.successList.push(`Checked UHB file: ${UHBBookList[0]}`);
+                if (UGNTBookList.length === 1)
+                resultObject.successList.push(`Checked UGNT file: ${UGNTBookList[0]}`);
+                if (LTBookList.length === 1)
+                resultObject.successList.push(`Checked LT file: ${LTBookList[0]}`);
+                if (STBookList.length === 1)
+                resultObject.successList.push(`Checked ST file: ${STBookList[0]}`);
+                if (TNBookList.length === 1)
+                resultObject.successList.push(`Checked TN file: ${TNBookList[0]}`);
+                if (USFMBookList.length === 1)
+                resultObject.successList.push(`Checked ${USFMBookList[0]} file`);
+                if (TSVNotesList.length === 1)
+                resultObject.successList.push(`Checked ${TSVNotesList[0]} file`);
+                if (manifestsList.length === 1)
+                resultObject.successList.push(`Checked ${manifestsList[0]} manifest file`);
+            // Put summary messages at the beginning of the list if more than one found
+            // Process these messages in the opposite order than we want them to display (since we push to beginning of list each time)
+            if (manifestsList.length > 1)
+                resultObject.successList.unshift(`Checked ${manifestsList.length} manifest files: ${manifestsList.join(', ')}`);
+            if (TSVNotesList.length > 1)
                 resultObject.successList.unshift(`Checked ${TSVNotesList.length} TSV notes files: ${TSVNotesList.join(', ')}`);
-            if (USFMBookList.length)
+            if (USFMBookList.length > 1)
                 resultObject.successList.unshift(`Checked ${USFMBookList.length} USFM Bible files: ${USFMBookList.join(', ')}`);
-            if (TNBookList.length)
+            if (TNBookList.length > 1)
                 resultObject.successList.unshift(`Checked ${TNBookList.length} TN files: ${TNBookList.join(', ')}`);
-            if (USTBookList.length)
-                resultObject.successList.unshift(`Checked ${USTBookList.length} UST files: ${USTBookList.join(', ')}`);
-            if (ULTBookList.length)
-                resultObject.successList.unshift(`Checked ${ULTBookList.length} ULT files: ${ULTBookList.join(', ')}`);
-            if (UGNTBookList.length)
+            if (STBookList.length > 1)
+                resultObject.successList.unshift(`Checked ${STBookList.length} ST files: ${STBookList.join(', ')}`);
+            if (LTBookList.length > 1)
+                resultObject.successList.unshift(`Checked ${LTBookList.length} LT files: ${LTBookList.join(', ')}`);
+            if (UGNTBookList.length > 1)
                 resultObject.successList.unshift(`Checked ${UGNTBookList.length} UGNT files: ${UGNTBookList.join(', ')}`);
-            if (UHBBookList.length)
+            if (UHBBookList.length > 1)
                 resultObject.successList.unshift(`Checked ${UHBBookList.length} UHB files: ${UHBBookList.join(', ')}`);
         }
     else resultObject.successList = [];

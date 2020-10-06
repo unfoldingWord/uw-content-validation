@@ -6,6 +6,10 @@ and then validates the content of one file selected from the repo.
 **Note**: This demonstration uses cached values of files stored inside the local browser. This makes reruns of the checks much faster, but it won't notice if you have updated the files on Door43. If you want to clear the local caches, use the `Clear Cache` function.
 
 ```js
+import { clearCheckedArticleCache } from '../../core';
+
+clearCheckedArticleCache();
+
 <FileCheck
     username='unfoldingWord'
 
@@ -18,16 +22,17 @@ and then validates the content of one file selected from the repo.
     // branch='master'
 
     // Of course, the filename must be correct for the chosen repository
-    // filename= '01-GEN.usfm' // e.g., for UHB, ULT, or UST
-    // filename= '08-RUT.usfm' // e.g., for UHB, ULT, or UST
-    // filename= '41-MAT.usfm' // e.g., for UGNT, ULT, or UST
-    // filename= '42-MRK.usfm' // e.g., for UGNT, ULT, or UST
-    // filename= '43-LUK.usfm' // e.g., for UGNT, ULT, or UST
-    // filename= '45-ACT.usfm' // e.g., for UGNT, ULT, or UST
-    // filename= '48-2CO.usfm' // e.g., for UGNT, ULT, or UST
-    // filename= '50-EPH.usfm' // e.g., for UGNT, ULT, or UST
-    filename= '65-3JN.usfm' // e.g., for UGNT, ULT, or UST
-    // filename= '67-REV.usfm' // e.g., for UGNT, ULT, or UST
+    // filename= '01-GEN.usfm' // e.g., for UHB, LT, or ST
+    // filename= '08-RUT.usfm' // e.g., for UHB, LT, or ST
+    // filename= '41-MAT.usfm' // e.g., for UGNT, LT, or ST
+    // filename= '42-MRK.usfm' // e.g., for UGNT, LT, or ST
+    // filename= '43-LUK.usfm' // e.g., for UGNT, LT, or ST
+    // filename= '45-ACT.usfm' // e.g., for UGNT, LT, or ST
+    // filename= '48-2CO.usfm' // e.g., for UGNT, LT, or ST
+    // filename= '50-EPH.usfm' // e.g., for UGNT, LT, or ST
+    // filename= '57-TIT.usfm' // e.g., for UGNT, LT, or ST
+    filename= '65-3JN.usfm' // e.g., for UGNT, LT, or ST
+    // filename= '67-REV.usfm' // e.g., for UGNT, LT, or ST
     // filename= 'en_tn_01-GEN.tsv' // for TN
     // filename= 'en_tn_16-NEH.tsv' // for TN
     // filename= 'en_tn_17-EST.tsv' // for TN

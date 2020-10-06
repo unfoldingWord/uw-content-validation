@@ -8,7 +8,7 @@ import { checkBookPackage } from './checkBookPackage';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.2.1';
+// const BP_VALIDATOR_VERSION_STRING = '0.2.2';
 
 
 function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
@@ -32,10 +32,15 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
     //  autoClearCache(bookID); // This technique avoids the complications of needing a button
 
     let checkingOptions = { // Uncomment any of these to test them
-        // 'extractLength': 25,
+        // extractLength: 25,
+        checkManifestFlag: true,
     };
     // Or this allows the parameters to be specified as a BookPackageCheck property
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
+    if (props.checkLinkedTAArticleFlag) checkingOptions.checkLinkedTAArticleFlag = props.checkLinkedTAArticleFlag.toLowerCase() === 'true';
+    if (props.checkLinkedTWArticleFlag) checkingOptions.checkLinkedTWArticleFlag = props.checkLinkedTWArticleFlag.toLowerCase() === 'true';
+    // console.log(`checkingOptions.checkLinkedTAArticleFlag ${checkingOptions.checkLinkedTAArticleFlag} from '${props.checkLinkedTAArticleFlag}'`);
+    // console.log(`checkingOptions.checkLinkedTWArticleFlag ${checkingOptions.checkLinkedTWArticleFlag} from '${props.checkLinkedTWArticleFlag}'`);
 
     useEffect(() => {
         // const newProps = { bookID, branch, checkingOptions, languageCode, cutoffPriorityLevel: props.cutoffPriorityLevel, displayType: props.displayType, errorPriorityLevel: props.errorPriorityLevel, maximumSimilarMessages: props.maximumSimilarMessages, sortBy: props.sortBy, username};
@@ -65,7 +70,6 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookID}</b> book package…</p>);
 
             const rawCBPResults = await checkBookPackage(username, languageCode, bookID, setResultValue, checkingOptions);
-            // console.log("checkBookPackage() returned", typeof rawCBPResults); //, JSON.stringify(rawCBPResults));
 
             // Add some extra fields to our rawCBPResults object in case we need this information again later
             rawCBPResults.checkType = 'BookPackage';
@@ -93,11 +97,18 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             let displayType = 'ErrorsWarnings'; // default
             if (props.displayType) displayType = props.displayType;
 
+            function renderSuccesses(processedResults) {
+                if (processedResults.checkedFileCount > 0)
+                    return (<p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount === 1 ? '' : 's'} from {username} {processedResults.checkedRepoNames.join(', ')}
+                        <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>);
+                else
+                    return (<p>&nbsp;&nbsp;&nbsp;&nbsp;No files checked!</p>);
+            }
+
             function renderSummary(processedResults) {
                 return (<div>
                     <p>Checked <b>{username} {languageCode} {bookID}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
-                    <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount === 1 ? '' : 's'} from {processedResults.checkedRepoNames.length} repo{processedResults.checkedRepoNames.length === 1 ? '' : 's'}: <b>{processedResults.checkedRepoNames.join(', ')}</b>
-                        <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>
+                    {renderSuccesses(processedResults)}
                     <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCBPResults.noticeList.length === 0 ? 'no' : rawCBPResults.noticeList.length.toLocaleString()} notice{rawCBPResults.noticeList.length === 1 ? '' : 's'}.</p>
                     {/* <RenderRawResults results={rawCBPResults} /> */}
                 </div>);

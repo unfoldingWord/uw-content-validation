@@ -1,7 +1,7 @@
 {
   "name": "uw-content-validation",
   "description": "Functions for Checking Door43.org Scriptural Content/Resources.",
-  "version": "0.8.14-alpha3",
+  "version": "0.8.14_alpha5",
   "private": false,
   "homepage": "https://unfoldingword.github.io/uw-content-validation/",
   "repository": {
@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@date-io/core": "^2.9.0",
+    "ajv": "^6.12.5",
     "axios": "^0.20.0",
     "axios-cache-adapter": "^2.5.0",
     "js-yaml-parser": "^1.0.0",

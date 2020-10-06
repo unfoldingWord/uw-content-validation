@@ -1,10 +1,540 @@
 import { checkYAMLText } from './yaml-text-check';
-import * as books from './books';
+import Ajv from 'ajv';
 
 
-const MANIFEST_VALIDATOR_VERSION_STRING = '0.2.1';
+const MANIFEST_VALIDATOR_VERSION_STRING = '0.3.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
+
+// Pasted in 2020-10-02 from https://raw.githubusercontent.com/unfoldingWord/dcs/master/options/schema/rc.schema.json
+const MANIFEST_SCHEMA = {
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://resource-container.readthedocs.io/schema/rc.schema.json",
+    "$$target": [
+        "rc.schema.json#/definitions/languageTag",
+        "rc.schema.json#/definitions/localizedText"
+    ],
+    "title": "Root",
+    "type": "object",
+    "required": [
+        "dublin_core",
+        "checking",
+        "projects"
+    ],
+    "properties": {
+        "dublin_core": {
+            "$id": "#root/dublin_core",
+            "title": "Dublin_core",
+            "type": "object",
+            "required": [
+                "conformsto",
+                "contributor",
+                "creator",
+                "description",
+                "format",
+                "identifier",
+                "issued",
+                "language",
+                "modified",
+                "publisher",
+                "relation",
+                "rights",
+                "source",
+                "subject",
+                "title",
+                "type",
+                "version"
+            ],
+            "properties": {
+                "conformsto": {
+                    "$id": "#root/dublin_core/conformsto",
+                    "title": "Conformsto",
+                    "type": "string",
+                    "default": "rc0.2",
+                    "enum": [
+                        "rc0.2"
+                    ]
+                },
+                "contributor": {
+                    "$id": "#root/dublin_core/contributor",
+                    "title": "Contributor",
+                    "type": "array",
+                    "default": [],
+                    "items": {
+                        "$id": "#root/dublin_core/contributor/items",
+                        "title": "Items",
+                        "type": "string",
+                        "default": "",
+                        "examples": [
+                            "Alrick G. Headley, M.Div., Th.M."
+                        ]
+                    }
+                },
+                "creator": {
+                    "$id": "#root/dublin_core/creator",
+                    "title": "Creator",
+                    "type": "string",
+                    "default": "",
+                    "examples": [
+                        "unfoldingWord"
+                    ]
+                },
+                "description": {
+                    "$id": "#root/dublin_core/description",
+                    "title": "Description",
+                    "type": "string",
+                    "default": "",
+                    "examples": [
+                        "An open-licensed update of the ASV, intended to provide a 'form-centric' understanding of the Bible. It increases the translator's understanding of the lexical and grammatical composition of the underlying text by adhering closely to the word order and structure of the originals."
+                    ]
+                },
+                "format": {
+                    "$id": "#root/dublin_core/format",
+                    "$ref": "#/definitions/mimeType",
+                    "title": "Format",
+                    "default": ""
+                },
+                "identifier": {
+                    "$id": "#root/dublin_core/identifier",
+                    "title": "Identifier",
+                    "type": "string",
+                    "default": "",
+                    "examples": [
+                        "ult"
+                    ],
+                    "pattern": "^[a-z][a-z0-9-]"
+                },
+                "issued": {
+                    "$id": "#root/dublin_core/issued",
+                    "$ref": "#/definitions/timestamp",
+                    "title": "Issued",
+                    "type": "string",
+                    "default": "",
+                    "examples": [
+                        "2020-03-25"
+                    ]
+                },
+                "modified": {
+                    "$id": "#root/dublin_core/modified",
+                    "$ref": "#/definitions/timestamp",
+                    "title": "Modified",
+                    "type": "string",
+                    "default": "",
+                    "examples": [
+                        "2020-03-25"
+                    ]
+                },
+                "publisher": {
+                    "$id": "#root/dublin_core/publisher",
+                    "title": "Publisher",
+                    "type": "string",
+                    "default": "",
+                    "examples": [
+                        "unfoldingWord"
+                    ]
+                },
+                "language": {
+                    "$id": "#root/dublin_core/language",
+                    "title": "Language",
+                    "type": "object",
+                    "required": [
+                        "direction",
+                        "identifier",
+                        "title"
+                    ],
+                    "properties": {
+                        "identifier": {
+                            "$id": "#root/dublin_core/language/identifier",
+                            "$ref": "#/definitions/languageTag",
+                            "title": "Identifier",
+                            "examples": ["en", "hi", "es-419"]
+                        },
+                        "title": {
+                            "$id": "#root/dublin_core/language/title",
+                            "title": "Title",
+                            "type": "string",
+                            "default": ""
+                        },
+                        "direction": {
+                            "$id": "#root/dublin_core/language/direction",
+                            "title": "Direction",
+                            "type": "string",
+                            "default": "ltr",
+                            "enum": ["ltr", "rtl"]
+                        }
+                    }
+                },
+                "relation": {
+                    "$id": "#root/dublin_core/relation",
+                    "title": "Relation",
+                    "type": "array",
+                    "default": [],
+                    "items": {
+                        "$id": "#root/dublin_core/relation/items",
+                        "$ref": "#/definitions/relationItem",
+                        "title": "Items",
+                        "default": "",
+                        "examples": [
+                            "en/tw"
+                        ]
+                    }
+                },
+                "rights": {
+                    "$id": "#root/dublin_core/rights",
+                    "title": "Rights",
+                    "type": "string",
+                    "default": "CC BY-SA 4.0",
+                    "enum": [
+                        "CC BY 3.0",
+                        "CC BY-SA 3.0",
+                        "CC BY-SA 4.0",
+                        "Free Translate 2.0 International Public License",
+                        "Public Domain"
+                    ]
+                },
+                "source": {
+                    "$id": "#root/dublin_core/source",
+                    "title": "Source",
+                    "type": "array",
+                    "default": [],
+                    "items": {
+                        "$id": "#root/dublin_core/source/items",
+                        "title": "Items",
+                        "type": "object",
+                        "required": [
+                            "identifier",
+                            "language",
+                            "version"
+                        ],
+                        "properties": {
+                            "identifier": {
+                                "$id": "#root/dublin_core/source/items/identifier",
+                                "title": "Identifier",
+                                "type": "string",
+                                "default": "",
+                                "examples": [
+                                    "asv"
+                                ],
+                                "pattern": "^[a-z][a-z0-9-]"
+                            },
+                            "language": {
+                                "$id": "#root/dublin_core/source/items/language",
+                                "$ref": "#/definitions/languageTag",
+                                "title": "Language",
+                                "default": "",
+                                "examples": [
+                                    "en"
+                                ]
+                            },
+                            "version": {
+                                "$id": "#root/dublin_core/source/items/version",
+                                "title": "Version",
+                                "type": "string",
+                                "default": "",
+                                "examples": [
+                                    "1901"
+                                ]
+                            }
+                        }
+                    }
+
+                },
+                "subject": {
+                    "$id": "#root/dublin_core/subject",
+                    "title": "Subject",
+                    "type": "string",
+                    "enum": [
+                        "Aligned Bible",
+                        "Bible",
+                        "Bible stories",
+                        "Greek New Testament",
+                        "Hebrew Old Testament",
+                        "OBS Study Notes",
+                        "OBS Study Questions",
+                        "OBS Translation Notes",
+                        "OBS Translation Questions",
+                        "Open Bible Stories",
+                        "Translation Academy",
+                        "Translation Notes",
+                        "Translation Questions",
+                        "Translation Words",
+                        "TSV Translation Notes"
+                    ]
+                },
+                "title": {
+                    "$id": "#root/dublin_core/title",
+                    "title": "Title",
+                    "type": "string",
+                    "default": "",
+                    "examples": [
+                        "unfoldingWord® Literal Text"
+                    ]
+                },
+                "type": {
+                    "$id": "#root/dublin_core/type",
+                    "title": "Type",
+                    "type": "string",
+                    "default": "",
+                    "examples": [
+                        "bundle"
+                    ],
+                    "enum": ["book", "bundle", "dict", "help", "man"]
+                },
+                "version": {
+                    "$id": "#root/dublin_core/version",
+                    "title": "Version",
+                    "type": "string",
+                    "default": "",
+                    "examples": [
+                        "10"
+                    ]
+                }
+            }
+        },
+        "checking": {
+            "$id": "#root/checking",
+            "title": "Checking",
+            "type": "object",
+            "required": [
+                "checking_entity",
+                "checking_level"
+            ],
+            "properties": {
+                "checking_entity": {
+                    "$id": "#root/checking/checking_entity",
+                    "title": "Checking_entity",
+                    "type": "array",
+                    "default": [],
+                    "items": {
+                        "$id": "#root/checking/checking_entity/items",
+                        "title": "Items",
+                        "type": "string",
+                        "default": "",
+                        "examples": [
+                            "unfoldingWord"
+                        ]
+                    }
+                },
+                "checking_level": {
+                    "$id": "#root/checking/checking_level",
+                    "title": "Checking_level",
+                    "type": ["integer", "string"],
+                    "default": "1",
+                    "enum": [
+                        "1",
+                        "2",
+                        "3"
+                    ]
+                }
+            }
+        },
+        "projects": {
+            "$id": "#root/projects",
+            "title": "Projects",
+            "type": "array",
+            "default": [],
+            "items": {
+                "$id": "#root/projects/items",
+                "title": "Items",
+                "type": "object",
+                "required": [
+                    "title",
+                    "identifier",
+                    "path"
+                ],
+                "properties": {
+                    "title": {
+                        "$id": "#root/projects/items/title",
+                        "title": "Title",
+                        "type": "string",
+                        "default": "",
+                        "examples": [
+                            "Genesis"
+                        ]
+                    },
+                    "versification": {
+                        "$id": "#root/projects/items/versification",
+                        "title": "Versification",
+                        "type": ["string", "null"],
+                        "default": null,
+                        "examples": [
+                            "ufw"
+                        ],
+                        "enum": ["avd", "odx", "odx-hr", "other", "rsc", "ufw", "ufw-bn", "ufw-ml", "ufw-odx", "ufw-rev", "obs", "", null]
+                    },
+                    "identifier": {
+                        "$id": "#root/projects/items/identifier",
+                        "$ref": "#/definitions/projectIdentifier",
+                        "title": "Identifier",
+                        "default": ""
+                    },
+                    "sort": {
+                        "$id": "#root/projects/items/sort",
+                        "title": "Sort",
+                        "type": "integer",
+                        "default": 0
+                    },
+                    "path": {
+                        "$id": "#root/projects/items/path",
+                        "$ref": "#/definitions/path",
+                        "title": "Path",
+                        "examples": [
+                            "./01-GEN.usfm"
+                        ]
+                    },
+                    "categories": {
+                        "$id": "#root/projects/items/categories",
+                        "title": "Categories",
+                        "type": ["array", "null"],
+                        "default": [],
+                        "items": {
+                            "$id": "#root/projects/items/categories/items",
+                            "title": "Items",
+                            "type": "string",
+                            "enum": [
+                                "bible-ot",
+                                "bible-nt",
+                                "ta"
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "languageTag": {
+            "type": "string",
+            "pattern": "^(((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang))|((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+))$",
+            "minLength": 2,
+            "description": "A valid IETF language tag as specified by BCP 47."
+        },
+        "localizedText": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/trimmedText"
+            },
+            "propertyNames": {
+                "$ref": "#/definitions/languageTag"
+            },
+            "minProperties": 1,
+            "description": "A textual string specified in one or multiple languages, indexed by IETF language tag."
+        },
+        "mimeType": {
+            "type": "string",
+            "pattern": "^[\\-a-z0-9]+/[\\-a-z0-9+]+$",
+            "description": "An IANA media type (also known as MIME type)"
+        },
+        "path": {
+            "type": "string",
+            "pattern": "^[^\\/:?*\"><|]+(/[^\\/:?*\"><|]+)*$",
+            "description": "A file path, delimited by forward slashes."
+        },
+        "projectIdentifier": {
+            "type": "string",
+            "enum": [
+                "gen",
+                "exo",
+                "lev",
+                "num",
+                "deu",
+                "jos",
+                "jdg",
+                "rut",
+                "1sa",
+                "2sa",
+                "1ki",
+                "2ki",
+                "1ch",
+                "2ch",
+                "ezr",
+                "neh",
+                "est",
+                "job",
+                "psa",
+                "pro",
+                "ecc",
+                "sng",
+                "isa",
+                "jer",
+                "lam",
+                "ezk",
+                "dan",
+                "hos",
+                "jol",
+                "amo",
+                "oba",
+                "jon",
+                "mic",
+                "nam",
+                "hab",
+                "zep",
+                "hag",
+                "zec",
+                "mal",
+                "mat",
+                "mrk",
+                "luk",
+                "jhn",
+                "act",
+                "rom",
+                "1co",
+                "2co",
+                "gal",
+                "eph",
+                "php",
+                "col",
+                "1th",
+                "2th",
+                "1ti",
+                "2ti",
+                "tit",
+                "phm",
+                "heb",
+                "jas",
+                "1pe",
+                "2pe",
+                "1jn",
+                "2jn",
+                "3jn",
+                "jud",
+                "rev",
+                "obs",
+                "intro",
+                "process",
+                "translate",
+                "checking",
+                "bible"
+            ]
+        },
+        "relationItem": {
+            "type": "string",
+            "pattern": "^(((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang))|((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+))/[a-z][a-z0-9-]*(\\?v=[0-9][a-z0-9\\._-]*)*$",
+            "minLength": 4,
+            "description": "A relation has valid IETF language tag as specified by BCP 47 and a valid resource, separated with a slash."
+        },
+        "timestamp": {
+            "type": "string",
+            "pattern": "^[12][0-9]{3}(-[01][0-9](-[0123][0-9])?)?$"
+        },
+        "trimmedText": {
+            "type": "string",
+            "pattern": "^\\S(.*\\S)?$",
+            "description": "A string without surrounding whitespace characters."
+        },
+        "url": {
+            "type": "string",
+            "pattern": "^((http(s)?|ftp)://)[^\\s$]+$",
+            "minLength": 1,
+            "description": "A valid **Uniform Resource Locator**.",
+            "examples": ["https://example.com"]
+        }
+    }
+};
+
+
+const ajv = new Ajv();
+const validate = ajv.compile(MANIFEST_SCHEMA);
 
 
 export function checkManifestText(textName, manifestText, givenLocation, optionalCheckingOptions) {
@@ -39,28 +569,19 @@ export function checkManifestText(textName, manifestText, givenLocation, optiona
         // console.log(`checkManifestText success: ${successString}`);
         cmtResult.successList.push(successString);
     }
-    function addNotice9({ priority, message, bookID, C, V, lineNumber, characterIndex, extract, location }) {
-        // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
+    function addNotice(noticeObject) {
         // console.log(`checkManifestText Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(priority !== undefined, "cManT addNotice9: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', `cManT addNotice9: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        console.assert(message !== undefined, "cManT addNotice9: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', `cManT addNotice9: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        console.assert(bookID !== undefined, "cManT addNotice9: 'bookID' parameter should be defined");
-        console.assert(typeof bookID === 'string', `cManT addNotice9: 'bookID' parameter should be a string not a '${typeof bookID}'`);
-        console.assert(bookID.length === 3, `cManT addNotice9: 'bookID' parameter should be three characters long not ${bookID.length}`);
-        console.assert(books.isValidBookID(bookID), `cManT addNotice9: '${bookID}' is not a valid USFM book identifier`);
-        // console.assert(C !== undefined, "cManT addNotice9: 'C' parameter should be defined");
-        if (C) console.assert(typeof C === 'string', `cManT addNotice9: 'C' parameter should be a string not a '${typeof C}'`);
-        // console.assert(V !== undefined, "cManT addNotice9: 'V' parameter should be defined");
-        if (V) console.assert(typeof V === 'string', `cManT addNotice9: 'V' parameter should be a string not a '${typeof V}'`);
-        // console.assert(characterIndex !== undefined, "cManT addNotice9: 'characterIndex' parameter should be defined");
-        if (characterIndex) console.assert(typeof characterIndex === 'number', `cManT addNotice9: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
-        // console.assert(extract !== undefined, "cManT addNotice9: 'extract' parameter should be defined");
-        if (extract) console.assert(typeof extract === 'string', `cManT addNotice9: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
-        console.assert(location !== undefined, "cManT addNotice9: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', `cManT addNotice9: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        cmtResult.noticeList.push({ priority, message, bookID, C, V, lineNumber, characterIndex, extract, location });
+        console.assert(noticeObject.priority !== undefined, "cManT addNotice: 'priority' parameter should be defined");
+        console.assert(typeof noticeObject.priority === 'number', `cManT addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        console.assert(noticeObject.message !== undefined, "cManT addNotice: 'message' parameter should be defined");
+        console.assert(typeof noticeObject.message === 'string', `cManT addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+        // console.assert(characterIndex !== undefined, "cManT addNotice: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `cManT addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        // console.assert(extract !== undefined, "cManT addNotice: 'extract' parameter should be defined");
+        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cManT addNotice: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        console.assert(noticeObject.location !== undefined, "cManT addNotice: 'location' parameter should be defined");
+        console.assert(typeof noticeObject.location === 'string', `cManT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        cmtResult.noticeList.push(noticeObject);
     }
 
 
@@ -90,7 +611,7 @@ export function checkManifestText(textName, manifestText, givenLocation, optiona
               && noticeEntry.message !== "Unexpected space after ' character"
               && noticeEntry.message !== "Unexpected space after [ character"
               )
-                addNotice9(noticeEntry.priority, noticeEntry.message, noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
+                addNotice(noticeEntry.priority, noticeEntry.message, noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
         */
         return cYtResultObject.formData;
     }
@@ -105,11 +626,11 @@ export function checkManifestText(textName, manifestText, givenLocation, optiona
         // console.log("formData keys", JSON.stringify(formDataKeys));
 
         if (formDataKeys.indexOf('dublin_core') < 0)
-            addNotice9({ priority: 928, message: "'dublin_core' key is missing", location: ourLocation });
+            addNotice({ priority: 928, message: "'dublin_core' key is missing", location: ourLocation });
         if (formDataKeys.indexOf('projects') < 0)
-            addNotice9({ priority: 929, message: "'projects' key is missing", location: ourLocation });
+            addNotice({ priority: 929, message: "'projects' key is missing", location: ourLocation });
         if (formDataKeys.indexOf('checking') < 0)
-            addNotice9({ priority: 148, message: "'checking' key is missing", location: ourLocation });
+            addNotice({ priority: 148, message: "'checking' key is missing", location: ourLocation });
 
         // Check Dublin Core stuff
         // const DublinCoreData = formData.dublin_core
@@ -127,6 +648,24 @@ export function checkManifestText(textName, manifestText, givenLocation, optiona
 
         //     }
         // }
+
+        // Validate Resource Container manifest against the schema
+        //  using AJV from https://www.npmjs.com/package/ajv
+        const valid = validate(formData);
+        if (!valid) {
+            // console.log("checkManifestText validationResult", valid, JSON.stringify(validate.errors));
+            // Here's a typical error entry:
+            //  {"keyword":"pattern",
+            //   "dataPath":".dublin_core.source[0].identifier",
+            //   "schemaPath":"#/properties/dublin_core/properties/source/items/properties/identifier/pattern",
+            //   "params":{"pattern":"^[a-z][a-z0-9-]"},
+            //   "message":"should match pattern \"^[a-z][a-z0-9-]\""}
+            for (const errorObject of validate.errors) {
+                console.log("checkManifestText schema validation errorObject", JSON.stringify(errorObject));
+                // Can't give a lineNumber unfortunately
+                addNotice({ priority: 985, message: `Field does not match schema ${errorObject.keyword}`, details: errorObject.message, fieldName: errorObject.dataPath, location: ourLocation });
+            }
+        }
     }
 
     // addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'}${ourLocation}.`);
@@ -135,7 +674,7 @@ export function checkManifestText(textName, manifestText, givenLocation, optiona
     else
         addSuccessMessage(`No errors or warnings found by checkManifestText v${MANIFEST_VALIDATOR_VERSION_STRING}`)
     // console.log(`  checkManifestText returning with ${cmtResult.successList.length.toLocaleString()} success(es), ${cmtResult.noticeList.length.toLocaleString()} notice(s).`);
-    // console.log("checkManifestText result is", JSON.stringify(result));
+    // console.log("checkManifestText result is", JSON.stringify(cmtResult));
     return cmtResult;
 }
 // end of checkManifestText function

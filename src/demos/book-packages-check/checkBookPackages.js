@@ -2,7 +2,7 @@ import * as books  from '../../core/books/books';
 import { checkBookPackage } from '../book-package-check/checkBookPackage';
 // import { consoleLogObject } from '../../core/utilities';
 
-//const VALIDATOR_VERSION_STRING = '0.2.2';
+//const BPs_VALIDATOR_VERSION_STRING = '0.2.3';
 
 
 export async function checkBookPackages(username, languageCode, bookIDList, setResultValue, checkingOptions) {
@@ -48,6 +48,7 @@ export async function checkBookPackages(username, languageCode, bookIDList, setR
 
     // Main code for checkBookPackages()
     let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0, checkedRepoNames = new Set();
+    let checkedBibleBPManifestFlag = false;
     for (const bookID of bookIDList) {
         // console.log(`checkBookPackages bookID: ${bookID}`);
 
@@ -65,6 +66,16 @@ export async function checkBookPackages(username, languageCode, bookIDList, setR
             }
             // console.log(`bookNumberAndName='${bookNumberAndName}' (${whichTestament} testament)`);
         }
+
+        // We only want to check the manifest files for ONE Bible BP AND for OBS
+        let checkManifestFlag = false;
+        if (bookID === 'OBS') checkManifestFlag = true;
+        else // it's a Bible book
+            if (!checkedBibleBPManifestFlag) {
+                checkManifestFlag = true;
+                checkedBibleBPManifestFlag = true; // so we only do it once for Bible books
+            }
+        checkingOptions.checkManifestFlag = checkManifestFlag;
 
         // We use the generalLocation here (does not include repo name)
         //  so that we can adjust the returned strings ourselves
