@@ -6,6 +6,13 @@ const MARKDOWN_VALIDATOR_VERSION_STRING = '0.3.2';
 const DEFAULT_EXTRACT_LENGTH = 10;
 
 
+/**
+ *
+ * @param {string} textName
+ * @param {string} markdownText - the actual text to be checked
+ * @param {string} givenLocation
+ * @param {Object} optionalCheckingOptions
+ */
 export function checkMarkdownText(textName, markdownText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire markdown file, i.e., all lines.
 

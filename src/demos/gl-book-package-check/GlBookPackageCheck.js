@@ -8,7 +8,7 @@ import { checkBookPackage } from '../book-package-check/checkBookPackage';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const BPS_VALIDATOR_VERSION_STRING = '0.1.2';
+// const BPS_VALIDATOR_VERSION_STRING = '0.1.3';
 
 
 function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
@@ -19,7 +19,8 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
     // consoleLogObject("props", props);
     // consoleLogObject("props.classes", props.classes);
 
-    let username = props.username;
+    // TODO: We currently ignore originalLanguagesUsername
+    let username = props.otherLanguageUsername;
     // console.log(`username='${username}'`);
     let languageCode = props.languageCode;
     // console.log(`languageCode='${languageCode}'`);
@@ -32,7 +33,8 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
     //  autoClearCache(bookIDs); // This technique avoids the complications of needing a button
 
     let checkingOptions = { // Uncomment any of these to test them
-        // 'extractLength': 25,
+        // extractLength: 25,
+        checkManifestFlag: true,
     };
     // Or this allows the parameters to be specified as a GlBookPackageCheck property
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
@@ -89,11 +91,18 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
             let displayType = 'ErrorsWarnings'; // default
             if (props.displayType) displayType = props.displayType;
 
+            function renderSuccesses(processedResults) {
+                if (processedResults.checkedFileCount > 0)
+                    return (<p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount === 1 ? '' : 's'} from {username} {processedResults.checkedRepoNames.join(', ')}
+                        <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>);
+                else
+                    return (<p>&nbsp;&nbsp;&nbsp;&nbsp;No files checked!</p>);
+            }
+
             function renderSummary(processedResults) {
                 return (<div>
                     <p>Checked <b>{username} {languageCode} {bookID}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
-                    <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount === 1 ? '' : 's'} from {username} {processedResults.checkedRepoNames.join(', ')}
-                        <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>
+                    {renderSuccesses(processedResults)}
                     <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCBPsResults.noticeList.length === 0 ? 'no' : rawCBPsResults.noticeList.length.toLocaleString()} notice{rawCBPsResults.noticeList.length === 1 ? '' : 's'}.</p>
                     {/* <RenderRawResults results={rawCBPsResults} /> */}
                 </div>);
@@ -101,8 +110,8 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
 
             if (displayType === 'ErrorsWarnings') {
                 const processedResults = processNoticesToErrorsWarnings(rawCBPsResults, processOptions);
-//                 console.log(`GlBookPackageCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
-//   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
+                //                 console.log(`GlBookPackageCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
+                //   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
                 // console.log("Here now in rendering bit!");
 
@@ -139,8 +148,8 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
 
             } else if (displayType === 'SingleList') {
                 const processedResults = processNoticesToSingleList(rawCBPsResults, processOptions);
-//                 console.log(`GlBookPackageCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s) and ${processedResults.warningList.length.toLocaleString()} notice(s)
-//   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
+                //                 console.log(`GlBookPackageCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s) and ${processedResults.warningList.length.toLocaleString()} notice(s)
+                //   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
                 if (processedResults.warningList.length)
                     setResultValue(<>

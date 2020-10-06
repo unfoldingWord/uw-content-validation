@@ -13,7 +13,10 @@ Note that `OBS` can also be entered here as a *pseudo book identifier* in order 
 **Note**: This demonstration uses cached values of files stored inside the local browser. This makes reruns of the checks much faster, but it won't notice if you have updated the files on Door43. If you want to clear the local caches, use the `Clear Cache` function.
 
 ```js
+import { clearCheckedArticleCache } from '../../core';
 import BookPackageCheck from './BookPackageCheck';
+
+clearCheckedArticleCache();
 
 <BookPackageCheck
   username='unfoldingWord'
@@ -26,10 +29,13 @@ import BookPackageCheck from './BookPackageCheck';
   //  Alternatives are `SevereMediumLow', 'SingleList'
   displayType='SingleList'
 
-  // Specifying maximumSimilarMessages and extractLength is just to show off options
+  checkLinkedTAArticleFlag='true' // 'true' or 'false'
+  checkLinkedTWArticleFlag='true' // 'true' or 'false'
+
+  // Specifying extractLength and maximumSimilarMessages is just to show off options
   //  -- those fields are not necessary (or normal) here
-  maximumSimilarMessages='4' // Default is 3 -- 0 means don't suppress
   extractLength='15' // Default is 10
+  maximumSimilarMessages='4' // Default is 3 -- 0 means don't suppress
   />
 ```
 

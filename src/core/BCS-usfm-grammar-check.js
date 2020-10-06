@@ -2,7 +2,7 @@ import grammar from 'usfm-grammar';
 import * as books from '../core/books/books';
 
 
-// const USFM_GRAMMAR_VALIDATOR_VERSION_STRING = '0.3.1';
+// const USFM_GRAMMAR_VALIDATOR_VERSION_STRING = '0.3.2';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -68,7 +68,7 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
 
         // Some of these "errors" need to be degraded in priority
 
-        let adjustedPriority = 994;
+        let adjustedPriority = 594; // We don't make these extra high coz the messages are hard for users to interpret
         if (extract === '\\s5' // Temporarily, even though \s5 fields are not valid USFM
             || ourErrorMessage.startsWith('Expected "f*", "+"') // Might neeed a OHM schema fix?
         )

@@ -5,6 +5,8 @@ import { checkFileContents } from '../file-check/checkFileContents';
 import { checkRepo } from '../repo-check/checkRepo';
 
 
+//const BP_VALIDATOR_VERSION_STRING = '0.3.3';
+
 const MANIFEST_FILENAME = 'manifest.yaml';
 
 
@@ -89,9 +91,9 @@ async function checkTQbook(username, languageCode, repoName, branch, bookID, che
 
 
   // Main code for checkTQbook
-  // We need to find an check all the markdown folders/files for this book
-  let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(['md']), totalCheckedSize = 0;
+  // We need to find and check all the markdown folders/files for this book
   const getFileListFromZip_ = checkingOptions && checkingOptions.getFileListFromZip ? checkingOptions.getFileListFromZip : getFileListFromZip;
+  let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0;
   const pathList = await getFileListFromZip_({ username, repository: repoName, branch, optionalPrefix: `${bookID.toLowerCase()}/` });
   if (!Array.isArray(pathList) || !pathList.length) {
     console.error("checkTQrepo failed to load", username, repoName, branch);
@@ -118,14 +120,15 @@ async function checkTQbook(username, languageCode, repoName, branch, bookID, che
       } catch (tQerror) {
         console.error("checkTQbook failed to load", username, repoName, thisPath, branch, tQerror + '');
         addNoticePartial({ priority: 996, message: "Failed to load", details: `username=${username}`, bookID, C, V, location: `${generalLocation} ${thisPath}: ${tQerror}`, extra: repoCode });
-        continue;
       }
-
-      // We use the generalLocation here (does not include repo name)
-      //  so that we can adjust the returned strings ourselves
-      await ourCheckTQFileContents(repoCode, bookID, C, V, filename, tqFileContent, generalLocation, checkingOptions); // Adds the notices to checkBookPackageResult
-      checkedFileCount += 1;
-      // addSuccessMessage(`Checked ${repoCode.toUpperCase()} file: ${thisPath}`);
+      if (tqFileContent) {
+        // We use the generalLocation here (does not include repo name)
+        //  so that we can adjust the returned strings ourselves
+        await ourCheckTQFileContents(repoCode, bookID, C, V, filename, tqFileContent, generalLocation, checkingOptions); // Adds the notices to checkBookPackageResult
+        checkedFileCount += 1;
+        checkedFilenameExtensions.add('md');
+        // addSuccessMessage(`Checked ${repoCode.toUpperCase()} file: ${thisPath}`);
+      }
     }
     addSuccessMessage(`Checked ${checkedFileCount.toLocaleString()} ${repoCode.toUpperCase()} file${checkedFileCount === 1 ? '' : 's'}`);
   }
@@ -149,7 +152,7 @@ async function checkTQbook(username, languageCode, repoName, branch, bookID, che
  * @param {string} languageCode
  * @param {string} bookID -- 3-character USFM book ID or 'OBS'
  * @param {Function} setResultValue function
- * @param {Object} checkingOptions
+ * @param {Object} checkingOptions -- can contain: getFile (function), originalLanguageRepoUsername, taRepoUsername, checkManifestFlag
  * @return {Object} - containing successList and noticeList
  */
 export async function checkBookPackage(username, languageCode, bookID, setResultValue, checkingOptions) {
@@ -162,6 +165,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   const startTime = new Date();
   bookID = bookID.toUpperCase(); // normalise to USFM standard
 
+  let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0, checkedRepoNames = [];
   let checkBookPackageResult = { successList: [], noticeList: [] };
 
   const newCheckingOptions = checkingOptions ? { ...checkingOptions } : {}; // clone before modify
@@ -231,14 +235,35 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     // console.log("cfcResultObject", JSON.stringify(cfcResultObject));
 
     // Process results line by line,  appending the repoCode as an extra field as we go
-    for (const cfcNoticeEntry of cfcResultObject.noticeList)
-      // noticeEntry is an object
-      // We add the repoCode as an extra value
-      addNoticePartial({ ...cfcNoticeEntry, filename: cfFilename, extra: repoCode });
+    for (const cfcNoticeEntry of cfcResultObject.noticeList) // noticeEntry is an object
+      if (cfcNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN check
+        checkBookPackageResult.noticeList.push(cfcNoticeEntry); // Just copy the complete notice as is
+      else // For our direct checks, we add the repoCode as an extra value
+        addNoticePartial({ ...cfcNoticeEntry, filename: cfFilename, extra: cfcNoticeEntry.extra ? cfcNoticeEntry.extra : repoCode });
+    // The following is needed coz we might be checking the linked TA and/or TW articles from TN TSV files
+    if (cfcResultObject.checkedFileCount && cfcResultObject.checkedFileCount > 0) {
+      checkedFileCount += cfcResultObject.checkedFileCount;
+      addSuccessMessage(`Checked ${cfcResultObject.checkedFileCount} linked TA/TW articles`);
+    }
+    if (cfcResultObject.checkedFilesizes && cfcResultObject.checkedFilesizes > 0) totalCheckedSize += cfcResultObject.checkedFilesizes;
+    if (cfcResultObject.checkedRepoNames && cfcResultObject.checkedRepoNames.length > 0)
+      for (const checkedRepoName of cfcResultObject.checkedRepoNames)
+        try { if (checkedRepoNames.indexOf(checkedRepoName) < 0) checkedRepoNames.push(checkedRepoName); }
+        catch { checkedRepoNames = [checkedRepoName]; }
+    if (cfcResultObject.checkedFilenameExtensions && cfcResultObject.checkedFilenameExtensions.length > 0)
+      for (const checkedFilenameExtension of cfcResultObject.checkedFilenameExtensions)
+        checkedFilenameExtensions.add(checkedFilenameExtension);
   }
   // end of ourCheckBPFileContents function
 
 
+  /**
+   *
+   * @param {string} repoCode, e.g., TA
+   * @param {string} repoName, e.g., en_ta
+   * @param {string} manifestLocation
+   * @param {Object} optionalCheckingOptions
+   */
   async function ourCheckManifest(repoCode, repoName, manifestLocation, optionalCheckingOptions) {
     // console.log(`checkBookPackage ourCheckManifest(${repoCode}, ${repoName}, ${manifestLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
     // Updates the global list of notices
@@ -258,7 +283,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     }
     if (manifestFileContent) {
       const cmtResultObject = checkManifestText('Manifest', manifestFileContent, manifestLocation, optionalCheckingOptions);
-      console.log(`ourCheckManifest checkManifestText(${repoName}) returned ${cmtResultObject.successList.length} success message(s) and ${cmtResultObject.noticeList.length} notice(s)`);
+      // console.log(`ourCheckManifest checkManifestText(${repoName}) returned ${cmtResultObject.successList.length} success message(s) and ${cmtResultObject.noticeList.length} notice(s)`);
       // NOTE: We ignore the returned success messages here
       // for (const successEntry of cfResultObject.successList) console.log("  ourCheckBPFileContents:", successEntry);
       // console.log("cfcResultObject", JSON.stringify(cfcResultObject));
@@ -306,7 +331,6 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     // So now we want to work through checking this one specified Bible book in various repos:
     //  UHB/UGNT, ULT/GLT, UST/GST, TN, TQ
     const getFile_ = (newCheckingOptions && newCheckingOptions.getFile) ? newCheckingOptions.getFile : cachedGetFile;
-    let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0, checkedRepoNames = [];
     const origLang = whichTestament === 'old' ? 'UHB' : 'UGNT';
 
     const repoCodeList = [origLang, 'LT', 'ST', 'TN', 'TQ'];
@@ -323,7 +347,6 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         // TODO: Might we need specific releases/tags for some of these (e.g., from the TN manifest)???
         // TODO: Do we need to hard-code where to find the UHB and UGNT???
         filename = `${bookNumberAndName}.usfm`;
-        checkedFilenameExtensions.add('usfm');
       }
       else if (repoCode === 'TN') {
         try {
@@ -334,7 +357,6 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
           filename = `${languageCode}_tn_${bookNumberAndName}.tsv`;
         }
         console.assert(filename.endsWith('.tsv'), `Expected TN filename '${filename}' to end with '.tsv'`);
-        checkedFilenameExtensions.add('tsv');
       }
 
       if (repoCode === 'TQ') {
@@ -342,11 +364,13 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         const tqResultObject = await checkTQbook(username, languageCode, repoName, branch, bookID, newCheckingOptions);
         checkBookPackageResult.successList = checkBookPackageResult.successList.concat(tqResultObject.successList);
         checkBookPackageResult.noticeList = checkBookPackageResult.noticeList.concat(tqResultObject.noticeList);
-        checkedFilenames = checkedFilenames.concat(tqResultObject.checkedFilenames);
-        checkedFilenameExtensions = new Set([...checkedFilenameExtensions, ...tqResultObject.checkedFilenameExtensions]);
-        checkedFileCount += tqResultObject.checkedFileCount;
-        totalCheckedSize += tqResultObject.totalCheckedSize;
-        checkedRepoNames.push(repoCode);
+        if (tqResultObject.checkedFileCount > 0) {
+          checkedFilenames = checkedFilenames.concat(tqResultObject.checkedFilenames);
+          checkedFilenameExtensions = new Set([...checkedFilenameExtensions, ...tqResultObject.checkedFilenameExtensions]);
+          checkedFileCount += tqResultObject.checkedFileCount;
+          totalCheckedSize += tqResultObject.totalCheckedSize;
+          checkedRepoNames.push(repoName);
+        }
       } else { // For repos other than TQ, we only have one file to check
         // console.log("Try to load", username, repoName, filename, branch);
         let repoFileContent;
@@ -356,7 +380,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
           // console.log("checkBookPackage fetched fileContent for", username, repoName, branch, filename, typeof repoFileContent, repoFileContent.length);
           checkedFilenames.push(filename);
           totalCheckedSize += repoFileContent.length;
-          checkedRepoNames.push(repoCode);
+          checkedRepoNames.push(repoName);
         } catch (cBPgfError) {
           console.error(`checkBookPackage(${username}, ${languageCode}, ${bookID}, (fn), ${JSON.stringify(checkingOptions)}) failed to load`, username, repoName, filename, branch, cBPgfError + '');
           addNoticePartial({ priority: 996, message: "Failed to load", details: `username=${username}`, repoName, filename, location: `${repoLocation}: ${cBPgfError}`, extra: repoCode });
@@ -366,16 +390,22 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
           //  so that we can adjust the returned strings ourselves
           await ourCheckBPFileContents(repoCode, filename, repoFileContent, generalLocation, newCheckingOptions); // Adds the notices to checkBookPackageResult
           checkedFileCount += 1;
+          checkedFilenameExtensions.add(filename.split('.').pop());
           addSuccessMessage(`Checked ${repoCode.toUpperCase()} file: ${filename}`);
         }
       }
 
-      const numCheckedCharacters = await ourCheckManifest(repoCode, repoName, generalLocation, newCheckingOptions);
-      if (numCheckedCharacters > 0) {
-        checkedFileCount += 1;
-        checkedFilenames.push('manifest.yaml');
-        totalCheckedSize += numCheckedCharacters;
-        addSuccessMessage(`Checked ${repoName} manifest file`);
+      // We also check the manifest file for each repo if requested
+      //  because a faulty manifest might also stop a BP from working correctly in various programs
+      if (checkingOptions.checkManifestFlag) {
+        const numCheckedCharacters = await ourCheckManifest(repoCode, repoName, generalLocation, newCheckingOptions);
+        if (numCheckedCharacters > 0) {
+          checkedFileCount += 1;
+          checkedFilenames.push('manifest.yaml');
+          checkedFilenameExtensions.add('yaml');
+          totalCheckedSize += numCheckedCharacters;
+          addSuccessMessage(`Checked ${repoName} manifest file`);
+        }
       }
     } // end of repo loop
 

@@ -62,7 +62,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     console.log(`AllBookPackagesCheck bookIDList (${bookIDList.length}) = ${bookIDList.join(', ')}`);
 
     let checkingOptions = { // Uncomment any of these to test them
-        // 'extractLength': 25,
+        // extractLength: 25,
     };
     // Or this allows the parameters to be specified as a BookPackagesCheck property
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
@@ -87,8 +87,8 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
       setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookIDList.join(', ')}</b> book packages…</p>);
 
       let rawCBPsResults = {};
-      if (bookIDList.length) rawCBPsResults = await checkBookPackages(username, languageCode, bookIDList, setResultValue, checkingOptions);
-      // console.log("checkBookPackage() returned", typeof rawCBPsResults); //, JSON.stringify(rawCBPsResults));
+      if (bookIDList.length)
+        rawCBPsResults = await checkBookPackages(username, languageCode, bookIDList, setResultValue, checkingOptions);
 
       // Add some extra fields to our rawCBPsResults object in case we need this information again later
       rawCBPsResults.checkType = 'BookPackages';
@@ -124,11 +124,18 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
 
         // console.log("Here now in rendering bit!");
 
+        function renderSuccesses(processedResults) {
+          if (processedResults.checkedFileCount > 0)
+          return (<p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount===1?'':'s'} from {username} {processedResults.checkedRepoNames.join(', ')}
+          <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>);
+          else
+          return (<p>&nbsp;&nbsp;&nbsp;&nbsp;No files checked!</p>);
+        }
+
         function renderSummary() {
           return (<div>
             <p>Checked <b>{username} {languageCode} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
-            <p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount===1?'':'s'} from {username} {processedResults.checkedRepoNames.join(', ')}
-              <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>
+            {renderSuccesses(processedResults)}
             <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCBPsResults.noticeList.length===0?'no':rawCBPsResults.noticeList.length.toLocaleString()} notice{rawCBPsResults.noticeList.length===1?'':'s'}.</p>
             {/* <RenderRawResults results={rawCBPsResults} /> */}
           </div>);

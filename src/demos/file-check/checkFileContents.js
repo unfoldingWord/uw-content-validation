@@ -5,7 +5,14 @@ import { checkUSFMText, checkMarkdownText, checkPlainText, checkYAMLText, checkM
 // const CHECK_FILE_CONTENTS_VERSION_STRING = '0.2.1';
 
 
-/** */
+/**
+ *
+ * @param {string} languageCode
+ * @param {string} filename
+ * @param {string} fileContent
+ * @param {string} givenLocation
+ * @param {Object} checkingOptions
+ */
 export async function checkFileContents(languageCode, filename, fileContent, givenLocation, checkingOptions) {
   // Determine the file type from the filename extension
   //  and return the results of checking that kind of file text
@@ -15,8 +22,10 @@ export async function checkFileContents(languageCode, filename, fileContent, giv
   let ourCFLocation = givenLocation;
   if (ourCFLocation[0] !== ' ') ourCFLocation = ' ' + ourCFLocation;
 
-  let checkFileResult;
-  if (filename.toLowerCase().endsWith('.tsv')) {
+  const filenameLower = filename.toLowerCase();
+
+  let checkFileResult = { checkedFileCount: 0 };
+  if (filenameLower.endsWith('.tsv')) {
     const filenameMain = filename.substring(0, filename.length - 4); // drop .tsv
     // console.log(`Have TSV filenameMain=${filenameMain}`);
     const bookID = filenameMain.substring(filenameMain.length - 3);
@@ -24,27 +33,27 @@ export async function checkFileContents(languageCode, filename, fileContent, giv
     console.assert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
     checkFileResult = await checkTN_TSVText(languageCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
   }
-  else if (filename.toLowerCase().endsWith('.usfm')) {
+  else if (filenameLower.endsWith('.usfm')) {
     const filenameMain = filename.substring(0, filename.length - 5); // drop .usfm
     // console.log(`Have USFM filenameMain=${filenameMain}`);
     const bookID = filenameMain.substring(filenameMain.length - 3);
     // console.log(`Have USFM bookcode=${bookID}`);
     console.assert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
     checkFileResult = checkUSFMText(languageCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
-  } else if (filename.toLowerCase().endsWith('.sfm')) {
+  } else if (filenameLower.endsWith('.sfm')) {
     const filenameMain = filename.substring(0, filename.length - 4); // drop .sfm
     console.log(`Have SFM filenameMain=${filenameMain}`);
     const bookID = filenameMain.substring(2, 5);
     console.log(`Have SFM bookcode=${bookID}`);
     console.assert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
     checkFileResult = checkUSFMText(languageCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
-  } else if (filename.toLowerCase().endsWith('.md'))
+  } else if (filenameLower.endsWith('.md'))
     checkFileResult = checkMarkdownText(filename, fileContent, ourCFLocation, checkingOptions);
-  else if (filename.toLowerCase().endsWith('.txt'))
+  else if (filenameLower.endsWith('.txt'))
     checkFileResult = checkPlainText(filename, fileContent, ourCFLocation, checkingOptions);
-  else if (filename.toLowerCase() === 'manifest.yaml')
+  else if (filenameLower === 'manifest.yaml')
     checkFileResult = checkManifestText('', fileContent, ourCFLocation, checkingOptions);
-  else if (filename.toLowerCase().endsWith('.yaml'))
+  else if (filenameLower.endsWith('.yaml'))
     checkFileResult = checkYAMLText('', fileContent, ourCFLocation, checkingOptions);
   else {
     checkFileResult = checkPlainText(filename, fileContent, ourCFLocation, checkingOptions);
@@ -53,12 +62,12 @@ export async function checkFileContents(languageCode, filename, fileContent, giv
   // console.log(`checkFileContents got initial results with ${checkFileResult.successList.length} success message(s) and ${checkFileResult.noticeList.length} notice(s)`);
 
   // Make sure that we have the filename in all of our notices (in case other files are being checked as well)
-  function addFilenameField(notice) { return { ...notice, filename }; }
+  function addFilenameField(notice) { return notice.extra ? notice : { ...notice, filename }; } // Might be an indirect check on a TA or TW article
   checkFileResult.noticeList = checkFileResult.noticeList.map(addFilenameField);
 
   // Add some extra fields to our checkFileResult object
   //  in case we need this information again later
-  checkFileResult.checkedFileCount = 1;
+  checkFileResult.checkedFileCount += 1;
   checkFileResult.checkedFilename = filename;
   checkFileResult.checkedFilesize = fileContent.length;
   checkFileResult.checkedOptions = checkingOptions;

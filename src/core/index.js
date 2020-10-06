@@ -10,6 +10,7 @@ export * from './file-text-check';
 export * from './markdown-text-check';
 export * from './manifest-text-check';
 export * from './plain-text-check';
+export * from './tn-links-check';
 export * from './tn-table-row-check';
 export * from './tn-table-text-check';
 export * from './usfm-text-check';

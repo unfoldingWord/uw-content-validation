@@ -13,7 +13,10 @@ Note that `OBS` can also be entered here as a *pseudo book identifier* in order 
 **Note**: This demonstration uses cached values of files stored inside the local browser. This makes reruns of the checks much faster, but it won't notice if you have updated the files on Door43. If you want to clear the local caches, use the `Clear Cache` function.
 
 ```js
+import { clearCheckedArticleCache } from '../../core';
 import BookPackagesCheck from './BookPackagesCheck';
+
+clearCheckedArticleCache();
 
 <BookPackagesCheck
   username='unfoldingWord'

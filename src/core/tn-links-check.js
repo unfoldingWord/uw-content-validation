@@ -1,10 +1,12 @@
+import localforage from 'localforage';
+import Path from 'path';
 import * as books from '../core/books/books';
-import { cachedGetFile } from '../core/getApi';
+import { cachedGetFile, checkMarkdownText } from '../core';
 import { ourParseInt } from './utilities';
 // import { consoleLogObject } from '../core/utilities';
 
 
-// const TN_LINKS_VALIDATOR_VERSION_STRING = '0.4.1';
+// const TN_LINKS_VALIDATOR_VERSION_STRING = '0.5.1';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -13,6 +15,53 @@ const DEFAULT_BRANCH = 'master';
 const DEFAULT_LANGUAGE_CODE = 'en';
 
 
+// Caches the path names of files which have been already checked
+//  Used for storing paths to TA and TW articles that have already been checked
+const checkedArticleStore = localforage.createInstance({
+    driver: [localforage.INDEXEDDB],
+    name: 'CV-checked-path-store',
+});
+
+export async function clearCheckedArticleCache() {
+    console.log("clearCheckedArticleCache()…");
+    await checkedArticleStore.clear();
+}
+
+/**
+ *
+ * @param {string} username
+ * @param {string} repository name
+ * @param {string} path
+ * @param {string} branch
+ */
+async function markAsChecked({ username, repository, path, branch }) {
+    // console.log(`markAsChecked(${username}, ${repository}, ${path}, ${branch})…`);
+    const dummyPath = Path.join(username, repository, branch, path);
+    await checkedArticleStore.setItem(dummyPath, true);
+}
+
+/**
+ *
+ * @param {string} username
+ * @param {string} repository name
+ * @param {string} path
+ * @param {string} branch
+ */
+async function alreadyChecked({ username, repository, path, branch }) {
+    // console.log(`alreadyChecked(${username}, ${repository}, ${path}, ${branch})…`);
+    const dummyPath = Path.join(username, repository, branch, path);
+    return await checkedArticleStore.getItem(dummyPath);
+}
+
+
+/**
+ *
+ * @param {string} bookID
+ * @param {string} fieldName
+ * @param {string} fieldText
+ * @param {string} givenLocation
+ * @param {Object} optionalCheckingOptions
+ */
 export async function checkTNLinksToOutside(bookID, fieldName, fieldText, givenLocation, optionalCheckingOptions) {
     /* This is for the case of the OccurrenceNote field containing markdown links
 
@@ -32,11 +81,13 @@ export async function checkTNLinksToOutside(bookID, fieldName, fieldText, givenL
     //  -- you can control this with:
     //      optionalCheckingOptions.taRepoUsername
     //      optionalCheckingOptions.taRepoBranch (or tag)
+    //      optionalCheckingOptions.checkLinkedTAArticleFlag
 
     // We attempt to fetch any TW links to test that the destination is really there
     //  -- you can control this with:
     //      optionalCheckingOptions.twRepoUsername
     //      optionalCheckingOptions.twRepoBranch (or tag)
+    //      optionalCheckingOptions.checkLinkedTWArticleFlag
     */
 
     // console.log(`checkTNLinksToOutside v${TN_LINKS_VALIDATOR_VERSION_STRING} ${bookID} (${fieldName}, (${fieldText.length}) '${fieldText}', ${givenLocation}, …)…`);
@@ -55,7 +106,7 @@ export async function checkTNLinksToOutside(bookID, fieldName, fieldText, givenL
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
-    const ctarResult = { noticeList: [] };
+    const ctarResult = { noticeList: [], checkedFileCount: 0, checkedFilenames: [], checkedRepoNames: [] };
 
     function addNoticePartial(noticeObject) {
         // console.log(`checkTNLinksToOutside Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
@@ -130,21 +181,38 @@ export async function checkTNLinksToOutside(bookID, fieldName, fieldText, givenL
         // console.log(`Got tA filepath=${filepath}`);
 
         // console.log(`Need to check against ${taRepoName}`);
+        const taPathParameters = { username: twRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch };
         let taFileContent; // Not really used here -- just to show that we got something valid
         try {
-            taFileContent = await getFile_({ username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch });
+            taFileContent = await getFile_(taPathParameters);
             // console.log("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
-            if (!taFileContent)
-                addNoticePartial({ priority: 886, message: `Unable to find ${fieldName} TA link`, extract: resultArray[0], location: `${ourLocation} ${filepath}` });
-            else if (taFileContent.length < 10)
-                addNoticePartial({ priority: 884, message: `Linked ${fieldName} TA article seems empty`, extract: resultArray[0], location: `${ourLocation} ${filepath}` });
         } catch (trcGCerror) {
             console.error(`checkTNLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
             addNoticePartial({ priority: 885, message: `Error loading ${fieldName} TA link`, extract: resultArray[0], location: `${ourLocation} ${filepath}: ${trcGCerror}` });
         }
+        if (!taFileContent)
+            addNoticePartial({ priority: 886, message: `Unable to find ${fieldName} TA link`, extract: resultArray[0], location: `${ourLocation} ${filepath}` });
+        else if (taFileContent.length < 10)
+            addNoticePartial({ priority: 884, message: `Linked ${fieldName} TA article seems empty`, extract: resultArray[0], location: `${ourLocation} ${filepath}` });
+        else if (optionalCheckingOptions.checkLinkedTAArticleFlag === true) {
+            // console.log(`checkTNLinksToOutside got ${optionalCheckingOptions.checkLinkedTAArticleFlag} so checking TA article: ${filepath}`);
+            if (await alreadyChecked(taPathParameters) !== true) {
+                // console.log(`checkTNLinksToOutside needs to check TA article: ${filepath}`);
+                const checkTAFileResult = checkMarkdownText(`${resultArray[3]}.md`, taFileContent, ourLocation, optionalCheckingOptions);
+                for (const noticeObject of checkTAFileResult.noticeList)
+                    ctarResult.noticeList.push({ ...noticeObject, repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
+                ctarResult.checkedFileCount += 1;
+                ctarResult.checkedFilenames.push(`${resultArray[3]}.md`);
+                ctarResult.checkedFilesizes = taFileContent.length;
+                ctarResult.checkedFilenameExtensions = ['md'];
+                ctarResult.checkedRepoNames.push(taRepoName);
+                markAsChecked(taPathParameters); // don't bother waiting for the result
+            }
+        }
     }
 
     // Check TW links like [[rc://en/tw/dict/bible/other/death]]
+    //  (These are not nearly as many as TA links.)
     // console.log("checkTNLinksToOutside: Search for TW links")
     const twRegex = new RegExp('\\[\\[rc://([^ /]+?)/tw/dict/bible/([^ /]+?)/([^ \\]]+?)\\]\\]', 'g');
     // eslint-disable-next-line no-cond-assign
@@ -159,18 +227,36 @@ export async function checkTNLinksToOutside(bookID, fieldName, fieldText, givenL
         // console.log(`Got tW filepath=${filepath}`);
 
         // console.log(`Need to check against ${twRepoName}`);
-        let taFileContent; // Not really used here -- just to show that we got something valid
+        const twPathParameters = { username: twRepoUsername, repository: twRepoName, path: filepath, branch: twRepoBranch };
+        let twFileContent;
         try {
-            taFileContent = await getFile_({ username: twRepoUsername, repository: twRepoName, path: filepath, branch: twRepoBranch });
+            twFileContent = await getFile_(twPathParameters);
             // console.log("Fetched fileContent for", twRepoName, filepath, typeof fileContent, fileContent.length);
         } catch (trcGCerror) {
             console.error(`checkTNLinksToOutside(${bookID}, ${fieldName}, …) failed to load TW`, twRepoUsername, twRepoName, filepath, twRepoBranch, trcGCerror.message);
             addNoticePartial({ priority: 882, message: `Error loading ${fieldName} TW link`, extract: resultArray[0], location: `${ourLocation} ${filepath}: ${trcGCerror}` });
         }
-        if (!taFileContent)
+        if (!twFileContent)
             addNoticePartial({ priority: 883, message: `Unable to find ${fieldName} TW link`, extract: resultArray[0], location: `${ourLocation} ${filepath}` });
-        else if (taFileContent.length < 10)
-            addNoticePartial({ priority: 881, message: `Linked ${fieldName} TW article seems empty`, extract: resultArray[0], location: `${ourLocation} ${filepath}` });
+        else { // we got the content of the TW article
+            if (twFileContent.length < 10)
+                addNoticePartial({ priority: 881, message: `Linked ${fieldName} TW article seems empty`, extract: resultArray[0], location: `${ourLocation} ${filepath}` });
+            else if (optionalCheckingOptions.checkLinkedTWArticleFlag === true) {
+                // console.log(`checkTNLinksToOutside got ${optionalCheckingOptions.checkLinkedTWArticleFlag} so checking TW article: ${filepath}`);
+                if (await alreadyChecked(twPathParameters) !== true) {
+                    // console.log(`checkTNLinksToOutside needs to check TW article: ${filepath}`);
+                    const checkTWFileResult = checkMarkdownText(`${resultArray[3]}.md`, twFileContent, ourLocation, optionalCheckingOptions);
+                    for (const noticeObject of checkTWFileResult.noticeList)
+                        ctarResult.noticeList.push({ ...noticeObject, repoName: twRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TW' });
+                    ctarResult.checkedFileCount += 1;
+                    ctarResult.checkedFilenames.push(`${resultArray[3]}.md`);
+                    ctarResult.checkedFilesizes = twFileContent.length;
+                    ctarResult.checkedFilenameExtensions = ['md'];
+                    ctarResult.checkedRepoNames.push(twRepoName);
+                    markAsChecked(twPathParameters); // don't bother waiting for the result
+                }
+            }
+        }
     }
 
     // Check Bible links like [Revelation 3:11](../03/11.md)

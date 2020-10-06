@@ -1,5 +1,6 @@
 export function isWhitespace(myString) {
-    if (/^\s+$/.test(myString)) return true;
+    // includes zero-width space
+    if (/^[\s\u200B]+$/.test(myString)) return true;
     return false;
 }
 

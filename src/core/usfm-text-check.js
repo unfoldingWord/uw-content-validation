@@ -7,7 +7,7 @@ import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
 import { ourParseInt } from './utilities';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.6.34';
+// const USFM_VALIDATOR_VERSION_STRING = '0.6.35';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -167,6 +167,8 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cUSFM addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "cUSFM addNoticePartial: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `cUSFM addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+
+        console.assert(noticeObject.message.indexOf('Mismatched {}') < 0, `checkUSFMText addNoticePartial: got bad notice: ${JSON.stringify(noticeObject)}`);
         result.noticeList.push({ ...noticeObject, bookID, filename });
     }
 
@@ -409,17 +411,17 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
     // end of CVCheck function
 
 
+    /**
+    * @description - checks the given text field and processes the returned results
+    * @param {String} C - chapter number of the text being checked
+    * @param {String} V - verse number of the text being checked
+    * @param {String} fieldName - name of the field being checked
+    * @param {String} fieldText - the actual text of the field being checked
+    * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
+    * @param {String} fieldLocation - description of where the field is located
+    * @param {Object} optionalCheckingOptions - parameters that might affect the check
+    */
     function ourCheckTextField(lineNumber, C, V, fieldName, fieldText, allowedLinks, fieldLocation, optionalCheckingOptions) {
-        /**
-        * @description - checks the given text field and processes the returned results
-        * @param {String} C - chapter number of the text being checked
-        * @param {String} V - verse number of the text being checked
-        * @param {String} fieldName - name of the field being checked
-        * @param {String} fieldText - the actual text of the field being checked
-        * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
-        * @param {String} fieldLocation - description of where the field is located
-        * @param {Object} optionalCheckingOptions - parameters that might affect the check
-        */
         // Does basic checks for small errors like leading/trailing spaces, etc.
 
         // We assume that checking for compulsory fields is done elsewhere
@@ -483,6 +485,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
             console.assert(Object.keys(noticeEntry).length >= 5, `USFM ourBasicFileChecks notice length=${Object.keys(noticeEntry).length}`);
             if (!noticeEntry.message.startsWith("Mismatched () characters") // 663 Mismatched left/right chars -- suppress these misleading warnings coz open quote can occur in one verse and close in another
                 && !noticeEntry.message.startsWith("Mismatched [] characters")
+                && !noticeEntry.message.startsWith("Mismatched {} characters") // Start/end of implied text can be on different lines
                 && !noticeEntry.message.startsWith("Mismatched “” characters")
                 && !noticeEntry.message.startsWith("Mismatched «» characters")
                 && (!noticeEntry.message.startsWith("Unexpected space after | character") || fileText.indexOf('zaln-s') < 0) // 192 inside \zaln-s fields
@@ -875,17 +878,20 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
                 const extract = `${rest.substring(0, thisLength)}${rest.length > thisLength ? '…' : ''}`;
                 addNoticePartial({ priority: 987, C, V, message: "Expected \\id line to start with book identifier", lineNumber: n, characterIndex: 4, extract, location: ourLocation });
             }
+
             // Check the order of markers
             // In headers
             if (marker === 'toc2' && lastMarker !== 'toc1')
-                addNoticePartial({ priority: 87, C, V, message: "Expected \\toc2 line to follow \\toc1", lineNumber: n, characterIndex: 1, extract: `(not '${lastMarker}')`, location: ourLocation });
+                addNoticePartial({ priority: 87, C, V, message: "Expected \\toc2 line to follow \\toc1", lineNumber: n, characterIndex: 1, details: `(not '${lastMarker}')`, location: ourLocation });
             else if (marker === 'toc3' && lastMarker !== 'toc2')
-                addNoticePartial({ priority: 87, C, V, message: "Expected \\toc3 line to follow \\toc2", lineNumber: n, characterIndex: 1, extract: `(not '${lastMarker}')`, location: ourLocation });
+                addNoticePartial({ priority: 87, C, V, message: "Expected \\toc3 line to follow \\toc2", lineNumber: n, characterIndex: 1, details: `(not '${lastMarker}')`, location: ourLocation });
             // In chapters
             else if ((PARAGRAPH_MARKERS.indexOf(marker) >= 0 || marker === 's5' || marker === 'ts\\*')
                 && PARAGRAPH_MARKERS.indexOf(lastMarker) >= 0
                 && !lastRest)
-                addNoticePartial({ priority: 399, C, V, message: "Useless paragraph marker", lineNumber: n, characterIndex: 1, extract: `('${lastMarker}' before '${marker}')`, location: ourLocation });
+                addNoticePartial({ priority: 399, C, V, message: "Useless paragraph marker", lineNumber: n, characterIndex: 1, details: `('${lastMarker}' before '${marker}')`, location: ourLocation });
+            else if (['c','ca','cl'].indexOf(lastMarker) > 0 && marker === 'v')
+                addNoticePartial({ priority: C==='1'? 657:457, C, V, message: "Paragraph marker expected before first verse", lineNumber: n, characterIndex: 1, details: `('${marker}' after '${lastMarker}')`, location: ourLocation });
 
             // Do general checks
             checkUSFMLineContents(n, C, V, marker, rest, ourLocation, optionalCheckingOptions);

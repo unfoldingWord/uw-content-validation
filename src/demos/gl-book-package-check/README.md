@@ -13,11 +13,27 @@ Note that `OBS` can also be entered here as a *pseudo book identifier* in order 
 **Note**: This demonstration uses cached values of files stored inside the local browser. This makes reruns of the checks much faster, but it won't notice if you have updated the files on Door43. If you want to clear the local caches, use the `Clear Cache` function.
 
 ```js
+import { clearCheckedArticleCache } from '../../core';
 import GlBookPackageCheck from './GlBookPackageCheck';
 
+clearCheckedArticleCache();
+
 <GlBookPackageCheck
-  username='Door43-Catalog'
-  languageCode='hi'
+  // NOTE: originalLanguagesUsername is not yet used by the demonstration
+  // Uncomment or change ONE of the following lines
+  // originalLanguagesUsername='Door43-Catalog' // repo organisation name for published Door43 UHB and UGNT versions
+  originalLanguagesUsername='unfoldingWord' // repo organisation name for work-in-progress Door43 UHB and UGNT versions
+
+  // Uncomment or change ONE of the following lines
+  // otherLanguageUsername='Door43-Catalog' // repo organisation name for all published Door43 LT, ST, TN, etc. versions
+  // otherLanguageUsername='unfoldingWord' // repo organisation name for work-in-progress en Door43 ULT, UST, UTN, etc. versions
+  // otherLanguageUsername='Es-419_gl' // repo organisation name for work-in-progress es-419 Door43 LT, ST, TN, etc. versions
+  // otherLanguageUsername='translationCore-Create-BCS' // repo organisation name for work-in-progress hi/kn Door43 LT, ST, TN, etc. versions
+  otherLanguageUsername='ru_gl' // repo organisation name for work-in-progress ru Door43 LT, ST, TN, etc. versions
+
+  // Of course, this languageCode has to match the chosen otherLanguageUsername above
+  languageCode='ru' // Tested with es-419, hi, kn, ru
+
   // bookID can be a USFM bookID, e.g., 'GEN', 'MAT', '3JN'
   //  and can also be 'OBS' (for Open Bible Stories)
   bookID='TIT'
