@@ -42,7 +42,7 @@ function FileCheck(props) {
 
       // Display our "waiting" message
       setResultValue(<p style={{ color: 'magenta' }}>Fetching {username} {repoName} <b>{filename}</b>…</p>);
-      console.log(`FileCheck about to call cachedGetFile(${username}, ${repoName}, ${filename}, ${branch})…`);
+      // console.log(`FileCheck about to call cachedGetFile(${username}, ${repoName}, ${filename}, ${branch})…`);
       const fileContent = await cachedGetFile({ username: username, repository: repoName, path: filename, branch: branch });
 
       setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {repoName} <b>{filename}</b>…</p>);

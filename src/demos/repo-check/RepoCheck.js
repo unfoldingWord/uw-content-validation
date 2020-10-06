@@ -46,10 +46,15 @@ function RepoCheck(/*username, languageCode,*/ props) {
         (async () => {
             // console.log("Started RepoCheck.unnamedFunction()");
 
+            if (!username) {
+                setResultValue(<p style={{ color: 'red' }}>No <b>username</b> set!</p>);
+                return;
+            }
             if (!repoName) {
                 setResultValue(<p style={{ color: 'red' }}>No <b>repoName</b> set!</p>);
                 return;
             }
+            
             let [languageCode,repoCode] = repoName.split('_');
             repoCode = repoCode.toUpperCase();
             console.log(`languageCode='${languageCode}' repoCode='${repoCode}'`);

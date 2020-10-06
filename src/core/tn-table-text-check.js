@@ -24,11 +24,11 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     // if (bookID) ourLocation = ` in ${bookID}${ourLocation}`;
 
-    const result = { successList: [], noticeList: [] };
+    const ttResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
         // console.log(`checkTN_TSVText success: ${successString}`);
-        result.successList.push(successString);
+        ttResult.successList.push(successString);
     }
     function addNoticeCV8(noticeObject) {
         // console.log(`checkTN_TSVText notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
@@ -46,7 +46,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `TSV addNoticeCV8: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "TSV addNoticeCV8: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `TSV addNoticeCV8: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
-        result.noticeList.push({ ...noticeObject, bookID, filename });
+        ttResult.noticeList.push({ ...noticeObject, bookID, filename });
     }
 
 
@@ -96,14 +96,33 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
                 const [B, C, V, rowID, supportReference, origQuote, occurrence, _GLQuote, _occurrenceNote] = fields;
 
                 // Use the row check to do most basic checks
-                const firstResult = await checkTN_TSVDataRow(languageCode, lines[n], bookID, C, V, ourLocation, optionalCheckingOptions);
+                const drResultObject = await checkTN_TSVDataRow(languageCode, lines[n], bookID, C, V, ourLocation, optionalCheckingOptions);
                 // Choose only ONE of the following
                 // This is the fast way of append the results from this field
                 // result.noticeList = result.noticeList.concat(firstResult.noticeList);
                 // If we need to put everything through addNoticeCV8, e.g., for debugging or filtering
                 //  process results line by line
-                for (const noticeEntry of firstResult.noticeList)
-                    addNoticeCV8({ ...noticeEntry, lineNumber: n + 1 });
+                for (const drNoticeEntry of drResultObject.noticeList)
+                    if (drNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN check
+                        ttResult.noticeList.push(drNoticeEntry); // Just copy the complete notice as is
+                    else
+                        addNoticeCV8({ ...drNoticeEntry, lineNumber: n + 1 });
+                // The following is needed coz we might be checking the linked TA and/or TW articles
+                if (drResultObject.checkedFileCount && drResultObject.checkedFileCount > 0)
+                    if (typeof ttResult.checkedFileCount === 'number') ttResult.checkedFileCount += drResultObject.checkedFileCount;
+                    else ttResult.checkedFileCount = drResultObject.checkedFileCount;
+                if (drResultObject.checkedFilesizes && drResultObject.checkedFilesizes > 0)
+                    if (typeof ttResult.checkedFilesizes === 'number') ttResult.checkedFilesizes += drResultObject.checkedFilesizes;
+                    else ttResult.checkedFilesizes = drResultObject.checkedFilesizes;
+                if (drResultObject.checkedRepoNames && drResultObject.checkedRepoNames.length > 0)
+                    for (const checkedRepoName of drResultObject.checkedRepoNames)
+                        try { if (ttResult.checkedRepoNames.indexOf(checkedRepoName) < 0) ttResult.checkedRepoNames.push(checkedRepoName); }
+                        catch { ttResult.checkedRepoNames = [checkedRepoName]; }
+                if (drResultObject.checkedFilenameExtensions && drResultObject.checkedFilenameExtensions.length > 0)
+                    for (const checkedFilenameExtension of drResultObject.checkedFilenameExtensions)
+                        try { if (ttResult.checkedFilenameExtensions.indexOf(checkedFilenameExtension) < 0) ttResult.checkedFilenameExtensions.push(checkedFilenameExtension); }
+                        catch { ttResult.checkedFilenameExtensions = [checkedFilenameExtension]; }
+                // if (ttResult.checkedFilenameExtensions) console.log("ttResult", JSON.stringify(ttResult));
 
                 // So here we only have to check against the previous and next fields for out-of-order problems and duplicate problems
                 if (B !== lastB || C !== lastC || V !== lastV) {
@@ -192,12 +211,12 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
         }
     }
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}.`);
-    if (result.noticeList)
-        addSuccessMessage(`checkTN_TSVText v${TN_TABLE_TEXT_VALIDATOR_VERSION_STRING} finished with ${result.noticeList.length ? result.noticeList.length.toLocaleString() : "zero"} notice${result.noticeList.length === 1 ? '' : 's'}`);
+    if (ttResult.noticeList)
+        addSuccessMessage(`checkTN_TSVText v${TN_TABLE_TEXT_VALIDATOR_VERSION_STRING} finished with ${ttResult.noticeList.length ? ttResult.noticeList.length.toLocaleString() : "zero"} notice${ttResult.noticeList.length === 1 ? '' : 's'}`);
     else
         addSuccessMessage(`No errors or warnings found by checkTN_TSVText v${TN_TABLE_TEXT_VALIDATOR_VERSION_STRING}`)
     // console.log(`  checkTN_TSVText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
     // console.log("checkTN_TSVText result is", JSON.stringify(result));
-    return result;
+    return ttResult;
 }
 // end of checkTN_TSVText function

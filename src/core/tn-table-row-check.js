@@ -252,10 +252,28 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         // result.noticeList = result.noticeList.concat(coqResultObject.noticeList);
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
-        for (const noticeEntry of coqResultObject.noticeList) {
-            // console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckTNLinksToOutside notice length=${Object.keys(noticeEntry).length}`);
-            addNoticePartial({ ...noticeEntry, rowID, fieldName });
+        for (const coqNoticeEntry of coqResultObject.noticeList) {
+            if (coqNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN check
+                drResult.noticeList.push(coqNoticeEntry); // Just copy the complete notice as is
+            else // For our direct checks, we add the repoCode as an extra value
+                addNoticePartial({ ...coqNoticeEntry, rowID, fieldName });
         }
+        // The following is needed coz we might be checking the linked TA and/or TW articles
+        if (coqResultObject.checkedFileCount && coqResultObject.checkedFileCount > 0)
+            if (typeof drResult.checkedFileCount === 'number') drResult.checkedFileCount += coqResultObject.checkedFileCount;
+            else drResult.checkedFileCount = coqResultObject.checkedFileCount;
+        if (coqResultObject.checkedFilesizes && coqResultObject.checkedFilesizes > 0)
+            if (typeof drResult.checkedFilesizes === 'number') drResult.checkedFilesizes += coqResultObject.checkedFilesizes;
+            else drResult.checkedFilesizes = coqResultObject.checkedFilesizes;
+        if (coqResultObject.checkedRepoNames && coqResultObject.checkedRepoNames.length > 0)
+            for (const checkedRepoName of coqResultObject.checkedRepoNames)
+                try { if (drResult.checkedRepoNames.indexOf(checkedRepoName) < 0) drResult.checkedRepoNames.push(checkedRepoName); }
+                catch { drResult.checkedRepoNames = [checkedRepoName]; }
+        if (coqResultObject.checkedFilenameExtensions && coqResultObject.checkedFilenameExtensions.length > 0)
+            for (const checkedFilenameExtension of coqResultObject.checkedFilenameExtensions)
+                try { if (drResult.checkedFilenameExtensions.indexOf(checkedFilenameExtension) < 0) drResult.checkedFilenameExtensions.push(checkedFilenameExtension); }
+                catch { drResult.checkedFilenameExtensions = [checkedFilenameExtension]; }
+        // if (drResult.checkedFilenameExtensions) console.log("drResult", JSON.stringify(drResult));
     }
     // end of ourCheckTNLinksToOutside function
 
@@ -413,8 +431,8 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
             if (isWhitespace(GLQuote))
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'GLQuote', rowID, location: ourRowLocation });
             else // More than just whitespace
-            if (V !== 'intro')
-                ourCheckTextField(rowID, 'GLQuote', GLQuote, false, ourRowLocation, optionalCheckingOptions);
+                if (V !== 'intro')
+                    ourCheckTextField(rowID, 'GLQuote', GLQuote, false, ourRowLocation, optionalCheckingOptions);
         }
         // else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
         //     if (V !== 'intro')

@@ -9,7 +9,10 @@ The code below requests some info and then checks the requested Bible books -- N
 **Note**: This demonstration uses cached values of files stored inside the local browser. This makes reruns of the checks much faster, but it won't notice if you have updated the files on Door43. If you want to clear the local caches, use the `Clear Cache` function.
 
 ```js
+import { clearCheckedArticleCache } from '../../core';
 import AllBookPackagesCheck from './AllBookPackagesCheck';
+
+clearCheckedArticleCache();
 
 <AllBookPackagesCheck
   username='unfoldingWord'

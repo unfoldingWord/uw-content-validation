@@ -24,7 +24,7 @@ export async function checkFileContents(languageCode, filename, fileContent, giv
 
   const filenameLower = filename.toLowerCase();
 
-  let checkFileResult;
+  let checkFileResult = { checkedFileCount: 0 };
   if (filenameLower.endsWith('.tsv')) {
     const filenameMain = filename.substring(0, filename.length - 4); // drop .tsv
     // console.log(`Have TSV filenameMain=${filenameMain}`);
@@ -62,12 +62,12 @@ export async function checkFileContents(languageCode, filename, fileContent, giv
   // console.log(`checkFileContents got initial results with ${checkFileResult.successList.length} success message(s) and ${checkFileResult.noticeList.length} notice(s)`);
 
   // Make sure that we have the filename in all of our notices (in case other files are being checked as well)
-  function addFilenameField(notice) { return { ...notice, filename }; }
+  function addFilenameField(notice) { return notice.extra ? notice : { ...notice, filename }; } // Might be an indirect check on a TA or TW article
   checkFileResult.noticeList = checkFileResult.noticeList.map(addFilenameField);
 
   // Add some extra fields to our checkFileResult object
   //  in case we need this information again later
-  checkFileResult.checkedFileCount = 1;
+  checkFileResult.checkedFileCount += 1;
   checkFileResult.checkedFilename = filename;
   checkFileResult.checkedFilesize = fileContent.length;
   checkFileResult.checkedOptions = checkingOptions;

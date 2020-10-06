@@ -4,6 +4,8 @@ import localforage from 'localforage';
 import { setup } from 'axios-cache-adapter';
 import JSZip from 'jszip';
 import * as books from './books';
+import { clearCheckedArticleCache } from './tn-links-check';
+
 // import { consoleLogObject } from '../core/utilities';
 
 
@@ -67,8 +69,9 @@ export async function clearCaches() {
   // results.forEach(x => console.log("Done it", x));
   await failedStore.clear();
   await zipStore.clear();
-  await cacheStore.clear(); // This is the one used by the Axion Door43Api
+  await cacheStore.clear(); // This is the one used by the Axion Door43Api (above)
   await unzipStore.clear();
+  await clearCheckedArticleCache(); // Used for checking TA and TW articles referred to by TN links
 }
 
 

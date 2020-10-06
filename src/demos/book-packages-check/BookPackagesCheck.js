@@ -28,9 +28,6 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     let branch = props.branch;
     // console.log(`branch='${branch}'`);
 
-    // Clear cached files if we've changed repo
-    //  autoClearCache(bookIDs); // This technique avoids the complications of needing a button
-
     let bookIDList = [];
     let bookIDInvalid;
     for (let bookID of bookIDs.split(',')) {
