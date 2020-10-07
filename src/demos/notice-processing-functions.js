@@ -138,8 +138,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             if (thisFilename) {
                 console.assert(thisFilename.indexOf(':') < 0 && thisFilename.indexOf('\\') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 console.assert(ALL_TSV_FIELDNAMES.indexOf(thisFilename) < 0, `filename '${thisFilename}' contains a TSV fieldName!`);
-                // NOTE: Some OBS messages have to include part of the part in the 'filename' (to prevent ambiguity) so we don't disallow forward slash
-                if (!thisRepoName || !thisRepoName.endsWith('_obs'))
+                // NOTE: Some OBS and other messages have to include part of the part in the 'filename' (to prevent ambiguity) so we don't disallow forward slash
+                if (!thisRepoName || !(thisRepoName.endsWith('_obs') || thisRepoName.endsWith('_ta') || thisRepoName.endsWith('_tw')))
                     console.assert(thisFilename.indexOf('/') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 if (thisLocation)
                     console.assert(thisLocation.indexOf(thisFilename) < 0, `filename is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
@@ -228,7 +228,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 if (thisParticularSuccessMsg.startsWith('Checked UHB file: '))
                     UHBBookList.push(thisParticularSuccessMsg.substring(18, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked UGNT file: '))
-                UGNTBookList.push(thisParticularSuccessMsg.substring(19, thisParticularSuccessMsg.length))
+                    UGNTBookList.push(thisParticularSuccessMsg.substring(19, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked LT file: '))
                     LTBookList.push(thisParticularSuccessMsg.substring(18, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked ST file: '))
@@ -251,19 +251,19 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             // Recreate original messages if exactly one found
             if (UHBBookList.length === 1)
                 resultObject.successList.push(`Checked UHB file: ${UHBBookList[0]}`);
-                if (UGNTBookList.length === 1)
+            if (UGNTBookList.length === 1)
                 resultObject.successList.push(`Checked UGNT file: ${UGNTBookList[0]}`);
-                if (LTBookList.length === 1)
+            if (LTBookList.length === 1)
                 resultObject.successList.push(`Checked LT file: ${LTBookList[0]}`);
-                if (STBookList.length === 1)
+            if (STBookList.length === 1)
                 resultObject.successList.push(`Checked ST file: ${STBookList[0]}`);
-                if (TNBookList.length === 1)
+            if (TNBookList.length === 1)
                 resultObject.successList.push(`Checked TN file: ${TNBookList[0]}`);
-                if (USFMBookList.length === 1)
+            if (USFMBookList.length === 1)
                 resultObject.successList.push(`Checked ${USFMBookList[0]} file`);
-                if (TSVNotesList.length === 1)
+            if (TSVNotesList.length === 1)
                 resultObject.successList.push(`Checked ${TSVNotesList[0]} file`);
-                if (manifestsList.length === 1)
+            if (manifestsList.length === 1)
                 resultObject.successList.push(`Checked ${manifestsList[0]} manifest file`);
             // Put summary messages at the beginning of the list if more than one found
             // Process these messages in the opposite order than we want them to display (since we push to beginning of list each time)
