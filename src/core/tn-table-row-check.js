@@ -14,6 +14,8 @@ const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOr
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
+const TA_REGEX = new RegExp('\\[\\[rc://[^ /]+?/ta/man/[^ /]+?/([^ \\]]+?)\\]\\]', 'g');
+
 
 export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, givenV, givenRowLocation, optionalCheckingOptions) {
     /**
@@ -394,8 +396,16 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
             if (isWhitespace(supportReference))
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'SupportReference', rowID, location: ourRowLocation });
             else { // More than just whitespace
+                if (!supportReference.startsWith('figs-')
+                    && !supportReference.startsWith('grammar-')
+                    && !supportReference.startsWith('translate-')
+                    && !supportReference.startsWith('writing-')
+                    && supportReference !== 'guidelines-sonofgodprinciples-')
+                    addNoticePartial({ priority: 788, message: "Only 'Just-In-Time Training' TA articles allowed here", fieldName: 'SupportReference', extract: supportReference, rowID, location: ourRowLocation });
                 ourCheckTextField(rowID, 'SupportReference', supportReference, true, ourRowLocation, optionalCheckingOptions);
                 await ourCheckSupportReferenceInTA(rowID, 'SupportReference', supportReference, ourRowLocation, optionalCheckingOptions);
+                if (occurrenceNote.indexOf(supportReference) < 0) // The full link is NOT in the note!
+                    addNoticePartial({ priority: 787, message: "TA Link should also be in OccurrenceNote", fieldName: 'SupportReference', extract: supportReference, rowID, location: ourRowLocation });
             }
             if (supportReference.indexOf('\u200B') >= 0)
                 addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", fieldName: 'SupportReference', rowID, location: ourRowLocation });
@@ -446,6 +456,13 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
             else { // More than just whitespace
                 ourMarkdownTextChecks(rowID, 'OccurrenceNote', occurrenceNote, true, ourRowLocation, optionalCheckingOptions);
                 await ourCheckTNLinksToOutside(rowID, 'OccurrenceNote', occurrenceNote, ourRowLocation, linkCheckingOptions);
+                let regexResultArray;
+                // eslint-disable-next-line no-cond-assign
+                while (regexResultArray = TA_REGEX.exec(occurrenceNote)) {
+                    // console.log("Got TA Regex in OccurrenceNote", JSON.stringify(regexResultArray));
+                    if (supportReference !== regexResultArray[1])
+                        addNoticePartial({ priority: 786, message: "TA Link should also be in SupportReference", details: `(SR='${supportReference}')`, fieldName: 'OccurrenceNote', extract: regexResultArray[1], rowID, location: ourRowLocation });
+                }
             }
         }
         else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
