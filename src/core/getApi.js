@@ -5,9 +5,10 @@ import { setup } from 'axios-cache-adapter';
 import JSZip from 'jszip';
 import * as books from './books';
 import { clearCheckedArticleCache } from './tn-links-check';
-
 // import { consoleLogObject } from '../core/utilities';
 
+
+// const GETAPI_VERSION_STRING = '0.5.1';
 
 const MAX_INDIVIDUAL_FILES_TO_DOWNLOAD = 5; // More than this and it downloads the zipfile for the entire repo
 
@@ -374,7 +375,10 @@ export async function preloadReposIfNecessary(username, languageCode, bookIDList
   // else console.log("All repos were cached already!");
 
   for (const repoCode of repos_) {
-    const repoName = formRepoName(languageCode, repoCode);
+    let adjustedLanguageCode = languageCode;
+    if ((languageCode === 'hbo' && repoCode !== 'UHB') || (languageCode === 'el-x-koine' && repoCode !== 'UGNT'))
+      adjustedLanguageCode = 'en'; // Assume English then
+    const repoName = formRepoName(adjustedLanguageCode, repoCode);
     // console.log(`preloadReposIfNecessary: preloading zip file for ${repoName}…`);
     const zipFetchSucceeded = await cachedGetRepositoryZipFile({ username, repository: repoName, branch });
     if (!zipFetchSucceeded) {

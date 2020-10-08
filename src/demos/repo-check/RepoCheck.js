@@ -7,7 +7,7 @@ import { checkRepo } from './checkRepo';
 // import { consoleLogObject, displayPropertyNames } from '../../core/utilities';
 
 
-//const VALIDATOR_VERSION_STRING = '0.1.2';
+//const VALIDATOR_VERSION_STRING = '0.1.3';
 
 
 function RepoCheck(/*username, languageCode,*/ props) {
@@ -54,13 +54,14 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 setResultValue(<p style={{ color: 'red' }}>No <b>repoName</b> set!</p>);
                 return;
             }
-            
-            let [languageCode,repoCode] = repoName.split('_');
+
+            let [languageCode, repoCode] = repoName.split('_');
             repoCode = repoCode.toUpperCase();
             console.log(`languageCode='${languageCode}' repoCode='${repoCode}'`);
 
             setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for {repoName} repo check…</p>);
-            const repoList = ['TA', 'TW'];
+            const repoList = ['TW'];
+            if (repoCode !== 'UHB' && repoCode !== 'UGNT') repoList.push('TA'); // Original languages only have TW links
             if (repoCode !== 'TA' && repoCode !== 'TW') repoList.push(repoCode);
             const successFlag = await preloadReposIfNecessary(username, languageCode, [], branch, repoList);
             if (!successFlag)
