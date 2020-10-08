@@ -1,19 +1,17 @@
-./makeNoticeList.py
-Got 226 notices:
+Last updated 2020-10-09 09:18:52.975668 by makeNoticeList.py
+Got 224 notices:
   marker === 's5' ? 111 : 809, `$marker === 's5' ? 'Deprecated' : 'Unexpected' '\\$marker' marker at start of line`, C, V, lineNumber, characterIndex: 1, location: lineLocation
-  leftChar === '“' ? 163 : 563, `Mismatched $leftChar$rightChar characters`, details: `(left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString())`, location: ourLocation
-  leftChar === '“' ? 162 : 462, `Mismatched $leftChar$rightChar characters`, details: `(left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString())`, location: ourLocation
-  console.log(`cFLs : (priority=$priority) $message$characterIndex > 0 ? ` (at character $characterIndex)` : ""$extract ? ` $extract` : ""$location`
-  console.log(`cBPs : (priority=$noticeObject.priority) $noticeObject.extra $noticeObject.message$noticeObject.characterIndex > 0 ? ` (at character $noticeObject.characterIndex)` : ""$noticeObject.extract ? ` $noticeObject.extract` : ""$noticeObject.location`
   `"`.indexOf(line[0]) < 0 ? 880 : 280, C, V, "Expected line to start with backslash", lineNumber: n, characterIndex: 0, extract: line[0], location: ourLocation
   C==='1'? 657:457, C, V, "Paragraph marker expected before first verse", lineNumber: n, characterIndex: 1, details: `('$marker' after '$lastMarker')`, location: ourLocation
+  leftChar === '“' ? 163 : 563, `Mismatched $leftChar$rightChar characters`, details: `(left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString())`, location: ourLocation
+  leftChar === '“' ? 162 : 462, `Mismatched $leftChar$rightChar characters`, details: `(left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString())`, location: ourLocation
   998, "checkAnnotationTSVDataRow() is still a placeholder -- not completed yet", location: ourRowLocation
   997, "checkAnnotationRows() is still a placeholder -- not completed yet", location: ourLocation
+  996, "Failed to load", details: `username=$username`, bookID, location: generalLocation, extra: repoCode
+  996, "Failed to load", details: `username=$username`, bookID, C, V, location: `$generalLocation $thisPath: $tQerror`, extra: repoCode
   996, "Failed to load", details: `username=$username`, repoName, filename: MANIFEST_FILENAME, location: `$manifestLocation: $cBPgfError`, extra: repoCode
   996, "Failed to load", details: `username=$username`, repoName, filename, location: `$repoLocation: $cBPgfError`, extra: repoCode
   996, "Failed to load", details: `username=$username`, bookID: ourBookID, filename: thisFilename, location: `$givenLocation $thisFilepath: $cRgfError`, extra: repoName
-  996, "Failed to load", details: `username=$username`, bookID, location: generalLocation, extra: repoCode
-  996, "Failed to load", details: `username=$username`, bookID, C, V, location: `$generalLocation $thisPath: $tQerror`, extra: repoCode
   993, "Unresolved GIT conflict", characterIndex, extract, location: ourLocation
   993, "Unresolved GIT conflict", characterIndex, extract, location: ourLocation
   992, "Unresolved GIT conflict", characterIndex, extract, location: ourLocation
@@ -41,13 +39,13 @@ Got 226 notices:
   928, "'dublin_core' key is missing", location: ourLocation
   920, yamlError.message, location: ourLocation )
   919, "Missing OrigQuote field", fieldName: 'OrigQuote', rowID, location: ourRowLocation
-  916, "Unable to find original language quote in verse text", details: noBreakSpaceText, extract, location: ourLocation
-  916, "Unable to find original language quote in verse text", details: "quote which starts with 'zero-width space'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation
-  916, "Unable to find original language quote in verse text", details: "quote which starts with 'zero-width joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation
   916, "Unable to find original language quote in verse text", details: "quote which starts with 'word joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation
-  916, "Unable to find original language quote in verse text", details: "quote which ends with 'zero-width space'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation
-  916, "Unable to find original language quote in verse text", details: "quote which ends with 'zero-width joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation
   916, "Unable to find original language quote in verse text", details: "quote which ends with 'word joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation
+  916, "Unable to find original language quote in verse text", details: "quote which starts with 'zero-width space'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation
+  916, "Unable to find original language quote in verse text", details: "quote which ends with 'zero-width space'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation
+  916, "Unable to find original language quote in verse text", details: "quote which starts with 'zero-width joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation
+  916, "Unable to find original language quote in verse text", details: "quote which ends with 'zero-width joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation
+  916, "Unable to find original language quote in verse text", details: noBreakSpaceText, extract, location: ourLocation
   903, "Bad function call: should be given a valid book abbreviation", extract: bookID, location: ` (not '$bookID')$ourLocation`
   902, "Bad function call: should be given a valid book abbreviation", extract: bookID, location: ` (not '$bookID')$generalLocation` ); return checkBookPackageResult;
   900, "Bad parameter: should be given a valid book abbreviation",
@@ -69,40 +67,40 @@ Got 226 notices:
   861, `Found wrong number of TSV fields (expected $NUM_EXPECTED_TN_TSV_FIELDS)`, details: `Found $fields.length field$fields.length === 1 ? '' : 's'`, location: ourRowLocation
   861, `Found wrong number of TSV fields (expected $NUM_EXPECTED_ANNOTATION_TSV_FIELDS)`, extract: `Found $fields.length field$fields.length === 1 ? '' : 's'`, location: ourRowLocation
   851, "Unable to load original language verse text", location: ourLocation
-  824, `Invalid zero chapter number`, extract: C, rowID, location: ourRowLocation
   824, `Invalid zero chapter number`, extract: C, rowID, fieldName: 'Chapter', location: ourRowLocation
-  823, `Invalid large chapter number`, extract: C, rowID, location: ourRowLocation
+  824, `Invalid zero chapter number`, extract: C, rowID, location: ourRowLocation
   823, `Invalid large chapter number`, extract: C, rowID, fieldName: 'Chapter', location: ourRowLocation
-  822, C, V, "Expected \\v field to contain an integer", characterIndex: 3, extract: `\\v $rest`, location: lineLocation
-  822, "Unable to check chapter number", rowID, location: ` '$C'$ourRowLocation`
+  823, `Invalid large chapter number`, extract: C, rowID, location: ourRowLocation
   822, "Unable to check chapter number", extract: C, rowID, fieldName: 'Chapter', location: ourRowLocation
   822, "Expected \\c field to contain an integer", lineNumber, C, V, characterIndex: 3, extract: `\\c $rest`, location: lineLocation
-  821, "Bad chapter number", rowID, location: ` '$C' with$ourRowLocation`
+  822, C, V, "Expected \\v field to contain an integer", characterIndex: 3, extract: `\\v $rest`, location: lineLocation
+  822, "Unable to check chapter number", rowID, location: ` '$C'$ourRowLocation`
   821, "Bad chapter number", extract: C, rowID, fieldName: 'Chapter', location: ourRowLocation
-  820, "Missing chapter number", rowID, location: ` ?:$V$ourRowLocation`
+  821, "Bad chapter number", rowID, location: ` '$C' with$ourRowLocation`
   820, "Missing chapter number", rowID, fieldName: 'Chapter', location: ` ?:$V$ourRowLocation`
+  820, "Missing chapter number", rowID, location: ` ?:$V$ourRowLocation`
   819, "Missing compulsory USFM line", extract: `missing \\$compulsoryMarker`, location: fileLocation
-  814, `Invalid zero '$V' verse number`, rowID, location: ourRowLocation
   814, "Invalid zero verse number", rowID, fieldName: 'Verse', extract: V, location: ourRowLocation
-  813, `Invalid large '$V' verse number`, rowID, location: ` for chapter $C$ourRowLocation`
+  814, `Invalid zero '$V' verse number`, rowID, location: ourRowLocation
   813, "Invalid large verse number", rowID, fieldName: 'Verse', extract: V, location: ` for chapter $C$ourRowLocation`
-  812, "Unable to check verse number", rowID, location: ` '$V'$ourRowLocation`
+  813, `Invalid large '$V' verse number`, rowID, location: ` for chapter $C$ourRowLocation`
   812, "Unable to check verse number", rowID, fieldName: 'Verse', location: ` '$V'$ourRowLocation`
-  811, "Bad verse number", rowID, location: ` '$V'$ourRowLocation`
+  812, "Unable to check verse number", rowID, location: ` '$V'$ourRowLocation`
   811, "Bad verse number", rowID, fieldName: 'Verse', location: ` '$V'$ourRowLocation`
-  810, "Missing verse number", rowID, location: ` after $C:?$ourRowLocation`
+  811, "Bad verse number", rowID, location: ` '$V'$ourRowLocation`
   810, "Missing verse number", rowID, fieldName: 'Verse', location: ` after $C:?$ourRowLocation`
-  792, `Invalid '$occurrence' occurrence field`, rowID, location: ourRowLocation
+  810, "Missing verse number", rowID, location: ` after $C:?$ourRowLocation`
   792, `Invalid '$occurrence' occurrence field`, fieldName: 'Occurrence', rowID, location: ourRowLocation
+  792, `Invalid '$occurrence' occurrence field`, rowID, location: ourRowLocation
   790, C, V, "Missing verse number", rowID, lineNumber: n + 1, location: ` after $C:$lastV$ourLocation`
   790, C, V, "Missing verse number", rowID, lineNumber: n + 1, location: ` after $C:$lastV$ourLocation`
   788, "Only 'Just-In-Time Training' TA articles allowed here", fieldName: 'SupportReference', extract: supportReference, rowID, location: ourRowLocation
   787, "TA Link should also be in OccurrenceNote", fieldName: 'SupportReference', extract: supportReference, rowID, location: ourRowLocation
   786, "TA Link should also be in SupportReference", details: `(SR='$supportReference')`, fieldName: 'OccurrenceNote', extract: regexResultArray[1], rowID, location: ourRowLocation
-  779, "Missing ID field", location: ourRowLocation
   779, "Missing ID field", fieldName: 'Verse', location: ourRowLocation
-  778, "ID should be exactly 4 characters", rowID, location: ` (not $rowID.length)$ourRowLocation`
+  779, "Missing ID field", location: ourRowLocation
   778, "ID should be exactly 4 characters", rowID, fieldName: 'ID', location: ` (not $rowID.length)$ourRowLocation`
+  778, "ID should be exactly 4 characters", rowID, location: ` (not $rowID.length)$ourRowLocation`
   777, `Unexpected $char closing character doesn't match`, details, lineNumber: n, characterIndex, extract, location: ourLocation
   776, 'Unexpected " straight quote character', lineNumber, C, V, extract, location: lineLocation
   775, "Unexpected ' straight quote character", lineNumber, C, V, extract, location: lineLocation
@@ -112,8 +110,8 @@ Got 226 notices:
   765, "Unexpected link", characterIndex, extract, location: ourLocation
   764, C, V, "Chapter number didn't increment correctly", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, halfLength)$rest.length > halfLength ? '…' : '' ($lastC ? lastC : '0' → $C)`, location: ourLocation
   763, C, V, "Verse number didn't increment correctly", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, halfLength)$rest.length > halfLength ? '…' : '' ($lastV ? lastV : '0' → $V)`, location: ourLocation
-  762, C, V, "Unable to convert verse bridge numbers to integers", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, Math.max(9, extractLength))$rest.length > extractLength ? '…' : ''`, location: ourLocation
   762, "Unable to convert verse bridge numbers to integers", C: chapterNumberString, V: verseNumberString, characterIndex: 3, extract: verseNumberString, location: `$CVlocation with $usfmVIerror`
+  762, C, V, "Unable to convert verse bridge numbers to integers", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, Math.max(9, extractLength))$rest.length > extractLength ? '…' : ''`, location: ourLocation
   761, C, V, "Verse number didn't increment correctly", lineNumber: n, characterIndex: 3, extract: `$restRest.substring(0, halfLength)$restRest.length > halfLength ? '…' : '' ($lastV ? lastV : '0' → $V)`, location: ourLocation
   747, "Bad function call: should be given a valid book abbreviation", extract: bookID, location: ` (not '$bookID')$ourLocation`
   747, "Bad function call: should be given a valid book abbreviation", extract: bookID, location: ` (not '$bookID')$ourLocation`
@@ -133,16 +131,16 @@ Got 226 notices:
   736, C, V, `Receding '$C' chapter number after '$lastC'`, rowID, lineNumber: n + 1, location: ourLocation
   735, C, V, `Advancing '$C' chapter number after '$lastC'`, rowID, lineNumber: n + 1, location: ourLocation
   735, C, V, `Advancing '$C' chapter number after '$lastC'`, rowID, lineNumber: n + 1, location: ourLocation
-  734, C, V, `Invalid large '$V' verse number for chapter $C`, rowID, lineNumber: n + 1, location: ourLocation
+  734, C, V, "Bad chapter number", rowID, lineNumber: n + 1, location: ourLocation
   734, C, V, `Invalid large '$V' verse number for chapter $C`, rowID, lineNumber: n + 1, location: ourLocation
   734, C, V, "Bad chapter number", rowID, lineNumber: n + 1, location: ourLocation
-  734, C, V, "Bad chapter number", rowID, lineNumber: n + 1, location: ourLocation
+  734, C, V, `Invalid large '$V' verse number for chapter $C`, rowID, lineNumber: n + 1, location: ourLocation
   733, C, V, `Receding '$V' verse number after '$lastV'`, rowID, lineNumber: n + 1, location: ourLocation
   733, C, V, `Receding '$V' verse number after '$lastV'`, rowID, lineNumber: n + 1, location: ourLocation
-  730, C, V, "Missing ID", lineNumber: n + 1, location: ourLocation
   730, C, V, "Missing ID", fieldName: 'ID', lineNumber: n + 1, location: ourLocation
-  729, C, V, `Duplicate '$rowID' ID`, rowID, lineNumber: n + 1, location: ourLocation
+  730, C, V, "Missing ID", lineNumber: n + 1, location: ourLocation
   729, C, V, `Duplicate '$rowID' ID`, fieldName: 'ID', rowID, lineNumber: n + 1, location: ourLocation
+  729, C, V, `Duplicate '$rowID' ID`, rowID, lineNumber: n + 1, location: ourLocation
   724, C, V, "Unable to convert chapter number to integer", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, halfLength)$rest.length > halfLength ? '…' : ''`, location: ourLocation
   723, C, V, "Unable to convert verse number to integer", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, halfLength)$rest.length > halfLength ? '…' : ''`, location: ourLocation
   721, "Unable to find original language quote in verse text", extract, location: ourLocation
@@ -169,8 +167,8 @@ Got 226 notices:
   552, C, V, `Invalid zero '$V' verse number`, rowID, lineNumber: n + 1, location: ourLocation
   551, C, V, `Invalid zero '$C' chapter number`, rowID, lineNumber: n + 1, location: ourLocation
   551, C, V, `Invalid zero '$C' chapter number`, rowID, lineNumber: n + 1, location: ourLocation
-  550, "Invalid zero occurrence field when we have an original quote", rowID, location: ourRowLocation
   550, "Invalid zero occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, location: ourRowLocation
+  550, "Invalid zero occurrence field when we have an original quote", rowID, location: ourRowLocation
   519, "Missing expected USFM line", extract: `missing \\$expectedMarker`, location: fileLocation
   518, "Missing expected USFM line", extract: `missing \\$expectedMarker`, location: fileLocation
   517, "Missing expected USFM line", extract: `missing \\$expectedMarker`, location: fileLocation
@@ -183,16 +181,16 @@ Got 226 notices:
   399, C, V, "Useless paragraph marker", lineNumber: n, characterIndex: 1, details: `('$lastMarker' before '$marker')`, location: ourLocation
   375, "Ellipsis without surrounding snippet", location: ourLocation
   374, "Field contains zero-width space(s)", fieldName: 'SupportReference', rowID, location: ourRowLocation
-  374, "Field contains zero-width space(s)", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation
   374, "Field contains zero-width space(s)", fieldName: 'GLQuote', rowID, location: ourRowLocation
+  374, "Field contains zero-width space(s)", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation
   373, "Field is only whitespace", fieldName: 'SupportReference', rowID, location: ourRowLocation
-  373, "Field is only whitespace", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation
   373, "Field is only whitespace", fieldName: 'GLQuote', rowID, location: ourRowLocation
+  373, "Field is only whitespace", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation
   301, `Unexpected whitespace after \\$marker marker`, C, V, lineNumber, characterIndex: marker.length, extract: rest, location: lineLocation
   287, `Not enough links (expected $linkOptions.expectedCount link$linkOptions.expectedCount === 1 ? "" : "s")`, location: ` (only found $regexResultsArray.length)$ourAtString`
   276, "Missing Quote field", rowID, location: ourRowLocation
-  274, `Missing $annotationType Annotation field`, rowID, location: ourRowLocation
   274, "Missing OccurrenceNote field", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation
+  274, `Missing $annotationType Annotation field`, rowID, location: ourRowLocation
   218, "Using deprecated USFM marker", extract: `\\$deprecatedMarker`, location: fileLocation
   194, "Unexpected double spaces", characterIndex, extract, location: ourLocation
   192, `Unexpected space after $punctChar character`, characterIndex, extract, location: ourLocation
@@ -200,18 +198,18 @@ Got 226 notices:
   179, "Unexpected space before ellipse character", characterIndex, extract, location: ourLocation
   178, "Unexpected space after ellipse character", characterIndex, extract, location: ourLocation
   177, `Unexpected doubled $punctChar characters`, characterIndex, extract, location: ourLocation
-  176, "ID should start with a lowercase letter or digit", characterIndex: 0, rowID, location: ` (not '$rowID[0]')$ourRowLocation`
   176, "ID should start with a lowercase letter or digit", characterIndex: 0, rowID, fieldName: 'ID', location: ` (not '$rowID[0]')$ourRowLocation`
-  175, "ID should end with a lowercase letter or digit", characterIndex: 3, rowID, location: ` (not '$rowID[3]')$ourRowLocation`
+  176, "ID should start with a lowercase letter or digit", characterIndex: 0, rowID, location: ` (not '$rowID[0]')$ourRowLocation`
   175, "ID should end with a lowercase letter or digit", characterIndeX: 3, rowID, fieldName: 'ID', location: ` (not '$rowID[3]')$ourRowLocation`
+  175, "ID should end with a lowercase letter or digit", characterIndex: 3, rowID, location: ` (not '$rowID[3]')$ourRowLocation`
   174, "ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 1, rowID, location: ` (not '$rowID[1]')$ourRowLocation`
   174, "ID characters should only be lowercase letters, digits, or hypen", characterIndex: 1, rowID, location: ` (not '$rowID[1]')$ourRowLocation`
   173, "ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 2, rowID, location: ` (not '$rowID[2]')$ourRowLocation`
   173, "ID characters should only be lowercase letters, digits, or hypen", characterIndex: 2, rowID, location: ` (not '$rowID[2]')$ourRowLocation`
   172, "Header levels should only increment by one", lineNumber: n, characterIndex: 0, location: ourLocation
   159, "Should use proper ellipse character (not periods)", characterIndex, extract, location: ourLocation
-  158, "Unexpected space(s) beside ellipse characters", characterIndex, extract, location: ourLocation
   158, "Unexpected space(s) beside ellipse character", characterIndex, extract, location: ourLocation
+  158, "Unexpected space(s) beside ellipse characters", characterIndex, extract, location: ourLocation
   148, "'checking' key is missing", location: ourLocation
   143, "Unknown Bible book name in link", extract: B1, location: ourLocation
   111, `Bad options for checkFieldLinks: expectedCount=$linkOptions.expectedCount but allowedCount=$linkOptions.allowedCount`
@@ -223,6 +221,6 @@ Got 226 notices:
   102, `USFMGrammar: $warningString`, location: fileLocation
   101, `USFMGrammar: $warningString`, filename, location: ourLocation
   95, "Unexpected trailing space(s)", characterIndex: fieldText.length - 1, extract, location: ourLocation
-  87, C, V, "Expected \\toc3 line to follow \\toc2", lineNumber: n, characterIndex: 1, details: `(not '$lastMarker')`, location: ourLocation
   87, C, V, "Expected \\toc2 line to follow \\toc1", lineNumber: n, characterIndex: 1, details: `(not '$lastMarker')`, location: ourLocation
+  87, C, V, "Expected \\toc3 line to follow \\toc2", lineNumber: n, characterIndex: 1, details: `(not '$lastMarker')`, location: ourLocation
   67, C: chapterNumberString, V: `$v`, "Verse appears to be left out", location: CVlocation

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import os
+import datetime
+
 
 noticeList = []
 
@@ -12,7 +14,8 @@ for root, dirs, files in os.walk('.'):
             with open(os.path.join(root, name), 'rt') as sourceFile:
                 for line in sourceFile:
                     if 'addNotice' in line and 'function addNotice' not in line \
-                    and 'console.assert' not in line and 'noticeEntry.priority' not in line \
+                    and 'console.log' not in line and 'console.assert' not in line \
+                    and 'noticeEntry' not in line \
                     and 'grammarCheckResult.error' not in line \
                     and '...' not in line:
                         strippedLine = line.strip()
@@ -37,6 +40,22 @@ for root, dirs, files in os.walk('.'):
     # for name in dirs:
     #     print("dir", name, os.path.join(root, name))
 
-print(f"\nGot {len(noticeList)} notices:")
-for notice in sorted(noticeList, reverse=True):
-    print(f"  {notice}")
+def makeKey(noticeLine):
+    # Gives proper sorting of 2-3 digit priority numbers
+    index = 0
+    string = ''
+    while noticeLine[index].isdigit():
+        string += noticeLine[index]
+        index += 1
+    if string: return int(string)
+    return 99999 # Return a big number for lines not starting with digits
+
+filename = 'noticeList.txt'
+with open(filename, 'wt') as outputFile:
+    print(f"\nGot {len(noticeList)} notices:")
+    outputFile.write(f"Last updated {datetime.datetime.now()} by makeNoticeList.py\n")
+    outputFile.write(f"Got {len(noticeList)} notices:\n")
+    for notice in sorted(noticeList, reverse=True, key=makeKey):
+        print(f"  {notice}")
+        outputFile.write(f"  {notice}\n")
+print(f"Wrote {len(noticeList)} sorted notices to {filename}.")
