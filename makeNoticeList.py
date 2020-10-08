@@ -12,7 +12,7 @@ for root, dirs, files in os.walk('.'):
         and name.endswith('.js') or name.endswith('.ts'):
             # print("file", name, os.path.join(root, name))
             with open(os.path.join(root, name), 'rt') as sourceFile:
-                for line in sourceFile:
+                for n, line in enumerate(sourceFile, start=1):
                     if 'addNotice' in line and 'function addNotice' not in line \
                     and 'console.log' not in line and 'console.assert' not in line \
                     and 'noticeEntry' not in line \
@@ -36,9 +36,10 @@ for root, dirs, files in os.walk('.'):
                             adjustedLine = adjustedLine.strip().replace('  ',' ')
                             print("adjustedLine", adjustedLine)
                             if not adjustedLine: halt
-                            noticeList.append(adjustedLine)
+                            noticeList.append(f"{adjustedLine}\tfrom {name} line {n:,}")
     # for name in dirs:
     #     print("dir", name, os.path.join(root, name))
+
 
 def makeKey(noticeLine):
     # Gives proper sorting of 2-3 digit priority numbers
@@ -49,6 +50,7 @@ def makeKey(noticeLine):
         index += 1
     if string: return int(string)
     return 99999 # Return a big number for lines not starting with digits
+
 
 filename = 'noticeList.txt'
 with open(filename, 'wt') as outputFile:
