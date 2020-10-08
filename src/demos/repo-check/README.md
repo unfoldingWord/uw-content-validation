@@ -12,14 +12,14 @@ import RepoCheck from './RepoCheck';
 <RepoCheck
   username = 'unfoldingWord'
 
-  // repoName='hbo_uhb' // OT books only
-  // repoName='el-x-koine_ugnt' // NT books only
-  // repoName='en_ult' // Can use ult or ust here
+  // repoName='hbo_uhb' // OT books only -- some large files with parsing info!
+  // repoName='el-x-koine_ugnt' // NT books only -- some large files with parsing info!
+  // repoName='en_ult' // Can use ult or ust here -- some large files with alignment info!
   // repoName='en_tn' // Translation Notes (TSV tables)
-  // repoName='en_tq' // Translation Questions (markdown files)
-  // repoName='en_ta' // Translation Academy (markdown files)
-  // repoName='en_tw' // Translation Words (markdown files)
-  // repoName='en_obs' // Open Bible Stories (markdown files)
+  // repoName='en_tq' // Translation Questions (17,000+ markdown files)
+  // repoName='en_ta' // Translation Academy (700+ markdown files)
+  // repoName='en_tw' // Translation Words (1000+ markdown files)
+  // repoName='en_obs' // Open Bible Stories (50+ markdown files)
   repoName='fr_ulb' // No alignment so smaller files (faster demo)
 
   // If we don't put the branch here, the default branch is used
