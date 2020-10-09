@@ -238,7 +238,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     for (const cfcNoticeEntry of cfcResultObject.noticeList) // noticeEntry is an object
       if (cfcNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN check
         checkBookPackageResult.noticeList.push(cfcNoticeEntry); // Just copy the complete notice as is
-      else // For our direct checks, we add the repoCode as an extra value
+      else // For our direct checks, we add the repoCode as an extra value (unless it's already there from a TA or TW check)
         addNoticePartial({ ...cfcNoticeEntry, filename: cfFilename, extra: cfcNoticeEntry.extra ? cfcNoticeEntry.extra : repoCode });
     // The following is needed coz we might be checking the linked TA and/or TW articles from TN TSV files
     if (cfcResultObject.checkedFileCount && cfcResultObject.checkedFileCount > 0) {

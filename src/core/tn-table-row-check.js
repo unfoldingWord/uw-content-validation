@@ -405,7 +405,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
                 ourCheckTextField(rowID, 'SupportReference', supportReference, true, ourRowLocation, optionalCheckingOptions);
                 await ourCheckSupportReferenceInTA(rowID, 'SupportReference', supportReference, ourRowLocation, optionalCheckingOptions);
                 if (occurrenceNote.indexOf(supportReference) < 0) // The full link is NOT in the note!
-                    addNoticePartial({ priority: 787, message: "TA Link should also be in OccurrenceNote", fieldName: 'SupportReference', extract: supportReference, rowID, location: ourRowLocation });
+                    addNoticePartial({ priority: 787, message: "Link to TA should also be in OccurrenceNote", fieldName: 'SupportReference', extract: supportReference, rowID, location: ourRowLocation });
             }
             if (supportReference.indexOf('\u200B') >= 0)
                 addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", fieldName: 'SupportReference', rowID, location: ourRowLocation });
@@ -461,7 +461,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
                 while (regexResultArray = TA_REGEX.exec(occurrenceNote)) {
                     // console.log("Got TA Regex in OccurrenceNote", JSON.stringify(regexResultArray));
                     if (supportReference !== regexResultArray[1])
-                        addNoticePartial({ priority: 786, message: "TA Link should also be in SupportReference", details: `(SR='${supportReference}')`, fieldName: 'OccurrenceNote', extract: regexResultArray[1], rowID, location: ourRowLocation });
+                        addNoticePartial({ priority: 786, message: "Link to TA should also be in SupportReference", details: `(SR='${supportReference}')`, fieldName: 'OccurrenceNote', extract: regexResultArray[1], rowID, location: ourRowLocation });
                 }
             }
         }

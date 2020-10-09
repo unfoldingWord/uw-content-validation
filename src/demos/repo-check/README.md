@@ -12,8 +12,8 @@ import RepoCheck from './RepoCheck';
 <RepoCheck
   username = 'unfoldingWord'
 
-  // repoName='hbo_uhb' // OT books only -- some large files with parsing info!
-  // repoName='el-x-koine_ugnt' // NT books only -- some large files with parsing info!
+  // repoName='hbo_uhb' // includes OT books only -- some large files with parsing info!
+  // repoName='el-x-koine_ugnt' // includes NT books only -- some large files with parsing info!
   // repoName='en_ult' // Can use ult or ust here -- some large files with alignment info!
   // repoName='en_tn' // Translation Notes (TSV tables)
   // repoName='en_tq' // Translation Questions (17,000+ markdown files)

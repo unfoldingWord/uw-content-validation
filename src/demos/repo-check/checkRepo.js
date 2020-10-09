@@ -23,7 +23,8 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
 
   let checkRepoResult = {
     successList: [], noticeList: [],
-    checkedFileCount: 0, checkedFilenames: [], checkedFilenameExtensions: []
+    checkedFileCount: 0, checkedFileSizes: 0,
+    checkedFilenames: [], checkedFilenameExtensions: [], checkedRepoNames: [],
   };
 
   function addSuccessMessage(successString) {
@@ -86,8 +87,27 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
 
     // Process results line by line,  appending the bookOrFileCode as an extra field as we go
     for (const cfcNoticeEntry of cfcResultObject.noticeList)
-      // We add the bookOrFileCode as an extra value
-      addNoticePartial({ ...cfcNoticeEntry, bookID: cfBookID, extra: bookOrFileCode });
+      // We add the bookOrFileCode as an extra value (unless it's already there from a TA or TW check)
+      if (cfcNoticeEntry.extra)
+        checkRepoResult.noticeList.push(cfcNoticeEntry); // Add this notice directly
+      else
+        addNoticePartial({ ...cfcNoticeEntry, bookID: cfBookID, extra: bookOrFileCode });
+    if (repoName.endsWith('_tn')) {
+      // The following is needed coz we might be checking the linked TA and/or TW articles from TN TSV files
+      console.log("cfcResultObject", JSON.stringify({...cfcResultObject, noticeList:"deleted"}));
+      if (cfcResultObject.checkedFileCount && cfcResultObject.checkedFileCount > 0) {
+        checkRepoResult.checkedFileCount += cfcResultObject.checkedFileCount;
+        addSuccessMessage(`Checked ${cfcResultObject.checkedFileCount} linked TA/TW articles`);
+      }
+      if (cfcResultObject.checkedFilesizes && cfcResultObject.checkedFilesizes > 0) checkRepoResult.totalCheckedSize += cfcResultObject.checkedFilesizes;
+      if (cfcResultObject.checkedRepoNames && cfcResultObject.checkedRepoNames.length > 0)
+        for (const checkedRepoName of cfcResultObject.checkedRepoNames)
+          try { if (checkRepoResult.checkedRepoNames.indexOf(checkedRepoName) < 0) checkRepoResult.checkedRepoNames.push(checkedRepoName); }
+          catch { checkRepoResult.checkedRepoNames = [checkedRepoName]; }
+      if (cfcResultObject.checkedFilenameExtensions && cfcResultObject.checkedFilenameExtensions.length > 0)
+        for (const checkedFilenameExtension of cfcResultObject.checkedFilenameExtensions)
+          checkRepoResult.checkedFilenameExtensions.add(checkedFilenameExtension);
+    }
   }
   // end of ourCheckRepoFileContents function
 
@@ -198,11 +218,11 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
 
       // Add some extra fields to our checkRepoResult object
       //  in case we need this information again later
-      checkRepoResult.checkedFileCount = checkedFileCount;
+      checkRepoResult.checkedFileCount += checkedFileCount;
       checkRepoResult.checkedFilenames = checkedFilenames;
-      checkRepoResult.checkedFilenameExtensions = [...checkedFilenameExtensions]; // convert Set to Array
-      checkRepoResult.checkedFilesizes = totalCheckedSize;
-      checkRepoResult.checkedRepoNames = [`${username}/${repoName}`];
+      checkRepoResult.checkedFilenameExtensions = [...checkRepoResult.checkedFilenameExtensions, ...checkedFilenameExtensions]; // convert Set to Array
+      checkRepoResult.checkedFilesizes += totalCheckedSize;
+      checkRepoResult.checkedRepoNames.unshift([`${username}/${repoName}`]);
       // checkRepoResult.checkedOptions = checkingOptions; // This is done at the caller level
 
       addSuccessMessage(`Checked ${username} repo: ${repoName}`);
