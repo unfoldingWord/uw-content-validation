@@ -20,6 +20,16 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
      Returns a result object containing a successList and a noticeList
      */
     // console.log(`checkTN_TSVText(${bookID}, ${tableText.length}, ${location},${JSON.stringify(optionalCheckingOptions)})…`);
+    console.assert(languageCode !== undefined, "checkTN_TSVText: 'languageCode' parameter should be defined");
+    console.assert(typeof languageCode === 'string', `checkTN_TSVText: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    console.assert(bookID !== undefined, "checkTN_TSVText: 'bookID' parameter should be defined");
+    console.assert(typeof bookID === 'string', `checkTN_TSVText: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+    console.assert(bookID.length === 3, `checkTN_TSVText: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    console.assert(bookID.toUpperCase() === bookID, `checkTN_TSVText: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+    console.assert(books.isValidBookID(bookID), `checkTN_TSVText: '${bookID}' is not a valid USFM book identifier`);
+    console.assert(givenLocation !== undefined, "checkTN_TSVText: 'givenLocation' parameter should be defined");
+    console.assert(typeof givenLocation === 'string', `checkTN_TSVText: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
+
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     // if (bookID) ourLocation = ` in ${bookID}${ourLocation}`;
@@ -30,22 +40,22 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
         // console.log(`checkTN_TSVText success: ${successString}`);
         ttResult.successList.push(successString);
     }
-    function addNoticeCV8(noticeObject) {
+    function addNoticePartial(noticeObject) {
         // console.log(`checkTN_TSVText notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(noticeObject.priority !== undefined, "TSV addNoticeCV8: 'priority' parameter should be defined");
-        console.assert(typeof noticeObject.priority === 'number', `TSV addNoticeCV8: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        console.assert(noticeObject.message !== undefined, "TSV addNoticeCV8: 'message' parameter should be defined");
-        console.assert(typeof noticeObject.message === 'string', `TSV addNoticeCV8: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // console.assert(C !== undefined, "TSV addNoticeCV8: 'C' parameter should be defined");
-        if (noticeObject.C) console.assert(typeof noticeObject.C === 'string', `TSV addNoticeCV8: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
-        // console.assert(V !== undefined, "TSV addNoticeCV8: 'V' parameter should be defined");
-        if (noticeObject.V) console.assert(typeof noticeObject.V === 'string', `TSV addNoticeCV8: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
-        // console.assert(characterIndex !== undefined, "TSV addNoticeCV8: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `TSV addNoticeCV8: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // console.assert(extract !== undefined, "TSV addNoticeCV8: 'extract' parameter should be defined");
-        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `TSV addNoticeCV8: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
-        console.assert(noticeObject.location !== undefined, "TSV addNoticeCV8: 'location' parameter should be defined");
-        console.assert(typeof noticeObject.location === 'string', `TSV addNoticeCV8: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        console.assert(noticeObject.priority !== undefined, "TSV addNoticePartial: 'priority' parameter should be defined");
+        console.assert(typeof noticeObject.priority === 'number', `TSV addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        console.assert(noticeObject.message !== undefined, "TSV addNoticePartial: 'message' parameter should be defined");
+        console.assert(typeof noticeObject.message === 'string', `TSV addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+        // console.assert(C !== undefined, "TSV addNoticePartial: 'C' parameter should be defined");
+        if (noticeObject.C) console.assert(typeof noticeObject.C === 'string', `TSV addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
+        // console.assert(V !== undefined, "TSV addNoticePartial: 'V' parameter should be defined");
+        if (noticeObject.V) console.assert(typeof noticeObject.V === 'string', `TSV addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
+        // console.assert(characterIndex !== undefined, "TSV addNoticePartial: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `TSV addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        // console.assert(extract !== undefined, "TSV addNoticePartial: 'extract' parameter should be defined");
+        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `TSV addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        console.assert(noticeObject.location !== undefined, "TSV addNoticePartial: 'location' parameter should be defined");
+        console.assert(typeof noticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
         ttResult.noticeList.push({ ...noticeObject, bookID, filename });
     }
 
@@ -71,7 +81,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
     }
     catch {
         if (!books.isValidBookID(bookID)) // must not be in FRT, BAK, etc.
-            addNoticeCV8({ priority: 747, message: "Bad function call: should be given a valid book abbreviation", extract: bookID, location: ` (not '${bookID}')${ourLocation}` });
+            addNoticePartial({ priority: 747, message: "Bad function call: should be given a valid book abbreviation", extract: bookID, location: ` (not '${bookID}')${ourLocation}` });
     }
 
     let lines = tableText.split('\n');
@@ -86,7 +96,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
             if (lines[0] === EXPECTED_TN_HEADING_LINE)
                 addSuccessMessage(`Checked TSV header ${ourLocation}`);
             else
-                addNoticeCV8({ priority: 746, message: "Bad TSV header", lineNumber: n + 1, location: `${ourLocation}: '${lines[0]}'` });
+                addNoticePartial({ priority: 746, message: "Bad TSV header", lineNumber: n + 1, location: `${ourLocation}: '${lines[0]}'` });
         }
         else // not the header
         {
@@ -100,13 +110,13 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
                 // Choose only ONE of the following
                 // This is the fast way of append the results from this field
                 // result.noticeList = result.noticeList.concat(firstResult.noticeList);
-                // If we need to put everything through addNoticeCV8, e.g., for debugging or filtering
+                // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
                 //  process results line by line
                 for (const drNoticeEntry of drResultObject.noticeList)
                     if (drNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN check
                         ttResult.noticeList.push(drNoticeEntry); // Just copy the complete notice as is
                     else
-                        addNoticeCV8({ ...drNoticeEntry, lineNumber: n + 1 });
+                        addNoticePartial({ ...drNoticeEntry, lineNumber: n + 1 });
                 // The following is needed coz we might be checking the linked TA and/or TW articles
                 if (drResultObject.checkedFileCount && drResultObject.checkedFileCount > 0)
                     if (typeof ttResult.checkedFileCount === 'number') ttResult.checkedFileCount += drResultObject.checkedFileCount;
@@ -134,17 +144,17 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
                 // Check for duplicate notes
                 const uniqueID = C + V + supportReference + origQuote + occurrence; // This combination should not be repeated
                 // if (uniqueRowList.indexOf(uniqueID) >= 0)
-                //     addNoticeCV8({ priority: 880, C, V, message: `Duplicate note`, rowID, lineNumber: n + 1, location: ourLocation });
+                //     addNoticePartial({ priority: 880, C, V, message: `Duplicate note`, rowID, lineNumber: n + 1, location: ourLocation });
                 // if (uniqueRowList.indexOf(uniqueID) >= 0)
-                //     addNoticeCV8({ priority: 80, C, V, message: `Note: tC 3.0 won't display duplicate note`, rowID, lineNumber: n + 1, location: ourLocation });
+                //     addNoticePartial({ priority: 80, C, V, message: `Note: tC 3.0 won't display duplicate note`, rowID, lineNumber: n + 1, location: ourLocation });
                 uniqueRowList.push(uniqueID);
 
                 if (B) {
                     if (B !== bookID)
-                        addNoticeCV8({ priority: 745, C, V, message: `Wrong '${B}' book identifier (expected '${bookID}')`, rowID, lineNumber: n + 1, location: ourLocation });
+                        addNoticePartial({ priority: 745, C, V, message: `Wrong '${B}' book identifier (expected '${bookID}')`, rowID, lineNumber: n + 1, location: ourLocation });
                 }
                 else
-                    addNoticeCV8({ priority: 744, C, V, message: "Missing book identifier", rowID, lineNumber: n + 1, location: ourLocation });
+                    addNoticePartial({ priority: 744, C, V, message: "Missing book identifier", rowID, lineNumber: n + 1, location: ourLocation });
 
                 if (C) {
                     if (C === 'front') { }
@@ -153,51 +163,51 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
                         if (C !== lastC)
                             numVersesThisChapter = books.versesInChapter(lowercaseBookID, intC);
                         if (intC === 0)
-                            addNoticeCV8({ priority: 551, C, V, message: `Invalid zero '${C}' chapter number`, rowID, lineNumber: n + 1, location: ourLocation });
+                            addNoticePartial({ priority: 551, C, V, message: `Invalid zero chapter number`, rowID, lineNumber: n + 1, extract: C, location: ourLocation });
                         if (intC > numChaptersThisBook)
-                            addNoticeCV8({ priority: 737, C, V, message: `Invalid large '${C}' chapter number`, rowID, lineNumber: n + 1, location: ourLocation });
+                            addNoticePartial({ priority: 737, C, V, message: "Invalid large chapter number", rowID, lineNumber: n + 1, extract: C, location: ourLocation });
                         if (/^\d+$/.test(lastC)) {
                             let lastintC = Number(lastC);
                             if (intC < lastintC)
-                                addNoticeCV8({ priority: 736, C, V, message: `Receding '${C}' chapter number after '${lastC}'`, rowID, lineNumber: n + 1, location: ourLocation });
+                                addNoticePartial({ priority: 736, C, V, message: "Receding chapter number", details: `'${C}' after '${lastC}'`, rowID, lineNumber: n + 1, location: ourLocation });
                             else if (intC > lastintC + 1)
-                                addNoticeCV8({ priority: 735, C, V, message: `Advancing '${C}' chapter number after '${lastC}'`, rowID, lineNumber: n + 1, location: ourLocation });
+                                addNoticePartial({ priority: 735, C, V, message: "Advancing chapter number", details: `'${C}' after '${lastC}'`.rowID, lineNumber: n + 1, location: ourLocation });
                         }
                     }
                     else
-                        addNoticeCV8({ priority: 734, C, V, message: "Bad chapter number", rowID, lineNumber: n + 1, location: ourLocation });
+                        addNoticePartial({ priority: 734, C, V, message: "Bad chapter number", rowID, lineNumber: n + 1, location: ourLocation });
                 }
                 else
-                    addNoticeCV8({ priority: 739, C, V, message: "Missing chapter number", rowID, lineNumber: n + 1, location: ` after ${lastC}:${V}${ourLocation}` });
+                    addNoticePartial({ priority: 739, C, V, message: "Missing chapter number", rowID, lineNumber: n + 1, location: ` after ${lastC}:${V}${ourLocation}` });
 
                 if (V) {
                     if (V === 'intro') { }
                     else if (/^\d+$/.test(V)) {
                         let intV = Number(V);
                         if (intV === 0)
-                            addNoticeCV8({ priority: 552, C, V, message: `Invalid zero '${V}' verse number`, rowID, lineNumber: n + 1, location: ourLocation });
+                            addNoticePartial({ priority: 552, C, V, message: "Invalid zero verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, extract: V, location: ourLocation });
                         if (intV > numVersesThisChapter)
-                            addNoticeCV8({ priority: 734, C, V, message: `Invalid large '${V}' verse number for chapter ${C}`, rowID, lineNumber: n + 1, location: ourLocation });
+                            addNoticePartial({ priority: 734, C, V, message: "Invalid large verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, extract: V, location: ourLocation });
                         if (/^\d+$/.test(lastV)) {
                             let lastintV = Number(lastV);
                             if (intV < lastintV)
-                                addNoticeCV8({ priority: 733, C, V, message: `Receding '${V}' verse number after '${lastV}'`, rowID, lineNumber: n + 1, location: ourLocation });
+                                addNoticePartial({ priority: 733, C, V, message: "Receding verse number", details: `'${V}' after '${lastV} for chapter ${C}`, rowID, lineNumber: n + 1, extract: V, location: ourLocation });
                             // else if (intV > lastintV + 1)
-                            //   addNoticeCV8({priority:556, `Skipped verses with '${V}' verse number after '${lastV}'${withString}`);
+                            //   addNoticePartial({priority:556, "Skipped verses with '${V}' verse number after '${lastV}'${withString}`);
                         }
                     }
                     else
-                        addNoticeCV8({ priority: 738, C, V, message: "Bad verse number", rowID, lineNumber: n + 1, location: ourLocation });
+                        addNoticePartial({ priority: 738, C, V, message: "Bad verse number", rowID, lineNumber: n + 1, location: ourLocation });
 
                 }
                 else
-                    addNoticeCV8({ priority: 790, C, V, message: "Missing verse number", rowID, lineNumber: n + 1, location: ` after ${C}:${lastV}${ourLocation}` });
+                    addNoticePartial({ priority: 790, C, V, message: "Missing verse number", rowID, lineNumber: n + 1, location: ` after ${C}:${lastV}${ourLocation}` });
 
                 if (rowID) {
                     if (rowIDList.indexOf(rowID) >= 0)
-                        addNoticeCV8({ priority: 729, C, V, message: `Duplicate '${rowID}' ID`, fieldName: 'ID', rowID, lineNumber: n + 1, location: ourLocation });
+                        addNoticePartial({ priority: 729, C, V, message: `Duplicate '${rowID}' ID`, fieldName: 'ID', rowID, lineNumber: n + 1, location: ourLocation });
                 } else
-                    addNoticeCV8({ priority: 730, C, V, message: "Missing ID", fieldName: 'ID', lineNumber: n + 1, location: ourLocation });
+                    addNoticePartial({ priority: 730, C, V, message: "Missing ID", fieldName: 'ID', lineNumber: n + 1, location: ourLocation });
 
 
                 lastB = B; lastC = C; lastV = V;
@@ -207,7 +217,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
                 //     console.log(`  Line ${n}: Has ${fields.length} field(s) instead of ${NUM_EXPECTED_TN_FIELDS}: ${EXPECTED_TN_HEADING_LINE.replace(/\t/g, ', ')}`);
                 // else
                 if (n !== lines.length - 1) // it's not the last line
-                    addNoticeCV8({ priority: 988, message: `Wrong number of tabbed fields (expected ${NUM_EXPECTED_TN_TSV_FIELDS})`, extract: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, lineNumber: n + 1, location: ourLocation });
+                    addNoticePartial({ priority: 988, message: `Wrong number of tabbed fields (expected ${NUM_EXPECTED_TN_TSV_FIELDS})`, extract: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, lineNumber: n + 1, location: ourLocation });
         }
     }
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}.`);

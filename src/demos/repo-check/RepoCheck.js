@@ -33,11 +33,13 @@ function RepoCheck(/*username, languageCode,*/ props) {
     const checkingOptions = { // Uncomment any of these to test them
         // extractLength: 25,
     };
-    if (repoName && repoName.endsWith('_tn')) {
-        // TODO: Should the user be able to turn this off and on ????
-        checkingOptions.checkLinkedTAArticleFlag = true;
-        checkingOptions.checkLinkedTWArticleFlag = true;
-    }
+    // NOTE: I removed this again as it didn't really seem to make sense to enable it here
+    //          Also, I don't think the results were getting returned correctly yet
+    // if (repoName && repoName.endsWith('_tn')) {
+    //     // TODO: Should the user be able to turn this off and on ????
+    //     checkingOptions.checkLinkedTAArticleFlag = true;
+    //     checkingOptions.checkLinkedTWArticleFlag = true;
+    // }
     // Or this allows the parameters to be specified as a RepoCheck property
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
 
@@ -62,7 +64,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
 
             let [languageCode, repoCode] = repoName.split('_');
             repoCode = repoCode.toUpperCase();
-            console.log(`languageCode='${languageCode}' repoCode='${repoCode}'`);
+            // console.log(`RepoCheck languageCode='${languageCode}' repoCode='${repoCode}'`);
 
             setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for {repoName} repo check…</p>);
             const repoList = ['TW'];

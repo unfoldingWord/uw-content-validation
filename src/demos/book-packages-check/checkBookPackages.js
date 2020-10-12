@@ -8,6 +8,7 @@ import { checkBookPackage } from '../book-package-check/checkBookPackage';
 export async function checkBookPackages(username, languageCode, bookIDList, setResultValue, checkingOptions) {
     //     console.log(`I'm here in checkBookPackages v${VALIDATOR_VERSION_STRING}
     //   with ${username}, ${languageCode}, ${bookIDList}, ${JSON.stringify(checkingOptions)}`);
+    let abortFlag = false;
     const startTime = new Date();
 
     const checkBookPackagesResult = { successList: [], noticeList: [] };
@@ -51,7 +52,8 @@ export async function checkBookPackages(username, languageCode, bookIDList, setR
     let checkedBibleBPManifestFlag = false;
     for (const bookID of bookIDList) {
         // console.log(`checkBookPackages bookID: ${bookID}`);
-
+        if (abortFlag) break;
+        
         // const generalLocation = ` ${languageCode} ${bookID} book packages from ${username}`;
         if (bookID !== 'OBS') {
           // eslint-disable-next-line no-unused-vars

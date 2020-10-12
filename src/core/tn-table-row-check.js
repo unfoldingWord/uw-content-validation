@@ -7,7 +7,7 @@ import { checkTNLinksToOutside } from './tn-links-check';
 import { checkOriginalLanguageQuote } from './quote-check';
 
 
-// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.4.5';
+// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.4.6';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -20,6 +20,7 @@ const TA_REGEX = new RegExp('\\[\\[rc://[^ /]+?/ta/man/[^ /]+?/([^ \\]]+?)\\]\\]
 export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, givenV, givenRowLocation, optionalCheckingOptions) {
     /**
     * @description - Checks one TSV data row of translation notes (TN)
+    * @param {String} languageCode - the language code, e.g., 'en'
     * @param {String} line - the TSV line to be checked
     * @param {String} bookID - 3-character UPPERCASE USFM book identifier
     * @param {String} givenC - chapter number string
@@ -36,11 +37,14 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         Returns an object containing the noticeList.
     */
     // console.log(`checkTN_TSVDataRow(${languageCode}, ${line}, ${bookID}, ${givenRowLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
+    console.assert(languageCode !== undefined, "checkTN_TSVDataRow: 'languageCode' parameter should be defined");
+    console.assert(typeof languageCode === 'string', `checkTN_TSVDataRow: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
     console.assert(line !== undefined, "checkTN_TSVDataRow: 'line' parameter should be defined");
     console.assert(typeof line === 'string', `checkTN_TSVDataRow: 'line' parameter should be a string not a '${typeof line}'`);
     console.assert(bookID !== undefined, "checkTN_TSVDataRow: 'bookID' parameter should be defined");
     console.assert(typeof bookID === 'string', `checkTN_TSVDataRow: 'bookID' parameter should be a string not a '${typeof bookID}'`);
     console.assert(bookID.length === 3, `checkTN_TSVDataRow: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    console.assert(bookID.toUpperCase() === bookID, `checkTN_TSVDataRow: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
     console.assert(books.isValidBookID(bookID), `checkTN_TSVDataRow: '${bookID}' is not a valid USFM book identifier`);
     // console.assert(givenC !== undefined, "checkTN_TSVDataRow: 'givenC' parameter should be defined");
     if (givenC) console.assert(typeof givenC === 'string', `checkTN_TSVDataRow: 'givenC' parameter should be a string not a '${typeof givenC}'`);
@@ -400,7 +404,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
                     && !supportReference.startsWith('grammar-')
                     && !supportReference.startsWith('translate-')
                     && !supportReference.startsWith('writing-')
-                    && supportReference !== 'guidelines-sonofgodprinciples-')
+                    && supportReference !== 'guidelines-sonofgodprinciples')
                     addNoticePartial({ priority: 788, message: "Only 'Just-In-Time Training' TA articles allowed here", fieldName: 'SupportReference', extract: supportReference, rowID, location: ourRowLocation });
                 ourCheckTextField(rowID, 'SupportReference', supportReference, true, ourRowLocation, optionalCheckingOptions);
                 await ourCheckSupportReferenceInTA(rowID, 'SupportReference', supportReference, ourRowLocation, optionalCheckingOptions);
@@ -431,8 +435,8 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
             }
             else if (occurrence === '-1') // TODO check the special conditions when this can occur???
                 ;
-            else if ('12345'.indexOf(occurrence) < 0) // it's not one of these integers
-                addNoticePartial({ priority: 792, message: `Invalid '${occurrence}' occurrence field`, fieldName: 'Occurrence', rowID, location: ourRowLocation });
+            else if ('1234567'.indexOf(occurrence) < 0) // it's not one of these integers
+                addNoticePartial({ priority: 792, message: `Invalid occurrence field`, fieldName: 'Occurrence', rowID, extract: occurrence, location: ourRowLocation });
         }
 
         if (GLQuote.length) { // TODO: need to check UTN against ULT

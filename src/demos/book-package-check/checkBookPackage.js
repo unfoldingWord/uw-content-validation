@@ -105,7 +105,7 @@ async function checkTQbook(username, languageCode, repoName, branch, bookID, che
       // console.log("checkTQbook: Try to load", username, repoName, thisPath, branch);
 
       console.assert(thisPath.endsWith('.md'), `Expected ${thisPath} to end with .md`);
-      const filename = thisPath.split('/').pop();
+      // const filename = thisPath.split('/').pop();
       const pathParts = thisPath.slice(0, -3).split('/');
       const C = pathParts[pathParts.length - 2].replace(/^0+(?=\d)/, ''); // Remove leading zeroes
       const V = pathParts[pathParts.length - 1].replace(/^0+(?=\d)/, ''); // Remove leading zeroes
@@ -119,12 +119,13 @@ async function checkTQbook(username, languageCode, repoName, branch, bookID, che
         totalCheckedSize += tqFileContent.length;
       } catch (tQerror) {
         console.error("checkTQbook failed to load", username, repoName, thisPath, branch, tQerror + '');
-        addNoticePartial({ priority: 996, message: "Failed to load", details: `username=${username}`, bookID, C, V, location: `${generalLocation} ${thisPath}: ${tQerror}`, extra: repoCode });
+        addNoticePartial({ priority: 996, message: "Failed to load", details: `username=${username}`, bookID, C, V, filename: thisPath, location: `${generalLocation} ${thisPath}: ${tQerror}`, extra: repoCode });
       }
       if (tqFileContent) {
         // We use the generalLocation here (does not include repo name)
         //  so that we can adjust the returned strings ourselves
-        await ourCheckTQFileContents(repoCode, bookID, C, V, filename, tqFileContent, generalLocation, checkingOptions); // Adds the notices to checkBookPackageResult
+        // NOTE: We pass thisPath here coz the actual filename by itself is useless (so many '01.md')
+        await ourCheckTQFileContents(repoCode, bookID, C, V, thisPath, tqFileContent, generalLocation, checkingOptions); // Adds the notices to checkBookPackageResult
         checkedFileCount += 1;
         checkedFilenameExtensions.add('md');
         // addSuccessMessage(`Checked ${repoCode.toUpperCase()} file: ${thisPath}`);
@@ -162,6 +163,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   Note that bookID here can also be the 'OBS' pseudo bookID.
   */
   // console.log(`checkBookPackage(${username}, ${languageCode}, ${bookID}, (fn), ${JSON.stringify(checkingOptions)})…`)
+  let abortFlag = false;
   const startTime = new Date();
   bookID = bookID.toUpperCase(); // normalise to USFM standard
 
@@ -331,10 +333,11 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     // So now we want to work through checking this one specified Bible book in various repos:
     //  UHB/UGNT, ULT/GLT, UST/GST, TN, TQ
     const getFile_ = (newCheckingOptions && newCheckingOptions.getFile) ? newCheckingOptions.getFile : cachedGetFile;
-    const origLang = whichTestament === 'old' ? 'UHB' : 'UGNT';
+    const origLangRepoCode = whichTestament === 'old' ? 'UHB' : 'UGNT';
 
-    const repoCodeList = [origLang, 'LT', 'ST', 'TN', 'TQ'];
+    const repoCodeList = [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'];
     for (const repoCode of repoCodeList) {
+      if (abortFlag) break;
       console.log(`checkBookPackage: check ${bookID} in ${repoCode} (${languageCode} ${bookID} from ${username})`);
       const repoLocation = ` in ${repoCode.toUpperCase()}${generalLocation}`;
       const repoName = formRepoName(languageCode, repoCode);

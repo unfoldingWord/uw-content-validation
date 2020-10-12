@@ -19,6 +19,12 @@ const DEFAULT_MEDIUM_PRIORITY_LEVEL = 600; // This level or higher becomes a med
 // (no constants required)
 
 
+/**
+ *
+ * @param {Object} givenNoticeObject
+ * @param {Object} optionalProcessingOptions
+ * @return {Array} containing three items: remainingNoticeList, allTotals, resultObject
+ */
 function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     /**
     * @description - Preprocesses the successList and noticeList
@@ -98,10 +104,10 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     // Run a check through the noticeList to help discover any programming errors that need fixing
     // This entire section may be commented out of production code
     if (givenNoticeObject.noticeList && givenNoticeObject.noticeList.length) {
-        const ALL_TSV_FIELDNAMES = ['Book', 'Chapter', 'Verse',
-            'ID', 'SupportReference', 'OrigQuote',
-            'Occurrence', 'GLQuote', 'OccurrenceNote',
-            'Reference', 'Tag', 'Quote', 'Annotation'];
+        const ALL_TSV_FIELDNAMES = ['Book', 'Chapter', 'Verse', 'Reference',
+            'ID', 'Tags', 'SupportReference',
+            'OrigQuote', 'Quote', 'Occurrence', 'GLQuote',
+            'OccurrenceNote', 'Annotation'];
         const numberStore = {}, duplicatePriorityList = [];
         for (const thisGivenNotice of standardisedNoticeList) {
             const thisPriority = thisGivenNotice.priority, thisMsg = thisGivenNotice.message;
@@ -129,7 +135,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
 
             // Check fields for bad values, and also across fields for unexpected combinations
             const thisRepoName = thisGivenNotice.repoName, thisFilename = thisGivenNotice.filename, thisLineNumber = thisGivenNotice.lineNumber,
-                thisRowID = thisGivenNotice.rowID, thisFieldName = thisGivenNotice.fieldName, thisLocation = thisGivenNotice.location
+                thisRowID = thisGivenNotice.rowID, thisFieldName = thisGivenNotice.fieldName, thisLocation = thisGivenNotice.location, thisExtra = thisGivenNotice.extra;
             if (thisRepoName) {
                 console.assert(thisRepoName.indexOf(' ') < 0 && thisRepoName.indexOf('/') < 0 && thisRepoName.indexOf('\\') < 0, `repoName '${thisRepoName}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 if (thisLocation)
@@ -139,8 +145,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 console.assert(thisFilename.indexOf(':') < 0 && thisFilename.indexOf('\\') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 console.assert(ALL_TSV_FIELDNAMES.indexOf(thisFilename) < 0, `filename '${thisFilename}' contains a TSV fieldName!`);
                 // NOTE: Some OBS and other messages have to include part of the part in the 'filename' (to prevent ambiguity) so we don't disallow forward slash
-                if (!thisRepoName || !(thisRepoName.endsWith('_obs') || thisRepoName.endsWith('_ta') || thisRepoName.endsWith('_tw')))
-                    console.assert(thisFilename.indexOf('/') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+                // if (!thisRepoName || !(thisRepoName.endsWith('_obs') || thisRepoName.endsWith('_ta') || thisRepoName.endsWith('_tw')))
+                //     console.assert(thisFilename.indexOf('/') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 if (thisLocation)
                     console.assert(thisLocation.indexOf(thisFilename) < 0, `filename is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
             }
@@ -162,6 +168,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                     // && (!thisGivenNotice.bookID || thisGivenNotice.bookID.indexOf(thisLineNumber + '') < 0)
                     console.assert(thisLocation.indexOf(thisLineNumber + '') < 0 && thisLocation.indexOf(thisLineNumber.toLocaleString()) < 0, `lineNumber might be repeated in location in ${JSON.stringify(thisGivenNotice)}`);
             }
+            if (thisExtra)
+                console.assert(thisExtra !== '01', `extra should not be '${thisExtra}'`);
             numberStore[thisPriority] = thisMsg;
         }
     }
@@ -401,6 +409,12 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
 // end of processNoticesCommon function
 
 
+/**
+ *
+ * @param {Object} givenNoticeObject
+ * @param {Object} optionalProcessingOptions
+ * @return {Object} containing errorList and warningList
+ */
 export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProcessingOptions) {
     /*
         Available options are:
@@ -480,6 +494,12 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
 // end of processNoticesToErrorsWarnings function
 
 
+/**
+ *
+ * @param {Object} givenNoticeObject
+ * @param {Object} optionalProcessingOptions
+ * @return {Object} containing severeList, mediumList, and lowList
+ */
 export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProcessingOptions) {
     /*
         Available options are:
@@ -578,6 +598,12 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
 // end of processNoticesToSevereMediumLow function
 
 
+/**
+ *
+ * @param {Object} givenNoticeObject
+ * @param {Object} optionalProcessingOptions
+ * @return {Object} containing warningList
+ */
 export function processNoticesToSingleList(givenNoticeObject, optionalProcessingOptions) {
     /*
         Available options are:

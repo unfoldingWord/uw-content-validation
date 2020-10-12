@@ -2,7 +2,7 @@ import { cachedGetFile } from '../core/getApi';
 // import { consoleLogObject } from '../core/utilities';
 
 
-// const TA_REFERENCE_VALIDATOR_VERSION_STRING = '0.2.2';
+// const TA_REFERENCE_VALIDATOR_VERSION_STRING = '0.3.1';
 
 // const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -17,6 +17,7 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
     //      optionalCheckingOptions.taRepoBranch (or tag)
     //      optionalCheckingOptions.taRepoLanguageCode
     //      optionalCheckingOptions.taRepoSectionName
+    //      optionalCheckingOptions.expectFullLink (bool)
 
     // console.log(`checkSupportReferenceInTA v${TA_REFERENCE_VALIDATOR_VERSION_STRING} (${fieldName}, (${fieldText.length}) '${fieldText}', ${givenLocation}, …)`);
     console.assert(fieldName !== undefined, "checkSupportReferenceInTA: 'fieldText' parameter should be defined");
@@ -90,7 +91,15 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
     } catch (trcSNerror) { }
     if (!taRepoSectionName) taRepoSectionName = 'translate';
     const taRepoName = `${taRepoLanguageCode}_ta`;
-    const filepath = `${taRepoSectionName}/${fieldText}/01.md`; // Other files are title.md, sub-title.md
+    let filepath;
+    if (optionalCheckingOptions.expectFullLink) {
+        // console.log("checkSupportReferenceInTA expect full link")
+        if (!fieldText.startsWith('rc://*/'))
+            addNoticePartial({ priority: 879, message: `Badly formatted Resource Container link`, extract: fieldText, location: `${ourLocation} ${filepath}` });
+        filepath = `${fieldText.replace('rc://*/', '')}/01.md`; // Other files are title.md, sub-title.md
+    }
+    else filepath = `${taRepoSectionName}/${fieldText}/01.md`; // Other files are title.md, sub-title.md
+    // console.log("checkSupportReferenceInTA filepath", filepath);
 
     // console.log(`Need to check against ${taRepoName}`);
     let taFileContent; // Not really used here -- just to show that we got something valid
@@ -99,12 +108,12 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
         taFileContent = await getFile_({ username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch });
         // console.log("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
         if (!taFileContent)
-            addNoticePartial({ priority: 889, message: `Unable to find ${fieldName} TA link`, extract: fieldText, location: `${ourLocation} ${filepath}` });
+            addNoticePartial({ priority: 889, message: `Unable to find TA link`, extract: fieldText, location: `${ourLocation} ${filepath}` });
         else if (taFileContent.length < 10)
-            addNoticePartial({ priority: 887, message: `Linked ${fieldName} TA article seems empty`, extract: fieldText, location: `${ourLocation} ${filepath}` });
+            addNoticePartial({ priority: 887, message: `Linked TA article seems empty`, extract: fieldText, location: `${ourLocation} ${filepath}` });
     } catch (trcGCerror) {
         console.error("checkSupportReferenceInTA() failed to load", taRepoUsername, taRepoName, filepath, taRepoBranch, trcGCerror.message);
-        addNoticePartial({ priority: 888, message: `Error loading ${fieldName} TA link`, extract: fieldText, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+        addNoticePartial({ priority: 888, message: `Error loading TA link`, extract: fieldText, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
     }
 
     // console.log(`checkSupportReferenceInTA is returning ${JSON.stringify(ctarResult)}`);

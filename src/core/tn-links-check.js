@@ -98,6 +98,7 @@ export async function checkTNLinksToOutside(bookID, fieldName, fieldText, givenL
     console.assert(bookID !== undefined, "checkTNLinksToOutside: 'bookID' parameter should be defined");
     console.assert(typeof bookID === 'string', `checkTNLinksToOutside: 'bookID' parameter should be a string not a '${typeof bookID}'`);
     console.assert(bookID.length === 3, `checkTNLinksToOutside: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    console.assert(bookID.toUpperCase() === bookID, `checkTNLinksToOutside: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
     console.assert(books.isValidBookID(bookID), `checkTNLinksToOutside: '${bookID}' is not a valid USFM book identifier`);
     console.assert(fieldName !== undefined, "checkTNLinksToOutside: 'fieldText' parameter should be defined");
     console.assert(typeof fieldName === 'string', `checkTNLinksToOutside: 'fieldText' parameter should be a string not a '${typeof fieldName}'`);

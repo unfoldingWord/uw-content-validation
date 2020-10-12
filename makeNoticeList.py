@@ -25,7 +25,7 @@ for root, dirs, files in os.walk('.'):
                             cleanedLine = strippedLine.replace('addNoticePartial','') \
                                                 .replace('addNotice6to7','') \
                                                 .replace('addNotice5','').replace('addNotice6','').replace('addNotice8','').replace('addNotice9','') \
-                                                .replace('addNoticeCV8','').replace('addNotice10','') \
+                                                .replace('addNoticePartial','').replace('addNotice10','') \
                                                 .replace('addNotice','')
                             if cleanedLine.startswith('('): cleanedLine = cleanedLine[1:]
                             cleanedLine = cleanedLine.replace('{','').replace('}','')

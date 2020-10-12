@@ -14,6 +14,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
       noticeList: an array of 9 (i.e., with extra bookOrFileCode parameter at end) notice components
   */
   // console.log(`checkRepo(${username}, ${repoName}, ${branch}, ${givenLocation}, (fn), ${JSON.stringify(checkingOptions)})…`);
+  let abortFlag = false;
   const startTime = new Date();
 
   const languageCode = repoName.split('_')[0];
@@ -57,7 +58,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
     if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cR addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}'`);
     console.assert(noticeObject.location !== undefined, "cR addNoticePartial: 'location' parameter should be defined");
     console.assert(typeof noticeObject.location === 'string', `cR addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}'`);
-    console.assert(noticeObject.extra !== undefined, "cR addNoticePartial: 'extra' parameter should be defined");
+    // console.assert(noticeObject.extra !== undefined, "cR addNoticePartial: 'extra' parameter should be defined");
     console.assert(typeof noticeObject.extra === 'string', `cR addNoticePartial: 'extra' parameter should be a string not a '${typeof noticeObject.extra}'`);
     // Add in the repoName from the outer scope
     checkRepoResult.noticeList.push({ ...noticeObject, repoName });
@@ -90,11 +91,16 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
       // We add the bookOrFileCode as an extra value (unless it's already there from a TA or TW check)
       if (cfcNoticeEntry.extra)
         checkRepoResult.noticeList.push(cfcNoticeEntry); // Add this notice directly
-      else
-        addNoticePartial({ ...cfcNoticeEntry, bookID: cfBookID, extra: bookOrFileCode });
+      else {
+        // const newNoticeObject = { ...cfcNoticeEntry, bookID: cfBookID };
+        // if (!repoName.endsWith('_ta') && !repoName.endsWith('_tw') && bookOrFileCode !== '01')
+        //   newNoticeObject.extra = bookOrFileCode;
+        // addNoticePartial(newNoticeObject);
+        addNoticePartial({ ...cfcNoticeEntry, bookID: cfBookID, extra: bookOrFileCode.toUpperCase() });
+      }
     if (repoName.endsWith('_tn')) {
       // The following is needed coz we might be checking the linked TA and/or TW articles from TN TSV files
-      console.log("cfcResultObject", JSON.stringify({...cfcResultObject, noticeList:"deleted"}));
+      console.log("cfcResultObject", JSON.stringify({ ...cfcResultObject, noticeList: "deleted" }));
       if (cfcResultObject.checkedFileCount && cfcResultObject.checkedFileCount > 0) {
         checkRepoResult.checkedFileCount += cfcResultObject.checkedFileCount;
         addSuccessMessage(`Checked ${cfcResultObject.checkedFileCount} linked TA/TW articles`);
@@ -152,6 +158,8 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
       let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0;
       for (const thisFilepath of pathList) {
         // console.log(`At top of loop: thisFilepath='${thisFilepath}'`);
+        // if (thisFilepath.indexOf('1c') >= 0) continue; // Takes us straight to shorter 1JN for debugging
+        // if (abortFlag || checkedFileCount >= 3) break;
 
         // Update our "waiting" message
         setResultValue(<p style={{ color: 'magenta' }}>Checking <b>{username}/{repoName}</b> repo: checked {checkedFileCount.toLocaleString()}/{countString}…</p>);
@@ -164,7 +172,15 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
         // Default to the main filename without the extensions
         let bookOrFileCode = thisFilename.substring(0, thisFilename.length - thisFilenameExtension.length - 1);
         let ourBookID = '';
-        if (thisFilenameExtension === 'usfm') {
+        if (repoName === 'en_translation-annotations' && thisFilenameExtension === 'tsv') {
+          // console.log(`checkRepo have en_translation-annotations bookOrFileCode=${bookOrFileCode}`);
+          const bookID = bookOrFileCode.substring(0, 3);
+          // console.log(`checkRepo have bookID=${bookID}`);
+          console.assert(books.isValidBookID(bookID), `checkRepo: '${bookID}' is not a valid USFM book identifier`);
+          bookOrFileCode = `${bookOrFileCode.substring(4).toUpperCase()} ${bookID}`;
+          ourBookID = bookID;
+        }
+        else if (thisFilenameExtension === 'usfm') {
           // const filenameMain = thisFilename.substring(0, thisFilename.length - 5); // drop .usfm
           // console.log(`Have USFM filenameMain=${bookOrFileCode}`);
           const bookID = bookOrFileCode.substring(bookOrFileCode.length - 3);
@@ -182,6 +198,8 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
           bookOrFileCode = bookID;
           ourBookID = bookID;
         }
+        if (repoName.endsWith('_ta') && thisFilepath.indexOf('/')> 0) bookOrFileCode = thisFilepath.split('/')[1];
+        if (repoName.endsWith('_tq') && thisFilepath.indexOf('/')> 0) bookOrFileCode = thisFilepath.split('/')[0];
 
         // console.log("checkRepo: Try to load", username, repoName, thisFilepath, branch);
         const getFile_ = (checkingOptions && checkingOptions.getFile) ? checkingOptions.getFile : cachedGetFile;
@@ -198,7 +216,8 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
           // console.log(`checkRepo for ${repoName} checking ${thisFilename}`);
           await ourCheckRepoFileContents(bookOrFileCode, ourBookID,
             // OBS has many files with the same name, so we have to give some of the path as well
-            repoName.endsWith('_obs') ? thisFilepath.replace('content/', '') : thisFilename,
+            // repoName.endsWith('_obs') ? thisFilepath.replace('content/', '') : thisFilename,
+            thisFilenameExtension === 'md' ? thisFilepath.replace('content/', '').replace('bible/', '') : thisFilename,
             repoFileContent, ourLocation, checkingOptions);
           checkedFileCount += 1;
           checkedFilenames.push(thisFilename);

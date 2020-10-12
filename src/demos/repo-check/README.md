@@ -10,17 +10,19 @@ The code below requests some info and then checks a Door43 repository.You can en
 import RepoCheck from './RepoCheck';
 
 <RepoCheck
+  // username = 'Door43-Catalog'
   username = 'unfoldingWord'
 
   // repoName='hbo_uhb' // includes OT books only -- some large files with parsing info!
   // repoName='el-x-koine_ugnt' // includes NT books only -- some large files with parsing info!
   // repoName='en_ult' // Can use ult or ust here -- some large files with alignment info!
   // repoName='en_tn' // Translation Notes (TSV tables)
-  // repoName='en_tq' // Translation Questions (17,000+ markdown files)
+  // repoName='en_tq' // Translation Questions (17,000+ markdown files!)
   // repoName='en_ta' // Translation Academy (700+ markdown files)
   // repoName='en_tw' // Translation Words (1000+ markdown files)
   // repoName='en_obs' // Open Bible Stories (50+ markdown files)
-  repoName='fr_ulb' // No alignment so smaller files (faster demo)
+  repoName='en_translation-annotations' // Full Bible plus OBS (new annotation TSV files)
+  // repoName='fr_ulb' // No alignment so smaller files (faster demo)
 
   // If we don't put the branch here, the default branch is used
   // branch='master'
