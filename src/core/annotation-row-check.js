@@ -7,7 +7,7 @@ import { checkTNLinksToOutside } from './tn-links-check';
 import { checkOriginalLanguageQuote } from './quote-check';
 
 
-// const ANNOTATION_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.5.1';
+// const ANNOTATION_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.5.2';
 
 const NUM_EXPECTED_ANNOTATION_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_ANNOTATION_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tAnnotation';
@@ -53,7 +53,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
     console.assert(typeof bookID === 'string', `checkAnnotationTSVDataRow: 'bookID' parameter should be a string not a '${typeof bookID}'`);
     console.assert(bookID.length === 3, `checkAnnotationTSVDataRow: 'bookID' parameter should be three characters long not ${bookID.length}`);
     console.assert(bookID.toUpperCase() === bookID, `checkAnnotationTSVDataRow: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-    console.assert(books.isValidBookID(bookID), `checkAnnotationTSVDataRow: '${bookID}' is not a valid USFM book identifier`);
+    console.assert(bookID === 'OBS' || books.isValidBookID(bookID), `checkAnnotationTSVDataRow: '${bookID}' is not a valid USFM book identifier`);
     // console.assert(givenC !== undefined, "checkAnnotationTSVDataRow: 'givenC' parameter should be defined");
     if (givenC) console.assert(typeof givenC === 'string', `checkAnnotationTSVDataRow: 'givenC' parameter should be a string not a '${typeof givenC}'`);
     // console.assert(givenV !== undefined, "checkAnnotationTSVDataRow: 'givenV' parameter should be defined");
@@ -312,10 +312,15 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
 
     const lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook;
-    try {
-        numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
-    } catch (tlcNCerror) {
-        addNoticePartial({ priority: 979, message: "Invalid book identifier passed to checkAnnotationTSVDataRow", location: ` '${bookID}' in first parameter: ${tlcNCerror}` });
+    if (bookID === 'OBS')
+        numChaptersThisBook = 50; // There's 50 Open Bible Stories
+    else {
+        console.assert(lowercaseBookID !== 'obs', "Shouldn't happen in annotation-row-check");
+        try {
+            numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
+        } catch (tlcNCerror) {
+            addNoticePartial({ priority: 979, message: "Invalid book identifier passed to checkAnnotationTSVDataRow", location: ` '${bookID}' in first parameter: ${tlcNCerror}` });
+        }
     }
     const haveGoodBookID = numChaptersThisBook !== undefined;
 
@@ -344,15 +349,19 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
                     addNoticePartial({ priority: 823, message: `Invalid large chapter number`, extract: C, rowID, fieldName: 'Reference', location: ourRowLocation });
                     haveGoodChapterNumber = false;
                 }
-                try {
-                    numVersesThisChapter = books.versesInChapter(lowercaseBookID, intC);
-                    haveGoodChapterNumber = true;
-                } catch (tlcNVerror) {
-                    if (!haveGoodBookID)
-                        // addNoticePartial({priority:500, "Invalid chapter number", rowLocation);
-                        // else
-                        addNoticePartial({ priority: 822, message: "Unable to check chapter number", extract: C, rowID, fieldName: 'Reference', location: ourRowLocation });
-                    haveGoodChapterNumber = false;
+                if (lowercaseBookID === 'obs')
+                    numVersesThisChapter = 99; // Set to maximum expected number of frames
+                else {
+                    try {
+                        numVersesThisChapter = books.versesInChapter(lowercaseBookID, intC);
+                        haveGoodChapterNumber = true;
+                    } catch (tlcNVerror) {
+                        if (!haveGoodBookID)
+                            // addNoticePartial({priority:500, "Invalid chapter number", rowLocation);
+                            // else
+                            addNoticePartial({ priority: 822, message: "Unable to check chapter number", extract: C, rowID, fieldName: 'Reference', location: ourRowLocation });
+                        haveGoodChapterNumber = false;
+                    }
                 }
             }
             else
@@ -405,7 +414,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
             if (isWhitespace(supportReference))
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'SupportReference', rowID, location: ourRowLocation });
             else if (annotationType === 'TN') { // More than just whitespace
-                const supportReferenceArticlePart = supportReference.replace('rc://*/ta/man/translate/','');
+                const supportReferenceArticlePart = supportReference.replace('rc://*/ta/man/translate/', '');
                 // console.log("supportReferenceArticlePart", supportReferenceArticlePart);
                 if (!supportReferenceArticlePart.startsWith('figs-')
                     && !supportReferenceArticlePart.startsWith('grammar-')
@@ -458,8 +467,11 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
                 // eslint-disable-next-line no-cond-assign
                 while (regexResultArray = TA_REGEX.exec(annotation)) {
                     // console.log("Got TA Regex in Annotation", JSON.stringify(regexResultArray));
-                    if (supportReference !== regexResultArray[1])
-                        addNoticePartial({ priority: 786, message: "Link to TA should also be in SupportReference", details: `(SR='${supportReference}')`, fieldName: 'Annotation', extract: regexResultArray[1], rowID, location: ourRowLocation });
+                    const adjustedLink = regexResultArray[0].substring(2, regexResultArray[0].length - 2)
+                    if (supportReference !== adjustedLink) {
+                        const details = supportReference ? `(SR='${supportReference}')` : "(empty SR field)"
+                        addNoticePartial({ priority: 786, message: "Link to TA should also be in SupportReference", details, rowID, fieldName: 'Annotation', extract: adjustedLink, location: ourRowLocation });
+                    }
                 }
             }
         }

@@ -19,14 +19,14 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
 
      Returns a result object containing a successList and a noticeList
      */
-    console.log(`checkAnnotationRows(${languageCode}, ${annotationType}, ${bookID}, ${tableText.length}, ${givenLocation},${JSON.stringify(optionalCheckingOptions)})…`);
+    // console.log(`checkAnnotationRows(${languageCode}, ${annotationType}, ${bookID}, ${tableText.length}, ${givenLocation},${JSON.stringify(optionalCheckingOptions)})…`);
     console.assert(languageCode !== undefined, "checkAnnotationRows: 'languageCode' parameter should be defined");
     console.assert(typeof languageCode === 'string', `checkAnnotationRows: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
     console.assert(bookID !== undefined, "checkAnnotationRows: 'bookID' parameter should be defined");
     console.assert(typeof bookID === 'string', `checkAnnotationRows: 'bookID' parameter should be a string not a '${typeof bookID}'`);
     console.assert(bookID.length === 3, `checkAnnotationRows: 'bookID' parameter should be three characters long not ${bookID.length}`);
     console.assert(bookID.toUpperCase() === bookID, `checkAnnotationRows: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-    console.assert(books.isValidBookID(bookID), `checkAnnotationRows: '${bookID}' is not a valid USFM book identifier`);
+    console.assert(bookID === 'OBS' || books.isValidBookID(bookID), `checkAnnotationRows: '${bookID}' is not a valid USFM book identifier`);
     console.assert(givenLocation !== undefined, "checkAnnotationRows: 'givenLocation' parameter should be defined");
     console.assert(typeof givenLocation === 'string', `checkAnnotationRows: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
 
@@ -76,12 +76,17 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
 
     let lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook = 0;
-    try {
-        numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
-    }
-    catch {
-        if (!books.isValidBookID(bookID)) // must not be in FRT, BAK, etc.
-            addNoticePartial({ priority: 747, message: "Bad function call: should be given a valid book abbreviation", extract: bookID, location: ` (not '${bookID}')${ourLocation}` });
+    if (bookID === 'OBS')
+        numChaptersThisBook = 50; // There's 50 Open Bible Stories
+    else {
+        console.assert(lowercaseBookID !== 'obs', "Shouldn't happen in annotation-table-check");
+        try {
+            numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
+        }
+        catch {
+            if (!books.isValidBookID(bookID)) // must not be in FRT, BAK, etc.
+                addNoticePartial({ priority: 747, message: "Bad function call: should be given a valid book abbreviation", extract: bookID, location: ` (not '${bookID}')${ourLocation}` });
+        }
     }
 
     let lines = tableText.split('\n');
@@ -155,7 +160,10 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
                     else if (/^\d+$/.test(C)) {
                         let intC = Number(C);
                         if (C !== lastC)
-                            numVersesThisChapter = books.versesInChapter(lowercaseBookID, intC);
+                            if (lowercaseBookID === 'obs')
+                                numVersesThisChapter = 99; // Set to maximum expected number of frames
+                            else
+                                numVersesThisChapter = books.versesInChapter(lowercaseBookID, intC);
                         if (intC === 0)
                             addNoticePartial({ priority: 551, C, V, message: `Invalid zero chapter number`, rowID, lineNumber: n + 1, extract: C, location: ourLocation });
                         if (intC > numChaptersThisBook)
@@ -184,7 +192,7 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
                             addNoticePartial({ priority: 734, C, V, message: "Invalid large verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, extract: V, location: ourLocation });
                         if (/^\d+$/.test(lastV)) {
                             let lastintV = Number(lastV);
-                            if (intV < lastintV)
+                            if (C === lastC && intV < lastintV)
                                 addNoticePartial({ priority: 733, C, V, message: "Receding verse number", details: `'${V}' after '${lastV} for chapter ${C}`, rowID, lineNumber: n + 1, extract: V, location: ourLocation });
                             // else if (intV > lastintV + 1)
                             //   addNoticePartial({priority:556, `Skipped verses with '${V}' verse number after '${lastV}'${withString}`);
@@ -220,7 +228,7 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
     else
         addSuccessMessage(`No errors or warnings found by checkAnnotationRows v${ANNOTATION_TABLE_VALIDATOR_VERSION_STRING}`)
     // console.log(`  checkAnnotationRows returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
-    // console.log("checkAnnotationRows result is", JSON.stringify(result));
+    // console.log("checkAnnotationRows result is", JSON.stringify(carResult));
     return carResult;
 }
 // end of checkAnnotationRows function

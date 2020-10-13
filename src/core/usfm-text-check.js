@@ -7,7 +7,7 @@ import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
 import { ourParseInt } from './utilities';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.6.36';
+// const USFM_VALIDATOR_VERSION_STRING = '0.6.37';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -130,6 +130,18 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
      Returns a result object containing a successList and a noticeList
      */
     // console.log(`checkUSFMText(${languageCode}, ${bookID}, ${givenText.length.toLocaleString()} chars, '${givenLocation}', ${JSON.stringify(optionalCheckingOptions)})…`);
+    console.assert(languageCode !== undefined, "checkUSFMText: 'languageCode' parameter should be defined");
+    console.assert(typeof languageCode === 'string', `checkUSFMText: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    console.assert(bookID !== undefined, "checkUSFMText: 'bookID' parameter should be defined");
+    console.assert(typeof bookID === 'string', `checkUSFMText: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+    console.assert(bookID.length === 3, `checkUSFMText: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    console.assert(bookID.toUpperCase() === bookID, `checkUSFMText: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+    console.assert(bookID === 'OBS' || books.isValidBookID(bookID), `checkUSFMText: '${bookID}' is not a valid USFM book identifier`);
+    console.assert(filename !== undefined, "checkUSFMText: 'line' parameter should be defined");
+    console.assert(typeof filename === 'string', `checkUSFMText: 'line' parameter should be a string not a '${typeof filename}'`);
+    console.assert(givenLocation !== undefined, "checkUSFMText: 'givenRowLocation' parameter should be defined");
+    console.assert(typeof givenLocation === 'string', `checkUSFMText: 'givenRowLocation' parameter should be a string not a '${typeof givenLocation}'`);
+
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
@@ -329,6 +341,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
         let lowercaseBookID = bookID.toLowerCase();
         let expectedVersesPerChapterList = [];
         try {
+            console.assert(lowercaseBookID !== 'obs', "Shouldn't happen in usfm-text-check1");
             expectedVersesPerChapterList = books.chaptersInBook(lowercaseBookID); // A list of integers -- numVerses for each chapter
             // console.log("Got chapterList", JSON.stringify(expectedVersesPerChapterList));
         }
@@ -761,6 +774,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
         // eslint-disable-next-line no-unused-vars
         let numChaptersThisBook = 0;
         try {
+            console.assert(lowercaseBookID !== 'obs', "Shouldn't happen in usfm-text-check2");
             numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
         }
         catch {

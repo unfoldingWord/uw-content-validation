@@ -77,6 +77,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
     let lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook = 0;
     try {
+        console.assert(lowercaseBookID !== 'obs', "Shouldn't happen in tn_table-text-check");
         numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
     }
     catch {
@@ -190,7 +191,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
                             addNoticePartial({ priority: 734, C, V, message: "Invalid large verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, extract: V, location: ourLocation });
                         if (/^\d+$/.test(lastV)) {
                             let lastintV = Number(lastV);
-                            if (intV < lastintV)
+                            if (C === lastC && intV < lastintV)
                                 addNoticePartial({ priority: 733, C, V, message: "Receding verse number", details: `'${V}' after '${lastV} for chapter ${C}`, rowID, lineNumber: n + 1, extract: V, location: ourLocation });
                             // else if (intV > lastintV + 1)
                             //   addNoticePartial({priority:556, "Skipped verses with '${V}' verse number after '${lastV}'${withString}`);

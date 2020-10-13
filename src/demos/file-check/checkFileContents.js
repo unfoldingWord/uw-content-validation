@@ -30,7 +30,7 @@ export async function checkFileContents(languageCode, filename, fileContent, giv
     // console.log(`checkFileContents have TSV filenameMain=${filenameMain}`);
     const bookID = filenameMain.startsWith(`${languageCode}_`) ? filenameMain.substring(filenameMain.length - 3) : filenameMain.substring(0, 3).toUpperCase();
     // console.log(`checkFileContents have TSV bookID=${bookID}`);
-    console.assert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
+    console.assert(bookID === 'OBS' || books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
     if (filename.startsWith(`${languageCode}_`))
       checkFileResult = await checkTN_TSVText(languageCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
     else {

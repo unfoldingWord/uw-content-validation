@@ -96,7 +96,7 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
         // console.log("checkSupportReferenceInTA expect full link")
         if (!fieldText.startsWith('rc://*/'))
             addNoticePartial({ priority: 879, message: `Badly formatted Resource Container link`, extract: fieldText, location: `${ourLocation} ${filepath}` });
-        filepath = `${fieldText.replace('rc://*/', '')}/01.md`; // Other files are title.md, sub-title.md
+        filepath = `${fieldText.replace('rc://*/ta/man/', '')}/01.md`; // Other files are title.md, sub-title.md
     }
     else filepath = `${taRepoSectionName}/${fieldText}/01.md`; // Other files are title.md, sub-title.md
     // console.log("checkSupportReferenceInTA filepath", filepath);

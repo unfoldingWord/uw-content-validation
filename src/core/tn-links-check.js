@@ -6,7 +6,7 @@ import { ourParseInt } from './utilities';
 // import { consoleLogObject } from '../core/utilities';
 
 
-// const TN_LINKS_VALIDATOR_VERSION_STRING = '0.5.1';
+// const TN_LINKS_VALIDATOR_VERSION_STRING = '0.5.2';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -99,7 +99,7 @@ export async function checkTNLinksToOutside(bookID, fieldName, fieldText, givenL
     console.assert(typeof bookID === 'string', `checkTNLinksToOutside: 'bookID' parameter should be a string not a '${typeof bookID}'`);
     console.assert(bookID.length === 3, `checkTNLinksToOutside: 'bookID' parameter should be three characters long not ${bookID.length}`);
     console.assert(bookID.toUpperCase() === bookID, `checkTNLinksToOutside: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-    console.assert(books.isValidBookID(bookID), `checkTNLinksToOutside: '${bookID}' is not a valid USFM book identifier`);
+    console.assert(bookID === 'OBS' || books.isValidBookID(bookID), `checkTNLinksToOutside: '${bookID}' is not a valid USFM book identifier`);
     console.assert(fieldName !== undefined, "checkTNLinksToOutside: 'fieldText' parameter should be defined");
     console.assert(typeof fieldName === 'string', `checkTNLinksToOutside: 'fieldText' parameter should be a string not a '${typeof fieldName}'`);
     console.assert(fieldText !== undefined, "checkTNLinksToOutside: 'fieldText' parameter should be defined");
@@ -266,7 +266,7 @@ export async function checkTNLinksToOutside(bookID, fieldName, fieldText, givenL
     // console.log("checkTNLinksToOutside: Search for Bible links")
     // eslint-disable-next-line no-cond-assign
     while (regexResultArray = BIBLE_REGEX.exec(fieldText)) {
-        // console.log(`  checkTNLinksToOutside Bible resultArray=${JSON.stringify(resultArray)}`);
+        // console.log(`  checkTNLinksToOutside Bible regexResultArray=${JSON.stringify(regexResultArray)}`);
         console.assert(regexResultArray.length === 7, `Expected 7 fields (not ${regexResultArray.length})`);
         const [totalLink, B1, C1, V1, B2, C2, V2] = regexResultArray;
 
@@ -296,6 +296,7 @@ export async function checkTNLinksToOutside(bookID, fieldName, fieldText, givenL
         if (linkBookCode) { // then we know which Bible book this link is to
             // So we can check for valid C:V numbers
             let numChaptersThisBook, numVersesThisChapter;
+            console.assert(linkBookCode.toLowerCase() !== 'obs', "Shouldn't happen in tn-links-check");
             try {
                 numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
             } catch (tlcNCerror) { }

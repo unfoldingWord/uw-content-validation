@@ -305,6 +305,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
     const lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook;
     try {
+        console.assert(lowercaseBookID !== 'obs', "Shouldn't happen in tn_table-row-check");
         numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
     } catch (tlcNCerror) {
         addNoticePartial({ priority: 979, message: "Invalid book identifier passed to checkTN_TSVDataRow", location: ` '${bookID}' in first parameter: ${tlcNCerror}` });
@@ -464,8 +465,10 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
                 // eslint-disable-next-line no-cond-assign
                 while (regexResultArray = TA_REGEX.exec(occurrenceNote)) {
                     // console.log("Got TA Regex in OccurrenceNote", JSON.stringify(regexResultArray));
-                    if (supportReference !== regexResultArray[1])
-                        addNoticePartial({ priority: 786, message: "Link to TA should also be in SupportReference", details: `(SR='${supportReference}')`, fieldName: 'OccurrenceNote', extract: regexResultArray[1], rowID, location: ourRowLocation });
+                    if (supportReference !== regexResultArray[1]) {
+                        const details = supportReference ? `(SR='${supportReference}')` : "(empty SR field)"
+                        addNoticePartial({ priority: 786, message: "Link to TA should also be in SupportReference", details, rowID, fieldName: 'OccurrenceNote', extract: regexResultArray[1], location: ourRowLocation });
+                    }
                 }
             }
         }

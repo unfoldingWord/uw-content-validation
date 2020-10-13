@@ -85,6 +85,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 } catch (checkRepoError) {
                     rawCRResults = { successList: [], noticeList: [] };
                     rawCRResults.noticeList.push({ priority: 999, message: "checkRepo function FAILED", repoName, extract: checkRepoError, location: repoName });
+                    // console.log("RepoCheck trace is", checkRepoError.trace);
                 }
                 // console.log("checkRepo() returned", typeof rawCRResults); //, JSON.stringify(rawCRResults));
 

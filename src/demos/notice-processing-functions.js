@@ -230,6 +230,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             resultObject.successList = [];
             const UHBBookList = [], UGNTBookList = [], LTBookList = [], STBookList = [], TNBookList = [];
             const USFMBookList = [], TSVNotesList = [], manifestsList = [];
+            const TNList = [], TQList = [], TWLList = [];
             for (const thisParticularSuccessMsg of givenNoticeObject.successList) {
                 // console.log("thisParticularSuccessMessage", thisParticularSuccessMessage);
                 let regexResult;
@@ -243,6 +244,12 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                     STBookList.push(thisParticularSuccessMsg.substring(18, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked TN file: '))
                     TNBookList.push(thisParticularSuccessMsg.substring(17, thisParticularSuccessMsg.length))
+                else if (thisParticularSuccessMsg.startsWith('Checked TN ') && thisParticularSuccessMsg.substring(14, 20) === ' file:')
+                    TNList.push(thisParticularSuccessMsg.substring(21, thisParticularSuccessMsg.length))
+                else if (thisParticularSuccessMsg.startsWith('Checked TQ ') && thisParticularSuccessMsg.substring(14, 20) === ' file:')
+                    TQList.push(thisParticularSuccessMsg.substring(21, thisParticularSuccessMsg.length))
+                else if (thisParticularSuccessMsg.startsWith('Checked TWL ') && thisParticularSuccessMsg.substring(15, 21) === ' file:')
+                    TWLList.push(thisParticularSuccessMsg.substring(22, thisParticularSuccessMsg.length))
                 else if ((regexResult = BibleRegex.exec(thisParticularSuccessMsg)) !== null
                     // but don't do it for Book Package checks (in different repos)
                     && thisParticularSuccessMsg.startsWith(`Checked ${regexResult[1]} file`))
@@ -253,8 +260,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                     TSVNotesList.push(regexResult[1]);
                 else if ((regexResult = manifestRegex.exec(thisParticularSuccessMsg)) !== null)
                     manifestsList.push(regexResult[1]);
-                else
-                    resultObject.successList.push(thisParticularSuccessMsg); // Just copy it across
+                else // Just copy it across
+                    resultObject.successList.push(thisParticularSuccessMsg);
             }
             // Recreate original messages if exactly one found
             if (UHBBookList.length === 1)
@@ -271,6 +278,12 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 resultObject.successList.push(`Checked ${USFMBookList[0]} file`);
             if (TSVNotesList.length === 1)
                 resultObject.successList.push(`Checked ${TSVNotesList[0]} file`);
+            if (TNList.length === 1)
+                resultObject.successList.push(`Checked TN file: ${TNList[0]}`);
+            if (TQList.length === 1)
+                resultObject.successList.push(`Checked TQ file: ${TQList[0]}`);
+            if (TWLList.length === 1)
+                resultObject.successList.push(`Checked TWL file: ${TWLList[0]}`);
             if (manifestsList.length === 1)
                 resultObject.successList.push(`Checked ${manifestsList[0]} manifest file`);
             // Put summary messages at the beginning of the list if more than one found
@@ -281,6 +294,12 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 resultObject.successList.unshift(`Checked ${TSVNotesList.length} TSV notes files: ${TSVNotesList.join(', ')}`);
             if (USFMBookList.length > 1)
                 resultObject.successList.unshift(`Checked ${USFMBookList.length} USFM Bible files: ${USFMBookList.join(', ')}`);
+                if (TWLList.length > 1)
+                resultObject.successList.unshift(`Checked ${TWLList.length} TWL files: ${TWLList.join(', ')}`);
+                if (TQList.length > 1)
+                resultObject.successList.unshift(`Checked ${TQList.length} TQ files: ${TQList.join(', ')}`);
+                if (TNList.length > 1)
+                resultObject.successList.unshift(`Checked ${TNList.length} TN files: ${TNList.join(', ')}`);
             if (TNBookList.length > 1)
                 resultObject.successList.unshift(`Checked ${TNBookList.length} TN files: ${TNBookList.join(', ')}`);
             if (STBookList.length > 1)

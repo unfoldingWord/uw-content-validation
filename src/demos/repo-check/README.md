@@ -21,8 +21,8 @@ import RepoCheck from './RepoCheck';
   // repoName='en_ta' // Translation Academy (700+ markdown files)
   // repoName='en_tw' // Translation Words (1000+ markdown files)
   // repoName='en_obs' // Open Bible Stories (50+ markdown files)
-  repoName='en_translation-annotations' // Full Bible plus OBS (new annotation TSV files)
-  // repoName='fr_ulb' // No alignment so smaller files (faster demo)
+  // repoName='en_translation-annotations' // 1hr+ -- Full Bible plus OBS (new annotation TSV files)
+  repoName='fr_ulb' // No alignment so smaller files (faster demo)
 
   // If we don't put the branch here, the default branch is used
   // branch='master'
