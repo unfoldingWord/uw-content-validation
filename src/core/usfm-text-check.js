@@ -458,7 +458,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
 
         const dbtcResultObject = checkTextField(fieldName, fieldText, allowedLinks, fieldLocation, optionalCheckingOptions);
 
-        // Process results line by line to filter out potential false positives
+        // Process noticeList line by line to filter out potential false positives
         //  for this particular kind of text field
         for (const noticeEntry of dbtcResultObject.noticeList) {
             // console.log("Notice keys", JSON.stringify(Object.keys(noticeEntry)));

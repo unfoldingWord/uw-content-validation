@@ -59,12 +59,12 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
                 return;
             }
 
-            if (bookID !== 'OBS') { // Preload the reference repos
-                setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for <b>{bookID}</b> book package check…</p>);
-                const successFlag = await preloadReposIfNecessary(username, languageCode, [bookID], branch);
-                if (!successFlag)
-                    console.error(`BookPackageCheck error: Failed to pre-load all repos`)
-            }
+            // if (bookID !== 'OBS') { // Preload the reference repos
+            setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for <b>{bookID}</b> book package check…</p>);
+            const successFlag = await preloadReposIfNecessary(username, languageCode, [bookID], branch);
+            if (!successFlag)
+                console.error(`BookPackageCheck error: Failed to pre-load all repos`)
+            // }
 
             // Display our "waiting" message
             setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookID}</b> book package…</p>);

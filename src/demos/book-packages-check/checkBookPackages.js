@@ -53,7 +53,7 @@ export async function checkBookPackages(username, languageCode, bookIDList, setR
     for (const bookID of bookIDList) {
         // console.log(`checkBookPackages bookID: ${bookID}`);
         if (abortFlag) break;
-        
+
         // const generalLocation = ` ${languageCode} ${bookID} book packages from ${username}`;
         if (bookID !== 'OBS') {
           // eslint-disable-next-line no-unused-vars
@@ -86,7 +86,7 @@ export async function checkBookPackages(username, languageCode, bookIDList, setR
 
         // Concat is faster if we don't need to process each success message individually
         checkBookPackagesResult.successList = checkBookPackagesResult.successList.concat(cbpResultObject.successList);
-        // Process results line by line,  appending the repoCode/bookID as an extra field as we go
+        // Process noticeList line by line,  appending the repoCode/bookID as an extra field as we go
         // for (const successEntry of cbpResultObject.successList) {
         //     // console.log("  ourCheckBookPackage:", successEntry);
         //     addSuccessMessage(successEntry);

@@ -603,7 +603,7 @@ export function checkManifestText(textName, manifestText, givenLocation, optiona
         // Concat is faster if we don't need to process each notice individually
         cmtResult.successList = cmtResult.successList.concat(cYtResultObject.successList);
         cmtResult.noticeList = cmtResult.noticeList.concat(cYtResultObject.noticeList);
-        /* // Process results line by line
+        /* // Process noticeList line by line
         //  suppressing undesired errors
         for (const noticeEntry of cYtResultObject.noticeList)
             if (noticeEntry.priority !== 191 // "Unexpected XXX character after space"
@@ -661,7 +661,7 @@ export function checkManifestText(textName, manifestText, givenLocation, optiona
             //   "params":{"pattern":"^[a-z][a-z0-9-]"},
             //   "message":"should match pattern \"^[a-z][a-z0-9-]\""}
             for (const errorObject of validate.errors) {
-                console.log("checkManifestText schema validation errorObject", JSON.stringify(errorObject));
+                // console.log("checkManifestText schema validation errorObject", JSON.stringify(errorObject));
                 // Can't give a lineNumber unfortunately
                 addNotice({ priority: 985, message: `Field does not match schema ${errorObject.keyword}`, details: errorObject.message, fieldName: errorObject.dataPath, location: ourLocation });
             }

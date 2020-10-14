@@ -4,6 +4,9 @@ import { repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetR
 import { checkFileContents } from '../file-check/checkFileContents';
 
 
+// const REPO_VALIDATOR_VERSION_STRING = '0.4.1';
+
+
 /*
     checkRepo
 */
@@ -91,7 +94,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
     // for (const successEntry of resultObject.successList)
     //     console.log("  ", successEntry);
 
-    // Process results line by line,  appending the bookOrFileCode as an extra field as we go
+    // Process noticeList line by line,  appending the bookOrFileCode as an extra field as we go
     for (const cfcNoticeEntry of cfcResultObject.noticeList)
       // We add the bookOrFileCode as an extra value (unless it's already there from a TA or TW check)
       if (cfcNoticeEntry.extra)
@@ -237,15 +240,15 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
           totalCheckedSize += repoFileContent.length;
           // console.log(`checkRepo checked ${thisFilename}`);
           if (thisFilenameExtension !== 'md') // There's often far, far too many of these
-            addSuccessMessage(`Checked ${bookOrFileCode.toUpperCase()} file: ${thisFilename}`);
+            addSuccessMessage(`Checked ${repoName} ${bookOrFileCode.toUpperCase()} file: ${thisFilename}`);
         }
       }
 
       // Check that we processed a license and a manifest
       if (checkedFilenames.indexOf('LICENSE.md') < 0)
-        addNoticePartial({ priority: 946, message: "Missing LICENSE.md", location: ourLocation, extra: 'LICENSE' });
+        addNoticePartial({ priority: 946, message: "Missing LICENSE.md", location: ourLocation, extra: `${repoName} LICENSE` });
       if (checkedFilenames.indexOf('manifest.yaml') < 0)
-        addNoticePartial({ priority: 947, message: "Missing manifest.yaml", location: ourLocation, extra: 'MANIFEST' });
+        addNoticePartial({ priority: 947, message: "Missing manifest.yaml", location: ourLocation, extra: `${repoName} MANIFEST` });
 
       // Add some extra fields to our checkRepoResult object
       //  in case we need this information again later

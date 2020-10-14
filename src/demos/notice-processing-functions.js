@@ -1,7 +1,7 @@
 // import { displayPropertyNames, consoleLogObject } from './utilities';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.8.1';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.8.2';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -129,7 +129,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 && !thisMsg.endsWith(' closing character (no matching opener)')
                 && !thisMsg.endsWith(' closing character doesn\'t match')
             ) {
-                console.error(`PROGRAMMING ERROR: priority ${thisPriority} has at least two different messages: '${oldMsg}' and '${thisMsg}'`);
+                console.error(`POSSIBLE PROGRAMMING ERROR: priority ${thisPriority} has at least two different messages: '${oldMsg}' and '${thisMsg}'`);
                 duplicatePriorityList.push(thisPriority); // so that we only give the error once
             }
 
@@ -232,7 +232,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             const USFMBookList = [], TSVNotesList = [], manifestsList = [];
             const TNList = [], TQList = [], TWLList = [];
             for (const thisParticularSuccessMsg of givenNoticeObject.successList) {
-                // console.log("thisParticularSuccessMessage", thisParticularSuccessMessage);
+                // console.log("thisParticularSuccessMsg", thisParticularSuccessMsg);
                 let regexResult;
                 if (thisParticularSuccessMsg.startsWith('Checked UHB file: '))
                     UHBBookList.push(thisParticularSuccessMsg.substring(18, thisParticularSuccessMsg.length))

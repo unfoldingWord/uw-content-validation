@@ -8,7 +8,7 @@ import { clearCheckedArticleCache } from './tn-links-check';
 // import { consoleLogObject } from '../core/utilities';
 
 
-// const GETAPI_VERSION_STRING = '0.5.1';
+// const GETAPI_VERSION_STRING = '0.6.2';
 
 const MAX_INDIVIDUAL_FILES_TO_DOWNLOAD = 5; // More than this and it downloads the zipfile for the entire repo
 
@@ -93,7 +93,16 @@ export function formRepoName(languageCode, repoCode) {
   let repo_languageCode = languageCode;
   if (repoCode === 'UHB') repo_languageCode = 'hbo';
   else if (repoCode === 'UGNT') repo_languageCode = 'el-x-koine';
-  const repoName = `${repo_languageCode}_${repoCode.toLowerCase()}`;
+
+  let repoName;
+  if (repoCode === 'TWL' || repoCode === 'TN' || repoCode === 'TQ')
+    repoName = `${repo_languageCode}_translation-annotations`;
+  else if (repoCode === 'SN' || repoCode === 'SQ')
+    repoName = `${repo_languageCode}_study-annotations`;
+  else {
+    if (repoCode.endsWith('1')) repoCode = repoCode.substring(0, repoCode.length - 1);
+    repoName = `${repo_languageCode}_${repoCode.toLowerCase()}`;
+  }
   return repoName;
 }
 
@@ -230,7 +239,7 @@ export async function cachedGetBookFilenameFromManifest({ username, repository, 
 /*
 async function clearCacheAndPreloadRepos(username, languageCode, bookIDList, branch = 'master', repos = ['TA', 'TW', 'TQ']) {
   // NOTE: We preload TA and TW by default because we are likely to have many links to those repos
-  //        We preload TQ by default because it has thousands of files (17,337), so individual file fetches might be slow
+  //        We preload TQ1 by default because it has thousands of files (17,337), so individual file fetches might be slow
   //          even for one book which might have several hundred files.
   console.log(`clearCacheAndPreloadRepos(${username}, ${languageCode}, ${bookIDList}, ${branch}, [${repos}])…`);
   clearCaches(); // clear existing cached files so we know we have the latest
@@ -329,14 +338,18 @@ async function PreLoadRepos(username, languageCode, bookIDList, branch = 'master
  * @param {Array} repos - optional, list of repos to pre-load
  * @return {Promise<Boolean>} resolves to true if file loads are successful
  */
-export async function preloadReposIfNecessary(username, languageCode, bookIDList, branch = 'master', repos = ['TA', 'TW', 'TQ']) {
+export async function preloadReposIfNecessary(username, languageCode, bookIDList, branch = 'master', repos = ['TA', 'TW', 'TQ1']) {
   // NOTE: We preload TA and TW by default because we are likely to have many links to those repos
-  //        We preload TQ by default because it has thousands of files (17,337), so individual file fetches might be slow
+  //        We preload TQ1 by default because it has thousands of files (17,337), so individual file fetches might be slow
   //          even for one book which might have several hundred files.
-  console.log(`preloadReposIfNecessary(${username}, ${languageCode}, ${bookIDList}, ${branch}, [${repos}])…`);
+  console.log(`preloadReposIfNecessary(${username}, ${languageCode}, ${bookIDList} (${typeof bookID}), ${branch}, [${repos}])…`);
   let success = true;
 
   const repos_ = [...repos];
+  if (bookIDList.length ===1 && bookIDList[0] === 'OBS') {
+    if (!repos_.includes('OBS'))
+      repos_.unshift('OBS');
+  }
   if (bookIDList && Array.isArray(bookIDList) && bookIDList.length > MAX_INDIVIDUAL_FILES_TO_DOWNLOAD) { // Fetch individually if checking less books
     // make sure we have the original languages needed
     for (const bookID of bookIDList) {
@@ -348,6 +361,7 @@ export async function preloadReposIfNecessary(username, languageCode, bookIDList
       }
     }
   }
+  // console.log("  Adjusted repo list", repos_.length, JSON.stringify(repos_));
 
   // // See if the required repos are there already
   // console.log(`Check if need to preload ${repos_.length} repos: ${repos_}`)

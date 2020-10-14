@@ -220,7 +220,7 @@ Got 236 notices:
   172, "Header levels should only increment by one", lineNumber: n, characterIndex: 0, location: ourLocation	from markdown-text-check.js line 146
   159, "Should use proper ellipse character (not periods)", characterIndex, extract, location: ourLocation	from quote-check.js line 193
   158, "Unexpected space(s) beside ellipse character", characterIndex, extract, location: ourLocation	from quote-check.js line 202
-  157, "Unexpected space(s) beside ◊ divider character", characterIndex, extract, location: ourLocation	from quote-check.js line 209
+  157, "Unexpected space(s) beside ↔ divider character", characterIndex, extract, location: ourLocation	from quote-check.js line 209
   156, "Unexpected space(s) beside ellipse characters", characterIndex, extract, location: ourLocation	from quote-check.js line 216
   148, "'checking' key is missing", location: ourLocation	from manifest-text-check.js line 633
   143, "Unknown Bible book name in link", extract: B1, location: ourLocation	from tn-links-check.js line 279
