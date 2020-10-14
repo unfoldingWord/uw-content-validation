@@ -1049,7 +1049,7 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "fieldName": "Verse",
-      "location": " '9' that was supplied",
+      "location": " that was supplied",
       "message": "Unable to check verse number",
       "priority": 812,
       "rowID": "W-3r5",
