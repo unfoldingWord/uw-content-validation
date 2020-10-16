@@ -1,5 +1,5 @@
 import * as books from '../../core/books/books';
-import { checkUSFMText, checkMarkdownText, checkPlainText, checkYAMLText, checkManifestText, checkTN_TSVText } from '../../core';
+import { checkUSFMText, checkMarkdownText, checkPlainText, checkYAMLText, checkManifestText, checkTN_TSVText, checkAnnotationRows } from '../../core';
 
 
 // const CHECK_FILE_CONTENTS_VERSION_STRING = '0.2.1';
@@ -27,11 +27,16 @@ export async function checkFileContents(languageCode, filename, fileContent, giv
   let checkFileResult = { checkedFileCount: 0 };
   if (filenameLower.endsWith('.tsv')) {
     const filenameMain = filename.substring(0, filename.length - 4); // drop .tsv
-    // console.log(`Have TSV filenameMain=${filenameMain}`);
-    const bookID = filenameMain.substring(filenameMain.length - 3);
-    // console.log(`Have TSV bookcode=${bookID}`);
-    console.assert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
-    checkFileResult = await checkTN_TSVText(languageCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
+    // console.log(`checkFileContents have TSV filenameMain=${filenameMain}`);
+    const bookID = filenameMain.startsWith(`${languageCode}_`) ? filenameMain.substring(filenameMain.length - 3) : filenameMain.substring(0, 3).toUpperCase();
+    // console.log(`checkFileContents have TSV bookID=${bookID}`);
+    console.assert(bookID === 'OBS' || books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
+    if (filename.startsWith(`${languageCode}_`))
+      checkFileResult = await checkTN_TSVText(languageCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
+    else {
+      const annotationType = filenameMain.substring(4).toUpperCase();
+      checkFileResult = await checkAnnotationRows(languageCode, annotationType, bookID, filename, fileContent, ourCFLocation, checkingOptions);
+    }
   }
   else if (filenameLower.endsWith('.usfm')) {
     const filenameMain = filename.substring(0, filename.length - 5); // drop .usfm
@@ -42,9 +47,9 @@ export async function checkFileContents(languageCode, filename, fileContent, giv
     checkFileResult = checkUSFMText(languageCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
   } else if (filenameLower.endsWith('.sfm')) {
     const filenameMain = filename.substring(0, filename.length - 4); // drop .sfm
-    console.log(`Have SFM filenameMain=${filenameMain}`);
+    console.log(`checkFileContents have SFM filenameMain=${filenameMain}`);
     const bookID = filenameMain.substring(2, 5);
-    console.log(`Have SFM bookcode=${bookID}`);
+    console.log(`checkFileContents have SFM bookcode=${bookID}`);
     console.assert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
     checkFileResult = checkUSFMText(languageCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
   } else if (filenameLower.endsWith('.md'))

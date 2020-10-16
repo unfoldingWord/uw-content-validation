@@ -1,7 +1,7 @@
 import { checkTextField } from './field-text-check';
 
 
-const MARKDOWN_VALIDATOR_VERSION_STRING = '0.3.2';
+const MARKDOWN_VALIDATOR_VERSION_STRING = '0.3.3';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -102,12 +102,16 @@ export function checkMarkdownText(textName, markdownText, givenLocation, optiona
 
     function checkMarkdownLineContents(lineNumber, lineText, lineLocation) {
 
-        // console.log(`checkMarkdownLineContents for '${lineName} ${lineText}' at${lineLocation}`);
+        // console.log(`checkMarkdownLineContents for ${lineNumber} '${lineText}' at${lineLocation}`);
         let thisText = lineText
 
         // Remove leading and trailing hash signs
         thisText = thisText.replace(/^#+|#$/g, '')
         // console.log(`After removing hashes have '${thisText}'`);
+
+        // Remove leading block text markers
+        thisText = thisText.replace(/^>+ */g, '')
+        // console.log(`After removing leading block text markers have '${thisText}'`);
 
         // Remove leading spaces
         thisText = thisText.replace(/^ +/g, '')

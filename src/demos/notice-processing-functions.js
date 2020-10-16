@@ -1,7 +1,7 @@
 // import { displayPropertyNames, consoleLogObject } from './utilities';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.8.1';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.8.2';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -19,6 +19,12 @@ const DEFAULT_MEDIUM_PRIORITY_LEVEL = 600; // This level or higher becomes a med
 // (no constants required)
 
 
+/**
+ *
+ * @param {Object} givenNoticeObject
+ * @param {Object} optionalProcessingOptions
+ * @return {Array} containing three items: remainingNoticeList, allTotals, resultObject
+ */
 function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     /**
     * @description - Preprocesses the successList and noticeList
@@ -98,10 +104,10 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     // Run a check through the noticeList to help discover any programming errors that need fixing
     // This entire section may be commented out of production code
     if (givenNoticeObject.noticeList && givenNoticeObject.noticeList.length) {
-        const ALL_TSV_FIELDNAMES = ['Book', 'Chapter', 'Verse',
-            'ID', 'SupportReference', 'OrigQuote',
-            'Occurrence', 'GLQuote', 'OccurrenceNote',
-            'Reference', 'Tag', 'Quote', 'Annotation'];
+        const ALL_TSV_FIELDNAMES = ['Book', 'Chapter', 'Verse', 'Reference',
+            'ID', 'Tags', 'SupportReference',
+            'OrigQuote', 'Quote', 'Occurrence', 'GLQuote',
+            'OccurrenceNote', 'Annotation'];
         const numberStore = {}, duplicatePriorityList = [];
         for (const thisGivenNotice of standardisedNoticeList) {
             const thisPriority = thisGivenNotice.priority, thisMsg = thisGivenNotice.message;
@@ -123,13 +129,13 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 && !thisMsg.endsWith(' closing character (no matching opener)')
                 && !thisMsg.endsWith(' closing character doesn\'t match')
             ) {
-                console.error(`PROGRAMMING ERROR: priority ${thisPriority} has at least two different messages: '${oldMsg}' and '${thisMsg}'`);
+                console.error(`POSSIBLE PROGRAMMING ERROR: priority ${thisPriority} has at least two different messages: '${oldMsg}' and '${thisMsg}'`);
                 duplicatePriorityList.push(thisPriority); // so that we only give the error once
             }
 
             // Check fields for bad values, and also across fields for unexpected combinations
             const thisRepoName = thisGivenNotice.repoName, thisFilename = thisGivenNotice.filename, thisLineNumber = thisGivenNotice.lineNumber,
-                thisRowID = thisGivenNotice.rowID, thisFieldName = thisGivenNotice.fieldName, thisLocation = thisGivenNotice.location
+                thisRowID = thisGivenNotice.rowID, thisFieldName = thisGivenNotice.fieldName, thisLocation = thisGivenNotice.location, thisExtra = thisGivenNotice.extra;
             if (thisRepoName) {
                 console.assert(thisRepoName.indexOf(' ') < 0 && thisRepoName.indexOf('/') < 0 && thisRepoName.indexOf('\\') < 0, `repoName '${thisRepoName}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 if (thisLocation)
@@ -139,8 +145,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 console.assert(thisFilename.indexOf(':') < 0 && thisFilename.indexOf('\\') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 console.assert(ALL_TSV_FIELDNAMES.indexOf(thisFilename) < 0, `filename '${thisFilename}' contains a TSV fieldName!`);
                 // NOTE: Some OBS and other messages have to include part of the part in the 'filename' (to prevent ambiguity) so we don't disallow forward slash
-                if (!thisRepoName || !(thisRepoName.endsWith('_obs') || thisRepoName.endsWith('_ta') || thisRepoName.endsWith('_tw')))
-                    console.assert(thisFilename.indexOf('/') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+                // if (!thisRepoName || !(thisRepoName.endsWith('_obs') || thisRepoName.endsWith('_ta') || thisRepoName.endsWith('_tw')))
+                //     console.assert(thisFilename.indexOf('/') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 if (thisLocation)
                     console.assert(thisLocation.indexOf(thisFilename) < 0, `filename is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
             }
@@ -162,6 +168,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                     // && (!thisGivenNotice.bookID || thisGivenNotice.bookID.indexOf(thisLineNumber + '') < 0)
                     console.assert(thisLocation.indexOf(thisLineNumber + '') < 0 && thisLocation.indexOf(thisLineNumber.toLocaleString()) < 0, `lineNumber might be repeated in location in ${JSON.stringify(thisGivenNotice)}`);
             }
+            if (thisExtra)
+                console.assert(thisExtra !== '01', `extra should not be '${thisExtra}'`);
             numberStore[thisPriority] = thisMsg;
         }
     }
@@ -222,8 +230,9 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             resultObject.successList = [];
             const UHBBookList = [], UGNTBookList = [], LTBookList = [], STBookList = [], TNBookList = [];
             const USFMBookList = [], TSVNotesList = [], manifestsList = [];
+            const TNList = [], TQList = [], TWLList = [];
             for (const thisParticularSuccessMsg of givenNoticeObject.successList) {
-                // console.log("thisParticularSuccessMessage", thisParticularSuccessMessage);
+                // console.log("thisParticularSuccessMsg", thisParticularSuccessMsg);
                 let regexResult;
                 if (thisParticularSuccessMsg.startsWith('Checked UHB file: '))
                     UHBBookList.push(thisParticularSuccessMsg.substring(18, thisParticularSuccessMsg.length))
@@ -235,6 +244,12 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                     STBookList.push(thisParticularSuccessMsg.substring(18, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked TN file: '))
                     TNBookList.push(thisParticularSuccessMsg.substring(17, thisParticularSuccessMsg.length))
+                else if (thisParticularSuccessMsg.startsWith('Checked TN ') && thisParticularSuccessMsg.substring(14, 20) === ' file:')
+                    TNList.push(thisParticularSuccessMsg.substring(21, thisParticularSuccessMsg.length))
+                else if (thisParticularSuccessMsg.startsWith('Checked TQ ') && thisParticularSuccessMsg.substring(14, 20) === ' file:')
+                    TQList.push(thisParticularSuccessMsg.substring(21, thisParticularSuccessMsg.length))
+                else if (thisParticularSuccessMsg.startsWith('Checked TWL ') && thisParticularSuccessMsg.substring(15, 21) === ' file:')
+                    TWLList.push(thisParticularSuccessMsg.substring(22, thisParticularSuccessMsg.length))
                 else if ((regexResult = BibleRegex.exec(thisParticularSuccessMsg)) !== null
                     // but don't do it for Book Package checks (in different repos)
                     && thisParticularSuccessMsg.startsWith(`Checked ${regexResult[1]} file`))
@@ -245,8 +260,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                     TSVNotesList.push(regexResult[1]);
                 else if ((regexResult = manifestRegex.exec(thisParticularSuccessMsg)) !== null)
                     manifestsList.push(regexResult[1]);
-                else
-                    resultObject.successList.push(thisParticularSuccessMsg); // Just copy it across
+                else // Just copy it across
+                    resultObject.successList.push(thisParticularSuccessMsg);
             }
             // Recreate original messages if exactly one found
             if (UHBBookList.length === 1)
@@ -263,6 +278,12 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 resultObject.successList.push(`Checked ${USFMBookList[0]} file`);
             if (TSVNotesList.length === 1)
                 resultObject.successList.push(`Checked ${TSVNotesList[0]} file`);
+            if (TNList.length === 1)
+                resultObject.successList.push(`Checked TN file: ${TNList[0]}`);
+            if (TQList.length === 1)
+                resultObject.successList.push(`Checked TQ file: ${TQList[0]}`);
+            if (TWLList.length === 1)
+                resultObject.successList.push(`Checked TWL file: ${TWLList[0]}`);
             if (manifestsList.length === 1)
                 resultObject.successList.push(`Checked ${manifestsList[0]} manifest file`);
             // Put summary messages at the beginning of the list if more than one found
@@ -273,6 +294,12 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 resultObject.successList.unshift(`Checked ${TSVNotesList.length} TSV notes files: ${TSVNotesList.join(', ')}`);
             if (USFMBookList.length > 1)
                 resultObject.successList.unshift(`Checked ${USFMBookList.length} USFM Bible files: ${USFMBookList.join(', ')}`);
+                if (TWLList.length > 1)
+                resultObject.successList.unshift(`Checked ${TWLList.length} TWL files: ${TWLList.join(', ')}`);
+                if (TQList.length > 1)
+                resultObject.successList.unshift(`Checked ${TQList.length} TQ files: ${TQList.join(', ')}`);
+                if (TNList.length > 1)
+                resultObject.successList.unshift(`Checked ${TNList.length} TN files: ${TNList.join(', ')}`);
             if (TNBookList.length > 1)
                 resultObject.successList.unshift(`Checked ${TNBookList.length} TN files: ${TNBookList.join(', ')}`);
             if (STBookList.length > 1)
@@ -401,6 +428,12 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
 // end of processNoticesCommon function
 
 
+/**
+ *
+ * @param {Object} givenNoticeObject
+ * @param {Object} optionalProcessingOptions
+ * @return {Object} containing errorList and warningList
+ */
 export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProcessingOptions) {
     /*
         Available options are:
@@ -480,6 +513,12 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
 // end of processNoticesToErrorsWarnings function
 
 
+/**
+ *
+ * @param {Object} givenNoticeObject
+ * @param {Object} optionalProcessingOptions
+ * @return {Object} containing severeList, mediumList, and lowList
+ */
 export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProcessingOptions) {
     /*
         Available options are:
@@ -578,6 +617,12 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
 // end of processNoticesToSevereMediumLow function
 
 
+/**
+ *
+ * @param {Object} givenNoticeObject
+ * @param {Object} optionalProcessingOptions
+ * @return {Object} containing warningList
+ */
 export function processNoticesToSingleList(givenNoticeObject, optionalProcessingOptions) {
     /*
         Available options are:

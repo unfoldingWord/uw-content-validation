@@ -7,7 +7,7 @@ import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
 import { ourParseInt } from './utilities';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.6.35';
+// const USFM_VALIDATOR_VERSION_STRING = '0.6.37';
 
 const DEFAULT_EXTRACT_LENGTH = 10;
 
@@ -35,9 +35,12 @@ const HEADING_TYPE_MARKERS = [ // expected to contain text on the same line
     'ms', 'ms1', 'mr',
     'r', 'd', 'rem', 'sp', 'qs', 'cl',
     'sd', 'sd1', 'sd2',
-    'pr', 'cls', 'pmo', 'pmc', 'pmr', 'pc',
+    'pr', 'qa', 'qc', 'qd', 'qr',
+    'cls', 'pmo', 'pmc', 'pmr', 'pc',
     'periph'];
-const PARAGRAPH_MARKERS = ['p', 'q', 'q1', 'q2', 'q3', 'q4',
+const PARAGRAPH_MARKERS = ['p',
+    'q', 'q1', 'q2', 'q3', 'q4',
+    'qm', 'qm1', 'qm2', 'qm3', 'qm4',
     'm', 'mi',
     'pi', 'pi1', 'pi2', 'pi3', 'pi4',
     'li', 'li1', 'li2', 'li3', 'li4',
@@ -127,6 +130,18 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
      Returns a result object containing a successList and a noticeList
      */
     // console.log(`checkUSFMText(${languageCode}, ${bookID}, ${givenText.length.toLocaleString()} chars, '${givenLocation}', ${JSON.stringify(optionalCheckingOptions)})…`);
+    console.assert(languageCode !== undefined, "checkUSFMText: 'languageCode' parameter should be defined");
+    console.assert(typeof languageCode === 'string', `checkUSFMText: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    console.assert(bookID !== undefined, "checkUSFMText: 'bookID' parameter should be defined");
+    console.assert(typeof bookID === 'string', `checkUSFMText: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+    console.assert(bookID.length === 3, `checkUSFMText: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    console.assert(bookID.toUpperCase() === bookID, `checkUSFMText: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+    console.assert(bookID === 'OBS' || books.isValidBookID(bookID), `checkUSFMText: '${bookID}' is not a valid USFM book identifier`);
+    console.assert(filename !== undefined, "checkUSFMText: 'line' parameter should be defined");
+    console.assert(typeof filename === 'string', `checkUSFMText: 'line' parameter should be a string not a '${typeof filename}'`);
+    console.assert(givenLocation !== undefined, "checkUSFMText: 'givenRowLocation' parameter should be defined");
+    console.assert(typeof givenLocation === 'string', `checkUSFMText: 'givenRowLocation' parameter should be a string not a '${typeof givenLocation}'`);
+
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
@@ -189,9 +204,13 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
 
         // We only get one error if it fails
         if (grammarCheckResult.error && grammarCheckResult.error.priority)
-            // Prevent these false alarms (from Ohm schema issues, esp. empty lemma fields)
+            // Prevent these false alarms (from Ohm schema issues, esp. empty lemma="" fields)
             if (!grammarCheckResult.error.extract
-                || (grammarCheckResult.error.extract.indexOf('emma=""') < 0 && grammarCheckResult.error.message.indexOf('Expected "c", "v", ') < 0))
+                // Note: checking the extract might not always be reliable if they choose a length < 10
+                || (grammarCheckResult.error.extract.indexOf('mma="" ') < 0 // see https://github.com/Bridgeconn/usfm-grammar/issues/87
+                    && grammarCheckResult.error.message.indexOf('Expected "c", "v", ') < 0 // forgotten what this prevents ???
+                    && grammarCheckResult.error.message.indexOf('Expected "f*", "+", ') < 0 // see https://github.com/Bridgeconn/usfm-grammar/issues/86
+                ))
                 addNoticePartial(grammarCheckResult.error);
 
         // console.log("  Warnings:", JSON.stringify(grammarCheckResult.warnings));
@@ -322,6 +341,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
         let lowercaseBookID = bookID.toLowerCase();
         let expectedVersesPerChapterList = [];
         try {
+            console.assert(lowercaseBookID !== 'obs', "Shouldn't happen in usfm-text-check1");
             expectedVersesPerChapterList = books.chaptersInBook(lowercaseBookID); // A list of integers -- numVerses for each chapter
             // console.log("Got chapterList", JSON.stringify(expectedVersesPerChapterList));
         }
@@ -438,7 +458,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
 
         const dbtcResultObject = checkTextField(fieldName, fieldText, allowedLinks, fieldLocation, optionalCheckingOptions);
 
-        // Process results line by line to filter out potential false positives
+        // Process noticeList line by line to filter out potential false positives
         //  for this particular kind of text field
         for (const noticeEntry of dbtcResultObject.noticeList) {
             // console.log("Notice keys", JSON.stringify(Object.keys(noticeEntry)));
@@ -562,6 +582,8 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
         // console.log(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
         // console.log(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}=${rest.length} chars, ${lineLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
 
+        const details = `(line marker=\\${marker})`
+
         // Remove any self-closed milestones and internal \v markers
         // NOTE: replaceAll() is not generally available in browsers yet, so need to use RegExps
         let adjustedRest = rest.replace(/\\zaln-e\\\*/g, '').replace(/\\ts\\\*/g, '').replace(/\\k-e\\\*/g, '')
@@ -585,27 +607,35 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
         let ixEnd;
         if (marker === 'w') { // Handle first \w field (i.e., if marker==w) -- there may be more \w fields in rest
             const ixWordEnd = adjustedRest.indexOf('|');
-            console.assert(ixWordEnd >= 0, `Why1 is w| = ${ixWordEnd}?`);
+            if (ixWordEnd < 0 && adjustedRest.indexOf('lemma="') >= 0) {
+                const characterIndex = 5; // Presumably, a little bit into the word
+                const extract = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
+                addNoticePartial({ priority: 912, message: 'Missing | character in \\w line', lineNumber, C, V, characterIndex, extract, location: lineLocation });
+            }
+            console.assert(ixWordEnd >= 1, `Why1 is w| = ${ixWordEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
             ixEnd = adjustedRest.indexOf('\\w*');
             if (ixEnd >= 0)
                 adjustedRest = adjustedRest.substring(0, ixWordEnd) + adjustedRest.substring(ixEnd + 3, adjustedRest.length);
-            else console.assert(false, `Why is w ixEnd = ${ixEnd}?`);
+            else console.assert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
         } else if (marker === 'zaln-s') { // Remove first \zaln-s milestone (if marker == zaln-s)
             ixEnd = adjustedRest.indexOf('\\*');
             if (ixEnd >= 0)
                 adjustedRest = adjustedRest.substring(ixEnd + 2, adjustedRest.length);
-            else console.assert(false, `Why is zaln-s ixEnd = ${ixEnd}?`);
+            else console.assert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
         } else if (marker === 'k-s') { // Remove first \k-s milestone (if marker == k-s)
             ixEnd = adjustedRest.indexOf('\\*');
             if (ixEnd >= 0)
                 adjustedRest = adjustedRest.substring(ixEnd + 2, adjustedRest.length);
-            else console.assert(false, `Why is k-s ixEnd = ${ixEnd}?`);
+            else console.assert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
         } else if (marker === 'f') { // Handle first footnote (if marker == f)
             ixEnd = adjustedRest.indexOf('\\f*');
             const startIndex = adjustedRest.startsWith('+ ') ? 2 : 0;
             if (ixEnd >= 0)
                 adjustedRest = adjustedRest.substring(startIndex, ixEnd) + adjustedRest.substring(ixEnd + 3, adjustedRest.length);
-            else console.assert(false, `Why is k-s ixEnd = ${ixEnd}?`);
+            else {
+                // console.assert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
+                addNoticePartial({ priority: 312, message: 'Possible unclosed footnote', details, lineNumber, C, V, location: lineLocation });
+            }
             // console.log(`After removing f field: '${adjustedRest}' from '${rest}'`);
         }
         else if (marker === 'va')
@@ -633,7 +663,14 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
         let nextWIndex;
         while ((nextWIndex = adjustedRest.indexOf('\\w ')) >= 0) {
             const ixWordEnd = adjustedRest.indexOf('|');
-            console.assert(ixWordEnd >= 0, `Why2 is w| = ${ixWordEnd}?`);
+            if (ixWordEnd < 0 && adjustedRest.indexOf('lemma="') >= 0) {
+                const characterIndex = nextWIndex + 5; // Presumably, a little bit into the word
+                const extract = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
+                addNoticePartial({ priority: 911, message: 'Missing | character in \\w field', details, lineNumber, C, V, characterIndex, extract, location: lineLocation });
+                adjustedRest = ''; // Avoid follow-on errors
+                break;
+            }
+            console.assert(ixWordEnd > nextWIndex + 3, `Why2 is w| = ${ixWordEnd}? nextWIndex=${nextWIndex} ${languageCode} ${bookID} ${C}:${V} ${lineNumber}`);
             const ixWEnd = adjustedRest.indexOf('\\w*');
             if (ixWEnd >= 0) {
                 console.assert(ixWEnd > nextWIndex, `Exected closure at ${ixWEnd} to be AFTER \\w (${nextWIndex})`);
@@ -663,12 +700,12 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
             let characterIndex;
             if ((characterIndex = adjustedRest.indexOf('"')) >= 0) {
                 const extract = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
-                addNoticePartial({ priority: 776, message: 'Unexpected " straight quote character', lineNumber, C, V, extract, location: lineLocation });
+                addNoticePartial({ priority: 776, message: 'Unexpected " straight quote character', details, lineNumber, C, V, extract, location: lineLocation });
                 // console.log(`ERROR 776: in ${marker} '${adjustedRest}' from '${rest}'`);
             }
             if ((characterIndex = adjustedRest.indexOf("'")) >= 0) {
                 const extract = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
-                addNoticePartial({ priority: 775, message: "Unexpected ' straight quote character", lineNumber, C, V, extract, location: lineLocation });
+                addNoticePartial({ priority: 775, message: "Unexpected ' straight quote character", details, lineNumber, C, V, extract, location: lineLocation });
                 // console.log(`ERROR 775: in ${marker} '${adjustedRest}' from '${rest}'`);
             }
             if (adjustedRest.indexOf('\\') >= 0 || adjustedRest.indexOf('|') >= 0) {
@@ -676,7 +713,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
                 characterIndex = adjustedRest.indexOf('\\');
                 if (characterIndex === -1) characterIndex = adjustedRest.indexOf('|');
                 const extract = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
-                addNoticePartial({ priority: 875, message: "Unexpected USFM field", lineNumber, C, V, extract, location: lineLocation });
+                addNoticePartial({ priority: 875, message: "Unexpected USFM field", details, lineNumber, C, V, extract, location: lineLocation });
             }
             if (adjustedRest !== rest) // Only re-check if line has changed (because original is checked in checkUSFMLineInternals())
                 // Note: false (below) is for allowedLinks flag
@@ -715,7 +752,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
             if (rest && MARKERS_WITHOUT_CONTENT.indexOf(marker) >= 0)
                 if (isWhitespace(rest))
                     addNoticePartial({ priority: 301, message: `Unexpected whitespace after \\${marker} marker`, C, V, lineNumber, characterIndex: marker.length, extract: rest, location: lineLocation });
-                else if (rest !== 'ס') // in UHB NEH 3:20
+                else if (rest !== 'ס' && rest !== 'פ') // in UHB NEH 3:20 or EZR 3:18
                     addNoticePartial({ priority: 401, message: `Unexpected content after \\${marker} marker`, C, V, lineNumber, characterIndex: marker.length, extract: rest, location: lineLocation });
                 else if (MARKERS_WITH_COMPULSORY_CONTENT.indexOf(marker) >= 0 && !rest)
                     addNoticePartial({ priority: 711, message: "Expected compulsory content", C, V, lineNumber, characterIndex: marker.length, location: ` after \\${marker} marker${lineLocation}` });
@@ -737,6 +774,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
         // eslint-disable-next-line no-unused-vars
         let numChaptersThisBook = 0;
         try {
+            console.assert(lowercaseBookID !== 'obs', "Shouldn't happen in usfm-text-check2");
             numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
         }
         catch {
@@ -792,7 +830,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
             if (line[0] === '\\') {
                 marker = findStartMarker(C, V, n, line);
                 rest = line.substring(marker.length + 2); // Skip backslash, marker, and space after marker
-                // console.log(`Line ${n}: marker='${marker}' rest='${rest}'`);
+                // console.log(`Line ${n}: marker='\\${marker}' rest='${rest}'`);
             } else { // Line didn't start with a backslash
                 // NOTE: Some unfoldingWord USFM Bibles commonly have this
                 //          so it's not necessarily either an error or a warning
@@ -803,7 +841,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
                     if (line[1] === '\\') { // Let's drop the leading punctuation and try to check the rest of the line
                         marker = line.substring(2).split(' ', 1)[0];
                         rest = line.substring(marker.length + 2 + 1); // Skip leading character, backslash, marker, and space after marker
-                        // console.log(`USFM after ${line[0]} got '${marker}': '${rest}'`);
+                        // console.log(`USFM after ${line[0]} got '\\${marker}': '${rest}'`);
                     }
                     else
                         marker = 'rem'; // to try to avoid consequential errors, but the rest of the line won't be checked
@@ -882,16 +920,16 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
             // Check the order of markers
             // In headers
             if (marker === 'toc2' && lastMarker !== 'toc1')
-                addNoticePartial({ priority: 87, C, V, message: "Expected \\toc2 line to follow \\toc1", lineNumber: n, characterIndex: 1, details: `(not '${lastMarker}')`, location: ourLocation });
+                addNoticePartial({ priority: 87, C, V, message: "Expected \\toc2 line to follow \\toc1", lineNumber: n, characterIndex: 1, details: `(not '\\${lastMarker}')`, location: ourLocation });
             else if (marker === 'toc3' && lastMarker !== 'toc2')
-                addNoticePartial({ priority: 87, C, V, message: "Expected \\toc3 line to follow \\toc2", lineNumber: n, characterIndex: 1, details: `(not '${lastMarker}')`, location: ourLocation });
+                addNoticePartial({ priority: 87, C, V, message: "Expected \\toc3 line to follow \\toc2", lineNumber: n, characterIndex: 1, details: `(not '\\${lastMarker}')`, location: ourLocation });
             // In chapters
             else if ((PARAGRAPH_MARKERS.indexOf(marker) >= 0 || marker === 's5' || marker === 'ts\\*')
                 && PARAGRAPH_MARKERS.indexOf(lastMarker) >= 0
                 && !lastRest)
-                addNoticePartial({ priority: 399, C, V, message: "Useless paragraph marker", lineNumber: n, characterIndex: 1, details: `('${lastMarker}' before '${marker}')`, location: ourLocation });
-            else if (['c','ca','cl'].indexOf(lastMarker) > 0 && marker === 'v')
-                addNoticePartial({ priority: C==='1'? 657:457, C, V, message: "Paragraph marker expected before first verse", lineNumber: n, characterIndex: 1, details: `('${marker}' after '${lastMarker}')`, location: ourLocation });
+                addNoticePartial({ priority: 399, C, V, message: "Useless paragraph marker", lineNumber: n, characterIndex: 1, details: `('\\${lastMarker}' before '\\${marker}')`, location: ourLocation });
+            else if (['c', 'ca', 'cl'].indexOf(lastMarker) > 0 && marker === 'v')
+                addNoticePartial({ priority: C === '1' ? 657 : 457, C, V, message: "Paragraph marker expected before first verse", lineNumber: n, characterIndex: 1, details: `('\\${marker}' after '\\${lastMarker}')`, location: ourLocation });
 
             // Do general checks
             checkUSFMLineContents(n, C, V, marker, rest, ourLocation, optionalCheckingOptions);
@@ -920,7 +958,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
     console.log(`  Finished all tasks with ${JSON.stringify(allResults)}.`);
     console.log("  Finished all tasks.");
     if (!allResults[1].isValidUSFM)
-        addNoticePartial({priority:942, "USFM Grammar check fails", location});
+        addNoticePartial({priority: 942, "USFM Grammar check fails", location});
     console.log("  Warnings:", JSON.stringify(allResults[1].warnings));
     // Display these warnings but with a lower priority
     for (const warningString of allResults[1].warnings)
@@ -937,7 +975,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
     // console.assert(allResults.length === 2);
     // console.log("allResults", JSON.stringify(allResults));
     // if (!allResults[1].isValidUSFM)
-    //     addNoticePartial({priority:941, "USFM Grammar check fails", location});
+    //     addNoticePartial({priority: 941, "USFM Grammar check fails", location});
     // console.log("  Warnings:", JSON.stringify(allResults[1].warnings));
     // // Display these warnings but with a lower priority
     // for (const warningString of allResults[1].warnings)

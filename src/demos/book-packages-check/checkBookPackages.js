@@ -8,6 +8,7 @@ import { checkBookPackage } from '../book-package-check/checkBookPackage';
 export async function checkBookPackages(username, languageCode, bookIDList, setResultValue, checkingOptions) {
     //     console.log(`I'm here in checkBookPackages v${VALIDATOR_VERSION_STRING}
     //   with ${username}, ${languageCode}, ${bookIDList}, ${JSON.stringify(checkingOptions)}`);
+    let abortFlag = false;
     const startTime = new Date();
 
     const checkBookPackagesResult = { successList: [], noticeList: [] };
@@ -51,6 +52,7 @@ export async function checkBookPackages(username, languageCode, bookIDList, setR
     let checkedBibleBPManifestFlag = false;
     for (const bookID of bookIDList) {
         // console.log(`checkBookPackages bookID: ${bookID}`);
+        if (abortFlag) break;
 
         // const generalLocation = ` ${languageCode} ${bookID} book packages from ${username}`;
         if (bookID !== 'OBS') {
@@ -84,7 +86,7 @@ export async function checkBookPackages(username, languageCode, bookIDList, setR
 
         // Concat is faster if we don't need to process each success message individually
         checkBookPackagesResult.successList = checkBookPackagesResult.successList.concat(cbpResultObject.successList);
-        // Process results line by line,  appending the repoCode/bookID as an extra field as we go
+        // Process noticeList line by line,  appending the repoCode/bookID as an extra field as we go
         // for (const successEntry of cbpResultObject.successList) {
         //     // console.log("  ourCheckBookPackage:", successEntry);
         //     addSuccessMessage(successEntry);

@@ -7,7 +7,7 @@ import { checkRepo } from './checkRepo';
 // import { consoleLogObject, displayPropertyNames } from '../../core/utilities';
 
 
-//const VALIDATOR_VERSION_STRING = '0.1.2';
+//const VALIDATOR_VERSION_STRING = '0.1.3';
 
 
 function RepoCheck(/*username, languageCode,*/ props) {
@@ -33,6 +33,13 @@ function RepoCheck(/*username, languageCode,*/ props) {
     const checkingOptions = { // Uncomment any of these to test them
         // extractLength: 25,
     };
+    // NOTE: I removed this again as it didn't really seem to make sense to enable it here
+    //          Also, I don't think the results were getting returned correctly yet
+    // if (repoName && repoName.endsWith('_tn')) {
+    //     // TODO: Should the user be able to turn this off and on ????
+    //     checkingOptions.checkLinkedTAArticleFlag = true;
+    //     checkingOptions.checkLinkedTWArticleFlag = true;
+    // }
     // Or this allows the parameters to be specified as a RepoCheck property
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
 
@@ -54,13 +61,14 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 setResultValue(<p style={{ color: 'red' }}>No <b>repoName</b> set!</p>);
                 return;
             }
-            
-            let [languageCode,repoCode] = repoName.split('_');
+
+            let [languageCode, repoCode] = repoName.split('_');
             repoCode = repoCode.toUpperCase();
-            console.log(`languageCode='${languageCode}' repoCode='${repoCode}'`);
+            // console.log(`RepoCheck languageCode='${languageCode}' repoCode='${repoCode}'`);
 
             setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for {repoName} repo check…</p>);
-            const repoList = ['TA', 'TW'];
+            const repoList = ['TW'];
+            if (repoCode !== 'UHB' && repoCode !== 'UGNT') repoList.push('TA'); // Original languages only have TW links
             if (repoCode !== 'TA' && repoCode !== 'TW') repoList.push(repoCode);
             const successFlag = await preloadReposIfNecessary(username, languageCode, [], branch, repoList);
             if (!successFlag)
@@ -77,6 +85,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 } catch (checkRepoError) {
                     rawCRResults = { successList: [], noticeList: [] };
                     rawCRResults.noticeList.push({ priority: 999, message: "checkRepo function FAILED", repoName, extract: checkRepoError, location: repoName });
+                    // console.log("RepoCheck trace is", checkRepoError.trace);
                 }
                 // console.log("checkRepo() returned", typeof rawCRResults); //, JSON.stringify(rawCRResults));
 

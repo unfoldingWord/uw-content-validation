@@ -20,37 +20,45 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
      Returns a result object containing a successList and a noticeList
      */
     // console.log(`checkAnnotationRows(${languageCode}, ${annotationType}, ${bookID}, ${tableText.length}, ${givenLocation},${JSON.stringify(optionalCheckingOptions)})…`);
+    console.assert(languageCode !== undefined, "checkAnnotationRows: 'languageCode' parameter should be defined");
+    console.assert(typeof languageCode === 'string', `checkAnnotationRows: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    console.assert(bookID !== undefined, "checkAnnotationRows: 'bookID' parameter should be defined");
+    console.assert(typeof bookID === 'string', `checkAnnotationRows: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+    console.assert(bookID.length === 3, `checkAnnotationRows: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    console.assert(bookID.toUpperCase() === bookID, `checkAnnotationRows: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+    console.assert(bookID === 'OBS' || books.isValidBookID(bookID), `checkAnnotationRows: '${bookID}' is not a valid USFM book identifier`);
+    console.assert(givenLocation !== undefined, "checkAnnotationRows: 'givenLocation' parameter should be defined");
+    console.assert(typeof givenLocation === 'string', `checkAnnotationRows: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
+
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     // if (bookID) ourLocation = ` in ${bookID}${ourLocation}`;
 
-    const result = { successList: [], noticeList: [] };
+    const carResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
         // console.log(`checkAnnotationRows success: ${successString}`);
-        result.successList.push(successString);
+        carResult.successList.push(successString);
     }
-    function addNoticeCV8(noticeObject) {
+    function addNoticePartial(noticeObject) {
         // console.log(`checkAnnotationRows notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(noticeObject.priority !== undefined, "ATSV addNoticeCV8: 'priority' parameter should be defined");
-        console.assert(typeof noticeObject.priority === 'number', `ATSV addNoticeCV8: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        console.assert(noticeObject.message !== undefined, "ATSV addNoticeCV8: 'message' parameter should be defined");
-        console.assert(typeof noticeObject.message === 'string', `ATSV addNoticeCV8: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // console.assert(C !== undefined, "ATSV addNoticeCV8: 'C' parameter should be defined");
-        if (noticeObject.C) console.assert(typeof noticeObject.C === 'string', `ATSV addNoticeCV8: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
-        // console.assert(V !== undefined, "ATSV addNoticeCV8: 'V' parameter should be defined");
-        if (noticeObject.V) console.assert(typeof noticeObject.V === 'string', `ATSV addNoticeCV8: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
-        // console.assert(characterIndex !== undefined, "ATSV addNoticeCV8: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `ATSV addNoticeCV8: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // console.assert(extract !== undefined, "ATSV addNoticeCV8: 'extract' parameter should be defined");
-        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `ATSV addNoticeCV8: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
-        console.assert(noticeObject.location !== undefined, "ATSV addNoticeCV8: 'location' parameter should be defined");
-        console.assert(typeof noticeObject.location === 'string', `ATSV addNoticeCV8: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
-        result.noticeList.push({ ...noticeObject, bookID, filename });
+        console.assert(noticeObject.priority !== undefined, "ATSV addNoticePartial: 'priority' parameter should be defined");
+        console.assert(typeof noticeObject.priority === 'number', `TSV addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        console.assert(noticeObject.message !== undefined, "ATSV addNoticePartial: 'message' parameter should be defined");
+        console.assert(typeof noticeObject.message === 'string', `TSV addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+        // console.assert(C !== undefined, "ATSV addNoticePartial: 'C' parameter should be defined");
+        if (noticeObject.C) console.assert(typeof noticeObject.C === 'string', `TSV addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
+        // console.assert(V !== undefined, "ATSV addNoticePartial: 'V' parameter should be defined");
+        if (noticeObject.V) console.assert(typeof noticeObject.V === 'string', `TSV addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
+        // console.assert(characterIndex !== undefined, "ATSV addNoticePartial: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `TSV addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        // console.assert(extract !== undefined, "ATSV addNoticePartial: 'extract' parameter should be defined");
+        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `TSV addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        console.assert(noticeObject.location !== undefined, "ATSV addNoticePartial: 'location' parameter should be defined");
+        console.assert(typeof noticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        carResult.noticeList.push({ ...noticeObject, bookID, filename });
     }
 
-
-    addNoticeCV8({ priority: 997, message: "checkAnnotationRows() is still a placeholder -- not completed yet", location: ourLocation });
 
     let extractLength;
     try {
@@ -68,19 +76,24 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
 
     let lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook = 0;
-    try {
-        numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
-    }
-    catch {
-        if (!books.isValidBookID(bookID)) // must not be in FRT, BAK, etc.
-            addNoticeCV8({ priority: 747, message: "Bad function call: should be given a valid book abbreviation", extract: bookID, location: ` (not '${bookID}')${ourLocation}` });
+    if (bookID === 'OBS')
+        numChaptersThisBook = 50; // There's 50 Open Bible Stories
+    else {
+        console.assert(lowercaseBookID !== 'obs', "Shouldn't happen in annotation-table-check");
+        try {
+            numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
+        }
+        catch {
+            if (!books.isValidBookID(bookID)) // must not be in FRT, BAK, etc.
+                addNoticePartial({ priority: 747, message: "Bad function call: should be given a valid book abbreviation", extract: bookID, location: ` (not '${bookID}')${ourLocation}` });
+        }
     }
 
     let lines = tableText.split('\n');
     // console.log(`  '${location}' has ${lines.length.toLocaleString()} total lines (expecting ${NUM_EXPECTED_TN_FIELDS} fields in each line)`);
 
     let lastC = '', lastV = '';
-    let rowID_list = [];
+    let rowIDList = [], uniqueRowList = [];
     let numVersesThisChapter = 0;
     for (let n = 0; n < lines.length; n++) {
         // console.log(`checkAnnotationRows checking line ${n}: ${JSON.stringify(lines[n])}`);
@@ -88,101 +101,134 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
             if (lines[0] === EXPECTED_TN_HEADING_LINE)
                 addSuccessMessage(`Checked TSV header ${ourLocation}`);
             else
-                addNoticeCV8({ priority: 746, message: "Bad TSV header", lineNumber: n + 1, location: `${ourLocation}: '${lines[0]}'` });
+                addNoticePartial({ priority: 746, message: "Bad TSV header", lineNumber: n + 1, location: `${ourLocation}: '${lines[0]}'` });
         }
         else // not the header
         {
             let fields = lines[n].split('\t');
             if (fields.length === NUM_EXPECTED_ANNOTATION_TSV_FIELDS) {
                 // eslint-disable-next-line no-unused-vars
-                const [reference, rowID, tags, _support_reference, _quote, _occurrence, _annotation] = fields;
+                const [reference, rowID, tags, supportReference, quote, occurrence, annotation] = fields;
                 const [C, V] = reference.split(':')
 
                 // Use the row check to do most basic checks
-                const firstResult = await checkAnnotationTSVDataRow(languageCode, annotationType, lines[n], bookID, C, V, ourLocation, optionalCheckingOptions);
+                const drResultObject = await checkAnnotationTSVDataRow(languageCode, annotationType, lines[n], bookID, C, V, ourLocation, optionalCheckingOptions);
                 // Choose only ONE of the following
                 // This is the fast way of append the results from this field
                 // result.noticeList = result.noticeList.concat(firstResult.noticeList);
-                // If we need to put everything through addNoticeCV8, e.g., for debugging or filtering
+                // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
                 //  process results line by line
-                for (const noticeEntry of firstResult.noticeList)
-                    addNoticeCV8({ ...noticeEntry, lineNumber: n + 1 });
+                for (const drNoticeEntry of drResultObject.noticeList)
+                    if (drNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN check
+                        carResult.noticeList.push(drNoticeEntry); // Just copy the complete notice as is
+                    else
+                        addNoticePartial({ ...drNoticeEntry, lineNumber: n + 1 });
+                // The following is needed coz we might be checking the linked TA and/or TW articles
+                if (drResultObject.checkedFileCount && drResultObject.checkedFileCount > 0)
+                    if (typeof carResult.checkedFileCount === 'number') carResult.checkedFileCount += drResultObject.checkedFileCount;
+                    else carResult.checkedFileCount = drResultObject.checkedFileCount;
+                if (drResultObject.checkedFilesizes && drResultObject.checkedFilesizes > 0)
+                    if (typeof carResult.checkedFilesizes === 'number') carResult.checkedFilesizes += drResultObject.checkedFilesizes;
+                    else carResult.checkedFilesizes = drResultObject.checkedFilesizes;
+                if (drResultObject.checkedRepoNames && drResultObject.checkedRepoNames.length > 0)
+                    for (const checkedRepoName of drResultObject.checkedRepoNames)
+                        try { if (carResult.checkedRepoNames.indexOf(checkedRepoName) < 0) carResult.checkedRepoNames.push(checkedRepoName); }
+                        catch { carResult.checkedRepoNames = [checkedRepoName]; }
+                if (drResultObject.checkedFilenameExtensions && drResultObject.checkedFilenameExtensions.length > 0)
+                    for (const checkedFilenameExtension of drResultObject.checkedFilenameExtensions)
+                        try { if (carResult.checkedFilenameExtensions.indexOf(checkedFilenameExtension) < 0) carResult.checkedFilenameExtensions.push(checkedFilenameExtension); }
+                        catch { carResult.checkedFilenameExtensions = [checkedFilenameExtension]; }
+                // if (ttResult.checkedFilenameExtensions) console.log("ttResult", JSON.stringify(ttResult));
 
-                // So here we only have to check against the previous and next fields for out-of-order problems
+                // So here we only have to check against the previous and next fields for out-of-order problems and duplicate problems
+                if (C !== lastC || V !== lastV) {
+                    rowIDList = []; // ID's only need to be unique within each verse
+                    uniqueRowList = []; // Same for these
+                }
+
+                // TODO: Check if we need this at all (even though tC 3.0 can't display these "duplicate" notes)
+                // Check for duplicate notes
+                const uniqueID = C + V + supportReference + quote + occurrence; // This combination should not be repeated
+                // if (uniqueRowList.indexOf(uniqueID) >= 0)
+                //     addNoticePartial({ priority: 880, C, V, message: `Duplicate note`, rowID, lineNumber: n + 1, location: ourLocation });
+                // if (uniqueRowList.indexOf(uniqueID) >= 0)
+                //     addNoticePartial({ priority: 80, C, V, message: `Note: tC 3.0 won't display duplicate note`, rowID, lineNumber: n + 1, location: ourLocation });
+                uniqueRowList.push(uniqueID);
+
                 if (C) {
                     if (C === 'front') { }
                     else if (/^\d+$/.test(C)) {
                         let intC = Number(C);
                         if (C !== lastC)
-                            numVersesThisChapter = books.versesInChapter(lowercaseBookID, intC);
+                            if (lowercaseBookID === 'obs')
+                                numVersesThisChapter = 99; // Set to maximum expected number of frames
+                            else
+                                numVersesThisChapter = books.versesInChapter(lowercaseBookID, intC);
                         if (intC === 0)
-                            addNoticeCV8({ priority: 551, C, V, message: `Invalid zero '${C}' chapter number`, rowID, lineNumber: n + 1, location: ourLocation });
+                            addNoticePartial({ priority: 551, C, V, message: `Invalid zero chapter number`, rowID, lineNumber: n + 1, extract: C, location: ourLocation });
                         if (intC > numChaptersThisBook)
-                            addNoticeCV8({ priority: 737, C, V, message: `Invalid large '${C}' chapter number`, rowID, lineNumber: n + 1, location: ourLocation });
+                            addNoticePartial({ priority: 737, C, V, message: "Invalid large chapter number", rowID, lineNumber: n + 1, extract: C, location: ourLocation });
                         if (/^\d+$/.test(lastC)) {
                             let lastintC = Number(lastC);
                             if (intC < lastintC)
-                                addNoticeCV8({ priority: 736, C, V, message: `Receding '${C}' chapter number after '${lastC}'`, rowID, lineNumber: n + 1, location: ourLocation });
+                                addNoticePartial({ priority: 736, C, V, message: "Receding chapter number", details: `'${C}' after '${lastC}'`, rowID, lineNumber: n + 1, location: ourLocation });
                             else if (intC > lastintC + 1)
-                                addNoticeCV8({ priority: 735, C, V, message: `Advancing '${C}' chapter number after '${lastC}'`, rowID, lineNumber: n + 1, location: ourLocation });
+                                addNoticePartial({ priority: 735, C, V, message: "Advancing chapter number", details: `'${C}' after '${lastC}'`.rowID, lineNumber: n + 1, location: ourLocation });
                         }
                     }
                     else
-                        addNoticeCV8({ priority: 734, C, V, message: "Bad chapter number", rowID, lineNumber: n + 1, location: ourLocation });
+                        addNoticePartial({ priority: 734, C, V, message: "Bad chapter number", rowID, lineNumber: n + 1, location: ourLocation });
                 }
                 else
-                    addNoticeCV8({ priority: 739, C, V, message: "Missing chapter number", rowID, lineNumber: n + 1, location: ` after ${lastC}:${V}${ourLocation}` });
+                    addNoticePartial({ priority: 739, C, V, message: "Missing chapter number", rowID, lineNumber: n + 1, location: ` after ${lastC}:${V}${ourLocation}` });
 
                 if (V) {
                     if (V === 'intro') { }
                     else if (/^\d+$/.test(V)) {
                         let intV = Number(V);
                         if (intV === 0)
-                            addNoticeCV8({ priority: 552, C, V, message: `Invalid zero '${V}' verse number`, rowID, lineNumber: n + 1, location: ourLocation });
+                            addNoticePartial({ priority: 552, C, V, message: "Invalid zero verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, extract: V, location: ourLocation });
                         if (intV > numVersesThisChapter)
-                            addNoticeCV8({ priority: 734, C, V, message: `Invalid large '${V}' verse number for chapter ${C}`, rowID, lineNumber: n + 1, location: ourLocation });
+                            addNoticePartial({ priority: 734, C, V, message: "Invalid large verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, extract: V, location: ourLocation });
                         if (/^\d+$/.test(lastV)) {
                             let lastintV = Number(lastV);
-                            if (intV < lastintV)
-                                addNoticeCV8({ priority: 733, C, V, message: `Receding '${V}' verse number after '${lastV}'`, rowID, lineNumber: n + 1, location: ourLocation });
+                            if (C === lastC && intV < lastintV)
+                                addNoticePartial({ priority: 733, C, V, message: "Receding verse number", details: `'${V}' after '${lastV} for chapter ${C}`, rowID, lineNumber: n + 1, extract: V, location: ourLocation });
                             // else if (intV > lastintV + 1)
-                            //   addNoticeCV8({priority:556, `Skipped verses with '${V}' verse number after '${lastV}'${withString}`);
+                            //   addNoticePartial({priority:556, `Skipped verses with '${V}' verse number after '${lastV}'${withString}`);
                         }
                     }
                     else
-                        addNoticeCV8({ priority: 738, C, V, message: "Bad verse number", rowID, lineNumber: n + 1, location: ourLocation });
+                        addNoticePartial({ priority: 738, C, V, message: "Bad verse number", rowID, lineNumber: n + 1, location: ourLocation });
 
                 }
                 else
-                    addNoticeCV8({ priority: 790, C, V, message: "Missing verse number", rowID, lineNumber: n + 1, location: ` after ${C}:${lastV}${ourLocation}` });
+                    addNoticePartial({ priority: 790, C, V, message: "Missing verse number", rowID, lineNumber: n + 1, location: ` after ${C}:${lastV}${ourLocation}` });
 
                 if (rowID) {
-                    if (rowID_list.indexOf(rowID) >= 0)
-                        addNoticeCV8({ priority: 729, C, V, message: `Duplicate '${rowID}' ID`, rowID, lineNumber: n + 1, location: ourLocation });
+                    if (rowIDList.indexOf(rowID) >= 0)
+                        addNoticePartial({ priority: 729, C, V, message: `Duplicate '${rowID}' ID`, fieldName: 'ID', rowID, lineNumber: n + 1, location: ourLocation });
                 } else
-                    addNoticeCV8({ priority: 730, C, V, message: "Missing ID", lineNumber: n + 1, location: ourLocation });
+                    addNoticePartial({ priority: 730, C, V, message: "Missing ID", fieldName: 'ID', lineNumber: n + 1, location: ourLocation });
 
 
-                if (C !== lastC || V !== lastV) {
-                    rowID_list = []; // ID's only need to be unique within each verse
-                    lastC = C; lastV = V;
-                }
+                lastC = C; lastV = V;
 
             } else
                 // if (n === lines.length - 1) // it's the last line
                 //     console.log(`  Line ${n}: Has ${fields.length} field(s) instead of ${NUM_EXPECTED_TN_FIELDS}: ${EXPECTED_TN_HEADING_LINE.replace(/\t/g, ', ')}`);
                 // else
                 if (n !== lines.length - 1) // it's not the last line
-                    addNoticeCV8({ priority: 988, message: `Wrong number of tabbed fields (expected ${NUM_EXPECTED_ANNOTATION_TSV_FIELDS})`, extract: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, lineNumber: n + 1, location: ourLocation });
+                    addNoticePartial({ priority: 988, message: `Wrong number of tabbed fields (expected ${NUM_EXPECTED_ANNOTATION_TSV_FIELDS})`, extract: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, lineNumber: n + 1, location: ourLocation });
         }
     }
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}.`);
-    if (result.noticeList)
-        addSuccessMessage(`checkAnnotationRows v${ANNOTATION_TABLE_VALIDATOR_VERSION_STRING} finished with ${result.noticeList.length ? result.noticeList.length.toLocaleString() : "zero"} notice${result.noticeList.length === 1 ? '' : 's'}`);
+    if (carResult.noticeList)
+        addSuccessMessage(`checkAnnotationRows v${ANNOTATION_TABLE_VALIDATOR_VERSION_STRING} finished with ${carResult.noticeList.length ? carResult.noticeList.length.toLocaleString() : "zero"} notice${carResult.noticeList.length === 1 ? '' : 's'}`);
     else
         addSuccessMessage(`No errors or warnings found by checkAnnotationRows v${ANNOTATION_TABLE_VALIDATOR_VERSION_STRING}`)
     // console.log(`  checkAnnotationRows returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
-    // console.log("checkAnnotationRows result is", JSON.stringify(result));
-    return result;
+    // console.log("checkAnnotationRows result is", JSON.stringify(carResult));
+    return carResult;
 }
 // end of checkAnnotationRows function

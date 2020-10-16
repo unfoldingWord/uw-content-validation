@@ -78,7 +78,7 @@ export function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckin
 
         const resultObject = checkTextField(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
 
-        // Process results line by line
+        // Process noticeList line by line
         //  suppressing undesired errors
         for (const noticeEntry of resultObject.noticeList) {
             // console.assert(Object.keys(noticeEntry).length === 5, `YAML ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
