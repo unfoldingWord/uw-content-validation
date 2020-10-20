@@ -214,7 +214,7 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
 
                 lastC = C; lastV = V;
 
-            } else
+            } else // wrong number of fields in the row
                 // if (n === lines.length - 1) // it's the last line
                 //     console.log(`  Line ${n}: Has ${fields.length} field(s) instead of ${NUM_EXPECTED_TN_FIELDS}: ${EXPECTED_TN_HEADING_LINE.replace(/\t/g, ', ')}`);
                 // else

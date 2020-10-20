@@ -7,7 +7,7 @@ import { checkTNLinksToOutside } from './tn-links-check';
 import { checkOriginalLanguageQuote } from './quote-check';
 
 
-// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.4.7';
+// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.4.8';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -475,8 +475,12 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             addNoticePartial({ priority: 274, message: "Missing OccurrenceNote field", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation });
 
-    } else
-        addNoticePartial({ priority: 861, message: `Found wrong number of TSV fields (expected ${NUM_EXPECTED_TN_TSV_FIELDS})`, details: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, location: ourRowLocation });
+    } else { // wrong number of fields in the row
+        // Have a go at getting some of the first fields out of the row
+        let rowID = '????';
+        try { rowID = fields[3]; } catch { }
+        addNoticePartial({ priority: 984, message: `Found wrong number of TSV fields (expected ${NUM_EXPECTED_TN_TSV_FIELDS})`, details: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, rowID, location: ourRowLocation });
+    }
 
     // console.log(`  checkTN_TSVDataRow returning with ${drResult.noticeList.length.toLocaleString()} notice(s).`);
     // console.log("checkTN_TSVDataRow result is", JSON.stringify(drResult));

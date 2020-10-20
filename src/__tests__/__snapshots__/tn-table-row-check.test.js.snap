@@ -675,7 +675,8 @@ Object {
       "details": "Found 1 field",
       "location": " that was supplied",
       "message": "Found wrong number of TSV fields (expected 9)",
-      "priority": 861,
+      "priority": 984,
+      "rowID": undefined,
     },
   ],
 }
@@ -691,7 +692,8 @@ Object {
       "details": "Found 1 field",
       "location": " that was supplied",
       "message": "Found wrong number of TSV fields (expected 9)",
-      "priority": 861,
+      "priority": 984,
+      "rowID": undefined,
     },
   ],
 }
@@ -707,7 +709,8 @@ Object {
       "details": "Found 8 fields",
       "location": " that was supplied",
       "message": "Found wrong number of TSV fields (expected 9)",
-      "priority": 861,
+      "priority": 984,
+      "rowID": "w3r5",
     },
   ],
 }
