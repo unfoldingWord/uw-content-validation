@@ -2,7 +2,7 @@ import * as books from './books/books';
 import { checkTN_TSVDataRow } from './tn-table-row-check';
 
 
-const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.2.3';
+const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.2.4';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -217,8 +217,14 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
                 // if (n === lines.length - 1) // it's the last line
                 //     console.log(`  Line ${n}: Has ${fields.length} field(s) instead of ${NUM_EXPECTED_TN_FIELDS}: ${EXPECTED_TN_HEADING_LINE.replace(/\t/g, ', ')}`);
                 // else
-                if (n !== lines.length - 1) // it's not the last line
-                    addNoticePartial({ priority: 988, message: `Wrong number of tabbed fields (expected ${NUM_EXPECTED_TN_TSV_FIELDS})`, extract: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, lineNumber: n + 1, location: ourLocation });
+                if (n !== lines.length - 1) { // it's not the last line
+                    // Have a go at getting some of the first fields out of the line
+                    let C = '?', V = '?', rowID = '????';
+                    try { C = fields[1]; } catch { }
+                    try { V = fields[2]; } catch { }
+                    try { rowID = fields[3]; } catch { }
+                    addNoticePartial({ priority: 988, message: `Wrong number of tabbed fields (expected ${NUM_EXPECTED_TN_TSV_FIELDS})`, extract: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, C, V, rowID, lineNumber: n + 1, location: ourLocation });
+                }
         }
     }
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}.`);

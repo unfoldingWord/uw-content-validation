@@ -2,7 +2,7 @@ import * as books from './books/books';
 import { checkAnnotationTSVDataRow } from './annotation-row-check';
 
 
-const ANNOTATION_TABLE_VALIDATOR_VERSION_STRING = '0.2.4';
+const ANNOTATION_TABLE_VALIDATOR_VERSION_STRING = '0.2.5';
 
 const NUM_EXPECTED_ANNOTATION_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tAnnotation';
@@ -218,8 +218,14 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
                 // if (n === lines.length - 1) // it's the last line
                 //     console.log(`  Line ${n}: Has ${fields.length} field(s) instead of ${NUM_EXPECTED_TN_FIELDS}: ${EXPECTED_TN_HEADING_LINE.replace(/\t/g, ', ')}`);
                 // else
-                if (n !== lines.length - 1) // it's not the last line
-                    addNoticePartial({ priority: 988, message: `Wrong number of tabbed fields (expected ${NUM_EXPECTED_ANNOTATION_TSV_FIELDS})`, extract: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, lineNumber: n + 1, location: ourLocation });
+                if (n !== lines.length - 1) { // it's not the last line
+                    // Have a go at getting some of the first fields out of the line
+                    let reference = '?:?', C = '?', V = '?', rowID = '????';
+                    try { reference = fields[0]; } catch { }
+                    try { rowID = fields[1]; } catch { }
+                    try { [C, V] = reference.split(':'); } catch { }
+                    addNoticePartial({ priority: 988, message: `Wrong number of tabbed fields (expected ${NUM_EXPECTED_ANNOTATION_TSV_FIELDS})`, extract: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, C, V, rowID, lineNumber: n + 1, location: ourLocation });
+                }
         }
     }
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}.`);
