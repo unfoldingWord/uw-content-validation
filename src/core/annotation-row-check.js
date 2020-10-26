@@ -17,19 +17,20 @@ const DEFAULT_EXTRACT_LENGTH = 10;
 const TA_REGEX = new RegExp('\\[\\[rc://[^ /]+?/ta/man/[^ /]+?/([^ \\]]+?)\\]\\]', 'g');
 
 
+/**
+ *
+ * @description - Checks one TSV data row of translation notes (TN)
+ * @param {String} languageCode - the language code, e.g., 'en'
+ * @param {String} annotationType - TN, TQ, TWL, SN, or SQ -- allows more specific checks
+ * @param {String} line - the TSV line to be checked
+ * @param {String} bookID - 3-character UPPERCASE USFM book identifier or 'OBS'
+ * @param {String} givenC - chapter number or (for OBS) story number string
+ * @param {String} givenV - verse number or (for OBS) frame number string
+ * @param {String} givenRowLocation - description of where the line is located
+ * @param {Object} optionalCheckingOptions - may contain extractLength parameter
+ * @return {Object} - containing noticeList
+ */
 export async function checkAnnotationTSVDataRow(languageCode, annotationType, line, bookID, givenC, givenV, givenRowLocation, optionalCheckingOptions) {
-    /**
-    * @description - Checks one TSV data row of translation notes (TN)
-    * @param {String} languageCode - the language code, e.g., 'en'
-    * @param {String} annotationType - TN, TQ, TWL, SN, or SQ -- allows more specific checks
-    * @param {String} line - the TSV line to be checked
-    * @param {String} bookID - 3-character UPPERCASE USFM book identifier or 'OBS'
-    * @param {String} givenC - chapter number or (for OBS) story number string
-    * @param {String} givenV - verse number or (for OBS) frame number string
-    * @param {String} givenRowLocation - description of where the line is located
-    * @param {Object} optionalCheckingOptions - may contain extractLength parameter
-    * @return {Object} - containing noticeList
-    */
     /* This function is only for checking one data row
           and the function doesn't assume that it has any previous context.
 
