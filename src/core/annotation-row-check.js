@@ -7,7 +7,7 @@ import { checkTNLinksToOutside } from './tn-links-check';
 import { checkOriginalLanguageQuote } from './quote-check';
 
 
-// const ANNOTATION_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.5.3';
+// const ANNOTATION_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.5.4';
 
 const NUM_EXPECTED_ANNOTATION_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_ANNOTATION_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tAnnotation';
@@ -479,8 +479,12 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
             if (annotationType === 'TN')
                 addNoticePartial({ priority: 274, message: "Missing Annotation field", fieldName: 'Annotation', rowID, location: ourRowLocation });
 
-    } else
-        addNoticePartial({ priority: 861, message: `Found wrong number of TSV fields (expected ${NUM_EXPECTED_ANNOTATION_TSV_FIELDS})`, details: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, location: ourRowLocation });
+    } else { // wrong number of fields in the row
+        // Have a go at getting some of the first fields out of the row
+        let rowID = '????';
+        try { rowID = fields[1]; } catch { }
+        addNoticePartial({ priority: 984, message: `Found wrong number of TSV fields (expected ${NUM_EXPECTED_ANNOTATION_TSV_FIELDS})`, details: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, rowID, location: ourRowLocation });
+    }
 
     // console.log(`  checkAnnotationTSVDataRow returning with ${drResult.noticeList.length.toLocaleString()} notice(s).`);
     // console.log("checkAnnotationTSVDataRow result is", JSON.stringify(drResult));

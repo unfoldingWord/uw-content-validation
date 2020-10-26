@@ -218,6 +218,18 @@ Object {
       "C": "1",
       "V": "2",
       "bookID": "GEN",
+      "characterIndex": 0,
+      "extract": "‼וְ‼חֹ֖שֶׁ…",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Unexpected leading word joiner",
+      "priority": 770,
+      "rowID": "d7qw",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
       "details": "quote which starts with 'word joiner'",
       "extract": "",
       "fieldName": "OrigQuote",
@@ -255,6 +267,18 @@ Object {
 exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail with leading zero width joiner 1`] = `
 Object {
   "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": 0,
+      "extract": "‼וְ⁠חֹ֖שֶׁ…",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Unexpected leading zero-width joiner",
+      "priority": 771,
+      "rowID": "d7qw",
+    },
     Object {
       "C": "1",
       "V": "2",
@@ -394,6 +418,18 @@ Object {
       "C": "1",
       "V": "2",
       "bookID": "GEN",
+      "characterIndex": 0,
+      "extract": "וְ‼חֹ֖שֶׁך…",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Unexpected trailing word joiner",
+      "priority": 772,
+      "rowID": "d7qw",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
       "details": "quote which ends with 'word joiner'",
       "extract": "…",
       "fieldName": "OrigQuote",
@@ -431,6 +467,18 @@ Object {
 exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail with trailing zero width joiner 1`] = `
 Object {
   "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": 0,
+      "extract": "וְ⁠חֹ֖שֶׁך…",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Unexpected trailing zero-width joiner",
+      "priority": 773,
+      "rowID": "d7qw",
+    },
     Object {
       "C": "1",
       "V": "2",
@@ -675,7 +723,8 @@ Object {
       "details": "Found 1 field",
       "location": " that was supplied",
       "message": "Found wrong number of TSV fields (expected 9)",
-      "priority": 861,
+      "priority": 984,
+      "rowID": undefined,
     },
   ],
 }
@@ -691,7 +740,8 @@ Object {
       "details": "Found 1 field",
       "location": " that was supplied",
       "message": "Found wrong number of TSV fields (expected 9)",
-      "priority": 861,
+      "priority": 984,
+      "rowID": undefined,
     },
   ],
 }
@@ -707,7 +757,8 @@ Object {
       "details": "Found 8 fields",
       "location": " that was supplied",
       "message": "Found wrong number of TSV fields (expected 9)",
-      "priority": 861,
+      "priority": 984,
+      "rowID": "w3r5",
     },
   ],
 }
