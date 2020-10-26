@@ -294,11 +294,15 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
 
       // Process noticeList line by line,  appending the repoCode as an extra field as we go
       for (const cfcNoticeEntry of cmtResultObject.noticeList) {
-        addNoticePartial({ ...cfcNoticeEntry, filename: MANIFEST_FILENAME, extra: `${repoCode} MANIFEST` });
+        // NOTE: We don't use addNoticePartial, because it adds a misleading BookID
+        // addNoticePartial({ ...cfcNoticeEntry, filename: MANIFEST_FILENAME, extra: `${repoCode} MANIFEST` });
+        checkBookPackageResult.noticeList.push({ ...cfcNoticeEntry, filename: MANIFEST_FILENAME, extra: `${repoCode} MANIFEST` });
       }
       return manifestFileContent.length;
     }
-    addNoticePartial({ priority: 956, message: "Got empty manifest file", repoName, filename: MANIFEST_FILENAME, location: manifestLocation, extra: `${repoCode} MANIFEST` });
+    // NOTE: We don't use addNoticePartial, because it adds a misleading BookID
+    // addNoticePartial({ priority: 956, message: "Got empty manifest file", repoName, filename: MANIFEST_FILENAME, location: manifestLocation, extra: `${repoCode} MANIFEST` });
+    checkBookPackageResult.noticeList.push({ priority: 956, message: "Got empty manifest file", repoName, filename: MANIFEST_FILENAME, location: manifestLocation, extra: `${repoCode} MANIFEST` });
     return 0;
   }
   // end of ourCheckManifest function
