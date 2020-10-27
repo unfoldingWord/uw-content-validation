@@ -1,9 +1,8 @@
 import { checkTextField } from './field-text-check';
+import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 
 
 const MARKDOWN_VALIDATOR_VERSION_STRING = '0.3.3';
-
-const DEFAULT_EXTRACT_LENGTH = 10;
 
 
 /**
@@ -84,15 +83,14 @@ export function checkMarkdownText(textName, markdownText, givenLocation, optiona
 
         const dbtcResultObject = checkTextField('', fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
 
-        // Choose only ONE of the following
-        // This is the fast way of append the results from this field
-        // result.noticeList = result.noticeList.concat(dbtcResultObject.noticeList);
         // If we need to put everything through addNotice, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of dbtcResultObject.noticeList) {
             // console.assert(Object.keys(noticeEntry).length === 5, `MD ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
-            if (!noticeEntry.message.startsWith("Unexpected doubled * characters") // 577 Markdown allows this
-                && !noticeEntry.message.startsWith("Unexpected * character after space") // 191
+            if (noticeEntry.message !== "Unexpected doubled * characters" // 577 Markdown allows this
+                && noticeEntry.message !== "Unexpected * character after space" // 191
+                && noticeEntry.message !== "Unexpected _ character after space" // 191
+                && noticeEntry.message !== "Unexpected space after _ character" // 192
             )
                 addNotice({ ...noticeEntry, lineNumber });
         }
@@ -154,7 +152,7 @@ export function checkMarkdownText(textName, markdownText, givenLocation, optiona
             numLeadingSpaces = line.match(/^ */)[0].length;
             // console.log(`Got numLeadingSpaces=${numLeadingSpaces} for ${line}${atString}`);
             if (numLeadingSpaces && lastNumLeadingSpaces && numLeadingSpaces !== lastNumLeadingSpaces)
-                addNotice({ priority: 472, message: "Nesting seems confused", lineNumber: n, characterIndex: 0, location: ourLocation });
+                addNotice({ priority: 472, message: "Nesting of header levels seems confused", lineNumber: n, characterIndex: 0, location: ourLocation });
 
             checkMarkdownLineContents(n, line, ourLocation);
         } else {
