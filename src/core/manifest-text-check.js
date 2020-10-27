@@ -1,10 +1,9 @@
 import { checkYAMLText } from './yaml-text-check';
 import Ajv from 'ajv';
+import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 
 
 const MANIFEST_VALIDATOR_VERSION_STRING = '0.3.1';
-
-const DEFAULT_EXTRACT_LENGTH = 10;
 
 // Pasted in 2020-10-02 from https://raw.githubusercontent.com/unfoldingWord/dcs/master/options/schema/rc.schema.json
 const MANIFEST_SCHEMA = {

@@ -1,4 +1,5 @@
 import * as books from './books/books';
+import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { checkAnnotationTSVDataRow } from './annotation-row-check';
 
 
@@ -6,8 +7,6 @@ const ANNOTATION_TABLE_VALIDATOR_VERSION_STRING = '0.2.5';
 
 const NUM_EXPECTED_ANNOTATION_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tAnnotation';
-
-const DEFAULT_EXTRACT_LENGTH = 10;
 
 
 export async function checkAnnotationRows(languageCode, annotationType, bookID, filename, tableText, givenLocation, optionalCheckingOptions) {

@@ -1,11 +1,9 @@
-// import { isWhitespace, countOccurrences } from './text-handling-functions'
+import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import yaml from 'yaml';
 import { checkTextField } from './field-text-check';
 
 
 const YAML_VALIDATOR_VERSION_STRING = '0.1.1';
-
-const DEFAULT_EXTRACT_LENGTH = 10;
 
 
 export function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOptions) {

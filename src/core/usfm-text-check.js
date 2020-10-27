@@ -1,5 +1,5 @@
 import * as books from '../core/books/books';
-import { isWhitespace, countOccurrences, ourDeleteAll } from './text-handling-functions'
+import { DEFAULT_EXTRACT_LENGTH, isWhitespace, countOccurrences, ourDeleteAll } from './text-handling-functions'
 import { checkTextField } from './field-text-check';
 import { checkTextfileContents } from './file-text-check';
 import { runUsfmJsCheck } from './usfm-js-check';
@@ -8,8 +8,6 @@ import { ourParseInt } from './utilities';
 
 
 // const USFM_VALIDATOR_VERSION_STRING = '0.6.37';
-
-const DEFAULT_EXTRACT_LENGTH = 10;
 
 
 // See http://ubsicap.github.io/usfm/master/index.html

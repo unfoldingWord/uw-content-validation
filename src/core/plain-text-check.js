@@ -1,10 +1,8 @@
 import { checkTextField } from './field-text-check';
-import { isWhitespace, countOccurrences } from './text-handling-functions'
+import { DEFAULT_EXTRACT_LENGTH, MATCHED_PUNCTUATION_PAIRS, PAIRED_PUNCTUATION_OPENERS, PAIRED_PUNCTUATION_CLOSERS, isWhitespace, countOccurrences } from './text-handling-functions'
 
 
-const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.2.1';
-
-const DEFAULT_EXTRACT_LENGTH = 10;
+const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.2.2';
 
 
 export function checkPlainText(textName, plainText, givenLocation, optionalCheckingOptions) {
@@ -111,8 +109,6 @@ export function checkPlainText(textName, plainText, givenLocation, optionalCheck
     // let lastLineContents;
     // While checking individual lines,
     //  checking nested markers (so that we can give the line number in the notice)
-    const openers = '[({<⟨“‹«';
-    const closers = '])}>⟩”›»';
     const openMarkers = [];
     for (let n = 1; n <= lines.length; n++) {
 
@@ -124,22 +120,22 @@ export function checkPlainText(textName, plainText, givenLocation, optionalCheck
             for (let characterIndex = 0; characterIndex < line.length; characterIndex++) {
                 const char = line[characterIndex];
                 let which;
-                if (openers.indexOf(char) >= 0) {
+                if (PAIRED_PUNCTUATION_OPENERS.indexOf(char) >= 0) {
                     // console.log(`Saving ${openMarkers.length} '${char}' ${n} ${x}`);
                     openMarkers.push({ char, n, x: characterIndex });
-                } else if ((which = closers.indexOf(char)) >= 0) {
+                } else if ((which = PAIRED_PUNCTUATION_CLOSERS.indexOf(char)) >= 0) {
                     // console.log(`Found '${char}' ${n} ${x}`);
                     // console.log(`Which: ${which} '${openers.charAt(which)}'`)
                     if (openMarkers.length) {
                         const [lastEntry] = openMarkers.slice(-1);
                         // console.log(`  Recovered lastEntry=${JSON.stringify(lastEntry)}`);
                         // console.log(`  Comparing found '${char}' with (${which}) '${openers.charAt(which)}' from '${lastEntry.char}'`);
-                        if (lastEntry.char === openers.charAt(which)) {
+                        if (lastEntry.char === PAIRED_PUNCTUATION_OPENERS.charAt(which)) {
                             // console.log(`  Matched '${char}' with  '${openers.charAt(which)}' ${n} ${x}`);
                             openMarkers.pop();
                         } else {
                             const extract = (characterIndex > halfLength ? '…' : '') + line.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < line.length ? '…' : '')
-                            const details = `'${openers.charAt(which)}' opened on line ${lastEntry.n} character ${lastEntry.x + 1}`;
+                            const details = `'${PAIRED_PUNCTUATION_OPENERS.charAt(which)}' opened on line ${lastEntry.n} character ${lastEntry.x + 1}`;
                             addNotice({ priority: 777, message: `Unexpected ${char} closing character doesn't match`, details, lineNumber: n, characterIndex, extract, location: ourLocation });
                             // console.log(`  ERROR 777: mismatched characters: ${details}`);
                         }
@@ -174,9 +170,7 @@ export function checkPlainText(textName, plainText, givenLocation, optionalCheck
     }
 
     // Check matched pairs in the entire file
-    for (const punctSet of [['[', ']'], ['(', ')'], ['{', '}'],
-    ['<', '>'], ['⟨', '⟩'], ['“', '”'],
-    ['‹', '›'], ['«', '»'], ['**_', '_**']]) {
+    for (const punctSet of MATCHED_PUNCTUATION_PAIRS) {
         // Can't check '‘’' coz they might be used as apostrophe
         const leftChar = punctSet[0], rightChar = punctSet[1];
         const leftCount = countOccurrences(plainText, leftChar);

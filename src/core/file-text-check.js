@@ -2,8 +2,6 @@ import { checkPlainText } from './plain-text-check';
 
 //const FILE_TEXT_VALIDATOR_VERSION_STRING = '0.2.2';
 
-// const DEFAULT_EXTRACT_LENGTH = 10;
-
 
 export function checkTextfileContents(languageCode, filename, fileText, optionalFileLocation, optionalCheckingOptions) {
     // Does basic checks for small errors like mismatched punctuation pairs, etc.

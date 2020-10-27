@@ -1,4 +1,4 @@
-import { isWhitespace } from './text-handling-functions'
+import { DEFAULT_EXTRACT_LENGTH, isWhitespace } from './text-handling-functions'
 import * as books from './books/books';
 import { checkTextField } from './field-text-check';
 import { checkMarkdownText } from './markdown-text-check';
@@ -11,8 +11,6 @@ import { checkOriginalLanguageQuote } from './quote-check';
 
 const NUM_EXPECTED_ANNOTATION_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_ANNOTATION_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tAnnotation';
-
-const DEFAULT_EXTRACT_LENGTH = 10;
 
 const TA_REGEX = new RegExp('\\[\\[rc://[^ /]+?/ta/man/[^ /]+?/([^ \\]]+?)\\]\\]', 'g');
 

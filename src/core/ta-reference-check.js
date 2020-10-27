@@ -4,8 +4,6 @@ import { cachedGetFile } from '../core/getApi';
 
 // const TA_REFERENCE_VALIDATOR_VERSION_STRING = '0.3.1';
 
-// const DEFAULT_EXTRACT_LENGTH = 10;
-
 
 export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocation, optionalCheckingOptions) {
     // This is for the case of the full SupportReference field being the article link

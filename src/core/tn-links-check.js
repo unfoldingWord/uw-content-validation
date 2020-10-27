@@ -1,14 +1,13 @@
 import localforage from 'localforage';
 import Path from 'path';
 import * as books from '../core/books/books';
+import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { cachedGetFile, checkMarkdownText } from '../core';
 import { ourParseInt } from './utilities';
 // import { consoleLogObject } from '../core/utilities';
 
 
 // const TN_LINKS_VALIDATOR_VERSION_STRING = '0.5.2';
-
-const DEFAULT_EXTRACT_LENGTH = 10;
 
 const DEFAULT_USERNAME = 'Door43-Catalog'; // or unfoldingWord ???
 const DEFAULT_BRANCH = 'master';

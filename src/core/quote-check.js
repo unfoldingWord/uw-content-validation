@@ -1,11 +1,10 @@
 import * as books from '../core/books/books';
+import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { cachedGetFile } from '../core/getApi';
 // import { consoleLogObject } from '../core/utilities';
 
 
 // const QUOTE_VALIDATOR_VERSION_STRING = '0.6.1';
-
-const DEFAULT_EXTRACT_LENGTH = 10;
 
 
 export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldText, bookID, C, V, givenLocation, optionalCheckingOptions) {
@@ -74,7 +73,7 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
         try {
             username = optionalCheckingOptions.originalLanguageRepoUsername;
         } catch (qcoError) { }
-        if (!username) username = languageCode === 'en'? 'unfoldingWord': 'Door43-Catalog'; // ??? !!!
+        if (!username) username = languageCode === 'en' ? 'unfoldingWord' : 'Door43-Catalog'; // ??? !!!
         let branch;
         try {
             branch = optionalCheckingOptions.originalLanguageRepoBranch;
@@ -340,12 +339,12 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
                 addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which ends with 'zero-width joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation });
             } else {
                 const extract = fieldText.substring(0, halfLength) + (fieldText.length > 2 * halfLength ? '…' : '') + fieldText.substring(fieldText.length - halfLength, fieldText.length);
-                addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: noBreakSpaceText, extract, location: ourLocation });
+                addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: noBreakSpaceText ? noBreakSpaceText : `passage ⸢${verseText}⸣`, extract, location: ourLocation });
             }
         }
     }
 
-    // console.log(`checkOriginalLanguageQuote is returning ${JSON.stringify(colqResult)}`);
+    // console.log(`checkOriginalLanguageQuote is returning ${ JSON.stringify(colqResult) }`);
     return colqResult;
 }
 // end of checkOriginalLanguageQuote function

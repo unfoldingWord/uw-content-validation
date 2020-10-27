@@ -1,4 +1,5 @@
 import * as books from './books/books';
+import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { checkTN_TSVDataRow } from './tn-table-row-check';
 
 
@@ -6,8 +7,6 @@ const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.2.4';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
-
-const DEFAULT_EXTRACT_LENGTH = 10;
 
 
 export async function checkTN_TSVText(languageCode, bookID, filename, tableText, givenLocation, optionalCheckingOptions) {

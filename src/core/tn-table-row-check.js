@@ -1,4 +1,4 @@
-import { isWhitespace } from './text-handling-functions'
+import { DEFAULT_EXTRACT_LENGTH, isWhitespace } from './text-handling-functions'
 import * as books from './books/books';
 import { checkTextField } from './field-text-check';
 import { checkMarkdownText } from './markdown-text-check';
@@ -11,8 +11,6 @@ import { checkOriginalLanguageQuote } from './quote-check';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
-
-const DEFAULT_EXTRACT_LENGTH = 10;
 
 const TA_REGEX = new RegExp('\\[\\[rc://[^ /]+?/ta/man/[^ /]+?/([^ \\]]+?)\\]\\]', 'g');
 

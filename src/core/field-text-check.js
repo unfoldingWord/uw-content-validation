@@ -1,9 +1,7 @@
-import { isWhitespace, countOccurrences } from './text-handling-functions'
+import { DEFAULT_EXTRACT_LENGTH, MATCHED_PUNCTUATION_PAIRS, isWhitespace, countOccurrences } from './text-handling-functions'
 
 
-//const VALIDATOR_VERSION_STRING = '0.1.2';
-
-const DEFAULT_EXTRACT_LENGTH = 10;
+//const VALIDATOR_VERSION_STRING = '0.1.3';
 
 
 export function checkTextField(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
@@ -196,9 +194,7 @@ export function checkTextField(fieldName, fieldText, allowedLinks, optionalField
     }
 
     // Check matched pairs in the field
-    for (const punctSet of [['[', ']'], ['(', ')'], ['{', '}'],
-    ['<', '>'], ['⟨', '⟩'], ['“', '”'],
-    ['‹', '›'], ['«', '»'], ['**_', '_**']]) {
+    for (const punctSet of MATCHED_PUNCTUATION_PAIRS) {
         // Can't check '‘’' coz they might be used as apostrophe
         const leftChar = punctSet[0], rightChar = punctSet[1];
         const leftCount = countOccurrences(fieldText, leftChar);

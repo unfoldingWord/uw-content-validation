@@ -1,3 +1,19 @@
+export const DEFAULT_EXTRACT_LENGTH = 10;
+
+
+// See http://xahlee.info/comp/unicode_matching_brackets.html for a more complete list
+export const PAIRED_PUNCTUATION_OPENERS = '[({<⟨“‹«《〈⸢⸤';
+export const PAIRED_PUNCTUATION_CLOSERS = '])}>⟩”›»》〉⸣⸥';
+export const MATCHED_PUNCTUATION_PAIRS = [
+    ['[', ']'], ['(', ')'], ['{', '}'],
+    ['<', '>'], ['⟨', '⟩'], ['“', '”'],
+    ['‹', '›'], ['«', '»'],
+    ['《', '》'], ['〈', '〉'],
+    ['⸢', '⸣'], ['⸤', '⸥'],
+    ['**_', '_**']
+];
+
+
 export function isWhitespace(myString) {
     // includes zero-width space
     if (/^[\s\u200B]+$/.test(myString)) return true;

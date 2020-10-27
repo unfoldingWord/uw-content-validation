@@ -4,8 +4,6 @@ import { cachedGetFileUsingFullURL } from './getApi';
 
 const LINK_VALIDATOR_VERSION_STRING = '0.3.3';
 
-// const DEFAULT_EXTRACT_LENGTH = 10;
-
 
 export async function startLiveLinksCheck(linksList, existingNoticeList, callbackFunction) {
     // This (IO bound) function checks the targets of the given links

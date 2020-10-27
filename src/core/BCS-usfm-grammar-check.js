@@ -1,10 +1,9 @@
 import grammar from 'usfm-grammar';
 import * as books from '../core/books/books';
+import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 
 
 // const USFM_GRAMMAR_VALIDATOR_VERSION_STRING = '0.3.2';
-
-const DEFAULT_EXTRACT_LENGTH = 10;
 
 
 export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLocation, optionalCheckingOptions) {
