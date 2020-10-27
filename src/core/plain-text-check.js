@@ -72,7 +72,7 @@ export function checkPlainText(textName, plainText, givenLocation, optionalCheck
         console.assert(typeof fieldText === 'string', `cPT ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         console.assert(allowedLinks === true || allowedLinks === false, "cPT ourCheckTextField: allowedLinks parameter must be either true or false");
 
-        const resultObject = checkTextField('', fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
+        const resultObject = checkTextField('raw', '', fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field

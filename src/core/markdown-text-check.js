@@ -2,13 +2,13 @@ import { checkTextField } from './field-text-check';
 import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 
 
-const MARKDOWN_VALIDATOR_VERSION_STRING = '0.3.3';
+const MARKDOWN_VALIDATOR_VERSION_STRING = '0.3.4';
 
 
 /**
  *
- * @param {string} textName
- * @param {string} markdownText - the actual text to be checked
+ * @param {string} textName -- used for identification
+ * @param {string} markdownText -- the actual text to be checked
  * @param {string} givenLocation
  * @param {Object} optionalCheckingOptions
  */
@@ -81,17 +81,17 @@ export function checkMarkdownText(textName, markdownText, givenLocation, optiona
         console.assert(typeof fieldText === 'string', `cMdT ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         console.assert(allowedLinks === true || allowedLinks === false, "cMdT ourCheckTextField: allowedLinks parameter must be either true or false");
 
-        const dbtcResultObject = checkTextField('', fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
+        const dbtcResultObject = checkTextField('markdown', '', fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
 
         // If we need to put everything through addNotice, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of dbtcResultObject.noticeList) {
             // console.assert(Object.keys(noticeEntry).length === 5, `MD ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
-            if (noticeEntry.message !== "Unexpected doubled * characters" // 577 Markdown allows this
-                && noticeEntry.message !== "Unexpected * character after space" // 191
-                && noticeEntry.message !== "Unexpected _ character after space" // 191
-                && noticeEntry.message !== "Unexpected space after _ character" // 192
-            )
+            // if (noticeEntry.message !== "Unexpected doubled * characters" // 577 Markdown allows this
+            //     && noticeEntry.message !== "Unexpected * character after space" // 191
+            //     && noticeEntry.message !== "Unexpected _ character after space" // 191
+            //     && noticeEntry.message !== "Unexpected space after _ character" // 192
+            // )
                 addNotice({ ...noticeEntry, lineNumber });
         }
     }

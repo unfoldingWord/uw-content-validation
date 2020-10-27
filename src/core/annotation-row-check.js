@@ -170,7 +170,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         console.assert(allowedLinks === true || allowedLinks === false, "checkAnnotationTSVDataRow ourCheckTextField: allowedLinks parameter must be either true or false");
         console.assert(rowLocation.indexOf(fieldName) < 0, `checkAnnotationTSVDataRow ourCheckTextField: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const dbtcResultObject = checkTextField(fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions);
+        const dbtcResultObject = checkTextField('TSV', fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
