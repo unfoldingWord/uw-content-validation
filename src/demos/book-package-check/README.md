@@ -23,7 +23,9 @@ clearCheckedArticleCache();
   languageCode='en'
   // bookID can be a USFM bookID, e.g., 'GEN', 'MAT', '3JN'
   //  and can also be 'OBS' (for Open Bible Stories)
-  bookID='NEH'
+  bookID='1TI'
+
+  dataSet='OLD' // Can be 'OLD' (Markdown TQ1 etc.), 'NEW' (TSV TQ, etc.), or 'BOTH'
 
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'
@@ -36,6 +38,8 @@ clearCheckedArticleCache();
   //  -- those fields are not necessary (or normal) here
   extractLength='15' // Default is 10
   maximumSimilarMessages='4' // Default is 3 -- 0 means don't suppress
+  // Ignore 450 "TN Resource container link should have '*' language code with (not 'en')" as tC can't handle it yet!
+  ignorePriorityNumberList='[450]'
   />
 ```
 

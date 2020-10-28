@@ -256,29 +256,30 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     const newNoticeList = [];
     for (const noticeEntry of result.noticeList)
         if (fieldType === 'markdown') {
-            if (noticeEntry.message !== "Unexpected doubled * characters" // 577 Markdown allows this
-                && noticeEntry.message !== "Unexpected * character after space" // 191
-                && noticeEntry.message !== "Unexpected _ character after space" // 191
-                && noticeEntry.message !== "Unexpected space after _ character" // 192
+            if (noticeEntry.message !== "Unexpected doubled * characters" // 577 Allowed in markdown formatting
+                && noticeEntry.message !== "Unexpected * character after space" // 191 Allowed in markdown formatting
+                && noticeEntry.message !== "Unexpected _ character after space" // 191 Allowed in markdown formatting
+                && noticeEntry.message !== "Unexpected space after _ character" // 192 Allowed in markdown formatting
+                && noticeEntry.message !== "Mismatched <> characters" // 563 > Can be used for block quote
             )
                 newNoticeList.push(noticeEntry);
         } else if (fieldType === 'USFM') {
             if (noticeEntry.message !== "Mismatched () characters" // 663 Mismatched left/right chars -- suppress these misleading warnings coz open quote can occur in one verse and close in another
-                && noticeEntry.message !== "Mismatched [] characters" // Start/end of questionable text can be on different lines
-                && noticeEntry.message !== "Mismatched {} characters" // Start/end of implied text can be on different lines
-                && noticeEntry.message !== "Mismatched “” characters"
-                && noticeEntry.message !== "Mismatched «» characters"
+                && noticeEntry.message !== "Mismatched [] characters" // 563 Start/end of questionable text can be on different lines
+                && noticeEntry.message !== "Mismatched {} characters" // 563 Start/end of implied text can be on different lines
+                && noticeEntry.message !== "Mismatched “” characters" // 563 Start/end of quoted text can be on different lines
+                && noticeEntry.message !== "Mismatched «» characters" // 563 Start/end of quoted text can be on different lines
                 && (noticeEntry.message !== "Unexpected | character after space" || (fieldText.indexOf('x-lemma') < 0 && fieldText.indexOf('x-tw') < 0)) // 191 inside \zaln-s and \k-s fields
                 && (noticeEntry.message !== "Unexpected doubled , characters" || fieldText.indexOf('x-morph') < 0) // inside \w fields
                 && (noticeEntry.message !== 'Unexpected doubled " characters' || fieldText.indexOf('x-morph') < 0) // inside \w fields
             )
                 newNoticeList.push(noticeEntry);
         } else if (fieldType === 'YAML') {
-            if (noticeEntry.priority !== 191 // "Unexpected XXX character after space"
-                && noticeEntry.message !== "Unexpected ' character after space"
-                //   && noticeEntry.message !== "Unexpected space after ' character"
-                && noticeEntry.message !== "Unexpected space after [ character"
-                && (noticeEntry.message !== "Unexpected doubled - characters" || fieldText === '---')
+            if (noticeEntry.message !== "Unexpected ' character after space" // 191
+                // && noticeEntry.priority !== 191 // "Unexpected XXX character after space"
+                //   && noticeEntry.message !== "Unexpected space after ' character" //192
+                && noticeEntry.message !== "Unexpected space after [ character" // 192
+                && (noticeEntry.message !== "Unexpected doubled - characters" || fieldText === '---') // 577
             )
                 newNoticeList.push(noticeEntry);
         } else

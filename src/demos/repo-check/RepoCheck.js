@@ -7,7 +7,7 @@ import { checkRepo } from './checkRepo';
 // import { consoleLogObject, displayPropertyNames } from '../../core/utilities';
 
 
-//const VALIDATOR_VERSION_STRING = '0.1.3';
+//const REPO_VALIDATOR_VERSION_STRING = '0.1.4';
 
 
 function RepoCheck(/*username, languageCode,*/ props) {
@@ -18,7 +18,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
         and then checks all the individual files
     */
 
-    // console.log(`I'm here in RepoCheck v${VALIDATOR_VERSION_STRING}`);
+    // console.log(`I'm here in RepoCheck v${REPO_VALIDATOR_VERSION_STRING}`);
     // consoleLogObject("props", props);
     // consoleLogObject("props.classes", props.classes);
 
@@ -130,7 +130,8 @@ function RepoCheck(/*username, languageCode,*/ props) {
                     return (<div>
                         <p>Checked <b>{username} {repoName}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)</p>
                         {renderSuccesses(processedResults)}
-                        <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCRResults.noticeList.length === 0 ? 'no' : rawCRResults.noticeList.length.toLocaleString()} notice{rawCRResults.noticeList.length === 1 ? '' : 's'}.</p>
+                        <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCRResults.noticeList.length === 0 ? 'no' : rawCRResults.noticeList.length.toLocaleString()} notice{rawCRResults.noticeList.length === 1 ? '' : 's'}
+                            {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}.</p>
                         {/* <RenderRawResults results={rawCRResults} /> */}
                     </div>);
                 }
@@ -145,14 +146,12 @@ function RepoCheck(/*username, languageCode,*/ props) {
 
                     if (processedResults.errorList.length || processedResults.warningList.length)
                         setResultValue(<>
-                            <div>{renderSummary(processedResults)}
-                                {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
+                            {renderSummary(processedResults)}
                             <RenderSuccessesErrorsWarnings results={processedResults} />
                         </>);
                     else // no errors or warnings
                         setResultValue(<>
-                            <div>{renderSummary(processedResults)}
-                                {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
+                            {renderSummary(processedResults)}
                             <RenderSuccessesErrorsWarnings results={processedResults} />
                         </>);
                 } else if (displayType === 'SevereMediumLow') {
@@ -162,14 +161,12 @@ function RepoCheck(/*username, languageCode,*/ props) {
 
                     if (processedResults.severeList.length || processedResults.mediumList.length || processedResults.lowList.length)
                         setResultValue(<>
-                            <div>{renderSummary(processedResults)}
-                                {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
+                            {renderSummary(processedResults)}
                             <RenderSuccessesSevereMediumLow results={processedResults} />
                         </>);
                     else // no severe, medium, or low notices
                         setResultValue(<>
-                            <div>{renderSummary(processedResults)}
-                                {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
+                            {renderSummary(processedResults)}
                             <RenderSuccessesSevereMediumLow results={processedResults} />
                         </>);
                 } else if (displayType === 'SingleList') {
@@ -179,14 +176,12 @@ function RepoCheck(/*username, languageCode,*/ props) {
 
                     if (processedResults.warningList.length)
                         setResultValue(<>
-                            <div>{renderSummary(processedResults)}
-                                {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
+                            {renderSummary(processedResults)}
                             <RenderSuccessesWarningsGradient results={processedResults} />
                         </>);
                     else // no warnings
                         setResultValue(<>
-                            <div>{renderSummary(processedResults)}
-                                {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
+                            {renderSummary(processedResults)}
                             <RenderSuccessesWarningsGradient results={processedResults} />
                         </>);
                 } else setResultValue(<b style={{ color: 'red' }}>Invalid displayType='{displayType}'</b>)

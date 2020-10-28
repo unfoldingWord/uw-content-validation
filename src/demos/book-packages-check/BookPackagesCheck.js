@@ -8,7 +8,7 @@ import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSu
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const BPS_VALIDATOR_VERSION_STRING = '0.1.2';
+// const BPS_VALIDATOR_VERSION_STRING = '0.1.3';
 
 
 function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
@@ -105,7 +105,8 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         return (<div>
           <p>Checked <b>{username} {languageCode} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
           {renderSuccesses(processedResults)}
-          <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCBPsResults.noticeList.length===0?'no':rawCBPsResults.noticeList.length.toLocaleString()} notice{rawCBPsResults.noticeList.length===1?'':'s'}.</p>
+          <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCBPsResults.noticeList.length===0?'no':rawCBPsResults.noticeList.length.toLocaleString()} notice{rawCBPsResults.noticeList.length===1?'':'s'}
+          {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}.</p>
           {/* <RenderRawResults results={rawCBPsResults} /> */}
         </div>);
       }
@@ -119,14 +120,12 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
 
         if (processedResults.errorList.length || processedResults.warningList.length)
           setResultValue(<>
-            <div>{renderSummary(processedResults)}
-              {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
+            {renderSummary(processedResults)}
             <RenderSuccessesErrorsWarnings results={processedResults} />
           </>);
         else // no errors or warnings
           setResultValue(<>
-            <div>{renderSummary(processedResults)}
-              {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
+            {renderSummary(processedResults)}
             <RenderSuccessesErrorsWarnings results={processedResults} />
           </>);
 
@@ -137,14 +136,12 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
 
         if (processedResults.severeList.length || processedResults.mediumList.length || processedResults.lowList.length)
           setResultValue(<>
-            <div>{renderSummary(processedResults)}
-              {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
+            {renderSummary(processedResults)}
             <RenderSuccessesSevereMediumLow results={processedResults} />
           </>);
         else // no severe, medium, or low notices
           setResultValue(<>
-            <div>{renderSummary(processedResults)}
-              {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
+            {renderSummary(processedResults)}
             <RenderSuccessesSevereMediumLow results={processedResults} />
           </>);
 
@@ -161,8 +158,7 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
           </>);
         else // no warnings
           setResultValue(<>
-            <div>{renderSummary(processedResults)}
-              {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
+            {renderSummary(processedResults)}
             <RenderSuccessesWarningsGradient results={processedResults} />
           </>);
       } else setResultValue(<b style={{ color: 'red' }}>Invalid displayType='{displayType}'</b>)

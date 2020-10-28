@@ -170,6 +170,9 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0, checkedRepoNames = new Set();
   let checkBookPackageResult = { successList: [], noticeList: [] };
 
+  let dataSet = checkingOptions.dataSet; // Can be 'OLD' (Markdown, etc.), 'NEW' (TSV only), or 'BOTH'
+  if (!dataSet) dataSet = 'OLD';
+
   const newCheckingOptions = checkingOptions ? { ...checkingOptions } : {}; // clone before modify
   const getFile_ = newCheckingOptions.getFile ? newCheckingOptions.getFile : cachedGetFile; // default to using caching of files
   newCheckingOptions.getFile = getFile_; // use same getFile_ when we call core functions
@@ -315,7 +318,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   let repoCodeList;
   let bookNumberAndName, whichTestament;
   if (bookID === 'OBS') {
-    // NOTE: No code below to handle TN1 and TQ1 which are markdown repos
+    // NOTE: No code below to handle OBS TN1 and TQ1 which are markdown repos
     repoCodeList = ['TWL', 'OBS', 'TN', 'TQ', 'SN', 'SQ'];
   } else { // not OBS
     // We also need to know the number for USFM books
@@ -333,7 +336,12 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
 
     // So now we want to work through checking this one specified Bible book in various repos
     const origLangRepoCode = whichTestament === 'old' ? 'UHB' : 'UGNT';
-    repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'TWL', 'LT', 'ST', 'TN', 'TN1', 'TQ', 'TQ1', 'SN', 'SQ'] : [origLangRepoCode, 'LT', 'ST', 'TN1', 'TQ1'];
+    if (dataSet === 'OLD')
+      repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'LT', 'ST', 'TN1', 'TQ1'] : [origLangRepoCode, 'LT', 'ST', 'TN1', 'TQ1'];
+    else if (dataSet === 'NEW')
+      repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'TWL', 'LT', 'ST', 'TN', 'TQ', 'SN', 'SQ'] : [origLangRepoCode, 'LT', 'ST', 'TN1', 'TQ1'];
+    else // assume BOTH
+      repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'TWL', 'LT', 'ST', 'TN', 'TN1', 'TQ', 'TQ1', 'SN', 'SQ'] : [origLangRepoCode, 'LT', 'ST', 'TN1', 'TQ1'];
   }
 
 

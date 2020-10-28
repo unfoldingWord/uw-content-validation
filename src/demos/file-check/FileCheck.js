@@ -11,7 +11,7 @@ import { checkFileContents } from './checkFileContents';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const FILE_CHECK_VERSION_STRING = '0.1.3';
+// const FILE_CHECK_VERSION_STRING = '0.1.4';
 
 
 function FileCheck(props) {
@@ -90,7 +90,8 @@ function FileCheck(props) {
       function renderSummary(processedResults) {
         return (<div>
           <p>Checked <b>{filename}</b> (from {username} {repoName} <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)</p>
-          <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCFResults.noticeList.length === 0 ? 'no' : rawCFResults.noticeList.length.toLocaleString()} notice{rawCFResults.noticeList.length === 1 ? '' : 's'}.</p>
+          <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCFResults.noticeList.length === 0 ? 'no' : rawCFResults.noticeList.length.toLocaleString()} notice{rawCFResults.noticeList.length === 1 ? '' : 's'}
+            {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}.</p>
           {/* <RenderRawResults results={rawCFResults} /> */}
         </div>);
       }
@@ -102,14 +103,12 @@ function FileCheck(props) {
 
         if (processedResults.errorList.length || processedResults.warningList.length)
           setResultValue(<>
-            <div>{renderSummary(processedResults)}
-              {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
+            {renderSummary(processedResults)}
             <RenderSuccessesErrorsWarnings results={processedResults} />
           </>);
         else // no errors or warnings
           setResultValue(<>
-            <div>{renderSummary(processedResults)}
-              {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
+            {renderSummary(processedResults)}
             <RenderSuccessesErrorsWarnings results={processedResults} />
           </>);
       } else if (displayType === 'SevereMediumLow') {
@@ -119,14 +118,12 @@ function FileCheck(props) {
 
         if (processedResults.severeList.length || processedResults.mediumList.length || processedResults.lowList.length)
           setResultValue(<>
-            <div>{renderSummary(processedResults)}
-              {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
+            {renderSummary(processedResults)}
             <RenderSuccessesSevereMediumLow results={processedResults} />
           </>);
         else // no severe, medium, or low notices
           setResultValue(<>
-            <div>{renderSummary(processedResults)}
-              {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
+            {renderSummary(processedResults)}
             <RenderSuccessesSevereMediumLow results={processedResults} />
           </>);
       } else if (displayType === 'SingleList') {
@@ -136,14 +133,12 @@ function FileCheck(props) {
 
         if (processedResults.warningList.length)
           setResultValue(<>
-            <div>{renderSummary(processedResults)}
-              {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
+            {renderSummary(processedResults)}
             <RenderSuccessesWarningsGradient results={processedResults} />
           </>);
         else // no warnings
           setResultValue(<>
-            <div>{renderSummary(processedResults)}
-              {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
+            {renderSummary(processedResults)}
             <RenderSuccessesWarningsGradient results={processedResults} />
           </>);
       } else setResultValue(<b style={{ color: 'red' }}>Invalid displayType='{displayType}'</b>)

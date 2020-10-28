@@ -1,9 +1,10 @@
 import * as books from './books/books';
 import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { checkAnnotationTSVDataRow } from './annotation-row-check';
+import { ourParseInt, getBookNumber } from './utilities';
 
 
-const ANNOTATION_TABLE_VALIDATOR_VERSION_STRING = '0.2.5';
+const ANNOTATION_TABLE_VALIDATOR_VERSION_STRING = '0.2.6';
 
 const NUM_EXPECTED_ANNOTATION_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tAnnotation';
@@ -33,6 +34,9 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     // if (bookID) ourLocation = ` in ${bookID}${ourLocation}`;
 
+    const bookNumber = getBookNumber(bookID);
+    const largeBookNumber = bookNumber * 1e+10;
+
     const carResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
@@ -55,7 +59,11 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `TSV addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "ATSV addNoticePartial: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
-        carResult.noticeList.push({ ...noticeObject, bookID, filename });
+        let msgID = noticeObject.priority * 1e+12 + largeBookNumber;
+        try { msgID += ourParseInt(noticeObject.C) * 1e+7; } catch { }
+        try { msgID += ourParseInt(noticeObject.V) * 1e+4; } catch { }
+        try { msgID += ourParseInt(noticeObject.lineNumber); } catch { }
+        carResult.noticeList.push({ ...noticeObject, msgID, bookID, filename });
     }
 
 

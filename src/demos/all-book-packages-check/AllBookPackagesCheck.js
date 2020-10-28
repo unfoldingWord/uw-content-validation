@@ -8,7 +8,7 @@ import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSu
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const BPS_VALIDATOR_VERSION_STRING = '0.2.1';
+// const ALL_BPS_VALIDATOR_VERSION_STRING = '0.3.0';
 
 const OLD_TESTAMENT_BOOK_CODES = 'GEN,EXO,LEV,NUM,DEU,JOS,JDG,RUT,1SA,2SA,1KI,2KI,1CH,2CH,EZR,NEH,EST,JOB,PSA,PRO,ECC,SNG,ISA,JER,LAM,EZK,DAN,HOS,JOL,AMO,OBA,JON,MIC,NAM,HAB,ZEP,HAG,ZEC,MAL';
 const NEW_TESTAMENT_BOOK_CODES = 'MAT,MRK,LUK,JHN,ACT,ROM,1CO,2CO,GAL,EPH,PHP,COL,1TH,2TH,1TI,2TI,TIT,PHM,HEB,JAS,1PE,2PE,1JN,2JN,3JN,JUD,REV';
@@ -18,7 +18,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     // Check a single Bible book across many repositories
     const [result, setResultValue] = useState("Waiting-CheckAllBookPackages");
 
-    // console.log(`I'm here in AllBookPackagesCheckBookPackagesCheck v${BPS_VALIDATOR_VERSION_STRING}`);
+    // console.log(`I'm here in AllBookPackagesCheckBookPackagesCheck v${ALL_BPS_VALIDATOR_VERSION_STRING}`);
     // consoleLogObject("props", props);
     // consoleLogObject("props.classes", props.classes);
 
@@ -117,40 +117,39 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
       let displayType = 'ErrorsWarnings'; // default
       if (props.displayType) displayType = props.displayType;
 
-      if (displayType === 'ErrorsWarnings') {
+      function renderSuccesses(processedResults) {
+        if (processedResults.checkedFileCount > 0)
+        return (<p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount===1?'':'s'} from {username} {processedResults.checkedRepoNames.join(', ')}
+        <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>);
+        else
+        return (<p>&nbsp;&nbsp;&nbsp;&nbsp;No files checked!</p>);
+      }
+
+      function renderSummary(processedResults) {
+        return (<div>
+          <p>Checked <b>{username} {languageCode} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
+          {renderSuccesses(processedResults)}
+          <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCBPsResults.noticeList.length===0?'no':rawCBPsResults.noticeList.length.toLocaleString()} notice{rawCBPsResults.noticeList.length===1?'':'s'}
+          {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}.</p>
+          {/* <RenderRawResults results={rawCBPsResults} /> */}
+        </div>);
+      }
+
+    if (displayType === 'ErrorsWarnings') {
         const processedResults = processNoticesToErrorsWarnings(rawCBPsResults, processOptions);
   //       console.log(`AllBookPackagesCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
   // numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
         // console.log("Here now in rendering bit!");
 
-        function renderSuccesses(processedResults) {
-          if (processedResults.checkedFileCount > 0)
-          return (<p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount===1?'':'s'} from {username} {processedResults.checkedRepoNames.join(', ')}
-          <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>);
-          else
-          return (<p>&nbsp;&nbsp;&nbsp;&nbsp;No files checked!</p>);
-        }
-
-        function renderSummary() {
-          return (<div>
-            <p>Checked <b>{username} {languageCode} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
-            {renderSuccesses(processedResults)}
-            <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCBPsResults.noticeList.length===0?'no':rawCBPsResults.noticeList.length.toLocaleString()} notice{rawCBPsResults.noticeList.length===1?'':'s'}.</p>
-            {/* <RenderRawResults results={rawCBPsResults} /> */}
-          </div>);
-        }
-
         if (processedResults.errorList.length || processedResults.warningList.length)
           setResultValue(<>
-            <div>{renderSummary()}
-              {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
+            {renderSummary()}
             <RenderSuccessesErrorsWarnings results={processedResults} />
           </>);
         else // no errors or warnings
           setResultValue(<>
-            <div>{renderSummary()}
-              {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
+            {renderSummary()}
             <RenderSuccessesErrorsWarnings results={processedResults} />
           </>);
       } else if (displayType === 'SevereMediumLow') {
@@ -160,14 +159,12 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
 
         if (processedResults.severeList.length || processedResults.mediumList.length || processedResults.lowList.length)
           setResultValue(<>
-            <p>Checked <b>{username} {languageCode} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
-              {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</p>
+            {renderSummary()}
             <RenderSuccessesSevereMediumLow results={processedResults} />
           </>);
         else // no severe, medium, or low notices
           setResultValue(<>
-            <p>Checked <b>{username} {languageCode} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
-              {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</p>
+            {renderSummary()}
             <RenderSuccessesSevereMediumLow results={processedResults} />
           </>);
       } else if (displayType === 'SingleList') {
@@ -177,14 +174,12 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
 
         if (processedResults.warningList.length)
           setResultValue(<>
-            <p>Checked <b>{username} {languageCode} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
-              {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</p>
+            {renderSummary()}
             <RenderSuccessesWarningsGradient results={processedResults} />
           </>);
         else // no warnings
           setResultValue(<>
-            <p>Checked <b>{username} {languageCode} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)
-              {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</p>
+            {renderSummary()}
             <RenderSuccessesWarningsGradient results={processedResults} />
           </>);
       } else setResultValue(<b style={{ color: 'red' }}>Invalid displayType='{displayType}'</b>)

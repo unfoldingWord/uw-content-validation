@@ -7,6 +7,9 @@ import MaterialTable from 'material-table';
 // import { consoleLogObject, displayPropertyNames } from '../core/utilities';
 
 
+// const RENDER_PROCESSED_RESULTS_VERSION = '0.5.0';
+
+
 // Note from RJH: I commented out these fields because 1/ they seemed to cause warnings/errors,
 //  2/ I didn't understand what they do anyway.
 // so feel free to uncomment it if it makes the table work better.
@@ -143,7 +146,7 @@ export function RenderRawResults({ results }) {
             { title: VName, field: 'V' }
         ]);
     }
-    if (allPropertiesSet.has('rowID')) headerData = headerData.concat([{ title: 'ID', field: 'rowID' }]);
+    if (allPropertiesSet.has('rowID')) headerData = headerData.concat([{ title: 'row ID', field: 'rowID' }]);
     if (allPropertiesSet.has('repoName')) headerData = headerData.concat([{ title: 'Repo', field: 'repoName' }]);
     if (allPropertiesSet.has('filename')) headerData = headerData.concat([{ title: 'Filename', field: 'filename' }]);
     if (allPropertiesSet.has('fieldName')) headerData = headerData.concat([{ title: 'Field', field: 'fieldName' }]);
@@ -152,6 +155,7 @@ export function RenderRawResults({ results }) {
     if (allPropertiesSet.has('extract')) headerData = headerData.concat([{ title: 'Extract', field: 'extract' }]);
     if (allPropertiesSet.has('location')) headerData = headerData.concat([{ title: 'Location', field: 'location' }]);
     if (allPropertiesSet.has('extra')) headerData = headerData.concat([{ title: 'Extra', field: 'extra' }]);
+    if (allPropertiesSet.has('ID')) headerData = headerData.concat([{ title: 'MsgID', field: 'msgID', type: 'numeric' }]);
     // console.log("headerData", headerData.length, JSON.stringify(headerData));
 
     // Make the actual table and return it
@@ -169,7 +173,7 @@ export function RenderRawResults({ results }) {
 }
 
 
-export function RenderMessage({ color, message, details }) {
+function RenderMessage({ color, message, details }) {
     /**
     * @description - Displays the message plus details if specified
     * @param {String} color - color field for the message style
@@ -184,7 +188,7 @@ export function RenderMessage({ color, message, details }) {
 }
 
 
-export function RenderBCV({ bookID, C, V }) {
+function RenderBCV({ bookID, C, V }) {
     /**
     * @description - Displays the bookcode and chapter/verse details if specified
     * @param {String} bookID - (optional) 3-character UPPERCASE USFM bookcode or 'OBS'.
@@ -205,9 +209,10 @@ export function RenderBCV({ bookID, C, V }) {
     return null;
 }
 
-export function RenderFileDetails({ repoName, filename, lineNumber, rowID, fieldName }) {
+function RenderFileDetails({ username, repoName, filename, lineNumber, rowID, fieldName }) {
     /**
     * @description - Displays the repoName and filename/lineNumber details if specified
+    * @param {String} username - (optional) username/orgName string
     * @param {String} repoName - (optional) repo name string
     * @param {String} filename - (optional) filename string
     * @param {Number} lineNumber - (optional) line number integer (1-based)
@@ -225,14 +230,22 @@ export function RenderFileDetails({ repoName, filename, lineNumber, rowID, field
     if (filename && filename.length) resultStart += ` in file ${filename}`;
     if (lineNumber) {
         resultStart += ' on ';
-        lineResult = `line ${lineNumber.toLocaleString()}`;
+        if (0 && username && repoName && filename && lineNumber) {
+            let href;
+            try {
+                if (filename.endsWith('.tsv')) href = `https://git.door43.org/${username}/${repoName}/blame/branch/master/${filename}#L${lineNumber}`;
+                else href = `https://git.door43.org/${username}/${repoName}/src/branch/master/${filename}#L${lineNumber}`;
+            } catch { }
+            lineResult = `line <a target="_blank" href="${href}">${lineNumber.toLocaleString()}</a>`;
+        } else
+            lineResult = `line ${lineNumber.toLocaleString()}`;
     }
     if (rowID && rowID.length) resultEnd += ` with ID ${rowID}`;
     if (fieldName && fieldName.length) resultEnd += ` in ${fieldName} field`;
     return <>{resultStart}<b>{lineResult}</b>{resultEnd}</>;
 }
 
-export function RenderSuccessesColored({ results }) {
+function RenderSuccessesColored({ results }) {
     // Display our array of success message strings in a nicer format
     //
     // Expects results to contain:
@@ -256,7 +269,13 @@ export function RenderSuccessesColored({ results }) {
     </ul>;
 }
 
-export function RenderProcessedArray({ arrayType, results }) {
+function RenderPriority({ entry }) {
+    const priorityBit = entry.priority >= 0 ? "Priority " + entry.priority : "";
+    const msgIdBit = entry.msgID ? "MsgID " + entry.msgID : "";
+    return <small style={{ color: 'Gray' }}> ({priorityBit}{priorityBit && msgIdBit ? ", " : ""}{msgIdBit})</small>
+}
+
+function RenderProcessedArray({ arrayType, results }) {
     // Display our array of objects in a nicer format
     //  priority (integer), message (string)
     //  plus optional fields:
@@ -277,11 +296,11 @@ export function RenderProcessedArray({ arrayType, results }) {
                 return <li key={index}>
                     <RenderMessage color={arrayType === 'e' ? 'red' : 'orange'} message={listEntry.message} details={listEntry.details} />
                     <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
-                    <RenderFileDetails repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
+                    <RenderFileDetails username='unfoldingWord' repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
                     {listEntry.characterIndex > 0 ? " (at character " + (listEntry.characterIndex + 1) + ")" : ""}
                     <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
                     {listEntry.location}
-                    <small style={{ color: 'Gray' }}>{listEntry.priority >= 0 ? " (Priority " + listEntry.priority + ")" : ""}</small>
+                    <RenderPriority entry={listEntry} />
                 </li>;
             })}
         </ul>;
@@ -289,7 +308,7 @@ export function RenderProcessedArray({ arrayType, results }) {
 }
 
 
-export function RenderGivenArray({ array, color }) {
+function RenderGivenArray({ array, color }) {
     // Display our array of objects in a nicer format
     //  priority (integer), message (string),
     //  plus possible optional fields:
@@ -305,18 +324,18 @@ export function RenderGivenArray({ array, color }) {
             return <li key={index}>
                 <RenderMessage color={color} message={listEntry.message} details={listEntry.details} />
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
-                <RenderFileDetails repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
+                <RenderFileDetails username='unfoldingWord' repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
                 {listEntry.characterIndex !== undefined && listEntry.characterIndex >= 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
                 <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
                 {listEntry.location}
-                <small style={{ color: 'Gray' }}>{listEntry.priority >= 0 ? " (Priority " + listEntry.priority + ")" : ""}</small>
+                <RenderPriority entry={listEntry} />
             </li>;
         })}
     </ul>;
 }
 
 
-export function getGradientcolor(priorityValue) {
+function getGradientcolor(priorityValue) {
     // priorityValue is in range 1..999
     //
     // Returns a color value from red (highest priority) to orange (lower)
@@ -327,7 +346,7 @@ export function getGradientcolor(priorityValue) {
 }
 
 
-export function RenderWarningsGradient({ results }) {
+function RenderWarningsGradient({ results }) {
     // Display our array of 8-part lists in a nicer format
     //  1/ priority number, 2/ bookID, 3/ C, 4/ V, 5/ message,
     //      6/ index (integer), 7/ extract (optional), 8/ location
@@ -343,18 +362,18 @@ export function RenderWarningsGradient({ results }) {
             return <li key={index}>
                 <RenderMessage color={thiscolor} message={listEntry.message} details={listEntry.details} />
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
-                <RenderFileDetails repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
+                <RenderFileDetails username='unfoldingWord' repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
                 {listEntry.characterIndex !== undefined && listEntry.characterIndex >= 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
                 <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
                 {listEntry.location}
-                <small style={{ color: 'Gray' }}>{listEntry.priority >= 0 ? " (Priority " + listEntry.priority + ")" : ""}</small>
+                <RenderPriority entry={listEntry} />
             </li>;
         })}
     </ul>;
 }
 
 
-export function RenderErrors({ results }) {
+function RenderErrors({ results }) {
     // console.log("In RenderErrors");
     // consoleLogObject('RenderErrors results', results);
     return <>
@@ -363,7 +382,7 @@ export function RenderErrors({ results }) {
         <RenderProcessedArray results={results} arrayType='e' />
     </>;
 }
-export function RenderWarnings({ results }) {
+function RenderWarnings({ results }) {
     // console.log("In RenderWarnings");
     // consoleLogObject('RenderWarnings results', results);
     return <>
@@ -372,7 +391,7 @@ export function RenderWarnings({ results }) {
         <RenderProcessedArray results={results} arrayType='w' />
     </>;
 }
-export function RenderErrorsAndWarnings({ results }) {
+function RenderErrorsAndWarnings({ results }) {
     // console.log("In RenderErrorsAndWarnings");
     // consoleLogObject('RenderErrorsAndWarnings results', results);
     return <>
@@ -382,7 +401,7 @@ export function RenderErrorsAndWarnings({ results }) {
 }
 
 
-export function RenderSevere({ results }) {
+function RenderSevere({ results }) {
     // console.log("In RenderSevere");
     // consoleLogObject('RenderSevere results', results);
     return <>
@@ -391,7 +410,7 @@ export function RenderSevere({ results }) {
         <RenderGivenArray array={results.severeList} color='red' />
     </>;
 }
-export function RenderMedium({ results }) {
+function RenderMedium({ results }) {
     // console.log("In RenderSevere");
     // consoleLogObject('RenderSevere results', results);
     return <>
@@ -400,7 +419,7 @@ export function RenderMedium({ results }) {
         <RenderGivenArray array={results.mediumList} color='maroon' />
     </>;
 }
-export function RenderLow({ results }) {
+function RenderLow({ results }) {
     // console.log("In RenderLow");
     // consoleLogObject('RenderLow results', results);
     return <>
@@ -409,7 +428,7 @@ export function RenderLow({ results }) {
         <RenderGivenArray array={results.lowList} color='orange' />
     </>;
 }
-export function RenderSevereMediumLow({ results }) {
+function RenderSevereMediumLow({ results }) {
     // console.log("In RenderSevereMediumLow");
     // consoleLogObject('RenderSevereMediumLow results', results);
     return <>

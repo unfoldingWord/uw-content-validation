@@ -8,14 +8,14 @@ import { checkBookPackage } from '../book-package-check/checkBookPackage';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const BPS_VALIDATOR_VERSION_STRING = '0.1.3';
+// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.4';
 
 
 function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
     // Check a single Bible book across many repositories
     const [result, setResultValue] = useState("Waiting-CheckBookPackages");
 
-    // console.log(`I'm here in GlBookPackageCheck v${BPS_VALIDATOR_VERSION_STRING}`);
+    // console.log(`I'm here in GlBookPackageCheck v${GL_BP_VALIDATOR_VERSION_STRING}`);
     // consoleLogObject("props", props);
     // consoleLogObject("props.classes", props.classes);
 
@@ -103,7 +103,8 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
                 return (<div>
                     <p>Checked <b>{username} {languageCode} {bookID}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
                     {renderSuccesses(processedResults)}
-                    <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCBPsResults.noticeList.length === 0 ? 'no' : rawCBPsResults.noticeList.length.toLocaleString()} notice{rawCBPsResults.noticeList.length === 1 ? '' : 's'}.</p>
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCBPsResults.noticeList.length === 0 ? 'no' : rawCBPsResults.noticeList.length.toLocaleString()} notice{rawCBPsResults.noticeList.length === 1 ? '' : 's'}
+                        {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}.</p>
                     {/* <RenderRawResults results={rawCBPsResults} /> */}
                 </div>);
             }
@@ -117,14 +118,12 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
 
                 if (processedResults.errorList.length || processedResults.warningList.length)
                     setResultValue(<>
-                        <div>{renderSummary(processedResults)}
-                            {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
+                        {renderSummary(processedResults)}
                         <RenderSuccessesErrorsWarnings results={processedResults} />
                     </>);
                 else // no errors or warnings
                     setResultValue(<>
-                        <div>{renderSummary(processedResults)}
-                            {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
+                        {renderSummary(processedResults)}
                         <RenderSuccessesErrorsWarnings results={processedResults} />
                     </>);
 
@@ -135,14 +134,12 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
 
                 if (processedResults.severeList.length || processedResults.mediumList.length || processedResults.lowList.length)
                     setResultValue(<>
-                        <div>{renderSummary(processedResults)}
-                            {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
+                        {renderSummary(processedResults)}
                         <RenderSuccessesSevereMediumLow results={processedResults} />
                     </>);
                 else // no severe, medium, or low notices
                     setResultValue(<>
-                        <div>{renderSummary(processedResults)}
-                            {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
+                        {renderSummary(processedResults)}
                         <RenderSuccessesSevereMediumLow results={processedResults} />
                     </>);
 
@@ -153,14 +150,12 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
 
                 if (processedResults.warningList.length)
                     setResultValue(<>
-                        <div>{renderSummary(processedResults)}
-                            {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
+                        {renderSummary(processedResults)}
                         <RenderSuccessesWarningsGradient results={processedResults} />
                     </>);
                 else // no warnings
                     setResultValue(<>
-                        <div>{renderSummary(processedResults)}
-                            {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
+                        {renderSummary(processedResults)}
                         <RenderSuccessesWarningsGradient results={processedResults} />
                     </>);
             } else setResultValue(<b style={{ color: 'red' }}>Invalid displayType='{displayType}'</b>)

@@ -1,7 +1,7 @@
 // import { displayPropertyNames, consoleLogObject } from './utilities';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.8.2';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.8.3';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -192,9 +192,10 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     } catch (npfIPNLerror) { }
     if (ignorePriorityNumberList === undefined) {
         ignorePriorityNumberList = DEFAULT_IGNORE_PRIORITY_NUMBER_LIST;
-        // console.log(`Using default ignorePriorityNumberList=${ignorePriorityNumberList}`);
+        // console.log(`Using default ignorePriorityNumberList=${JSON.stringify(ignorePriorityNumberList)}`);
     }
-    else console.log(`Using supplied ignorePriorityNumberList=${ignorePriorityNumberList} cf. default=${DEFAULT_IGNORE_PRIORITY_NUMBER_LIST}`);
+    else console.log(`Using supplied ignorePriorityNumberList=${JSON.stringify(ignorePriorityNumberList)} cf. default=${JSON.stringify(DEFAULT_IGNORE_PRIORITY_NUMBER_LIST)}`);
+    console.assert(Array.isArray(ignorePriorityNumberList), `ignorePriorityNumberList should be an Array, not ${typeof ignorePriorityNumberList}=${ignorePriorityNumberList}`);
     let sortBy;
     try {
         sortBy = optionalProcessingOptions.sortBy;
@@ -294,11 +295,11 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 resultObject.successList.unshift(`Checked ${TSVNotesList.length} TSV notes files: ${TSVNotesList.join(', ')}`);
             if (USFMBookList.length > 1)
                 resultObject.successList.unshift(`Checked ${USFMBookList.length} USFM Bible files: ${USFMBookList.join(', ')}`);
-                if (TWLList.length > 1)
+            if (TWLList.length > 1)
                 resultObject.successList.unshift(`Checked ${TWLList.length} TWL files: ${TWLList.join(', ')}`);
-                if (TQList.length > 1)
+            if (TQList.length > 1)
                 resultObject.successList.unshift(`Checked ${TQList.length} TQ files: ${TQList.join(', ')}`);
-                if (TNList.length > 1)
+            if (TNList.length > 1)
                 resultObject.successList.unshift(`Checked ${TNList.length} TN files: ${TNList.join(', ')}`);
             if (TNBookList.length > 1)
                 resultObject.successList.unshift(`Checked ${TNBookList.length} TN files: ${TNBookList.join(', ')}`);

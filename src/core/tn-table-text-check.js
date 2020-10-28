@@ -1,9 +1,10 @@
 import * as books from './books/books';
 import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { checkTN_TSVDataRow } from './tn-table-row-check';
+import { ourParseInt, getBookNumber } from './utilities';
 
 
-const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.2.4';
+const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.2.5';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -33,6 +34,9 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     // if (bookID) ourLocation = ` in ${bookID}${ourLocation}`;
 
+    const bookNumber = getBookNumber(bookID);
+    const largeBookNumber = bookNumber * 1e+10;
+
     const ttResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
@@ -55,7 +59,11 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `TSV addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "TSV addNoticePartial: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
-        ttResult.noticeList.push({ ...noticeObject, bookID, filename });
+        let msgID = noticeObject.priority * 1e+12 + largeBookNumber;
+        try { msgID += ourParseInt(noticeObject.C) * 1e+7; } catch { }
+        try { msgID += ourParseInt(noticeObject.V) * 1e+4; } catch { }
+        try { msgID += ourParseInt(noticeObject.lineNumber); } catch { }
+        ttResult.noticeList.push({ ...noticeObject, msgID, bookID, filename });
     }
 
 

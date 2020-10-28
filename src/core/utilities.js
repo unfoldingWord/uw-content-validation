@@ -1,5 +1,6 @@
 // utilities
 
+import { usfmNumberName } from './books';
 // import { isUndefined } from 'lodash';
 
 
@@ -65,6 +66,28 @@ export function ourParseInt(givenString) {
   // eslint-disable-next-line no-throw-literal
     if (isNaN(int)) throw "String is not a simple integer";
     return int;
+}
+
+
+/**
+ *
+ * @param {string} bookID - 3-character UPPERCASE Book Id
+ * @requires {number} 0..99
+ */
+export function getBookNumber(bookID) {
+    console.log(`getBookNumber(${bookID})…`)
+    let numberResult = 88; // default value
+    if (bookID==='OBS') numberResult = 99;
+    else if (bookID==='FRT') numberResult = 0;
+    else if (bookID==='BAK') numberResult = 68;
+    else {
+        const thisUSFMNumberName = usfmNumberName(bookID);
+        numberResult = ourParseInt(thisUSFMNumberName.substring(0, 2)); // 01..67
+    // } catch {}
+    }
+    // For everything else
+    console.log(`getBookNumber(${bookID})) returning ${numberResult}`);
+    return numberResult;
 }
 
 

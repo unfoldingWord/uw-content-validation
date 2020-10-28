@@ -4,10 +4,10 @@ import { checkTextField } from './field-text-check';
 import { checkTextfileContents } from './file-text-check';
 import { runUsfmJsCheck } from './usfm-js-check';
 import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
-import { ourParseInt } from './utilities';
+import { ourParseInt, getBookNumber } from './utilities';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.6.37';
+// const USFM_VALIDATOR_VERSION_STRING = '0.7.0';
 
 
 // See http://ubsicap.github.io/usfm/master/index.html
@@ -157,6 +157,10 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
     // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
+    const bookNumber = getBookNumber(bookID);
+    const largeBookNumber = bookNumber * 1e+10;
+    const lowercaseBookID = bookID.toLowerCase();
+
     const result = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
@@ -182,7 +186,11 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
         console.assert(typeof noticeObject.location === 'string', `cUSFM addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
         console.assert(noticeObject.message.indexOf('Mismatched {}') < 0, `checkUSFMText addNoticePartial: got bad notice: ${JSON.stringify(noticeObject)}`);
-        result.noticeList.push({ ...noticeObject, bookID, filename });
+        let msgID = noticeObject.priority * 1e+12 + largeBookNumber;
+        try { msgID += ourParseInt(noticeObject.C) * 1e+7; } catch { }
+        try { msgID += ourParseInt(noticeObject.V) * 1e+4; } catch { }
+        try { msgID += ourParseInt(noticeObject.lineNumber); } catch { }
+        result.noticeList.push({ ...noticeObject, msgID, bookID, filename });
     }
 
 
@@ -336,7 +344,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
 
 
         // Main code for CVCheck function
-        let lowercaseBookID = bookID.toLowerCase();
+        // const lowercaseBookID = bookID.toLowerCase();
         let expectedVersesPerChapterList = [];
         try {
             console.assert(lowercaseBookID !== 'obs', "Shouldn't happen in usfm-text-check1");
@@ -470,14 +478,14 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
             //     && (!noticeEntry.message.startsWith("Unexpected doubled , characters") || fieldText.indexOf('x-morph') < 0) // inside \w fields
             //     && (!noticeEntry.message.startsWith('Unexpected doubled " characters') || fieldText.indexOf('x-morph') < 0) // inside \w fields
             // ) {
-                // const newNoticeObject = { priority:noticeEntry.priority, message:noticeEntry.message }
-                // if (C !== undefined && C.length) newNoticeObject.C = C;
-                // if (V !== undefined && V.length) newNoticeObject.V = V;
-                // // if (filename !== undefined && filename.length) newNoticeObject.filename = filename;
-                // if (noticeEntry.characterIndex !== undefined) newNoticeObject.characterIndex = noticeEntry.characterIndex;
-                // if (noticeEntry.extract !== undefined && noticeEntry.extract.length) newNoticeObject.extract = noticeEntry.extract;
-                // if (noticeEntry.location !== undefined && noticeEntry.location.length) newNoticeObject.location = noticeEntry.location;
-                addNoticePartial({ ...noticeEntry, lineNumber, C, V });
+            // const newNoticeObject = { priority:noticeEntry.priority, message:noticeEntry.message }
+            // if (C !== undefined && C.length) newNoticeObject.C = C;
+            // if (V !== undefined && V.length) newNoticeObject.V = V;
+            // // if (filename !== undefined && filename.length) newNoticeObject.filename = filename;
+            // if (noticeEntry.characterIndex !== undefined) newNoticeObject.characterIndex = noticeEntry.characterIndex;
+            // if (noticeEntry.extract !== undefined && noticeEntry.extract.length) newNoticeObject.extract = noticeEntry.extract;
+            // if (noticeEntry.location !== undefined && noticeEntry.location.length) newNoticeObject.location = noticeEntry.location;
+            addNoticePartial({ ...noticeEntry, lineNumber, C, V });
             // }
         }
     }
@@ -768,7 +776,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
         let ourLocation = location;
         if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
-        let lowercaseBookID = bookID.toLowerCase();
+        // const lowercaseBookID = bookID.toLowerCase();
         // eslint-disable-next-line no-unused-vars
         let numChaptersThisBook = 0;
         try {
@@ -940,6 +948,8 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
 
         addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length === 1 ? '' : 's'} for ${bookID}${ourLocation}`)
     }
+    // end of mainUSFMCheck function
+
 
     /* function runSlowTask(which) {
         // Ideally these should be run in parallel using multiprocessing
@@ -948,9 +958,12 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
         return (which === 1)
             ? mainUSFMCheck(bookID, filename, givenText, location)
             : runBCSGrammarCheck(filename, givenText, location);
-    }
+    } */
+
+
     // Main code for checkUSFMText()
-    console.log("Starting USFM checking tasks…");
+    // console.log("Starting USFM checking tasks…");
+    /*
     const tasks = [1,2].map(runSlowTask);
     const allResults = await Promise.all(tasks);
     console.log(`  Finished all tasks with ${JSON.stringify(allResults)}.`);

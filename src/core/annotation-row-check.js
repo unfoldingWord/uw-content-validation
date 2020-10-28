@@ -392,18 +392,18 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
             addNoticePartial({ priority: 810, message: "Missing verse number", rowID, fieldName: 'Reference', location: ` after ${C}:?${ourRowLocation}` });
 
         if (!rowID.length)
-            addNoticePartial({ priority: 779, message: "Missing ID field", fieldName: 'Reference', location: ourRowLocation });
+            addNoticePartial({ priority: 779, message: "Missing row ID field", fieldName: 'Reference', location: ourRowLocation });
         else {
             if (rowID.length !== 4)
-                addNoticePartial({ priority: 778, message: "ID should be exactly 4 characters", rowID, fieldName: 'ID', location: ` (not ${rowID.length})${ourRowLocation}` });
+                addNoticePartial({ priority: 778, message: "Row ID should be exactly 4 characters", rowID, fieldName: 'ID', location: ` (not ${rowID.length})${ourRowLocation}` });
             else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(rowID[0]) < 0)
-                addNoticePartial({ priority: 176, message: "ID should start with a lowercase letter or digit", characterIndex: 0, rowID, fieldName: 'ID', location: ` (not '${rowID[0]}')${ourRowLocation}` });
+                addNoticePartial({ priority: 176, message: "Row ID should start with a lowercase letter or digit", characterIndex: 0, rowID, fieldName: 'ID', location: ` (not '${rowID[0]}')${ourRowLocation}` });
             else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(rowID[3]) < 0)
-                addNoticePartial({ priority: 175, message: "ID should end with a lowercase letter or digit", characterIndeX: 3, rowID, fieldName: 'ID', location: ` (not '${rowID[3]}')${ourRowLocation}` });
+                addNoticePartial({ priority: 175, message: "Row ID should end with a lowercase letter or digit", characterIndeX: 3, rowID, fieldName: 'ID', location: ` (not '${rowID[3]}')${ourRowLocation}` });
             else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(rowID[1]) < 0)
-                addNoticePartial({ priority: 174, message: "ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 1, rowID, location: ` (not '${rowID[1]}')${ourRowLocation}` });
+                addNoticePartial({ priority: 174, message: "Row ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 1, rowID, location: ` (not '${rowID[1]}')${ourRowLocation}` });
             else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(rowID[2]) < 0)
-                addNoticePartial({ priority: 173, message: "ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 2, rowID, location: ` (not '${rowID[2]}')${ourRowLocation}` });
+                addNoticePartial({ priority: 173, message: "Row ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 2, rowID, location: ` (not '${rowID[2]}')${ourRowLocation}` });
         }
 
         if (tags.length)
@@ -467,7 +467,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
                 while (regexResultArray = TA_REGEX.exec(annotation)) {
                     // console.log("Got TA Regex in Annotation", JSON.stringify(regexResultArray));
                     const adjustedLink = regexResultArray[0].substring(2, regexResultArray[0].length - 2)
-                    if (supportReference !== adjustedLink) {
+                    if (supportReference !== adjustedLink && V !== 'intro') {
                         const details = supportReference ? `(SR='${supportReference}')` : "(empty SR field)"
                         addNoticePartial({ priority: 786, message: "Link to TA should also be in SupportReference", details, rowID, fieldName: 'Annotation', extract: adjustedLink, location: ourRowLocation });
                     }
