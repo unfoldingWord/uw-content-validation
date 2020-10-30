@@ -1,4 +1,4 @@
-import * as books  from '../../core/books/books';
+import * as books from '../../core/books/books';
 import { checkBookPackage } from '../book-package-check/checkBookPackage';
 // import { consoleLogObject } from '../../core/utilities';
 
@@ -56,14 +56,13 @@ export async function checkBookPackages(username, languageCode, bookIDList, setR
 
         // const generalLocation = ` ${languageCode} ${bookID} book packages from ${username}`;
         if (bookID !== 'OBS') {
-          // eslint-disable-next-line no-unused-vars
+            // eslint-disable-next-line no-unused-vars
             let bookNumberAndName; //, whichTestament;
             try {
                 bookNumberAndName = books.usfmNumberName(bookID);
                 // whichTestament = books.testament(bookID); // returns 'old' or 'new'
             } catch (CBPsError) {
-                addNotice10({priority:900, message:"Bad parameter: should be given a valid book abbreviation",
-                                extract:bookIDList, location:` (not '${bookIDList}')`});
+                addNotice10({ priority: 900, message: "Bad parameter: should be given a valid book abbreviation", extract: bookIDList, location: ` (not '${bookIDList}')` });
                 return checkBookPackagesResult;
             }
             // console.log(`bookNumberAndName='${bookNumberAndName}' (${whichTestament} testament)`);

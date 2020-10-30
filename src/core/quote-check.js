@@ -93,7 +93,7 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
                 // console.log("Fetched fileContent for", OBSRepoName, OBSPathname, typeof originalMarkdown, originalMarkdown.length);
             } catch (gcUHBerror) {
                 console.error(`getOriginalPassage(${bookID}, ${C}:${V}, ${JSON.stringify(optionalCheckingOptions)}) failed to load UHB`, username, languageCode, OBSPathname, branch, gcUHBerror.message);
-                addNotice({ priority: 601, message: "Failed to load", OBSPathname, location: `${ourLocation}: ${gcUHBerror}`, extra: OBSRepoName });
+                addNotice({ priority: 601, message: "Unable to load", details: `username=${username} error=${gcUHBerror}`, OBSPathname, location: ourLocation, extra: OBSRepoName });
             }
             if (!originalMarkdown) return '';
 
@@ -125,7 +125,7 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
                     // console.log("Fetched fileContent for", repoName, filename, typeof originalUSFM, originalUSFM.length);
                 } catch (gcUHBerror) {
                     console.error(`getOriginalPassage(${bookID}, ${C}:${V}, ${JSON.stringify(optionalCheckingOptions)}) failed to load UHB`, username, originalLanguageRepoCode, filename, branch, gcUHBerror.message);
-                    addNotice({ priority: 601, message: "Failed to load", filename, location: `${ourLocation}: ${gcUHBerror}`, extra: originalLanguageRepoName });
+                    addNotice({ priority: 601, message: "Unable to load", details: `username=${username} error=${gcUHBerror}`, filename, location: ourLocation, extra: originalLanguageRepoName });
                 }
             } else if (originalLanguageRepoCode === 'UGNT') {
                 try {
@@ -133,7 +133,7 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
                     // console.log("Fetched fileContent for", repoName, filename, typeof originalUSFM, originalUSFM.length);
                 } catch (gcUGNTerror) {
                     console.error(`getOriginalPassage(${bookID}, ${C}:${V}, ${JSON.stringify(optionalCheckingOptions)}) failed to load UGNT`, username, originalLanguageRepoCode, filename, branch, gcUGNTerror.message);
-                    addNotice({ priority: 601, message: "Failed to load", filename, location: `${ourLocation}: ${gcUGNTerror}`, extra: originalLanguageRepoName });
+                    addNotice({ priority: 601, message: "Unable to load", details: `username=${username} error=${gcUGNTerror}`, filename, location: ourLocation, extra: originalLanguageRepoName });
                 }
             }
             if (!originalUSFM) return '';

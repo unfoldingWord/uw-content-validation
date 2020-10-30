@@ -269,6 +269,10 @@ function RenderSuccessesColored({ results }) {
     </ul>;
 }
 
+/**
+ *
+ * @param {Object} props.entry -- the given notice entry object
+ */
 function RenderPriority({ entry }) {
     const priorityBit = entry.priority >= 0 ? "Priority " + entry.priority : "";
     const msgIdBit = entry.msgID ? "MsgID " + entry.msgID : "";

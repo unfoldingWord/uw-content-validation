@@ -1,7 +1,7 @@
 import * as books from './books/books';
 import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { checkAnnotationTSVDataRow } from './annotation-row-check';
-import { ourParseInt, getBookNumber } from './utilities';
+import { getBookNumber, createMsgID } from './utilities';
 
 
 const ANNOTATION_TABLE_VALIDATOR_VERSION_STRING = '0.2.6';
@@ -59,10 +59,7 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `TSV addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "ATSV addNoticePartial: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
-        let msgID = noticeObject.priority * 1e+12 + largeBookNumber;
-        try { msgID += ourParseInt(noticeObject.C) * 1e+7; } catch { }
-        try { msgID += ourParseInt(noticeObject.V) * 1e+4; } catch { }
-        try { msgID += ourParseInt(noticeObject.lineNumber); } catch { }
+        const msgID = createMsgID(largeBookNumber, noticeObject);
         carResult.noticeList.push({ ...noticeObject, msgID, bookID, filename });
     }
 

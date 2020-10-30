@@ -75,7 +75,7 @@ export function ourParseInt(givenString) {
  * @requires {number} 0..99
  */
 export function getBookNumber(bookID) {
-    console.log(`getBookNumber(${bookID})…`)
+    // console.log(`getBookNumber(${bookID})…`)
     let numberResult = 88; // default value
     if (bookID==='OBS') numberResult = 99;
     else if (bookID==='FRT') numberResult = 0;
@@ -86,8 +86,23 @@ export function getBookNumber(bookID) {
     // } catch {}
     }
     // For everything else
-    console.log(`getBookNumber(${bookID})) returning ${numberResult}`);
+    // console.log(`getBookNumber(${bookID})) returning ${numberResult}`);
     return numberResult;
+}
+
+
+/**
+ *
+ * @param {number} largeBookNumber
+ * @param {Object} noticeObject
+ * @returns {number} -- typically a 15-digit number
+ */
+export function createMsgID(largeBookNumber, noticeObject) {
+    let msgID = noticeObject.priority * 1e+12 + largeBookNumber;
+    try { msgID += ourParseInt(noticeObject.C) * 1e+7; } catch { }
+    try { msgID += ourParseInt(noticeObject.V) * 1e+4; } catch { }
+    try { msgID += ourParseInt(noticeObject.lineNumber); } catch { }
+    return msgID;
 }
 
 

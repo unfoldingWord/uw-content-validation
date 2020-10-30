@@ -2,7 +2,7 @@ import * as books from '../../core/books/books';
 import { checkUSFMText, checkMarkdownText, checkPlainText, checkYAMLText, checkManifestText, checkTN_TSVText, checkAnnotationRows } from '../../core';
 
 
-// const CHECK_FILE_CONTENTS_VERSION_STRING = '0.2.1';
+// const CHECK_FILE_CONTENTS_VERSION_STRING = '0.2.2';
 
 
 /**
@@ -55,13 +55,13 @@ export async function checkFileContents(languageCode, filename, fileContent, giv
   } else if (filenameLower.endsWith('.md'))
     checkFileResult = checkMarkdownText(filename, fileContent, ourCFLocation, checkingOptions);
   else if (filenameLower.endsWith('.txt'))
-    checkFileResult = checkPlainText(filename, fileContent, ourCFLocation, checkingOptions);
+    checkFileResult = checkPlainText('raw', filename, fileContent, ourCFLocation, checkingOptions);
   else if (filenameLower === 'manifest.yaml')
     checkFileResult = checkManifestText('', fileContent, ourCFLocation, checkingOptions);
   else if (filenameLower.endsWith('.yaml'))
     checkFileResult = checkYAMLText('', fileContent, ourCFLocation, checkingOptions);
   else {
-    checkFileResult = checkPlainText(filename, fileContent, ourCFLocation, checkingOptions);
+    checkFileResult = checkPlainText('raw', filename, fileContent, ourCFLocation, checkingOptions);
     checkFileResult.noticeList.unshift({ priority: 995, message: "File extension is not recognized, so treated as plain text.", filename, location: filename });
   }
   // console.log(`checkFileContents got initial results with ${checkFileResult.successList.length} success message(s) and ${checkFileResult.noticeList.length} notice(s)`);

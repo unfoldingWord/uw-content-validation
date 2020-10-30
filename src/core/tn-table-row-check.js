@@ -7,7 +7,7 @@ import { checkTNLinksToOutside } from './tn-links-check';
 import { checkOriginalLanguageQuote } from './quote-check';
 
 
-// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.4.8';
+// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.4.9';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -163,7 +163,8 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         console.assert(allowedLinks === true || allowedLinks === false, "checkTN_TSVDataRow ourCheckTextField: allowedLinks parameter must be either true or false");
         console.assert(rowLocation.indexOf(fieldName) < 0, `checkTN_TSVDataRow ourCheckTextField: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const dbtcResultObject = checkTextField('TSV', fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions);
+        const fieldType = fieldName==='OccurrenceNote'? 'markdown':'raw';
+        const dbtcResultObject = checkTextField(fieldType, fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field

@@ -7,7 +7,7 @@ import { checkTNLinksToOutside } from './tn-links-check';
 import { checkOriginalLanguageQuote } from './quote-check';
 
 
-// const ANNOTATION_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.5.4';
+// const ANNOTATION_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.5.5';
 
 const NUM_EXPECTED_ANNOTATION_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_ANNOTATION_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tAnnotation';
@@ -170,7 +170,8 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         console.assert(allowedLinks === true || allowedLinks === false, "checkAnnotationTSVDataRow ourCheckTextField: allowedLinks parameter must be either true or false");
         console.assert(rowLocation.indexOf(fieldName) < 0, `checkAnnotationTSVDataRow ourCheckTextField: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const dbtcResultObject = checkTextField('TSV', fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions);
+        const fieldType = fieldName==='Annotation'? 'markdown':'raw';
+        const dbtcResultObject = checkTextField(fieldType, fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field

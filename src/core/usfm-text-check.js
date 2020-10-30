@@ -4,7 +4,7 @@ import { checkTextField } from './field-text-check';
 import { checkTextfileContents } from './file-text-check';
 import { runUsfmJsCheck } from './usfm-js-check';
 import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
-import { ourParseInt, getBookNumber } from './utilities';
+import { ourParseInt, getBookNumber, createMsgID } from './utilities';
 
 
 // const USFM_VALIDATOR_VERSION_STRING = '0.7.0';
@@ -186,10 +186,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
         console.assert(typeof noticeObject.location === 'string', `cUSFM addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
         console.assert(noticeObject.message.indexOf('Mismatched {}') < 0, `checkUSFMText addNoticePartial: got bad notice: ${JSON.stringify(noticeObject)}`);
-        let msgID = noticeObject.priority * 1e+12 + largeBookNumber;
-        try { msgID += ourParseInt(noticeObject.C) * 1e+7; } catch { }
-        try { msgID += ourParseInt(noticeObject.V) * 1e+4; } catch { }
-        try { msgID += ourParseInt(noticeObject.lineNumber); } catch { }
+        const msgID = createMsgID(largeBookNumber, noticeObject);
         result.noticeList.push({ ...noticeObject, msgID, bookID, filename });
     }
 
@@ -447,44 +444,36 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
     * @param {String} fieldLocation - description of where the field is located
     * @param {Object} optionalCheckingOptions - parameters that might affect the check
     */
-    function ourCheckTextField(lineNumber, C, V, fieldName, fieldText, allowedLinks, fieldLocation, optionalCheckingOptions) {
+    function ourCheckTextField(lineNumber, C, V, fieldType, fieldName, fieldText, allowedLinks, fieldLocation, optionalCheckingOptions) {
         // Does basic checks for small errors like leading/trailing spaces, etc.
 
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global list of notices
         // console.log(`cUSFM ourCheckTextField(${lineNumber}, ${C}:${V}, ${fieldName}, (${fieldText.length} chars), ${allowedLinks}, ${fieldLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
+        console.assert(C !== undefined, "cUSFM ourCheckTextField: 'C' parameter should be defined");
+        console.assert(typeof C === 'string', `cUSFM ourCheckTextField: 'C' parameter should be a string not a '${typeof C}'`);
+        console.assert(V !== undefined, "cUSFM ourCheckTextField: 'V' parameter should be defined");
+        console.assert(typeof V === 'string', `cUSFM ourCheckTextField: 'V' parameter should be a string not a '${typeof V}'`);
         console.assert(lineNumber !== undefined, "cUSFM ourCheckTextField: 'lineNumber' parameter should be defined");
         console.assert(typeof lineNumber === 'number', `cUSFM ourCheckTextField: 'lineNumber' parameter should be a number not a '${typeof lineNumber}'`);
+        console.assert(fieldType !== undefined, "cUSFM ourCheckTextField: 'fieldType' parameter should be defined");
+        console.assert(typeof fieldType === 'string', `cUSFM ourCheckTextField: 'fieldType' parameter should be a string not a '${typeof fieldType}'`);
+        console.assert(fieldType === 'USFM' || fieldType === 'raw', `cUSFM ourCheckTextField: Unrecognized 'fieldType' parameter: ${fieldType}`);
         console.assert(fieldName !== undefined, "cUSFM ourCheckTextField: 'fieldName' parameter should be defined");
         console.assert(typeof fieldName === 'string', `cUSFM ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        console.assert(fieldName !== '', `cUSFM ourCheckTextField: ${fieldType} 'fieldName' parameter should be not be an empty string`);
         console.assert(fieldText !== undefined, "cUSFM ourCheckTextField: 'fieldText' parameter should be defined");
         console.assert(typeof fieldText === 'string', `cUSFM ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         console.assert(allowedLinks === true || allowedLinks === false, "cUSFM ourCheckTextField: allowedLinks parameter must be either true or false");
 
-        const dbtcResultObject = checkTextField('USFM', fieldName, fieldText, allowedLinks, fieldLocation, optionalCheckingOptions);
+        const dbtcResultObject = checkTextField(fieldType, fieldName, fieldText, allowedLinks, fieldLocation, optionalCheckingOptions);
 
         // Process noticeList line by line to filter out potential false positives
         //  for this particular kind of text field
         for (const noticeEntry of dbtcResultObject.noticeList) {
             // console.log("Notice keys", JSON.stringify(Object.keys(noticeEntry)));
             console.assert(Object.keys(noticeEntry).length >= 4, `USFM ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
-            // if (!noticeEntry.message.startsWith("Mismatched () characters") // 663 Mismatched left/right chars -- suppress these misleading warnings coz open quote can occur in one verse and close in another
-            //     && !noticeEntry.message.startsWith("Mismatched [] characters") // Start/end of questionable text can be on different lines
-            //     && !noticeEntry.message.startsWith("Mismatched {} characters") // Start/end of implied text can be on different lines
-            //     && !noticeEntry.message.startsWith("Mismatched “” characters")
-            //     && !noticeEntry.message.startsWith("Mismatched «» characters")
-            //     && (!noticeEntry.message.startsWith("Unexpected | character after space") || (fieldText.indexOf('x-lemma') < 0 && fieldText.indexOf('x-tw') < 0)) // 191 inside \zaln-s and \k-s fields
-            //     && (!noticeEntry.message.startsWith("Unexpected doubled , characters") || fieldText.indexOf('x-morph') < 0) // inside \w fields
-            //     && (!noticeEntry.message.startsWith('Unexpected doubled " characters') || fieldText.indexOf('x-morph') < 0) // inside \w fields
-            // ) {
-            // const newNoticeObject = { priority:noticeEntry.priority, message:noticeEntry.message }
-            // if (C !== undefined && C.length) newNoticeObject.C = C;
-            // if (V !== undefined && V.length) newNoticeObject.V = V;
-            // // if (filename !== undefined && filename.length) newNoticeObject.filename = filename;
-            // if (noticeEntry.characterIndex !== undefined) newNoticeObject.characterIndex = noticeEntry.characterIndex;
-            // if (noticeEntry.extract !== undefined && noticeEntry.extract.length) newNoticeObject.extract = noticeEntry.extract;
-            // if (noticeEntry.location !== undefined && noticeEntry.location.length) newNoticeObject.location = noticeEntry.location;
             addNoticePartial({ ...noticeEntry, lineNumber, C, V });
             // }
         }
@@ -509,26 +498,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
         //  process results line by line
         for (const noticeEntry of resultObject.noticeList) {
             console.assert(Object.keys(noticeEntry).length >= 5, `USFM ourBasicFileChecks notice length=${Object.keys(noticeEntry).length}`);
-            if (!noticeEntry.message.startsWith("Mismatched () characters") // 663 Mismatched left/right chars -- suppress these misleading warnings coz open quote can occur in one verse and close in another
-                && !noticeEntry.message.startsWith("Mismatched [] characters")
-                && !noticeEntry.message.startsWith("Mismatched {} characters") // Start/end of implied text can be on different lines
-                && !noticeEntry.message.startsWith("Mismatched “” characters")
-                && !noticeEntry.message.startsWith("Mismatched «» characters")
-                && (!noticeEntry.message.startsWith("Unexpected space after | character") || fileText.indexOf('zaln-s') < 0) // 192 inside \zaln-s fields
-                && (!noticeEntry.message.startsWith("Unexpected | character after space") || (fileText.indexOf('x-lemma') < 0 && fileText.indexOf('x-tw') < 0)) // 191 inside \zaln-s and \k-s fields
-                && (!noticeEntry.message.startsWith("Unexpected doubled , characters") || fileText.indexOf('x-morph') < 0) // inside \w fields
-                && (!noticeEntry.message.startsWith('Unexpected doubled " characters') || fileText.indexOf('x-morph') < 0) // inside \w fields with empty lemma
-                && (!noticeEntry.message.startsWith('Unexpected link') || fileText.indexOf('x-tw') < 0) // inside original language \w fields
-            ) {
-                // const newNoticeObject = { priority:noticeEntry.priority, message:noticeEntry.message }
-                // if (C !== undefined && C.length) newNoticeObject.C = C;
-                // if (V !== undefined && V.length) newNoticeObject.V = V;
-                // // if (filename !== undefined && filename.length) newNoticeObject.filename = filename;
-                // if (noticeEntry.characterIndex !== undefined) newNoticeObject.characterIndex = noticeEntry.characterIndex;
-                // if (noticeEntry.extract !== undefined && noticeEntry.extract.length) newNoticeObject.extract = noticeEntry.extract;
-                // if (noticeEntry.location !== undefined && noticeEntry.location.length) newNoticeObject.location = noticeEntry.location;
-                addNoticePartial(noticeEntry);
-            }
+            addNoticePartial(noticeEntry);
         }
     }
     // end of ourBasicFileChecks function
@@ -723,7 +693,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
             }
             if (adjustedRest !== rest) // Only re-check if line has changed (because original is checked in checkUSFMLineInternals())
                 // Note: false (below) is for allowedLinks flag
-                ourCheckTextField(lineNumber, C, V, `from \\${marker}`, adjustedRest, false, lineLocation, optionalCheckingOptions);
+                ourCheckTextField(lineNumber, C, V, 'raw', `from \\${marker}`, adjustedRest, false, lineLocation, optionalCheckingOptions);
         }
     }
     // end of checkUSFMLineText function
@@ -746,7 +716,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
         const allowedLinks = (marker === 'w' || marker === 'k-s' || marker === 'f' || marker === 'SPECIAL1')
             // (because we don't know what marker SPECIAL1 is, so default to "no false alarms")
             && rest.indexOf('x-tw') >= 0;
-        if (rest) ourCheckTextField(lineNumber, C, V, `\\${marker}`, rest, allowedLinks, lineLocation, optionalCheckingOptions);
+        if (rest) ourCheckTextField(lineNumber, C, V, 'USFM', `\\${marker}`, rest, allowedLinks, lineLocation, optionalCheckingOptions);
     }
     // end of checkUSFMLineInternals function
 

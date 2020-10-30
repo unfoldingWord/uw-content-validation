@@ -80,16 +80,8 @@ export function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckin
         cytResult.noticeList = cytResult.noticeList.concat(resultObject.noticeList);
         // // Process noticeList line by line
         // //  suppressing undesired errors
-        // for (const noticeEntry of resultObject.noticeList) {
-        //     // console.assert(Object.keys(noticeEntry).length === 5, `YAML ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
-        //     if (noticeEntry.priority !== 191 // "Unexpected XXX character after space"
-        //         && noticeEntry.message !== "Unexpected ' character after space"
-        //         //   && noticeEntry.message !== "Unexpected space after ' character"
-        //         && noticeEntry.message !== "Unexpected space after [ character"
-        //         && (noticeEntry.message !== "Unexpected doubled - characters" || fieldText === '---')
-        //     )
-        //         addNotice(noticeEntry);
-        // }
+        for (const noticeEntry of resultObject.noticeList)
+            addNotice(noticeEntry);
     }
     // end of ourCheckTextField function
 

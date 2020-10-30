@@ -11,7 +11,7 @@ import { checkFileContents } from './checkFileContents';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const FILE_CHECK_VERSION_STRING = '0.1.4';
+// const FILE_CHECK_VERSION_STRING = '0.1.5';
 
 
 function FileCheck(props) {
@@ -46,16 +46,16 @@ function FileCheck(props) {
       const fileContent = await cachedGetFile({ username: username, repository: repoName, path: filename, branch: branch });
 
       setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {repoName} <b>{filename}</b>…</p>);
-      let rawCFResults = { noticeList: [{ priority: 990, message: "Unable to load file", filename }], elapsedSeconds: 0 };
+      let rawCFResults = { noticeList: [{ priority: 990, message: "Unable to load file", details: `username=${username}`, repoName, filename }], elapsedSeconds: 0 };
       if (fileContent) {
         const languageCode = repoName.split('_')[0];
         rawCFResults = await checkFileContents(languageCode, filename, fileContent, givenLocation, checkingOptions);
+
+        // Because we know here that we're only checking one file, we don't need the filename field in the notices
+        function deleteFilenameField(notice) { delete notice.filename; return notice; }
+        rawCFResults.noticeList = rawCFResults.noticeList.map(deleteFilenameField);
       }
       // console.log(`FileCheck got initial results with ${rawCFResults.successList.length} success message(s) and ${rawCFResults.noticeList.length} notice(s)`);
-
-      // Because we know here that we're only checking one file, we don't need the filename field in the notices
-      function deleteFilenameField(notice) { delete notice.filename; return notice; }
-      rawCFResults.noticeList = rawCFResults.noticeList.map(deleteFilenameField);
 
       // // Since we know the repoName here, add it to our notices
       // for (const thisNotice of rawCFResults.noticeList)

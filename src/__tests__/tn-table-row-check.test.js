@@ -154,7 +154,7 @@ describe('checkTN_TSVDataRow() - ', () => {
     it('should fail with trailing space', async() => {
       const chosenLine = "GEN\t1\t2\td7qw\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ \t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(4);
+      expect(rawResults.noticeList.length).toEqual(3);
       expect(rawResults).toMatchSnapshot();
     });
 

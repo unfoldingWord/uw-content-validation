@@ -134,7 +134,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
   if (! await repositoryExistsOnDoor43({ username, repository: repoName })) {
     setResultValue(<p style={{ color: 'red' }}>No such <b>{username}/{repoName}</b> repository!</p>);
     console.error(`checkRepo ${username}/${repoName} doesn't seem to exist`);
-    addNoticePartial({ priority: 986, message: "Failed to fetch repo", details: `username=${username}`, location: givenLocation, extra: repoName });
+    addNoticePartial({ priority: 986, message: "Repository doesn't seem to exist", details: `username=${username}`, location: givenLocation, extra: repoName });
   } else {
 
     // Put all this in a try/catch block coz otherwise it's difficult to debug/view errors
@@ -154,7 +154,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
       if (!zipFetchSucceeded) {
         console.error(`checkRepo: misfetched zip file for repo with ${zipFetchSucceeded}`);
         setResultValue(<p style={{ color: 'red' }}>Failed to fetching zipped files from <b>{username}/{repoName}</b> repository</p>);
-        addNoticePartial({ priority: 989, message: "Failed to find/load repository", location: ourLocation });
+        addNoticePartial({ priority: 989, message: "Unable to find/load repository", location: ourLocation });
         return checkRepoResult;
       }
 
@@ -224,7 +224,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
           // console.log("Fetched fileContent for", repoName, thisPath, typeof repoFileContent, repoFileContent.length);
         } catch (cRgfError) {
           console.error(`checkRepo(${username}, ${repoName}, ${branch}, ${givenLocation}, (fn), ${JSON.stringify(checkingOptions)})) failed to load`, thisFilepath, branch, `${cRgfError}`);
-          addNoticePartial({ priority: 996, message: "Failed to load", details: `username=${username}`, bookID: ourBookID, filename: thisFilename, location: `${givenLocation} ${thisFilepath}: ${cRgfError}`, extra: repoName });
+          addNoticePartial({ priority: 996, message: "Unable to load", details: `username=${username} error=${cRgfError}`, bookID: ourBookID, filename: thisFilename, location: `${givenLocation} ${thisFilepath}`, extra: repoName });
           return;
         }
         if (repoFileContent) {

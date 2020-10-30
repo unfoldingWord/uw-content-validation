@@ -2,7 +2,7 @@ import { checkTextField } from './field-text-check';
 import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 
 
-const MARKDOWN_VALIDATOR_VERSION_STRING = '0.3.4';
+const MARKDOWN_VALIDATOR_VERSION_STRING = '0.3.5';
 
 
 /**
@@ -22,7 +22,6 @@ export function checkMarkdownText(textName, markdownText, givenLocation, optiona
     // console.log(`checkMarkdownText(${textName}, ${markdownText.length}, ${givenLocation})…`);
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
-    // if (textName) ourLocation = ` in ${textName}${ourLocation}`;
 
     let extractLength;
     try {
@@ -85,15 +84,8 @@ export function checkMarkdownText(textName, markdownText, givenLocation, optiona
 
         // If we need to put everything through addNotice, e.g., for debugging or filtering
         //  process results line by line
-        for (const noticeEntry of dbtcResultObject.noticeList) {
-            // console.assert(Object.keys(noticeEntry).length === 5, `MD ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
-            // if (noticeEntry.message !== "Unexpected doubled * characters" // 577 Markdown allows this
-            //     && noticeEntry.message !== "Unexpected * character after space" // 191
-            //     && noticeEntry.message !== "Unexpected _ character after space" // 191
-            //     && noticeEntry.message !== "Unexpected space after _ character" // 192
-            // )
-                addNotice({ ...noticeEntry, lineNumber });
-        }
+        for (const noticeEntry of dbtcResultObject.noticeList)
+            addNotice({ ...noticeEntry, lineNumber });
     }
     // end of ourCheckTextField function
 
@@ -101,18 +93,22 @@ export function checkMarkdownText(textName, markdownText, givenLocation, optiona
     function checkMarkdownLineContents(lineNumber, lineText, lineLocation) {
 
         // console.log(`checkMarkdownLineContents for ${lineNumber} '${lineText}' at${lineLocation}`);
-        let thisText = lineText
+        let thisText = lineText;
 
-        // Remove leading and trailing hash signs
-        thisText = thisText.replace(/^#+|#$/g, '')
+        // Remove leading and trailing hash signs #
+        thisText = thisText.replace(/^#+|#+$/g, '');
         // console.log(`After removing hashes have '${thisText}'`);
 
-        // Remove leading block text markers
-        thisText = thisText.replace(/^>+ */g, '')
-        // console.log(`After removing leading block text markers have '${thisText}'`);
-
         // Remove leading spaces
-        thisText = thisText.replace(/^ +/g, '')
+        thisText = thisText.replace(/^ +/g, '');
+
+        // Remove leading block text markers >
+        while (thisText.startsWith('>'))
+            thisText = thisText.replace(/^>+ */g, '');
+        // if (thisText.indexOf('>') >= 0) console.log(`After removing leading block text markers from '${lineText}' still have '${thisText}'`);
+
+        // Remove leading spaces again
+        // thisText = thisText.replace(/^ +/g, '');
         // console.log(`After removing leading spaces have '${thisText}'`);
 
         // // Remove leading asterisks
@@ -144,7 +140,8 @@ export function checkMarkdownText(textName, markdownText, givenLocation, optiona
 
             const thisHeaderLevel = line.match(/^#*/)[0].length;
             // console.log(`Got thisHeaderLevel=${thisHeaderLevel} for ${line}${atString}`);
-            if (thisHeaderLevel > headerLevel + 1)
+            if (thisHeaderLevel > headerLevel + 1
+                && !textName.startsWith('TA ')) // Suppress this notice for translationAcademy subsections
                 addNotice({ priority: 172, message: "Header levels should only increment by one", lineNumber: n, characterIndex: 0, location: ourLocation });
             if (thisHeaderLevel > 0)
                 headerLevel = thisHeaderLevel;

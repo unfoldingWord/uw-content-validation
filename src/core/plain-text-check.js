@@ -2,16 +2,32 @@ import { checkTextField } from './field-text-check';
 import { DEFAULT_EXTRACT_LENGTH, MATCHED_PUNCTUATION_PAIRS, PAIRED_PUNCTUATION_OPENERS, PAIRED_PUNCTUATION_CLOSERS, isWhitespace, countOccurrences } from './text-handling-functions'
 
 
-const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.2.2';
+const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.3.1';
 
 
-export function checkPlainText(textName, plainText, givenLocation, optionalCheckingOptions) {
+/**
+ *
+ * @param {string} textType
+ * @param {string} textName
+ * @param {string} plainText
+ * @param {string} givenLocation
+ * @param {Object} optionalCheckingOptions
+ */
+export function checkPlainText(textType, textName, plainText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire text, i.e., all lines.
         It is used in checkFileContents() in book-package-check.js
 
      Returns a result object containing a successList and a noticeList
      */
     // console.log(`checkPlainText(${textName}, (${plainText.length} chars), ${givenLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
+    console.assert(textType !== undefined, "checkPlainText: 'fieldType' parameter should be defined");
+    console.assert(typeof textType === 'string', `checkPlainText: 'fieldType' parameter should be a string not a '${typeof textType}': ${textType}`);
+    console.assert(textType === 'markdown' || textType === 'USFM' || textType === 'YAML' || textType === 'raw', `checkPlainText: unrecognised 'textType' parameter: '${textType}'`);
+    console.assert(textName !== undefined, "checkPlainText: 'textName' parameter should be defined");
+    console.assert(typeof textName === 'string', `checkPlainText: 'textName' parameter should be a string not a '${typeof textName}': ${textName}`);
+    console.assert(plainText !== undefined, "checkPlainText: 'plainText' parameter should be defined");
+    console.assert(typeof plainText === 'string', `checkPlainText: 'plainText' parameter should be a string not a '${typeof plainText}': ${plainText}`);
+
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     if (textName) ourLocation = ` in ${textName}${ourLocation}`;
@@ -72,7 +88,7 @@ export function checkPlainText(textName, plainText, givenLocation, optionalCheck
         console.assert(typeof fieldText === 'string', `cPT ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         console.assert(allowedLinks === true || allowedLinks === false, "cPT ourCheckTextField: allowedLinks parameter must be either true or false");
 
-        const resultObject = checkTextField('raw', '', fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
+        const resultObject = checkTextField(textType, '', fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -90,7 +106,8 @@ export function checkPlainText(textName, plainText, givenLocation, optionalCheck
         let thisText = lineText.trimStart(); // So we don't get "leading space" and "doubled spaces" errors
 
         if (thisText)
-            ourCheckTextField(lineNumber, thisText, false, lineLocation, optionalCheckingOptions);
+            // Allow links as that's more general
+            ourCheckTextField(lineNumber, thisText, true, lineLocation, optionalCheckingOptions);
     }
     // end of checkPlainLine function
 

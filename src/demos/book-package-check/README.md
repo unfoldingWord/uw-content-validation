@@ -36,8 +36,8 @@ clearCheckedArticleCache();
 
   // Specifying extractLength and maximumSimilarMessages is just to show off options
   //  -- those fields are not necessary (or normal) here
-  extractLength='15' // Default is 10
-  maximumSimilarMessages='4' // Default is 3 -- 0 means don't suppress
+  extractLength='20' // Default is 10
+  //maximumSimilarMessages='4' // Default is 3 -- 0 means don't suppress
   // Ignore 450 "TN Resource container link should have '*' language code with (not 'en')" as tC can't handle it yet!
   ignorePriorityNumberList='[450]'
   />

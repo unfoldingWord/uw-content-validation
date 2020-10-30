@@ -97,7 +97,7 @@ async function checkTQMarkdownBook(username, languageCode, repoName, branch, boo
   const pathList = await getFileListFromZip_({ username, repository: repoName, branch, optionalPrefix: `${bookID.toLowerCase()}/` });
   if (!Array.isArray(pathList) || !pathList.length) {
     console.error("checkTQrepo failed to load", username, repoName, branch);
-    addNoticePartial({ priority: 996, message: "Failed to load", details: `username=${username}`, bookID, location: generalLocation, extra: repoCode });
+    addNoticePartial({ priority: 996, message: "Unable to load", details: `username=${username}`, bookID, location: generalLocation, extra: repoCode });
   } else {
 
     // console.log(`  Got ${pathList.length} pathList entries`)
@@ -119,7 +119,7 @@ async function checkTQMarkdownBook(username, languageCode, repoName, branch, boo
         totalCheckedSize += tqFileContent.length;
       } catch (tQerror) {
         console.error("checkTQMarkdownBook failed to load", username, repoName, thisPath, branch, tQerror + '');
-        addNoticePartial({ priority: 996, message: "Failed to load", details: `username=${username}`, bookID, C, V, filename: thisPath, location: `${generalLocation} ${thisPath}: ${tQerror}`, extra: repoCode });
+        addNoticePartial({ priority: 996, message: "Unable to load", details: `username=${username} error=${tQerror}`, bookID, C, V, filename: thisPath, location: `${generalLocation} ${thisPath}`, extra: repoCode });
       }
       if (tqFileContent) {
         // We use the generalLocation here (does not include repo name)
@@ -285,7 +285,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       // console.log("checkBookPackage ourCheckManifest fetched content for manifest", username, repoName, branch, typeof manifestFileContent, manifestFileContent.length);
     } catch (cBPgfError) {
       console.error(`checkBookPackage ourCheckManifest(${username}, ${languageCode}, ${bookID}, (fn), ${JSON.stringify(checkingOptions)}) failed to load manifest`, username, repoName, branch, cBPgfError + '');
-      addNoticePartial({ priority: 996, message: "Failed to load", details: `username=${username}`, repoName, filename: MANIFEST_FILENAME, location: `${manifestLocation}: ${cBPgfError}`, extra: repoCode });
+      addNoticePartial({ priority: 996, message: "Unable to load", details: `username=${username} error=${cBPgfError}`, repoName, filename: MANIFEST_FILENAME, location: manifestLocation, extra: repoCode });
     }
     if (manifestFileContent) {
       const cmtResultObject = checkManifestText('Manifest', manifestFileContent, manifestLocation, optionalCheckingOptions);
@@ -412,7 +412,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         checkedRepoNames.add(repoName);
       } catch (cBPgfError) {
         console.error(`checkBookPackage(${username}, ${languageCode}, ${bookID}, (fn), ${JSON.stringify(checkingOptions)}) failed to load`, username, repoName, filename, branch, cBPgfError + '');
-        addNoticePartial({ priority: 996, message: "Failed to load", details: `username=${username}`, repoName, filename, location: `${repoLocation}: ${cBPgfError}`, extra: repoCode });
+        addNoticePartial({ priority: 996, message: "Unable to load", details: `username=${username} error=${cBPgfError}`, repoName, filename, location: repoLocation, extra: repoCode });
       }
       if (repoFileContent) {
         // We use the generalLocation here (does not include repo name)
