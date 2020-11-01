@@ -136,23 +136,23 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
             // Check for nested brackets and quotes, etc.
             for (let characterIndex = 0; characterIndex < line.length; characterIndex++) {
                 const char = line[characterIndex];
-                let which;
+                let closeCharacterIndex;
                 if (PAIRED_PUNCTUATION_OPENERS.indexOf(char) >= 0) {
                     // console.log(`Saving ${openMarkers.length} '${char}' ${n} ${x}`);
                     openMarkers.push({ char, n, x: characterIndex });
-                } else if ((which = PAIRED_PUNCTUATION_CLOSERS.indexOf(char)) >= 0) {
+                } else if ((closeCharacterIndex = PAIRED_PUNCTUATION_CLOSERS.indexOf(char)) >= 0) {
                     // console.log(`Found '${char}' ${n} ${x}`);
                     // console.log(`Which: ${which} '${openers.charAt(which)}'`)
                     if (openMarkers.length) {
                         const [lastEntry] = openMarkers.slice(-1);
                         // console.log(`  Recovered lastEntry=${JSON.stringify(lastEntry)}`);
                         // console.log(`  Comparing found '${char}' with (${which}) '${openers.charAt(which)}' from '${lastEntry.char}'`);
-                        if (lastEntry.char === PAIRED_PUNCTUATION_OPENERS.charAt(which)) {
+                        if (lastEntry.char === PAIRED_PUNCTUATION_OPENERS.charAt(closeCharacterIndex)) {
                             // console.log(`  Matched '${char}' with  '${openers.charAt(which)}' ${n} ${x}`);
                             openMarkers.pop();
                         } else {
                             const extract = (characterIndex > halfLength ? '…' : '') + line.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < line.length ? '…' : '')
-                            const details = `'${PAIRED_PUNCTUATION_OPENERS.charAt(which)}' opened on line ${lastEntry.n} character ${lastEntry.x + 1}`;
+                            const details = `'${lastEntry.char}' opened on line ${lastEntry.n} character ${lastEntry.x + 1}`;
                             addNotice({ priority: 777, message: `Unexpected ${char} closing character doesn't match`, details, lineNumber: n, characterIndex, extract, location: ourLocation });
                             // console.log(`  ERROR 777: mismatched characters: ${details}`);
                         }
