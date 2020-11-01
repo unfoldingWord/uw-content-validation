@@ -225,24 +225,28 @@ function RenderFileDetails({ username, repoName, filename, lineNumber, rowID, fi
     if (!repoName && !filename && !lineNumber && !rowID && !fieldName)
         return null; // They're all undefined or blank!
     // console.log(`RenderFileDetails2 ${repoName}, ${filename}, ${lineNumber}`);
-    let resultStart = '', lineResult = '', resultEnd = '';
+    let resultStart = '', lineResult = '', resultEnd = '', fileLink = '';
     if (repoName && repoName.length) resultStart += ` in ${repoName} repository`;
     if (filename && filename.length) resultStart += ` in file ${filename}`;
     if (lineNumber) {
         resultStart += ' on ';
-        if (0 && username && repoName && filename && lineNumber) {
-            let href;
+        if (username && repoName && filename && lineNumber) {
             try {
-                if (filename.endsWith('.tsv')) href = `https://git.door43.org/${username}/${repoName}/blame/branch/master/${filename}#L${lineNumber}`;
-                else href = `https://git.door43.org/${username}/${repoName}/src/branch/master/${filename}#L${lineNumber}`;
+                if (filename.endsWith('.tsv') || filename.endsWith('.md')) // use blame so we can see the line!
+                    fileLink = `https://git.door43.org/${username}/${repoName}/blame/branch/master/${filename}#L${lineNumber}`;
+                else fileLink = `https://git.door43.org/${username}/${repoName}/src/branch/master/${filename}#L${lineNumber}`;
             } catch { }
-            lineResult = `line <a target="_blank" href="${href}">${lineNumber.toLocaleString()}</a>`;
-        } else
-            lineResult = `line ${lineNumber.toLocaleString()}`;
+        }
+        else if (!username) resultEnd += " no username"
+        else if (!repoName) resultEnd += " no repoName"
+        else if (!filename) resultEnd += " no filename"
+        lineResult = `line ${lineNumber.toLocaleString()}`;
     }
+    else resultEnd += " no lineNumber"
     if (rowID && rowID.length) resultEnd += ` with ID ${rowID}`;
     if (fieldName && fieldName.length) resultEnd += ` in ${fieldName} field`;
-    return <>{resultStart}<b>{lineResult}</b>{resultEnd}</>;
+    if (fileLink) return <>{resultStart}<a rel="noopener noreferrer" target="_blank" href={fileLink}>{lineResult}</a>{resultEnd}</>;
+    else return <>{resultStart}<b>{lineResult}</b>{resultEnd}</>;
 }
 
 function RenderSuccessesColored({ results }) {
@@ -300,7 +304,7 @@ function RenderProcessedArray({ arrayType, results }) {
                 return <li key={index}>
                     <RenderMessage color={arrayType === 'e' ? 'red' : 'orange'} message={listEntry.message} details={listEntry.details} />
                     <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
-                    <RenderFileDetails username='unfoldingWord' repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
+                    <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
                     {listEntry.characterIndex > 0 ? " (at character " + (listEntry.characterIndex + 1) + ")" : ""}
                     <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
                     {listEntry.location}
@@ -328,7 +332,7 @@ function RenderGivenArray({ array, color }) {
             return <li key={index}>
                 <RenderMessage color={color} message={listEntry.message} details={listEntry.details} />
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
-                <RenderFileDetails username='unfoldingWord' repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
+                <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
                 {listEntry.characterIndex !== undefined && listEntry.characterIndex >= 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
                 <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
                 {listEntry.location}
@@ -366,7 +370,7 @@ function RenderWarningsGradient({ results }) {
             return <li key={index}>
                 <RenderMessage color={thiscolor} message={listEntry.message} details={listEntry.details} />
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
-                <RenderFileDetails username='unfoldingWord' repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
+                <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
                 {listEntry.characterIndex !== undefined && listEntry.characterIndex >= 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
                 <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
                 {listEntry.location}

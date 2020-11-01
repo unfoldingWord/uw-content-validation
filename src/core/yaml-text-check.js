@@ -3,7 +3,7 @@ import yaml from 'yaml';
 import { checkTextField } from './field-text-check';
 
 
-const YAML_VALIDATOR_VERSION_STRING = '0.2.0';
+const YAML_VALIDATOR_VERSION_STRING = '0.3.0';
 
 
 export function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOptions) {
@@ -53,7 +53,7 @@ export function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckin
         cytResult.noticeList.push(noticeObject);
     }
 
-    function ourCheckTextField(fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
+    function ourCheckTextField(lineNumber, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
         /**
         * @description - checks the given text field and processes the returned results
         * @param {String} fieldName - name of the field being checked
@@ -68,26 +68,24 @@ export function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckin
 
         // Updates the global list of notices
         // console.log(`cYt ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${fieldLocation}, …)`);
-        console.assert(fieldName !== undefined, "cYt ourCheckTextField: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName === 'string', `cYt ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
         console.assert(fieldText !== undefined, "cYt ourCheckTextField: 'fieldText' parameter should be defined");
         console.assert(typeof fieldText === 'string', `cYt ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         console.assert(allowedLinks === true || allowedLinks === false, "cYt ourCheckTextField: allowedLinks parameter must be either true or false");
 
-        const resultObject = checkTextField('YAML', fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
+        const resultObject = checkTextField('YAML', '', fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
 
         // Concat is faster if we don't need to process each notice individually
         cytResult.noticeList = cytResult.noticeList.concat(resultObject.noticeList);
         // // Process noticeList line by line
         // //  suppressing undesired errors
         for (const noticeEntry of resultObject.noticeList)
-            addNotice(noticeEntry);
+            addNotice({ ...noticeEntry, lineNumber});
     }
     // end of ourCheckTextField function
 
-    function checkYAMLLineContents(lineName, lineText, lineLocation) {
+    function checkYAMLLineContents(lineNumber, lineText, lineLocation) {
 
-        // console.log(`checkYAMLLineContents for '${lineName} ${lineText}' at${lineLocation}`);
+        // console.log(`checkYAMLLineContents for '${lineNumber} ${lineText}' at${lineLocation}`);
         let thisText = lineText
 
         // Remove leading spaces
@@ -104,7 +102,7 @@ export function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckin
 
         const allowedLinksInLine = thisText.startsWith('url:') || thisText.startsWith('chapter_url:');
         if (thisText)
-            ourCheckTextField(lineName, thisText, allowedLinksInLine, lineLocation, optionalCheckingOptions);
+            ourCheckTextField(lineNumber, thisText, allowedLinksInLine, lineLocation, optionalCheckingOptions);
     }
     // end of checkYAMLLine function
 
@@ -136,7 +134,7 @@ export function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckin
         //     if (numLeadingSpaces && lastNumLeadingSpaces && numLeadingSpaces!=lastNumLeadingSpaces)
         //         addNotice({472, "Nesting seems confused", 0, '', atString);
 
-        checkYAMLLineContents(`line ${n.toLocaleString()}`, line, ourLocation);
+        checkYAMLLineContents(n, line, ourLocation);
         // } else {
         //     // This is a blank line
         //     numLeadingSpaces = 0;

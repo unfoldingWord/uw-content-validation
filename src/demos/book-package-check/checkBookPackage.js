@@ -5,7 +5,7 @@ import { checkFileContents } from '../file-check/checkFileContents';
 import { checkRepo } from '../repo-check/checkRepo';
 
 
-//const BP_VALIDATOR_VERSION_STRING = '0.4.1';
+//const BP_VALIDATOR_VERSION_STRING = '0.4.2';
 
 const MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -217,11 +217,11 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     console.assert(typeof noticeObject.location === 'string', `cBP addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}'`);
     console.assert(noticeObject.extra !== undefined, "cBP addNoticePartial: 'extra' parameter should be defined");
     console.assert(typeof noticeObject.extra === 'string', `cBP addNoticePartial: 'extra' parameter should be a string not a '${typeof noticeObject.extra}'`);
-    checkBookPackageResult.noticeList.push({ ...noticeObject, bookID });
+    checkBookPackageResult.noticeList.push({ ...noticeObject, bookID, username });
   }
 
 
-  async function ourCheckBPFileContents(repoCode, cfFilename, fileContent, fileLocation, optionalCheckingOptions) {
+  async function ourCheckBPFileContents(repoCode, repoName, cfFilename, fileContent, fileLocation, optionalCheckingOptions) {
     // console.log(`checkBookPackage ourCheckBPFileContents(${repoCode}, ${cfFilename}, ${fileContent.length}, ${fileLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
 
     // Updates the global list of notices
@@ -244,7 +244,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       if (cfcNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN check
         addNoticePartial(cfcNoticeEntry); // Just copy the complete notice as is
       else // For our direct checks, we add the repoCode as an extra value (unless it's already there from a TA or TW check)
-        addNoticePartial({ ...cfcNoticeEntry, filename: cfFilename, extra: cfcNoticeEntry.extra ? cfcNoticeEntry.extra : repoCode });
+        addNoticePartial({ ...cfcNoticeEntry, repoName, filename: cfFilename, extra: cfcNoticeEntry.extra ? cfcNoticeEntry.extra : repoCode });
     // The following is needed coz we might be checking the linked TA and/or TW articles from TN TSV files
     if (cfcResultObject.checkedFileCount && cfcResultObject.checkedFileCount > 0) {
       checkedFileCount += cfcResultObject.checkedFileCount;
@@ -299,7 +299,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       for (const cfcNoticeEntry of cmtResultObject.noticeList) {
         // NOTE: We don't use addNoticePartial, because it adds a misleading BookID
         // addNoticePartial({ ...cfcNoticeEntry, filename: MANIFEST_FILENAME, extra: `${repoCode} MANIFEST` });
-        checkBookPackageResult.noticeList.push({ ...cfcNoticeEntry, filename: MANIFEST_FILENAME, extra: `${repoCode} MANIFEST` });
+        checkBookPackageResult.noticeList.push({ ...cfcNoticeEntry, username, repoName, filename: MANIFEST_FILENAME, extra: `${repoCode} MANIFEST` });
       }
       return manifestFileContent.length;
     }
@@ -347,6 +347,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
 
   // Main loop for checkBookPackage()
   const checkedManifestDetails = [];
+  let numCheckedRepos = 0;
   for (const repoCode of repoCodeList) {
     if (abortFlag) break;
     const repoLocation = ` in ${repoCode}${generalLocation}`;
@@ -357,7 +358,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     console.log(`checkBookPackage: check ${bookID} in ${repoCode} (${languageCode} ${bookID} from ${username} ${repoName})`);
 
     // Update our "waiting" message
-    setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookID}</b> book package in <b>{repoCode}</b> (checked <b>{checkedRepoNames.size.toLocaleString()}</b>/{repoCodeList.length} repos)…</p>);
+    setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookID}</b> book package in <b>{repoCode}</b> (checked <b>{numCheckedRepos}</b>/{repoCodeList.length} repos)…</p>);
 
     let filename;
     if (repoCode === 'UHB' || repoCode === 'UGNT' || repoCode === 'LT' || repoCode === 'ST') {
@@ -417,7 +418,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       if (repoFileContent) {
         // We use the generalLocation here (does not include repo name)
         //  so that we can adjust the returned strings ourselves
-        await ourCheckBPFileContents(repoCode, filename, repoFileContent, generalLocation, newCheckingOptions); // Adds the notices to checkBookPackageResult
+        await ourCheckBPFileContents(repoCode, repoName, filename, repoFileContent, generalLocation, newCheckingOptions); // Adds the notices to checkBookPackageResult
         checkedFileCount += 1;
         checkedFilenameExtensions.add(filename.split('.').pop());
         addSuccessMessage(`Checked ${repoCode.toUpperCase()} file: ${filename}`);
@@ -441,6 +442,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         }
       }
     }
+    numCheckedRepos += 1;
   } // end of repo loop
 
   // Add some extra fields to our checkFileResult object

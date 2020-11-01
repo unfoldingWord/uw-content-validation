@@ -52,7 +52,7 @@ function FileCheck(props) {
         rawCFResults = await checkFileContents(languageCode, filename, fileContent, givenLocation, checkingOptions);
 
         // Because we know here that we're only checking one file, we don't need the filename field in the notices
-        function deleteFilenameField(notice) { delete notice.filename; return notice; }
+        function deleteFilenameField(notice) { delete notice.filename; notice.username=username; return notice; }
         rawCFResults.noticeList = rawCFResults.noticeList.map(deleteFilenameField);
       }
       // console.log(`FileCheck got initial results with ${rawCFResults.successList.length} success message(s) and ${rawCFResults.noticeList.length} notice(s)`);
