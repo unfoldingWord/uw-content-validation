@@ -31,6 +31,7 @@ for root, dirs, files in os.walk('.'):
                                                 .replace('addNotice','') \
                                                 .replace('checkBookPackageResult.noticeList.push({', '') \
                                                 .replace('rawCRResults.noticeList.push({', '') \
+                                                .replace('ctqResult.noticeList.push({', '') \
                                                 .replace('checkFileResult.noticeList.unshift({', '') \
                                                 .replace('let rawCFResults = { noticeList: [{', '')
                             if cleanedLine.startswith('('): cleanedLine = cleanedLine[1:]

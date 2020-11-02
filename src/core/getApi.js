@@ -417,7 +417,7 @@ async function cachedFetchFileFromServer({ username, repository, path, branch = 
   // TODO: Check how slow this next call is -- can it be avoided or cached?
   // RJH removed this 2Oct2020 -- what's the point -- it just slows things down --
   //      if it needs to be checked, should be checked before this point
-  // const repoExistsOnDoor43 = await repositoryExistsOnDoor43({ username, repository });
+  // const repositoryExistsOnDoor43 = await repositoryExistsOnDoor43({ username, repository });
   // let uri;
   const uri = Path.join(username, repository, 'raw/branch', branch, path);
   const failMessage = await failedStore.getItem(uri.toLowerCase());
@@ -436,7 +436,7 @@ async function cachedFetchFileFromServer({ username, repository, path, branch = 
       /* await */ failedStore.setItem(uri.toLowerCase(), fffsError.message);
     return null;
   }
-  // } else { // ! repoExistsOnDoor43
+  // } else { // ! repositoryExistsOnDoor43
   //   console.error(`cachedFetchFileFromServer repo ${username} '${repository}' does not exist!`);
   //   /* await */ failedStore.setItem(uri.toLowerCase(), `Repo '${repository}' does not exist!`);
   //   return null;

@@ -1,11 +1,11 @@
 import React from 'react';
 import * as books from '../../core/books/books';
-import { formRepoName, getFileListFromZip, cachedGetFile, cachedGetBookFilenameFromManifest, checkManifestText } from '../../core';
+import { formRepoName, repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetBookFilenameFromManifest, checkManifestText } from '../../core';
 import { checkFileContents } from '../file-check/checkFileContents';
 import { checkRepo } from '../repo-check/checkRepo';
 
 
-//const BP_VALIDATOR_VERSION_STRING = '0.4.2';
+//const BP_VALIDATOR_VERSION_STRING = '0.4.3';
 
 const MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -97,7 +97,11 @@ async function checkTQMarkdownBook(username, languageCode, repoName, branch, boo
   const pathList = await getFileListFromZip_({ username, repository: repoName, branch, optionalPrefix: `${bookID.toLowerCase()}/` });
   if (!Array.isArray(pathList) || !pathList.length) {
     console.error("checkTQrepo failed to load", username, repoName, branch);
-    addNoticePartial({ priority: 996, message: "Unable to load", details: `username=${username}`, bookID, location: generalLocation, extra: repoCode });
+    const details = `username=${username}`;
+    if (! await repositoryExistsOnDoor43({ username, repository: repoName }))
+      ctqResult.noticeList.push({ priority: 997, message: "Repository doesn't exist", details, username, repoCode, repoName, location: generalLocation, extra: repoCode });
+    else
+      addNoticePartial({ priority: 996, message: "Unable to load", details, bookID, location: generalLocation, extra: repoCode });
   } else {
 
     // console.log(`  Got ${pathList.length} pathList entries`)
@@ -119,7 +123,14 @@ async function checkTQMarkdownBook(username, languageCode, repoName, branch, boo
         totalCheckedSize += tqFileContent.length;
       } catch (tQerror) {
         console.error("checkTQMarkdownBook failed to load", username, repoName, thisPath, branch, tQerror + '');
-        addNoticePartial({ priority: 996, message: "Unable to load", details: `username=${username} error=${tQerror}`, bookID, C, V, filename: thisPath, location: `${generalLocation} ${thisPath}`, extra: repoCode });
+        let details = `username=${username}`;
+        if (! await repositoryExistsOnDoor43({ username, repository: repoName }))
+          ctqResult.noticeList.push({ priority: 997, message: "Repository doesn't exist", details, username, repoCode, repoName, location: generalLocation, extra: repoCode });
+        else {
+          // eslint-disable-next-line eqeqeq
+          if (tQerror != 'TypeError: repoFileContent is null') details += ` error=${tQerror}`;
+          addNoticePartial({ priority: 996, message: "Unable to load", details, bookID, C, V, filename: thisPath, location: `${generalLocation} ${thisPath}`, extra: repoCode });
+        }
       }
       if (tqFileContent) {
         // We use the generalLocation here (does not include repo name)
@@ -285,7 +296,14 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       // console.log("checkBookPackage ourCheckManifest fetched content for manifest", username, repoName, branch, typeof manifestFileContent, manifestFileContent.length);
     } catch (cBPgfError) {
       console.error(`checkBookPackage ourCheckManifest(${username}, ${languageCode}, ${bookID}, (fn), ${JSON.stringify(checkingOptions)}) failed to load manifest`, username, repoName, branch, cBPgfError + '');
-      addNoticePartial({ priority: 996, message: "Unable to load", details: `username=${username} error=${cBPgfError}`, repoName, filename: MANIFEST_FILENAME, location: manifestLocation, extra: repoCode });
+      let details = `username=${username}`;
+      if (! await repositoryExistsOnDoor43({ username, repository: repoName }))
+        checkBookPackageResult.noticeList.push({ priority: 997, message: "Repository doesn't exist", details, username, repoCode, repoName, location: manifestLocation, extra: repoCode });
+      else {
+        // eslint-disable-next-line eqeqeq
+        if (cBPgfError != 'TypeError: repoFileContent is null') details += ` error=${cBPgfError}`;
+        addNoticePartial({ priority: 996, message: "Unable to load", details: `username=${username} error=${cBPgfError}`, repoName, filename: MANIFEST_FILENAME, location: manifestLocation, extra: repoCode });
+      }
     }
     if (manifestFileContent) {
       const cmtResultObject = checkManifestText('Manifest', manifestFileContent, manifestLocation, optionalCheckingOptions);
@@ -413,7 +431,15 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         checkedRepoNames.add(repoName);
       } catch (cBPgfError) {
         console.error(`checkBookPackage(${username}, ${languageCode}, ${bookID}, (fn), ${JSON.stringify(checkingOptions)}) failed to load`, username, repoName, filename, branch, cBPgfError + '');
-        addNoticePartial({ priority: 996, message: "Unable to load", details: `username=${username} error=${cBPgfError}`, repoName, filename, location: repoLocation, extra: repoCode });
+        // console.log(`cBPgfError=${cBPgfError} or ${JSON.stringify(cBPgfError)} or2 ${cBPgfError == 'TypeError: repoFileContent is null'} or3 ${cBPgfError.message == 'TypeError: repoFileContent is null'} or4 ${cBPgfError.message === 'TypeError: repoFileContent is null'}`);
+        let details = `username=${username}`;
+        if (! await repositoryExistsOnDoor43({ username, repository: repoName }))
+          checkBookPackageResult.noticeList.push({ priority: 997, message: "Repository doesn't exist", details, username, repoCode, repoName, location: repoLocation, extra: repoCode });
+        else {
+          // eslint-disable-next-line eqeqeq
+          if (cBPgfError != 'TypeError: repoFileContent is null') details += ` error=${cBPgfError}`;
+          addNoticePartial({ priority: 996, message: "Unable to load", details, repoCode, repoName, filename, location: repoLocation, extra: repoCode });
+        }
       }
       if (repoFileContent) {
         // We use the generalLocation here (does not include repo name)

@@ -4,7 +4,7 @@ import { repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetR
 import { checkFileContents } from '../file-check/checkFileContents';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.4.1';
+// const REPO_VALIDATOR_VERSION_STRING = '0.4.2';
 
 
 /*
@@ -24,7 +24,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
   repoCode = repoCode.toUpperCase();
   if (repoCode === 'TN') repoCode = 'TN1';
   else if (repoCode === 'TQ') repoCode = 'TQ1';
-// console.log("checkRepo languageCode", languageCode);
+  // console.log("checkRepo languageCode", languageCode);
 
   if (branch === undefined) branch = 'master'; // Ideally we should ask what the default branch is
 
@@ -227,7 +227,14 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
           // console.log("Fetched fileContent for", repoName, thisPath, typeof repoFileContent, repoFileContent.length);
         } catch (cRgfError) {
           console.error(`checkRepo(${username}, ${repoName}, ${branch}, ${givenLocation}, (fn), ${JSON.stringify(checkingOptions)})) failed to load`, thisFilepath, branch, `${cRgfError}`);
-          addNoticePartial({ priority: 996, message: "Unable to load", details: `username=${username} error=${cRgfError}`, bookID: ourBookID, filename: thisFilename, location: `${givenLocation} ${thisFilepath}`, extra: repoName });
+          let details = `username=${username}`;
+          if (! await repositoryExistsOnDoor43({ username, repository: repoName }))
+            checkRepoResult.noticeList.push({ priority: 997, message: "Repository doesn't exist", details, username, repoCode, repoName, location: givenLocation, extra: repoCode });
+          else {
+            // eslint-disable-next-line eqeqeq
+            if (cRgfError != 'TypeError: repoFileContent is null') details += ` error=${cRgfError}`;
+            addNoticePartial({ priority: 996, message: "Unable to load", details: `username=${username} error=${cRgfError}`, bookID: ourBookID, filename: thisFilename, location: `${givenLocation} ${thisFilepath}`, extra: repoName });
+          }
           return;
         }
         if (repoFileContent) {
