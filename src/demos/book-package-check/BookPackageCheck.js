@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import * as books from '../../core/books/books';
 import { ourParseInt, preloadReposIfNecessary } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
-import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
+import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderTotals } from '../RenderProcessedResults';
 import { checkBookPackage } from './checkBookPackage';
 // import { consoleLogObject } from '../../core/utilities';
 
@@ -103,25 +103,17 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
                     processOptions.ignorePriorityNumberList.push(intBit);
                 }
                 // console.log(`Now have processOptions.ignorePriorityNumberList=${JSON.stringify(processOptions.ignorePriorityNumberList)}`);
+            if (props.ignoreDisabledNoticesFlag) processOptions.ignoreDisabledNoticesFlag = props.ignoreDisabledNoticesFlag.toLowerCase() === 'true';
             }
 
             let displayType = 'ErrorsWarnings'; // default
             if (props.displayType) displayType = props.displayType;
 
-            function renderSuccesses(processedResults) {
-                if (processedResults.checkedFileCount > 0)
-                    return (<p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount === 1 ? '' : 's'} from {username} {processedResults.checkedRepoNames.join(', ')}
-                        <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>);
-                else
-                    return (<p>&nbsp;&nbsp;&nbsp;&nbsp;No files checked!</p>);
-            }
-
             function renderSummary(processedResults) {
                 return (<div>
                     <p>Checked <b>{username} {languageCode} {bookID}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
-                    {renderSuccesses(processedResults)}
-                    <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCBPResults.noticeList.length === 0 ? 'no' : rawCBPResults.noticeList.length.toLocaleString()} notice{rawCBPResults.noticeList.length === 1 ? '' : 's'}
-                        {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}.</p>
+                    <RenderSuccesses username={username} results={processedResults} />
+                    <RenderTotals rawNoticeListLength={rawCBPResults.noticeList.length} results={processedResults}/>
                     {/* <RenderRawResults results={rawCBPResults} /> */}
                 </div>);
             }

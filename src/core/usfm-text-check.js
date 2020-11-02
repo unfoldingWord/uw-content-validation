@@ -4,7 +4,7 @@ import { checkTextField } from './field-text-check';
 import { checkTextfileContents } from './file-text-check';
 import { runUsfmJsCheck } from './usfm-js-check';
 import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
-import { ourParseInt, getBookNumber, createMsgID } from './utilities';
+import { ourParseInt } from './utilities';
 
 
 // const USFM_VALIDATOR_VERSION_STRING = '0.7.0';
@@ -157,8 +157,6 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
     // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
-    const bookNumber = getBookNumber(bookID);
-    const largeBookNumber = bookNumber * 1e+10;
     const lowercaseBookID = bookID.toLowerCase();
 
     const result = { successList: [], noticeList: [] };
@@ -186,8 +184,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
         console.assert(typeof noticeObject.location === 'string', `cUSFM addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
         console.assert(noticeObject.message.indexOf('Mismatched {}') < 0, `checkUSFMText addNoticePartial: got bad notice: ${JSON.stringify(noticeObject)}`);
-        const msgID = createMsgID(largeBookNumber, noticeObject);
-        result.noticeList.push({ ...noticeObject, msgID, bookID, filename });
+        result.noticeList.push({ ...noticeObject, bookID, filename });
     }
 
 
@@ -415,13 +412,13 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
                 // Check that expected verses numbers were actually all there
                 // console.log("Doing missing verse check");
                 for (let v = 1; v <= expectedVersesPerChapterList[chapterInt - 1]; v++) {
-                    if (discoveredVerseList.indexOf(v) < 0)
+                    if (!discoveredVerseList.includes(v))
                         if (books.isOftenMissing(bookID, chapterInt, v))
                             addNoticePartial({ priority: 67, C: chapterNumberString, V: `${v}`, message: "Verse appears to be left out", location: CVlocation });
                         else
                             addNoticePartial({ priority: 867, C: chapterNumberString, V: `${v}`, message: "Verse appears to be missing", location: CVlocation });
                     // Check for existing verses but missing text
-                    if (discoveredVerseWithTextList.indexOf(v) < 0) {
+                    if (!discoveredVerseWithTextList.includes(v)) {
                         // const firstVerseObject = result1.returnedJSON.chapters[chapterNumberString][v]['verseObjects'][0];
                         // console.log("firstVerseObject", JSON.stringify(firstVerseObject));
                         addNoticePartial({ priority: 866, C: chapterNumberString, V: `${v}`, message: "Verse seems to have no text", location: CVlocation });

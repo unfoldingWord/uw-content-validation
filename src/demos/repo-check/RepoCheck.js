@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
-import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
+import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderTotals } from '../RenderProcessedResults';
 import { preloadReposIfNecessary, ourParseInt } from '../../core';
 import { checkRepo } from './checkRepo';
 // import { consoleLogObject, displayPropertyNames } from '../../core/utilities';
@@ -64,6 +64,8 @@ function RepoCheck(/*username, languageCode,*/ props) {
 
             let [languageCode, repoCode] = repoName.split('_');
             repoCode = repoCode.toUpperCase();
+            if (repoCode === 'TN') repoCode = 'TN1';
+            else if (repoCode === 'TQ') repoCode = 'TQ1';
             // console.log(`RepoCheck languageCode='${languageCode}' repoCode='${repoCode}'`);
 
             setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for {repoName} repo check…</p>);
@@ -118,20 +120,11 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 let displayType = 'ErrorsWarnings'; // default
                 if (props.displayType) displayType = props.displayType;
 
-                function renderSuccesses(processedResults) {
-                    if (processedResults.checkedFileCount > 0)
-                        return (<p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount === 1 ? '' : 's'} from {username} {processedResults.checkedRepoNames.join(', ')}
-                            <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>);
-                    else
-                        return (<p>&nbsp;&nbsp;&nbsp;&nbsp;No files checked!</p>);
-                }
-
                 function renderSummary(processedResults) {
                     return (<div>
                         <p>Checked <b>{username} {repoName}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)</p>
-                        {renderSuccesses(processedResults)}
-                        <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCRResults.noticeList.length === 0 ? 'no' : rawCRResults.noticeList.length.toLocaleString()} notice{rawCRResults.noticeList.length === 1 ? '' : 's'}
-                            {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}.</p>
+                        <RenderSuccesses username={username} results={processedResults} />
+                        <RenderTotals rawNoticeListLength={rawCRResults.noticeList.length} results={processedResults}/>
                         {/* <RenderRawResults results={rawCRResults} /> */}
                     </div>);
                 }

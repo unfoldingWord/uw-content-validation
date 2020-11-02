@@ -1,7 +1,6 @@
 import * as books from './books/books';
 import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { checkTN_TSVDataRow } from './tn-table-row-check';
-import { getBookNumber, createMsgID } from './utilities';
 
 
 const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.2.5';
@@ -34,9 +33,6 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     // if (bookID) ourLocation = ` in ${bookID}${ourLocation}`;
 
-    const bookNumber = getBookNumber(bookID);
-    const largeBookNumber = bookNumber * 1e+10;
-
     const ttResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
@@ -59,8 +55,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `TSV addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "TSV addNoticePartial: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
-        const msgID = createMsgID(largeBookNumber, noticeObject);
-        ttResult.noticeList.push({ ...noticeObject, msgID, bookID, filename });
+        ttResult.noticeList.push({ ...noticeObject, bookID, filename });
     }
 
 
@@ -148,9 +143,9 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
                 // TODO: Check if we need this at all (even though tC 3.0 can't display these "duplicate" notes)
                 // Check for duplicate notes
                 const uniqueID = C + V + supportReference + origQuote + occurrence; // This combination should not be repeated
-                // if (uniqueRowList.indexOf(uniqueID) >= 0)
+                // if (uniqueRowList.includes(uniqueID))
                 //     addNoticePartial({ priority: 880, C, V, message: `Duplicate note`, rowID, lineNumber: n + 1, location: ourLocation });
-                // if (uniqueRowList.indexOf(uniqueID) >= 0)
+                // if (uniqueRowList.includes(uniqueID))
                 //     addNoticePartial({ priority: 80, C, V, message: `Note: tC 3.0 won't display duplicate note`, rowID, lineNumber: n + 1, location: ourLocation });
                 uniqueRowList.push(uniqueID);
 
@@ -209,7 +204,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
                     addNoticePartial({ priority: 790, C, V, message: "Missing verse number", rowID, lineNumber: n + 1, location: ` after ${C}:${lastV}${ourLocation}` });
 
                 if (rowID) {
-                    if (rowIDList.indexOf(rowID) >= 0)
+                    if (rowIDList.includes(rowID))
                         addNoticePartial({ priority: 729, C, V, message: `Duplicate '${rowID}' ID`, fieldName: 'ID', rowID, lineNumber: n + 1, location: ourLocation });
                 } else
                     addNoticePartial({ priority: 730, C, V, message: "Missing ID", fieldName: 'ID', lineNumber: n + 1, location: ourLocation });

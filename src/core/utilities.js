@@ -1,6 +1,5 @@
 // utilities
 
-import { usfmNumberName } from './books';
 // import { isUndefined } from 'lodash';
 
 
@@ -69,42 +68,32 @@ export function ourParseInt(givenString) {
 }
 
 
-/**
+/*
  *
  * @param {string} bookID - 3-character UPPERCASE Book Id
  * @requires {number} 0..99
  */
+/*
 export function getBookNumber(bookID) {
     // console.log(`getBookNumber(${bookID})…`)
-    let numberResult = 88; // default value
-    if (bookID==='OBS') numberResult = 99;
-    else if (bookID==='FRT') numberResult = 0;
+    let numberResult = 99; // default 'unknown' value
+    if (bookID==='FRT') numberResult = 0;
     else if (bookID==='BAK') numberResult = 68;
+    else if (bookID==='OBS') numberResult = 80;
+    else if (bookID==='MANIFEST') numberResult = 81;
+    else if (bookID==='MEDIA') numberResult = 82;
+    else if (bookID==='LICENSE') numberResult = 83;
+    else if (bookID==='README') numberResult = 84;
     else {
         const thisUSFMNumberName = usfmNumberName(bookID);
-        numberResult = ourParseInt(thisUSFMNumberName.substring(0, 2)); // 01..67
+        numberResult = ourParseInt(thisUSFMNumberName.substring(0, 2)); // 01..67 converted to number
     // } catch {}
     }
     // For everything else
     // console.log(`getBookNumber(${bookID})) returning ${numberResult}`);
     return numberResult;
 }
-
-
-/**
- *
- * @param {number} largeBookNumber
- * @param {Object} noticeObject
- * @returns {number} -- typically a 15-digit number
- */
-export function createMsgID(largeBookNumber, noticeObject) {
-    let msgID = noticeObject.priority * 1e+12 + largeBookNumber;
-    try { msgID += ourParseInt(noticeObject.C) * 1e+7; } catch { }
-    try { msgID += ourParseInt(noticeObject.V) * 1e+4; } catch { }
-    try { msgID += ourParseInt(noticeObject.lineNumber); } catch { }
-    return msgID;
-}
-
+*/
 
 /*
 // function to convert an array to an object

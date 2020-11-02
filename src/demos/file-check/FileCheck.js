@@ -91,7 +91,11 @@ function FileCheck(props) {
         return (<div>
           <p>Checked <b>{filename}</b> (from {username} {repoName} <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)</p>
           <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCFResults.noticeList.length === 0 ? 'no' : rawCFResults.noticeList.length.toLocaleString()} notice{rawCFResults.noticeList.length === 1 ? '' : 's'}
-            {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}.</p>
+            {processedResults.numIgnoredNotices || processedResults.numDisabledNotices ? ' (but ' : ''}
+            {processedResults.numIgnoredNotices ? `${processedResults.numIgnoredNotices.toLocaleString()} ignored notice(s)` : ""}
+            {processedResults.numIgnoredNotices && processedResults.numDisabledNotices ? ' and ' : ''}
+            {processedResults.numDisabledNotices ? `${processedResults.numDisabledNotices.toLocaleString()} disabled notice(s)` : ""}
+            {processedResults.numIgnoredNotices || processedResults.numDisabledNotices ? ')' : ''}.</p>
           {/* <RenderRawResults results={rawCFResults} /> */}
         </div>);
       }

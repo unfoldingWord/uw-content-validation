@@ -75,11 +75,11 @@ export function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckin
         const resultObject = checkTextField('YAML', '', fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
 
         // Concat is faster if we don't need to process each notice individually
-        cytResult.noticeList = cytResult.noticeList.concat(resultObject.noticeList);
+        // cytResult.noticeList = cytResult.noticeList.concat(resultObject.noticeList);
         // // Process noticeList line by line
         // //  suppressing undesired errors
         for (const noticeEntry of resultObject.noticeList)
-            addNotice({ ...noticeEntry, lineNumber});
+            addNotice({ ...noticeEntry, lineNumber });
     }
     // end of ourCheckTextField function
 

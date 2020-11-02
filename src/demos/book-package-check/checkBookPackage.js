@@ -25,7 +25,7 @@ const MANIFEST_FILENAME = 'manifest.yaml';
  */
 async function checkTQMarkdownBook(username, languageCode, repoName, branch, bookID, checkingOptions) {
   // console.log(`checkTQMarkdownBook(${username}, ${repoName}, ${branch}, ${bookID}, ${JSON.stringify(checkingOptions)})…`)
-  const repoCode = 'TQ';
+  const repoCode = 'TQ1';
   const generalLocation = ` in ${username} (${branch})`;
 
   const ctqResult = { successList: [], noticeList: [] };
@@ -58,7 +58,7 @@ async function checkTQMarkdownBook(username, languageCode, repoName, branch, boo
     console.assert(typeof noticeObject.location === 'string', `cTQ addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}'`);
     console.assert(noticeObject.extra !== undefined, "cTQ addNoticePartial: 'extra' parameter should be defined");
     console.assert(typeof noticeObject.extra === 'string', `cTQ addNoticePartial: 'extra' parameter should be a string not a '${typeof noticeObject.extra}'`);
-    ctqResult.noticeList.push({ ...noticeObject, repoName, bookID });
+    ctqResult.noticeList.push({ ...noticeObject, repoCode, repoName, bookID });
   }
 
 
@@ -242,9 +242,9 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     // Process noticeList line by line,  appending the repoCode as an extra field as we go
     for (const cfcNoticeEntry of cfcResultObject.noticeList) // noticeEntry is an object
       if (cfcNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN check
-        addNoticePartial(cfcNoticeEntry); // Just copy the complete notice as is
+        checkBookPackageResult.noticeList.push(cfcNoticeEntry); // Just copy the complete notice as is
       else // For our direct checks, we add the repoCode as an extra value (unless it's already there from a TA or TW check)
-        addNoticePartial({ ...cfcNoticeEntry, repoName, filename: cfFilename, extra: cfcNoticeEntry.extra ? cfcNoticeEntry.extra : repoCode });
+        addNoticePartial({ ...cfcNoticeEntry, repoCode, repoName, filename: cfFilename, extra: cfcNoticeEntry.extra ? cfcNoticeEntry.extra : repoCode });
     // The following is needed coz we might be checking the linked TA and/or TW articles from TN TSV files
     if (cfcResultObject.checkedFileCount && cfcResultObject.checkedFileCount > 0) {
       checkedFileCount += cfcResultObject.checkedFileCount;
@@ -299,7 +299,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       for (const cfcNoticeEntry of cmtResultObject.noticeList) {
         // NOTE: We don't use addNoticePartial, because it adds a misleading BookID
         // addNoticePartial({ ...cfcNoticeEntry, filename: MANIFEST_FILENAME, extra: `${repoCode} MANIFEST` });
-        checkBookPackageResult.noticeList.push({ ...cfcNoticeEntry, username, repoName, filename: MANIFEST_FILENAME, extra: `${repoCode} MANIFEST` });
+        checkBookPackageResult.noticeList.push({ ...cfcNoticeEntry, username, repoCode, repoName, filename: MANIFEST_FILENAME, extra: `${repoCode} MANIFEST` });
       }
       return manifestFileContent.length;
     }

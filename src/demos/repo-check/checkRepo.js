@@ -20,8 +20,11 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
   let abortFlag = false;
   const startTime = new Date();
 
-  const languageCode = repoName.split('_')[0];
-  // console.log("checkRepo languageCode", languageCode);
+  let [languageCode, repoCode] = repoName.split('_');
+  repoCode = repoCode.toUpperCase();
+  if (repoCode === 'TN') repoCode = 'TN1';
+  else if (repoCode === 'TQ') repoCode = 'TQ1';
+// console.log("checkRepo languageCode", languageCode);
 
   if (branch === undefined) branch = 'master'; // Ideally we should ask what the default branch is
 
@@ -64,7 +67,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
     // console.assert(noticeObject.extra !== undefined, "cR addNoticePartial: 'extra' parameter should be defined");
     console.assert(typeof noticeObject.extra === 'string', `cR addNoticePartial: 'extra' parameter should be a string not a '${typeof noticeObject.extra}'`);
     // Add in the repoName from the outer scope
-    checkRepoResult.noticeList.push({ ...noticeObject, repoName });
+    checkRepoResult.noticeList.push({ ...noticeObject, repoCode, repoName });
   }
 
 

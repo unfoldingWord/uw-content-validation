@@ -7,7 +7,7 @@ import { ourParseInt } from './utilities';
 // import { consoleLogObject } from '../core/utilities';
 
 
-// const TN_LINKS_VALIDATOR_VERSION_STRING = '0.5.3';
+// const TN_LINKS_VALIDATOR_VERSION_STRING = '0.5.4';
 
 const DEFAULT_USERNAME = 'Door43-Catalog'; // or unfoldingWord ???
 const DEFAULT_BRANCH = 'master';
@@ -184,7 +184,7 @@ export async function checkTNLinksToOutside(bookID, fieldName, fieldText, givenL
         // console.log(`Got tA filepath=${filepath}`);
 
         // console.log(`Need to check against ${taRepoName}`);
-        const taPathParameters = { username: twRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch };
+        const taPathParameters = { username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch };
         let taFileContent; // Not really used here -- just to show that we got something valid
         try {
             taFileContent = await getFile_(taPathParameters);
@@ -203,7 +203,7 @@ export async function checkTNLinksToOutside(bookID, fieldName, fieldText, givenL
                 // console.log(`checkTNLinksToOutside needs to check TA article: ${filepath}`);
                 const checkTAFileResult = checkMarkdownText(`TA ${regexResultArray[3]}.md`, taFileContent, ourLocation, optionalCheckingOptions);
                 for (const noticeObject of checkTAFileResult.noticeList)
-                    ctarResult.noticeList.push({ ...noticeObject, repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
+                    ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
                 ctarResult.checkedFileCount += 1;
                 ctarResult.checkedFilenames.push(`${regexResultArray[3]}.md`);
                 ctarResult.checkedFilesizes = taFileContent.length;
@@ -249,7 +249,7 @@ export async function checkTNLinksToOutside(bookID, fieldName, fieldText, givenL
                     // console.log(`checkTNLinksToOutside needs to check TW article: ${filepath}`);
                     const checkTWFileResult = checkMarkdownText(`TW ${regexResultArray[3]}.md`, twFileContent, ourLocation, optionalCheckingOptions);
                     for (const noticeObject of checkTWFileResult.noticeList)
-                        ctarResult.noticeList.push({ ...noticeObject, repoName: twRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TW' });
+                        ctarResult.noticeList.push({ ...noticeObject, username: twRepoUsername, repoCode: 'TW', repoName: twRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TW' });
                     ctarResult.checkedFileCount += 1;
                     ctarResult.checkedFilenames.push(`${regexResultArray[3]}.md`);
                     ctarResult.checkedFilesizes = twFileContent.length;

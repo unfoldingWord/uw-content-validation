@@ -4,7 +4,7 @@ import * as books from '../../core/books/books';
 import { ourParseInt, preloadReposIfNecessary } from '../../core';
 import { checkBookPackages } from './checkBookPackages';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
-import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
+import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderTotals } from '../RenderProcessedResults';
 // import { consoleLogObject } from '../../core/utilities';
 
 
@@ -93,20 +93,11 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
       let displayType = 'ErrorsWarnings'; // default
       if (props.displayType) displayType = props.displayType;
 
-      function renderSuccesses(processedResults) {
-        if (processedResults.checkedFileCount > 0)
-        return (<p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount===1?'':'s'} from {username} {processedResults.checkedRepoNames.join(', ')}
-        <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>);
-        else
-        return (<p>&nbsp;&nbsp;&nbsp;&nbsp;No files checked!</p>);
-      }
-
     function renderSummary(processedResults) {
         return (<div>
           <p>Checked <b>{username} {languageCode} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
-          {renderSuccesses(processedResults)}
-          <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCBPsResults.noticeList.length===0?'no':rawCBPsResults.noticeList.length.toLocaleString()} notice{rawCBPsResults.noticeList.length===1?'':'s'}
-          {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}.</p>
+          <RenderSuccesses username={username} results={processedResults}/>
+          <RenderTotals rawNoticeListLength={rawCBPsResults.noticeList.length} results={processedResults}/>
           {/* <RenderRawResults results={rawCBPsResults} /> */}
         </div>);
       }

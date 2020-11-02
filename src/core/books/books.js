@@ -116,13 +116,13 @@ const oftenMissingBCVList = [
 
 const extraBookList = ['FRT','BAK'];
 export const isValidBookID = (bookId) => {
-  return bookId.toLowerCase() in BibleBookData || extraBookList.indexOf(bookId) >= 0;
+  return bookId.toLowerCase() in BibleBookData || extraBookList.includes(bookId);
 }
 export const isOptionalValidBookID = (bookId) => {
-  return !bookId || bookId.toLowerCase() in BibleBookData || extraBookList.indexOf(bookId) >= 0;
+  return !bookId || bookId.toLowerCase() in BibleBookData || extraBookList.includes(bookId);
 }
 export const isExtraBookID = (bookId) => {
-  return extraBookList.indexOf(bookId) >= 0;
+  return extraBookList.includes(bookId);
 }
 
 

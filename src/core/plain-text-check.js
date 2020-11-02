@@ -153,7 +153,7 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
                         } else {
                             const extract = (characterIndex > halfLength ? '…' : '') + line.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < line.length ? '…' : '')
                             const details = `'${lastEntry.char}' opened on line ${lastEntry.n} character ${lastEntry.x + 1}`;
-                            addNotice({ priority: 777, message: `Unexpected ${char} closing character doesn't match`, details, lineNumber: n, characterIndex, extract, location: ourLocation });
+                            addNotice({ priority: 777, message: `Bad nesting: ${char} closing character doesn't match`, details, lineNumber: n, characterIndex, extract, location: ourLocation });
                             // console.log(`  ERROR 777: mismatched characters: ${details}`);
                         }
                     } else { // Closed something without an opener

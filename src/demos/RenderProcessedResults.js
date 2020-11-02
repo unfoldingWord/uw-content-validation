@@ -36,6 +36,27 @@ const tableIcons = {
   /* end material box imports and icons */
 
 
+export function RenderSuccesses({ username, results }) {
+    if (results.checkedFileCount > 0)
+        return (<p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {results.checkedFileCount.toLocaleString()} file{results.checkedFileCount === 1 ? '' : 's'} from {results.checkedRepoNames.length.toLocaleString()} {username} repo{results.checkedRepoNames.length === 1 ? '' : 's'}: {results.checkedRepoNames.join(', ')}
+            <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {results.checkedFilenameExtensions.length} file type{results.checkedFilenameExtensions.size === 1 ? '' : 's'}: {results.checkedFilenameExtensions.join(', ')}.</p>);
+    else
+        return (<p>&nbsp;&nbsp;&nbsp;&nbsp;No files checked!</p>);
+}
+
+export function RenderTotals({ rawNoticeListLength, results }) {
+    if (results.numIgnoredNotices || results.numDisabledNotices) {
+        const netNumNotices = rawNoticeListLength - results.numIgnoredNotices - results.numDisabledNotices;
+        return (<p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={results.elapsedSeconds} /> with {netNumNotices === 0 ? 'no' : netNumNotices.toLocaleString()} notice{netNumNotices === 1 ? ' ' : 's '}
+             ({rawNoticeListLength === 0 ? 'no' : rawNoticeListLength.toLocaleString()} raw notice{rawNoticeListLength === 1 ? '' : 's'} but
+            {results.numIgnoredNotices ? ` ${results.numIgnoredNotices.toLocaleString()} ignored notice${results.numIgnoredNotices === 1 ? '' : 's'}` : ""}
+            {results.numIgnoredNotices && results.numDisabledNotices ? ' and ' : ''}
+            {results.numDisabledNotices ? `${results.numDisabledNotices.toLocaleString()} disabled notice${results.numDisabledNotices === 1 ? '' : 's'}` : ""}
+            ).</p>);
+    } else // it's much simpler
+        return (<p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={results.elapsedSeconds} /> with {rawNoticeListLength === 0 ? 'no' : rawNoticeListLength.toLocaleString()} notice{rawNoticeListLength === 1 ? '' : 's'}.</p>);
+}
+
 export function RenderLines({ text }) {
     /**
     * @description - Displays a given piece of text (which can include newline characters)
@@ -63,7 +84,7 @@ export function RenderObject({ thisObject, excludeList }) {
     return <ul>
         {
             Object.keys(thisObject).map((key, keyIndex) => {
-                if (!excludeList || excludeList.indexOf(key) < 0) {
+                if (!excludeList || !excludeList.includes(key)) {
                     let displayObject = thisObject[key];
                     if (Array.isArray(displayObject) && displayObject.length > MAX_ARRAY_ITEMS_TO_DISPLAY)
                         displayObject = `(only first ${MAX_ARRAY_ITEMS_TO_DISPLAY} displayed here) ${JSON.stringify(displayObject.slice(0, MAX_ARRAY_ITEMS_TO_DISPLAY))}, etc…`;
@@ -155,7 +176,6 @@ export function RenderRawResults({ results }) {
     if (allPropertiesSet.has('extract')) headerData = headerData.concat([{ title: 'Extract', field: 'extract' }]);
     if (allPropertiesSet.has('location')) headerData = headerData.concat([{ title: 'Location', field: 'location' }]);
     if (allPropertiesSet.has('extra')) headerData = headerData.concat([{ title: 'Extra', field: 'extra' }]);
-    if (allPropertiesSet.has('ID')) headerData = headerData.concat([{ title: 'MsgID', field: 'msgID', type: 'numeric' }]);
     // console.log("headerData", headerData.length, JSON.stringify(headerData));
 
     // Make the actual table and return it
@@ -237,12 +257,12 @@ function RenderFileDetails({ username, repoName, filename, lineNumber, rowID, fi
                 else fileLink = `https://git.door43.org/${username}/${repoName}/src/branch/master/${filename}#L${lineNumber}`;
             } catch { }
         }
-        else if (!username) resultEnd += " no username"
-        else if (!repoName) resultEnd += " no repoName"
-        else if (!filename) resultEnd += " no filename"
+        // else if (!username) resultEnd += " no username"
+        // else if (!repoName) resultEnd += " no repoName"
+        // else if (!filename) resultEnd += " no filename"
         lineResult = `line ${lineNumber.toLocaleString()}`;
     }
-    else resultEnd += " no lineNumber"
+    // else resultEnd += " no lineNumber"
     if (rowID && rowID.length) resultEnd += ` with ID ${rowID}`;
     if (fieldName && fieldName.length) resultEnd += ` in ${fieldName} field`;
     if (fileLink) return <>{resultStart}<a rel="noopener noreferrer" target="_blank" href={fileLink}>{lineResult}</a>{resultEnd}</>;
@@ -278,9 +298,7 @@ function RenderSuccessesColored({ results }) {
  * @param {Object} props.entry -- the given notice entry object
  */
 function RenderPriority({ entry }) {
-    const priorityBit = entry.priority >= 0 ? "Priority " + entry.priority : "";
-    const msgIdBit = entry.msgID ? "MsgID " + entry.msgID : "";
-    return <small style={{ color: 'Gray' }}> ({priorityBit}{priorityBit && msgIdBit ? ", " : ""}{msgIdBit})</small>
+    return <small style={{ color: 'Gray' }}> ({entry.priority >= 0 ? "Priority " + entry.priority : ""})</small>
 }
 
 function RenderProcessedArray({ arrayType, results }) {

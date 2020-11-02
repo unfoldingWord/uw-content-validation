@@ -1,3 +1,4 @@
+import { isDisabledNotice } from '../core/disabled-notices';
 // import { displayPropertyNames, consoleLogObject } from './utilities';
 
 
@@ -116,7 +117,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
 
             // Check that notice priority numbers are unique (to detect programming errors)
             const oldMsg = numberStore[thisPriority];
-            if (oldMsg && oldMsg !== thisMsg && duplicatePriorityList.indexOf(thisPriority) < 0
+            if (oldMsg && oldMsg !== thisMsg && !duplicatePriorityList.includes(thisPriority)
                 // Some of the messages include the troubling character in the message
                 //    so we expect them to differ slightly
                 && !thisMsg.startsWith('Mismatched ')
@@ -176,7 +177,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
 
 
     const resultObject = { // inititalise with our new fields
-        numIgnoredNotices: 0,
+        numIgnoredNotices: 0, // Ignored by unique priority number
+        numDisabledNotices: 0, // Individually disabled
         numSuppressedWarnings: 0,
         processingOptions: optionalProcessingOptions, // Just helpfully includes what we were given (may be undefined)
     };
@@ -216,7 +218,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     else console.log(`Using supplied cutoffPriorityLevel=${cutoffPriorityLevel} cf. default=${DEFAULT_CUTOFF_PRIORITY_LEVEL}`);
     // if (cutoffPriorityLevel > errorPriorityLevel)
     // resultObject.errorList.push({999, "Cutoff level must not be higher than error level", extract:`(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
-
+    let ignoreDisabledNoticesFlag = optionalProcessingOptions.ignoreDisabledNoticesFlag === true;
+    if (ignoreDisabledNoticesFlag) console.log(`ignoreDisabledNoticesFlag=${ignoreDisabledNoticesFlag}`);
 
     // Adjust the list of success notices to combine multiple similar messages, e.g., Checked this book, Checked that book
     //  into one summary message, e.g., Checked this and that books.
@@ -347,18 +350,24 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
 
     // Remove any notices that they have asked us to ignore
     let remainingNoticeList;
-    if (ignorePriorityNumberList.length) {
+    if (ignorePriorityNumberList.length || !ignoreDisabledNoticesFlag) {
         // console.log("Doing ignore of", ignorePriorityNumberList.length,"value(s)");
         remainingNoticeList = [];
-        for (const thisNotice of standardisedNoticeList)
-            if (ignorePriorityNumberList.indexOf(thisNotice.priority) >= 0)
+        for (const thisNotice of standardisedNoticeList) {
+            if (ignorePriorityNumberList.includes(thisNotice.priority))
                 resultObject.numIgnoredNotices++;
-            else
+            else if (!ignoreDisabledNoticesFlag && isDisabledNotice(thisNotice)) {
+                console.log(`Disabled ${JSON.stringify(thisNotice)}`);
+                resultObject.numDisabledNotices++;
+            } else
                 remainingNoticeList.push(thisNotice);
+        }
     } else
         remainingNoticeList = standardisedNoticeList;
     if (resultObject.numIgnoredNotices)
-        console.log(`Ignored ${resultObject.numIgnoredNotices} notices`);
+        console.log(`Ignored ${resultObject.numIgnoredNotices} notice(s)`);
+    if (resultObject.numDisabledNotices)
+        console.log(`Disabled ${resultObject.numDisabledNotices} notice(s)`);
 
     // Cut off the lowest priority notices if requested
     if (cutoffPriorityLevel > 0) {
@@ -445,7 +454,7 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
             successList: a list of strings describing what has been checked
             errorList
             warningList
-            numIgnoredNotices, numSuppressedErrors, numSuppressedWarnings
+            numIgnoredNotices, numDisabledNotices, numSuppressedErrors, numSuppressedWarnings
             processingOptions: just helpfully passes on what we were given (may be undefined)
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
@@ -532,7 +541,7 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
             severeList
             mediumList
             lowList
-            numIgnoredNotices, numSevereSuppressed, numMediumSuppressed, numLowSuppressed
+            numIgnoredNotices, numDisabledNotices, numSevereSuppressed, numMediumSuppressed, numLowSuppressed
             processingOptions: just helpfully passes on what we were given (may be undefined)
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
@@ -634,7 +643,7 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
         Returns an object with:
             successList: a list of strings describing what has been checked
             warningList
-            numIgnoredNotices, numSevereSuppressed, numMediumSuppressed, numLowSuppressed
+            numIgnoredNotices, numDisabledNotices, numSevereSuppressed, numMediumSuppressed, numLowSuppressed
             processingOptions: just helpfully passes on what we were given (may be undefined)
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.

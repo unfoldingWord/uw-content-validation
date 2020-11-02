@@ -40,6 +40,7 @@ clearCheckedArticleCache();
   //maximumSimilarMessages='4' // Default is 3 -- 0 means don't suppress
   // Ignore 450 "TN Resource container link should have '*' language code with (not 'en')" as tC can't handle it yet!
   ignorePriorityNumberList='[450]'
+  ignoreDisabledNoticesFlag='false' // Show known non-issues: 'true' or 'false'
   />
 ```
 

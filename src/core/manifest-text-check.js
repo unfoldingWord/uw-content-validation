@@ -3,7 +3,7 @@ import Ajv from 'ajv';
 import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 
 
-const MANIFEST_VALIDATOR_VERSION_STRING = '0.3.1';
+const MANIFEST_VALIDATOR_VERSION_STRING = '0.3.3';
 
 // Pasted in 2020-10-02 from https://raw.githubusercontent.com/unfoldingWord/dcs/master/options/schema/rc.schema.json
 const MANIFEST_SCHEMA = {
@@ -546,7 +546,7 @@ export function checkManifestText(textName, manifestText, givenLocation, optiona
     // console.log(`checkManifestText(${textName}, ${manifestText.length} chars, ${givenLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
-    if (textName) ourLocation = ` in ${textName}${ourLocation}`;
+    // if (textName) ourLocation = ` in ${textName}${ourLocation}`;
 
     let extractLength;
     try {
@@ -602,16 +602,6 @@ export function checkManifestText(textName, manifestText, givenLocation, optiona
         // Concat is faster if we don't need to process each notice individually
         cmtResult.successList = cmtResult.successList.concat(cYtResultObject.successList);
         cmtResult.noticeList = cmtResult.noticeList.concat(cYtResultObject.noticeList);
-        /* // Process noticeList line by line
-        //  suppressing undesired errors
-        for (const noticeEntry of cYtResultObject.noticeList)
-            if (noticeEntry.priority !== 191 // "Unexpected XXX character after space"
-              && noticeEntry.message !== "Unexpected ' character after space"
-              && noticeEntry.message !== "Unexpected space after ' character"
-              && noticeEntry.message !== "Unexpected space after [ character"
-              )
-                addNotice(noticeEntry.priority, noticeEntry.message, noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7]);
-        */
         return cYtResultObject.formData;
     }
     // end of ourYAMLTextChecks function
