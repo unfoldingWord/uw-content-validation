@@ -141,22 +141,28 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
         if (suggestion[suggestion.length - 1] === '\u200D') suggestion = suggestion.substring(0, suggestion.length - 1);
     }
 
+    // Find leading line breaks (but not if the whole line is just the line break sequence)
     const fieldTextLower = fieldText.toLowerCase();
-    if (fieldTextLower.substring(0, 2) === '\\n' || fieldTextLower.substring(0, 4) === '<br>' || fieldTextLower.substring(0, 5) === '<br/>' || fieldTextLower.substring(0, 6) === '<br />') {
+    if ((fieldTextLower.substring(0, 2) === '\\n' || fieldTextLower.substring(0, 4) === '<br>' || fieldTextLower.substring(0, 5) === '<br/>' || fieldTextLower.substring(0, 6) === '<br />')
+     && fieldTextLower !== '\\n' && fieldTextLower !== '<br>' && fieldTextLower !== '<br/>' && fieldTextLower !== '<br />') {
         const extract = fieldText.substring(0, extractLength) + (fieldText.length > extractLength ? '…' : '');
-        addNoticePartial({ priority: 107, message: "Unexpected leading break", characterIndex: 0, extract, location: ourLocation });
+        addNoticePartial({ priority: 107, message: "Unexpected leading line break", characterIndex: 0, extract, location: ourLocation });
         while (suggestion.toLowerCase().substring(0, 2) === '\\n') suggestion = suggestion.substring(2);
         while (suggestion.toLowerCase().substring(0, 4) === '<br>') suggestion = suggestion.substring(4);
         while (suggestion.toLowerCase().substring(0, 5) === '<br/>') suggestion = suggestion.substring(5);
         while (suggestion.toLowerCase().substring(0, 6) === '<br />') suggestion = suggestion.substring(6);
     }
+
     if (fieldText[fieldText.length - 1] === ' ') {
         const extract = (fieldText.length > extractLength ? '…' : '') + fieldText.substring(fieldText.length - 10).replace(/ /g, '␣');
         addNoticePartial({ priority: 95, message: "Unexpected trailing space(s)", characterIndex: fieldText.length - 1, extract, location: ourLocation });
     }
-    if (fieldTextLower.substring(fieldTextLower.length - 2) === '\\n' || fieldTextLower.substring(fieldTextLower.length - 4) === '<br>' || fieldTextLower.substring(fieldTextLower.length - 5) === '<br/>' || fieldTextLower.substring(fieldTextLower.length - 6) === '<br />') {
-        const extract = (fieldText.length > extractLength ? '…' : '') + fieldText.substring(fieldText.length - 10);
-        addNoticePartial({ priority: 104, message: "Unexpected trailing break", characterIndex: fieldText.length - 1, extract, location: ourLocation });
+
+    // Find trailing line breaks (but not if the whole line is just the line break sequence)
+    if ((fieldTextLower.substring(fieldTextLower.length - 2) === '\\n' || fieldTextLower.substring(fieldTextLower.length - 4) === '<br>' || fieldTextLower.substring(fieldTextLower.length - 5) === '<br/>' || fieldTextLower.substring(fieldTextLower.length - 6) === '<br />')
+        && fieldTextLower !== '\\n' && fieldTextLower !== '<br>' && fieldTextLower !== '<br/>' && fieldTextLower !== '<br />') {
+            const extract = (fieldText.length > extractLength ? '…' : '') + fieldText.substring(fieldText.length - 10);
+        addNoticePartial({ priority: 104, message: "Unexpected trailing line break", characterIndex: fieldText.length - 1, extract, location: ourLocation });
         while (suggestion.toLowerCase().substring(suggestion.length - 2) === '\\n') suggestion = suggestion.substring(0, suggestion.length - 2);
         while (suggestion.toLowerCase().substring(suggestion.length - 4) === '<br>') suggestion = suggestion.substring(0, suggestion.length - 4);
         while (suggestion.toLowerCase().substring(suggestion.length - 5) === '<br/>') suggestion = suggestion.substring(0, suggestion.length - 5);
@@ -219,10 +225,10 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     }
     // Check for punctuation chars following space
     //  Removed ©
-    let afterSpaceCheckList = ')}>⟩:,،、‒–—―!.›»‐-?’”";/⁄·@•^†‡°¡¿※#№÷×ºª%‰‱¶′″‴§~‖¦℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥';
+    let afterSpaceCheckList = ')}>⟩:,،、‒–—―!.›»‐-?’”;/⁄·@•^†‡°¡¿※#№÷×ºª%‰‱¶′″‴§~‖¦℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥';
     if (fieldType !== 'markdown') afterSpaceCheckList += '_*'; // These are used for markdown formatting
     if (fieldType !== 'USFM' || (fieldText.indexOf('x-lemma') < 0 && fieldText.indexOf('x-tw') < 0)) afterSpaceCheckList += '|';
-    if (fieldType !== 'YAML') afterSpaceCheckList += "'"; // These are used for YAML strings
+    if (fieldType !== 'YAML') afterSpaceCheckList += '\'"'; // These are used for YAML strings, e.g., version: '0.15'
     // if (fieldName === 'OrigQuote' || fieldName === 'Quote') afterSpaceCheckList += '…'; // NOT NEEDED -- this is specifically checked elsewhere
     for (const punctChar of afterSpaceCheckList) {
         characterIndex = fieldText.indexOf(' ' + punctChar);

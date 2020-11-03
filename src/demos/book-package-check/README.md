@@ -25,7 +25,7 @@ clearCheckedArticleCache();
   //  and can also be 'OBS' (for Open Bible Stories)
   bookID='1TI'
 
-  dataSet='OLD' // Can be 'OLD' (Markdown TQ1 etc.), 'NEW' (TSV TQ, etc.), or 'BOTH'
+  dataSet='OLD' // Can be 'OLD' (Markdown TQ1, TSV TN1, etc.), 'NEW' (TSV TQ, TN, etc.), or 'BOTH'
 
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'

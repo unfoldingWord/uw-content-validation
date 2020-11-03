@@ -294,6 +294,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       // console.log("checkBookPackage ourCheckManifest about to fetch manifest", username, repoName, branch);
       manifestFileContent = await getFile_({ username, repository: repoName, path: MANIFEST_FILENAME, branch });
       // console.log("checkBookPackage ourCheckManifest fetched content for manifest", username, repoName, branch, typeof manifestFileContent, manifestFileContent.length);
+      // console.log(manifestFileContent);
     } catch (cBPgfError) {
       console.error(`checkBookPackage ourCheckManifest(${username}, ${languageCode}, ${bookID}, (fn), ${JSON.stringify(checkingOptions)}) failed to load manifest`, username, repoName, branch, cBPgfError + '');
       let details = `username=${username}`;

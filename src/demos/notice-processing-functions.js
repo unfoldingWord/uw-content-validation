@@ -357,7 +357,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             if (ignorePriorityNumberList.includes(thisNotice.priority))
                 resultObject.numIgnoredNotices++;
             else if (!ignoreDisabledNoticesFlag && isDisabledNotice(thisNotice)) {
-                console.log(`Disabled ${JSON.stringify(thisNotice)}`);
+                // console.log(`Disabled ${JSON.stringify(thisNotice)}`);
                 resultObject.numDisabledNotices++;
             } else
                 remainingNoticeList.push(thisNotice);
@@ -365,9 +365,9 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     } else
         remainingNoticeList = standardisedNoticeList;
     if (resultObject.numIgnoredNotices)
-        console.log(`Ignored ${resultObject.numIgnoredNotices} notice(s)`);
+        console.log(`Ignored ${resultObject.numIgnoredNotices} generic notice(s)`);
     if (resultObject.numDisabledNotices)
-        console.log(`Disabled ${resultObject.numDisabledNotices} notice(s)`);
+        console.log(`Disabled ${resultObject.numDisabledNotices} specific notice(s)`);
 
     // Cut off the lowest priority notices if requested
     if (cutoffPriorityLevel > 0) {
@@ -387,26 +387,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     else if (sortBy !== 'AsFound')
         console.error(`Sorting '${sortBy}' is not implemented yet!!!`);
 
-    /*
-    // Add additional information fields to the location
-    const newNoticeList = [];
-    for (const thisNotice of remainingNoticeList) {
-        const newNotice = thisNotice;
-        if (newNotice.location) newNotice.location = newNotice.location.trim(); // Remove any leading spaces
-        else newNotice.location = '';
-        if (newNotice.repoName) newNotice.location = `in ${newNotice.filename} repoName ${newNotice.location}`
-        if (newNotice.filename) newNotice.location = `in file ${newNotice.filename} ${newNotice.location}`;
-        if (newNotice.rowID) newNotice.location = `with ID ${newNotice.rowID} ${newNotice.location}`;
-        if (newNotice.lineNumber) newNotice.location = `in line ${newNotice.lineNumber} ${newNotice.location}`;
-        if (newNotice.fieldName) newNotice.location = `in ${newNotice.fieldName} field ${newNotice.location}`;
-        // Default is to prepend extra to the message
-        //  This prevents errors/warnings from different repos or books from being combined
-        if (newNotice.extra) newNotice.message = `${newNotice.extra} ${newNotice.message}`;
-        newNoticeList.push(newNotice);
-    }
-    */
-
-    // Add in extra location info if it's there
+    // Add in extra info if it's there
     // Default is to prepend it to the msg
     //  This prevents errors/warnings from different repos or books from being combined
     if (remainingNoticeList.length

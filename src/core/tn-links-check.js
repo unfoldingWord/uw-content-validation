@@ -7,11 +7,10 @@ import { ourParseInt } from './utilities';
 // import { consoleLogObject } from '../core/utilities';
 
 
-// const TN_LINKS_VALIDATOR_VERSION_STRING = '0.5.4';
+// const TN_LINKS_VALIDATOR_VERSION_STRING = '0.5.5';
 
-const DEFAULT_USERNAME = 'Door43-Catalog'; // or unfoldingWord ???
-const DEFAULT_BRANCH = 'master';
 const DEFAULT_LANGUAGE_CODE = 'en';
+const DEFAULT_BRANCH = 'master';
 
 const TA_REGEX = new RegExp('\\[\\[rc://([^ /]+?)/ta/man/([^ /]+?)/([^ \\]]+?)\\]\\]', 'g');
 const TW_REGEX = new RegExp('\\[\\[rc://([^ /]+?)/tw/dict/bible/([^ /]+?)/([^ \\]]+?)\\]\\]', 'g');
@@ -152,13 +151,13 @@ export async function checkTNLinksToOutside(bookID, fieldName, fieldText, givenL
 
     let taRepoUsername;
     try { taRepoUsername = optionalCheckingOptions.taRepoUsername; } catch (trcUNerror) { }
-    if (!taRepoUsername) taRepoUsername = DEFAULT_USERNAME;
+    if (!taRepoUsername) taRepoUsername = defaultLanguageCode === 'en' ? 'unfoldingWord' : 'Door43-Catalog';
     let taRepoBranch;
     try { taRepoBranch = optionalCheckingOptions.taRepoBranch; } catch (trcBRerror) { }
     if (!taRepoBranch) taRepoBranch = DEFAULT_BRANCH;
     let twRepoUsername;
     try { twRepoUsername = optionalCheckingOptions.twRepoUsername; } catch (trcUNerror) { }
-    if (!twRepoUsername) twRepoUsername = DEFAULT_USERNAME;
+    if (!twRepoUsername) twRepoUsername = defaultLanguageCode === 'en' ? 'unfoldingWord' : 'Door43-Catalog';
     let twRepoBranch;
     try { twRepoBranch = optionalCheckingOptions.twRepoBranch; } catch (trcBRerror) { }
     if (!twRepoBranch) twRepoBranch = DEFAULT_BRANCH;
