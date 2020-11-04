@@ -5,7 +5,7 @@ import { ourParseInt } from './utilities';
 // import { consoleLogObject } from '../core/utilities';
 
 
-const QUOTE_VALIDATOR_VERSION_STRING = '0.6.2';
+// const QUOTE_VALIDATOR_VERSION_STRING = '0.7.0';
 
 
 export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldText, occurrenceString, bookID, C, V, givenLocation, optionalCheckingOptions) {
@@ -20,7 +20,7 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
     //      (UHB or UGNT will be used for the repo name)
     //      optionalCheckingOptions.originalLanguageRepoBranch (or tag)
 
-    if (occurrenceString !== '1') console.log(`checkOriginalLanguageQuote v${QUOTE_VALIDATOR_VERSION_STRING} (${fieldName}, (${fieldText.length}) '${fieldText}', ${occurrenceString}, ${bookID} ${C}:${V} ${givenLocation}, …)…`);
+    // console.log(`checkOriginalLanguageQuote v${QUOTE_VALIDATOR_VERSION_STRING} (${fieldName}, (${fieldText.length}) '${fieldText}', ${occurrenceString}, ${bookID} ${C}:${V} ${givenLocation}, …)…`);
     console.assert(languageCode !== undefined, "checkOriginalLanguageQuote: 'languageCode' parameter should be defined");
     console.assert(typeof languageCode === 'string', `checkOriginalLanguageQuote: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
     console.assert(fieldName !== undefined, "checkOriginalLanguageQuote: 'fieldName' parameter should be defined");

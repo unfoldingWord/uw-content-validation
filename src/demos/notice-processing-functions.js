@@ -2,7 +2,7 @@ import { isDisabledNotice } from '../core/disabled-notices';
 // import { displayPropertyNames, consoleLogObject } from './utilities';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.8.3';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.8.4';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -476,13 +476,15 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
         const thisID = thisPriority + thisMsg; // Could have identical worded messages but with different priorities
         if (isNaN(counter[thisID])) counter[thisID] = 1;
         else counter[thisID]++;
-        if (maximumSimilarMessages > 0 && counter[thisID] === maximumSimilarMessages + 1) {
+        if (maximumSimilarMessages > 0 && allTotals[thisPriority] > maximumSimilarMessages + 1 && counter[thisID] === maximumSimilarMessages + 1) {
             if (thisPriority >= errorPriorityLevel) {
                 const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
+                console.assert(numSuppressed !== 1, `Shouldn't suppress just one error of priority ${thisPriority}`);
                 resultObject.errorList.push({ priority: -1, message: thisMsg, location: ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
                 resultObject.numSuppressedErrors++;
             } else {
                 const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
+                console.assert(numSuppressed !== 1, `Shouldn't suppress just one warning of priority ${thisPriority}`);
                 resultObject.warningList.push({ priority: -1, message: thisMsg, location: ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
                 resultObject.numSuppressedWarnings++;
             }
@@ -572,17 +574,20 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
         const thisID = thisPriority + thisMsg; // Could have identical worded messages but with different priorities
         if (isNaN(counter[thisID])) counter[thisID] = 1;
         else counter[thisID]++;
-        if (maximumSimilarMessages > 0 && counter[thisID] === maximumSimilarMessages + 1) {
+        if (maximumSimilarMessages > 0 && allTotals[thisPriority] > maximumSimilarMessages + 1 && counter[thisID] === maximumSimilarMessages + 1) {
             if (thisPriority >= severePriorityLevel) {
                 const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
+                console.assert(numSuppressed !== 1, `Shouldn't suppress just one severe error of priority ${thisPriority}`);
                 resultObject.severeList.push({ priority: -1, message: thisMsg, location: ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
                 resultObject.numSevereSuppressed++;
             } else if (thisPriority >= mediumPriorityLevel) {
                 const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
+                console.assert(numSuppressed !== 1, `Shouldn't suppress just one medium error of priority ${thisPriority}`);
                 resultObject.mediumList.push({ priority: -1, message: thisMsg, location: ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
                 resultObject.numMediumSuppressed++;
             } else {
                 const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
+                console.assert(numSuppressed !== 1, `Shouldn't suppress just one low warning of priority ${thisPriority}`);
                 resultObject.lowList.push({ priority: -1, message: thisMsg, location: ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
                 resultObject.numLowSuppressed++;
             }
@@ -663,8 +668,9 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
         const thisID = thisPriority + thisMsg; // Could have identical worded messages but with different priorities
         if (isNaN(counter[thisID])) counter[thisID] = 1;
         else counter[thisID]++;
-        if (maximumSimilarMessages > 0 && counter[thisID] === maximumSimilarMessages + 1) {
+        if (maximumSimilarMessages > 0 && allTotals[thisPriority] > maximumSimilarMessages + 1 && counter[thisID] === maximumSimilarMessages + 1) {
             const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
+            console.assert(numSuppressed !== 1, `Shouldn't suppress just one notice of priority ${thisPriority}`);
             resultObject.warningList.push({ priority: thisPriority, message: thisMsg, location: ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
             resultObject.numSuppressedWarnings++;
         } else if (maximumSimilarMessages > 0 && counter[thisID] > maximumSimilarMessages + 1) {
