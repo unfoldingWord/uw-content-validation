@@ -4,7 +4,7 @@ import { checkTextField } from './field-text-check';
 import { checkMarkdownText } from './markdown-text-check';
 import { checkSupportReferenceInTA } from './ta-reference-check';
 import { checkTNLinksToOutside } from './tn-links-check';
-import { checkOriginalLanguageQuote } from './quote-check';
+import { checkOriginalLanguageQuote } from './orig-quote-check';
 
 
 // const ANNOTATION_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.5.5';
@@ -170,7 +170,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         console.assert(allowedLinks === true || allowedLinks === false, "checkAnnotationTSVDataRow ourCheckTextField: allowedLinks parameter must be either true or false");
         console.assert(rowLocation.indexOf(fieldName) < 0, `checkAnnotationTSVDataRow ourCheckTextField: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const fieldType = fieldName==='Annotation'? 'markdown':'raw';
+        const fieldType = fieldName === 'Annotation' ? 'markdown' : 'raw';
         const dbtcResultObject = checkTextField(fieldType, fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
@@ -214,7 +214,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
     // end of ourCheckSupportReferenceInTA function
 
 
-    async function ourCheckTNOriginalLanguageQuote(rowID, fieldName, fieldText, rowLocation, optionalCheckingOptions) {
+    async function ourCheckTNOriginalLanguageQuote(rowID, fieldName, fieldText, occurrence, rowLocation, optionalCheckingOptions) {
         // Checks that the Hebrew/Greek quote can be found in the original texts
 
         // Uses the bookID,C,V values from the main function call
@@ -222,15 +222,17 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         // Updates the global list of notices
 
         // console.log(`checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote(${fieldName}, (${fieldText.length}) '${fieldText}', ${rowLocation}, …)`);
-        console.assert(rowID !== undefined, "checkAnnotationTSVDataRow ourMarkdownTextChecks: 'rowID' parameter should be defined");
-        console.assert(typeof rowID === 'string', `checkAnnotationTSVDataRow ourMarkdownTextChecks: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        console.assert(fieldName !== undefined, "checkAnnotationTSVDataRow ourMarkdownTextChecks: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName === 'string', `checkAnnotationTSVDataRow ourMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        console.assert(rowID !== undefined, "checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'rowID' parameter should be defined");
+        console.assert(typeof rowID === 'string', `checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+        console.assert(fieldName !== undefined, "checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'fieldName' parameter should be defined");
+        console.assert(typeof fieldName === 'string', `checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
         console.assert(fieldText !== undefined, "checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'fieldText' parameter should be defined");
         console.assert(typeof fieldText === 'string', `checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+        console.assert(occurrence !== undefined, "checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'occurrence' parameter should be defined");
+        console.assert(typeof occurrence === 'string', `checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'occurrence' parameter should be a string not a '${typeof occurrence}'`);
         console.assert(rowLocation.indexOf(fieldName) < 0, `checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const coqResultObject = await checkOriginalLanguageQuote(languageCode, fieldName, fieldText, bookID, givenC, givenV, rowLocation, optionalCheckingOptions);
+        const coqResultObject = await checkOriginalLanguageQuote(languageCode, fieldName, fieldText, occurrence, bookID, givenC, givenV, rowLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -255,6 +257,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         console.assert(typeof rowID === 'string', `checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'rowID' parameter should be a string not a '${typeof rowID}'`);
         console.assert(fieldName !== undefined, "checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'fieldName' parameter should be defined");
         console.assert(typeof fieldName === 'string', `checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        console.assert(fieldName === 'Annotation', `checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'fieldName' parameter should be 'Annotation' not '${fieldName}'`);
         console.assert(taLinkText !== undefined, "checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'taLinkText' parameter should be defined");
         console.assert(typeof taLinkText === 'string', `checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
 
@@ -436,7 +439,8 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
 
         if (quote.length) { // need to check UTN against UHB and UGNT
             ourCheckTextField(rowID, 'Quote', quote, false, ourRowLocation, optionalCheckingOptions);
-            await ourCheckTNOriginalLanguageQuote(rowID, 'Quote', quote, ourRowLocation, optionalCheckingOptions);
+            if (occurrence.length)
+                await ourCheckTNOriginalLanguageQuote(rowID, 'Quote', quote, occurrence, ourRowLocation, optionalCheckingOptions);
         }
         else // TODO: Find more details about when these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             if (annotationType === 'TN' && V !== 'intro' && occurrence !== '0')
@@ -454,6 +458,8 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
             else if ('1234567'.indexOf(occurrence) < 0) // it's not one of these integers
                 addNoticePartial({ priority: 792, message: `Invalid occurrence field`, fieldName: 'Occurrence', rowID, extract: occurrence, location: ourRowLocation });
         }
+        else if (quote.length)
+            addNoticePartial({ priority: 791, message: `Missing occurrence field`, fieldName: 'Occurrence', rowID, location: ourRowLocation });
 
         if (annotation.length) {
             if (annotation.indexOf('\u200B') >= 0)

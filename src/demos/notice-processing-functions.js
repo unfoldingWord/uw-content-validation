@@ -365,9 +365,9 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     } else
         remainingNoticeList = standardisedNoticeList;
     if (resultObject.numIgnoredNotices)
-        console.log(`Ignored ${resultObject.numIgnoredNotices} generic notice(s)`);
+        console.log(`Ignored ${resultObject.numIgnoredNotices.toLocaleString()} generic notice(s) out of ${givenNoticeObject.noticeList.length.toLocaleString()}`);
     if (resultObject.numDisabledNotices)
-        console.log(`Disabled ${resultObject.numDisabledNotices} specific notice(s)`);
+        console.log(`Disabled ${resultObject.numDisabledNotices.toLocaleString()} specific notice(s) out of ${givenNoticeObject.noticeList.length.toLocaleString()}`);
 
     // Cut off the lowest priority notices if requested
     if (cutoffPriorityLevel > 0) {
