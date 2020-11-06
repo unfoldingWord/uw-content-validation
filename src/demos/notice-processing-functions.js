@@ -359,8 +359,10 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             else if (!ignoreDisabledNoticesFlag && isDisabledNotice(thisNotice)) {
                 // console.log(`Disabled ${JSON.stringify(thisNotice)}`);
                 resultObject.numDisabledNotices++;
-            } else
+            } else {
+                // if (thisNotice.repoCode==='TA' && thisNotice.priority === 177) console.log(`Didn't ignore or disable ${JSON.stringify(thisNotice)}`);
                 remainingNoticeList.push(thisNotice);
+            }
         }
     } else
         remainingNoticeList = standardisedNoticeList;
