@@ -7,7 +7,7 @@ import MaterialTable from 'material-table';
 // import { consoleLogObject, displayPropertyNames } from '../core/utilities';
 
 
-// const RENDER_PROCESSED_RESULTS_VERSION = '0.5.0';
+// const RENDER_PROCESSED_RESULTS_VERSION = '0.5.2';
 
 
 // Note from RJH: I commented out these fields because 1/ they seemed to cause warnings/errors,
@@ -50,8 +50,8 @@ export function RenderTotals({ rawNoticeListLength, results }) {
         return (<p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={results.elapsedSeconds} /> with {netNumNotices === 0 ? 'no' : netNumNotices.toLocaleString()} notice{netNumNotices === 1 ? ' ' : 's '}
              ({rawNoticeListLength === 0 ? 'no' : rawNoticeListLength.toLocaleString()} raw notice{rawNoticeListLength === 1 ? '' : 's'} but
             {results.numIgnoredNotices ? ` ${results.numIgnoredNotices.toLocaleString()} ignored notice${results.numIgnoredNotices === 1 ? '' : 's'}` : ""}
-            {results.numIgnoredNotices && results.numDisabledNotices ? ' and ' : ''}
-            {results.numDisabledNotices ? `${results.numDisabledNotices.toLocaleString()} disabled notice${results.numDisabledNotices === 1 ? '' : 's'}` : ""}
+            {results.numIgnoredNotices && results.numDisabledNotices ? ' and' : ''}
+            {results.numDisabledNotices ? ` ${results.numDisabledNotices.toLocaleString()} disabled notice${results.numDisabledNotices === 1 ? '' : 's'}` : ""}
             ).</p>);
     } else // it's much simpler
         return (<p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={results.elapsedSeconds} /> with {rawNoticeListLength === 0 ? 'no' : rawNoticeListLength.toLocaleString()} notice{rawNoticeListLength === 1 ? '' : 's'}.</p>);
@@ -168,7 +168,9 @@ export function RenderRawResults({ results }) {
         ]);
     }
     if (allPropertiesSet.has('rowID')) headerData = headerData.concat([{ title: 'row ID', field: 'rowID' }]);
-    if (allPropertiesSet.has('repoName')) headerData = headerData.concat([{ title: 'Repo', field: 'repoName' }]);
+    if (allPropertiesSet.has('repoCode')) headerData = headerData.concat([{ title: 'RepoCode', field: 'repoCode' }]);
+    if (allPropertiesSet.has('username')) headerData = headerData.concat([{ title: 'Username', field: 'username' }]);
+    if (allPropertiesSet.has('repoName')) headerData = headerData.concat([{ title: 'RepoName', field: 'repoName' }]);
     if (allPropertiesSet.has('filename')) headerData = headerData.concat([{ title: 'Filename', field: 'filename' }]);
     if (allPropertiesSet.has('fieldName')) headerData = headerData.concat([{ title: 'Field', field: 'fieldName' }]);
     if (allPropertiesSet.has('lineNumber')) headerData = headerData.concat([{ title: 'Line', field: 'lineNumber' }]);

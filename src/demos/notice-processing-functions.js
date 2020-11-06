@@ -1,4 +1,4 @@
-import { isDisabledNotice } from '../core/disabled-notices';
+import { isDisabledNotice } from './disabled-notices';
 // import { displayPropertyNames, consoleLogObject } from './utilities';
 
 

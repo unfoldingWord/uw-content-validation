@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // import { withStyles } from '@material-ui/core/styles';
 import * as books from '../../core/books/books';
-import { preloadReposIfNecessary, ourParseInt } from '../../core';
+import { clearCaches, clearCheckedArticleCache, preloadReposIfNecessary, ourParseInt } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderTotals } from '../RenderProcessedResults';
 import { checkBookPackage } from '../book-package-check/checkBookPackage';
@@ -47,6 +47,13 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
         (async () => {
             // console.log("Started GlBookPackageCheck.unnamedFunction()");
 
+            // NOTE from RJH: I can't find the correct React place for this / way to do this
+            //                  so it shows a warning for the user, and doesn't continue to try to process
+            if (!props.wait || props.wait !== 'N') {
+                setResultValue(<p style={{ color: 'blue' }}>Waiting…</p>);
+                return;
+            }
+
             // NOTE from RJH: I can't find the correct React place for this or way to do this
             //                  so it shows a warning for the user, and doesn't continue to try to process
             if (bookID !== 'OBS' && !books.isValidBookID(bookID)) {
@@ -54,6 +61,13 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
                 setResultValue(<p style={{ color: 'red' }}>Please enter a valid USFM book identifier or 'OBS'. ('<b>{bookID}</b>' is not valid.)</p>);
                 return;
             }
+
+            if (props.reloadAllFilesFirst && props.reloadAllFilesFirst.slice(0).toUpperCase() === 'Y') {
+                console.log("Clearing cache before running book package check…");
+                setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running book package check…</p>);
+                await clearCaches();
+            }
+            else await clearCheckedArticleCache();
 
             setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for GL book package check…</p>);
             const successFlag = await preloadReposIfNecessary(username, languageCode, [bookID], branch);
@@ -95,7 +109,7 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
                 return (<div>
                     <p>Checked <b>{username} {languageCode} {bookID}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
                     <RenderSuccesses username={username} results={processedResults} />
-                    <RenderTotals rawNoticeListLength={rawCBPsResults.noticeList.length} results={processedResults}/>
+                    <RenderTotals rawNoticeListLength={rawCBPsResults.noticeList.length} results={processedResults} />
                     {/* <RenderRawResults results={rawCBPsResults} /> */}
                 </div>);
             }

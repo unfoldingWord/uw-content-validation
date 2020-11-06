@@ -82,6 +82,7 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
 
         // Save our line number
         if (lineNumberString && lineNumberString.length) {
+            /*
             //  but we need a temporary fix for the BCS bug which doesn't include blank lines in the count
             let lineNumber = Number(lineNumberString)
             let notified = false;
@@ -97,6 +98,8 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
                 }
             }
             ourErrorObject.lineNumber = lineNumber;
+            */
+            ourErrorObject.lineNumber = Number(lineNumberString);
         }
     }
 

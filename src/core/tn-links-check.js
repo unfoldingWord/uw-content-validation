@@ -19,9 +19,10 @@ const TA_REGEX = new RegExp('\\[\\[rc://([^ /]+?)/ta/man/([^ /]+?)/([^ \\]]+?)\\
 const TW_REGEX = new RegExp('\\[\\[rc://([^ /]+?)/tw/dict/bible/([^ /]+?)/([^ \\]]+?)\\]\\]', 'g');
 
 // TODO: Allow [1 Timothy 3:16](./16.md)
-const OTHER_BOOK_BIBLE_REGEX = new RegExp('\\[(\\w+?) (\\d{1,3}):(\\d{1,3})\\]\\((.{2,3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');
-const THIS_BOOK_BIBLE_REGEX = new RegExp('\\[(\\d{1,3}):(\\d{1,3})\\]\\((.{2,3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');
-const THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[(\\d{1,3}):(\\d{1,3})\\]\\(\\./(\\d{1,3})\\.md\\)', 'g');
+// TODO: Allow [Titus 1:9](../01/09/pzi1)
+const OTHER_BOOK_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})\\]\\(([123A-Z]{2,3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');
+const THIS_BOOK_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})\\]\\((\\.{2,3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');
+const THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})\\]\\(\\./(\\d{1,3})\\.md\\)', 'g');
 
 
 // Caches the path names of files which have been already checked
@@ -209,7 +210,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
             taFileContent = await getFile_(taPathParameters);
             // console.log("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
         } catch (trcGCerror) {
-            console.error(`checkTNLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
+            // console.error(`checkTNLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
             addNoticePartial({ priority: 885, message: `Error loading ${fieldName} TA link`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}: ${trcGCerror}` });
         }
         if (!taFileContent)
@@ -286,10 +287,21 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
     // Check this chapter Bible links like [Revelation 3:11](./11.md)
     // eslint-disable-next-line no-cond-assign
     while (regexResultArray = THIS_CHAPTER_BIBLE_REGEX.exec(fieldText)) {
-        console.log(`  checkTNLinksToOutside THIS_CHAPTER_BIBLE_REGEX regexResultArray=${JSON.stringify(regexResultArray)}`);
+        // console.log(`  checkTNLinksToOutside THIS_CHAPTER_BIBLE_REGEX regexResultArray=${JSON.stringify(regexResultArray)}`);
         thisChapterBibleLinkCount += 1;
-        console.assert(regexResultArray.length === 4, `Expected 4 fields (not ${regexResultArray.length})`);
-        const [totalLink, C1, V1, V2] = regexResultArray;
+        console.assert(regexResultArray.length === 6, `Expected 6 fields (not ${regexResultArray.length})`);
+        let [totalLink, optionalN1, optionalB1, C1, V1, V2] = regexResultArray;
+
+        if (optionalN1) console.assert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+        if (optionalB1) {
+            optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
+            if (defaultLanguageCode === 'en') { // should be able to check the book name
+                const checkResult = books.isGoodEnglishBookName(optionalB1);
+                // console.log(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
+                if (checkResult === undefined || checkResult === false)
+                    addNoticePartial({ priority: 143, message: "Unknown Bible book name in link", details: totalLink, extract: optionalB1, location: ourLocation });
+            }
+        }
 
         let linkBookCode = bookID;
 
@@ -329,8 +341,19 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
     while (regexResultArray = THIS_BOOK_BIBLE_REGEX.exec(fieldText)) {
         // console.log(`  checkTNLinksToOutside THIS_BOOK_BIBLE_REGEX regexResultArray=${JSON.stringify(regexResultArray)}`);
         thisBookBibleLinkCount += 1;
-        console.assert(regexResultArray.length === 6, `Expected 6 fields (not ${regexResultArray.length})`);
-        const [totalLink, C1, V1, B2, C2, V2] = regexResultArray;
+        console.assert(regexResultArray.length === 8, `Expected 8 fields (not ${regexResultArray.length})`);
+        let [totalLink, optionalN1, optionalB1, C1, V1, B2, C2, V2] = regexResultArray;
+
+        if (optionalN1) console.assert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+        if (optionalB1) {
+            optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
+            if (defaultLanguageCode === 'en') { // should be able to check the book name
+                const checkResult = books.isGoodEnglishBookName(optionalB1);
+                // console.log(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
+                if (checkResult === undefined || checkResult === false)
+                    addNoticePartial({ priority: 143, message: "Unknown Bible book name in link", details: totalLink, extract: optionalB1, location: ourLocation });
+            }
+        }
 
         let linkBookCode = B2 === '..' ? bookID : B2;
 
@@ -370,17 +393,21 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
     while (regexResultArray = OTHER_BOOK_BIBLE_REGEX.exec(fieldText)) {
         console.log(`  checkTNLinksToOutside OTHER_BOOK_BIBLE_REGEX regexResultArray=${JSON.stringify(regexResultArray)}`);
         otherBookBibleLinkCount += 1;
-        console.assert(regexResultArray.length === 7, `Expected 7 fields (not ${regexResultArray.length})`);
-        const [totalLink, B1, C1, V1, B2, C2, V2] = regexResultArray;
+        console.assert(regexResultArray.length === 8, `Expected 8 fields (not ${regexResultArray.length})`);
+        let [totalLink, optionalN1, optionalB1, C1, V1, B2, C2, V2] = regexResultArray;
+
+        if (optionalN1) console.assert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+        if (optionalB1) {
+            optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
+            if (defaultLanguageCode === 'en') { // should be able to check the book name
+                const checkResult = books.isGoodEnglishBookName(optionalB1);
+                // console.log(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
+                if (checkResult === undefined || checkResult === false)
+                    addNoticePartial({ priority: 143, message: "Unknown Bible book name in link", details: totalLink, extract: optionalB1, location: ourLocation });
+            }
+        }
 
         let linkBookCode = B2 === '..' ? bookID : B2;
-
-        if (defaultLanguageCode === 'en') { // should be able to check the book name
-            const checkResult = books.isGoodEnglishBookName(B1);
-            // console.log(B1, "isGoodEnglishBookName checkResult", checkResult);
-            if (checkResult === undefined || checkResult === false)
-                addNoticePartial({ priority: 143, message: "Unknown Bible book name in link", extract: B1, location: ourLocation });
-        }
 
         const chapterInt = ourParseInt(C2), verseInt = ourParseInt(V2);
         try {

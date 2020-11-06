@@ -23,8 +23,7 @@ describe('checkTN_TSVDataRow() - ', () => {
   const languageCode = 'en';
 
   describe('link tests - ', () => {
-    // TODO re-enable test when fixed
-    it.skip('should fail invalid doublet link', async() => {
+    it('should fail invalid doublet link', async() => {
       const chosenLine = "RUT\t2\t12\tgnn5\tfigs-parallelism\tשְׁלֵמָ֗ה\t1\tmay your full wages come from Yahweh	This is a poetic expression that is very similar to the previous sentence. Alternate translation: “May Yahweh fully give to you everything that you deserve” (See: [[rc://*/ta/man/translate/figs-parallelism]], [Doublet](../figs-doublet/01.md))";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'RUT','2','12', 'that was supplied', optionalCheckingOptions);
       expect(rawResults.noticeList.length).toEqual(1);
@@ -59,23 +58,21 @@ describe('checkTN_TSVDataRow() - ', () => {
       expect(rawResults).toMatchSnapshot();
     });
 
-    // TODO: Reenable after issue implemented
-    it.skip('should fail if SupportReference link differs from link in OccurrenceNote', async() => {
+    it('should fail if SupportReference link differs from link in OccurrenceNote', async() => {
       const chosenLine = "GEN\t1\t6\turb3\tfigs-imperative\t\t0\tLet there be an expanse…let it divide\tThese are commands. By commanding that the expanse should exist and that it divide the waters, God made it exist and divide the waters. (See: [[rc://*/ta/man/figs-parallelism]])";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','6', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(1);
+      expect(rawResults.noticeList.length).toEqual(2);
       expect(rawResults).toMatchSnapshot();
     });
 
-    it.skip('should fail invalid link path', async() => {
+    it('should fail invalid link path', async() => {
       const chosenLine = "GEN\t1\t7\turb3\tfigs-imperative\t\t0\tLet there be an expanse…let it divide\tThese are commands. By commanding that the expanse should exist and that it divide the waters, God made it exist and divide the waters. (See: [[rc://*/ta/woman/figs-imperative]])";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','7', 'that was supplied', optionalCheckingOptions);
       expect(rawResults.noticeList.length).toEqual(1);
       expect(rawResults).toMatchSnapshot();
     });
 
-    // TODO re-enable test when fixed
-    it.skip('should succeed with mixed link types', async() => {
+    it('should succeed with mixed link types', async() => {
       const chosenLine = "GEN\t1\t8\tss9r\tfigs-merism\t\t0\tevening and morning\tThis refers to the whole day. The writer speaks of the whole day as if it were these two parts. In the Jewish culture, a day begins when the sun sets. See how you translated this in [Genesis 1:5](../01/05.md). (See: [[rc://*/ta/man/translate/figs-merism]])";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','8', 'that was supplied', optionalCheckingOptions);
       expect(rawResults.noticeList.length).toEqual(0);
@@ -134,7 +131,7 @@ describe('checkTN_TSVDataRow() - ', () => {
     it('invalid Original Language', async() => {
       const chosenLine = "GEN\t1\t1\tf2mg\t\t0\t\t\tIn the beginning, God created the heavens and the earth “This is about how God made the heavens and the earth in the beginning.” This statement summarizes the rest of the chapter. Some languages translate it as “A very long time ago God created the heavens and the earth.” Translate it in a way that shows this actually happened and is not just a folk story.";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','1', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(1);
+      expect(rawResults.noticeList.length).toEqual(2);
       expect(rawResults).toMatchSnapshot();
     });
 
@@ -218,11 +215,10 @@ describe('checkTN_TSVDataRow() - ', () => {
 
   describe('Occurrence Note tests - ', () => {
 
-    // TODO re-enable test when fixed
-    it.skip('should find white space', async() => {
+    it('should find white space', async() => {
       const chosenLine = "GEN\t1\t2\td7qw\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\t1\tDarkness\t ";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(1);
+      expect(rawResults.noticeList.length).toEqual(2);
       expect(rawResults).toMatchSnapshot();
     });
 
@@ -255,7 +251,7 @@ describe('checkTN_TSVDataRow() - ', () => {
       expect(rawResults).toMatchSnapshot();
     });
 
-    it('should find invalid book ID', async() => {
+    it.skip('should find invalid book ID', async() => {
       const chosenLine = "GIN\t1\t2\td7qw\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
       let error = false;
       try {
@@ -343,12 +339,11 @@ describe('checkTN_TSVDataRow() - ', () => {
     expect(rawResults).toMatchSnapshot();
   });
 
-  // TODO: fix validation of chapter/verse and then re-enable test
-  it.skip('should find mismatched chapter verse', async() => {
+  it('should find mismatched chapter verse', async() => {
     const chosenLine = "GEN\t2\t3\td7qw\tfigs-imperative\t\t0\tLet there be light\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
-    const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','2','3', 'that was supplied', optionalCheckingOptions);
-    expect(rawResults.noticeList.length).toEqual(3);
-    // expect(rawResults).toEqual({}); // TODO add match snapshot
+    const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','22','33', 'that was supplied', optionalCheckingOptions);
+    expect(rawResults.noticeList.length).toEqual(2);
+    expect(rawResults).toMatchSnapshot();
   });
 
   it('should find mismatched bookId', async() => {

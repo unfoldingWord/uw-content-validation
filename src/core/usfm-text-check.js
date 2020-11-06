@@ -183,7 +183,8 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
         console.assert(noticeObject.location !== undefined, "cUSFM addNoticePartial: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `cUSFM addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
-        console.assert(noticeObject.message.indexOf('Mismatched {}') < 0, `checkUSFMText addNoticePartial: got bad notice: ${JSON.stringify(noticeObject)}`);
+        // Doublecheck -- we don't want "Mismatched {}" per line, only per file
+        console.assert(noticeObject.message.indexOf("Mismatched {}") < 0 || noticeObject.lineNumber === undefined, `checkUSFMText addNoticePartial: got bad notice: ${JSON.stringify(noticeObject)}`);
         result.noticeList.push({ ...noticeObject, bookID, filename });
     }
 

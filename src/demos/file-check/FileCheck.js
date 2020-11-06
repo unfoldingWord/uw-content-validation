@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 // import { Paper, Button } from '@material-ui/core';
 // import { RepositoryContext, FileContext } from 'gitea-react-toolkit';
 import { withStyles } from '@material-ui/core/styles';
-import { ourParseInt, cachedGetFile } from '../../core';
+import { clearCaches, clearCheckedArticleCache, ourParseInt, cachedGetFile } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
 import { checkFileContents } from './checkFileContents';
@@ -27,6 +27,13 @@ function FileCheck(props) {
     (async () => {
       // console.log("Started FileCheck.unnamedFunction()");
 
+      // NOTE from RJH: I can't find the correct React place for this / way to do this
+      //                  so it shows a warning for the user, and doesn't continue to try to process
+      if (!props.wait || props.wait !== 'N') {
+        setResultValue(<p style={{ color: 'blue' }}>Waiting…</p>);
+        return;
+      }
+
       if (!username) {
         setResultValue(<p style={{ color: 'red' }}>No <b>username</b> set!</p>);
         return;
@@ -40,6 +47,13 @@ function FileCheck(props) {
         return;
       }
 
+      if (props.reloadAllFilesFirst && props.reloadAllFilesFirst.slice(0).toUpperCase() === 'Y') {
+        console.log("Clearing cache before running book package check…");
+        setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running book package check…</p>);
+        await clearCaches();
+      }
+      else await clearCheckedArticleCache();
+
       // Display our "waiting" message
       setResultValue(<p style={{ color: 'magenta' }}>Fetching {username} {repoName} <b>{filename}</b>…</p>);
       // console.log(`FileCheck about to call cachedGetFile(${username}, ${repoName}, ${filename}, ${branch})…`);
@@ -52,7 +66,7 @@ function FileCheck(props) {
         rawCFResults = await checkFileContents(languageCode, filename, fileContent, givenLocation, checkingOptions);
 
         // Because we know here that we're only checking one file, we don't need the filename field in the notices
-        function deleteFilenameField(notice) { delete notice.filename; notice.username=username; return notice; }
+        function deleteFilenameField(notice) { delete notice.filename; notice.username = username; return notice; }
         rawCFResults.noticeList = rawCFResults.noticeList.map(deleteFilenameField);
       }
       // console.log(`FileCheck got initial results with ${rawCFResults.successList.length} success message(s) and ${rawCFResults.noticeList.length} notice(s)`);

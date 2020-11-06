@@ -85,7 +85,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     let characterIndex;
     if ((characterIndex = fieldText.indexOf('\u200B')) >= 0) {
         const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/\u200B/g, '‼') + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
-        addNoticePartial({ priority: 639, message: "Field contains zero-width space(s)", characterIndex, extract, location: ourLocation });
+        addNoticePartial({ priority: 895, message: "Field contains zero-width space(s)", characterIndex, extract, location: ourLocation });
         suggestion = suggestion.replace(/\u200B/g, ''); // Or should it be space ???
     }
 

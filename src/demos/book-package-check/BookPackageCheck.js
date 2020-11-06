@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // import { withStyles } from '@material-ui/core/styles';
 import * as books from '../../core/books/books';
-import { ourParseInt, preloadReposIfNecessary } from '../../core';
+import { clearCaches, clearCheckedArticleCache, ourParseInt, preloadReposIfNecessary } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderTotals } from '../RenderProcessedResults';
 import { checkBookPackage } from './checkBookPackage';
@@ -56,11 +56,25 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
 
             // NOTE from RJH: I can't find the correct React place for this / way to do this
             //                  so it shows a warning for the user, and doesn't continue to try to process
+            if (!props.wait || props.wait !== 'N') {
+                setResultValue(<p style={{ color: 'blue' }}>Waiting…</p>);
+                return;
+            }
+
+            // NOTE from RJH: I can't find the correct React place for this / way to do this
+            //                  so it shows a warning for the user, and doesn't continue to try to process
             if (bookID !== 'OBS' && !books.isValidBookID(bookID)) {
                 console.log(`Invalid '${bookID}' bookID given!`)
                 setResultValue(<p style={{ color: 'red' }}>Please enter a valid USFM book identifier or 'OBS'. ('<b>{bookID}</b>' is not valid.)</p>);
                 return;
             }
+
+            if (props.reloadAllFilesFirst && props.reloadAllFilesFirst.slice(0).toUpperCase() === 'Y') {
+                console.log("Clearing cache before running book package check…");
+                setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running book package check…</p>);
+                await clearCaches();
+            }
+            else await clearCheckedArticleCache();
 
             // if (bookID !== 'OBS') { // Preload the reference repos
             setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for <b>{bookID}</b> book package check…</p>);
@@ -103,7 +117,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
                     processOptions.ignorePriorityNumberList.push(intBit);
                 }
                 // console.log(`Now have processOptions.ignorePriorityNumberList=${JSON.stringify(processOptions.ignorePriorityNumberList)}`);
-            if (props.ignoreDisabledNoticesFlag) processOptions.ignoreDisabledNoticesFlag = props.ignoreDisabledNoticesFlag.toLowerCase() === 'true';
+                if (props.ignoreDisabledNoticesFlag) processOptions.ignoreDisabledNoticesFlag = props.ignoreDisabledNoticesFlag.toLowerCase() === 'true';
             }
 
             let displayType = 'ErrorsWarnings'; // default
@@ -113,7 +127,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
                 return (<div>
                     <p>Checked <b>{username} {languageCode} {bookID}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
                     <RenderSuccesses username={username} results={processedResults} />
-                    <RenderTotals rawNoticeListLength={rawCBPResults.noticeList.length} results={processedResults}/>
+                    <RenderTotals rawNoticeListLength={rawCBPResults.noticeList.length} results={processedResults} />
                     {/* <RenderRawResults results={rawCBPResults} /> */}
                 </div>);
             }

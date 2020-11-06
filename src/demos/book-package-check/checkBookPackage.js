@@ -5,7 +5,7 @@ import { checkFileContents } from '../file-check/checkFileContents';
 import { checkRepo } from '../repo-check/checkRepo';
 
 
-//const BP_VALIDATOR_VERSION_STRING = '0.4.3';
+//const BP_VALIDATOR_VERSION_STRING = '0.4.4';
 
 const MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -96,7 +96,7 @@ async function checkTQMarkdownBook(username, languageCode, repoName, branch, boo
   let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0;
   const pathList = await getFileListFromZip_({ username, repository: repoName, branch, optionalPrefix: `${bookID.toLowerCase()}/` });
   if (!Array.isArray(pathList) || !pathList.length) {
-    console.error("checkTQrepo failed to load", username, repoName, branch);
+    // console.error("checkTQrepo failed to load", username, repoName, branch);
     const details = `username=${username}`;
     if (! await repositoryExistsOnDoor43({ username, repository: repoName }))
       ctqResult.noticeList.push({ priority: 997, message: "Repository doesn't exist", details, username, repoCode, repoName, location: generalLocation, extra: repoCode });
@@ -396,8 +396,8 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         filename = await cachedGetBookFilenameFromManifest({ username, repository: repoName, branch, bookID: bookID.toLowerCase() });
         console.assert(filename.startsWith(`${languageCode}_`), `Expected TN filename '${filename}' to start with the language code '${languageCode}_'`);
       } catch (e) {
-        console.error(`cachedGetBookFilenameFromManifest failed with: ${e}`);
-        filename = `${languageCode}_tn_${bookNumberAndName}.tsv`;
+        // console.error(`cachedGetBookFilenameFromManifest failed with: ${e}`);
+        filename = `${languageCode}_tn_${bookNumberAndName}.tsv`; // Take a guess
       }
       console.assert(filename.endsWith('.tsv'), `Expected TN filename '${filename}' to end with '.tsv'`);
     }
@@ -431,7 +431,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         totalCheckedSize += repoFileContent.length;
         checkedRepoNames.add(repoName);
       } catch (cBPgfError) {
-        console.error(`checkBookPackage(${username}, ${languageCode}, ${bookID}, (fn), ${JSON.stringify(checkingOptions)}) failed to load`, username, repoName, filename, branch, cBPgfError + '');
+        // console.error(`checkBookPackage(${username}, ${languageCode}, ${bookID}, (fn), ${JSON.stringify(checkingOptions)}) failed to load`, username, repoName, filename, branch, cBPgfError + '');
         // console.log(`cBPgfError=${cBPgfError} or ${JSON.stringify(cBPgfError)} or2 ${cBPgfError == 'TypeError: repoFileContent is null'} or3 ${cBPgfError.message == 'TypeError: repoFileContent is null'} or4 ${cBPgfError.message === 'TypeError: repoFileContent is null'}`);
         let details = `username=${username}`;
         if (! await repositoryExistsOnDoor43({ username, repository: repoName }))

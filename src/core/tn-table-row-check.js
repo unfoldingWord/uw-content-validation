@@ -7,7 +7,7 @@ import { checkTNLinksToOutside } from './tn-links-check';
 import { checkOriginalLanguageQuote } from './orig-quote-check';
 
 
-// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.4.9';
+// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.4.10';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -163,7 +163,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         console.assert(allowedLinks === true || allowedLinks === false, "checkTN_TSVDataRow ourCheckTextField: allowedLinks parameter must be either true or false");
         console.assert(rowLocation.indexOf(fieldName) < 0, `checkTN_TSVDataRow ourCheckTextField: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const fieldType = fieldName==='OccurrenceNote'? 'markdown':'raw';
+        const fieldType = fieldName === 'OccurrenceNote' ? 'markdown' : 'raw';
         const dbtcResultObject = checkTextField(fieldType, fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
@@ -426,7 +426,9 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         if (origQuote.length) { // need to check UTN against UHB and UGNT
             ourCheckTextField(rowID, 'OrigQuote', origQuote, false, ourRowLocation, optionalCheckingOptions);
             if (occurrence.length)
-            await ourCheckTNOriginalLanguageQuote(rowID, 'OrigQuote', origQuote, occurrence, ourRowLocation, optionalCheckingOptions);
+                await ourCheckTNOriginalLanguageQuote(rowID, 'OrigQuote', origQuote, occurrence, ourRowLocation, optionalCheckingOptions);
+            else
+                addNoticePartial({ priority: 750, message: "Missing occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, location: ourRowLocation });
         }
         else // TODO: Find more details about when these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             if (V !== 'intro' && occurrence !== '0')
@@ -435,7 +437,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         if (occurrence.length) { // This should usually be a digit
             if (occurrence === '0') { // zero means that it doesn't occur
                 if (origQuote.length)
-                    addNoticePartial({ priority: 550, message: "Invalid zero occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, location: ourRowLocation });
+                    addNoticePartial({ priority: 751, message: "Invalid zero occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, extract: occurrence, location: ourRowLocation });
                 // if (V !== 'intro')
                 //     addNoticePartial({priority:500, message:"Invalid zero occurrence field", rowID, location:rowLocation);
             }

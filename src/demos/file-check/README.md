@@ -3,14 +3,16 @@
 The code below requests some info to select an online repository
 and then validates the content of one file selected from the repo.
 
-**Note**: This demonstration uses cached values of files stored inside the local browser. This makes reruns of the checks much faster, but it won't notice if you have updated the files on Door43. If you want to clear the local caches, use the `Clear Cache` function.
+**Note**: This demonstration uses saved (cached) copies of files stored inside the local browser. This makes reruns of the checks faster, but it won't notice if you have recently updated the files on Door43. If you want to clear the local caches, use either the `reloadAllFilesFirst` variable below, or the `Clear Cache` function from the menu.
 
 ```js
-import { clearCheckedArticleCache } from '../../core';
-
-clearCheckedArticleCache();
-
 <FileCheck
+    // Set to Y while adjusting settings below, then change back to N to start the check
+    wait='N' // 'Y' (for Yes) or 'N' (for No)
+
+    // Set to Y to freshly update all data files from Door43 (Same as ClearCache in menu)
+    reloadAllFilesFirst='N' // 'Y' (for Yes) or 'N' (for No)
+
     username='unfoldingWord'
 
     // repoName='hbo_uhb' // OT books only
@@ -44,7 +46,7 @@ clearCheckedArticleCache();
     // filename= 'en_tn_65-3JN.tsv' // for TN
 
     // The location field appears in check messages to help the user locate the issue
-    location="as specified in file-check/README.md"
+    location="as specified in FileCheck demo"
 
     // Default displayType is 'ErrorsWarnings'
     //  Alternatives are `SevereMediumLow', 'SingleList'

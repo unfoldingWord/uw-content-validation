@@ -110,7 +110,7 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
         else if (taFileContent.length < 10)
             addNoticePartial({ priority: 887, message: `Linked TA article seems empty`, extract: fieldText, location: `${ourLocation} ${filepath}` });
     } catch (trcGCerror) {
-        console.error("checkSupportReferenceInTA() failed to load", taRepoUsername, taRepoName, filepath, taRepoBranch, trcGCerror.message);
+        // console.error("checkSupportReferenceInTA() failed to load", taRepoUsername, taRepoName, filepath, taRepoBranch, trcGCerror.message);
         addNoticePartial({ priority: 888, message: `Error loading TA link`, extract: fieldText, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
     }
 

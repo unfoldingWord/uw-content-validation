@@ -76,9 +76,47 @@ Object {
 }
 `;
 
+exports[`checkTN_TSVDataRow() -  Occurrence Note tests -  should find white space 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "extract": "figs-imperative",
+      "fieldName": "SupportReference",
+      "location": " that was supplied",
+      "message": "Link to TA should also be in OccurrenceNote",
+      "priority": 787,
+      "rowID": "d7qw",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "fieldName": "OccurrenceNote",
+      "location": " that was supplied",
+      "message": "Field is only whitespace",
+      "priority": 373,
+      "rowID": "d7qw",
+    },
+  ],
+}
+`;
+
 exports[`checkTN_TSVDataRow() -  Original Quote tests -  invalid Original Language 1`] = `
 Object {
   "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "1",
+      "bookID": "GEN",
+      "fieldName": "Occurrence",
+      "location": " that was supplied",
+      "message": "Missing occurrence field when we have an original quote",
+      "priority": 750,
+      "rowID": "f2mg",
+    },
     Object {
       "C": "1",
       "V": "1",
@@ -515,6 +553,53 @@ Object {
 }
 `;
 
+exports[`checkTN_TSVDataRow() -  link tests -  should fail if SupportReference link differs from link in OccurrenceNote 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "6",
+      "bookID": "GEN",
+      "extract": "figs-imperative",
+      "fieldName": "SupportReference",
+      "location": " that was supplied",
+      "message": "Link to TA should also be in OccurrenceNote",
+      "priority": 787,
+      "rowID": "urb3",
+    },
+    Object {
+      "C": "1",
+      "V": "6",
+      "bookID": "GEN",
+      "details": "detected 1 link but no TA/TW links from [\\"[[rc://*/ta/man/figs-parallelism]]\\"]",
+      "fieldName": "OccurrenceNote",
+      "location": " that was supplied",
+      "message": "More [[ ]] links than valid TA/TW links",
+      "priority": 649,
+      "rowID": "urb3",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  link tests -  should fail invalid doublet link 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "2",
+      "V": "12",
+      "bookID": "RUT",
+      "details": "detected 1 link but no Bible links from [\\"[[rc://*/ta/man/translate/figs-parallelism]], [Doublet](../figs-doublet/01.md)\\"]",
+      "fieldName": "OccurrenceNote",
+      "location": " that was supplied",
+      "message": "More [ ]( ) links than valid Bible links",
+      "priority": 648,
+      "rowID": "gnn5",
+    },
+  ],
+}
+`;
+
 exports[`checkTN_TSVDataRow() -  link tests -  should fail invalid first link 1`] = `
 Object {
   "noticeList": Array [
@@ -568,6 +653,24 @@ Object {
 }
 `;
 
+exports[`checkTN_TSVDataRow() -  link tests -  should fail invalid link path 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "7",
+      "bookID": "GEN",
+      "details": "detected 1 link but no TA/TW links from [\\"[[rc://*/ta/woman/figs-imperative]]\\"]",
+      "fieldName": "OccurrenceNote",
+      "location": " that was supplied",
+      "message": "More [[ ]] links than valid TA/TW links",
+      "priority": 649,
+      "rowID": "urb3",
+    },
+  ],
+}
+`;
+
 exports[`checkTN_TSVDataRow() -  link tests -  should fail invalid second link 1`] = `
 Object {
   "noticeList": Array [
@@ -616,7 +719,7 @@ Object {
       "C": "1",
       "V": "9",
       "bookID": "GEN",
-      "details": "1 link (but no Bible links) from [\\"[Genesis 1:7](../01/zzz.md)\\"]",
+      "details": "detected 1 link but no Bible links from [\\"[Genesis 1:7](../01/zzz.md)\\"]",
       "fieldName": "OccurrenceNote",
       "location": " that was supplied",
       "message": "More [ ]( ) links than valid Bible links",
@@ -925,6 +1028,37 @@ Object {
       "location": " that was supplied",
       "message": "Wrong book identifier",
       "priority": 978,
+      "rowID": "d7qw",
+    },
+  ],
+}
+`;
+
+exports[`checkTN_TSVDataRow() -  should find mismatched chapter verse 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "22",
+      "V": "33",
+      "bookID": "GEN",
+      "details": "(expected '22')",
+      "extract": "2",
+      "fieldName": "Chapter",
+      "location": " that was supplied",
+      "message": "Wrong chapter number",
+      "priority": 976,
+      "rowID": "d7qw",
+    },
+    Object {
+      "C": "22",
+      "V": "33",
+      "bookID": "GEN",
+      "details": "(expected '33')",
+      "extract": "3",
+      "fieldName": "Verse",
+      "location": " that was supplied",
+      "message": "Wrong verse number",
+      "priority": 975,
       "rowID": "d7qw",
     },
   ],

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderTotals } from '../RenderProcessedResults';
-import { preloadReposIfNecessary, ourParseInt } from '../../core';
+import { clearCaches, clearCheckedArticleCache, preloadReposIfNecessary, ourParseInt } from '../../core';
 import { checkRepo } from './checkRepo';
 // import { consoleLogObject, displayPropertyNames } from '../../core/utilities';
 
@@ -53,6 +53,13 @@ function RepoCheck(/*username, languageCode,*/ props) {
         (async () => {
             // console.log("Started RepoCheck.unnamedFunction()");
 
+            // NOTE from RJH: I can't find the correct React place for this / way to do this
+            //                  so it shows a warning for the user, and doesn't continue to try to process
+            if (!props.wait || props.wait !== 'N') {
+                setResultValue(<p style={{ color: 'blue' }}>Waiting…</p>);
+                return;
+            }
+
             if (!username) {
                 setResultValue(<p style={{ color: 'red' }}>No <b>username</b> set!</p>);
                 return;
@@ -61,6 +68,13 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 setResultValue(<p style={{ color: 'red' }}>No <b>repoName</b> set!</p>);
                 return;
             }
+
+            if (props.reloadAllFilesFirst && props.reloadAllFilesFirst.slice(0).toUpperCase() === 'Y') {
+                console.log("Clearing cache before running book package check…");
+                setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running book package check…</p>);
+                await clearCaches();
+            }
+            else await clearCheckedArticleCache();
 
             let [languageCode, repoCode] = repoName.split('_');
             repoCode = repoCode.toUpperCase();
@@ -124,7 +138,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
                     return (<div>
                         <p>Checked <b>{username} {repoName}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)</p>
                         <RenderSuccesses username={username} results={processedResults} />
-                        <RenderTotals rawNoticeListLength={rawCRResults.noticeList.length} results={processedResults}/>
+                        <RenderTotals rawNoticeListLength={rawCRResults.noticeList.length} results={processedResults} />
                         {/* <RenderRawResults results={rawCRResults} /> */}
                     </div>);
                 }

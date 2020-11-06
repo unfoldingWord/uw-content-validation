@@ -7,7 +7,7 @@ import { checkTNLinksToOutside } from './tn-links-check';
 import { checkOriginalLanguageQuote } from './orig-quote-check';
 
 
-// const ANNOTATION_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.5.5';
+// const ANNOTATION_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.5.6';
 
 const NUM_EXPECTED_ANNOTATION_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_ANNOTATION_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tAnnotation';
@@ -441,6 +441,8 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
             ourCheckTextField(rowID, 'Quote', quote, false, ourRowLocation, optionalCheckingOptions);
             if (occurrence.length)
                 await ourCheckTNOriginalLanguageQuote(rowID, 'Quote', quote, occurrence, ourRowLocation, optionalCheckingOptions);
+            else
+                addNoticePartial({ priority: 750, message: "Missing occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, location: ourRowLocation });
         }
         else // TODO: Find more details about when these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             if (annotationType === 'TN' && V !== 'intro' && occurrence !== '0')
@@ -449,7 +451,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         if (occurrence.length) { // This should usually be a digit
             if (occurrence === '0') { // zero means that it doesn't occur
                 if (quote.length)
-                    addNoticePartial({ priority: 550, message: "Invalid zero occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, location: ourRowLocation });
+                    addNoticePartial({ priority: 751, message: "Invalid zero occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, extract: occurrence, location: ourRowLocation });
                 // if (V !== 'intro')
                 //     addNoticePartial({priority:500, message:"Invalid zero occurrence field", rowID, location:rowLocation);
             }

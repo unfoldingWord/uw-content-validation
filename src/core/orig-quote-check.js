@@ -276,7 +276,7 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
 
     // Now check if the quote can be found in the verse text
     if (quoteBits) { // it had an ellipsis
-        console.assert(occurrence === 1, `Oh -- can get '${fieldText}' with occurrence=${occurrence}`);
+        console.assert(occurrence === 1, `Oh -- can get '${fieldText}' with occurrence=${occurrence} in ${bookID} ${C}:${V}`);
         const numQuoteBits = quoteBits.length;
         if (numQuoteBits >= 2) {
             for (let bitIndex = 0; bitIndex < numQuoteBits; bitIndex++) {
