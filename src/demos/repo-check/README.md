@@ -10,8 +10,8 @@ The code below requests some info and then checks a Door43 repository.You can en
 import RepoCheck from './RepoCheck';
 
 <RepoCheck
-  // Set to Y while adjusting settings below, then change back to N to start the check
-  wait='N' // 'Y' (for Yes) or 'N' (for No)
+  // Set to Y while adjusting settings below, then change to N to start the check
+  wait='Y' // 'Y' (for Yes) or 'N' (for No)
 
   // Set to Y to freshly update all data files from Door43 (Same as ClearCache in menu)
   reloadAllFilesFirst='N' // 'Y' (for Yes) or 'N' (for No)
