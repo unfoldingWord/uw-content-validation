@@ -5,7 +5,7 @@ import { checkFileContents } from '../file-check/checkFileContents';
 import { checkRepo } from '../repo-check/checkRepo';
 
 
-//const BP_VALIDATOR_VERSION_STRING = '0.4.4';
+//const BP_VALIDATOR_VERSION_STRING = '0.4.5';
 
 const MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -58,7 +58,7 @@ async function checkTQMarkdownBook(username, languageCode, repoName, branch, boo
     console.assert(typeof noticeObject.location === 'string', `cTQ addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}'`);
     console.assert(noticeObject.extra !== undefined, "cTQ addNoticePartial: 'extra' parameter should be defined");
     console.assert(typeof noticeObject.extra === 'string', `cTQ addNoticePartial: 'extra' parameter should be a string not a '${typeof noticeObject.extra}'`);
-    ctqResult.noticeList.push({ ...noticeObject, repoCode, repoName, bookID });
+    ctqResult.noticeList.push({ ...noticeObject, username, repoCode, repoName, bookID });
   }
 
 

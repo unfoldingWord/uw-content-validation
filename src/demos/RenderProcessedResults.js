@@ -259,12 +259,12 @@ function RenderFileDetails({ username, repoName, filename, lineNumber, rowID, fi
                 else fileLink = `https://git.door43.org/${username}/${repoName}/src/branch/master/${filename}#L${lineNumber}`;
             } catch { }
         }
-        // else if (!username) resultEnd += " no username"
-        // else if (!repoName) resultEnd += " no repoName"
-        // else if (!filename) resultEnd += " no filename"
+        // else if (!username) resultEnd += " no username";
+        // else if (!repoName) resultEnd += " no repoName";
+        // else if (!filename) resultEnd += " no filename";
         lineResult = `line ${lineNumber.toLocaleString()}`;
     }
-    // else resultEnd += " no lineNumber"
+    // else resultEnd += " no lineNumber";
     if (rowID && rowID.length) resultEnd += ` with ID ${rowID}`;
     if (fieldName && fieldName.length) resultEnd += ` in ${fieldName} field`;
     if (fileLink) return <>{resultStart}<a rel="noopener noreferrer" target="_blank" href={fileLink}>{lineResult}</a>{resultEnd}</>;
