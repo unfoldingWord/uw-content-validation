@@ -86,6 +86,7 @@ export function checkMarkdownText(textName, markdownText, givenLocation, optiona
         //  process results line by line
         for (const noticeEntry of dbtcResultObject.noticeList)
             addNotice({ ...noticeEntry, lineNumber });
+        return dbtcResultObject.suggestion; // There may or may not be one!
     }
     // end of ourCheckTextField function
 
@@ -119,8 +120,12 @@ export function checkMarkdownText(textName, markdownText, givenLocation, optiona
         // thisText = thisText.replace(/^ +/g,'')
         // console.log(`After removing more leading spaces have '${thisText}'`);
 
+        let suggestion;
         if (thisText)
-            ourCheckTextField(lineNumber, thisText, true, lineLocation, optionalCheckingOptions);
+            suggestion = ourCheckTextField(lineNumber, thisText, true, lineLocation, optionalCheckingOptions);
+
+        if (thisText === lineText) // i.e., we didn't premodify the field being checked
+            return suggestion;
     }
     // end of checkMarkdownLine function
 
@@ -132,6 +137,7 @@ export function checkMarkdownText(textName, markdownText, givenLocation, optiona
     let headerLevel = 0;
     let lastNumLeadingSpaces = 0;
     // let lastLineContents;
+    const suggestedLines = [];
     for (let n = 1; n <= lines.length; n++) {
 
         const line = lines[n - 1];
@@ -151,14 +157,23 @@ export function checkMarkdownText(textName, markdownText, givenLocation, optiona
             if (numLeadingSpaces && lastNumLeadingSpaces && numLeadingSpaces !== lastNumLeadingSpaces)
                 addNotice({ priority: 472, message: "Nesting of header levels seems confused", lineNumber: n, characterIndex: 0, location: ourLocation });
 
-            checkMarkdownLineContents(n, line, ourLocation);
+            const suggestedLine = checkMarkdownLineContents(n, line, ourLocation);
+            suggestedLines.push(suggestedLine === undefined ? line : suggestedLine);
         } else {
             // This is a blank line
             numLeadingSpaces = 0;
+            suggestedLines.push('');
         }
 
         // lastLineContents = line;
         lastNumLeadingSpaces = numLeadingSpaces;
+    }
+
+    const suggestion = suggestedLines.join('\n');
+    if (suggestion !== markdownText) {
+        // console.log(`Had markdown ${markdownText}`);
+        // console.log(`Sug markdown ${suggestion}`);
+        result.suggestion = suggestion;
     }
 
     addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length === 1 ? '' : 's'}${ourLocation}.`);

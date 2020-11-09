@@ -128,6 +128,7 @@ Object {
       "rowID": "f2mg",
     },
   ],
+  "suggestion": "GEN	1	1	f2mg		0	1		In the beginning, God created the heavens and the earth “This is about how God made the heavens and the earth in the beginning.” This statement summarizes the rest of the chapter. Some languages translate it as “A very long time ago God created the heavens and the earth.” Translate it in a way that shows this actually happened and is not just a folk story.",
 }
 `;
 
@@ -179,6 +180,7 @@ Object {
       "rowID": "d7qw",
     },
   ],
+  "suggestion": "GEN	1	2	d7qw	figs-imperative	וְ⁠חֹ֖שֶׁךְ	1	Darkness	This is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])",
 }
 `;
 
@@ -210,6 +212,7 @@ Object {
       "rowID": "d7qw",
     },
   ],
+  "suggestion": "GEN	1	2	d7qw	figs-imperative	וְ⁠חֹ֖שֶׁךְ	1	Darkness	This is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])",
 }
 `;
 
@@ -241,6 +244,7 @@ Object {
       "rowID": "d7qw",
     },
   ],
+  "suggestion": "GEN	1	2	d7qw	figs-imperative	וְ⁠חֹ֖שֶׁךְ	1	Darkness	This is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])",
 }
 `;
 
@@ -279,6 +283,7 @@ Object {
       "rowID": "d7qw",
     },
   ],
+  "suggestion": "GEN	1	2	d7qw	figs-imperative	וְ⁠חֹ֖שֶׁךְ	1	Darkness	This is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])",
 }
 `;
 
@@ -310,6 +315,7 @@ Object {
       "rowID": "d7qw",
     },
   ],
+  "suggestion": "GEN	1	2	d7qw	figs-imperative	וְ⁠חֹ֖שֶׁךְ	1	Darkness	This is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])",
 }
 `;
 
@@ -341,6 +347,7 @@ Object {
       "rowID": "d7qw",
     },
   ],
+  "suggestion": "GEN	1	2	d7qw	figs-imperative	וְ⁠חֹ֖שֶׁךְ	1	Darkness	This is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])",
 }
 `;
 
@@ -387,8 +394,10 @@ Object {
       "C": "1",
       "V": "2",
       "bookID": "GEN",
+      "details": "(not 5)",
+      "extract": "d7q33",
       "fieldName": "ID",
-      "location": " (not 5) that was supplied",
+      "location": " that was supplied",
       "message": "Row ID should be exactly 4 characters",
       "priority": 778,
       "rowID": "d7q33",
@@ -420,13 +429,16 @@ Object {
       "C": "1",
       "V": "2",
       "bookID": "GEN",
+      "details": "(not 3)",
+      "extract": "d7q",
       "fieldName": "ID",
-      "location": " (not 3) that was supplied",
+      "location": " that was supplied",
       "message": "Row ID should be exactly 4 characters",
       "priority": 778,
       "rowID": "d7q",
     },
   ],
+  "suggestion": "GEN	1	2	d7qj	figs-imperative	וְ⁠חֹ֖שֶׁךְ	1	Darkness	This is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])",
 }
 `;
 
@@ -830,8 +842,10 @@ Object {
       "C": "1",
       "V": "2",
       "bookID": "GEN",
+      "details": "(not 5)",
+      "extract": "W-3r5",
       "fieldName": "ID",
-      "location": " (not 5) that was supplied",
+      "location": " that was supplied",
       "message": "Row ID should be exactly 4 characters",
       "priority": 778,
       "rowID": "W-3r5",
@@ -942,6 +956,7 @@ Object {
       "rowID": "W-3r5",
     },
   ],
+  "suggestion": "GIN	200	9	W-3r5	Laugh		1	Bad ellipse...	Boo hoo,,<br> lost my shoe !",
 }
 `;
 

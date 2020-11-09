@@ -7,10 +7,12 @@ import { checkTNLinksToOutside } from './tn-links-check';
 import { checkOriginalLanguageQuote } from './orig-quote-check';
 
 
-// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.4.10';
+// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.0';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
+
+const LC_ALPHABET_PLUS_DIGITS = 'abcdefghijklmnopqrstuvwxyz0123456789';
 
 const TA_REGEX = new RegExp('\\[\\[rc://[^ /]+?/ta/man/[^ /]+?/([^ \\]]+?)\\]\\]', 'g');
 
@@ -118,14 +120,14 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         console.assert(allowedLinks === true || allowedLinks === false, "checkTN_TSVDataRow ourMarkdownTextChecks: allowedLinks parameter must be either true or false");
         console.assert(rowLocation.indexOf(fieldName) < 0, `checkTN_TSVDataRow ourMarkdownTextChecks: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const cmtResultObject = checkMarkdownText(fieldName, fieldText, rowLocation, optionalCheckingOptions);
+        const omtcResultObject = checkMarkdownText(fieldName, fieldText, rowLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
         // result.noticeList = result.noticeList.concat(cmtResultObject.noticeList);
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
-        for (const noticeEntry of cmtResultObject.noticeList) {
+        for (const noticeEntry of omtcResultObject.noticeList) {
             // console.assert(Object.keys(noticeEntry).length === 5, `TL ourMarkdownTextChecks notice length=${Object.keys(noticeEntry).length}`);
             // NOTE: Ellipses in OccurrenceNote have the normal meaning
             //          not like the specialised meaning in the snippet fields OrigQuote and GLQuote
@@ -134,6 +136,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
             )
                 addNoticePartial({ ...noticeEntry, rowID, fieldName });
         }
+        return omtcResultObject.suggestion; // There may or may not be one!
     }
     // end of ourMarkdownTextChecks function
 
@@ -164,17 +167,18 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         console.assert(rowLocation.indexOf(fieldName) < 0, `checkTN_TSVDataRow ourCheckTextField: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
         const fieldType = fieldName === 'OccurrenceNote' ? 'markdown' : 'raw';
-        const dbtcResultObject = checkTextField(fieldType, fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions);
+        const octfResultObject = checkTextField(fieldType, fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
         // result.noticeList = result.noticeList.concat(dbtcResultObject.noticeList);
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
-        for (const noticeEntry of dbtcResultObject.noticeList) {
+        for (const noticeEntry of octfResultObject.noticeList) {
             // console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
             addNoticePartial({ ...noticeEntry, rowID, fieldName });
         }
+        return octfResultObject.suggestion; // There may or may not be one!
     }
     // end of ourCheckTextField function
 
@@ -317,6 +321,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
     const haveGoodBookID = numChaptersThisBook !== undefined;
 
     let fields = line.split('\t');
+    let RIDSuggestion, SRSuggestion, GLQSuggestion, OQSuggestion, OSuggestion, ONSuggestion;
     if (fields.length === NUM_EXPECTED_TN_TSV_FIELDS) {
         const [B, C, V, rowID, supportReference, origQuote, occurrence, GLQuote, occurrenceNote] = fields;
         // let withString = ` with '${rowID}'${inString}`;
@@ -389,16 +394,21 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         if (!rowID.length)
             addNoticePartial({ priority: 779, message: "Missing row ID field", fieldName: 'Verse', location: ourRowLocation });
         else {
-            if (rowID.length !== 4)
-                addNoticePartial({ priority: 778, message: "Row ID should be exactly 4 characters", rowID, fieldName: 'ID', location: ` (not ${rowID.length})${ourRowLocation}` });
-            else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(rowID[0]) < 0)
-                addNoticePartial({ priority: 176, message: "Row ID should start with a lowercase letter or digit", characterIndex: 0, rowID, fieldName: 'ID', location: ` (not '${rowID[0]}')${ourRowLocation}` });
-            else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(rowID[3]) < 0)
-                addNoticePartial({ priority: 175, message: "Row ID should end with a lowercase letter or digit", characterIndeX: 3, rowID, fieldName: 'ID', location: ` (not '${rowID[3]}')${ourRowLocation}` });
-            else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(rowID[1]) < 0)
-                addNoticePartial({ priority: 174, message: "Row ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 1, rowID, location: ` (not '${rowID[1]}')${ourRowLocation}` });
-            else if ('abcdefghijklmnopqrstuvwxyz0123456789'.indexOf(rowID[2]) < 0)
-                addNoticePartial({ priority: 173, message: "Row ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 2, rowID, location: ` (not '${rowID[2]}')${ourRowLocation}` });
+            if (rowID.length !== 4) {
+                addNoticePartial({ priority: 778, message: "Row ID should be exactly 4 characters", details: `(not ${rowID.length})`, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation });
+                if (rowID.length > 4) RIDSuggestion = rowID.substring(0,5);
+                else { // must be < 4
+                    RIDSuggestion = rowID;
+                    while (RIDSuggestion.length < 4) RIDSuggestion += LC_ALPHABET_PLUS_DIGITS[Math.floor(Math.random() * LC_ALPHABET_PLUS_DIGITS.length)];;
+                }
+            } else if (LC_ALPHABET_PLUS_DIGITS.indexOf(rowID[0]) < 0)
+                addNoticePartial({ priority: 176, message: "Row ID should start with a lowercase letter or digit", characterIndex: 0, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation });
+            else if (LC_ALPHABET_PLUS_DIGITS.indexOf(rowID[3]) < 0)
+                addNoticePartial({ priority: 175, message: "Row ID should end with a lowercase letter or digit", characterIndeX: 3, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation });
+            else if (LC_ALPHABET_PLUS_DIGITS.indexOf(rowID[1]) < 0)
+                addNoticePartial({ priority: 174, message: "Row ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 1, rowID, extract: rowID, location: ourRowLocation });
+            else if (LC_ALPHABET_PLUS_DIGITS.indexOf(rowID[2]) < 0)
+                addNoticePartial({ priority: 173, message: "Row ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 2, rowID, extract: rowID, location: ourRowLocation });
         }
 
         if (supportReference.length) { // need to check TN against TA
@@ -411,7 +421,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
                     && !supportReference.startsWith('writing-')
                     && supportReference !== 'guidelines-sonofgodprinciples')
                     addNoticePartial({ priority: 788, message: "Only 'Just-In-Time Training' TA articles allowed here", fieldName: 'SupportReference', extract: supportReference, rowID, location: ourRowLocation });
-                ourCheckTextField(rowID, 'SupportReference', supportReference, true, ourRowLocation, optionalCheckingOptions);
+                SRSuggestion = ourCheckTextField(rowID, 'SupportReference', supportReference, true, ourRowLocation, optionalCheckingOptions);
                 await ourCheckSupportReferenceInTA(rowID, 'SupportReference', supportReference, ourRowLocation, optionalCheckingOptions);
                 if (occurrenceNote.indexOf(supportReference) < 0) // The full link is NOT in the note!
                     addNoticePartial({ priority: 787, message: "Link to TA should also be in OccurrenceNote", fieldName: 'SupportReference', extract: supportReference, rowID, location: ourRowLocation });
@@ -424,7 +434,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         //     addNoticePartial({ priority: 877, message: "Missing SupportReference field", fieldName: 'SupportReference', rowID, location: ourRowLocation });
 
         if (origQuote.length) { // need to check UTN against UHB and UGNT
-            ourCheckTextField(rowID, 'OrigQuote', origQuote, false, ourRowLocation, optionalCheckingOptions);
+            OQSuggestion = ourCheckTextField(rowID, 'OrigQuote', origQuote, false, ourRowLocation, optionalCheckingOptions);
             if (occurrence.length)
                 await ourCheckTNOriginalLanguageQuote(rowID, 'OrigQuote', origQuote, occurrence, ourRowLocation, optionalCheckingOptions);
             else
@@ -436,18 +446,24 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
 
         if (occurrence.length) { // This should usually be a digit
             if (occurrence === '0') { // zero means that it doesn't occur
-                if (origQuote.length)
+                if (origQuote.length) {
                     addNoticePartial({ priority: 751, message: "Invalid zero occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, extract: occurrence, location: ourRowLocation });
+                    OSuggestion = '1';
+                }
                 // if (V !== 'intro')
                 //     addNoticePartial({priority:500, message:"Invalid zero occurrence field", rowID, location:rowLocation);
             }
             else if (occurrence === '-1') // TODO check the special conditions when this can occur???
                 ;
-            else if ('1234567'.indexOf(occurrence) < 0) // it's not one of these integers
+            else if ('1234567'.indexOf(occurrence) < 0) { // it's not one of these integers
                 addNoticePartial({ priority: 792, message: `Invalid occurrence field`, fieldName: 'Occurrence', rowID, extract: occurrence, location: ourRowLocation });
+                OSuggestion = '1';
+            }
         }
-        else if (origQuote.length)
+        else if (origQuote.length) {
             addNoticePartial({ priority: 791, message: `Missing occurrence field`, fieldName: 'Occurrence', rowID, location: ourRowLocation });
+            OSuggestion = '1';
+        }
 
         if (GLQuote.length) { // TODO: need to check UTN against ULT
             if (GLQuote.indexOf('\u200B') >= 0)
@@ -456,7 +472,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'GLQuote', rowID, location: ourRowLocation });
             else // More than just whitespace
                 if (V !== 'intro')
-                    ourCheckTextField(rowID, 'GLQuote', GLQuote, false, ourRowLocation, optionalCheckingOptions);
+                    GLQSuggestion = ourCheckTextField(rowID, 'GLQuote', GLQuote, false, ourRowLocation, optionalCheckingOptions);
         }
         // else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
         //     if (V !== 'intro')
@@ -468,7 +484,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
             if (isWhitespace(occurrenceNote))
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation });
             else { // More than just whitespace
-                ourMarkdownTextChecks(rowID, 'OccurrenceNote', occurrenceNote, true, ourRowLocation, optionalCheckingOptions);
+                ONSuggestion = ourMarkdownTextChecks(rowID, 'OccurrenceNote', occurrenceNote, true, ourRowLocation, optionalCheckingOptions);
                 await ourCheckTNLinksToOutside(rowID, 'OccurrenceNote', occurrenceNote, ourRowLocation, linkCheckingOptions);
                 let regexResultArray;
                 // eslint-disable-next-line no-cond-assign
@@ -484,6 +500,14 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             addNoticePartial({ priority: 274, message: "Missing OccurrenceNote field", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation });
 
+        // 9 [B, C, V, rowID, supportReference, origQuote, occurrence, GLQuote, occurrenceNote]
+        const suggestion = `${B}\t${C}\t${V}\t${RIDSuggestion === undefined? rowID: RIDSuggestion}\t${SRSuggestion === undefined ? supportReference : SRSuggestion}\t${OQSuggestion === undefined ? origQuote : OQSuggestion}\t${OSuggestion === undefined ? occurrence : OSuggestion}\t${GLQSuggestion === undefined ? GLQuote : GLQSuggestion}\t${ONSuggestion === undefined ? occurrenceNote : ONSuggestion}`;
+        if (suggestion !== line) {
+            // console.log(`Had TN ${line}`);
+            // console.log(`Sug TN ${suggestion}`);
+            drResult.suggestion = suggestion;
+        }
+
     } else { // wrong number of fields in the row
         // Have a go at getting some of the first fields out of the row
         let rowID = '????';
@@ -493,6 +517,6 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
 
     // console.log(`  checkTN_TSVDataRow returning with ${drResult.noticeList.length.toLocaleString()} notice(s).`);
     // console.log("checkTN_TSVDataRow result is", JSON.stringify(drResult));
-    return drResult; // object with noticeList only
+    return drResult; // object with noticeList and possibly suggestion only
 }
 // end of checkTN_TSVDataRow function

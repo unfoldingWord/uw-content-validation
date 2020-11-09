@@ -144,7 +144,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     // Find leading line breaks (but not if the whole line is just the line break sequence)
     const fieldTextLower = fieldText.toLowerCase();
     if ((fieldTextLower.substring(0, 2) === '\\n' || fieldTextLower.substring(0, 4) === '<br>' || fieldTextLower.substring(0, 5) === '<br/>' || fieldTextLower.substring(0, 6) === '<br />')
-     && fieldTextLower !== '\\n' && fieldTextLower !== '<br>' && fieldTextLower !== '<br/>' && fieldTextLower !== '<br />') {
+        && fieldTextLower !== '\\n' && fieldTextLower !== '<br>' && fieldTextLower !== '<br/>' && fieldTextLower !== '<br />') {
         const extract = fieldText.substring(0, extractLength) + (fieldText.length > extractLength ? '…' : '');
         addNoticePartial({ priority: 107, message: "Unexpected leading line break", characterIndex: 0, extract, location: ourLocation });
         while (suggestion.toLowerCase().substring(0, 2) === '\\n') suggestion = suggestion.substring(2);
@@ -161,7 +161,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     // Find trailing line breaks (but not if the whole line is just the line break sequence)
     if ((fieldTextLower.substring(fieldTextLower.length - 2) === '\\n' || fieldTextLower.substring(fieldTextLower.length - 4) === '<br>' || fieldTextLower.substring(fieldTextLower.length - 5) === '<br/>' || fieldTextLower.substring(fieldTextLower.length - 6) === '<br />')
         && fieldTextLower !== '\\n' && fieldTextLower !== '<br>' && fieldTextLower !== '<br/>' && fieldTextLower !== '<br />') {
-            const extract = (fieldText.length > extractLength ? '…' : '') + fieldText.substring(fieldText.length - 10);
+        const extract = (fieldText.length > extractLength ? '…' : '') + fieldText.substring(fieldText.length - 10);
         addNoticePartial({ priority: 104, message: "Unexpected trailing line break", characterIndex: fieldText.length - 1, extract, location: ourLocation });
         while (suggestion.toLowerCase().substring(suggestion.length - 2) === '\\n') suggestion = suggestion.substring(0, suggestion.length - 2);
         while (suggestion.toLowerCase().substring(suggestion.length - 4) === '<br>') suggestion = suggestion.substring(0, suggestion.length - 4);
@@ -291,7 +291,8 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
 
     // See if we have a suggestion
     if (suggestion !== fieldText) {
-        // if (suggestion !== fieldText.trim()) console.log(`checkTextField suggested '${suggestion}' for ${fieldType} ${fieldName} '${fieldText}'`);
+        // console.log(`Had text ${fieldText}`);
+        // console.log(`Sug text ${suggestion}`);
         result.suggestion = suggestion;
     }
 
