@@ -4,14 +4,14 @@ import React, { useEffect, useState } from 'react';
 // import { Paper, Button } from '@material-ui/core';
 // import { RepositoryContext, FileContext } from 'gitea-react-toolkit';
 import { withStyles } from '@material-ui/core/styles';
-import { ourParseInt, cachedGetFile } from '../../core';
+import { clearCaches, clearCheckedArticleCache, ourParseInt, cachedGetFile } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
 import { checkFileContents } from './checkFileContents';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const FILE_CHECK_VERSION_STRING = '0.1.3';
+// const FILE_CHECK_VERSION_STRING = '0.1.5';
 
 
 function FileCheck(props) {
@@ -27,6 +27,13 @@ function FileCheck(props) {
     (async () => {
       // console.log("Started FileCheck.unnamedFunction()");
 
+      // NOTE from RJH: I can't find the correct React place for this / way to do this
+      //                  so it shows a warning for the user, and doesn't continue to try to process
+      if (!props.wait || props.wait !== 'N') {
+        setResultValue(<p style={{ color: 'blue' }}>Waiting…</p>);
+        return;
+      }
+
       if (!username) {
         setResultValue(<p style={{ color: 'red' }}>No <b>username</b> set!</p>);
         return;
@@ -40,22 +47,29 @@ function FileCheck(props) {
         return;
       }
 
+      if (props.reloadAllFilesFirst && props.reloadAllFilesFirst.slice(0).toUpperCase() === 'Y') {
+        console.log("Clearing cache before running book package check…");
+        setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running book package check…</p>);
+        await clearCaches();
+      }
+      else await clearCheckedArticleCache();
+
       // Display our "waiting" message
       setResultValue(<p style={{ color: 'magenta' }}>Fetching {username} {repoName} <b>{filename}</b>…</p>);
       // console.log(`FileCheck about to call cachedGetFile(${username}, ${repoName}, ${filename}, ${branch})…`);
       const fileContent = await cachedGetFile({ username: username, repository: repoName, path: filename, branch: branch });
 
       setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {repoName} <b>{filename}</b>…</p>);
-      let rawCFResults = { noticeList: [{ priority: 990, message: "Unable to load file", filename }], elapsedSeconds: 0 };
+      let rawCFResults = { noticeList: [{ priority: 990, message: "Unable to load file", details: `username=${username}`, repoName, filename }], elapsedSeconds: 0 };
       if (fileContent) {
         const languageCode = repoName.split('_')[0];
         rawCFResults = await checkFileContents(languageCode, filename, fileContent, givenLocation, checkingOptions);
+
+        // Because we know here that we're only checking one file, we don't need the filename field in the notices
+        function deleteFilenameField(notice) { delete notice.filename; notice.username = username; return notice; }
+        rawCFResults.noticeList = rawCFResults.noticeList.map(deleteFilenameField);
       }
       // console.log(`FileCheck got initial results with ${rawCFResults.successList.length} success message(s) and ${rawCFResults.noticeList.length} notice(s)`);
-
-      // Because we know here that we're only checking one file, we don't need the filename field in the notices
-      function deleteFilenameField(notice) { delete notice.filename; return notice; }
-      rawCFResults.noticeList = rawCFResults.noticeList.map(deleteFilenameField);
 
       // // Since we know the repoName here, add it to our notices
       // for (const thisNotice of rawCFResults.noticeList)
@@ -90,7 +104,12 @@ function FileCheck(props) {
       function renderSummary(processedResults) {
         return (<div>
           <p>Checked <b>{filename}</b> (from {username} {repoName} <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)</p>
-          <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCFResults.noticeList.length === 0 ? 'no' : rawCFResults.noticeList.length.toLocaleString()} notice{rawCFResults.noticeList.length === 1 ? '' : 's'}.</p>
+          <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCFResults.noticeList.length === 0 ? 'no' : rawCFResults.noticeList.length.toLocaleString()} notice{rawCFResults.noticeList.length === 1 ? '' : 's'}
+            {processedResults.numIgnoredNotices || processedResults.numDisabledNotices ? ' (but ' : ''}
+            {processedResults.numIgnoredNotices ? `${processedResults.numIgnoredNotices.toLocaleString()} ignored notice(s)` : ""}
+            {processedResults.numIgnoredNotices && processedResults.numDisabledNotices ? ' and ' : ''}
+            {processedResults.numDisabledNotices ? `${processedResults.numDisabledNotices.toLocaleString()} disabled notice(s)` : ""}
+            {processedResults.numIgnoredNotices || processedResults.numDisabledNotices ? ')' : ''}.</p>
           {/* <RenderRawResults results={rawCFResults} /> */}
         </div>);
       }
@@ -102,14 +121,12 @@ function FileCheck(props) {
 
         if (processedResults.errorList.length || processedResults.warningList.length)
           setResultValue(<>
-            <div>{renderSummary(processedResults)}
-              {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
+            {renderSummary(processedResults)}
             <RenderSuccessesErrorsWarnings results={processedResults} />
           </>);
         else // no errors or warnings
           setResultValue(<>
-            <div>{renderSummary(processedResults)}
-              {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
+            {renderSummary(processedResults)}
             <RenderSuccessesErrorsWarnings results={processedResults} />
           </>);
       } else if (displayType === 'SevereMediumLow') {
@@ -119,14 +136,12 @@ function FileCheck(props) {
 
         if (processedResults.severeList.length || processedResults.mediumList.length || processedResults.lowList.length)
           setResultValue(<>
-            <div>{renderSummary(processedResults)}
-              {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
+            {renderSummary(processedResults)}
             <RenderSuccessesSevereMediumLow results={processedResults} />
           </>);
         else // no severe, medium, or low notices
           setResultValue(<>
-            <div>{renderSummary(processedResults)}
-              {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
+            {renderSummary(processedResults)}
             <RenderSuccessesSevereMediumLow results={processedResults} />
           </>);
       } else if (displayType === 'SingleList') {
@@ -136,14 +151,12 @@ function FileCheck(props) {
 
         if (processedResults.warningList.length)
           setResultValue(<>
-            <div>{renderSummary(processedResults)}
-              {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
+            {renderSummary(processedResults)}
             <RenderSuccessesWarningsGradient results={processedResults} />
           </>);
         else // no warnings
           setResultValue(<>
-            <div>{renderSummary(processedResults)}
-              {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
+            {renderSummary(processedResults)}
             <RenderSuccessesWarningsGradient results={processedResults} />
           </>);
       } else setResultValue(<b style={{ color: 'red' }}>Invalid displayType='{displayType}'</b>)

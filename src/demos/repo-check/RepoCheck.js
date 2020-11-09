@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
-import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
-import { preloadReposIfNecessary, ourParseInt } from '../../core';
+import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderTotals } from '../RenderProcessedResults';
+import { clearCaches, clearCheckedArticleCache, preloadReposIfNecessary, ourParseInt } from '../../core';
 import { checkRepo } from './checkRepo';
 // import { consoleLogObject, displayPropertyNames } from '../../core/utilities';
 
 
-//const VALIDATOR_VERSION_STRING = '0.1.3';
+//const REPO_VALIDATOR_VERSION_STRING = '0.1.4';
 
 
 function RepoCheck(/*username, languageCode,*/ props) {
@@ -18,7 +18,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
         and then checks all the individual files
     */
 
-    // console.log(`I'm here in RepoCheck v${VALIDATOR_VERSION_STRING}`);
+    // console.log(`I'm here in RepoCheck v${REPO_VALIDATOR_VERSION_STRING}`);
     // consoleLogObject("props", props);
     // consoleLogObject("props.classes", props.classes);
 
@@ -53,6 +53,13 @@ function RepoCheck(/*username, languageCode,*/ props) {
         (async () => {
             // console.log("Started RepoCheck.unnamedFunction()");
 
+            // NOTE from RJH: I can't find the correct React place for this / way to do this
+            //                  so it shows a warning for the user, and doesn't continue to try to process
+            if (!props.wait || props.wait !== 'N') {
+                setResultValue(<p style={{ color: 'blue' }}>Waiting…</p>);
+                return;
+            }
+
             if (!username) {
                 setResultValue(<p style={{ color: 'red' }}>No <b>username</b> set!</p>);
                 return;
@@ -62,8 +69,17 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 return;
             }
 
+            if (props.reloadAllFilesFirst && props.reloadAllFilesFirst.slice(0).toUpperCase() === 'Y') {
+                console.log("Clearing cache before running book package check…");
+                setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running book package check…</p>);
+                await clearCaches();
+            }
+            else await clearCheckedArticleCache();
+
             let [languageCode, repoCode] = repoName.split('_');
             repoCode = repoCode.toUpperCase();
+            if (repoCode === 'TN') repoCode = 'TN1';
+            else if (repoCode === 'TQ') repoCode = 'TQ1';
             // console.log(`RepoCheck languageCode='${languageCode}' repoCode='${repoCode}'`);
 
             setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for {repoName} repo check…</p>);
@@ -118,19 +134,11 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 let displayType = 'ErrorsWarnings'; // default
                 if (props.displayType) displayType = props.displayType;
 
-                function renderSuccesses(processedResults) {
-                    if (processedResults.checkedFileCount > 0)
-                        return (<p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount === 1 ? '' : 's'} from {username} {processedResults.checkedRepoNames.join(', ')}
-                            <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>);
-                    else
-                        return (<p>&nbsp;&nbsp;&nbsp;&nbsp;No files checked!</p>);
-                }
-
                 function renderSummary(processedResults) {
                     return (<div>
                         <p>Checked <b>{username} {repoName}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)</p>
-                        {renderSuccesses(processedResults)}
-                        <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCRResults.noticeList.length === 0 ? 'no' : rawCRResults.noticeList.length.toLocaleString()} notice{rawCRResults.noticeList.length === 1 ? '' : 's'}.</p>
+                        <RenderSuccesses username={username} results={processedResults} />
+                        <RenderTotals rawNoticeListLength={rawCRResults.noticeList.length} results={processedResults} />
                         {/* <RenderRawResults results={rawCRResults} /> */}
                     </div>);
                 }
@@ -145,14 +153,12 @@ function RepoCheck(/*username, languageCode,*/ props) {
 
                     if (processedResults.errorList.length || processedResults.warningList.length)
                         setResultValue(<>
-                            <div>{renderSummary(processedResults)}
-                                {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
+                            {renderSummary(processedResults)}
                             <RenderSuccessesErrorsWarnings results={processedResults} />
                         </>);
                     else // no errors or warnings
                         setResultValue(<>
-                            <div>{renderSummary(processedResults)}
-                                {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
+                            {renderSummary(processedResults)}
                             <RenderSuccessesErrorsWarnings results={processedResults} />
                         </>);
                 } else if (displayType === 'SevereMediumLow') {
@@ -162,14 +168,12 @@ function RepoCheck(/*username, languageCode,*/ props) {
 
                     if (processedResults.severeList.length || processedResults.mediumList.length || processedResults.lowList.length)
                         setResultValue(<>
-                            <div>{renderSummary(processedResults)}
-                                {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
+                            {renderSummary(processedResults)}
                             <RenderSuccessesSevereMediumLow results={processedResults} />
                         </>);
                     else // no severe, medium, or low notices
                         setResultValue(<>
-                            <div>{renderSummary(processedResults)}
-                                {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
+                            {renderSummary(processedResults)}
                             <RenderSuccessesSevereMediumLow results={processedResults} />
                         </>);
                 } else if (displayType === 'SingleList') {
@@ -179,14 +183,12 @@ function RepoCheck(/*username, languageCode,*/ props) {
 
                     if (processedResults.warningList.length)
                         setResultValue(<>
-                            <div>{renderSummary(processedResults)}
-                                {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
+                            {renderSummary(processedResults)}
                             <RenderSuccessesWarningsGradient results={processedResults} />
                         </>);
                     else // no warnings
                         setResultValue(<>
-                            <div>{renderSummary(processedResults)}
-                                {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
+                            {renderSummary(processedResults)}
                             <RenderSuccessesWarningsGradient results={processedResults} />
                         </>);
                 } else setResultValue(<b style={{ color: 'red' }}>Invalid displayType='{displayType}'</b>)

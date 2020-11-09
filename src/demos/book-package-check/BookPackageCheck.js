@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 // import { withStyles } from '@material-ui/core/styles';
 import * as books from '../../core/books/books';
-import { ourParseInt, preloadReposIfNecessary } from '../../core';
+import { clearCaches, clearCheckedArticleCache, ourParseInt, preloadReposIfNecessary } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
-import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
+import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderTotals } from '../RenderProcessedResults';
 import { checkBookPackage } from './checkBookPackage';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.2.2';
+// const BP_VALIDATOR_VERSION_STRING = '0.3.1';
 
 
 function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
@@ -25,6 +25,8 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
     // console.log(`languageCode='${languageCode}'`);
     let bookID = props.bookID;
     // console.log(`bookID='${bookID}'`);
+    let dataSet = props.dataSet;
+    // console.log(`dataSet='${dataSet}'`);
     let branch = props.branch;
     // console.log(`branch='${branch}'`);
 
@@ -32,6 +34,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
     //  autoClearCache(bookID); // This technique avoids the complications of needing a button
 
     let checkingOptions = { // Uncomment any of these to test them
+        dataSet: dataSet, // Can be 'OLD' (Markdown, etc.), 'NEW' (TSV only), or 'BOTH'
         // extractLength: 25,
         checkManifestFlag: true,
     };
@@ -53,11 +56,25 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
 
             // NOTE from RJH: I can't find the correct React place for this / way to do this
             //                  so it shows a warning for the user, and doesn't continue to try to process
+            if (!props.wait || props.wait !== 'N') {
+                setResultValue(<p style={{ color: 'blue' }}>Waiting…</p>);
+                return;
+            }
+
+            // NOTE from RJH: I can't find the correct React place for this / way to do this
+            //                  so it shows a warning for the user, and doesn't continue to try to process
             if (bookID !== 'OBS' && !books.isValidBookID(bookID)) {
                 console.log(`Invalid '${bookID}' bookID given!`)
                 setResultValue(<p style={{ color: 'red' }}>Please enter a valid USFM book identifier or 'OBS'. ('<b>{bookID}</b>' is not valid.)</p>);
                 return;
             }
+
+            if (props.reloadAllFilesFirst && props.reloadAllFilesFirst.slice(0).toUpperCase() === 'Y') {
+                console.log("Clearing cache before running book package check…");
+                setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running book package check…</p>);
+                await clearCaches();
+            }
+            else await clearCheckedArticleCache();
 
             // if (bookID !== 'OBS') { // Preload the reference repos
             setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for <b>{bookID}</b> book package check…</p>);
@@ -92,24 +109,25 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             if (props.errorPriorityLevel) processOptions.errorPriorityLevel = ourParseInt(props.errorPriorityLevel);
             if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
             if (props.sortBy) processOptions.sortBy = props.sortBy;
-            // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
+            if (props.ignorePriorityNumberList) { // We need to convert from string to Array
+                console.assert(props.ignorePriorityNumberList[0] === '[' && props.ignorePriorityNumberList[props.ignorePriorityNumberList.length - 1] === ']', `Format of props.ignorePriorityNumberList '${props.ignorePriorityNumberList}' is wrong should be enclosed in []`)
+                processOptions.ignorePriorityNumberList = [];
+                for (const stringBit of props.ignorePriorityNumberList.substring(1, props.ignorePriorityNumberList.length - 1).split(',')) {
+                    const intBit = ourParseInt(stringBit.trim()); // trim allows comma,space to also be used as separator
+                    processOptions.ignorePriorityNumberList.push(intBit);
+                }
+                // console.log(`Now have processOptions.ignorePriorityNumberList=${JSON.stringify(processOptions.ignorePriorityNumberList)}`);
+                if (props.ignoreDisabledNoticesFlag) processOptions.ignoreDisabledNoticesFlag = props.ignoreDisabledNoticesFlag.toLowerCase() === 'true';
+            }
 
             let displayType = 'ErrorsWarnings'; // default
             if (props.displayType) displayType = props.displayType;
 
-            function renderSuccesses(processedResults) {
-                if (processedResults.checkedFileCount > 0)
-                    return (<p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount === 1 ? '' : 's'} from {username} {processedResults.checkedRepoNames.join(', ')}
-                        <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>);
-                else
-                    return (<p>&nbsp;&nbsp;&nbsp;&nbsp;No files checked!</p>);
-            }
-
             function renderSummary(processedResults) {
                 return (<div>
                     <p>Checked <b>{username} {languageCode} {bookID}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
-                    {renderSuccesses(processedResults)}
-                    <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCBPResults.noticeList.length === 0 ? 'no' : rawCBPResults.noticeList.length.toLocaleString()} notice{rawCBPResults.noticeList.length === 1 ? '' : 's'}.</p>
+                    <RenderSuccesses username={username} results={processedResults} />
+                    <RenderTotals rawNoticeListLength={rawCBPResults.noticeList.length} results={processedResults} />
                     {/* <RenderRawResults results={rawCBPResults} /> */}
                 </div>);
             }
@@ -124,13 +142,11 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
                 if (processedResults.errorList.length || processedResults.warningList.length)
                     setResultValue(<>
                         {renderSummary(processedResults)}
-                        {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}
                         <RenderSuccessesErrorsWarnings results={processedResults} />
                     </>);
                 else // no errors or warnings
                     setResultValue(<>
                         {renderSummary(processedResults)}
-                        {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}
                         <RenderSuccessesErrorsWarnings results={processedResults} />
                     </>);
             } else if (displayType === 'SevereMediumLow') {
@@ -141,13 +157,11 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
                 if (processedResults.severeList.length || processedResults.mediumList.length || processedResults.lowList.length)
                     setResultValue(<>
                         {renderSummary(processedResults)}
-                        {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}
                         <RenderSuccessesSevereMediumLow results={processedResults} />
                     </>);
                 else // no severe, medium, or low notices
                     setResultValue(<>
                         {renderSummary(processedResults)}
-                        {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}
                         <RenderSuccessesSevereMediumLow results={processedResults} />
                     </>);
             } else if (displayType === 'SingleList') {
@@ -158,13 +172,11 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
                 if (processedResults.warningList.length)
                     setResultValue(<>
                         {renderSummary(processedResults)}
-                        {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}
                         <RenderSuccessesWarningsGradient results={processedResults} />
                     </>);
                 else // no warnings
                     setResultValue(<>
                         {renderSummary(processedResults)}
-                        {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}
                         <RenderSuccessesWarningsGradient results={processedResults} />
                     </>);
             } else setResultValue(<b style={{ color: 'red' }}>Invalid displayType='{displayType}'</b>)

@@ -69,6 +69,33 @@ export function ourParseInt(givenString) {
 
 
 /*
+ *
+ * @param {string} bookID - 3-character UPPERCASE Book Id
+ * @requires {number} 0..99
+ */
+/*
+export function getBookNumber(bookID) {
+    // console.log(`getBookNumber(${bookID})…`)
+    let numberResult = 99; // default 'unknown' value
+    if (bookID==='FRT') numberResult = 0;
+    else if (bookID==='BAK') numberResult = 68;
+    else if (bookID==='OBS') numberResult = 80;
+    else if (bookID==='MANIFEST') numberResult = 81;
+    else if (bookID==='MEDIA') numberResult = 82;
+    else if (bookID==='LICENSE') numberResult = 83;
+    else if (bookID==='README') numberResult = 84;
+    else {
+        const thisUSFMNumberName = usfmNumberName(bookID);
+        numberResult = ourParseInt(thisUSFMNumberName.substring(0, 2)); // 01..67 converted to number
+    // } catch {}
+    }
+    // For everything else
+    // console.log(`getBookNumber(${bookID})) returning ${numberResult}`);
+    return numberResult;
+}
+*/
+
+/*
 // function to convert an array to an object
 // with keys being 0..n
 export const array_to_obj = ( ar => {

@@ -4,8 +4,6 @@ import { cachedGetFileUsingFullURL } from './getApi';
 
 const LINK_VALIDATOR_VERSION_STRING = '0.3.3';
 
-// const DEFAULT_EXTRACT_LENGTH = 10;
-
 
 export async function startLiveLinksCheck(linksList, existingNoticeList, callbackFunction) {
     // This (IO bound) function checks the targets of the given links
@@ -98,7 +96,7 @@ export function checkFieldLinks(fieldName, fieldText, linkOptions, optionalField
 
     // Ok, we have something in our field
     if (linkOptions.otherTextAllowed)
-        result = checkTextField(fieldName, fieldText, true, optionalFieldLocation, optionalCheckingOptions);
+        result = checkTextField('link', fieldName, fieldText, true, optionalFieldLocation, optionalCheckingOptions);
 
     // Parameter nonsense check
     if (linkOptions.allowedCount > 0 && linkOptions.expectedCount > linkOptions.allowedCount)

@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from 'react';
 // import { withStyles } from '@material-ui/core/styles';
 import * as books from '../../core/books/books';
-import { preloadReposIfNecessary, ourParseInt } from '../../core';
+import { clearCaches, clearCheckedArticleCache, preloadReposIfNecessary, ourParseInt } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
-import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
+import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderTotals } from '../RenderProcessedResults';
 import { checkBookPackage } from '../book-package-check/checkBookPackage';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const BPS_VALIDATOR_VERSION_STRING = '0.1.3';
+// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.4';
 
 
 function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
     // Check a single Bible book across many repositories
     const [result, setResultValue] = useState("Waiting-CheckBookPackages");
 
-    // console.log(`I'm here in GlBookPackageCheck v${BPS_VALIDATOR_VERSION_STRING}`);
+    // console.log(`I'm here in GlBookPackageCheck v${GL_BP_VALIDATOR_VERSION_STRING}`);
     // consoleLogObject("props", props);
     // consoleLogObject("props.classes", props.classes);
 
@@ -47,6 +47,13 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
         (async () => {
             // console.log("Started GlBookPackageCheck.unnamedFunction()");
 
+            // NOTE from RJH: I can't find the correct React place for this / way to do this
+            //                  so it shows a warning for the user, and doesn't continue to try to process
+            if (!props.wait || props.wait !== 'N') {
+                setResultValue(<p style={{ color: 'blue' }}>Waiting…</p>);
+                return;
+            }
+
             // NOTE from RJH: I can't find the correct React place for this or way to do this
             //                  so it shows a warning for the user, and doesn't continue to try to process
             if (bookID !== 'OBS' && !books.isValidBookID(bookID)) {
@@ -54,6 +61,13 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
                 setResultValue(<p style={{ color: 'red' }}>Please enter a valid USFM book identifier or 'OBS'. ('<b>{bookID}</b>' is not valid.)</p>);
                 return;
             }
+
+            if (props.reloadAllFilesFirst && props.reloadAllFilesFirst.slice(0).toUpperCase() === 'Y') {
+                console.log("Clearing cache before running book package check…");
+                setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running book package check…</p>);
+                await clearCaches();
+            }
+            else await clearCheckedArticleCache();
 
             setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for GL book package check…</p>);
             const successFlag = await preloadReposIfNecessary(username, languageCode, [bookID], branch);
@@ -91,19 +105,11 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
             let displayType = 'ErrorsWarnings'; // default
             if (props.displayType) displayType = props.displayType;
 
-            function renderSuccesses(processedResults) {
-                if (processedResults.checkedFileCount > 0)
-                    return (<p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {processedResults.checkedFileCount.toLocaleString()} file{processedResults.checkedFileCount === 1 ? '' : 's'} from {username} {processedResults.checkedRepoNames.join(', ')}
-                        <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {processedResults.checkedFilenameExtensions.length} file type{processedResults.checkedFilenameExtensions.size === 1 ? '' : 's'}: {processedResults.checkedFilenameExtensions.join(', ')}.</p>);
-                else
-                    return (<p>&nbsp;&nbsp;&nbsp;&nbsp;No files checked!</p>);
-            }
-
             function renderSummary(processedResults) {
                 return (<div>
                     <p>Checked <b>{username} {languageCode} {bookID}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
-                    {renderSuccesses(processedResults)}
-                    <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCBPsResults.noticeList.length === 0 ? 'no' : rawCBPsResults.noticeList.length.toLocaleString()} notice{rawCBPsResults.noticeList.length === 1 ? '' : 's'}.</p>
+                    <RenderSuccesses username={username} results={processedResults} />
+                    <RenderTotals rawNoticeListLength={rawCBPsResults.noticeList.length} results={processedResults} />
                     {/* <RenderRawResults results={rawCBPsResults} /> */}
                 </div>);
             }
@@ -117,14 +123,12 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
 
                 if (processedResults.errorList.length || processedResults.warningList.length)
                     setResultValue(<>
-                        <div>{renderSummary(processedResults)}
-                            {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
+                        {renderSummary(processedResults)}
                         <RenderSuccessesErrorsWarnings results={processedResults} />
                     </>);
                 else // no errors or warnings
                     setResultValue(<>
-                        <div>{renderSummary(processedResults)}
-                            {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
+                        {renderSummary(processedResults)}
                         <RenderSuccessesErrorsWarnings results={processedResults} />
                     </>);
 
@@ -135,14 +139,12 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
 
                 if (processedResults.severeList.length || processedResults.mediumList.length || processedResults.lowList.length)
                     setResultValue(<>
-                        <div>{renderSummary(processedResults)}
-                            {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
+                        {renderSummary(processedResults)}
                         <RenderSuccessesSevereMediumLow results={processedResults} />
                     </>);
                 else // no severe, medium, or low notices
                     setResultValue(<>
-                        <div>{renderSummary(processedResults)}
-                            {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
+                        {renderSummary(processedResults)}
                         <RenderSuccessesSevereMediumLow results={processedResults} />
                     </>);
 
@@ -153,14 +155,12 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
 
                 if (processedResults.warningList.length)
                     setResultValue(<>
-                        <div>{renderSummary(processedResults)}
-                            {processedResults.numIgnoredNotices ? ` (but ${processedResults.numIgnoredNotices.toLocaleString()} ignored errors/warnings)` : ""}</div>
+                        {renderSummary(processedResults)}
                         <RenderSuccessesWarningsGradient results={processedResults} />
                     </>);
                 else // no warnings
                     setResultValue(<>
-                        <div>{renderSummary(processedResults)}
-                            {processedResults.numIgnoredNotices ? ` (with a total of ${processedResults.numIgnoredNotices.toLocaleString()} notices ignored)` : ""}</div>
+                        {renderSummary(processedResults)}
                         <RenderSuccessesWarningsGradient results={processedResults} />
                     </>);
             } else setResultValue(<b style={{ color: 'red' }}>Invalid displayType='{displayType}'</b>)

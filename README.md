@@ -76,7 +76,7 @@ All of the following fields may be missing or undefined, i.e., they're all optio
 
 Keeping our notices in this format, rather than the simplicity of just saving an array of single strings, allows the above *notice components* to be processed at a higher level, e.g., to allow user-controlled filtering, sorting, etc. The default is to funnel them all through the supplied `processNoticesToErrorsWarnings` function (in demos/notice-processing-functions.fs) which does the following:
 
-1. Removes excess repeated errors. For example, if there's a systematic error in a file, say with unneeded leading spaces in every field, rather than returning with hundreds of errors, only the first several errors will be returned, followed by an "errors suppressed" message. (The number of each error displayed is settable as an option -- zero means display all errors with no suppression.)
+1. Removes excess repeated errors. For example, if there's a systematic error in a file, say with unneeded leading spaces in every field, rather than returning with hundreds of errors, only the first several errors will be returned, followed by an "errors suppressed" message. (The number of each error displayed is settable as an option—zero means display all errors with no suppression.)
 1. Separates notices into error and warning lists based on the priority number. (The switch-over point is settable as an option.)
 1. Optionally drops the lowest priority notices and/or certain given notice types (by priority number).
 
@@ -88,14 +88,14 @@ However, the user is, of course, free to create their own alternative version of
 
 There is provision for checking to be altered and/or sped-up when the calling app sets some or all of the following fields in `optionalCheckingOptions`:
 
-- extractLength: an integer which defines how long excerpts of lines containing errors should be -- the default is 10 characters -- the package attempts to place the error in the middle of the extract
-- getFile: a function which takes the four parameters ({username, repository, path, branch}) and returns the full text of the relevant Door43 file -- default is to use our own function and associated caching
-- fetchRepositoryZipFile: a function which takes the three parameters ({username, repository, branch}) and returns the contents of the zip file containing all the Door43 files -- default is to use our own function and associated caching
-- getFileListFromZip: takes the same three parameters and returns a list/array containing the filepaths of all the files in the zip file from Door43 -- default is to use our own function and associated caching
-- originalLanguageVerseText: the Hebrew/Aramaic or Greek original language text for the book/chapter/verse of the TSV line being checked -- this enables `OrigQuote` fields to be checked without needing to load and parse the actual USFM file
+- extractLength: an integer which defines how long excerpts of lines containing errors should be—the default is 15 characters—the package attempts to place the error in the middle of the extract
+- getFile: a function which takes the four parameters ({username, repository, path, branch}) and returns the full text of the relevant Door43 file—default is to use our own function and associated caching
+- fetchRepositoryZipFile: a function which takes the three parameters ({username, repository, branch}) and returns the contents of the zip file containing all the Door43 files—default is to use our own function and associated caching
+- getFileListFromZip: takes the same three parameters and returns a list/array containing the filepaths of all the files in the zip file from Door43—default is to use our own function and associated caching
+- originalLanguageVerseText: the Hebrew/Aramaic or Greek original language text for the book/chapter/verse of the TSV line being checked—this enables `OrigQuote` fields to be checked without needing to load and parse the actual USFM file
 - originalLanguageRepoUsername and originalLanguageRepoBranch: these two fields can be used to specify the username/organisation and/or the branch/tag name for fetching the UHB and UGNT files for checking
 - taRepoUsername, taRepoBranchName: these two fields can be used to specify the username/organisation and/or the branch/tag name for fetching the TA files for checking
-- taRepoLanguageCode, and taRepoSectionName: can be used to specify how the `SupportReference` field is checked in TA -- defaults are 'en' and 'translate'
+- taRepoLanguageCode, and taRepoSectionName: can be used to specify how the `SupportReference` field is checked in TA—defaults are 'en' and 'translate'
 - twRepoUsername, twRepoBranchName: these two fields can be used to specify the username/organisation and/or the branch/tag name for fetching the TW files for checking
 
 Most of the high-level demonstrations allow a choice of one of three display formats for notices:
@@ -107,23 +107,21 @@ Most of the high-level demonstrations allow a choice of one of three display for
 In addition, there are some options in the display of notices for the demonstrations, set in `optionalProcessingOptions` used by the sample notice processing functions:
 
 - ignorePriorityNumberList: a list (array) of integers that causes of notices with these priority values to be dropped during notice processing
-- sortBy: a string which can be set to 'ByPriority' -- the default is 'AsFound', i.e., unsorted
-- errorPriorityLevel: an integer which can define *errors* (vs *warnings*) (if relevant) -- defaults to 700 (and above)
-- severePriorityLevel: an integer which can define *severe* errors (if relevant) -- defaults to 800 (and above)
-- mediumPriorityLevel: an integer which can define *medium* errors (if relevant) -- defaults to 600 (and up to `severePriorityLevel`)
-- cutoffPriorityLevel: an integer which can define notices to be dropped/ignored -- defaults to 0 so none are dropped
-- maximumSimilarMessages: an integer which defines how many of a certain notice to display, before summarising and saying something like *99 similar errors suppressed* -- zero means don't ever summarise notices -- defaults to 3
+- sortBy: a string which can be set to 'ByPriority'—the default is 'AsFound', i.e., unsorted
+- errorPriorityLevel: an integer which can define *errors* (vs *warnings*) (if relevant)—defaults to 700 (and above)
+- severePriorityLevel: an integer which can define *severe* errors (if relevant)—defaults to 800 (and above)
+- mediumPriorityLevel: an integer which can define *medium* errors (if relevant)—defaults to 600 (and up to `severePriorityLevel`)
+- cutoffPriorityLevel: an integer which can define notices to be dropped/ignored—defaults to 0 so none are dropped
+- maximumSimilarMessages: an integer which defines how many of a certain notice to display, before summarising and saying something like *99 similar errors suppressed*—zero means don't ever summarise notices—defaults to 3
 
 ## Still To Do
 
 Still unfinished (in rough priority order):
 
 1. Checking of general markdown and naked links (esp. in plain text and markdown files)
-1. Write the correct checks for the forthcoming new TSV annotation formats
 1. Work through all [Issues](https://github.com/unfoldingWord/uw-content-validation/issues)
 1. Work through all `ToDo`s in code
-1. Standardise parameters according to best practice (i.e., dereferencing, etc.) -- might be too late now???
-1. Testing and fine-tuning of error messages (e.g., comparing with tX), especially suppression of false alarms
+1. Standardise parameters according to best practice (i.e., dereferencing, etc.)—might be too late now???
 1. Document the API with (JsDoc)
 1. Improve general documentation in the code and readMe files
 1. Is our `RepoCheck` the same as `ResourceContainerCheck`? Or is the latter more specific?
@@ -134,9 +132,7 @@ Still unfinished (in rough priority order):
 
 Known bugs:
 
-1. Work on removing false alarms for end-users is not yet completed
-1. Work on checking links (esp. naked links) in text files is not yet completed
-1. Work on checking the forthcoming TSV annotation files is not yet completed.
+1. Work on checking naked links in text files is not yet completed
 
 ## Functionality and Limitations
 
@@ -153,7 +149,7 @@ Once you have this codebase forked and cloned to your local machine, you can sta
 1. Ensure that the Styleguide is running by visiting `localhost:6060` on your web browser. (for Chromebooks see note below)
 1. Modify the code and documentation in your code editor and check out the Styleguide.
     - Update the styleguide.config.js to match your new component names.
-1. See debug `console.log()` output in browser console -- in chrome, CTRL-SHIFT-J to open.
+1. See debug `console.log()` output in browser console—in chrome, CTRL-SHIFT-J to open.
 
 ### Setting up NPM Publishing
 

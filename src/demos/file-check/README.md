@@ -3,58 +3,60 @@
 The code below requests some info to select an online repository
 and then validates the content of one file selected from the repo.
 
-**Note**: This demonstration uses cached values of files stored inside the local browser. This makes reruns of the checks much faster, but it won't notice if you have updated the files on Door43. If you want to clear the local caches, use the `Clear Cache` function.
+**Note**: This demonstration uses saved (cached) copies of files stored inside the local browser. This makes reruns of the checks faster, but it won't notice if you have recently updated the files on Door43. If you want to clear the local caches, use either the `reloadAllFilesFirst` variable below, or the `Clear Cache` function from the menu.
 
 ```js
-import { clearCheckedArticleCache } from '../../core';
-
-clearCheckedArticleCache();
-
 <FileCheck
-    username='unfoldingWord'
+  // Set to Y while adjusting settings below, then change to N to start the check
+  wait='Y' // 'Y' (for Yes) or 'N' (for No)
 
-    // repoName='hbo_uhb' // OT books only
-    // repoName='el-x-koine_ugnt' // NT books only
-    repoName='en_ult' // Can use ult or ust here
-    // repoName='en_tn'
+  // Set to Y to freshly update all data files from Door43 (Same as ClearCache in menu)
+  reloadAllFilesFirst='N' // 'Y' (for Yes) or 'N' (for No)
 
-    // If we don't put the branch here, the default branch is used
-    // branch='master'
+  username='unfoldingWord'
 
-    // Of course, the filename must be correct for the chosen repository
-    // filename= '01-GEN.usfm' // e.g., for UHB, LT, or ST
-    // filename= '08-RUT.usfm' // e.g., for UHB, LT, or ST
-    // filename= '41-MAT.usfm' // e.g., for UGNT, LT, or ST
-    // filename= '42-MRK.usfm' // e.g., for UGNT, LT, or ST
-    // filename= '43-LUK.usfm' // e.g., for UGNT, LT, or ST
-    // filename= '45-ACT.usfm' // e.g., for UGNT, LT, or ST
-    // filename= '48-2CO.usfm' // e.g., for UGNT, LT, or ST
-    // filename= '50-EPH.usfm' // e.g., for UGNT, LT, or ST
-    // filename= '57-TIT.usfm' // e.g., for UGNT, LT, or ST
-    filename= '65-3JN.usfm' // e.g., for UGNT, LT, or ST
-    // filename= '67-REV.usfm' // e.g., for UGNT, LT, or ST
-    // filename= 'en_tn_01-GEN.tsv' // for TN
-    // filename= 'en_tn_16-NEH.tsv' // for TN
-    // filename= 'en_tn_17-EST.tsv' // for TN
-    // filename= 'en_tn_31-OBA.tsv' // for TN
-    // filename= 'en_tn_50-EPH.tsv' // for TN
-    // filename= 'en_tn_57-TIT.tsv' // for TN
-    // filename= 'en_tn_58-PHM.tsv' // for TN
-    // filename= 'en_tn_61-1PE.tsv' // for TN
-    // filename= 'en_tn_65-3JN.tsv' // for TN
+  // repoName='hbo_uhb' // OT books only
+  // repoName='el-x-koine_ugnt' // NT books only
+  repoName='en_ult' // Can use ult or ust here
+  // repoName='en_tn'
 
-    // The location field appears in check messages to help the user locate the issue
-    location="as specified in file-check/README.md"
+  // If we don't put the branch here, the default branch is used
+  // branch='master'
 
-    // Default displayType is 'ErrorsWarnings'
-    //  Alternatives are `SevereMediumLow', 'SingleList'
-    displayType='SingleList'
+  // Of course, the filename must be correct for the chosen repository
+  // filename= '01-GEN.usfm' // e.g., for UHB, LT, or ST
+  // filename= '08-RUT.usfm' // e.g., for UHB, LT, or ST
+  // filename= '41-MAT.usfm' // e.g., for UGNT, LT, or ST
+  // filename= '42-MRK.usfm' // e.g., for UGNT, LT, or ST
+  // filename= '43-LUK.usfm' // e.g., for UGNT, LT, or ST
+  // filename= '45-ACT.usfm' // e.g., for UGNT, LT, or ST
+  // filename= '48-2CO.usfm' // e.g., for UGNT, LT, or ST
+  // filename= '50-EPH.usfm' // e.g., for UGNT, LT, or ST
+  // filename= '57-TIT.usfm' // e.g., for UGNT, LT, or ST
+  filename= '65-3JN.usfm' // e.g., for UGNT, LT, or ST
+  // filename= '67-REV.usfm' // e.g., for UGNT, LT, or ST
+  // filename= 'en_tn_01-GEN.tsv' // for TN
+  // filename= 'en_tn_16-NEH.tsv' // for TN
+  // filename= 'en_tn_17-EST.tsv' // for TN
+  // filename= 'en_tn_31-OBA.tsv' // for TN
+  // filename= 'en_tn_50-EPH.tsv' // for TN
+  // filename= 'en_tn_57-TIT.tsv' // for TN
+  // filename= 'en_tn_58-PHM.tsv' // for TN
+  // filename= 'en_tn_61-1PE.tsv' // for TN
+  // filename= 'en_tn_65-3JN.tsv' // for TN
 
-    // Specifying maximumSimilarMessages and extractLength is just to show off options
-    //  -- those fields are not necessary (or normal) here
-    maximumSimilarMessages='0' // Default is 3 -- 0 means don't suppress
-    extractLength='12' // Default is 10
-    />
+  // The location field appears in check messages to help the user locate the issue
+  location="as specified in FileCheck demo"
+
+  // Default displayType is 'ErrorsWarnings'
+  //  Alternatives are `SevereMediumLow', 'SingleList'
+  displayType='SingleList'
+
+  // Specifying maximumSimilarMessages and extractLength is just to show off options
+  // —those fields are not necessary (or normal) here
+  maximumSimilarMessages='0' // Default is 3 (0 means don't suppress)
+  extractLength='12' // Default is 15
+  />
 ```
 
 <!-- ## Component Description

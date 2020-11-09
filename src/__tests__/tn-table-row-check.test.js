@@ -23,8 +23,7 @@ describe('checkTN_TSVDataRow() - ', () => {
   const languageCode = 'en';
 
   describe('link tests - ', () => {
-    // TODO re-enable test when fixed
-    it.skip('should fail invalid doublet link', async() => {
+    it('should fail invalid doublet link', async() => {
       const chosenLine = "RUT\t2\t12\tgnn5\tfigs-parallelism\tשְׁלֵמָ֗ה\t1\tmay your full wages come from Yahweh	This is a poetic expression that is very similar to the previous sentence. Alternate translation: “May Yahweh fully give to you everything that you deserve” (See: [[rc://*/ta/man/translate/figs-parallelism]], [Doublet](../figs-doublet/01.md))";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'RUT','2','12', 'that was supplied', optionalCheckingOptions);
       expect(rawResults.noticeList.length).toEqual(1);
@@ -34,48 +33,46 @@ describe('checkTN_TSVDataRow() - ', () => {
     it('should fail broken link start', async() => {
       const chosenLine = "RUT\t2\t12\tgnn5\tfigs-parallelism\tשְׁלֵמָ֗ה\t1\tmay your full wages come from Yahweh	This is a poetic expression that is very similar to the previous sentence. Alternate translation: “May Yahweh fully give to you everything that you deserve” (See: [rc://*/ta/man/translate/figs-parallelism]]";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'RUT','2','12', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(2);
+      expect(rawResults.noticeList.length).toEqual(1);
       expect(rawResults).toMatchSnapshot();
     });
 
     it('should fail broken link end', async() => {
       const chosenLine = "RUT\t2\t12\tgnn5\tfigs-parallelism\tשְׁלֵמָ֗ה\t1\tmay your full wages come from Yahweh	This is a poetic expression that is very similar to the previous sentence. Alternate translation: “May Yahweh fully give to you everything that you deserve” (See: [[rc://*/ta/man/translate/figs-parallelism]";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'RUT','2','12', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(2);
+      expect(rawResults.noticeList.length).toEqual(1);
       expect(rawResults).toMatchSnapshot();
     });
 
     it('should fail double broken link start', async() => {
       const chosenLine = "RUT\t2\t12\tgnn5\tfigs-parallelism\tשְׁלֵמָ֗ה\t1\tmay your full wages come from Yahweh	This is a poetic expression that is very similar to the previous sentence. Alternate translation: “May Yahweh fully give to you everything that you deserve” (See: rc://*/ta/man/translate/figs-parallelism]]";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'RUT','2','12', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(2);
+      expect(rawResults.noticeList.length).toEqual(1);
       expect(rawResults).toMatchSnapshot();
     });
 
     it('should fail double broken link end', async() => {
       const chosenLine = "RUT\t2\t12\tgnn5\tfigs-parallelism\tשְׁלֵמָ֗ה\t1\tmay your full wages come from Yahweh	This is a poetic expression that is very similar to the previous sentence. Alternate translation: “May Yahweh fully give to you everything that you deserve” (See: [[rc://*/ta/man/translate/figs-parallelism";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'RUT','2','12', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(2);
-      expect(rawResults).toMatchSnapshot();
-    });
-
-    // TODO: Reenable after issue implemented
-    it.skip('should fail if SupportReference link differs from link in OccurrenceNote', async() => {
-      const chosenLine = "GEN\t1\t6\turb3\tfigs-imperative\t\t0\tLet there be an expanse…let it divide\tThese are commands. By commanding that the expanse should exist and that it divide the waters, God made it exist and divide the waters. (See: [[rc://*/ta/man/figs-parallelism]])";
-      const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','6', 'that was supplied', optionalCheckingOptions);
       expect(rawResults.noticeList.length).toEqual(1);
       expect(rawResults).toMatchSnapshot();
     });
 
-    it.skip('should fail invalid link path', async() => {
+    it('should fail if SupportReference link differs from link in OccurrenceNote', async() => {
+      const chosenLine = "GEN\t1\t6\turb3\tfigs-imperative\t\t0\tLet there be an expanse…let it divide\tThese are commands. By commanding that the expanse should exist and that it divide the waters, God made it exist and divide the waters. (See: [[rc://*/ta/man/figs-parallelism]])";
+      const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','6', 'that was supplied', optionalCheckingOptions);
+      expect(rawResults.noticeList.length).toEqual(2);
+      expect(rawResults).toMatchSnapshot();
+    });
+
+    it('should fail invalid link path', async() => {
       const chosenLine = "GEN\t1\t7\turb3\tfigs-imperative\t\t0\tLet there be an expanse…let it divide\tThese are commands. By commanding that the expanse should exist and that it divide the waters, God made it exist and divide the waters. (See: [[rc://*/ta/woman/figs-imperative]])";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','7', 'that was supplied', optionalCheckingOptions);
       expect(rawResults.noticeList.length).toEqual(1);
       expect(rawResults).toMatchSnapshot();
     });
 
-    // TODO re-enable test when fixed
-    it.skip('should succeed with mixed link types', async() => {
+    it('should succeed with mixed link types', async() => {
       const chosenLine = "GEN\t1\t8\tss9r\tfigs-merism\t\t0\tevening and morning\tThis refers to the whole day. The writer speaks of the whole day as if it were these two parts. In the Jewish culture, a day begins when the sun sets. See how you translated this in [Genesis 1:5](../01/05.md). (See: [[rc://*/ta/man/translate/figs-merism]])";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','8', 'that was supplied', optionalCheckingOptions);
       expect(rawResults.noticeList.length).toEqual(0);
@@ -84,20 +81,20 @@ describe('checkTN_TSVDataRow() - ', () => {
     it('should succeed with dual links', async() => {
       const chosenLine = "GEN\t1\t9\tzu6f\tfigs-activepassive\t\t0\tLet the waters…be gathered\tThis can be translated with an active verb. This is a command. By commanding that the waters gather together, God made them gather together. Alternate translation: “Let the waters…gather” or “Let the waters…come together” (See: [[rc://*/ta/man/translate/figs-activepassive]] and [[rc://*/ta/man/translate/figs-imperative]])";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','9', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(5);
+      expect(rawResults.noticeList.length).toEqual(1);
     });
 
     it('should fail invalid first link', async() => {
       const chosenLine = "GEN\t1\t9\tzu6f\tfigs-activepassive\t\t0\tLet the waters…be gathered\tThis can be translated with an active verb. This is a command. By commanding that the waters gather together, God made them gather together. Alternate translation: “Let the waters…gather” or “Let the waters…come together” (See: [[rc://*/ta/man/translate/figs-activepassivez]] and [[rc://*/ta/man/translate/figs-imperative]])";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','9', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(6);
+      expect(rawResults.noticeList.length).toEqual(4);
       expect(rawResults).toMatchSnapshot();
     });
 
     it('should fail invalid second link', async() => {
       const chosenLine = "GEN\t1\t9\tzu6f\tfigs-activepassive\t\t0\tLet the waters…be gathered\tThis can be translated with an active verb. This is a command. By commanding that the waters gather together, God made them gather together. Alternate translation: “Let the waters…gather” or “Let the waters…come together” (See: [[rc://*/ta/man/translate/figs-activepassive]] and [[rc://*/ta/man/translate/figs-imperativez]])";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','9', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(5);
+      expect(rawResults.noticeList.length).toEqual(3);
       expect(rawResults).toMatchSnapshot();
     });
 
@@ -109,7 +106,21 @@ describe('checkTN_TSVDataRow() - ', () => {
 
     it('should fail invalid verse link', async() => {
       const chosenLine = "GEN\t1\t9\tha33\t\t\t0\tIt was so\t“It happened like that” or “That is what happened.” What God commanded happened just as he said it should. This phrase appears throughout the chapter and has the same meaning wherever it appears. See how you translated it in [Genesis 1:7](../01/zzz.md).";
-      const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
+      const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','9', 'that was supplied', optionalCheckingOptions);
+      expect(rawResults.noticeList.length).toEqual(1);
+      expect(rawResults).toMatchSnapshot();
+    });
+
+    it('should fail invalid verse link start', async() => {
+      const chosenLine = "GEN\t1\t9\tha33\t\t\t0\tIt was so\t“It happened like that” or “That is what happened.” What God commanded happened just as he said it should. This phrase appears throughout the chapter and has the same meaning wherever it appears. See how you translated it in Genesis 1:7](../01/07.md).";
+      const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','9', 'that was supplied', optionalCheckingOptions);
+      expect(rawResults.noticeList.length).toEqual(1);
+      expect(rawResults).toMatchSnapshot();
+    });
+
+    it('should fail invalid verse link end', async() => {
+      const chosenLine = "GEN\t1\t9\tha33\t\t\t0\tIt was so\t“It happened like that” or “That is what happened.” What God commanded happened just as he said it should. This phrase appears throughout the chapter and has the same meaning wherever it appears. See how you translated it in [Genesis 1:7](../01/07.md.";
+      const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','9', 'that was supplied', optionalCheckingOptions);
       expect(rawResults.noticeList.length).toEqual(1);
       expect(rawResults).toMatchSnapshot();
     });
@@ -120,83 +131,83 @@ describe('checkTN_TSVDataRow() - ', () => {
     it('invalid Original Language', async() => {
       const chosenLine = "GEN\t1\t1\tf2mg\t\t0\t\t\tIn the beginning, God created the heavens and the earth “This is about how God made the heavens and the earth in the beginning.” This statement summarizes the rest of the chapter. Some languages translate it as “A very long time ago God created the heavens and the earth.” Translate it in a way that shows this actually happened and is not just a folk story.";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','1', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(1);
+      expect(rawResults.noticeList.length).toEqual(2);
       expect(rawResults).toMatchSnapshot();
     });
 
     it('should find missing Original Quote', async() => {
-      const chosenLine = "GEN\t1\t3\td7qw\tfigs-imperative\t\t1\tLet there be light\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
+      const chosenLine = "GEN\t1\t3\ta7qw\tfigs-imperative\t\t1\tLet there be light\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','3', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(3);
+      expect(rawResults.noticeList.length).toEqual(1);
       expect(rawResults).toMatchSnapshot();
     });
 
     it('should fail to find OrigLang Quote', async() => {
-      const chosenLine = "GEN\t1\t2\td7qw\tfigs-imperative\tוְ⁠חֹ֖שֶךְ\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
+      const chosenLine = "GEN\t1\t2\tb7qw\tfigs-imperative\tוְ⁠חֹ֖שֶךְ\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(3);
+      expect(rawResults.noticeList.length).toEqual(1);
       expect(rawResults).toMatchSnapshot();
     });
 
-    it('should fail to find instance', async() => {
-      const chosenLine = "GEN\t1\t2\td7qw\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\t2\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
+    it('should fail to find 2nd instance/occurrence', async() => {
+      const chosenLine = "GEN\t1\t2\tc7qw\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\t2\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(2);
+      expect(rawResults.noticeList.length).toEqual(1);
     });
 
     it('should fail with leading space', async() => {
-      const chosenLine = "GEN\t1\t2\td7qw\tfigs-imperative\t וְ⁠חֹ֖שֶׁךְ\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
+      const chosenLine = "GEN\t1\t2\te7qw\tfigs-imperative\t וְ⁠חֹ֖שֶׁךְ\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(4);
+      expect(rawResults.noticeList.length).toEqual(2);
       expect(rawResults).toMatchSnapshot();
     });
 
     it('should fail with trailing space', async() => {
-      const chosenLine = "GEN\t1\t2\td7qw\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ \t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
+      const chosenLine = "GEN\t1\t2\tf7qw\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ \t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(4);
+      expect(rawResults.noticeList.length).toEqual(1);
       expect(rawResults).toMatchSnapshot();
     });
 
     it('should fail with leading word joiner', async() => {
-      const chosenLine = "GEN\t1\t2\td7qw\tfigs-imperative\t\u2060וְ⁠חֹ֖שֶׁךְ\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
+      const chosenLine = "GEN\t1\t2\tg7qw\tfigs-imperative\t\u2060וְ⁠חֹ֖שֶׁךְ\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(4);
+      expect(rawResults.noticeList.length).toEqual(2);
       expect(rawResults).toMatchSnapshot();
     });
 
     it('should fail with trailing word joiner', async() => {
-      const chosenLine = "GEN\t1\t2\td7qw\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\u2060\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
+      const chosenLine = "GEN\t1\t2\th7qw\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\u2060\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(4);
+      expect(rawResults.noticeList.length).toEqual(2);
       expect(rawResults).toMatchSnapshot();
     });
 
     it('should fail with leading zero width non-joiner', async() => {
-      const chosenLine = "GEN\t1\t2\td7qw\tfigs-imperative\t\u200cוְ⁠חֹ֖שֶׁךְ\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
+      const chosenLine = "GEN\t1\t2\ti7qw\tfigs-imperative\t\u200cוְ⁠חֹ֖שֶׁךְ\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(3);
+      expect(rawResults.noticeList.length).toEqual(1);
       expect(rawResults).toMatchSnapshot();
     });
 
     it('should fail with trailing zero width non-joiner', async() => {
-      const chosenLine = "GEN\t1\t2\td7qw\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\u200c\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
+      const chosenLine = "GEN\t1\t2\tj7qw\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\u200c\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(3);
+      expect(rawResults.noticeList.length).toEqual(1);
       expect(rawResults).toMatchSnapshot();
     });
 
     it('should fail with leading zero width joiner', async() => {
-      const chosenLine = "GEN\t1\t2\td7qw\tfigs-imperative\t\u200dוְ⁠חֹ֖שֶׁךְ\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
+      const chosenLine = "GEN\t1\t2\tk7qw\tfigs-imperative\t\u200dוְ⁠חֹ֖שֶׁךְ\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(4);
+      expect(rawResults.noticeList.length).toEqual(2);
       expect(rawResults).toMatchSnapshot();
     });
 
     it('should fail with trailing zero width joiner', async() => {
-      const chosenLine = "GEN\t1\t2\td7qw\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\u200d\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
+      const chosenLine = "GEN\t1\t2\tl7qw\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\u200d\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(4);
+      expect(rawResults.noticeList.length).toEqual(2);
       expect(rawResults).toMatchSnapshot();
     });
 
@@ -204,16 +215,15 @@ describe('checkTN_TSVDataRow() - ', () => {
 
   describe('Occurrence Note tests - ', () => {
 
-    // TODO re-enable test when fixed
-    it.skip('should find white space', async() => {
-      const chosenLine = "GEN\t1\t2\td7qw\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\t1\tDarkness\t ";
+    it('should find white space', async() => {
+      const chosenLine = "GEN\t1\t2\tm7qw\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\t1\tDarkness\t ";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(1);
+      expect(rawResults.noticeList.length).toEqual(2);
       expect(rawResults).toMatchSnapshot();
     });
 
     it('should find empty note', async() => {
-      const chosenLine = "GEN\t1\t2\td7qw\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\t1\tDarkness\t";
+      const chosenLine = "GEN\t1\t2\tn7qw\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\t1\tDarkness\t";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
       expect(rawResults.noticeList.length).toEqual(2);
       expect(rawResults).toMatchSnapshot();
@@ -235,14 +245,14 @@ describe('checkTN_TSVDataRow() - ', () => {
   describe('BookID tests - ', () => {
 
     it('should find wrong book ID', async() => {
-      const chosenLine = "RUT\t1\t2\td7qw\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
+      const chosenLine = "RUT\t1\t2\to7qw\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(3);
+      expect(rawResults.noticeList.length).toEqual(1);
       expect(rawResults).toMatchSnapshot();
     });
 
-    it('should find invalid book ID', async() => {
-      const chosenLine = "GIN\t1\t2\td7qw\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
+    it.skip('should find invalid book ID', async() => {
+      const chosenLine = "GIN\t1\t2\tp7qw\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
       let error = false;
       try {
         await checkTN_TSVDataRow(languageCode, chosenLine, 'GIN', '1', '2', 'that was supplied', optionalCheckingOptions);
@@ -287,23 +297,24 @@ describe('checkTN_TSVDataRow() - ', () => {
 
   describe('SupportReference tests - ', () => {
     it('should find short SupportReference', async() => {
-      const chosenLine = "GEN\t1\t2\td7q\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
+      const chosenLine = "GEN\t1\t2\tq7q\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(3);
+      expect(rawResults.noticeList.length).toEqual(1);
+      rawResults.suggestion = undefined; // We need to get rid of random characters in suggestion
       expect(rawResults).toMatchSnapshot();
     });
 
     it('should find long SupportReference', async() => {
-      const chosenLine = "GEN\t1\t2\td7q33\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
+      const chosenLine = "GEN\t1\t2\tr7q33\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(3);
+      expect(rawResults.noticeList.length).toEqual(1);
       expect(rawResults).toMatchSnapshot();
     });
 
     it('should find missing SupportReference', async() => {
       const chosenLine = "GEN\t1\t2\t\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
       const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(3);
+      expect(rawResults.noticeList.length).toEqual(1);
       expect(rawResults).toMatchSnapshot();
     });
 
@@ -329,32 +340,31 @@ describe('checkTN_TSVDataRow() - ', () => {
     expect(rawResults).toMatchSnapshot();
   });
 
-  // TODO: fix validation of chapter/verse and then re-enable test
-  it.skip('should find mismatched chapter verse', async() => {
-    const chosenLine = "GEN\t2\t3\td7qw\tfigs-imperative\t\t0\tLet there be light\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
-    const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','2','3', 'that was supplied', optionalCheckingOptions);
-    expect(rawResults.noticeList.length).toEqual(3);
-    // expect(rawResults).toEqual({}); // TODO add match snapshot
+  it('should find mismatched chapter verse', async() => {
+    const chosenLine = "GEN\t2\t3\ts7qw\tfigs-imperative\t\t0\tLet there be light\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
+    const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','22','33', 'that was supplied', optionalCheckingOptions);
+    expect(rawResults.noticeList.length).toEqual(2);
+    expect(rawResults).toMatchSnapshot();
   });
 
   it('should find mismatched bookId', async() => {
-    const chosenLine = "EXO\t1\t2\td7qw\tfigs-imperative\t\t0\tLet there be light\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
+    const chosenLine = "EXO\t1\t2\tt7qw\tfigs-imperative\t\t0\tLet there be light\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
     const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
-    expect(rawResults.noticeList.length).toEqual(3);
+    expect(rawResults.noticeList.length).toEqual(1);
     expect(rawResults).toMatchSnapshot();
   });
 
   it('should find language code instead of asterisk', async() => {
-    const chosenLine = "EXO\t1\t2\td7qw\tfigs-imperative\t\t0\tLet there be light\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://en/ta/man/translate/figs-imperative]])";
+    const chosenLine = "EXO\t1\t2\tu7qw\tfigs-imperative\t\t0\tLet there be light\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://en/ta/man/translate/figs-imperative]])";
     const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'EXO','1','2', 'that was supplied', optionalCheckingOptions);
-    expect(rawResults.noticeList.length).toEqual(3);
+    expect(rawResults.noticeList.length).toEqual(1);
     expect(rawResults).toMatchSnapshot();
   });
 
   it('should be valid', async() => {
-    const chosenLine = "GEN\t1\t2\td7qw\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
+    const chosenLine = "GEN\t1\t2\tv7qw\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\t1\tDarkness\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
     const rawResults = await checkTN_TSVDataRow(languageCode, chosenLine, 'GEN','1','2', 'that was supplied', optionalCheckingOptions);
-    expect(rawResults.noticeList.length).toEqual(2);
+    expect(rawResults.noticeList.length).toEqual(0);
   });
 
 })

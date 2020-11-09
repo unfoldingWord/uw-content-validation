@@ -8,22 +8,28 @@ Note that `OBS` can also be entered here as a *pseudo book identifier* in order 
 
 `Book Package Check` calls `checkBookPackage()` which then calls `checkFileContents()` for the book file in each repo (or calls `checkRepo()` for **OBS**).
 
-**Warning**: Some book packages contain many files and/or very large files, and downloading them all and then checking them might slow down your browser -- maybe even causing pop-up messages asking to confirm that you want to keep waiting.
+**Warning**: Some book packages contain many files and/or very large files, and downloading them all and then checking them might slow down your browser—maybe even causing pop-up messages asking to confirm that you want to keep waiting.
 
-**Note**: This demonstration uses cached values of files stored inside the local browser. This makes reruns of the checks much faster, but it won't notice if you have updated the files on Door43. If you want to clear the local caches, use the `Clear Cache` function.
+**Note**: This demonstration uses saved (cached) copies of files stored inside the local browser. This makes reruns of the checks faster, but it won't notice if you have recently updated the files on Door43. If you want to clear the local caches, use either the `reloadAllFilesFirst` variable below, or the `Clear Cache` function from the menu.
 
 ```js
-import { clearCheckedArticleCache } from '../../core';
 import BookPackageCheck from './BookPackageCheck';
 
-clearCheckedArticleCache();
-
 <BookPackageCheck
+  // Set to Y while adjusting settings below, then change to N to start the check
+  wait='Y' // 'Y' (for Yes) or 'N' (for No)
+
+  // Set to Y to freshly update all data files from Door43 (Same as ClearCache in menu)
+  reloadAllFilesFirst='N' // 'Y' (for Yes) or 'N' (for No)
+
   username='unfoldingWord'
   languageCode='en'
   // bookID can be a USFM bookID, e.g., 'GEN', 'MAT', '3JN'
   //  and can also be 'OBS' (for Open Bible Stories)
-  bookID='NEH'
+  bookID='EST'
+
+  // We can choose the forthcoming new TSV formats or the existing formats
+  dataSet='OLD' // 'OLD' (Markdown TQ1, TSV TN1, etc.), 'NEW' (TSV TQ, TN, etc.), or 'BOTH'
 
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'
@@ -33,9 +39,11 @@ clearCheckedArticleCache();
   checkLinkedTWArticleFlag='true' // 'true' or 'false'
 
   // Specifying extractLength and maximumSimilarMessages is just to show off options
-  //  -- those fields are not necessary (or normal) here
-  extractLength='15' // Default is 10
-  maximumSimilarMessages='4' // Default is 3 -- 0 means don't suppress
+  // —those fields are not necessary (or normal) here
+  extractLength='20' // Default is 15
+  maximumSimilarMessages='0' // Default is 3 (0 means don't suppress)
+  //ignorePriorityNumberList='[]'
+  ignoreDisabledNoticesFlag='false' // Show known non-issues: 'true' or 'false'
   />
 ```
 

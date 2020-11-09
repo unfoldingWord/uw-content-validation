@@ -41,7 +41,7 @@ describe('checkBookPackage() - ', () => {
     testFiles = {}; // reset test files
   });
 
-  it('TIT should fail on unsupported language', async() => {
+  it.skip('TIT should fail on unsupported language', async() => {
     const username = 'unfoldingWord';
     const languageCode = 'zzz';
     const bookID = 'TIT';
@@ -56,7 +56,7 @@ describe('checkBookPackage() - ', () => {
     expect(filteredResults).toMatchSnapshot();
   });
 
-  it('TIT should fail on missing repo', async() => {
+  it.skip('TIT should fail on missing repo', async() => {
     const username = 'unfoldingWord';
     const languageCode = 'en';
     const bookID = 'TIT';

@@ -1,7 +1,8 @@
+import { isDisabledNotice } from './disabled-notices';
 // import { displayPropertyNames, consoleLogObject } from './utilities';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.8.2';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.8.4';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -116,7 +117,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
 
             // Check that notice priority numbers are unique (to detect programming errors)
             const oldMsg = numberStore[thisPriority];
-            if (oldMsg && oldMsg !== thisMsg && duplicatePriorityList.indexOf(thisPriority) < 0
+            if (oldMsg && oldMsg !== thisMsg && !duplicatePriorityList.includes(thisPriority)
                 // Some of the messages include the troubling character in the message
                 //    so we expect them to differ slightly
                 && !thisMsg.startsWith('Mismatched ')
@@ -176,7 +177,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
 
 
     const resultObject = { // inititalise with our new fields
-        numIgnoredNotices: 0,
+        numIgnoredNotices: 0, // Ignored by unique priority number
+        numDisabledNotices: 0, // Individually disabled
         numSuppressedWarnings: 0,
         processingOptions: optionalProcessingOptions, // Just helpfully includes what we were given (may be undefined)
     };
@@ -192,9 +194,10 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     } catch (npfIPNLerror) { }
     if (ignorePriorityNumberList === undefined) {
         ignorePriorityNumberList = DEFAULT_IGNORE_PRIORITY_NUMBER_LIST;
-        // console.log(`Using default ignorePriorityNumberList=${ignorePriorityNumberList}`);
+        // console.log(`Using default ignorePriorityNumberList=${JSON.stringify(ignorePriorityNumberList)}`);
     }
-    else console.log(`Using supplied ignorePriorityNumberList=${ignorePriorityNumberList} cf. default=${DEFAULT_IGNORE_PRIORITY_NUMBER_LIST}`);
+    else console.log(`Using supplied ignorePriorityNumberList=${JSON.stringify(ignorePriorityNumberList)} cf. default=${JSON.stringify(DEFAULT_IGNORE_PRIORITY_NUMBER_LIST)}`);
+    console.assert(Array.isArray(ignorePriorityNumberList), `ignorePriorityNumberList should be an Array, not ${typeof ignorePriorityNumberList}=${ignorePriorityNumberList}`);
     let sortBy;
     try {
         sortBy = optionalProcessingOptions.sortBy;
@@ -215,7 +218,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     else console.log(`Using supplied cutoffPriorityLevel=${cutoffPriorityLevel} cf. default=${DEFAULT_CUTOFF_PRIORITY_LEVEL}`);
     // if (cutoffPriorityLevel > errorPriorityLevel)
     // resultObject.errorList.push({999, "Cutoff level must not be higher than error level", extract:`(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
-
+    let ignoreDisabledNoticesFlag = optionalProcessingOptions.ignoreDisabledNoticesFlag === true;
+    if (ignoreDisabledNoticesFlag) console.log(`ignoreDisabledNoticesFlag=${ignoreDisabledNoticesFlag}`);
 
     // Adjust the list of success notices to combine multiple similar messages, e.g., Checked this book, Checked that book
     //  into one summary message, e.g., Checked this and that books.
@@ -294,11 +298,11 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 resultObject.successList.unshift(`Checked ${TSVNotesList.length} TSV notes files: ${TSVNotesList.join(', ')}`);
             if (USFMBookList.length > 1)
                 resultObject.successList.unshift(`Checked ${USFMBookList.length} USFM Bible files: ${USFMBookList.join(', ')}`);
-                if (TWLList.length > 1)
+            if (TWLList.length > 1)
                 resultObject.successList.unshift(`Checked ${TWLList.length} TWL files: ${TWLList.join(', ')}`);
-                if (TQList.length > 1)
+            if (TQList.length > 1)
                 resultObject.successList.unshift(`Checked ${TQList.length} TQ files: ${TQList.join(', ')}`);
-                if (TNList.length > 1)
+            if (TNList.length > 1)
                 resultObject.successList.unshift(`Checked ${TNList.length} TN files: ${TNList.join(', ')}`);
             if (TNBookList.length > 1)
                 resultObject.successList.unshift(`Checked ${TNBookList.length} TN files: ${TNBookList.join(', ')}`);
@@ -346,18 +350,26 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
 
     // Remove any notices that they have asked us to ignore
     let remainingNoticeList;
-    if (ignorePriorityNumberList.length) {
+    if (ignorePriorityNumberList.length || !ignoreDisabledNoticesFlag) {
         // console.log("Doing ignore of", ignorePriorityNumberList.length,"value(s)");
         remainingNoticeList = [];
-        for (const thisNotice of standardisedNoticeList)
-            if (ignorePriorityNumberList.indexOf(thisNotice.priority) >= 0)
+        for (const thisNotice of standardisedNoticeList) {
+            if (ignorePriorityNumberList.includes(thisNotice.priority))
                 resultObject.numIgnoredNotices++;
-            else
+            else if (!ignoreDisabledNoticesFlag && isDisabledNotice(thisNotice)) {
+                // console.log(`Disabled ${JSON.stringify(thisNotice)}`);
+                resultObject.numDisabledNotices++;
+            } else {
+                // if (thisNotice.repoCode==='TA' && thisNotice.priority === 177) console.log(`Didn't ignore or disable ${JSON.stringify(thisNotice)}`);
                 remainingNoticeList.push(thisNotice);
+            }
+        }
     } else
         remainingNoticeList = standardisedNoticeList;
     if (resultObject.numIgnoredNotices)
-        console.log(`Ignored ${resultObject.numIgnoredNotices} notices`);
+        console.log(`Ignored ${resultObject.numIgnoredNotices.toLocaleString()} generic notice(s) out of ${givenNoticeObject.noticeList.length.toLocaleString()}`);
+    if (resultObject.numDisabledNotices)
+        console.log(`Disabled ${resultObject.numDisabledNotices.toLocaleString()} specific notice(s) out of ${givenNoticeObject.noticeList.length.toLocaleString()}`);
 
     // Cut off the lowest priority notices if requested
     if (cutoffPriorityLevel > 0) {
@@ -377,26 +389,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     else if (sortBy !== 'AsFound')
         console.error(`Sorting '${sortBy}' is not implemented yet!!!`);
 
-    /*
-    // Add additional information fields to the location
-    const newNoticeList = [];
-    for (const thisNotice of remainingNoticeList) {
-        const newNotice = thisNotice;
-        if (newNotice.location) newNotice.location = newNotice.location.trim(); // Remove any leading spaces
-        else newNotice.location = '';
-        if (newNotice.repoName) newNotice.location = `in ${newNotice.filename} repoName ${newNotice.location}`
-        if (newNotice.filename) newNotice.location = `in file ${newNotice.filename} ${newNotice.location}`;
-        if (newNotice.rowID) newNotice.location = `with ID ${newNotice.rowID} ${newNotice.location}`;
-        if (newNotice.lineNumber) newNotice.location = `in line ${newNotice.lineNumber} ${newNotice.location}`;
-        if (newNotice.fieldName) newNotice.location = `in ${newNotice.fieldName} field ${newNotice.location}`;
-        // Default is to prepend extra to the message
-        //  This prevents errors/warnings from different repos or books from being combined
-        if (newNotice.extra) newNotice.message = `${newNotice.extra} ${newNotice.message}`;
-        newNoticeList.push(newNotice);
-    }
-    */
-
-    // Add in extra location info if it's there
+    // Add in extra info if it's there
     // Default is to prepend it to the msg
     //  This prevents errors/warnings from different repos or books from being combined
     if (remainingNoticeList.length
@@ -444,7 +437,7 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
             successList: a list of strings describing what has been checked
             errorList
             warningList
-            numIgnoredNotices, numSuppressedErrors, numSuppressedWarnings
+            numIgnoredNotices, numDisabledNotices, numSuppressedErrors, numSuppressedWarnings
             processingOptions: just helpfully passes on what we were given (may be undefined)
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
@@ -485,13 +478,15 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
         const thisID = thisPriority + thisMsg; // Could have identical worded messages but with different priorities
         if (isNaN(counter[thisID])) counter[thisID] = 1;
         else counter[thisID]++;
-        if (maximumSimilarMessages > 0 && counter[thisID] === maximumSimilarMessages + 1) {
+        if (maximumSimilarMessages > 0 && allTotals[thisPriority] > maximumSimilarMessages + 1 && counter[thisID] === maximumSimilarMessages + 1) {
             if (thisPriority >= errorPriorityLevel) {
                 const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
+                console.assert(numSuppressed !== 1, `Shouldn't suppress just one error of priority ${thisPriority}`);
                 resultObject.errorList.push({ priority: -1, message: thisMsg, location: ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
                 resultObject.numSuppressedErrors++;
             } else {
                 const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
+                console.assert(numSuppressed !== 1, `Shouldn't suppress just one warning of priority ${thisPriority}`);
                 resultObject.warningList.push({ priority: -1, message: thisMsg, location: ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
                 resultObject.numSuppressedWarnings++;
             }
@@ -531,7 +526,7 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
             severeList
             mediumList
             lowList
-            numIgnoredNotices, numSevereSuppressed, numMediumSuppressed, numLowSuppressed
+            numIgnoredNotices, numDisabledNotices, numSevereSuppressed, numMediumSuppressed, numLowSuppressed
             processingOptions: just helpfully passes on what we were given (may be undefined)
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
@@ -581,17 +576,20 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
         const thisID = thisPriority + thisMsg; // Could have identical worded messages but with different priorities
         if (isNaN(counter[thisID])) counter[thisID] = 1;
         else counter[thisID]++;
-        if (maximumSimilarMessages > 0 && counter[thisID] === maximumSimilarMessages + 1) {
+        if (maximumSimilarMessages > 0 && allTotals[thisPriority] > maximumSimilarMessages + 1 && counter[thisID] === maximumSimilarMessages + 1) {
             if (thisPriority >= severePriorityLevel) {
                 const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
+                console.assert(numSuppressed !== 1, `Shouldn't suppress just one severe error of priority ${thisPriority}`);
                 resultObject.severeList.push({ priority: -1, message: thisMsg, location: ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
                 resultObject.numSevereSuppressed++;
             } else if (thisPriority >= mediumPriorityLevel) {
                 const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
+                console.assert(numSuppressed !== 1, `Shouldn't suppress just one medium error of priority ${thisPriority}`);
                 resultObject.mediumList.push({ priority: -1, message: thisMsg, location: ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
                 resultObject.numMediumSuppressed++;
             } else {
                 const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
+                console.assert(numSuppressed !== 1, `Shouldn't suppress just one low warning of priority ${thisPriority}`);
                 resultObject.lowList.push({ priority: -1, message: thisMsg, location: ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
                 resultObject.numLowSuppressed++;
             }
@@ -633,7 +631,7 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
         Returns an object with:
             successList: a list of strings describing what has been checked
             warningList
-            numIgnoredNotices, numSevereSuppressed, numMediumSuppressed, numLowSuppressed
+            numIgnoredNotices, numDisabledNotices, numSevereSuppressed, numMediumSuppressed, numLowSuppressed
             processingOptions: just helpfully passes on what we were given (may be undefined)
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
@@ -672,8 +670,9 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
         const thisID = thisPriority + thisMsg; // Could have identical worded messages but with different priorities
         if (isNaN(counter[thisID])) counter[thisID] = 1;
         else counter[thisID]++;
-        if (maximumSimilarMessages > 0 && counter[thisID] === maximumSimilarMessages + 1) {
+        if (maximumSimilarMessages > 0 && allTotals[thisPriority] > maximumSimilarMessages + 1 && counter[thisID] === maximumSimilarMessages + 1) {
             const numSuppressed = allTotals[thisPriority] - maximumSimilarMessages;
+            console.assert(numSuppressed !== 1, `Shouldn't suppress just one notice of priority ${thisPriority}`);
             resultObject.warningList.push({ priority: thisPriority, message: thisMsg, location: ` ◄ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
             resultObject.numSuppressedWarnings++;
         } else if (maximumSimilarMessages > 0 && counter[thisID] > maximumSimilarMessages + 1) {

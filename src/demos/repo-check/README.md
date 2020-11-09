@@ -2,26 +2,32 @@
 
 The code below requests some info and then checks a Door43 repository.You can enter the `repoName`, i.e., the `username/repoName` in the code below. (Unfortunately if you refresh the page from the browser controls, it will return to the default setting. If you want to restart the test without returning to the default repo, just change one letter in a `//` comment line below.)
 
-**Warning**: Some repos contain many files and/or very large files, and downloading them all and then checking them might slow down your browser -- maybe even causing pop-up messages asking to confirm that you want to keep waiting.
+**Warning**: Some repos contain many files and/or very large files, and downloading them all and then checking them might slow down your browser—maybe even causing pop-up messages asking to confirm that you want to keep waiting.
 
-**Note**: This demonstration uses cached values of files stored inside the local browser. This makes reruns of the checks much faster, but it won't notice if you have updated the files on Door43. If you want to clear the local caches, use the `Clear Cache` function.
+**Note**: This demonstration uses saved (cached) copies of files stored inside the local browser. This makes reruns of the checks faster, but it won't notice if you have recently updated the files on Door43. If you want to clear the local caches, use either the `reloadAllFilesFirst` variable below, or the `Clear Cache` function from the menu.
 
 ```js
 import RepoCheck from './RepoCheck';
 
 <RepoCheck
+  // Set to Y while adjusting settings below, then change to N to start the check
+  wait='Y' // 'Y' (for Yes) or 'N' (for No)
+
+  // Set to Y to freshly update all data files from Door43 (Same as ClearCache in menu)
+  reloadAllFilesFirst='N' // 'Y' (for Yes) or 'N' (for No)
+
   // username = 'Door43-Catalog'
   username = 'unfoldingWord'
 
-  // repoName='hbo_uhb' // includes OT books only -- some large files with parsing info!
-  // repoName='el-x-koine_ugnt' // includes NT books only -- some large files with parsing info!
-  // repoName='en_ult' // Can use ult or ust here -- some large files with alignment info!
+  // repoName='hbo_uhb' // includes OT books only—some large files with parsing info!
+  // repoName='el-x-koine_ugnt' // includes NT books only—some large files with parsing info!
+  // repoName='en_ult' // Can use ult or ust here—some large files with alignment info!
   // repoName='en_tn' // Translation Notes (TSV tables)
   // repoName='en_tq' // Translation Questions (17,000+ markdown files!)
   // repoName='en_ta' // Translation Academy (700+ markdown files)
   // repoName='en_tw' // Translation Words (1000+ markdown files)
   // repoName='en_obs' // Open Bible Stories (50+ markdown files)
-  // repoName='en_translation-annotations' // 1hr+ -- Full Bible plus OBS (new annotation TSV files)
+  // repoName='en_translation-annotations' // 1hr+—Full Bible plus OBS (new annotation TSV files)
   repoName='fr_ulb' // No alignment so smaller files (faster demo)
 
   // If we don't put the branch here, the default branch is used
@@ -32,10 +38,10 @@ import RepoCheck from './RepoCheck';
   displayType='SingleList'
 
   // Specifying maximumSimilarMessages and extractLength is just to show off options
-  //  -- those fields are not necessary (or normal) here
+  // —those fields are not necessary (or normal) here
   // The location field appears in check messages to help the user locate the issue
-  maximumSimilarMessages='4' // Default is 3 -- 0 means don't suppress
-  // extractLength='13' // Default is 10
+  maximumSimilarMessages='4' // Default is 3 (0 means don't suppress)
+  // extractLength='13' // Default is 15
   location="as specified in repo-check/README.md"
 />
 ```

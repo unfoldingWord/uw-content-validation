@@ -10,7 +10,7 @@ function ClearCache({areYouSure}) {
     if (areYouSure === 'Y')
     {
         clearCaches();
-        ccResult = <b style={{ color: 'red' }}>Cleared!</b>;
+        ccResult = <b style={{ color: 'orange' }}>Cleared stored caches!</b>;
     } else ccResult = <span style={{ color: 'gray' }}>Inactive</span>;
 
     // {/* <div className={classes.root}> */}

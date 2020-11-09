@@ -1,3 +1,21 @@
+export const DEFAULT_EXTRACT_LENGTH = 15;
+
+
+// See http://xahlee.info/comp/unicode_matching_brackets.html for a more complete list
+// Also see https://unicode-table.com/en/sets/quotation-marks/
+// NOTE: Can't include ‘ and ’ below coz ’ is also used as apostrophe
+export const PAIRED_PUNCTUATION_OPENERS = '[({<⟨“«‹《〈⸢⸤';
+export const PAIRED_PUNCTUATION_CLOSERS = '])}>⟩”»›》〉⸣⸥';
+export const MATCHED_PUNCTUATION_PAIRS = [
+    ['[', ']'], ['(', ')'], ['{', '}'],
+    ['<', '>'], ['⟨', '⟩'], ['“', '”'],
+    ['«', '»'], ['‹', '›'],
+    ['《', '》'], ['〈', '〉'],
+    ['⸢', '⸣'], ['⸤', '⸥'],
+    ['**_', '_**']
+];
+
+
 export function isWhitespace(myString) {
     // includes zero-width space
     if (/^[\s\u200B]+$/.test(myString)) return true;

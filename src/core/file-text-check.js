@@ -1,8 +1,6 @@
 import { checkPlainText } from './plain-text-check';
 
-//const FILE_TEXT_VALIDATOR_VERSION_STRING = '0.2.2';
-
-// const DEFAULT_EXTRACT_LENGTH = 10;
+//const FILE_TEXT_VALIDATOR_VERSION_STRING = '0.3.0';
 
 
 export function checkTextfileContents(languageCode, filename, fileText, optionalFileLocation, optionalCheckingOptions) {
@@ -11,7 +9,6 @@ export function checkTextfileContents(languageCode, filename, fileText, optional
 
     // filename (str): Used for identification
     // fileText (str): The field being checked
-    // allowedLinks (bool): doesn't check links -- only checks lack of links
     // optionalFileLocation (str): Used to inform where this field is located
 
     // We assume that checking for compulsory fields is done elsewhere
@@ -22,14 +19,14 @@ export function checkTextfileContents(languageCode, filename, fileText, optional
     //      message (compulsory): the error description string
     //      characterIndeX: the 0-based index for the position in the string
     //      extract: a short extract of the string containing the error (or empty-string if irrelevant)
-    //      location: the detailed location string
     //  (Returned in this way for more intelligent processing at a higher level)
-    // console.log(`checkTextfileContents(${filename}, ${fileText.length.toLocaleString()} chars, ${allowedLinks}, '${optionalFileLocation}')…`);
+    // console.log(`checkTextfileContents(${filename}, ${fileText.length.toLocaleString()} chars, '${optionalFileLocation}')…`);
+    console.assert(languageCode !== undefined, "checkTextfileContents: 'languageCode' parameter should be defined");
+    console.assert(typeof languageCode === 'string', `checkTextfileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
     console.assert(filename !== undefined, "checkTextfileContents: 'filename' parameter should be defined");
     console.assert(typeof filename === 'string', `checkTextfileContents: 'filename' parameter should be a string not a '${typeof filename}': ${filename}`);
     console.assert(fileText !== undefined, "checkTextfileContents: 'fileText' parameter should be defined");
     console.assert(typeof fileText === 'string', `checkTextfileContents: 'fileText' parameter should be a string not a '${typeof fileText}': ${fileText}`);
-    // console.assert( allowedLinks===true || allowedLinks===false, "checkTextfileContents: allowedLinks parameter must be either true or false");
 
     let result = { noticeList: [] };
 
@@ -48,7 +45,7 @@ export function checkTextfileContents(languageCode, filename, fileText, optional
         result.noticeList.push(noticeObject);
     }
 
-    function ourCheckPlainText(plainText, givenLocation, optionalCheckingOptions) {
+    function ourCheckPlainText(textType, plainText, givenLocation, optionalCheckingOptions) {
         /**
         * @description - checks the given text field and processes the returned results
         * @param {String} plainText - the actual text of the field being checked
@@ -60,13 +57,13 @@ export function checkTextfileContents(languageCode, filename, fileText, optional
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global list of notices
-        // console.log(`cPT ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${fieldLocation}, …)`);
+        // console.log(`cPT ourCheckTextField(${fieldName}, (${fieldText.length}), ${fieldLocation}, …)`);
         // console.assert(textName !== undefined, "cPT ourCheckTextField: 'textName' parameter should be defined");
         // console.assert(typeof textName === 'string', `cPT ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof textName}'`);
         console.assert(plainText !== undefined, "cPT ourCheckTextField: 'plainText' parameter should be defined");
         console.assert(typeof plainText === 'string', `cPT ourCheckTextField: 'plainText' parameter should be a string not a '${typeof plainText}'`);
 
-        const resultObject = checkPlainText('', plainText, givenLocation, optionalCheckingOptions);
+        const resultObject = checkPlainText(textType, '', plainText, givenLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -83,7 +80,6 @@ export function checkTextfileContents(languageCode, filename, fileText, optional
     if (!fileText) // Nothing to check
         return result;
 
-    // Create our more detailed location string by prepending the filename
     let ourLocation = optionalFileLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
@@ -103,7 +99,13 @@ export function checkTextfileContents(languageCode, filename, fileText, optional
     // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
     */
 
-    ourCheckPlainText(fileText, ourLocation, optionalCheckingOptions);
+    let textType = 'raw';
+    const filenameLower = filename.toLowerCase();
+    if (filenameLower.endsWith('.usfm')) textType = 'USFM';
+    else if (filenameLower.endsWith('.md')) textType = 'markdown';
+    else if (filenameLower.endsWith('.yaml') || filenameLower.endsWith('.yml')) textType = 'YAML';
+
+    ourCheckPlainText(textType, fileText, ourLocation, optionalCheckingOptions);
 
     //     // Simple check that there aren't any
     //     ix = fileText.indexOf('://');

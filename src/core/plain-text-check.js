@@ -1,19 +1,33 @@
 import { checkTextField } from './field-text-check';
-import { isWhitespace, countOccurrences } from './text-handling-functions'
+import { DEFAULT_EXTRACT_LENGTH, MATCHED_PUNCTUATION_PAIRS, PAIRED_PUNCTUATION_OPENERS, PAIRED_PUNCTUATION_CLOSERS, isWhitespace, countOccurrences } from './text-handling-functions'
 
 
-const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.2.1';
-
-const DEFAULT_EXTRACT_LENGTH = 10;
+const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.3.1';
 
 
-export function checkPlainText(textName, plainText, givenLocation, optionalCheckingOptions) {
+/**
+ *
+ * @param {string} textType
+ * @param {string} textName
+ * @param {string} plainText
+ * @param {string} givenLocation
+ * @param {Object} optionalCheckingOptions
+ */
+export function checkPlainText(textType, textName, plainText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire text, i.e., all lines.
         It is used in checkFileContents() in book-package-check.js
 
      Returns a result object containing a successList and a noticeList
      */
     // console.log(`checkPlainText(${textName}, (${plainText.length} chars), ${givenLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
+    console.assert(textType !== undefined, "checkPlainText: 'fieldType' parameter should be defined");
+    console.assert(typeof textType === 'string', `checkPlainText: 'fieldType' parameter should be a string not a '${typeof textType}': ${textType}`);
+    console.assert(textType === 'markdown' || textType === 'USFM' || textType === 'YAML' || textType === 'raw', `checkPlainText: unrecognised 'textType' parameter: '${textType}'`);
+    console.assert(textName !== undefined, "checkPlainText: 'textName' parameter should be defined");
+    console.assert(typeof textName === 'string', `checkPlainText: 'textName' parameter should be a string not a '${typeof textName}': ${textName}`);
+    console.assert(plainText !== undefined, "checkPlainText: 'plainText' parameter should be defined");
+    console.assert(typeof plainText === 'string', `checkPlainText: 'plainText' parameter should be a string not a '${typeof plainText}': ${plainText}`);
+
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     if (textName) ourLocation = ` in ${textName}${ourLocation}`;
@@ -74,7 +88,7 @@ export function checkPlainText(textName, plainText, givenLocation, optionalCheck
         console.assert(typeof fieldText === 'string', `cPT ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         console.assert(allowedLinks === true || allowedLinks === false, "cPT ourCheckTextField: allowedLinks parameter must be either true or false");
 
-        const resultObject = checkTextField('', fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
+        const resultObject = checkTextField(textType, '', fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -92,7 +106,8 @@ export function checkPlainText(textName, plainText, givenLocation, optionalCheck
         let thisText = lineText.trimStart(); // So we don't get "leading space" and "doubled spaces" errors
 
         if (thisText)
-            ourCheckTextField(lineNumber, thisText, false, lineLocation, optionalCheckingOptions);
+            // Allow links as that's more general
+            ourCheckTextField(lineNumber, thisText, true, lineLocation, optionalCheckingOptions);
     }
     // end of checkPlainLine function
 
@@ -111,8 +126,6 @@ export function checkPlainText(textName, plainText, givenLocation, optionalCheck
     // let lastLineContents;
     // While checking individual lines,
     //  checking nested markers (so that we can give the line number in the notice)
-    const openers = '[({<⟨“‹«';
-    const closers = '])}>⟩”›»';
     const openMarkers = [];
     for (let n = 1; n <= lines.length; n++) {
 
@@ -123,24 +136,24 @@ export function checkPlainText(textName, plainText, givenLocation, optionalCheck
             // Check for nested brackets and quotes, etc.
             for (let characterIndex = 0; characterIndex < line.length; characterIndex++) {
                 const char = line[characterIndex];
-                let which;
-                if (openers.indexOf(char) >= 0) {
+                let closeCharacterIndex;
+                if (PAIRED_PUNCTUATION_OPENERS.indexOf(char) >= 0) {
                     // console.log(`Saving ${openMarkers.length} '${char}' ${n} ${x}`);
                     openMarkers.push({ char, n, x: characterIndex });
-                } else if ((which = closers.indexOf(char)) >= 0) {
+                } else if ((closeCharacterIndex = PAIRED_PUNCTUATION_CLOSERS.indexOf(char)) >= 0) {
                     // console.log(`Found '${char}' ${n} ${x}`);
                     // console.log(`Which: ${which} '${openers.charAt(which)}'`)
                     if (openMarkers.length) {
                         const [lastEntry] = openMarkers.slice(-1);
                         // console.log(`  Recovered lastEntry=${JSON.stringify(lastEntry)}`);
                         // console.log(`  Comparing found '${char}' with (${which}) '${openers.charAt(which)}' from '${lastEntry.char}'`);
-                        if (lastEntry.char === openers.charAt(which)) {
+                        if (lastEntry.char === PAIRED_PUNCTUATION_OPENERS.charAt(closeCharacterIndex)) {
                             // console.log(`  Matched '${char}' with  '${openers.charAt(which)}' ${n} ${x}`);
                             openMarkers.pop();
                         } else {
                             const extract = (characterIndex > halfLength ? '…' : '') + line.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < line.length ? '…' : '')
-                            const details = `'${openers.charAt(which)}' opened on line ${lastEntry.n} character ${lastEntry.x + 1}`;
-                            addNotice({ priority: 777, message: `Unexpected ${char} closing character doesn't match`, details, lineNumber: n, characterIndex, extract, location: ourLocation });
+                            const details = `'${lastEntry.char}' opened on line ${lastEntry.n} character ${lastEntry.x + 1}`;
+                            addNotice({ priority: 777, message: `Bad nesting: ${char} closing character doesn't match`, details, lineNumber: n, characterIndex, extract, location: ourLocation });
                             // console.log(`  ERROR 777: mismatched characters: ${details}`);
                         }
                     } else { // Closed something without an opener
@@ -174,9 +187,7 @@ export function checkPlainText(textName, plainText, givenLocation, optionalCheck
     }
 
     // Check matched pairs in the entire file
-    for (const punctSet of [['[', ']'], ['(', ')'], ['{', '}'],
-    ['<', '>'], ['⟨', '⟩'], ['“', '”'],
-    ['‹', '›'], ['«', '»'], ['**_', '_**']]) {
+    for (const punctSet of MATCHED_PUNCTUATION_PAIRS) {
         // Can't check '‘’' coz they might be used as apostrophe
         const leftChar = punctSet[0], rightChar = punctSet[1];
         const leftCount = countOccurrences(plainText, leftChar);

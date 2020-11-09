@@ -1,14 +1,14 @@
 import * as books from '../core/books/books';
+import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { cachedGetFile } from '../core/getApi';
+import { ourParseInt } from './utilities';
 // import { consoleLogObject } from '../core/utilities';
 
 
-// const QUOTE_VALIDATOR_VERSION_STRING = '0.6.1';
-
-const DEFAULT_EXTRACT_LENGTH = 10;
+// const QUOTE_VALIDATOR_VERSION_STRING = '0.7.0';
 
 
-export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldText, bookID, C, V, givenLocation, optionalCheckingOptions) {
+export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldText, occurrenceString, bookID, C, V, givenLocation, optionalCheckingOptions) {
     // Checks that the Hebrew/Greek quote can be found in the original texts
 
     // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
@@ -20,24 +20,26 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
     //      (UHB or UGNT will be used for the repo name)
     //      optionalCheckingOptions.originalLanguageRepoBranch (or tag)
 
-    // console.log(`checkOriginalLanguageQuote v${QUOTE_VALIDATOR_VERSION_STRING} (${fieldName}, (${fieldText.length}) '${fieldText}', ${bookID} ${C}:${V} ${givenLocation}, …)…`);
+    // console.log(`checkOriginalLanguageQuote v${QUOTE_VALIDATOR_VERSION_STRING} (${fieldName}, (${fieldText.length}) '${fieldText}', ${occurrenceString}, ${bookID} ${C}:${V} ${givenLocation}, …)…`);
     console.assert(languageCode !== undefined, "checkOriginalLanguageQuote: 'languageCode' parameter should be defined");
     console.assert(typeof languageCode === 'string', `checkOriginalLanguageQuote: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
     console.assert(fieldName !== undefined, "checkOriginalLanguageQuote: 'fieldName' parameter should be defined");
     console.assert(typeof fieldName === 'string', `checkOriginalLanguageQuote: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
     console.assert(fieldText !== undefined, "checkOriginalLanguageQuote: 'fieldText' parameter should be defined");
     console.assert(typeof fieldText === 'string', `checkOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-    console.assert(bookID !== undefined, "checkOriginalLanguageQuote: 'fieldText' parameter should be defined");
-    console.assert(typeof bookID === 'string', `checkOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof bookID}'`);
+    console.assert(occurrenceString !== undefined, "checkOriginalLanguageQuote: 'occurrenceString' parameter should be defined");
+    console.assert(typeof occurrenceString === 'string', `checkOriginalLanguageQuote: 'occurrenceString' parameter should be a string not a '${typeof occurrenceString}'`);
+    console.assert(bookID !== undefined, "checkOriginalLanguageQuote: 'bookID' parameter should be defined");
+    console.assert(typeof bookID === 'string', `checkOriginalLanguageQuote: 'bookID' parameter should be a string not a '${typeof bookID}'`);
     console.assert(bookID.length === 3, `checkOriginalLanguageQuote: 'bookID' parameter should be three characters long not ${bookID.length}`);
     console.assert(bookID.toUpperCase() === bookID, `checkOriginalLanguageQuote: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
     console.assert(bookID === 'OBS' || books.isValidBookID(bookID), `checkOriginalLanguageQuote: '${bookID}' is not a valid USFM book identifier`);
-    console.assert(C !== undefined, "checkOriginalLanguageQuote: 'fieldText' parameter should be defined");
-    console.assert(typeof C === 'string', `checkOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof C}'`);
-    console.assert(V !== undefined, "checkOriginalLanguageQuote: 'fieldText' parameter should be defined");
-    console.assert(typeof V === 'string', `checkOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof V}'`);
-    console.assert(givenLocation !== undefined, "checkOriginalLanguageQuote: 'fieldText' parameter should be defined");
-    console.assert(typeof givenLocation === 'string', `checkOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof givenLocation}'`);
+    console.assert(C !== undefined, "checkOriginalLanguageQuote: 'C' parameter should be defined");
+    console.assert(typeof C === 'string', `checkOriginalLanguageQuote: 'C' parameter should be a string not a '${typeof C}'`);
+    console.assert(V !== undefined, "checkOriginalLanguageQuote: 'V' parameter should be defined");
+    console.assert(typeof V === 'string', `checkOriginalLanguageQuote: 'V' parameter should be a string not a '${typeof V}'`);
+    console.assert(givenLocation !== undefined, "checkOriginalLanguageQuote: 'givenLocation' parameter should be defined");
+    console.assert(typeof givenLocation === 'string', `checkOriginalLanguageQuote: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -74,7 +76,7 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
         try {
             username = optionalCheckingOptions.originalLanguageRepoUsername;
         } catch (qcoError) { }
-        if (!username) username = languageCode === 'en'? 'unfoldingWord': 'Door43-Catalog'; // ??? !!!
+        if (!username) username = languageCode === 'en' ? 'unfoldingWord' : 'Door43-Catalog'; // ??? !!!
         let branch;
         try {
             branch = optionalCheckingOptions.originalLanguageRepoBranch;
@@ -94,7 +96,7 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
                 // console.log("Fetched fileContent for", OBSRepoName, OBSPathname, typeof originalMarkdown, originalMarkdown.length);
             } catch (gcUHBerror) {
                 console.error(`getOriginalPassage(${bookID}, ${C}:${V}, ${JSON.stringify(optionalCheckingOptions)}) failed to load UHB`, username, languageCode, OBSPathname, branch, gcUHBerror.message);
-                addNotice({ priority: 601, message: "Failed to load", OBSPathname, location: `${ourLocation}: ${gcUHBerror}`, extra: OBSRepoName });
+                addNotice({ priority: 601, message: "Unable to load", details: `username=${username} error=${gcUHBerror}`, OBSPathname, location: ourLocation, extra: OBSRepoName });
             }
             if (!originalMarkdown) return '';
 
@@ -126,7 +128,7 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
                     // console.log("Fetched fileContent for", repoName, filename, typeof originalUSFM, originalUSFM.length);
                 } catch (gcUHBerror) {
                     console.error(`getOriginalPassage(${bookID}, ${C}:${V}, ${JSON.stringify(optionalCheckingOptions)}) failed to load UHB`, username, originalLanguageRepoCode, filename, branch, gcUHBerror.message);
-                    addNotice({ priority: 601, message: "Failed to load", filename, location: `${ourLocation}: ${gcUHBerror}`, extra: originalLanguageRepoName });
+                    addNotice({ priority: 601, message: "Unable to load", details: `username=${username} error=${gcUHBerror}`, filename, location: ourLocation, extra: originalLanguageRepoName });
                 }
             } else if (originalLanguageRepoCode === 'UGNT') {
                 try {
@@ -134,7 +136,7 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
                     // console.log("Fetched fileContent for", repoName, filename, typeof originalUSFM, originalUSFM.length);
                 } catch (gcUGNTerror) {
                     console.error(`getOriginalPassage(${bookID}, ${C}:${V}, ${JSON.stringify(optionalCheckingOptions)}) failed to load UGNT`, username, originalLanguageRepoCode, filename, branch, gcUGNTerror.message);
-                    addNotice({ priority: 601, message: "Failed to load", filename, location: `${ourLocation}: ${gcUGNTerror}`, extra: originalLanguageRepoName });
+                    addNotice({ priority: 601, message: "Unable to load", details: `username=${username} error=${gcUGNTerror}`, filename, location: ourLocation, extra: originalLanguageRepoName });
                 }
             }
             if (!originalUSFM) return '';
@@ -219,6 +221,8 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
     // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
+    let occurrence = 1;
+    try { occurrence = ourParseInt(occurrenceString); } catch { } // errors in this field are noted elsewhere
 
     // if fieldText.lstrip() !== fieldText:
     //     addNotice({priority:0, message:`Unexpected whitespace at start of {TNid} '{fieldText}'")
@@ -271,7 +275,8 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
     }
 
     // Now check if the quote can be found in the verse text
-    if (quoteBits) {
+    if (quoteBits) { // it had an ellipsis
+        console.assert(occurrence === 1, `Oh -- can get '${fieldText}' with occurrence=${occurrence} in ${bookID} ${C}:${V}`);
         const numQuoteBits = quoteBits.length;
         if (numQuoteBits >= 2) {
             for (let bitIndex = 0; bitIndex < numQuoteBits; bitIndex++) {
@@ -291,28 +296,36 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
             addNotice({ priority: 375, message: "Ellipsis without surrounding snippet", location: ourLocation });
     } else { // Only a single quote (no ellipsis)
         if (verseText.indexOf(fieldText) >= 0) {
-            // Double check that it doesn't start/stop in the middle of a word
-            // console.log(`Here with fieldText=${fieldText} and verseText=${verseText}`);
-            let remainingBits = verseText.split(fieldText);
-            // console.log(`remaingBits=${JSON.stringify(remainingBits)}`);
-            if (remainingBits.length > 2) // Join the extra bits back up
-                remainingBits = [remainingBits[0], remainingBits.slice(1).join('…')];
-            console.assert(remainingBits.length === 2, `remaining bits are ${remainingBits.length}`);
-            // Note: There's some Hebrew (RTL) characters at the beginning of the following regex
-            if (remainingBits[0] && remainingBits[0].slice(-1).search(/[^־A-Za-z\s*[(]/) !== -1) {
-                // const badChar = remainingBits[0].slice(-1);
-                // const badCharString = ` by '{badChar}' {unicodedata.name(badChar)}={hex(ord(badChar))}`;
-                // console.log(`Seems '${fieldText}' might not start at the beginning of a word—it's preceded ${badCharString} in '${verseText}'`);
-                const extract = `(${remainingBits[0].slice(-1)}=D${remainingBits[0].slice(-1).charCodeAt()}/H${remainingBits[0].slice(-1).charCodeAt().toString(16)})` + fieldText.substring(0, extractLength - 3) + (fieldText.length > extractLength - 3 ? '…' : '');
-                addNotice({ priority: 620, message: "Seems original language quote might not start at the beginning of a word", characterIndex: 0, extract, location: ourLocation });
-            }
-            // Note: There's some Hebrew (RTL) characters at the beginning of the following regex
-            if (remainingBits[1] && remainingBits[1][0].search(/[^׃־A-Za-z\s.,:;?!–)]/) !== -1) {
-                // const badChar = remainingBits[1][0];
-                // const badCharString = ` by '${badChar}' {unicodedata.name(badChar)}={hex(ord(badChar))}`;
-                // console.log(`Seems '${fieldText}' might not finish at the end of a word—it's followed ${badCharString} in '${verseText}'`);
-                const extract = (fieldText.length > extractLength - 3 ? '…' : '') + fieldText.substring(fieldText.length - extractLength + 3, fieldText.length) + `(${remainingBits[1][0]}=D${remainingBits[1].charCodeAt(0)}/H${remainingBits[1].charCodeAt(0).toString(16)})`;
-                addNotice({ priority: 621, message: "Seems original language quote might not finish at the end of a word", characterIndex: fieldText.length, extract, location: ourLocation });
+            if (occurrence > 1) {
+                console.log(`checkOriginalLanguageQuote is checking for ${occurrence} occurrences of ${fieldText}`);
+                if (verseText.split(fieldText).length <= occurrence) { // There's not enough of them
+                    const extract = fieldText.substring(0, halfLength) + (fieldText.length > 2 * halfLength ? '…' : '') + fieldText.substring(fieldText.length - halfLength, fieldText.length);
+                    addNotice({ priority: 917, message: "Unable to find duplicate original language quote in verse text", details: `occurrence=${occurrenceString}, passage ⸢${verseText}⸣`, extract, location: ourLocation });
+                }
+            } else { // We only need to check for one occurrence
+                // Double check that it doesn't start/stop in the middle of a word
+                // console.log(`Here with fieldText=${fieldText} and verseText=${verseText}`);
+                let remainingBits = verseText.split(fieldText);
+                // console.log(`remaingBits=${JSON.stringify(remainingBits)}`);
+                if (remainingBits.length > 2) // Join the extra bits back up
+                    remainingBits = [remainingBits[0], remainingBits.slice(1).join('…')];
+                console.assert(remainingBits.length === 2, `remaining bits are ${remainingBits.length}`);
+                // Note: There's some Hebrew (RTL) characters at the beginning of the following regex
+                if (fieldText.slice(0) !== ' ' && remainingBits[0] && remainingBits[0].slice(-1).search(/[^־A-Za-z\s*[(]/) !== -1) {
+                    // const badChar = remainingBits[0].slice(-1);
+                    // const badCharString = ` by '{badChar}' {unicodedata.name(badChar)}={hex(ord(badChar))}`;
+                    // console.log(`Seems '${fieldText}' might not start at the beginning of a word—it's preceded ${badCharString} in '${verseText}'`);
+                    const extract = `(${remainingBits[0].slice(-1)}=D${remainingBits[0].slice(-1).charCodeAt()}/H${remainingBits[0].slice(-1).charCodeAt().toString(16)})` + fieldText.substring(0, extractLength - 3) + (fieldText.length > extractLength - 3 ? '…' : '');
+                    addNotice({ priority: 620, message: "Seems original language quote might not start at the beginning of a word", details: `passage ⸢${verseText}⸣`, characterIndex: 0, extract, location: ourLocation });
+                }
+                // Note: There's some Hebrew (RTL) characters at the beginning of the following regex
+                if (fieldText.slice(-1) !== ' ' && remainingBits[1] && remainingBits[1][0].search(/[^׃־A-Za-z\s.,:;?!–)]/) !== -1) {
+                    // const badChar = remainingBits[1][0];
+                    // const badCharString = ` by '${badChar}' {unicodedata.name(badChar)}={hex(ord(badChar))}`;
+                    // console.log(`Seems '${fieldText}' might not finish at the end of a word—it's followed ${badCharString} in '${verseText}'`);
+                    const extract = (fieldText.length > extractLength - 3 ? '…' : '') + fieldText.substring(fieldText.length - extractLength + 3, fieldText.length) + `(${remainingBits[1][0]}=D${remainingBits[1].charCodeAt(0)}/H${remainingBits[1].charCodeAt(0).toString(16)})`;
+                    addNotice({ priority: 621, message: "Seems original language quote might not finish at the end of a word", details: `passage ⸢${verseText}⸣`, characterIndex: fieldText.length, extract, location: ourLocation });
+                }
             }
         } else { // can't find the given text
             // console.log(`Unable to find '${fieldText}' in '${verseText}'`);
@@ -340,12 +353,12 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
                 addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which ends with 'zero-width joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation });
             } else {
                 const extract = fieldText.substring(0, halfLength) + (fieldText.length > 2 * halfLength ? '…' : '') + fieldText.substring(fieldText.length - halfLength, fieldText.length);
-                addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: noBreakSpaceText, extract, location: ourLocation });
+                addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: noBreakSpaceText ? noBreakSpaceText : `passage ⸢${verseText}⸣`, extract, location: ourLocation });
             }
         }
     }
 
-    // console.log(`checkOriginalLanguageQuote is returning ${JSON.stringify(colqResult)}`);
+    // console.log(`checkOriginalLanguageQuote is returning ${ JSON.stringify(colqResult) }`);
     return colqResult;
 }
 // end of checkOriginalLanguageQuote function
