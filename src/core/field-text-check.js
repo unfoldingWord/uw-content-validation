@@ -264,7 +264,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
             let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
             addNoticePartial({ priority: 192, message: `Unexpected space after ${punctChar} character`, characterIndex, extract, location: ourLocation });
         }
-        if (fieldText[fieldText.length - 1] === punctChar) {
+        if (punctChar !== '—' && fieldText[fieldText.length - 1] === punctChar) {
             characterIndex = fieldText.length - 1;
             let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
             addNoticePartial({ priority: 193, message: `Unexpected ${punctChar} character at end of line`, characterIndex, extract, location: ourLocation });
