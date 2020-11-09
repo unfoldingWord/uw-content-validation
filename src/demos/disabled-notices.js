@@ -19,46 +19,56 @@ const disabledNotices = [
   // {username: 'unfoldingWord', repoName:'en_ta', filename:'translate/figs-quotemarks/01.md', message:'Unexpected space after ‹ character'},
   // {username: 'unfoldingWord', repoName:'en_ta', filename:'translate/figs-quotemarks/01.md', message:'Unexpected « character after space'},
   // {username: 'unfoldingWord', repoName:'en_ta', filename:'translate/figs-quotemarks/01.md', message:'Unexpected ‹ character after space'},
-  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: 'Unexpected . character after space', lineNumber: 16, }, // 191
-  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: 'Unexpected ” character after space', }, // 191
-  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: 'Unexpected ’ character after space', }, // 191
-  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: 'Unexpected » character after space', }, // 191
-  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: 'Unexpected › character after space', }, // 191
-  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: 'Unexpected — character after space', }, // 191
-  { repoCode: 'TA', filename: 'translate/grammar-connect-time-background/01.md', message: 'Unexpected - character after space', }, // 191
-  { repoCode: 'TA', filename: 'translate/translate-bdistance/01.md', message: 'Unexpected - character after space', }, // 191
-  { repoCode: 'TA', filename: 'translate/translate-bmoney/01.md', message: 'Unexpected - character after space', }, // 191
-  { repoCode: 'TA', filename: 'translate/translate-ordinal/01.md', message: 'Unexpected - character after space', }, // 191
-  { repoCode: 'TA', filename: 'translate/grammar-connect-time-background/01.md', message: 'Unexpected | character after space', }, // 191
-  { repoCode: 'TA', filename: 'translate/translate-bdistance/01.md', message: 'Unexpected | character after space', }, // 191
-  { repoCode: 'TA', filename: 'translate/translate-bmoney/01.md', message: 'Unexpected | character after space', }, // 191
-  { repoCode: 'TA', filename: 'translate/translate-ordinal/01.md', message: 'Unexpected | character after space', }, // 191
+  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected . character after space", lineNumber: 16, }, // 191
+  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected ” character after space", }, // 191
+  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected ’ character after space", }, // 191
+  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected » character after space", }, // 191
+  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected › character after space", }, // 191
+  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected — character after space", }, // 191
+  { repoCode: 'TA', filename: 'translate/grammar-connect-time-background/01.md', message: "Unexpected - character after space", }, // 191
+  { repoCode: 'TA', filename: 'translate/translate-bdistance/01.md', message: "Unexpected - character after space", }, // 191
+  { repoCode: 'TA', filename: 'translate/translate-bmoney/01.md', message: "Unexpected - character after space", }, // 191
+  { repoCode: 'TA', filename: 'translate/translate-ordinal/01.md', message: "Unexpected - character after space", }, // 191
+  { repoCode: 'TA', filename: 'translate/grammar-connect-time-background/01.md', message: "Unexpected | character after space", }, // 191
+  { repoCode: 'TA', filename: 'translate/translate-bdistance/01.md', message: "Unexpected | character after space", }, // 191
+  { repoCode: 'TA', filename: 'translate/translate-bmoney/01.md', message: "Unexpected | character after space", }, // 191
+  { repoCode: 'TA', filename: 'translate/translate-ordinal/01.md', message: "Unexpected | character after space", }, // 191
 
-  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: 'Unexpected space after “ character', lineNumber: 3, }, // 192
-  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: 'Unexpected space after “ character', lineNumber: 16, }, // 192
-  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: 'Unexpected space after ‘ character', lineNumber: 16, }, // 192
-  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: 'Unexpected space after « character', }, // 192
-  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: 'Unexpected space after ‹ character', }, // 192
-  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: 'Unexpected space after — character', }, // 192
-  { repoCode: 'TA', filename: 'translate/translate-textvariants/01.md', message: 'Unexpected space after [ character', }, // 192
-  { repoCode: 'TA', filename: 'translate/translate-formatsignals/01.md', message: 'Unexpected space after ( character', }, // 192
-  { repoCode: 'TA', filename: 'translate/grammar-connect-time-background/01.md', message: 'Unexpected space after | character', }, // 192 -- tA uses these for formatting
-  { repoCode: 'TA', filename: 'translate/translate-bdistance/01.md', message: 'Unexpected space after | character', }, // 192 -- tA uses these for formatting
-  { repoCode: 'TA', filename: 'translate/translate-bmoney/01.md', message: 'Unexpected space after | character', }, // 192 -- tA uses these for formatting
-  { repoCode: 'TA', filename: 'translate/translate-ordinal/01.md', message: 'Unexpected space after | character', }, // 192 -- tA uses these for formatting
+  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected space after “ character", lineNumber: 3, }, // 192
+  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected space after “ character", lineNumber: 16, }, // 192
+  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected space after ‘ character", lineNumber: 16, }, // 192
+  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected space after « character", }, // 192
+  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected space after ‹ character", }, // 192
+  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected space after — character", }, // 192
+  { repoCode: 'TA', filename: 'translate/translate-textvariants/01.md', message: "Unexpected space after [ character", }, // 192
+  { repoCode: 'TA', filename: 'translate/translate-formatsignals/01.md', message: "Unexpected space after ( character", }, // 192
+  { repoCode: 'TA', filename: 'translate/grammar-connect-time-background/01.md', message: "Unexpected space after | character", }, // 192 -- tA uses these for formatting
+  { repoCode: 'TA', filename: 'translate/translate-bdistance/01.md', message: "Unexpected space after | character", }, // 192 -- tA uses these for formatting
+  { repoCode: 'TA', filename: 'translate/translate-bmoney/01.md', message: "Unexpected space after | character", }, // 192 -- tA uses these for formatting
+  { repoCode: 'TA', filename: 'translate/translate-ordinal/01.md', message: "Unexpected space after | character", }, // 192 -- tA uses these for formatting
 
-  { repoCode: 'TA', message: 'Unexpected – character after space', }, // 191 -- temp en-dashes
-  { repoCode: 'TA', message: 'Unexpected space after – character', }, // 192 -- temp en-dashes
+  { repoCode: 'TA', message: "Unexpected – character after space", }, // 191 -- temp en-dashes
+  { repoCode: 'TA', message: "Unexpected space after – character", }, // 192 -- temp en-dashes
 
-  { repoCode: 'TA', filename: 'translate/grammar-connect-time-background/01.md', message: 'Unexpected doubled - characters',}, // 177 -- tA uses these for formatting
-  { repoCode: 'TA', filename: 'translate/translate-bdistance/01.md', message: 'Unexpected doubled - characters',}, // 177 -- tA uses these for formatting
-  { repoCode: 'TA', filename: 'translate/translate-bmoney/01.md', message: 'Unexpected doubled - characters',}, // 177 -- tA uses these for formatting
-  { repoCode: 'TA', filename: 'translate/translate-ordinal/01.md', message: 'Unexpected doubled - characters',}, // 177 -- tA uses these for formatting
+  { repoCode: 'TA', filename: 'translate/grammar-connect-time-background/01.md', message: "Unexpected doubled - characters",}, // 177 -- tA uses these for formatting
+  { repoCode: 'TA', filename: 'translate/translate-bdistance/01.md', message: "Unexpected doubled - characters",}, // 177 -- tA uses these for formatting
+  { repoCode: 'TA', filename: 'translate/translate-bmoney/01.md', message: "Unexpected doubled - characters",}, // 177 -- tA uses these for formatting
+  { repoCode: 'TA', filename: 'translate/translate-ordinal/01.md', message: "Unexpected doubled - characters",}, // 177 -- tA uses these for formatting
+
+  { repoCode: 'TA', filename: 'translate/grammar-connect-time-background/01.md', message: "Unexpected | character at end of line", }, // 193 -- tA uses these for formatting
+  { repoCode: 'TA', filename: 'translate/translate-bdistance/01.md', message: "Unexpected | character at end of line", }, // 193 -- tA uses these for formatting
+  { repoCode: 'TA', filename: 'translate/translate-bmoney/01.md', message: "Unexpected | character at end of line", }, // 193 -- tA uses these for formatting
+  { repoCode: 'TA', filename: 'translate/translate-ordinal/01.md', message: "Unexpected | character at end of line", }, // 193 -- tA uses these for formatting
 
   { repoCode: 'TA', filename: 'translate/grammar-connect-time-background/01.md', priority: 194, }, // "Unexpected doubled space(s)" -- tA uses these for formatting
   { repoCode: 'TA', filename: 'translate/translate-bdistance/01.md', priority: 194, }, // "Unexpected doubled space(s)" -- tA uses these for formatting
   { repoCode: 'TA', filename: 'translate/translate-bmoney/01.md', priority: 194, }, // "Unexpected doubled space(s)" -- tA uses these for formatting
   { repoCode: 'TA', filename: 'translate/translate-ordinal/01.md', priority: 194, }, // "Unexpected doubled space(s)" -- tA uses these for formatting
+
+  { repoCode: 'TA', filename: 'translate/grammar-connect-time-background/01.md', message: "Unexpected | character at start of line", }, // 195 -- tA uses these for formatting
+  { repoCode: 'TA', filename: 'translate/translate-bdistance/01.md', message: "Unexpected | character at start of line", }, // 195 -- tA uses these for formatting
+  { repoCode: 'TA', filename: 'translate/translate-bmoney/01.md', message: "Unexpected | character at start of line", }, // 195 -- tA uses these for formatting
+  { repoCode: 'TA', filename: 'translate/translate-ordinal/01.md', message: "Unexpected | character at start of line", }, // 195 -- tA uses these for formatting
 ];
 
 /**

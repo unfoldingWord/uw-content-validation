@@ -243,7 +243,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
             let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
             addNoticePartial({ priority: 191, message: `Unexpected ${punctChar} character after space`, characterIndex, extract, location: ourLocation });
         }
-        if (fieldText[0] === punctChar) {
+        if ((punctChar !== '-' || fieldType !== 'YAML') && fieldText[0] === punctChar) {
             characterIndex = 0;
             let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
             addNoticePartial({ priority: 195, message: `Unexpected ${punctChar} character at start of line`, characterIndex, extract, location: ourLocation });
