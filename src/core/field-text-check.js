@@ -28,7 +28,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     console.assert(fieldType !== undefined, "checkTextField: 'fieldType' parameter should be defined");
     console.assert(typeof fieldType === 'string', `checkTextField: 'fieldType' parameter should be a string not a '${typeof fieldType}': ${fieldType}`);
     console.assert(fieldType !== '', `checkTextField: 'fieldType' ${fieldName} parameter should be not be an empty string`);
-    console.assert(fieldType === 'markdown' || fieldType === 'USFM' || fieldType === 'YAML' || fieldType === 'raw', `checkTextField: unrecognised 'fieldType' parameter: '${fieldType}'`);
+    console.assert(fieldType === 'markdown' || fieldType === 'USFM' || fieldType === 'YAML' || fieldType === 'raw' || fieldType === 'link', `checkTextField: unrecognised 'fieldType' parameter: '${fieldType}'`);
     console.assert(fieldName !== undefined, "checkTextField: 'fieldName' parameter should be defined");
     console.assert(typeof fieldName === 'string', `checkTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}': ${fieldName}`);
     // if (fieldType !== 'markdown')
@@ -231,7 +231,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
             // addNoticePartial({ priority: 177, message: `Unexpected doubled ${fieldType} ${fieldName} ${allowedLinks} ${punctChar} characters`, characterIndex, extract, location: ourLocation });
         }
     }
-    // Check for punctuation chars following space
+    // Check for punctuation chars following space and at start of line
     //  Removed ©$€₱
     let afterSpaceCheckList = ')}>⟩:,،、‒–—―!.›»‐-?’”;/⁄·@•^†‡°¡¿※#№÷×ºª%‰‱¶′″‴§~‖¦℗®℠™¤₳฿₵¢₡₢₫₯֏₠ƒ₣₲₴₭₺₾ℳ₥₦₧₰£៛₽₹₨₪৳₸₮₩¥';
     if (fieldType !== 'markdown') afterSpaceCheckList += '_*'; // These are used for markdown formatting
@@ -239,17 +239,20 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     if (fieldType !== 'YAML') afterSpaceCheckList += '\'"'; // These are used for YAML strings, e.g., version: '0.15'
     // if (fieldName === 'OrigQuote' || fieldName === 'Quote') afterSpaceCheckList += '…'; // NOT NEEDED -- this is specifically checked elsewhere
     for (const punctChar of afterSpaceCheckList) {
-        characterIndex = fieldText.indexOf(' ' + punctChar);
-        if (characterIndex >= 0) {
+        if ((characterIndex = fieldText.indexOf(' ' + punctChar)) >= 0) {
             let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
             addNoticePartial({ priority: 191, message: `Unexpected ${punctChar} character after space`, characterIndex, extract, location: ourLocation });
-            // addNoticePartial({ priority: 191, message: `Unexpected ${fieldType} ${fieldName} ${punctChar} character after space`, characterIndex, extract, location: ourLocation });
+        }
+        if (fieldText[0] === punctChar) {
+            characterIndex = 0;
+            let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
+            addNoticePartial({ priority: 195, message: `Unexpected ${punctChar} character at start of line`, characterIndex, extract, location: ourLocation });
         }
     }
     if (fieldType === 'USFM')
         suggestion = suggestion.replace(/| /g, '|');
 
-    // Check for punctuation chars before space
+    // Check for punctuation chars before space and at end of line
     //  Removed ' (can be normal, e.g., Jesus' cloak)
     //  Removed ©
     let beforeSpaceCheckList = '({<⟨،、‒–—―‹«‐‘“/⁄·@\\•^†‡°¡¿※№×ºª‰‱¶′″‴§~|‖¦℗℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥';
@@ -257,11 +260,14 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     if (fieldType !== 'markdown' && fieldType !== 'USFM') beforeSpaceCheckList += '*'; // There are used for markdown formatting and USFM closing markers
     if (fieldType !== 'YAML') beforeSpaceCheckList += '[';
     for (const punctChar of beforeSpaceCheckList) {
-        characterIndex = fieldText.indexOf(punctChar + ' ');
-        if (characterIndex >= 0) {
+        if ((characterIndex = fieldText.indexOf(punctChar + ' '))>= 0) {
             let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
             addNoticePartial({ priority: 192, message: `Unexpected space after ${punctChar} character`, characterIndex, extract, location: ourLocation });
-            // addNoticePartial({ priority: 192, message: `Unexpected ${fieldType} ${fieldName} space after ${punctChar} character`, characterIndex, extract, location: ourLocation });
+        }
+        if (fieldText[fieldText.length - 1] === punctChar) {
+            characterIndex = fieldText.length - 1;
+            let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
+            addNoticePartial({ priority: 193, message: `Unexpected ${punctChar} character at end of line`, characterIndex, extract, location: ourLocation });
         }
     }
 

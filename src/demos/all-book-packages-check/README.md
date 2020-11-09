@@ -16,7 +16,7 @@ import AllBookPackagesCheck from './AllBookPackagesCheck';
   wait='Y' // 'Y' (for Yes) or 'N' (for No)
 
   // Set to Y to freshly update all data files from Door43 (Same as ClearCache in menu)
-  reloadAllFilesFirst='N' // 'Y' (for Yes) or 'N' (for No)
+  reloadAllFilesFirst='Y' // 'Y' (for Yes) or 'N' (for No)
 
   username='unfoldingWord'
   languageCode='en'
