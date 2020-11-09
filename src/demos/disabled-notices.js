@@ -51,11 +51,14 @@ const disabledNotices = [
   { repoCode: 'TA', message: 'Unexpected space after – character', }, // 192 -- temp en-dashes
 
   { repoCode: 'TA', filename: 'translate/grammar-connect-time-background/01.md', message: 'Unexpected doubled - characters',}, // 177 -- tA uses these for formatting
-  { repoCode: 'TA', filename: 'translate/translate-ordinal/01.md', message: 'Unexpected doubled - characters',}, // 177 -- tA uses these for formatting
   { repoCode: 'TA', filename: 'translate/translate-bdistance/01.md', message: 'Unexpected doubled - characters',}, // 177 -- tA uses these for formatting
   { repoCode: 'TA', filename: 'translate/translate-bmoney/01.md', message: 'Unexpected doubled - characters',}, // 177 -- tA uses these for formatting
+  { repoCode: 'TA', filename: 'translate/translate-ordinal/01.md', message: 'Unexpected doubled - characters',}, // 177 -- tA uses these for formatting
 
+  { repoCode: 'TA', filename: 'translate/grammar-connect-time-background/01.md', priority: 194, }, // "Unexpected doubled space(s)" -- tA uses these for formatting
   { repoCode: 'TA', filename: 'translate/translate-bdistance/01.md', priority: 194, }, // "Unexpected doubled space(s)" -- tA uses these for formatting
+  { repoCode: 'TA', filename: 'translate/translate-bmoney/01.md', priority: 194, }, // "Unexpected doubled space(s)" -- tA uses these for formatting
+  { repoCode: 'TA', filename: 'translate/translate-ordinal/01.md', priority: 194, }, // "Unexpected doubled space(s)" -- tA uses these for formatting
 ];
 
 /**
