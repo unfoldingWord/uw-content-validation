@@ -434,8 +434,10 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
 
     /**
     * @description - checks the given text field and processes the returned results
+    * @param {number} lineNumber -- 1-based integer
     * @param {String} C - chapter number of the text being checked
     * @param {String} V - verse number of the text being checked
+    * @param {String} fieldType - If 'USFM', fieldName will be the line marker, and fieldText will be the line text; If 'raw', fieldName will be 'from {marker}' and fieldText will have internal USFM markers removed
     * @param {String} fieldName - name of the field being checked
     * @param {String} fieldText - the actual text of the field being checked
     * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
@@ -449,12 +451,12 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
 
         // Updates the global list of notices
         // console.log(`cUSFM ourCheckTextField(${lineNumber}, ${C}:${V}, ${fieldName}, (${fieldText.length} chars), ${allowedLinks}, ${fieldLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
+        console.assert(lineNumber !== undefined, "cUSFM ourCheckTextField: 'lineNumber' parameter should be defined");
+        console.assert(typeof lineNumber === 'number', `cUSFM ourCheckTextField: 'lineNumber' parameter should be a number not a '${typeof lineNumber}'`);
         console.assert(C !== undefined, "cUSFM ourCheckTextField: 'C' parameter should be defined");
         console.assert(typeof C === 'string', `cUSFM ourCheckTextField: 'C' parameter should be a string not a '${typeof C}'`);
         console.assert(V !== undefined, "cUSFM ourCheckTextField: 'V' parameter should be defined");
         console.assert(typeof V === 'string', `cUSFM ourCheckTextField: 'V' parameter should be a string not a '${typeof V}'`);
-        console.assert(lineNumber !== undefined, "cUSFM ourCheckTextField: 'lineNumber' parameter should be defined");
-        console.assert(typeof lineNumber === 'number', `cUSFM ourCheckTextField: 'lineNumber' parameter should be a number not a '${typeof lineNumber}'`);
         console.assert(fieldType !== undefined, "cUSFM ourCheckTextField: 'fieldType' parameter should be defined");
         console.assert(typeof fieldType === 'string', `cUSFM ourCheckTextField: 'fieldType' parameter should be a string not a '${typeof fieldType}'`);
         console.assert(fieldType === 'USFM' || fieldType === 'raw', `cUSFM ourCheckTextField: Unrecognized 'fieldType' parameter: ${fieldType}`);
