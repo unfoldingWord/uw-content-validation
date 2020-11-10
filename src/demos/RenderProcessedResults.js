@@ -4,36 +4,8 @@ import React from 'react';
 // NOTE: The following line is currently giving compile warnings -- a problem in a dependency it seems
 import MaterialTable from 'material-table';
 
-// import { consoleLogObject, displayPropertyNames } from '../core/utilities';
 
-
-// const RENDER_PROCESSED_RESULTS_VERSION = '0.5.2';
-
-
-// Note from RJH: I commented out these fields because 1/ they seemed to cause warnings/errors,
-//  2/ I didn't understand what they do anyway.
-// so feel free to uncomment it if it makes the table work better.
-/*
-const tableIcons = {
-    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
-    Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
-    Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
-    DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
-    Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
-    Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
-    FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
-    LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
-    NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
-    ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
-    SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
-    ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
-    ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
-  };
-  /* end material box imports and icons */
+// const RENDER_PROCESSED_RESULTS_VERSION = '0.5.3';
 
 
 export function RenderSuccesses({ username, results }) {
@@ -265,7 +237,7 @@ function RenderFileDetails({ username, repoName, filename, lineNumber, rowID, fi
         lineResult = `line ${lineNumber.toLocaleString()}`;
     }
     // else resultEnd += " no lineNumber";
-    if (rowID && rowID.length) resultEnd += ` with ID ${rowID}`;
+    if (rowID && rowID.length) resultEnd += ` with row ID ${rowID}`;
     if (fieldName && fieldName.length) resultEnd += ` in ${fieldName} field`;
     if (fileLink) return <>{resultStart}<a rel="noopener noreferrer" target="_blank" href={fileLink}>{lineResult}</a>{resultEnd}</>;
     else return <>{resultStart}<b>{lineResult}</b>{resultEnd}</>;
