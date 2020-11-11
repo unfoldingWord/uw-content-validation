@@ -1,4 +1,4 @@
-## TN TSV Table Row Check Sandbox
+## TN2 TSV Table Row Check Sandbox
 
 This function checks one TranslationNotes tab-separated line for typical formatting errors.
 

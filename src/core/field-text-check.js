@@ -1,7 +1,7 @@
 import { DEFAULT_EXTRACT_LENGTH, MATCHED_PUNCTUATION_PAIRS, isWhitespace, countOccurrences } from './text-handling-functions'
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.2.0';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.2.1';
 
 
 /**
@@ -157,7 +157,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     if (fieldText[fieldText.length - 1] === ' ') {
         const extract = (fieldText.length > extractLength ? '…' : '') + fieldText.substring(fieldText.length - 10).replace(/ /g, '␣');
         const notice = { priority: 95, message: "Unexpected trailing space(s)", extract, location: ourLocation };
-        if (fieldType !== 'raw' || fieldName.substring(0,6) !== 'from \\') notice.characterIndex = fieldText.length - 1; // characterIndex means nothing for processed USFM
+        if (fieldType !== 'raw' || fieldName.substring(0, 6) !== 'from \\') notice.characterIndex = fieldText.length - 1; // characterIndex means nothing for processed USFM
         addNoticePartial(notice);
     }
     if ((characterIndex = fieldText.indexOf(' <br')) >= 0) {
@@ -182,7 +182,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     if ((characterIndex = fieldText.indexOf('  ')) >= 0) {
         const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
         const notice = { priority: 194, message: "Unexpected double spaces", extract, location: ourLocation }
-        if (fieldType !== 'raw' || fieldName.substring(0,6) !== 'from \\') notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
+        if (fieldType !== 'raw' || fieldName.substring(0, 6) !== 'from \\') notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
         addNoticePartial(notice);
     }
     if ((characterIndex = fieldText.indexOf('\n')) >= 0) {
@@ -203,7 +203,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     if ((characterIndex = fieldText.indexOf('\u202F')) >= 0) { // narrow non-break space
         const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/\u202F/g, '⍽') + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
         const notice = { priority: 580, message: "Unexpected narrow non-break space character", extract, location: ourLocation };
-        if (fieldType !== 'raw' || fieldName.substring(0,6) !== 'from \\') notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
+        if (fieldType !== 'raw' || fieldName.substring(0, 6) !== 'from \\') notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
         addNoticePartial(notice);
         suggestion = suggestion.replace(/\u202F/g, ' ');
     }
@@ -235,9 +235,9 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
         if (characterIndex >= 0) {
             let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
             const notice = { priority: 177, message: `Unexpected doubled ${punctChar} characters`, extract, location: ourLocation };
-            if (fieldType !== 'raw' || fieldName.substring(0,6) !== 'from \\') notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
+            if (fieldType !== 'raw' || fieldName.substring(0, 6) !== 'from \\') notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
             addNoticePartial(notice);
-            }
+        }
     }
     // Check for punctuation chars following space and at start of line
     //  Removed ©$€₱
@@ -250,9 +250,9 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
         if ((characterIndex = fieldText.indexOf(' ' + punctChar)) >= 0) {
             let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
             const notice = { priority: 191, message: `Unexpected ${punctChar} character after space`, extract, location: ourLocation };
-            if (fieldType !== 'raw' || fieldName.substring(0,6) !== 'from \\') notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
+            if (fieldType !== 'raw' || fieldName.substring(0, 6) !== 'from \\') notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
             addNoticePartial(notice);
-            }
+        }
         if ((punctChar !== '-' || fieldType !== 'YAML') && fieldText[0] === punctChar) {
             characterIndex = 0;
             let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
@@ -270,19 +270,19 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     if (fieldType !== 'markdown' && fieldType !== 'USFM') beforeSpaceCheckList += '*'; // There are used for markdown formatting and USFM closing markers
     if (fieldType !== 'YAML') beforeSpaceCheckList += '[';
     for (const punctChar of beforeSpaceCheckList) {
-        if ((characterIndex = fieldText.indexOf(punctChar + ' '))>= 0) {
+        if ((characterIndex = fieldText.indexOf(punctChar + ' ')) >= 0) {
             let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
             const notice = { priority: 192, message: `Unexpected space after ${punctChar} character`, extract, location: ourLocation };
-            if (fieldType !== 'raw' || fieldName.substring(0,6) !== 'from \\') notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
+            if (fieldType !== 'raw' || fieldName.substring(0, 6) !== 'from \\') notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
             addNoticePartial(notice);
-            }
+        }
         if (punctChar !== '—' && fieldText[fieldText.length - 1] === punctChar) {
             characterIndex = fieldText.length - 1;
             let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
             const notice = { priority: 193, message: `Unexpected ${punctChar} character at end of line`, extract, location: ourLocation };
-            if (fieldType !== 'raw' || fieldName.substring(0,6) !== 'from \\') notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
+            if (fieldType !== 'raw' || fieldName.substring(0, 6) !== 'from \\') notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
             addNoticePartial(notice);
-            }
+        }
     }
 
     // Check matched pairs in the field
@@ -292,6 +292,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
         // if (fieldType === 'markdown' && leftChar === '<') continue; // markdown uses this for block quote
         if ((fieldType === 'USFM' || fieldName.startsWith('from \\') || (fieldType === 'markdown' && fieldName === ''))
             && '([{“«'.indexOf(leftChar) >= 0) continue; // Start/end can be on different lines
+        if (fieldType === 'markdown' && leftChar === '<') continue; // > is a markdown block marker
         const rightChar = punctSet[1];
         const leftCount = countOccurrences(fieldText, leftChar);
         const rightCount = countOccurrences(fieldText, rightChar);

@@ -204,7 +204,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
 
         // console.log(`Need to check against ${taRepoName}`);
         const taPathParameters = { username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch };
-        let taFileContent; // Not really used here -- just to show that we got something valid
+        let taFileContent;
         try {
             taFileContent = await getFile_(taPathParameters);
             // console.log("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
@@ -309,13 +309,13 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
             if (ourParseInt(C1) !== chapterInt)
                 addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don't match", details: `${C1} vs ${chapterInt}`, extract: totalLink, location: ourLocation });
         } catch (ccError) {
-            console.error(`TN Link Check couldn't compare chapter numbers: ${ccError}`);
+            console.error(`TN2 Link Check couldn't compare chapter numbers: ${ccError}`);
         }
         try {
             if (ourParseInt(V1) !== ourParseInt(verseInt))
                 addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don't match", details: `${V1} vs ${verseInt}`, extract: totalLink, location: ourLocation });
         } catch (vvError) {
-            console.error(`TN Link Check couldn't compare verse numbers: ${vvError}`);
+            console.error(`TN2 Link Check couldn't compare verse numbers: ${vvError}`);
         }
 
         if (linkBookCode) { // then we know which Bible book this link is to
@@ -361,13 +361,13 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
             if (ourParseInt(C1) !== chapterInt)
                 addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don't match", details: `${C1} vs ${chapterInt}`, extract: totalLink, location: ourLocation });
         } catch (ccError) {
-            console.error(`TN Link Check couldn't compare chapter numbers: ${ccError}`);
+            console.error(`TN2 Link Check couldn't compare chapter numbers: ${ccError}`);
         }
         try {
             if (ourParseInt(V1) !== ourParseInt(verseInt))
                 addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don't match", details: `${V1} vs ${verseInt}`, extract: totalLink, location: ourLocation });
         } catch (vvError) {
-            console.error(`TN Link Check couldn't compare verse numbers: ${vvError}`);
+            console.error(`TN2 Link Check couldn't compare verse numbers: ${vvError}`);
         }
 
         if (linkBookCode) { // then we know which Bible book this link is to
@@ -413,13 +413,13 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
             if (ourParseInt(C1) !== chapterInt)
                 addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don't match", details: `${C1} vs ${chapterInt}`, extract: totalLink, location: ourLocation });
         } catch (ccError) {
-            console.error(`TN Link Check couldn't compare chapter numbers: ${ccError}`);
+            console.error(`TN2 Link Check couldn't compare chapter numbers: ${ccError}`);
         }
         try {
             if (ourParseInt(V1) !== ourParseInt(verseInt))
                 addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don't match", details: `${V1} vs ${verseInt}`, extract: totalLink, location: ourLocation });
         } catch (vvError) {
-            console.error(`TN Link Check couldn't compare verse numbers: ${vvError}`);
+            console.error(`TN2 Link Check couldn't compare verse numbers: ${vvError}`);
         }
 
         if (linkBookCode) { // then we know which Bible book this link is to

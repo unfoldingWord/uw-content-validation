@@ -2,7 +2,7 @@ import { isDisabledNotice } from './disabled-notices';
 // import { displayPropertyNames, consoleLogObject } from './utilities';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.8.4';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.8.6';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -126,6 +126,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 && !thisMsg.startsWith('Unexpected content after \\')
                 && !thisMsg.startsWith('USFMGrammar: ')
                 && !thisMsg.endsWith(' character after space')
+                && !thisMsg.endsWith(' character at start of line')
+                && !thisMsg.endsWith(' character at end of line')
                 && !thisMsg.endsWith(' marker at start of line')
                 && !thisMsg.endsWith(' closing character (no matching opener)')
                 && !thisMsg.endsWith(' closing character doesn\'t match')
@@ -232,7 +234,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             const NotesRegex = /\d\d-(\w\w\w).tsv/; // "Checked EN_TN_01-GEN.TSV file: en_tn_01-GEN.tsv"
             const manifestRegex = /Checked ([\w\-_]{2,25}) manifest file/;
             resultObject.successList = [];
-            const UHBBookList = [], UGNTBookList = [], LTBookList = [], STBookList = [], TNBookList = [];
+            const UHBBookList = [], UGNTBookList = [], LTBookList = [], STBookList = [], TNBookList = [], TN2BookList = [], TQ2BookList = [];
             const USFMBookList = [], TSVNotesList = [], manifestsList = [];
             const TNList = [], TQList = [], TWLList = [];
             for (const thisParticularSuccessMsg of givenNoticeObject.successList) {
@@ -248,9 +250,13 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                     STBookList.push(thisParticularSuccessMsg.substring(17, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked TN file: '))
                     TNBookList.push(thisParticularSuccessMsg.substring(17, thisParticularSuccessMsg.length))
-                else if (thisParticularSuccessMsg.startsWith('Checked TN ') && thisParticularSuccessMsg.substring(14, 20) === ' file:')
+                else if (thisParticularSuccessMsg.startsWith('Checked TN2 file: '))
+                    TN2BookList.push(thisParticularSuccessMsg.substring(17, thisParticularSuccessMsg.length))
+                else if (thisParticularSuccessMsg.startsWith('Checked TQ2 file: '))
+                    TQ2BookList.push(thisParticularSuccessMsg.substring(17, thisParticularSuccessMsg.length))
+                else if (thisParticularSuccessMsg.startsWith('Checked TN2 ') && thisParticularSuccessMsg.substring(14, 20) === ' file:')
                     TNList.push(thisParticularSuccessMsg.substring(21, thisParticularSuccessMsg.length))
-                else if (thisParticularSuccessMsg.startsWith('Checked TQ ') && thisParticularSuccessMsg.substring(14, 20) === ' file:')
+                else if (thisParticularSuccessMsg.startsWith('Checked TQ2 ') && thisParticularSuccessMsg.substring(14, 20) === ' file:')
                     TQList.push(thisParticularSuccessMsg.substring(21, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked TWL ') && thisParticularSuccessMsg.substring(15, 21) === ' file:')
                     TWLList.push(thisParticularSuccessMsg.substring(22, thisParticularSuccessMsg.length))
@@ -278,14 +284,18 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 resultObject.successList.push(`Checked ST file: ${STBookList[0]}`);
             if (TNBookList.length === 1)
                 resultObject.successList.push(`Checked TN file: ${TNBookList[0]}`);
+            if (TN2BookList.length === 1)
+                resultObject.successList.push(`Checked TN2 file: ${TN2BookList[0]}`);
+            if (TQ2BookList.length === 1)
+                resultObject.successList.push(`Checked TQ2 file: ${TQ2BookList[0]}`);
             if (USFMBookList.length === 1)
                 resultObject.successList.push(`Checked ${USFMBookList[0]} file`);
             if (TSVNotesList.length === 1)
                 resultObject.successList.push(`Checked ${TSVNotesList[0]} file`);
             if (TNList.length === 1)
-                resultObject.successList.push(`Checked TN file: ${TNList[0]}`);
+                resultObject.successList.push(`Checked TN2 file: ${TNList[0]}`);
             if (TQList.length === 1)
-                resultObject.successList.push(`Checked TQ file: ${TQList[0]}`);
+                resultObject.successList.push(`Checked TQ2 file: ${TQList[0]}`);
             if (TWLList.length === 1)
                 resultObject.successList.push(`Checked TWL file: ${TWLList[0]}`);
             if (manifestsList.length === 1)
@@ -301,9 +311,13 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             if (TWLList.length > 1)
                 resultObject.successList.unshift(`Checked ${TWLList.length} TWL files: ${TWLList.join(', ')}`);
             if (TQList.length > 1)
-                resultObject.successList.unshift(`Checked ${TQList.length} TQ files: ${TQList.join(', ')}`);
+                resultObject.successList.unshift(`Checked ${TQList.length} TQ2 files: ${TQList.join(', ')}`);
             if (TNList.length > 1)
                 resultObject.successList.unshift(`Checked ${TNList.length} TN files: ${TNList.join(', ')}`);
+            if (TQ2BookList.length > 1)
+                resultObject.successList.unshift(`Checked ${TQ2BookList.length} TQ2 files: ${TQ2BookList.join(', ')}`);
+            if (TN2BookList.length > 1)
+                resultObject.successList.unshift(`Checked ${TN2BookList.length} TN2 files: ${TN2BookList.join(', ')}`);
             if (TNBookList.length > 1)
                 resultObject.successList.unshift(`Checked ${TNBookList.length} TN files: ${TNBookList.join(', ')}`);
             if (STBookList.length > 1)

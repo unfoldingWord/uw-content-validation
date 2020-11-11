@@ -22,8 +22,8 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
 
   let [languageCode, repoCode] = repoName.split('_');
   repoCode = repoCode.toUpperCase();
-  if (repoCode === 'TN') repoCode = 'TN1';
-  else if (repoCode === 'TQ') repoCode = 'TQ1';
+  if (repoCode === 'TN2') repoCode = 'TN';
+  else if (repoCode === 'TQ2') repoCode = 'TQ';
   // console.log("checkRepo languageCode", languageCode);
 
   if (branch === undefined) branch = 'master'; // Ideally we should ask what the default branch is
@@ -113,7 +113,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
     //  as we don't enable TA or TW checking per repo anyway
     // Anyway, not sure that the following code was working yet
     if (repoName.endsWith('_tn')) {
-      // The following is needed coz we might be checking the linked TA and/or TW articles from TN TSV files
+      // The following is needed coz we might be checking the linked TA and/or TW articles from TN2 TSV files
       console.log("cfcResultObject", JSON.stringify({ ...cfcResultObject, noticeList: "deleted" }));
       if (cfcResultObject.checkedFileCount && cfcResultObject.checkedFileCount > 0) {
         checkRepoResult.checkedFileCount += cfcResultObject.checkedFileCount;

@@ -118,7 +118,7 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
                 // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
                 //  process results line by line
                 for (const drNoticeEntry of drResultObject.noticeList)
-                    if (drNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN check
+                    if (drNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN2 check
                         carResult.noticeList.push(drNoticeEntry); // Just copy the complete notice as is
                     else
                         addNoticePartial({ ...drNoticeEntry, lineNumber: n + 1 });

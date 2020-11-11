@@ -19,9 +19,9 @@ const TA_REGEX = new RegExp('\\[\\[rc://[^ /]+?/ta/man/[^ /]+?/([^ \\]]+?)\\]\\]
 
 /**
  *
- * @description - Checks one TSV data row of translation notes (TN)
+ * @description - Checks one TSV data row of translation notes (TN2)
  * @param {String} languageCode - the language code, e.g., 'en'
- * @param {String} annotationType - TN, TQ, TWL, SN, or SQ -- allows more specific checks
+ * @param {String} annotationType - TN2, TQ2, TWL, SN, or SQ -- allows more specific checks
  * @param {String} line - the TSV line to be checked
  * @param {String} bookID - 3-character UPPERCASE USFM book identifier or 'OBS'
  * @param {String} givenC - chapter number or (for OBS) story number string
@@ -267,7 +267,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const coqNoticeEntry of coqResultObject.noticeList) {
-            if (coqNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN check
+            if (coqNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN2 check
                 drResult.noticeList.push(coqNoticeEntry); // Just copy the complete notice as is
             else // For our direct checks, we add the repoCode as an extra value
                 addNoticePartial({ ...coqNoticeEntry, rowID, fieldName });
@@ -411,7 +411,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
                 addNoticePartial({ priority: 173, message: "Row ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 2, rowID, extract: rowID, location: ourRowLocation });
         }
 
-        if (supportReference.length) { // need to check TN against TA
+        if (supportReference.length) { // need to check TN2 against TA
             if (isWhitespace(supportReference))
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'SupportReference', rowID, location: ourRowLocation });
             else { // More than just whitespace
@@ -503,8 +503,8 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         // 9 [B, C, V, rowID, supportReference, origQuote, occurrence, GLQuote, occurrenceNote]
         const suggestion = `${B}\t${C}\t${V}\t${RIDSuggestion === undefined? rowID: RIDSuggestion}\t${SRSuggestion === undefined ? supportReference : SRSuggestion}\t${OQSuggestion === undefined ? origQuote : OQSuggestion}\t${OSuggestion === undefined ? occurrence : OSuggestion}\t${GLQSuggestion === undefined ? GLQuote : GLQSuggestion}\t${ONSuggestion === undefined ? occurrenceNote : ONSuggestion}`;
         if (suggestion !== line) {
-            // console.log(`Had TN ${line}`);
-            // console.log(`Sug TN ${suggestion}`);
+            // console.log(`Had TN2 ${line}`);
+            // console.log(`Sug TN2 ${suggestion}`);
             drResult.suggestion = suggestion;
         }
 

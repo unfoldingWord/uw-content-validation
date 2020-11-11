@@ -19,9 +19,9 @@ const TA_REGEX = new RegExp('\\[\\[rc://[^ /]+?/ta/man/[^ /]+?/([^ \\]]+?)\\]\\]
 
 /**
  *
- * @description - Checks one TSV data row of translation notes (TN)
+ * @description - Checks one TSV data row of translation notes (TN2)
  * @param {String} languageCode - the language code, e.g., 'en'
- * @param {String} annotationType - TN, TQ, TWL, SN, or SQ -- allows more specific checks
+ * @param {String} annotationType - TN2, TQ2, TWL, SN, or SQ -- allows more specific checks
  * @param {String} line - the TSV line to be checked
  * @param {String} bookID - 3-character UPPERCASE USFM book identifier or 'OBS'
  * @param {String} givenC - chapter number or (for OBS) story number string
@@ -34,7 +34,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
     /* This function is only for checking one data row
           and the function doesn't assume that it has any previous context.
 
-        TN, TQ, TWL, SN, or SQ
+        TN2, TQ2, TWL, SN, or SQ
             being translation or study notes, questions, or word-links.
 
         bookID is a three-character UPPERCASE USFM book identifier or 'OBS'
@@ -274,7 +274,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const coqNoticeEntry of coqResultObject.noticeList) {
-            if (coqNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN check
+            if (coqNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN2 check
                 drResult.noticeList.push(coqNoticeEntry); // Just copy the complete notice as is
             else // For our direct checks, we add the repoCode as an extra value
                 addNoticePartial({ ...coqNoticeEntry, rowID, fieldName });
@@ -423,10 +423,10 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         if (tags.length)
             ;
 
-        if (supportReference.length) { // need to check TN against TA
+        if (supportReference.length) { // need to check TN2 against TA
             if (isWhitespace(supportReference))
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'SupportReference', rowID, location: ourRowLocation });
-            else if (annotationType === 'TN') { // More than just whitespace
+            else if (annotationType === 'TN2') { // More than just whitespace
                 const supportReferenceArticlePart = supportReference.replace('rc://*/ta/man/translate/', '');
                 // console.log("supportReferenceArticlePart", supportReferenceArticlePart);
                 if (!supportReferenceArticlePart.startsWith('figs-')
@@ -455,7 +455,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
                 addNoticePartial({ priority: 750, message: "Missing occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, location: ourRowLocation });
         }
         else // TODO: Find more details about when these fields are really compulsory (and when they're not, e.g., for 'intro') ???
-            if (annotationType === 'TN' && V !== 'intro' && occurrence !== '0')
+            if (annotationType === 'TN2' && V !== 'intro' && occurrence !== '0')
                 addNoticePartial({ priority: 919, message: "Missing Quote field", fieldName: 'Quote', rowID, location: ourRowLocation });
 
         if (occurrence.length) { // This should usually be a digit
@@ -500,7 +500,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
             }
         }
         else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
-            if (annotationType === 'TN')
+            if (annotationType === 'TN2')
                 addNoticePartial({ priority: 274, message: "Missing Annotation field", fieldName: 'Annotation', rowID, location: ourRowLocation });
 
         // 7 [reference, rowID, tags, supportReference, quote, occurrence, annotation]

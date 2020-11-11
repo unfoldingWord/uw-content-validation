@@ -78,8 +78,8 @@ function RepoCheck(/*username, languageCode,*/ props) {
 
             let [languageCode, repoCode] = repoName.split('_');
             repoCode = repoCode.toUpperCase();
-            if (repoCode === 'TN') repoCode = 'TN1';
-            else if (repoCode === 'TQ') repoCode = 'TQ1';
+            if (repoCode === 'TN2') repoCode = 'TN';
+            else if (repoCode === 'TQ2') repoCode = 'TQ';
             // console.log(`RepoCheck languageCode='${languageCode}' repoCode='${repoCode}'`);
 
             setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for {repoName} repo check…</p>);

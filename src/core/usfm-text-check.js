@@ -7,7 +7,7 @@ import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
 import { ourParseInt } from './utilities';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.7.0';
+// const USFM_VALIDATOR_VERSION_STRING = '0.7.1';
 
 
 // See http://ubsicap.github.io/usfm/master/index.html
@@ -699,31 +699,36 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
     // end of checkUSFMLineText function
 
 
-    function checkUSFMLineInternals(lineNumber, C, V, marker, rest, lineLocation, optionalCheckingOptions) {
-        // Handles character formatting within the line contents
-        // console.log(`checkUSFMLineInternals(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
-
-        if (marker === 'c' && isNaN(rest))
-            addNoticePartial({ priority: 822, message: "Expected \\c field to contain an integer", lineNumber, C, V, characterIndex: 3, extract: `\\c ${rest}`, location: lineLocation });
-        if (marker === 'v') {
-            let Vstr = (rest) ? rest.split(' ', 1)[0] : '?';
-            if (isNaN(Vstr) && Vstr.indexOf('-') < 0)
-                addNoticePartial({ priority: 822, C, V, message: "Expected \\v field to contain an integer", characterIndex: 3, extract: `\\v ${rest}`, location: lineLocation });
-        }
-
-        if (rest) checkUSFMLineText(lineNumber, C, V, marker, rest, lineLocation, optionalCheckingOptions);
-
-        const allowedLinks = (marker === 'w' || marker === 'k-s' || marker === 'f' || marker === 'SPECIAL1')
-            // (because we don't know what marker SPECIAL1 is, so default to "no false alarms")
-            && rest.indexOf('x-tw') >= 0;
-        if (rest) ourCheckTextField(lineNumber, C, V, 'USFM', `\\${marker}`, rest, allowedLinks, lineLocation, optionalCheckingOptions);
-    }
-    // end of checkUSFMLineInternals function
-
-
     function checkUSFMLineContents(lineNumber, C, V, marker, rest, lineLocation, optionalCheckingOptions) {
         // Looks at the marker and determines what content is allowed/expected on the rest of the line
         // 'SPECIAL1' is used internally here when a character other than a backslash starts a line
+
+        function checkUSFMLineInternals(lineNumber, C, V, marker, rest, lineLocation, optionalCheckingOptions) {
+            // Handles character formatting within the line contents
+            // console.log(`checkUSFMLineInternals(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
+
+            if (marker === 'c' && isNaN(rest))
+                addNoticePartial({ priority: 822, message: "Expected field to contain an integer", lineNumber, characterIndex: 3, extract: `\\c ${rest}`, C, V, location: lineLocation });
+            if (marker === 'v') {
+                let Vstr = (rest) ? rest.split(' ', 1)[0] : '?';
+                if (isNaN(Vstr) && Vstr.indexOf('-') < 0)
+                    addNoticePartial({ priority: 822, message: "Expected field to contain an integer", characterIndex: 3, extract: `\\v ${rest}`, C, V, location: lineLocation });
+            }
+            else if (marker === 'h' || marker === 'toc1' || marker === 'toc2' || marker==='toc3')
+                if (rest.toLowerCase() === rest || rest.toUpperCase() === rest)
+                    addNoticePartial({ priority: languageCode === 'en' || languageCode === 'fr' ? 490 : 190, message: "Expected header field to contain a mixed-case string", fieldName: `\\${marker}`, extract: rest, C, V, location: lineLocation });
+
+            if (rest) checkUSFMLineText(lineNumber, C, V, marker, rest, lineLocation, optionalCheckingOptions);
+
+            const allowedLinks = (marker === 'w' || marker === 'k-s' || marker === 'f' || marker === 'SPECIAL1')
+                // (because we don't know what marker SPECIAL1 is, so default to "no false alarms")
+                && rest.indexOf('x-tw') >= 0;
+            if (rest) ourCheckTextField(lineNumber, C, V, 'USFM', `\\${marker}`, rest, allowedLinks, lineLocation, optionalCheckingOptions);
+        }
+        // end of checkUSFMLineInternals function
+
+
+        // Main code for checkUSFMLineContents()
         if (ALLOWED_LINE_START_MARKERS.indexOf(marker) >= 0 || marker === 'SPECIAL1') {
             if (rest && MARKERS_WITHOUT_CONTENT.indexOf(marker) >= 0)
                 if (isWhitespace(rest))

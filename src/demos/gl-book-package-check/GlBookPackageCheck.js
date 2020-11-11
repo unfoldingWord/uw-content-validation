@@ -8,7 +8,7 @@ import { checkBookPackage } from '../book-package-check/checkBookPackage';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.4';
+// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.5';
 
 
 function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
@@ -35,6 +35,8 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
     let checkingOptions = { // Uncomment any of these to test them
         // extractLength: 25,
         checkManifestFlag: true,
+        checkReadmeFlag: true,
+        checkLicenseFlag: true,
     };
     // Or this allows the parameters to be specified as a GlBookPackageCheck property
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);

@@ -4,7 +4,7 @@
 const disabledNotices = [
   // Just enter enough details to disable the required message(s) and no unwanted ones
   //  i.e., you can be as specific as you need about username and/or lineNumber, etc.
-  { repoCode: 'TN1', priority: 450, }, // "TN Resource container link should have '*' language code with (not 'en')" as tC can't handle it yet!
+  { repoCode: 'TN', priority: 450, }, // "TN2 Resource container link should have '*' language code with (not 'en')" as tC can't handle it yet!
 
   { repoCode: 'LT', priority: 638, fieldName: '\\p', }, // "Only found whitespace" tC3 outputs trailing spaces here
   { repoCode: 'ST', priority: 638, fieldName: '\\p', }, // "Only found whitespace" tC3 outputs trailing spaces here

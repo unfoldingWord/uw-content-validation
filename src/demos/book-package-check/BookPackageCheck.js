@@ -8,7 +8,7 @@ import { checkBookPackage } from './checkBookPackage';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.3.1';
+// const BP_VALIDATOR_VERSION_STRING = '0.3.2';
 
 
 function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
@@ -35,8 +35,10 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
 
     let checkingOptions = { // Uncomment any of these to test them
         dataSet: dataSet, // Can be 'OLD' (Markdown, etc.), 'NEW' (TSV only), or 'BOTH'
-        // extractLength: 25,
+        // extractLength: 25, // default is 15
         checkManifestFlag: true,
+        checkReadmeFlag: true,
+        checkLicenseFlag: true,
     };
     // Or this allows the parameters to be specified as a BookPackageCheck property
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);

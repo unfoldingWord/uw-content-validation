@@ -37,7 +37,7 @@ const data = {
   // You can choose any of the above lines here
   //  (to demonstrate differing results)
   languageCode: 'en',
-  annotationType: 'TN',
+  annotationType: 'TN2',
   tableTextName : 'textG',
   tableText : textG,
   bookID : 'GEN',
