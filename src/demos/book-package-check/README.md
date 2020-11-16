@@ -16,11 +16,11 @@ Note that `OBS` can also be entered here as a *pseudo book identifier* in order 
 import BookPackageCheck from './BookPackageCheck';
 
 <BookPackageCheck
-  // Set to Y while adjusting settings below, then change to N to start the check
+  // Leave as Y while adjusting settings below, then change to N to start the check
   wait='Y' // 'Y' (for Yes) or 'N' (for No)
 
-  // Set to Y to freshly update all data files from Door43 (Same as ClearCache in menu)
-  reloadAllFilesFirst='Y' // 'Y' (for Yes) or 'N' (for No)
+  // Set to N to rerun the check without fetching new copies of the files (slightly faster)
+  reloadAllFilesFirst='Y' // 'Y' (for Yes -- same as ClearCache in menu) or 'N' (for No)
 
   username='unfoldingWord'
   languageCode='en'
@@ -29,19 +29,22 @@ import BookPackageCheck from './BookPackageCheck';
   bookID='EST'
 
   // We can choose the forthcoming new TSV formats or the existing formats
-  dataSet='DEFAULT' // 'OLD' (Markdown TQ, TSV TN, etc.), 'NEW' (TSV TQ2, TN2, etc.), 'DEFAULT', or 'BOTH'
+  dataSet='OLD' // 'OLD' (Markdown TQ, TSV TN, etc.), 'NEW' (TSV TQ2, TN2, etc.), 'DEFAULT', or 'BOTH'
 
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'
   displayType='SingleList'
 
+  // Normally links in files are downloaded to check that they really exist
+  disableAllLinkFetchingFlag='false' // 'true' or 'false'
+  // The next two are only relevant if the above is 'false'
   checkLinkedTAArticleFlag='true' // 'true' or 'false'
   checkLinkedTWArticleFlag='true' // 'true' or 'false'
 
   // Specifying extractLength and maximumSimilarMessages is just to show off options
   // —those fields are not necessary (or normal) here
   extractLength='20' // Default is 15
-  maximumSimilarMessages='0' // Default is 3 (0 means don't suppress)
+  maximumSimilarMessages='5' // Default is 3 (0 means don't suppress)
   //ignorePriorityNumberList='[]'
   ignoreDisabledNoticesFlag='false' // Show known non-issues: 'true' or 'false'
   />

@@ -1,7 +1,7 @@
 import { DEFAULT_EXTRACT_LENGTH, MATCHED_PUNCTUATION_PAIRS, isWhitespace, countOccurrences } from './text-handling-functions'
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.2.1';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.2.2';
 
 
 /**
@@ -27,7 +27,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     // console.log(`checkTextField(${fieldName}, ${fieldText.length.toLocaleString()} chars, ${allowedLinks}, '${optionalFieldLocation}')…`);
     console.assert(fieldType !== undefined, "checkTextField: 'fieldType' parameter should be defined");
     console.assert(typeof fieldType === 'string', `checkTextField: 'fieldType' parameter should be a string not a '${typeof fieldType}': ${fieldType}`);
-    console.assert(fieldType !== '', `checkTextField: 'fieldType' ${fieldName} parameter should be not be an empty string`);
+    console.assert(fieldType !== '', `checkTextField: 'fieldType' ${fieldType} parameter should be not be an empty string`);
     console.assert(fieldType === 'markdown' || fieldType === 'USFM' || fieldType === 'YAML' || fieldType === 'raw' || fieldType === 'link', `checkTextField: unrecognised 'fieldType' parameter: '${fieldType}'`);
     console.assert(fieldName !== undefined, "checkTextField: 'fieldName' parameter should be defined");
     console.assert(typeof fieldName === 'string', `checkTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}': ${fieldName}`);
@@ -53,6 +53,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `dBTCs addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "dBTCs addNoticePartial: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `dBTCs addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        // noticeObject.debugChain = noticeObject.debugChain ? `checkTextField(${fieldType}, ${fieldName}, ${allowedLinks}) ${noticeObject.debugChain}` : `checkTextField(${fieldType}, ${fieldName}, ${allowedLinks})`;
         if (fieldName.length) noticeObject.fieldName = fieldName; // Don't add the field if it's blank
         result.noticeList.push(noticeObject);
     }

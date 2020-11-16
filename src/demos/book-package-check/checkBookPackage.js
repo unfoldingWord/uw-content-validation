@@ -5,7 +5,7 @@ import { checkFileContents } from '../file-check/checkFileContents';
 import { checkRepo } from '../repo-check/checkRepo';
 
 
-//const BP_VALIDATOR_VERSION_STRING = '0.5.0';
+//const BP_VALIDATOR_VERSION_STRING = '0.5.1';
 
 const MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -83,6 +83,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     console.assert(typeof noticeObject.location === 'string', `cBP addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}'`);
     console.assert(noticeObject.extra !== undefined, "cBP addNoticePartial: 'extra' parameter should be defined");
     console.assert(typeof noticeObject.extra === 'string', `cBP addNoticePartial: 'extra' parameter should be a string not a '${typeof noticeObject.extra}'`);
+    if (noticeObject.debugChain) noticeObject.debugChain = `checkBookPackage ${noticeObject.debugChain}`;
     checkBookPackageResult.noticeList.push({ ...noticeObject, bookID, username });
   }
 
@@ -288,7 +289,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     const adjustedRepoCode = (repoCode.endsWith('1') ? repoCode.substring(0, repoCode.length - 1) : repoCode).toLowerCase();
     if (bookID === 'OBS' && repoCode !== 'OBS' && repoName === `${languageCode}_${adjustedRepoCode}`)
       repoName = `${languageCode}_obs-${adjustedRepoCode}`;
-    console.log(`checkBookPackage: check ${bookID} in ${repoCode} (${languageCode} ${bookID} from ${username} ${repoName})`);
+    console.log(`checkBookPackage: check ${languageCode} ${bookID} in ${repoCode} from ${username} ${repoName}`);
 
     // Update our "waiting" message
     setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookID}</b> book package in <b>{repoCode}</b> (checked <b>{numCheckedRepos}</b>/{repoCodeList.length} repos)…</p>);
@@ -367,37 +368,39 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         addSuccessMessage(`Checked ${repoCode.toUpperCase()} file: ${filename}`);
       }
 
-      // We also check the manifest file for each repo if requested
-      //  because a faulty manifest might also stop a BP from working correctly in various programs
-      if (checkingOptions.checkManifestFlag) {
-        if (!checkedManifestDetails.includes(repoName)) { // Don't want to check more than once, esp. for annotations repos
-          checkedManifestDetails.push(repoName); // Remember that we checked this one
-          // console.log("BEFORE", checkBookPackageResult.noticeList.length);
-          const numCheckedCharacters = await ourCheckManifest(repoCode, repoName, generalLocation, newCheckingOptions);
-          // console.log("AFTER", checkBookPackageResult.noticeList.length);
-          if (numCheckedCharacters > 0) {
-            checkedFileCount += 1;
-            checkedFilenames.push('manifest.yaml');
-            checkedFilenameExtensions.add('yaml');
-            totalCheckedSize += numCheckedCharacters;
-            addSuccessMessage(`Checked ${repoName} manifest file`);
+      if (!newCheckingOptions.disableAllLinkFetchingFlag) {
+        // We also check the manifest file for each repo if requested
+        //  because a faulty manifest might also stop a BP from working correctly in various programs
+        if (checkingOptions.checkManifestFlag) {
+          if (!checkedManifestDetails.includes(repoName)) { // Don't want to check more than once, esp. for annotations repos
+            checkedManifestDetails.push(repoName); // Remember that we checked this one
+            // console.log("BEFORE", checkBookPackageResult.noticeList.length);
+            const numCheckedCharacters = await ourCheckManifest(repoCode, repoName, generalLocation, newCheckingOptions);
+            // console.log("AFTER", checkBookPackageResult.noticeList.length);
+            if (numCheckedCharacters > 0) {
+              checkedFileCount += 1;
+              checkedFilenames.push('manifest.yaml');
+              checkedFilenameExtensions.add('yaml');
+              totalCheckedSize += numCheckedCharacters;
+              addSuccessMessage(`Checked ${repoName} manifest file`);
+            }
           }
         }
-      }
-      // We can also check the README file for each repo if requested
-      if (checkingOptions.checkReadmeFlag) {
-        if (!checkedManifestDetails.includes(repoName)) { // Don't want to check more than once, esp. for annotations repos
-          checkedManifestDetails.push(repoName); // Remember that we checked this one
-          // console.log("BEFORE", checkBookPackageResult.noticeList.length);
-          const filename = 'README.md';
-          const numCheckedCharacters = await ourCheckMarkdown(repoCode, repoName, filename, generalLocation, newCheckingOptions);
-          // console.log("AFTER", checkBookPackageResult.noticeList.length);
-          if (numCheckedCharacters > 0) {
-            checkedFileCount += 1;
-            checkedFilenames.push(filename);
-            checkedFilenameExtensions.add('md');
-            totalCheckedSize += numCheckedCharacters;
-            addSuccessMessage(`Checked ${repoName} README file`);
+        // We can also check the README file for each repo if requested
+        if (checkingOptions.checkReadmeFlag) {
+          if (!checkedManifestDetails.includes(repoName)) { // Don't want to check more than once, esp. for annotations repos
+            checkedManifestDetails.push(repoName); // Remember that we checked this one
+            // console.log("BEFORE", checkBookPackageResult.noticeList.length);
+            const filename = 'README.md';
+            const numCheckedCharacters = await ourCheckMarkdown(repoCode, repoName, filename, generalLocation, newCheckingOptions);
+            // console.log("AFTER", checkBookPackageResult.noticeList.length);
+            if (numCheckedCharacters > 0) {
+              checkedFileCount += 1;
+              checkedFilenames.push(filename);
+              checkedFilenameExtensions.add('md');
+              totalCheckedSize += numCheckedCharacters;
+              addSuccessMessage(`Checked ${repoName} README file`);
+            }
           }
         }
       }

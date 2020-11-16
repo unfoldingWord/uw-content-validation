@@ -1,19 +1,22 @@
-import { checkTextField } from './field-text-check';
 import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
+import { checkTextField } from './field-text-check';
 
 
-const MARKDOWN_VALIDATOR_VERSION_STRING = '0.3.5';
+const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.4.0';
 
 
 /**
  *
+ * @param {string} languageCode
  * @param {string} textName -- used for identification
  * @param {string} markdownText -- the actual text to be checked
  * @param {string} givenLocation
  * @param {Object} optionalCheckingOptions
  */
-export function checkMarkdownText(textName, markdownText, givenLocation, optionalCheckingOptions) {
-    /* This function is optimised for checking the entire markdown file, i.e., all lines.
+export function checkMarkdownText(languageCode, textName, markdownText, givenLocation, optionalCheckingOptions) {
+    /* This function is optimised for checking the entire markdown text, i.e., all lines.
+
+    This text may not necessarily be from a file -- it may be from a (multiline) field within a file
 
     Note: This function does not check that any link targets in the markdown are valid links.
 
@@ -55,6 +58,7 @@ export function checkMarkdownText(textName, markdownText, givenLocation, optiona
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cMdT addNotice: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "cMdT addNotice: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `cMdT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        // noticeObject.debugChain = noticeObject.debugChain ? `checkMarkdownText(${languageCode}, ${textName}) ${noticeObject.debugChain}` : `checkMarkdownText(${languageCode}, ${textName})`;
         result.noticeList.push(noticeObject); // Used to have filename: textName, but that isn't always a filename !!!
     }
     // end of addNotice function
@@ -91,6 +95,13 @@ export function checkMarkdownText(textName, markdownText, givenLocation, optiona
     // end of ourCheckTextField function
 
 
+    /**
+     *
+     * @param {string} lineNumber
+     * @param {string} lineText -- text to be checked
+     * @param {string} lineLocation
+     * @returns {string} suggestion (may be undefined) -- suggested fixed replacement field
+     */
     function checkMarkdownLineContents(lineNumber, lineText, lineLocation) {
 
         // console.log(`checkMarkdownLineContents for ${lineNumber} '${lineText}' at${lineLocation}`);
@@ -121,7 +132,7 @@ export function checkMarkdownText(textName, markdownText, givenLocation, optiona
         // console.log(`After removing more leading spaces have '${thisText}'`);
 
         let suggestion;
-        if (thisText)
+        if (thisText && lineText[0] !== '|') // Doesn't really make sense to check table line entries
             suggestion = ourCheckTextField(lineNumber, thisText, true, lineLocation, optionalCheckingOptions);
 
         if (thisText === lineText) // i.e., we didn't premodify the field being checked
@@ -178,9 +189,9 @@ export function checkMarkdownText(textName, markdownText, givenLocation, optiona
 
     addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length === 1 ? '' : 's'}${ourLocation}.`);
     if (result.noticeList)
-        addSuccessMessage(`checkMarkdownText v${MARKDOWN_VALIDATOR_VERSION_STRING} finished with ${result.noticeList.length ? result.noticeList.length.toLocaleString() : "zero"} notice${result.noticeList.length === 1 ? '' : 's'}`);
+        addSuccessMessage(`checkMarkdownText v${MARKDOWN_TEXT_VALIDATOR_VERSION_STRING} finished with ${result.noticeList.length ? result.noticeList.length.toLocaleString() : "zero"} notice${result.noticeList.length === 1 ? '' : 's'}`);
     else
-        addSuccessMessage(`No errors or warnings found by checkMarkdownText v${MARKDOWN_VALIDATOR_VERSION_STRING}`)
+        addSuccessMessage(`No errors or warnings found by checkMarkdownText v${MARKDOWN_TEXT_VALIDATOR_VERSION_STRING}`)
     // console.log(`  checkMarkdownText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
     // console.log("checkMarkdownText result is", JSON.stringify(result));
     return result;

@@ -1,12 +1,12 @@
 import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import yaml from 'yaml';
 import { checkTextField } from './field-text-check';
+import { checkTextfileContents } from './file-text-check';
+
+const YAML_VALIDATOR_VERSION_STRING = '0.4.0';
 
 
-const YAML_VALIDATOR_VERSION_STRING = '0.3.0';
-
-
-export function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckingOptions) {
+export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
      Returns a result object containing a successList and a noticeList,
@@ -50,6 +50,7 @@ export function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckin
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cManT addNotice: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "cYt addNotice: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `cYt addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        if (noticeObject.debugChain) noticeObject.debugChain = `checkYAMLText ${noticeObject.debugChain}`;
         cytResult.noticeList.push(noticeObject);
     }
 
@@ -107,6 +108,29 @@ export function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckin
     // end of checkYAMLLine function
 
 
+    function ourBasicFileChecks(filename, fileText, fileLocation, optionalCheckingOptions) {
+        // Does basic checks for small errors like leading/trailing spaces, etc.
+
+        // We assume that checking for compulsory fields is done elsewhere
+
+        // Updates the global list of notices
+        console.assert(filename !== undefined, "cYT ourBasicFileChecks: 'filename' parameter should be defined");
+        console.assert(typeof filename === 'string', `cYT ourBasicFileChecks: 'filename' parameter should be a string not a '${typeof filename}'`);
+        console.assert(fileText !== undefined, "cYT ourBasicFileChecks: 'fileText' parameter should be defined");
+        console.assert(typeof fileText === 'string', `cYT ourBasicFileChecks: 'fileText' parameter should be a string not a '${typeof fileText}'`);
+
+        const resultObject = checkTextfileContents(languageCode, 'YAML', filename, fileText, fileLocation, optionalCheckingOptions);
+
+        // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
+        //  process results line by line
+        for (const noticeEntry of resultObject.noticeList) {
+            console.assert(Object.keys(noticeEntry).length >= 5, `USFM ourBasicFileChecks notice length=${Object.keys(noticeEntry).length}`);
+            addNotice(noticeEntry);
+        }
+    }
+    // end of ourBasicFileChecks function
+
+
     // Main code for checkYAMLText function
     const lines = YAMLText.split('\n');
     // console.log(`  '${location}' has ${lines.length.toLocaleString()} total lines`);
@@ -143,6 +167,9 @@ export function checkYAMLText(textName, YAMLText, givenLocation, optionalCheckin
         // lastLineContents = line;
         // lastNumLeadingSpaces = numLeadingSpaces;
     }
+
+    // Do basic file checks
+    ourBasicFileChecks(textName, YAMLText, givenLocation, optionalCheckingOptions);
 
     addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length === 1 ? '' : 's'}${ourLocation}.`);
     if (cytResult.noticeList)

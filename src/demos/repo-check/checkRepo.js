@@ -66,6 +66,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
     console.assert(typeof noticeObject.location === 'string', `cR addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}'`);
     // console.assert(noticeObject.extra !== undefined, "cR addNoticePartial: 'extra' parameter should be defined");
     console.assert(typeof noticeObject.extra === 'string', `cR addNoticePartial: 'extra' parameter should be a string not a '${typeof noticeObject.extra}'`);
+    if (noticeObject.debugChain) noticeObject.debugChain = `checkRepo ${noticeObject.debugChain}`;
     // Add in the repoName from the outer scope
     checkRepoResult.noticeList.push({ ...noticeObject, repoCode, repoName });
   }
@@ -208,9 +209,10 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
         else if (thisFilenameExtension === 'tsv') {
           // const filenameMain = thisFilename.substring(0, thisFilename.length - 4); // drop .tsv
           // console.log(`Have TSV filenameMain=${bookOrFileCode}`);
-          const bookID = bookOrFileCode.substring(bookOrFileCode.length - 3).toUpperCase();
+          let bookID;
+          bookID = bookOrFileCode.length === 6 ? bookOrFileCode.substring(0, 3) : bookOrFileCode.slice(-3).toUpperCase();
           // console.log(`Have TSV bookcode=${bookID}`);
-          console.assert(books.isValidBookID(bookID), `checkRepo: '${bookID}' is not a valid USFM book identifier (for TSV)`);
+          console.assert(bookID !== 'OBS' && books.isValidBookID(bookID), `checkRepo: '${bookID}' is not a valid USFM book identifier (for TSV)`);
           bookOrFileCode = bookID;
           ourBookID = bookID;
         }

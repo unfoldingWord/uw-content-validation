@@ -7,18 +7,18 @@ and then validates the content of one file selected from the repo.
 
 ```js
 <FileCheck
-  // Set to Y while adjusting settings below, then change to N to start the check
+  // Leave as Y while adjusting settings below, then change to N to start the check
   wait='Y' // 'Y' (for Yes) or 'N' (for No)
 
-  // Set to Y to freshly update all data files from Door43 (Same as ClearCache in menu)
-  reloadAllFilesFirst='Y' // 'Y' (for Yes) or 'N' (for No)
+  // Set to N to rerun the check without fetching new copies of the files (slightly faster)
+  reloadAllFilesFirst='Y' // 'Y' (for Yes -- same as ClearCache in menu) or 'N' (for No)
 
   username='unfoldingWord'
 
   // repoName='hbo_uhb' // OT books only
   // repoName='el-x-koine_ugnt' // NT books only
-  repoName='en_ult' // Can use ult or ust here
-  // repoName='en_tn'
+  // repoName='en_ult' // Can use ult or ust here
+  repoName='en_tn'
 
   // If we don't put the branch here, the default branch is used
   // branch='master'
@@ -33,11 +33,11 @@ and then validates the content of one file selected from the repo.
   // filename= '48-2CO.usfm' // e.g., for UGNT, LT, or ST
   // filename= '50-EPH.usfm' // e.g., for UGNT, LT, or ST
   // filename= '57-TIT.usfm' // e.g., for UGNT, LT, or ST
-  filename= '65-3JN.usfm' // e.g., for UGNT, LT, or ST
+  // filename= '65-3JN.usfm' // e.g., for UGNT, LT, or ST
   // filename= '67-REV.usfm' // e.g., for UGNT, LT, or ST
   // filename= 'en_tn_01-GEN.tsv' // for TN2
   // filename= 'en_tn_16-NEH.tsv' // for TN2
-  // filename= 'en_tn_17-EST.tsv' // for TN2
+  filename= 'en_tn_17-EST.tsv' // for TN2
   // filename= 'en_tn_31-OBA.tsv' // for TN2
   // filename= 'en_tn_50-EPH.tsv' // for TN2
   // filename= 'en_tn_57-TIT.tsv' // for TN2
@@ -51,6 +51,12 @@ and then validates the content of one file selected from the repo.
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'
   displayType='SingleList'
+
+  // Normally links in files are downloaded to check that they really exist
+  disableAllLinkFetchingFlag='false' // 'true' or 'false'
+  // The next two are only relevant if the above is 'false'
+  checkLinkedTAArticleFlag='true' // 'true' or 'false'
+  checkLinkedTWArticleFlag='true' // 'true' or 'false'
 
   // Specifying maximumSimilarMessages and extractLength is just to show off options
   // —those fields are not necessary (or normal) here

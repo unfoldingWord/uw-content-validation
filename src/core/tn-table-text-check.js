@@ -55,6 +55,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `TSV addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "TSV addNoticePartial: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        if (noticeObject.debugChain) noticeObject.debugChain = `checkTN_TSVText ${noticeObject.debugChain}`;
         ttResult.noticeList.push({ ...noticeObject, bookID, filename });
     }
 

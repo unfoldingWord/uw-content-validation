@@ -12,11 +12,11 @@ The code below requests some info and then checks the requested Bible books—NT
 import AllBookPackagesCheck from './AllBookPackagesCheck';
 
 <AllBookPackagesCheck
-  // Set to Y while adjusting settings below, then change to N to start the check
+  // Leave as Y while adjusting settings below, then change to N to start the check
   wait='Y' // 'Y' (for Yes) or 'N' (for No)
 
-  // Set to Y to freshly update all data files from Door43 (Same as ClearCache in menu)
-  reloadAllFilesFirst='Y' // 'Y' (for Yes) or 'N' (for No)
+  // Set to N to rerun the check without fetching new copies of the files (slightly faster)
+  reloadAllFilesFirst='Y' // 'Y' (for Yes -- same as ClearCache in menu) or 'N' (for No)
 
   username='unfoldingWord'
   languageCode='en'

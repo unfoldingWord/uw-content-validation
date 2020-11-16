@@ -185,6 +185,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
 
         // Doublecheck -- we don't want "Mismatched {}" per line, only per file
         console.assert(noticeObject.message.indexOf("Mismatched {}") < 0 || noticeObject.lineNumber === undefined, `checkUSFMText addNoticePartial: got bad notice: ${JSON.stringify(noticeObject)}`);
+        if (noticeObject.debugChain) noticeObject.debugChain = `checkUSFMText ${noticeObject.debugChain}`;
         result.noticeList.push({ ...noticeObject, bookID, filename });
     }
 
@@ -492,7 +493,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
         console.assert(fileText !== undefined, "cUSFM ourBasicFileChecks: 'fileText' parameter should be defined");
         console.assert(typeof fileText === 'string', `cUSFM ourBasicFileChecks: 'fileText' parameter should be a string not a '${typeof fileText}'`);
 
-        const resultObject = checkTextfileContents(languageCode, filename, fileText, fileLocation, optionalCheckingOptions);
+        const resultObject = checkTextfileContents(languageCode, 'USFM', filename, fileText, fileLocation, optionalCheckingOptions);
 
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
@@ -714,7 +715,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
                 if (isNaN(Vstr) && Vstr.indexOf('-') < 0)
                     addNoticePartial({ priority: 822, message: "Expected field to contain an integer", characterIndex: 3, extract: `\\v ${rest}`, C, V, location: lineLocation });
             }
-            else if (marker === 'h' || marker === 'toc1' || marker === 'toc2' || marker==='toc3')
+            else if (marker === 'h' || marker === 'toc1' || marker === 'toc2' || marker === 'toc3')
                 if (rest.toLowerCase() === rest || rest.toUpperCase() === rest)
                     addNoticePartial({ priority: languageCode === 'en' || languageCode === 'fr' ? 490 : 190, message: "Expected header field to contain a mixed-case string", fieldName: `\\${marker}`, extract: rest, C, V, location: lineLocation });
 

@@ -55,6 +55,7 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `TSV addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "ATSV addNoticePartial: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        if (noticeObject.debugChain) noticeObject.debugChain = `checkAnnotationRows ${noticeObject.debugChain}`;
         carResult.noticeList.push({ ...noticeObject, bookID, filename });
     }
 

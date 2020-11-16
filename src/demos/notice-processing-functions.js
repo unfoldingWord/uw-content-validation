@@ -2,7 +2,7 @@ import { isDisabledNotice } from './disabled-notices';
 // import { displayPropertyNames, consoleLogObject } from './utilities';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.8.6';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.8.7';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -21,18 +21,12 @@ const DEFAULT_MEDIUM_PRIORITY_LEVEL = 600; // This level or higher becomes a med
 
 
 /**
- *
- * @param {Object} givenNoticeObject
- * @param {Object} optionalProcessingOptions
- * @return {Array} containing three items: remainingNoticeList, allTotals, resultObject
- */
+* @description - Preprocesses the successList and noticeList
+* @param {Object} givenNoticeObject - must contain a noticeList array
+* @param {Object} optionalProcessingOptions - may contain parameters
+* @return {Array} containing three items: remainingNoticeList, allTotals, resultObject
+*/
 function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
-    /**
-    * @description - Preprocesses the successList and noticeList
-    * @param {Object} givenNoticeObject - must contain a noticeList array
-    * @param {Object} optionalProcessingOptions - may contain parameters
-    * @return {Array} - noticeList, countObject, preResultObject
-    */
     /*
         Expects to get an object with:
             successList: a list of strings describing what has been checked
@@ -100,6 +94,37 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
 
 
     const standardisedNoticeList = givenNoticeObject.noticeList;
+
+
+    // Check for duplicate notices in the noticeList
+    // This might indicate that a function is being called twice unnecessarily
+    // This entire section may be commented out of production code
+    // It only really makes sense if the debugChain is enabled
+    if (givenNoticeObject.noticeList && givenNoticeObject.noticeList.length) {
+        console.log("Checking for duplicate notices…")
+        const uniqueList = [];
+        function uniqueListContains(item) { // returns -1 or the index of the first match
+            for (let ix = 0; ix < uniqueList.length; ix++) {
+                const thisUniqueNotice = uniqueList[ix];
+                if (thisUniqueNotice.priority === item.priority // compare as few essentialfields as possible to find matches
+                    && thisUniqueNotice.message === item.message
+                    && thisUniqueNotice.details === item.details
+                    && thisUniqueNotice.repoCode === item.repoCode
+                    && thisUniqueNotice.filename === item.filename
+                    && thisUniqueNotice.rowID === item.rowID
+                    && thisUniqueNotice.lineNumber === item.lineNumber)
+                    return ix;
+            }
+            return -1;
+        }
+        for (const thisGivenNotice of standardisedNoticeList) {
+            let xx;
+            if ((xx = uniqueListContains(thisGivenNotice)) === -1) // wasn't found
+                uniqueList.push(thisGivenNotice);
+            else console.log(`Duplicate notices:\n${JSON.stringify(thisGivenNotice)}\nwhen had\n${JSON.stringify(uniqueList[xx])}`);
+        }
+        console.log(`Here with ${givenNoticeObject.noticeList.length} notices and ${uniqueList.length} unique notices`);
+    }
 
 
     // Run a check through the noticeList to help discover any programming errors that need fixing

@@ -1,5 +1,5 @@
-Last updated 2020-11-11 16:58:15.534711 by makeNoticeList.py
-Got 285 notices:
+Last updated 2020-11-13 16:21:07.670089 by makeNoticeList.py
+Got 287 notices:
   checkRepoResult.noticeList.push( 997, "Repository doesn't exist", details, username, repoCode, repoName, location: givenLocation, extra: repoCode	from checkRepo.js line 232
   languageCode === 'en' || languageCode === 'fr' ? 490 : 190, "Expected header field to contain a mixed-case string", fieldName: `\\$marker`, extract: rest, C, V, location: lineLocation	from usfm-text-check.js line 719
   marker === 's5' ? 111 : 809, `$marker === 's5' ? 'Deprecated' : 'Unexpected' '\\$marker' marker at start of line`, C, V, lineNumber, characterIndex: 1, location: lineLocation	from usfm-text-check.js line 742
@@ -20,7 +20,7 @@ Got 285 notices:
   const notice =  193, `Unexpected $punctChar character at end of line`, extract, location: ourLocation ;	from field-text-check.js line 282
   notice	from field-text-check.js line 284
   leftChar === '“' ? 163 : 563, `Mismatched $leftChar$rightChar characters`, details: `(left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString())`, location: ourLocation	from field-text-check.js line 301
-  leftChar === '“' ? 162 : 462, `Mismatched $leftChar$rightChar characters`, details: `(left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString())`, location: ourLocation	from plain-text-check.js line 198
+  leftChar === '“' ? 162 : 462, `Mismatched $leftChar$rightChar characters`, details: `(left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString())`, location: ourLocation	from plain-text-check.js line 209
   999, "checkRepo function FAILED", repoName, extract: checkRepoError, location: repoName	from RepoCheck.js line 103
   997, "Repository doesn't exist", details, username, repoCode, repoName, location: manifestLocation, extra: repoCode	from checkBookPackage.js line 157
   997, "Repository doesn't exist", details, username, repoCode, repoName, location: manifestLocation, extra: repoCode	from checkBookPackage.js line 214
@@ -35,11 +35,11 @@ Got 285 notices:
   996, "Unable to load", details: `username=$username error=$cRgfError`, bookID: ourBookID, filename: thisFilename, location: `$givenLocation $thisFilepath`, extra: repoName	from checkRepo.js line 236
   995, "File extension is not recognized, so treated as plain text.", filename, location: filename	from checkFileContents.js line 65
   993, "Unresolved GIT conflict", characterIndex, extract, location: ourLocation	from field-text-check.js line 102
-  993, "Unresolved GIT conflict", characterIndex, extract, location: ourLocation	from plain-text-check.js line 178
+  993, "Unresolved GIT conflict", characterIndex, extract, location: ourLocation	from plain-text-check.js line 189
   992, "Unresolved GIT conflict", characterIndex, extract, location: ourLocation	from field-text-check.js line 108
-  992, "Unresolved GIT conflict", characterIndex, extract, location: ourLocation	from plain-text-check.js line 182
+  992, "Unresolved GIT conflict", characterIndex, extract, location: ourLocation	from plain-text-check.js line 193
   991, "Unresolved GIT conflict", characterIndex, extract, location: ourLocation	from field-text-check.js line 114
-  991, "Unresolved GIT conflict", characterIndex, extract, location: ourLocation	from plain-text-check.js line 186
+  991, "Unresolved GIT conflict", characterIndex, extract, location: ourLocation	from plain-text-check.js line 197
   990, "Unable to load file", details: `username=$username`, repoName, filename ], elapsedSeconds: 0 ;	from FileCheck.js line 63
   989, "Unable to find/load repository", location: ourLocation	from checkRepo.js line 160
   988, `Wrong number of tabbed fields (expected $NUM_EXPECTED_TN_TSV_FIELDS)`, extract: `Found $fields.length field$fields.length === 1 ? '' : 's'`, C, V, rowID, lineNumber: n + 1, location: ourLocation	from tn-table-text-check.js line 225
@@ -142,10 +142,10 @@ Got 285 notices:
   779, "Missing row ID field", fieldName: 'Reference', location: ourRowLocation	from annotation-row-check.js line 404
   778, "Row ID should be exactly 4 characters", details: `(not $rowID.length)`, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation	from tn-table-row-check.js line 398
   778, "Row ID should be exactly 4 characters", details: `(not $rowID.length)`, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation	from annotation-row-check.js line 407
-  777, `Bad nesting: $char closing character doesn't match`, details, lineNumber: n, characterIndex, extract, location: ourLocation	from plain-text-check.js line 156
+  777, `Bad nesting: $char closing character doesn't match`, details, lineNumber: n, characterIndex, extract, location: ourLocation	from plain-text-check.js line 167
   776, 'Unexpected " straight quote character', details, lineNumber, C, V, extract, location: lineLocation	from usfm-text-check.js line 679
   775, "Unexpected ' straight quote character", details, lineNumber, C, V, extract, location: lineLocation	from usfm-text-check.js line 684
-  774, `Unexpected $char closing character (no matching opener)`, lineNumber: n, characterIndex, extract, location: ourLocation	from plain-text-check.js line 161
+  774, `Unexpected $char closing character (no matching opener)`, lineNumber: n, characterIndex, extract, location: ourLocation	from plain-text-check.js line 172
   773, `Unexpected trailing zero-width joiner`, characterIndex: 0, extract, location: ourLocation	from field-text-check.js line 141
   772, `Unexpected trailing word joiner`, characterIndex: 0, extract, location: ourLocation	from field-text-check.js line 137
   771, `Unexpected leading zero-width joiner`, characterIndex: 0, extract, location: ourLocation	from field-text-check.js line 131
@@ -225,10 +225,11 @@ Got 285 notices:
   552, C, V, "Invalid zero verse number", details: `for chapter $C`, rowID, lineNumber: n + 1, extract: V, location: ourLocation	from annotation-table-check.js line 189
   551, C, V, `Invalid zero chapter number`, rowID, lineNumber: n + 1, extract: C, location: ourLocation	from tn-table-text-check.js line 166
   551, C, V, `Invalid zero chapter number`, rowID, lineNumber: n + 1, extract: C, location: ourLocation	from annotation-table-check.js line 167
+  538, "File ends without newline character", characterIndex, extract, location: ourLocation	from plain-text-check.js line 124
   519, "Missing expected USFM line", extract: `missing \\$expectedMarker`, location: fileLocation	from usfm-text-check.js line 540
   518, "Missing expected USFM line", extract: `missing \\$expectedMarker`, location: fileLocation	from usfm-text-check.js line 548
   517, "Missing expected USFM line", extract: `missing \\$expectedMarker`, location: fileLocation	from usfm-text-check.js line 544
-  472, "Nesting of header levels seems confused", lineNumber: n, characterIndex: 0, location: ourLocation	from markdown-text-check.js line 158
+  472, "Nesting of header levels seems confused", lineNumber: n, characterIndex: 0, location: ourLocation	from markdown-text-check.js line 165
   450, "Resource container link should have '*' language code", details: `(not '$languageCode')`, characterIndex, extract, location: ourLocation	from tn-links-check.js line 197
   441, `Unknown linkType parameter`, extract: linkType	from field-link-check.js line 121
   439, "Error fetching link", location: ` $fetchLink`	from field-link-check.js line 43
@@ -263,7 +264,7 @@ Got 285 notices:
   174, "Row ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 1, rowID, extract: rowID, location: ourRowLocation	from annotation-row-check.js line 418
   173, "Row ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 2, rowID, extract: rowID, location: ourRowLocation	from tn-table-row-check.js line 411
   173, "Row ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 2, rowID, extract: rowID, location: ourRowLocation	from annotation-row-check.js line 420
-  172, "Header levels should only increment by one", lineNumber: n, characterIndex: 0, location: ourLocation	from markdown-text-check.js line 151
+  172, "Header levels should only increment by one", lineNumber: n, characterIndex: 0, location: ourLocation	from markdown-text-check.js line 158
   159, "Should use proper ellipse character (not periods)", characterIndex, extract, location: ourLocation	from orig-quote-check.js line 237
   158, "Unexpected space(s) beside ellipse character", characterIndex, extract, location: ourLocation	from orig-quote-check.js line 246
   157, "Unexpected space(s) beside ↔ divider character", characterIndex, extract, location: ourLocation	from orig-quote-check.js line 253
@@ -272,6 +273,7 @@ Got 285 notices:
   143, "Unknown Bible book name in link", details: totalLink, extract: optionalB1, location: ourLocation	from tn-links-check.js line 301
   143, "Unknown Bible book name in link", details: totalLink, extract: optionalB1, location: ourLocation	from tn-links-check.js line 353
   143, "Unknown Bible book name in link", details: totalLink, extract: optionalB1, location: ourLocation	from tn-links-check.js line 405
+  138, "File ends with additional blank line(s)", characterIndex, extract, location: ourLocation	from plain-text-check.js line 129
   111, `Bad options for checkFieldLinks: expectedCount=$linkOptions.expectedCount but allowedCount=$linkOptions.allowedCount`	from field-link-check.js line 103
   110, `Unexpected leading spaces`, characterIndex: 0, extract, location: ourLocation	from field-text-check.js line 122
   109, `Unexpected leading space`, characterIndex: 0, extract, location: ourLocation	from field-text-check.js line 124

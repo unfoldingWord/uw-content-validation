@@ -5,7 +5,7 @@ import { ourParseInt } from './utilities';
 // import { consoleLogObject } from '../core/utilities';
 
 
-// const QUOTE_VALIDATOR_VERSION_STRING = '0.7.0';
+// const QUOTE_VALIDATOR_VERSION_STRING = '0.7.2';
 
 
 export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldText, occurrenceString, bookID, C, V, givenLocation, optionalCheckingOptions) {
@@ -267,11 +267,16 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
     try {
         verseText = optionalCheckingOptions.originalLanguageVerseText;
     } catch (gcVTerror) { }
-    if (!verseText) // not supplied, so then we need to get it ourselves
-        verseText = await getOriginalPassage(bookID, C, V, optionalCheckingOptions);
-    if (!verseText) {
-        addNotice({ priority: 851, message: bookID === 'OBS' ? "Unable to load OBS story text" : "Unable to load original language verse text", location: ourLocation });
-        return colqResult; // nothing else we can do here
+    if (!verseText) {// not supplied, so then we need to get it ourselves
+        if (optionalCheckingOptions.disableAllLinkFetchingFlag)
+            return colqResult; // nothing else we can do here
+        else {
+            verseText = await getOriginalPassage(bookID, C, V, optionalCheckingOptions);
+            if (!verseText) {
+                addNotice({ priority: 851, message: bookID === 'OBS' ? "Unable to load OBS story text" : "Unable to load original language verse text", location: ourLocation });
+                return colqResult; // nothing else we can do here
+            }
+        }
     }
 
     // Now check if the quote can be found in the verse text
@@ -297,7 +302,7 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
     } else { // Only a single quote (no ellipsis)
         if (verseText.indexOf(fieldText) >= 0) {
             if (occurrence > 1) {
-                console.log(`checkOriginalLanguageQuote is checking for ${occurrence} occurrences of ${fieldText}`);
+                // console.log(`checkOriginalLanguageQuote is checking for ${occurrence} occurrences of ${fieldText}`);
                 if (verseText.split(fieldText).length <= occurrence) { // There's not enough of them
                     const extract = fieldText.substring(0, halfLength) + (fieldText.length > 2 * halfLength ? '…' : '') + fieldText.substring(fieldText.length - halfLength, fieldText.length);
                     addNotice({ priority: 917, message: "Unable to find duplicate original language quote in verse text", details: `occurrence=${occurrenceString}, passage ⸢${verseText}⸣`, extract, location: ourLocation });

@@ -8,6 +8,7 @@ export * from './annotation-table-check';
 export * from './field-text-check';
 export * from './file-text-check';
 export * from './markdown-text-check';
+export * from './markdown-file-contents-check';
 export * from './manifest-text-check';
 export * from './plain-text-check';
 export * from './tn-links-check';

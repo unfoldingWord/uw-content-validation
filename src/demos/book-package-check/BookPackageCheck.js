@@ -8,7 +8,7 @@ import { checkBookPackage } from './checkBookPackage';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.3.2';
+// const BP_VALIDATOR_VERSION_STRING = '0.3.3';
 
 
 function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
@@ -42,6 +42,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
     };
     // Or this allows the parameters to be specified as a BookPackageCheck property
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
+    if (props.disableAllLinkFetchingFlag) checkingOptions.disableAllLinkFetchingFlag = props.disableAllLinkFetchingFlag.toLowerCase() === 'true';
     if (props.checkLinkedTAArticleFlag) checkingOptions.checkLinkedTAArticleFlag = props.checkLinkedTAArticleFlag.toLowerCase() === 'true';
     if (props.checkLinkedTWArticleFlag) checkingOptions.checkLinkedTWArticleFlag = props.checkLinkedTWArticleFlag.toLowerCase() === 'true';
     // console.log(`checkingOptions.checkLinkedTAArticleFlag ${checkingOptions.checkLinkedTAArticleFlag} from '${props.checkLinkedTAArticleFlag}'`);

@@ -5,7 +5,7 @@ import React from 'react';
 import MaterialTable from 'material-table';
 
 
-// const RENDER_PROCESSED_RESULTS_VERSION = '0.5.3';
+// const RENDER_PROCESSED_RESULTS_VERSION = '0.5.4';
 
 
 export function RenderSuccesses({ username, results }) {
@@ -29,12 +29,12 @@ export function RenderTotals({ rawNoticeListLength, results }) {
         return (<p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={results.elapsedSeconds} /> with {rawNoticeListLength === 0 ? 'no' : rawNoticeListLength.toLocaleString()} notice{rawNoticeListLength === 1 ? '' : 's'}.</p>);
 }
 
+/**
+* @description - Displays a given piece of text (which can include newline characters)
+* @param {String} text - text to render as numbered lines
+* @return {String} - rendered HTML for the numbered list of lines
+*/
 export function RenderLines({ text }) {
-    /**
-    * @description - Displays a given piece of text (which can include newline characters)
-    * @param {String} text - text to render as numbered lines
-    * @return {String} - rendered HTML for the numbered list of lines
-    */
     return <ol>
         {text.split('\n').map(function (line, index) {
             return <li key={index}>{line}</li>;
@@ -44,13 +44,13 @@ export function RenderLines({ text }) {
 
 
 const MAX_ARRAY_ITEMS_TO_DISPLAY = 8; // Or do we want this as a parameter?
+/**
+* @description - Displays whatever is in the object
+* @param {Object} thisObject - object to render
+* @param {Array} excludeList - optional list of object property names to be ignored
+* @return {String} - rendered HTML for list of thisObject properties
+*/
 export function RenderObject({ thisObject, excludeList }) {
-    /**
-    * @description - Displays whatever is in the object
-    * @param {Object} thisObject - object to render
-    * @param {Array} excludeList - optional list of object property names to be ignored
-    * @return {String} - rendered HTML for list of thisObject properties
-    */
     // console.log("In RenderObject");
     // consoleLogObject('RenderObject settings', settings);
     return <ul>
@@ -72,12 +72,12 @@ export function RenderObject({ thisObject, excludeList }) {
 }
 
 
+/**
+* @description - Displays the raw noticeList in a table
+* @param {Object} results - object containing noticeList
+* @return {String} - rendered HTML for table of notices
+*/
 export function RenderRawResults({ results }) {
-    /**
-    * @description - Displays the raw noticeList in a table
-    * @param {Object} results - object containing noticeList
-    * @return {String} - rendered HTML for table of notices
-    */
     // This function is flexible enough to handle notice objects:
     //      including bookID,C,V or not
     //      including repoName, filename, lineNumber or not
@@ -167,14 +167,14 @@ export function RenderRawResults({ results }) {
 }
 
 
+/**
+* @description - Displays the message plus details if specified
+* @param {String} color - color field for the message style
+* @param {String} message - notice text
+* @param {String} details - (optional) extra notice text
+* @return {String} - rendered HTML for the given reference
+*/
 function RenderMessage({ color, message, details }) {
-    /**
-    * @description - Displays the message plus details if specified
-    * @param {String} color - color field for the message style
-    * @param {String} message - notice text
-    * @param {String} details - (optional) extra notice text
-    * @return {String} - rendered HTML for the given reference
-    */
     let detailsString = '';
     if (details && details.length)
         detailsString = ' with ' + (details[0] === '(' ? details : `'${details}'`);
@@ -182,14 +182,14 @@ function RenderMessage({ color, message, details }) {
 }
 
 
+/**
+* @description - Displays the bookcode and chapter/verse details if specified
+* @param {String} bookID - (optional) 3-character UPPERCASE USFM bookcode or 'OBS'.
+* @param {String} C - (optional) chapter info
+* @param {String} V - (optional) verse info
+* @return {String} - rendered HTML for the given reference
+*/
 function RenderBCV({ bookID, C, V }) {
-    /**
-    * @description - Displays the bookcode and chapter/verse details if specified
-    * @param {String} bookID - (optional) 3-character UPPERCASE USFM bookcode or 'OBS'.
-    * @param {String} C - (optional) chapter info
-    * @param {String} V - (optional) verse info
-    * @return {String} - rendered HTML for the given reference
-    */
     // These are all optional parameters - they may be undefined or blank if irrelevant
     // console.log(`RenderBCV(${bookID}, ${C}, ${V})`);
     if (!bookID && !C && !V) return null; // They're all undefined or blank!
@@ -203,17 +203,17 @@ function RenderBCV({ bookID, C, V }) {
     return null;
 }
 
+/**
+* @description - Displays the repoName and filename/lineNumber details if specified
+* @param {String} username - (optional) username/orgName string
+* @param {String} repoName - (optional) repo name string
+* @param {String} filename - (optional) filename string
+* @param {Number} lineNumber - (optional) line number integer (1-based)
+* @param {String} rowID - (optional) 4-character ID field
+* @param {String} fieldName - (optional) name of field
+* @return {String} - rendered HTML for the given reference
+*/
 function RenderFileDetails({ username, repoName, filename, lineNumber, rowID, fieldName }) {
-    /**
-    * @description - Displays the repoName and filename/lineNumber details if specified
-    * @param {String} username - (optional) username/orgName string
-    * @param {String} repoName - (optional) repo name string
-    * @param {String} filename - (optional) filename string
-    * @param {Number} lineNumber - (optional) line number integer (1-based)
-    * @param {String} rowID - (optional) 4-character ID field
-    * @param {String} fieldName - (optional) name of field
-    * @return {String} - rendered HTML for the given reference
-    */
     // These are all optional parameters - they may be undefined or blank if irrelevant
     // console.log(`RenderFileDetails(${repoName}, ${filename}, ${lineNumber}, ${rowID}, ${fieldName})`);
     if (!repoName && !filename && !lineNumber && !rowID && !fieldName)
@@ -272,6 +272,9 @@ function RenderSuccessesColored({ results }) {
  * @param {Object} props.entry -- the given notice entry object
  */
 function RenderPriority({ entry }) {
+    if (entry.debugChain)
+    return <small><span style={{ color: 'Gray' }}> ({entry.priority >= 0 ? "Priority " + entry.priority : ""})</span> <span style={{ color: 'Purple' }}>[{entry.debugChain}]</span></small>
+    else
     return <small style={{ color: 'Gray' }}> ({entry.priority >= 0 ? "Priority " + entry.priority : ""})</small>
 }
 

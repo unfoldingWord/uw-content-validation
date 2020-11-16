@@ -24,7 +24,7 @@ const textB = `{ Peace  on Earth,,
 const chosenTextName = "textB";
 const chosenText = textB;
 
-const rawResults = checkTextfileContents('en', 'Sample', chosenText, 'in '+chosenTextName+' that was supplied');
+const rawResults = checkTextfileContents('en', 'text', 'Sample', chosenText, 'in '+chosenTextName+' that was supplied');
 
 // Because we know here that we're only checking one file, we don't need the filename field in the notices
 function deleteFilenameField(notice) { delete notice.filename; return notice; }

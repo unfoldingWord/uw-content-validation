@@ -10,15 +10,16 @@ The code below requests some info and then checks a Door43 repository.You can en
 import RepoCheck from './RepoCheck';
 
 <RepoCheck
-  // Set to Y while adjusting settings below, then change to N to start the check
+  // Leave as Y while adjusting settings below, then change to N to start the check
   wait='Y' // 'Y' (for Yes) or 'N' (for No)
 
-  // Set to Y to freshly update all data files from Door43 (Same as ClearCache in menu)
-  reloadAllFilesFirst='Y' // 'Y' (for Yes) or 'N' (for No)
+  // Set to N to rerun the check without fetching new copies of the files (slightly faster)
+  reloadAllFilesFirst='Y' // 'Y' (for Yes -- same as ClearCache in menu) or 'N' (for No)
 
   // username = 'Door43-Catalog'
   username = 'unfoldingWord'
 
+  repoName='fr_ulb' // No alignment so smaller files (faster demo)
   // repoName='hbo_uhb' // includes OT books only—some large files with parsing info!
   // repoName='el-x-koine_ugnt' // includes NT books only—some large files with parsing info!
   // repoName='en_ult' // Can use ult or ust here—some large files with alignment info!
@@ -28,7 +29,6 @@ import RepoCheck from './RepoCheck';
   // repoName='en_tw' // Translation Words (1000+ markdown files)
   // repoName='en_obs' // Open Bible Stories (50+ markdown files)
   // repoName='en_translation-annotations' // 1hr+—Full Bible plus OBS (new annotation TSV files)
-  repoName='fr_ulb' // No alignment so smaller files (faster demo)
 
   // If we don't put the branch here, the default branch is used
   // branch='master'

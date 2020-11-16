@@ -7,7 +7,7 @@ import { checkTNLinksToOutside } from './tn-links-check';
 import { checkOriginalLanguageQuote } from './orig-quote-check';
 
 
-// const ANNOTATION_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.0';
+// const ANNOTATION_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.2';
 
 const NUM_EXPECTED_ANNOTATION_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_ANNOTATION_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tAnnotation';
@@ -95,6 +95,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         console.assert(noticeObject.location !== undefined, "checkAnnotationTSVDataRow addNoticePartial: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `checkAnnotationTSVDataRow addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
         // Also uses the given bookID,C,V, parameters from the main function call
+        // noticeObject.debugChain = noticeObject.debugChain ? `checkAnnotationTSVDataRow ${noticeObject.debugChain}` : `checkAnnotationTSVDataRow(${annotationType})`;
         drResult.noticeList.push({ ...noticeObject, bookID, C: givenC, V: givenV });
     }
 
@@ -127,7 +128,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         console.assert(allowedLinks === true || allowedLinks === false, "checkAnnotationTSVDataRow ourMarkdownTextChecks: allowedLinks parameter must be either true or false");
         console.assert(rowLocation.indexOf(fieldName) < 0, `checkAnnotationTSVDataRow ourMarkdownTextChecks: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const omtcResultObject = checkMarkdownText(fieldName, fieldText, rowLocation, optionalCheckingOptions);
+        const omtcResultObject = checkMarkdownText(languageCode, fieldName, fieldText, rowLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -405,7 +406,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         else {
             if (rowID.length !== 4) {
                 addNoticePartial({ priority: 778, message: "Row ID should be exactly 4 characters", details: `(not ${rowID.length})`, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation });
-                if (rowID.length > 4) RIDSuggestion = rowID.substring(0,5);
+                if (rowID.length > 4) RIDSuggestion = rowID.substring(0, 5);
                 else { // must be < 4
                     RIDSuggestion = rowID;
                     while (RIDSuggestion.length < 4) RIDSuggestion += LC_ALPHABET_PLUS_DIGITS[Math.floor(Math.random() * LC_ALPHABET_PLUS_DIGITS.length)];;
@@ -436,7 +437,8 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
                     && supportReferenceArticlePart !== 'guidelines-sonofgodprinciples')
                     addNoticePartial({ priority: 788, message: "Only 'Just-In-Time Training' TA articles allowed here", fieldName: 'SupportReference', extract: supportReference, rowID, location: ourRowLocation });
                 SRSuggestion = ourCheckTextField(rowID, 'SupportReference', supportReference, true, ourRowLocation, optionalCheckingOptions);
-                await ourCheckSupportReferenceInTA(rowID, 'SupportReference', supportReference, ourRowLocation, optionalCheckingOptions);
+                if (!optionalCheckingOptions.disableAllLinkFetchingFlag)
+                    await ourCheckSupportReferenceInTA(rowID, 'SupportReference', supportReference, ourRowLocation, optionalCheckingOptions);
                 if (annotation.indexOf(supportReference) < 0)
                     addNoticePartial({ priority: 787, message: "Link to TA should also be in Annotation", fieldName: 'SupportReference', extract: supportReference, rowID, location: ourRowLocation });
             }
@@ -504,7 +506,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
                 addNoticePartial({ priority: 274, message: "Missing Annotation field", fieldName: 'Annotation', rowID, location: ourRowLocation });
 
         // 7 [reference, rowID, tags, supportReference, quote, occurrence, annotation]
-        const suggestion = `${reference}\t${RIDSuggestion === undefined? rowID: RIDSuggestion}\t${tags}\t${SRSuggestion === undefined ? supportReference : SRSuggestion}\t${QSuggestion === undefined ? quote : QSuggestion}\t${OSuggestion === undefined ? occurrence : OSuggestion}\t${ASuggestion === undefined ? annotation : ASuggestion}`;
+        const suggestion = `${reference}\t${RIDSuggestion === undefined ? rowID : RIDSuggestion}\t${tags}\t${SRSuggestion === undefined ? supportReference : SRSuggestion}\t${QSuggestion === undefined ? quote : QSuggestion}\t${OSuggestion === undefined ? occurrence : OSuggestion}\t${ASuggestion === undefined ? annotation : ASuggestion}`;
         if (suggestion !== line) {
             // console.log(`Had annotation ${line}`);
             // console.log(`Sug annotation ${suggestion}`);

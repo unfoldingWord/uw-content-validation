@@ -1,6 +1,6 @@
+import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { checkYAMLText } from './yaml-text-check';
 import Ajv from 'ajv';
-import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 
 
 const MANIFEST_VALIDATOR_VERSION_STRING = '0.3.3';
@@ -580,6 +580,7 @@ export function checkManifestText(textName, manifestText, givenLocation, optiona
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cManT addNotice: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "cManT addNotice: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `cManT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        if (noticeObject.debugChain) noticeObject.debugChain = `checkManifestText ${noticeObject.debugChain}`;
         cmtResult.noticeList.push(noticeObject);
     }
 
@@ -597,7 +598,7 @@ export function checkManifestText(textName, manifestText, givenLocation, optiona
         console.assert(typeof manifestText === 'string', `cManT ourYAMLTextChecks: 'manifestText' parameter should be a string not a '${typeof manifestText}'`);
         // console.assert( allowedLinks===true || allowedLinks===false, "cManT ourYAMLTextChecks: allowedLinks parameter must be either true or false");
 
-        const cYtResultObject = checkYAMLText(textName, manifestText, givenLocation, optionalCheckingOptions);
+        const cYtResultObject = checkYAMLText('en', textName, manifestText, givenLocation, optionalCheckingOptions);
 
         // Concat is faster if we don't need to process each notice individually
         cmtResult.successList = cmtResult.successList.concat(cYtResultObject.successList);

@@ -1,5 +1,5 @@
 import * as books from '../../core/books/books';
-import { checkUSFMText, checkMarkdownText, checkPlainText, checkYAMLText, checkManifestText, checkTN_TSVText, checkAnnotationRows } from '../../core';
+import { checkUSFMText, checkMarkdownFileContents, checkPlainText, checkYAMLText, checkManifestText, checkTN_TSVText, checkAnnotationRows } from '../../core';
 
 
 // const CHECK_FILE_CONTENTS_VERSION_STRING = '0.2.2';
@@ -53,13 +53,13 @@ export async function checkFileContents(languageCode, filename, fileContent, giv
     console.assert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
     checkFileResult = checkUSFMText(languageCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
   } else if (filenameLower.endsWith('.md'))
-    checkFileResult = checkMarkdownText(filename, fileContent, ourCFLocation, checkingOptions);
+    checkFileResult = checkMarkdownFileContents(languageCode, filename, fileContent, ourCFLocation, checkingOptions);
   else if (filenameLower.endsWith('.txt'))
-    checkFileResult = checkPlainText('raw', filename, fileContent, ourCFLocation, checkingOptions);
+    checkFileResult = checkPlainText('text', filename, fileContent, ourCFLocation, checkingOptions);
   else if (filenameLower === 'manifest.yaml')
     checkFileResult = checkManifestText('', fileContent, ourCFLocation, checkingOptions);
   else if (filenameLower.endsWith('.yaml'))
-    checkFileResult = checkYAMLText('', fileContent, ourCFLocation, checkingOptions);
+    checkFileResult = checkYAMLText(languageCode, filename, fileContent, ourCFLocation, checkingOptions);
   else {
     checkFileResult = checkPlainText('raw', filename, fileContent, ourCFLocation, checkingOptions);
     checkFileResult.noticeList.unshift({ priority: 995, message: "File extension is not recognized, so treated as plain text.", filename, location: filename });
@@ -67,7 +67,10 @@ export async function checkFileContents(languageCode, filename, fileContent, giv
   // console.log(`checkFileContents got initial results with ${checkFileResult.successList.length} success message(s) and ${checkFileResult.noticeList.length} notice(s)`);
 
   // Make sure that we have the filename in all of our notices (in case other files are being checked as well)
-  function addFilenameField(notice) { return notice.extra ? notice : { ...notice, filename }; } // Might be an indirect check on a TA or TW article
+  function addFilenameField(noticeObject) {
+    if (noticeObject.debugChain) noticeObject.debugChain = `checkFileContents ${noticeObject.debugChain}`;
+    return noticeObject.extra ? noticeObject : { ...noticeObject, filename }; // Might be an indirect check on a TA or TW article
+  }
   checkFileResult.noticeList = checkFileResult.noticeList.map(addFilenameField);
 
   // Add some extra fields to our checkFileResult object
