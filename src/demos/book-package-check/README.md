@@ -41,6 +41,7 @@ import BookPackageCheck from './BookPackageCheck';
   checkLinkedTAArticleFlag='true' // 'true' or 'false'
   checkLinkedTWArticleFlag='true' // 'true' or 'false'
 
+  // Lines starting with // are ignored -- you can add or remove // as desired
   // Specifying extractLength and maximumSimilarMessages is just to show off options
   // —those fields are not necessary (or normal) here
   extractLength='20' // Default is 15

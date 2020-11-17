@@ -15,6 +15,7 @@ and then validates the content of one file selected from the repo.
 
   username='unfoldingWord'
 
+  // Lines starting with // are ignored -- you can add or remove // as desired
   // repoName='hbo_uhb' // OT books only
   // repoName='el-x-koine_ugnt' // NT books only
   // repoName='en_ult' // Can use ult or ust here

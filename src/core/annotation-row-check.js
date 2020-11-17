@@ -439,7 +439,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
                     && supportReferenceArticlePart !== 'guidelines-sonofgodprinciples')
                     addNoticePartial({ priority: 788, message: "Only 'Just-In-Time Training' TA articles allowed here", fieldName: 'SupportReference', extract: supportReference, rowID, location: ourRowLocation });
                 SRSuggestion = ourCheckTextField(rowID, 'SupportReference', supportReference, true, ourRowLocation, optionalCheckingOptions);
-                if (!optionalCheckingOptions.disableAllLinkFetchingFlag)
+                if (optionalCheckingOptions.disableAllLinkFetchingFlag !== true)
                     await ourCheckSupportReferenceInTA(rowID, 'SupportReference', supportReference, ourRowLocation, optionalCheckingOptions);
                 if (annotation.indexOf(supportReference) < 0)
                     addNoticePartial({ priority: 787, message: "Link to TA should also be in Annotation", fieldName: 'SupportReference', extract: supportReference, rowID, location: ourRowLocation });

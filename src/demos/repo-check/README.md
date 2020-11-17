@@ -19,6 +19,7 @@ import RepoCheck from './RepoCheck';
   // username = 'Door43-Catalog'
   username = 'unfoldingWord'
 
+  // Lines starting with // are ignored -- you can add or remove // as desired
   repoName='fr_ulb' // No alignment so smaller files (faster demo)
   // repoName='hbo_uhb' // includes OT books only—some large files with parsing info!
   // repoName='el-x-koine_ugnt' // includes NT books only—some large files with parsing info!

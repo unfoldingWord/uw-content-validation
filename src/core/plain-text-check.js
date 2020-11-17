@@ -2,7 +2,7 @@ import { DEFAULT_EXTRACT_LENGTH, MATCHED_PUNCTUATION_PAIRS, PAIRED_PUNCTUATION_O
 import { checkTextField } from './field-text-check';
 
 
-const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.3.2';
+const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.3.3';
 
 
 /**
@@ -177,13 +177,14 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
                         if (lastEntry.char === PAIRED_PUNCTUATION_OPENERS.charAt(closeCharacterIndex)) {
                             // console.log(`  Matched '${char}' with  '${openers.charAt(which)}' ${n} ${x}`);
                             openMarkers.pop();
-                        } else {
-                            const extract = (characterIndex > halfLength ? '…' : '') + line.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < line.length ? '…' : '')
-                            const details = `'${lastEntry.char}' opened on line ${lastEntry.n} character ${lastEntry.x + 1}`;
-                            addNotice({ priority: 777, message: `Bad nesting: ${char} closing character doesn't match`, details, lineNumber: n, characterIndex, extract, location: ourLocation });
-                            // console.log(`  ERROR 777: mismatched characters: ${details}`);
-                        }
-                    } else // Closed something without an opener
+                        } else // something is still open and this isn't a match -- might just be consequential error
+                            if (textType !== 'markdown' || char !== '>' || characterIndex > 2) { // Markdown uses > or >> or > > for block indents so ignore these -- might just be consequential error
+                                const extract = (characterIndex > halfLength ? '…' : '') + line.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < line.length ? '…' : '')
+                                const details = `'${lastEntry.char}' opened on line ${lastEntry.n} character ${lastEntry.x + 1}`;
+                                addNotice({ priority: 777, message: `Bad nesting: ${char} closing character doesn't match`, details, lineNumber: n, characterIndex, extract, location: ourLocation });
+                                // console.log(`  ERROR 777: mismatched characters: ${details}`);
+                            }
+                    } else // Closed something unexpectedly without an opener
                         if (textType !== 'markdown' || char !== '>') { // Markdown uses > for block indents so ignore these
                             const extract = (characterIndex > halfLength ? '…' : '') + line.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < line.length ? '…' : '')
                             addNotice({ priority: 774, message: `Unexpected ${char} closing character (no matching opener)`, lineNumber: n, characterIndex, extract, location: ourLocation });
