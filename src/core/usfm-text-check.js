@@ -7,8 +7,10 @@ import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
 import { ourParseInt } from './utilities';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.7.1';
+// const USFM_VALIDATOR_VERSION_STRING = '0.7.2';
 
+
+const VALID_LINE_START_CHARACTERS = `([“‘`; // '{' gets added for STs
 
 // See http://ubsicap.github.io/usfm/master/index.html
 const COMPULSORY_MARKERS = ['id', 'ide'];
@@ -118,7 +120,7 @@ const MATCHED_CHARACTER_FORMATTING_PAIRS = [
 
 
 
-export function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation, optionalCheckingOptions) {
+export function checkUSFMText(languageCode, repoCode, bookID, filename, givenText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
     bookID is a three-character UPPERCASE USFM book identifier.
@@ -130,13 +132,15 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
     // console.log(`checkUSFMText(${languageCode}, ${bookID}, ${givenText.length.toLocaleString()} chars, '${givenLocation}', ${JSON.stringify(optionalCheckingOptions)})…`);
     console.assert(languageCode !== undefined, "checkUSFMText: 'languageCode' parameter should be defined");
     console.assert(typeof languageCode === 'string', `checkUSFMText: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    console.assert(repoCode !== undefined, "checkUSFMText: 'repoCode' parameter should be defined");
+    console.assert(typeof repoCode === 'string', `checkUSFMText: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
     console.assert(bookID !== undefined, "checkUSFMText: 'bookID' parameter should be defined");
     console.assert(typeof bookID === 'string', `checkUSFMText: 'bookID' parameter should be a string not a '${typeof bookID}'`);
     console.assert(bookID.length === 3, `checkUSFMText: 'bookID' parameter should be three characters long not ${bookID.length}`);
     console.assert(bookID.toUpperCase() === bookID, `checkUSFMText: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
     console.assert(bookID === 'OBS' || books.isValidBookID(bookID), `checkUSFMText: '${bookID}' is not a valid USFM book identifier`);
-    console.assert(filename !== undefined, "checkUSFMText: 'line' parameter should be defined");
-    console.assert(typeof filename === 'string', `checkUSFMText: 'line' parameter should be a string not a '${typeof filename}'`);
+    console.assert(filename !== undefined, "checkUSFMText: 'filename' parameter should be defined");
+    console.assert(typeof filename === 'string', `checkUSFMText: 'filename' parameter should be a string not a '${typeof filename}'`);
     console.assert(givenLocation !== undefined, "checkUSFMText: 'givenRowLocation' parameter should be defined");
     console.assert(typeof givenLocation === 'string', `checkUSFMText: 'givenRowLocation' parameter should be a string not a '${typeof givenLocation}'`);
 
@@ -158,6 +162,9 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
     // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     const lowercaseBookID = bookID.toLowerCase();
+
+    let validLineStartCharacters = VALID_LINE_START_CHARACTERS;
+    if (repoCode==='ST') validLineStartCharacters += '{';
 
     const result = { successList: [], noticeList: [] };
 
@@ -817,7 +824,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
                 // NOTE: Some unfoldingWord USFM Bibles commonly have this
                 //          so it's not necessarily either an error or a warning
                 rest = line;
-                if (`([“‘`.indexOf(line[0]) < 0) { // These are the often expected characters
+                if (validLineStartCharacters.indexOf(line[0]) < 0) { // These are the often expected characters
                     // Drop the priority if it's a "half-likely" character
                     addNoticePartial({ priority: `"`.indexOf(line[0]) < 0 ? 880 : 280, C, V, message: "Expected line to start with backslash", lineNumber: n, characterIndex: 0, extract: line[0], location: ourLocation });
                     if (line[1] === '\\') { // Let's drop the leading punctuation and try to check the rest of the line

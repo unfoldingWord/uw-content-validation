@@ -3,7 +3,7 @@ import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { checkAnnotationTSVDataRow } from './annotation-row-check';
 
 
-const ANNOTATION_TABLE_VALIDATOR_VERSION_STRING = '0.2.6';
+const ANNOTATION_TABLE_VALIDATOR_VERSION_STRING = '0.2.7';
 
 const NUM_EXPECTED_ANNOTATION_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tAnnotation';
@@ -228,6 +228,10 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
                 }
         }
     }
+
+    if (optionalCheckingOptions.disableAllLinkFetchingFlag)
+        addNoticePartial({ priority: 20, message: "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked", location: ourLocation });
+
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}.`);
     if (carResult.noticeList)
         addSuccessMessage(`checkAnnotationRows v${ANNOTATION_TABLE_VALIDATOR_VERSION_STRING} finished with ${carResult.noticeList.length ? carResult.noticeList.length.toLocaleString() : "zero"} notice${carResult.noticeList.length === 1 ? '' : 's'}`);

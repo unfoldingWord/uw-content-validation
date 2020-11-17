@@ -2,7 +2,7 @@ import { isDisabledNotice } from './disabled-notices';
 // import { displayPropertyNames, consoleLogObject } from './utilities';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.8.7';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.8.8';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -106,13 +106,16 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         function uniqueListContains(item) { // returns -1 or the index of the first match
             for (let ix = 0; ix < uniqueList.length; ix++) {
                 const thisUniqueNotice = uniqueList[ix];
-                if (thisUniqueNotice.priority === item.priority // compare as few essentialfields as possible to find matches
+                if ( // compare as few essentialfields as possible to find matches
+                    thisUniqueNotice.priority === item.priority
                     && thisUniqueNotice.message === item.message
-                    && thisUniqueNotice.details === item.details
-                    && thisUniqueNotice.repoCode === item.repoCode
-                    && thisUniqueNotice.filename === item.filename
-                    && thisUniqueNotice.rowID === item.rowID
-                    && thisUniqueNotice.lineNumber === item.lineNumber)
+                    && (thisUniqueNotice.details === item.details || thisUniqueNotice.details===undefined || item.details===undefined)
+                    && (thisUniqueNotice.repoCode === item.repoCode || thisUniqueNotice.repoCode===undefined || item.repoCode===undefined)
+                    && (thisUniqueNotice.filename === item.filename || thisUniqueNotice.filename===undefined || item.filename===undefined)
+                    && (thisUniqueNotice.rowID === item.rowID || thisUniqueNotice.rowID===undefined || item.rowID===undefined)
+                    && (thisUniqueNotice.lineNumber === item.lineNumber || thisUniqueNotice.lineNumber===undefined || item.lineNumber===undefined)
+                    && (thisUniqueNotice.characterIndex === item.characterIndex || thisUniqueNotice.characterIndex===undefined || item.characterIndex===undefined)
+                    )
                     return ix;
             }
             return -1;

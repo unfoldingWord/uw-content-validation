@@ -29,6 +29,16 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   Note that bookID here can also be the 'OBS' pseudo bookID.
   */
   // console.log(`checkBookPackage(${username}, ${languageCode}, ${bookID}, (fn), ${JSON.stringify(checkingOptions)})…`)
+  console.assert(username !== undefined, "checkBookPackage: 'username' parameter should be defined");
+  console.assert(typeof username === 'string', `checkBookPackage: 'username' parameter should be a string not a '${typeof username}'`);
+  console.assert(languageCode !== undefined, "checkBookPackage: 'languageCode' parameter should be defined");
+  console.assert(typeof languageCode === 'string', `checkBookPackage: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+  console.assert(bookID !== undefined, "checkBookPackage: 'bookID' parameter should be defined");
+  console.assert(typeof bookID === 'string', `checkBookPackage: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+  console.assert(bookID.length === 3, `checkBookPackage: 'bookID' parameter should be three characters long not ${bookID.length}`);
+  console.assert(bookID.toUpperCase() === bookID, `checkBookPackage: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+  console.assert(bookID === 'OBS' || books.isValidBookID(bookID), `checkBookPackage: '${bookID}' is not a valid USFM book identifier`);
+
   let abortFlag = false;
   const startTime = new Date();
   bookID = bookID.toUpperCase(); // normalise to USFM standard
@@ -101,7 +111,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     console.assert(fileLocation !== undefined, "cBP ourCheckBPFileContents: 'fileLocation' parameter should be defined");
     console.assert(typeof fileLocation === 'string', `cBP ourCheckBPFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
 
-    const cfcResultObject = await checkFileContents(languageCode, cfFilename, fileContent, fileLocation, optionalCheckingOptions);
+    const cfcResultObject = await checkFileContents(languageCode, repoCode, cfFilename, fileContent, fileLocation, optionalCheckingOptions);
     // console.log("checkFileContents() returned", cfResultObject.successList.length, "success message(s) and", cfResultObject.noticeList.length, "notice(s)");
     // for (const successEntry of cfResultObject.successList) console.log("  ourCheckBPFileContents:", successEntry);
     // console.log("cfcResultObject", JSON.stringify(cfcResultObject));
@@ -490,7 +500,7 @@ async function checkTQMarkdownBook(username, languageCode, repoName, branch, boo
     console.assert(fileLocation !== undefined, "cTQ ourCheckTQFileContents: 'fileLocation' parameter should be defined");
     console.assert(typeof fileLocation === 'string', `cTQ ourCheckTQFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
 
-    const cfResultObject = await checkFileContents(languageCode, cfFilename, fileContent, fileLocation, optionalCheckingOptions);
+    const cfResultObject = await checkFileContents(languageCode, repoCode, cfFilename, fileContent, fileLocation, optionalCheckingOptions);
     // console.log("checkFileContents() returned", cfResultObject.successList.length, "success message(s) and", cfResultObject.noticeList.length, "notice(s)");
     // for (const successEntry of cfResultObject.successList) console.log("  ourCheckTQFileContents:", successEntry);
 

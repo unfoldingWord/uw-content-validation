@@ -63,7 +63,6 @@ function FileCheck(props) {
       let rawCFResults = { noticeList: [{ priority: 990, message: "Unable to load file", details: `username=${username}`, repoName, filename }], elapsedSeconds: 0 };
       if (fileContent) {
         const languageCode = repoName.split('_')[0];
-        rawCFResults = await checkFileContents(languageCode, filename, fileContent, givenLocation, checkingOptions);
 
         let repoCodeGuess;
         if (repoName === 'hbo_uhb') repoCodeGuess = 'UHB'
@@ -75,6 +74,8 @@ function FileCheck(props) {
         else if (repoName.endsWith('_sq')) repoCodeGuess = 'SQ'
         else if (repoName.endsWith('lt')) repoCodeGuess = 'LT'
         else if (repoName.endsWith('st')) repoCodeGuess = 'ST'
+
+        rawCFResults = await checkFileContents(languageCode, repoCodeGuess, filename, fileContent, givenLocation, checkingOptions);
 
         // Because we know here that we're only checking one file, we don't need the filename field in the notices
         function deleteFilenameField(notice) { delete notice.filename; notice.username = username; notice.repoCode = repoCodeGuess; return notice; }

@@ -17,6 +17,15 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
       noticeList: an array of 9 (i.e., with extra bookOrFileCode parameter at end) notice components
   */
   // console.log(`checkRepo(${username}, ${repoName}, ${branch}, ${givenLocation}, (fn), ${JSON.stringify(checkingOptions)})…`);
+  console.assert(username !== undefined, "checkRepo: 'username' parameter should be defined");
+  console.assert(typeof username === 'string', `checkRepo: 'username' parameter should be a string not a '${typeof username}'`);
+  console.assert(repoName !== undefined, "checkRepo: 'repoName' parameter should be defined");
+  console.assert(typeof repoName === 'string', `checkRepo: 'repoName' parameter should be a string not a '${typeof repoName}'`);
+  console.assert(branch !== undefined, "checkRepo: 'branch' parameter should be defined");
+  console.assert(typeof branch === 'string', `checkRepo: 'branch' parameter should be a string not a '${typeof branch}'`);
+  console.assert(givenLocation !== undefined, "checkRepo: 'givenRowLocation' parameter should be defined");
+  console.assert(typeof givenLocation === 'string', `checkRepo: 'givenRowLocation' parameter should be a string not a '${typeof givenLocation}'`);
+
   let abortFlag = false;
   const startTime = new Date();
 
@@ -93,7 +102,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
     console.assert(fileLocation !== undefined, "ourCheckRepoFileContents: 'fileLocation' parameter should be defined");
     console.assert(typeof fileLocation === 'string', `ourCheckRepoFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
 
-    const cfcResultObject = await checkFileContents(languageCode, filename, fileContent, fileLocation, optionalCheckingOptions);
+    const cfcResultObject = await checkFileContents(languageCode, repoCode, filename, fileContent, fileLocation, optionalCheckingOptions);
     // console.log("checkFileContents() returned", resultObject.successList.length, "success message(s) and", resultObject.noticeList.length, "notice(s)");
     // for (const successEntry of resultObject.successList)
     //     console.log("  ", successEntry);

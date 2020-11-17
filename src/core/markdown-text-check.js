@@ -2,7 +2,7 @@ import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { checkTextField } from './field-text-check';
 
 
-const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.4.0';
+const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.4.1';
 
 
 /**
@@ -63,7 +63,7 @@ export function checkMarkdownText(languageCode, textName, markdownText, givenLoc
     }
     // end of addNotice function
 
-    function ourCheckTextField(lineNumber, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
+    function ourCheckTextField(fieldName, lineNumber, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
         /**
         * @description - checks the given text field and processes the returned results
         * @param {String} fieldName - name of the field being checked
@@ -78,13 +78,15 @@ export function checkMarkdownText(languageCode, textName, markdownText, givenLoc
 
         // Updates the global list of notices
         // console.log(`cMdT ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${optionalFieldLocation}, …)`);
+        console.assert(fieldName !== undefined, "cMdT ourCheckTextField: 'fieldName' parameter should be defined");
+        console.assert(typeof fieldName === 'string', `cMdT ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
         console.assert(lineNumber !== undefined, "cMdT ourCheckTextField: 'lineNumber' parameter should be defined");
         console.assert(typeof lineNumber === 'number', `cMdT ourCheckTextField: 'lineNumber' parameter should be a number not a '${typeof lineNumber}'`);
         console.assert(fieldText !== undefined, "cMdT ourCheckTextField: 'fieldText' parameter should be defined");
         console.assert(typeof fieldText === 'string', `cMdT ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         console.assert(allowedLinks === true || allowedLinks === false, "cMdT ourCheckTextField: allowedLinks parameter must be either true or false");
 
-        const dbtcResultObject = checkTextField('markdown', '', fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
+        const dbtcResultObject = checkTextField('markdown', fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
 
         // If we need to put everything through addNotice, e.g., for debugging or filtering
         //  process results line by line
@@ -133,7 +135,7 @@ export function checkMarkdownText(languageCode, textName, markdownText, givenLoc
 
         let suggestion;
         if (thisText && lineText[0] !== '|') // Doesn't really make sense to check table line entries
-            suggestion = ourCheckTextField(lineNumber, thisText, true, lineLocation, optionalCheckingOptions);
+            suggestion = ourCheckTextField(textName, lineNumber, thisText, true, lineLocation, optionalCheckingOptions);
 
         if (thisText === lineText) // i.e., we didn't premodify the field being checked
             return suggestion;

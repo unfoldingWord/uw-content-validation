@@ -13,10 +13,21 @@ import { checkUSFMText, checkMarkdownFileContents, checkPlainText, checkYAMLText
  * @param {string} givenLocation
  * @param {Object} checkingOptions
  */
-export async function checkFileContents(languageCode, filename, fileContent, givenLocation, checkingOptions) {
+export async function checkFileContents(languageCode, repoCode, filename, fileContent, givenLocation, checkingOptions) {
   // Determine the file type from the filename extension
   //  and return the results of checking that kind of file text
   // console.log(`checkFileContents(${languageCode}, ${filename}, ${fileContent.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
+  console.assert(languageCode !== undefined, "checkFileContents: 'languageCode' parameter should be defined");
+  console.assert(typeof languageCode === 'string', `checkFileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+  console.assert(repoCode !== undefined, "checkFileContents: 'repoCode' parameter should be defined");
+  console.assert(typeof repoCode === 'string', `checkFileContents: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
+  console.assert(filename !== undefined, "checkFileContents: 'filename' parameter should be defined");
+  console.assert(typeof filename === 'string', `checkFileContents: 'filename' parameter should be a string not a '${typeof filename}'`);
+  console.assert(fileContent !== undefined, "checkFileContents: 'fileContent' parameter should be defined");
+  console.assert(typeof fileContent === 'string', `checkFileContents: 'fileContent' parameter should be a string not a '${typeof fileContent}'`);
+  console.assert(givenLocation !== undefined, "checkFileContents: 'givenRowLocation' parameter should be defined");
+  console.assert(typeof givenLocation === 'string', `checkFileContents: 'givenRowLocation' parameter should be a string not a '${typeof givenLocation}'`);
+
   const startTime = new Date();
 
   let ourCFLocation = givenLocation;
@@ -44,14 +55,14 @@ export async function checkFileContents(languageCode, filename, fileContent, giv
     const bookID = filenameMain.substring(filenameMain.length - 3);
     // console.log(`Have USFM bookcode=${bookID}`);
     console.assert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
-    checkFileResult = checkUSFMText(languageCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
+    checkFileResult = checkUSFMText(languageCode, repoCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
   } else if (filenameLower.endsWith('.sfm')) {
     const filenameMain = filename.substring(0, filename.length - 4); // drop .sfm
     console.log(`checkFileContents have SFM filenameMain=${filenameMain}`);
     const bookID = filenameMain.substring(2, 5);
     console.log(`checkFileContents have SFM bookcode=${bookID}`);
     console.assert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
-    checkFileResult = checkUSFMText(languageCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
+    checkFileResult = checkUSFMText(languageCode, repoCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
   } else if (filenameLower.endsWith('.md'))
     checkFileResult = checkMarkdownFileContents(languageCode, filename, fileContent, ourCFLocation, checkingOptions);
   else if (filenameLower.endsWith('.txt'))

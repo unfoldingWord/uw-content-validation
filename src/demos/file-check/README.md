@@ -53,7 +53,7 @@ and then validates the content of one file selected from the repo.
   displayType='SingleList'
 
   // Normally links in files are downloaded to check that they really exist
-  disableAllLinkFetchingFlag='false' // 'true' or 'false'
+  disableAllLinkFetchingFlag='true' // 'true' or 'false'
   // The next two are only relevant if the above is 'false'
   checkLinkedTAArticleFlag='true' // 'true' or 'false'
   checkLinkedTWArticleFlag='true' // 'true' or 'false'

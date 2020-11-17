@@ -1,7 +1,7 @@
 import { DEFAULT_EXTRACT_LENGTH, MATCHED_PUNCTUATION_PAIRS, isWhitespace, countOccurrences } from './text-handling-functions'
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.2.2';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.2.3';
 
 
 /**
@@ -225,9 +225,9 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     // Check for doubled punctuation chars (international)
     // Doesn't check for doubled forward slash by default coz that might occur in a link, e.g., https://etc…
     //  or doubled # coz that occurs in markdown
-    let doubledPunctuationCheckList = '({}<>⟨⟩:،、‒–—―…!‹›«»‐?‘’“”\';⁄·&@•^†‡°¡¿※№÷×ºª%‰+−=‱¶′″‴§~|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥';
+    let doubledPunctuationCheckList = '({}<>⟨⟩:،、‒–—―…!‹›«»‐?‘’“”\';⁄·&@•^†‡°¡¿※№÷×ºª%‰+−=‱¶′″‴§|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥';
     if (!allowedLinks) doubledPunctuationCheckList += '/[].)'; // Double square brackets can be part of markdown links, double periods can be part of a path
-    if (fieldType !== 'markdown') doubledPunctuationCheckList += '_*#'; // There are used for markdown formatting
+    if (fieldType !== 'markdown') doubledPunctuationCheckList += '_*#~'; // There are used for markdown formatting
     if (fieldType !== 'USFM' || fieldText.indexOf('x-morph') < 0) doubledPunctuationCheckList += ',"'; // Allowed in original language morphology fields
     if (fieldType !== 'YAML' || !fieldText.startsWith('--')) // NOTE: First hyphen may have been removed in preprocessing
         doubledPunctuationCheckList += '-';
@@ -254,7 +254,9 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
             if (fieldType !== 'raw' || fieldName.substring(0, 6) !== 'from \\') notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
             addNoticePartial(notice);
         }
-        if ((punctChar !== '-' || fieldType !== 'YAML') && fieldText[0] === punctChar) {
+        if ((punctChar !== '-' || fieldType !== 'YAML')
+            && (punctChar !== '!' || fieldType !== 'markdown') // image tag
+            && fieldText[0] === punctChar) {
             characterIndex = 0;
             let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
             addNoticePartial({ priority: 195, message: `Unexpected ${punctChar} character at start of line`, characterIndex, extract, location: ourLocation });
@@ -286,6 +288,18 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
         }
     }
 
+    // Check for problems created by tC Create or something
+    characterIndex = fieldText.indexOf('\\[')
+    if (characterIndex === -1) characterIndex = fieldText.indexOf('\\]')
+    if (characterIndex !== -1) {
+        let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
+        addNoticePartial({ priority: 849, message: "Unexpected \\[ or \\] characters", characterIndex, extract, location: ourLocation });
+    }
+
+    // if (countOccurrences(fieldText, '(') !== countOccurrences(fieldText, ')')) {
+    //     console.log(`checkTextField(${fieldType}, ${fieldName}, '${fieldText}', ${allowedLinks}, ${ourLocation}) found ${countOccurrences(fieldText, '(')} '(' but ${countOccurrences(fieldText, ')')} ')'`);
+    //     addNoticePartial({ priority: 1, message: `Mismatched ( ) characters`, details: `(left=${countOccurrences(fieldText, '(').toLocaleString()}, right=${countOccurrences(fieldText, ')').toLocaleString()})`, location: ourLocation });
+    // }
     // Check matched pairs in the field
     for (const punctSet of MATCHED_PUNCTUATION_PAIRS) {
         // Can't check '‘’' coz they might be used as apostrophe

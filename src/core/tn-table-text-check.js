@@ -3,7 +3,7 @@ import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { checkTN_TSVDataRow } from './tn-table-row-check';
 
 
-const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.2.5';
+const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.2.6';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -227,6 +227,10 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
                 }
         }
     }
+
+    if (optionalCheckingOptions.disableAllLinkFetchingFlag)
+        addNoticePartial({ priority: 20, message: "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked", location: ourLocation });
+
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}.`);
     if (ttResult.noticeList)
         addSuccessMessage(`checkTN_TSVText v${TN_TABLE_TEXT_VALIDATOR_VERSION_STRING} finished with ${ttResult.noticeList.length ? ttResult.noticeList.length.toLocaleString() : "zero"} notice${ttResult.noticeList.length === 1 ? '' : 's'}`);
