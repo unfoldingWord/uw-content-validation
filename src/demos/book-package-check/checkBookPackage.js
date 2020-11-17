@@ -47,7 +47,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   let checkBookPackageResult = { successList: [], noticeList: [] };
 
   let dataSet = checkingOptions.dataSet; // Can be 'DEFAULT', 'OLD' (Markdown, etc.), 'NEW' (TSV only), or 'BOTH'
-  if (!dataSet) dataSet = 'DEFAULT';
+  if (!dataSet) dataSet = 'OLD'; // TODO: Change back to DEFAULT
 
   const newCheckingOptions = checkingOptions ? { ...checkingOptions } : {}; // clone before modify
   const getFile_ = newCheckingOptions.getFile ? newCheckingOptions.getFile : cachedGetFile; // default to using caching of files

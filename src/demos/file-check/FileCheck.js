@@ -11,7 +11,7 @@ import { checkFileContents } from './checkFileContents';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const FILE_CHECK_VERSION_STRING = '0.2.0';
+// const FILE_CHECK_VERSION_STRING = '0.2.1';
 
 
 function FileCheck(props) {
@@ -78,8 +78,9 @@ function FileCheck(props) {
         rawCFResults = await checkFileContents(languageCode, repoCodeGuess, filename, fileContent, givenLocation, checkingOptions);
 
         // Because we know here that we're only checking one file, we don't need the filename field in the notices
-        function deleteFilenameField(notice) { delete notice.filename; notice.username = username; notice.repoCode = repoCodeGuess; return notice; }
-        rawCFResults.noticeList = rawCFResults.noticeList.map(deleteFilenameField);
+        // WRONG: We want the filename so that the lineNumber can be made into a live link
+        function addFields(notice) { notice.username = username; notice.repoName = repoName; notice.repoCode = repoCodeGuess; return notice; }
+        rawCFResults.noticeList = rawCFResults.noticeList.map(addFields);
       }
       // console.log(`FileCheck got initial results with ${rawCFResults.successList.length} success message(s) and ${rawCFResults.noticeList.length} notice(s)`);
 

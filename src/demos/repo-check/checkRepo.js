@@ -4,7 +4,7 @@ import { repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetR
 import { checkFileContents } from '../file-check/checkFileContents';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.4.2';
+// const REPO_VALIDATOR_VERSION_STRING = '0.4.3';
 
 
 /*
@@ -77,7 +77,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
     console.assert(typeof noticeObject.extra === 'string', `cR addNoticePartial: 'extra' parameter should be a string not a '${typeof noticeObject.extra}'`);
     if (noticeObject.debugChain) noticeObject.debugChain = `checkRepo ${noticeObject.debugChain}`;
     // Add in the repoName from the outer scope
-    checkRepoResult.noticeList.push({ ...noticeObject, repoCode, repoName });
+    checkRepoResult.noticeList.push({ ...noticeObject, username, repoCode, repoName });
   }
 
 

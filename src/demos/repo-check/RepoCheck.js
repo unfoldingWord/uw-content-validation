@@ -7,7 +7,7 @@ import { checkRepo } from './checkRepo';
 // import { consoleLogObject, displayPropertyNames } from '../../core/utilities';
 
 
-//const REPO_VALIDATOR_VERSION_STRING = '0.1.4';
+//const REPO_VALIDATOR_VERSION_STRING = '0.1.5';
 
 
 function RepoCheck(/*username, languageCode,*/ props) {
@@ -111,9 +111,11 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 rawCRResults.languageCode = languageCode;
                 rawCRResults.checkedOptions = checkingOptions;
 
+
                 // Because we know here that we're only checking one repo, we don't need the repoName field in the notices
-                function deleteRepoNameField(notice) { delete notice.repoName; return notice; }
-                rawCRResults.noticeList = rawCRResults.noticeList.map(deleteRepoNameField);
+                // WRONG: We want the repoName so we can make the line numbers into live links
+                // function deleteRepoNameField(notice) { delete notice.repoName; return notice; }
+                // rawCRResults.noticeList = rawCRResults.noticeList.map(deleteRepoNameField);
 
                 // console.log("Here with RC rawCRResults", typeof rawCRResults);
                 // Now do our final handling of the result -- we have some options available
