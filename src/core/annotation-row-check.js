@@ -63,6 +63,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
     if (givenV) console.assert(typeof givenV === 'string', `checkAnnotationTSVDataRow: 'givenV' parameter should be a string not a '${typeof givenV}'`);
     console.assert(givenRowLocation !== undefined, "checkAnnotationTSVDataRow: 'givenRowLocation' parameter should be defined");
     console.assert(typeof givenRowLocation === 'string', `checkAnnotationTSVDataRow: 'givenRowLocation' parameter should be a string not a '${typeof givenRowLocation}'`);
+    console.assert(givenRowLocation.indexOf('true') === -1, "checkAnnotationTSVDataRow: 'givenRowLocation' parameter should not be 'true'");
 
     let ourRowLocation = givenRowLocation;
     if (ourRowLocation && ourRowLocation[0] !== ' ') ourRowLocation = ` ${ourRowLocation}`;
@@ -96,6 +97,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `checkAnnotationTSVDataRow addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "checkAnnotationTSVDataRow addNoticePartial: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `checkAnnotationTSVDataRow addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        
         // Also uses the given bookID,C,V, parameters from the main function call
         // noticeObject.debugChain = noticeObject.debugChain ? `checkAnnotationTSVDataRow ${noticeObject.debugChain}` : `checkAnnotationTSVDataRow(${annotationType})`;
         drResult.noticeList.push({ ...noticeObject, bookID, C: givenC, V: givenV });
@@ -128,6 +130,8 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         console.assert(fieldText !== undefined, "checkAnnotationTSVDataRow ourMarkdownTextChecks: 'fieldText' parameter should be defined");
         console.assert(typeof fieldText === 'string', `checkAnnotationTSVDataRow ourMarkdownTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         console.assert(allowedLinks === true || allowedLinks === false, "checkAnnotationTSVDataRow ourMarkdownTextChecks: allowedLinks parameter must be either true or false");
+        console.assert(rowLocation !== undefined, "checkAnnotationTSVDataRow ourMarkdownTextChecks: 'rowLocation' parameter should be defined");
+        console.assert(typeof rowLocation === 'string', `checkAnnotationTSVDataRow ourMarkdownTextChecks: 'rowLocation' parameter should be a string not a '${typeof rowLocation}'`);
         console.assert(rowLocation.indexOf(fieldName) < 0, `checkAnnotationTSVDataRow ourMarkdownTextChecks: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
         const omtcResultObject = checkMarkdownText(languageCode, fieldName, fieldText, rowLocation, optionalCheckingOptions);
@@ -174,6 +178,8 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         console.assert(fieldText !== undefined, "checkAnnotationTSVDataRow ourCheckTextField: 'fieldText' parameter should be defined");
         console.assert(typeof fieldText === 'string', `checkAnnotationTSVDataRow ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         console.assert(allowedLinks === true || allowedLinks === false, "checkAnnotationTSVDataRow ourCheckTextField: allowedLinks parameter must be either true or false");
+        console.assert(rowLocation !== undefined, "checkAnnotationTSVDataRow ourCheckTextField: 'rowLocation' parameter should be defined");
+        console.assert(typeof rowLocation === 'string', `checkAnnotationTSVDataRow ourCheckTextField: 'rowLocation' parameter should be a string not a '${typeof rowLocation}'`);
         console.assert(rowLocation.indexOf(fieldName) < 0, `checkAnnotationTSVDataRow ourCheckTextField: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
         const fieldType = fieldName === 'Annotation' ? 'markdown' : 'raw';

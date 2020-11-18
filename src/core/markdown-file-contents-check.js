@@ -21,7 +21,19 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
 
    Returns a result object containing a successList and a noticeList
    */
-  // console.log(`checkMarkdownFileContents(${textName}, ${markdownText.length}, ${givenLocation})…`);
+  // console.log(`checkMarkdownFileContents(${languageCode}, ${markdownFilename}, ${markdownText.length}, ${givenLocation})…`);
+  console.assert(languageCode !== undefined, "checkMarkdownFileContents: 'languageCode' parameter should be defined");
+  console.assert(typeof languageCode === 'string', `checkMarkdownFileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
+  console.assert(markdownFilename !== undefined, "checkMarkdownFileContents: 'markdownFilename' parameter should be defined");
+  console.assert(typeof markdownFilename === 'string', `checkMarkdownFileContents: 'markdownFilename' parameter should be a string not a '${typeof markdownFilename}': ${markdownFilename}`);
+  console.assert(markdownText !== undefined, "checkMarkdownFileContents: 'markdownText' parameter should be defined");
+  console.assert(typeof markdownText === 'string', `checkMarkdownFileContents: 'markdownText' parameter should be a string not a '${typeof markdownText}': ${markdownText}`);
+  console.assert(givenLocation !== undefined, "checkMarkdownFileContents: 'givenLocation' parameter should be defined");
+  console.assert(typeof givenLocation === 'string', `checkMarkdownFileContents: 'givenLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
+  console.assert(givenLocation.indexOf('true') === -1, `checkMarkdownFileContents: 'givenLocation' parameter should not be '${givenLocation}'`);
+  console.assert(optionalCheckingOptions !== undefined, "checkMarkdownFileContents: 'optionalCheckingOptions' parameter should be defined");
+  console.assert(typeof optionalCheckingOptions === 'object', `checkMarkdownFileContents: 'optionalCheckingOptions' parameter should be an object not a '${typeof optionalCheckingOptions}': ${JSON.stringify(optionalCheckingOptions)}`);
+
   let ourLocation = givenLocation;
   if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
@@ -57,6 +69,7 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
     if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cMdT addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
     console.assert(noticeObject.location !== undefined, "cMdT addNoticePartial: 'location' parameter should be defined");
     console.assert(typeof noticeObject.location === 'string', `cMdT addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+
     if (noticeObject.debugChain) noticeObject.debugChain = `checkMarkdownFileContents ${noticeObject.debugChain}`;
     result.noticeList.push({ ...noticeObject, filename: markdownFilename });
   }
@@ -69,7 +82,7 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
     * @param {String} optionalFieldLocation - description of where the field is located
     * @param {Object} optionalCheckingOptions - parameters that might affect the check
     */
-   function ourCheckMarkdownText(markdownText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
+   function ourCheckMarkdownText(markdownText, optionalFieldLocation, optionalCheckingOptions) {
     // Does basic checks for small errors like leading/trailing spaces, etc.
 
     // We assume that checking for compulsory fields is done elsewhere
@@ -78,9 +91,10 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
     // console.log(`cMdT ourCheckMarkdownText(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${optionalFieldLocation}, …)`);
     console.assert(markdownText !== undefined, "cMdFC ourCheckMarkdownText: 'markdownText' parameter should be defined");
     console.assert(typeof markdownText === 'string', `cMdFC ourCheckMarkdownText: 'markdownText' parameter should be a string not a '${typeof markdownText}'`);
-    console.assert(allowedLinks === true || allowedLinks === false, "cMdFC ourCheckMarkdownText: allowedLinks parameter must be either true or false");
+    console.assert(optionalFieldLocation !== undefined, "cMdFC ourCheckMarkdownText: 'optionalFieldLocation' parameter should be defined");
+    console.assert(typeof optionalFieldLocation === 'string', `cMdFC ourCheckMarkdownText: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
-    const dbtcResultObject = checkMarkdownText(languageCode, markdownFilename, markdownText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
+    const dbtcResultObject = checkMarkdownText(languageCode, markdownFilename, markdownText, optionalFieldLocation, optionalCheckingOptions);
 
     // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
     //  process results line by line
@@ -117,7 +131,7 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
 
 
   // Main code for checkMarkdownFileContents function
-  ourCheckMarkdownText(markdownText, true, givenLocation, optionalCheckingOptions); // true is for allowedLins
+  ourCheckMarkdownText(markdownText, givenLocation, optionalCheckingOptions);
   ourFileTextCheck(markdownText, givenLocation, optionalCheckingOptions);
 
   addSuccessMessage(`Checked markdown file: ${markdownFilename}`);

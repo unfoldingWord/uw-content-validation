@@ -16,7 +16,7 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, o
     // console.log(`checkYAMLText(${textName}, ${YAMLText.length}, ${givenLocation})…`);
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
-    if (textName) ourLocation = ` in ${textName}${ourLocation}`;
+    // if (textName) ourLocation = ` in ${textName}${ourLocation}`;
 
     let extractLength;
     try {
@@ -72,6 +72,8 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, o
         console.assert(fieldText !== undefined, "cYt ourCheckTextField: 'fieldText' parameter should be defined");
         console.assert(typeof fieldText === 'string', `cYt ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         console.assert(allowedLinks === true || allowedLinks === false, "cYt ourCheckTextField: allowedLinks parameter must be either true or false");
+        console.assert(optionalFieldLocation !== undefined, "cYt ourCheckTextField: 'optionalFieldLocation' parameter should be defined");
+        console.assert(typeof optionalFieldLocation === 'string', `cYt ourCheckTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
         const resultObject = checkTextField('YAML', '', fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
 

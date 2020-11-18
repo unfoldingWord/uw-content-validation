@@ -31,7 +31,6 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
-    // if (bookID) ourLocation = ` in ${bookID}${ourLocation}`;
 
     const ttResult = { successList: [], noticeList: [] };
 

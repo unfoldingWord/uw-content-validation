@@ -2,7 +2,7 @@ import * as books from '../../core/books/books';
 import { checkUSFMText, checkMarkdownFileContents, checkPlainText, checkYAMLText, checkManifestText, checkTN_TSVText, checkAnnotationRows } from '../../core';
 
 
-// const CHECK_FILE_CONTENTS_VERSION_STRING = '0.2.2';
+// const CHECK_FILE_CONTENTS_VERSION_STRING = '0.2.3';
 
 
 /**
@@ -80,6 +80,7 @@ export async function checkFileContents(languageCode, repoCode, filename, fileCo
   // Make sure that we have the filename in all of our notices (in case other files are being checked as well)
   function addFilenameField(noticeObject) {
     if (noticeObject.debugChain) noticeObject.debugChain = `checkFileContents ${noticeObject.debugChain}`;
+    if (noticeObject.fieldName === filename) delete noticeObject.fieldName;
     return noticeObject.extra ? noticeObject : { ...noticeObject, filename }; // Might be an indirect check on a TA or TW article
   }
   checkFileResult.noticeList = checkFileResult.noticeList.map(addFilenameField);

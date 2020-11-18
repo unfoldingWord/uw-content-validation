@@ -32,7 +32,7 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, opti
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
-    if (filename) ourLocation = ` in ${filename}${ourLocation}`;
+    // if (filename) ourLocation = ` in ${filename}${ourLocation}`;
 
 
     const result = { successList: [], noticeList: [] };

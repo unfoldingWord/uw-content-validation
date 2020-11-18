@@ -31,7 +31,6 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
-    // if (fieldName) ourLocation = ` in ${fieldName}${ourLocation}`;
 
     const ctarResult = { noticeList: [] };
 

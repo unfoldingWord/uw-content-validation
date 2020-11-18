@@ -2,12 +2,12 @@ import { DEFAULT_EXTRACT_LENGTH, MATCHED_PUNCTUATION_PAIRS, PAIRED_PUNCTUATION_O
 import { checkTextField } from './field-text-check';
 
 
-const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.3.3';
+const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.3.4';
 
 
 /**
  *
- * @param {string} textType
+ * @param {string} textType 'markdown', 'USFM', 'YAML', 'text', or 'raw'
  * @param {string} textName
  * @param {string} plainText -- text to be checked
  * @param {string} givenLocation
@@ -30,7 +30,6 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
-    // if (textName) ourLocation = ` in ${textName}${ourLocation}`;
 
     let extractLength;
     try {
@@ -64,6 +63,7 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cPT addNotice: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "cPT addNotice: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `cPT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        
         // noticeObject.debugChain = noticeObject.debugChain ? `checkPlainText(${textType}, ${textName}) ${noticeObject.debugChain}` : `checkPlainText(${textType}, ${textName})`;
         cptResult.noticeList.push(noticeObject);
     }
@@ -88,6 +88,8 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
         console.assert(fieldText !== undefined, "cPT ourCheckTextField: 'fieldText' parameter should be defined");
         console.assert(typeof fieldText === 'string', `cPT ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         console.assert(allowedLinks === true || allowedLinks === false, "cPT ourCheckTextField: allowedLinks parameter must be either true or false");
+        console.assert(optionalFieldLocation !== undefined, "cPT ourCheckTextField: 'optionalFieldLocation' parameter should be defined");
+        console.assert(typeof optionalFieldLocation === 'string', `cPT ourCheckTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
         const resultObject = checkTextField(textType, '', fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
 
@@ -200,13 +202,15 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
         // lastLineContents = line;
     }
 
+    // TODO: Is this a duplicate of the above section about nesting?
     // Check matched pairs in the entire file
     for (const punctSet of MATCHED_PUNCTUATION_PAIRS) {
         // Can't check '‘’' coz they might be used as apostrophe
         const leftChar = punctSet[0], rightChar = punctSet[1];
         const leftCount = countOccurrences(plainText, leftChar);
         const rightCount = countOccurrences(plainText, rightChar);
-        if (leftCount !== rightCount)
+        if (leftCount !== rightCount
+            && (textType!=='markdown' || rightChar!=='>')) // markdown uses > as a block quote character
             // NOTE: These are lower priority than similar checks in a field
             //          since they occur only within the entire file
             addNotice({ priority: leftChar === '“' ? 162 : 462, message: `Mismatched ${leftChar}${rightChar} characters`, details: `(left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()})`, location: ourLocation });

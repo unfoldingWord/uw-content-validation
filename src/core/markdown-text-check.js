@@ -2,18 +2,18 @@ import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { checkTextField } from './field-text-check';
 
 
-const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.4.1';
+const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.4.2';
 
 
 /**
  *
  * @param {string} languageCode
- * @param {string} textName -- used for identification
+ * @param {string} textOrFileName -- used for identification
  * @param {string} markdownText -- the actual text to be checked
  * @param {string} givenLocation
  * @param {Object} optionalCheckingOptions
  */
-export function checkMarkdownText(languageCode, textName, markdownText, givenLocation, optionalCheckingOptions) {
+export function checkMarkdownText(languageCode, textOrFileName, markdownText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire markdown text, i.e., all lines.
 
     This text may not necessarily be from a file -- it may be from a (multiline) field within a file
@@ -23,6 +23,18 @@ export function checkMarkdownText(languageCode, textName, markdownText, givenLoc
      Returns a result object containing a successList and a noticeList
      */
     // console.log(`checkMarkdownText(${textName}, ${markdownText.length}, ${givenLocation})…`);
+    console.assert(languageCode !== undefined, "checkMarkdownText: 'languageCode' parameter should be defined");
+    console.assert(typeof languageCode === 'string', `checkMarkdownText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
+    console.assert(textOrFileName !== undefined, "checkMarkdownText: 'textOrFileName' parameter should be defined");
+    console.assert(typeof textOrFileName === 'string', `checkMarkdownText: 'textOrFileName' parameter should be a string not a '${typeof textOrFileName}': ${textOrFileName}`);
+    console.assert(markdownText !== undefined, "checkMarkdownText: 'markdownText' parameter should be defined");
+    console.assert(typeof markdownText === 'string', `checkMarkdownText: 'markdownText' parameter should be a string not a '${typeof markdownText}': ${markdownText}`);
+    console.assert(givenLocation !== undefined, "checkMarkdownText: 'optionalFieldLocation' parameter should be defined");
+    console.assert(typeof givenLocation === 'string', `checkMarkdownText: 'optionalFieldLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
+    console.assert(givenLocation.indexOf('true') === -1, `checkMarkdownText: 'optionalFieldLocation' parameter should not be '${givenLocation}'`);
+    console.assert(optionalCheckingOptions !== undefined, "checkMarkdownText: 'optionalCheckingOptions' parameter should be defined");
+    console.assert(typeof optionalCheckingOptions === 'object', `checkMarkdownText: 'optionalCheckingOptions' parameter should be an object not a '${typeof optionalCheckingOptions}': ${JSON.stringify(optionalCheckingOptions)}`);
+
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
@@ -58,6 +70,7 @@ export function checkMarkdownText(languageCode, textName, markdownText, givenLoc
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cMdT addNotice: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "cMdT addNotice: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `cMdT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+
         // noticeObject.debugChain = noticeObject.debugChain ? `checkMarkdownText(${languageCode}, ${textName}) ${noticeObject.debugChain}` : `checkMarkdownText(${languageCode}, ${textName})`;
         result.noticeList.push(noticeObject); // Used to have filename: textName, but that isn't always a filename !!!
     }
@@ -85,6 +98,8 @@ export function checkMarkdownText(languageCode, textName, markdownText, givenLoc
         console.assert(fieldText !== undefined, "cMdT ourCheckTextField: 'fieldText' parameter should be defined");
         console.assert(typeof fieldText === 'string', `cMdT ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         console.assert(allowedLinks === true || allowedLinks === false, "cMdT ourCheckTextField: allowedLinks parameter must be either true or false");
+        console.assert(optionalFieldLocation !== undefined, "cMdT ourCheckTextField: 'optionalFieldLocation' parameter should be defined");
+        console.assert(typeof optionalFieldLocation === 'string', `cMdT ourCheckTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
         const dbtcResultObject = checkTextField('markdown', fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
 
@@ -135,7 +150,7 @@ export function checkMarkdownText(languageCode, textName, markdownText, givenLoc
 
         let suggestion;
         if (thisText && lineText[0] !== '|') // Doesn't really make sense to check table line entries
-            suggestion = ourCheckTextField(textName, lineNumber, thisText, true, lineLocation, optionalCheckingOptions);
+            suggestion = ourCheckTextField(textOrFileName, lineNumber, thisText, true, lineLocation, optionalCheckingOptions);
 
         if (thisText === lineText) // i.e., we didn't premodify the field being checked
             return suggestion;
@@ -160,7 +175,7 @@ export function checkMarkdownText(languageCode, textName, markdownText, givenLoc
             const thisHeaderLevel = line.match(/^#*/)[0].length;
             // console.log(`Got thisHeaderLevel=${thisHeaderLevel} for ${line}${atString}`);
             if (thisHeaderLevel > headerLevel + 1
-                && !textName.startsWith('TA ')) // Suppress this notice for translationAcademy subsections
+                && !textOrFileName.startsWith('TA ')) // Suppress this notice for translationAcademy subsections
                 addNotice({ priority: 172, message: "Header levels should only increment by one", lineNumber: n, characterIndex: 0, location: ourLocation });
             if (thisHeaderLevel > 0)
                 headerLevel = thisHeaderLevel;

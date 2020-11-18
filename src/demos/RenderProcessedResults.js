@@ -272,6 +272,7 @@ function RenderSuccessesColored({ results }) {
  * @param {Object} props.entry -- the given notice entry object
  */
 function RenderPriority({ entry }) {
+    // Also displays the debugChain (after the priority) if the debugChain string exists
     if (entry.debugChain)
     return <small><span style={{ color: 'Gray' }}> ({entry.priority >= 0 ? "Priority " + entry.priority : ""})</span> <span style={{ color: 'Purple' }}>[{entry.debugChain}]</span></small>
     else

@@ -2,7 +2,7 @@ import { isDisabledNotice } from './disabled-notices';
 // import { displayPropertyNames, consoleLogObject } from './utilities';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.8.8';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.8.9';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -109,13 +109,13 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 if ( // compare as few essentialfields as possible to find matches
                     thisUniqueNotice.priority === item.priority
                     && thisUniqueNotice.message === item.message
-                    && (thisUniqueNotice.details === item.details || thisUniqueNotice.details===undefined || item.details===undefined)
-                    && (thisUniqueNotice.repoCode === item.repoCode || thisUniqueNotice.repoCode===undefined || item.repoCode===undefined)
-                    && (thisUniqueNotice.filename === item.filename || thisUniqueNotice.filename===undefined || item.filename===undefined)
-                    && (thisUniqueNotice.rowID === item.rowID || thisUniqueNotice.rowID===undefined || item.rowID===undefined)
-                    && (thisUniqueNotice.lineNumber === item.lineNumber || thisUniqueNotice.lineNumber===undefined || item.lineNumber===undefined)
-                    && (thisUniqueNotice.characterIndex === item.characterIndex || thisUniqueNotice.characterIndex===undefined || item.characterIndex===undefined)
-                    )
+                    && (thisUniqueNotice.details === item.details || thisUniqueNotice.details === undefined || item.details === undefined)
+                    && (thisUniqueNotice.repoCode === item.repoCode || thisUniqueNotice.repoCode === undefined || item.repoCode === undefined)
+                    && (thisUniqueNotice.filename === item.filename || thisUniqueNotice.filename === undefined || item.filename === undefined)
+                    && (thisUniqueNotice.rowID === item.rowID || thisUniqueNotice.rowID === undefined || item.rowID === undefined)
+                    && (thisUniqueNotice.lineNumber === item.lineNumber || thisUniqueNotice.lineNumber === undefined || item.lineNumber === undefined)
+                    && (thisUniqueNotice.characterIndex === item.characterIndex || thisUniqueNotice.characterIndex === undefined || item.characterIndex === undefined)
+                )
                     return ix;
             }
             return -1;
@@ -126,7 +126,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 uniqueList.push(thisGivenNotice);
             else console.log(`Duplicate notices:\n${JSON.stringify(thisGivenNotice)}\nwhen had\n${JSON.stringify(uniqueList[xx])}`);
         }
-        console.log(`Here with ${givenNoticeObject.noticeList.length} notices and ${uniqueList.length} unique notices`);
+        if (uniqueList.length !== givenNoticeObject.noticeList.length)
+            console.log(`Here with ${givenNoticeObject.noticeList.length.toLocaleString()} notices and ${uniqueList.length.toLocaleString()} unique notices`);
     }
 
 

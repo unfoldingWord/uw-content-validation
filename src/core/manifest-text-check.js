@@ -546,7 +546,6 @@ export function checkManifestText(textName, manifestText, givenLocation, optiona
     // console.log(`checkManifestText(${textName}, ${manifestText.length} chars, ${givenLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
-    // if (textName) ourLocation = ` in ${textName}${ourLocation}`;
 
     let extractLength;
     try {
@@ -580,6 +579,7 @@ export function checkManifestText(textName, manifestText, givenLocation, optiona
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cManT addNotice: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "cManT addNotice: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `cManT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        
         if (noticeObject.debugChain) noticeObject.debugChain = `checkManifestText ${noticeObject.debugChain}`;
         cmtResult.noticeList.push(noticeObject);
     }
