@@ -7,6 +7,9 @@ It returns a list of success messages and a list of notice components. (There is
 These raw notice components can then be filtered and/or sorted as required by the calling program, and then divided into a list of errors and a list of warnings or whatever as desired.
 
 ```js
+// The code in this box is editable for changing settings—
+//        Simply click inside here and add, change, or delete text as required.
+
 import React, { useState, useEffect } from 'react';
 import { checkAnnotationTSVDataRow } from './annotation-row-check';
 import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
@@ -59,7 +62,8 @@ function CheckAnnotationRow(props) {
     (async () => {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {tableLineName} <b>{bookID}</b>…</p>);
-      const rawResults = await checkAnnotationTSVDataRow(languageCode, annotationType, tableLine, bookID, C, V, givenLocation);
+      // (Final unused parameter is optionalCheckingOptions)
+      const rawResults = await checkAnnotationTSVDataRow(languageCode, annotationType, tableLine, bookID, C, V, givenLocation, {});
       setResults(
         <div>
           <b>Check</b> {tableLineName}: "{tableLine.substr(0,256)}…"<br/><br/>

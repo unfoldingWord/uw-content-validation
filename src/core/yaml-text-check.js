@@ -14,6 +14,18 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, o
 
      */
     // console.log(`checkYAMLText(${textName}, ${YAMLText.length}, ${givenLocation})…`);
+    console.assert(languageCode !== undefined, "checkYAMLText: 'languageCode' parameter should be defined");
+    console.assert(typeof languageCode === 'string', `checkYAMLText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
+    console.assert(textName !== undefined, "checkYAMLText: 'textName' parameter should be defined");
+    console.assert(typeof textName === 'string', `checkYAMLText: 'textName' parameter should be a string not a '${typeof textName}': ${textName}`);
+    console.assert(YAMLText !== undefined, "checkYAMLText: 'YAMLText' parameter should be defined");
+    console.assert(typeof YAMLText === 'string', `checkYAMLText: 'YAMLText' parameter should be a string not a '${typeof YAMLText}': ${YAMLText}`);
+    console.assert(givenLocation !== undefined, "checkYAMLText: 'optionalFieldLocation' parameter should be defined");
+    console.assert(typeof givenLocation === 'string', `checkYAMLText: 'optionalFieldLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
+    console.assert(givenLocation.indexOf('true') === -1, `checkYAMLText: 'optionalFieldLocation' parameter should not be '${givenLocation}'`);
+    if (optionalCheckingOptions !== undefined)
+        console.assert(typeof optionalCheckingOptions === 'object', `checkYAMLText: 'optionalCheckingOptions' parameter should be an object not a '${typeof optionalCheckingOptions}': ${JSON.stringify(optionalCheckingOptions)}`);
+
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     // if (textName) ourLocation = ` in ${textName}${ourLocation}`;

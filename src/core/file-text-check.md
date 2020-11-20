@@ -9,6 +9,9 @@ This generic function returns a list/array of notices, that can then be post-pro
 This demonstration doesn't display the raw notices, but rather displays the processed and formatted lists of errors and warnings.
 
 ```js
+// The code in this box is editable for changing settings—
+//        Simply click inside here and add, change, or delete text as required.
+
 import { checkTextfileContents } from './file-text-check';
 import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 

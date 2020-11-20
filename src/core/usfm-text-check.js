@@ -1,5 +1,5 @@
-import * as books from '../core/books/books';
 import { DEFAULT_EXTRACT_LENGTH, isWhitespace, countOccurrences, ourDeleteAll } from './text-handling-functions'
+import * as books from '../core/books/books';
 import { checkTextField } from './field-text-check';
 import { checkTextfileContents } from './file-text-check';
 import { runUsfmJsCheck } from './usfm-js-check';

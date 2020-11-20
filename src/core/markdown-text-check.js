@@ -32,8 +32,8 @@ export function checkMarkdownText(languageCode, textOrFileName, markdownText, gi
     console.assert(givenLocation !== undefined, "checkMarkdownText: 'optionalFieldLocation' parameter should be defined");
     console.assert(typeof givenLocation === 'string', `checkMarkdownText: 'optionalFieldLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
     console.assert(givenLocation.indexOf('true') === -1, `checkMarkdownText: 'optionalFieldLocation' parameter should not be '${givenLocation}'`);
-    console.assert(optionalCheckingOptions !== undefined, "checkMarkdownText: 'optionalCheckingOptions' parameter should be defined");
-    console.assert(typeof optionalCheckingOptions === 'object', `checkMarkdownText: 'optionalCheckingOptions' parameter should be an object not a '${typeof optionalCheckingOptions}': ${JSON.stringify(optionalCheckingOptions)}`);
+    if (optionalCheckingOptions !== undefined)
+        console.assert(typeof optionalCheckingOptions === 'object', `checkMarkdownText: 'optionalCheckingOptions' parameter should be an object not a '${typeof optionalCheckingOptions}': ${JSON.stringify(optionalCheckingOptions)}`);
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;

@@ -31,8 +31,8 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
   console.assert(givenLocation !== undefined, "checkMarkdownFileContents: 'givenLocation' parameter should be defined");
   console.assert(typeof givenLocation === 'string', `checkMarkdownFileContents: 'givenLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
   console.assert(givenLocation.indexOf('true') === -1, `checkMarkdownFileContents: 'givenLocation' parameter should not be '${givenLocation}'`);
-  console.assert(optionalCheckingOptions !== undefined, "checkMarkdownFileContents: 'optionalCheckingOptions' parameter should be defined");
-  console.assert(typeof optionalCheckingOptions === 'object', `checkMarkdownFileContents: 'optionalCheckingOptions' parameter should be an object not a '${typeof optionalCheckingOptions}': ${JSON.stringify(optionalCheckingOptions)}`);
+  if (optionalCheckingOptions !== undefined)
+    console.assert(typeof optionalCheckingOptions === 'object', `checkMarkdownFileContents: 'optionalCheckingOptions' parameter should be an object not a '${typeof optionalCheckingOptions}': ${JSON.stringify(optionalCheckingOptions)}`);
 
   let ourLocation = givenLocation;
   if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -75,14 +75,14 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
   }
   // end of addNoticePartial function
 
-    /**
-    * @description - checks the given text field and processes the returned results
-    * @param {String} markdownText - the actual text of the file being checked
-    * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
-    * @param {String} optionalFieldLocation - description of where the field is located
-    * @param {Object} optionalCheckingOptions - parameters that might affect the check
-    */
-   function ourCheckMarkdownText(markdownText, optionalFieldLocation, optionalCheckingOptions) {
+  /**
+  * @description - checks the given text field and processes the returned results
+  * @param {String} markdownText - the actual text of the file being checked
+  * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
+  * @param {String} optionalFieldLocation - description of where the field is located
+  * @param {Object} optionalCheckingOptions - parameters that might affect the check
+  */
+  function ourCheckMarkdownText(markdownText, optionalFieldLocation, optionalCheckingOptions) {
     // Does basic checks for small errors like leading/trailing spaces, etc.
 
     // We assume that checking for compulsory fields is done elsewhere

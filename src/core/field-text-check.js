@@ -40,8 +40,8 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     console.assert(optionalFieldLocation !== undefined, "checkTextField: 'optionalFieldLocation' parameter should be defined");
     console.assert(typeof optionalFieldLocation === 'string', `checkTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}': ${optionalFieldLocation}`);
     console.assert(optionalFieldLocation.indexOf('true') === -1, `checkTextField: 'optionalFieldLocation' parameter should not be '${optionalFieldLocation}'`);
-    console.assert(optionalCheckingOptions !== undefined, "checkTextField: 'optionalCheckingOptions' parameter should be defined");
-    console.assert(typeof optionalCheckingOptions === 'object', `checkTextField: 'optionalCheckingOptions' parameter should be an object not a '${typeof optionalCheckingOptions}': ${JSON.stringify(optionalCheckingOptions)}`);
+    if (optionalCheckingOptions !== undefined)
+        console.assert(typeof optionalCheckingOptions === 'object', `checkTextField: 'optionalCheckingOptions' parameter should be an object not a '${typeof optionalCheckingOptions}': ${JSON.stringify(optionalCheckingOptions)}`);
 
     let result = { noticeList: [] };
 
@@ -137,6 +137,14 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
         const extract = fieldText.substring(0, extractLength).replace(/\u200D/g, '‼') + (fieldText.length > extractLength ? '…' : '');
         addNoticePartial({ priority: 771, message: `Unexpected leading zero-width joiner`, characterIndex: 0, extract, location: ourLocation });
         if (suggestion[0] === '\u200D') suggestion = suggestion.substring(1);
+    }
+    if ((characterIndex = fieldText.indexOf('<br> ')) >= 0) {
+        const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
+        addNoticePartial({ priority: 64, message: "Unexpected leading space(s) after break", characterIndex, extract, location: ourLocation });
+    }
+    if ((characterIndex = fieldText.indexOf('\\n ')) >= 0) {
+        const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
+        addNoticePartial({ priority: 63, message: "Unexpected leading space(s) after line break", characterIndex, extract, location: ourLocation });
     }
 
     if (fieldText[fieldText.length - 1] === '\u2060') {

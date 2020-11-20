@@ -3,6 +3,9 @@
 This function is for checking text fields that are links, or that contain links.
 
 ```js
+// The code in this box is editable for changing settings—
+//        Simply click inside here and add, change, or delete text as required.
+
 import { checkFieldLinks } from './field-link-check';
 import { processNoticesToErrorsWarnings } from '../demos/notice-processing-functions';
 import { RenderLines, RenderRawResults, RenderSuccessesErrorsWarnings } from '../demos/RenderProcessedResults';

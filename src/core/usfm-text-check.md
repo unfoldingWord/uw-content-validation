@@ -13,6 +13,9 @@ Note that unfoldingWord has three distinct forms of USFM files (and these functi
 1. Some of our USFM Bible books simply contain the (normal) Bible text. (Of course, these files are much smaller and quicker to validate.)
 
 ```js
+// The code in this box is editable for changing settings—
+//        Simply click inside here and add, change, or delete text as required.
+
 import { checkUSFMText } from './usfm-text-check';
 import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
@@ -180,8 +183,9 @@ const textB = `\\id GEN Bad USFM test
 //  (to demonstrate differing results)
 const chosenText = textH;
 
-// Second (unused) parameter is filename
-const rawResults = checkUSFMText('en', 'GEN', '', chosenText, 'that was supplied');
+// Second (unused) parameter is repoCode
+// Fourth (unused) parameter is filename
+const rawResults = checkUSFMText('en', '', 'GEN', '', chosenText, 'that was supplied');
 if (!rawResults.successList || !rawResults.successList.length)
     rawResults.successList = ["Done USFM text checks"];
 

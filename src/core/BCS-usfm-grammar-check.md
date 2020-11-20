@@ -7,6 +7,9 @@ Our packaged function returns a list of success messages and a list of (prioriti
 These raw notice components can then be filtered and/or sorted as required by the calling program, and then divided into a list of errors and a list of warnings or whatever as desired.
 
 ```js
+// The code in this box is editable for changing settings—
+//        Simply click inside here and add, change, or delete text as required.
+
 import { checkUSFMGrammar } from './BCS-usfm-grammar-check';
 import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
