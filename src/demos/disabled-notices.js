@@ -19,6 +19,8 @@ const disabledNotices = [
   { repoCode: 'TA', message: "Unexpected – character after space", }, // 191 -- temp en-dashes
   { repoCode: 'TA', message: "Unexpected space after – character", }, // 192 -- temp en-dashes
 
+  { repoCode: 'TA', priority: 172, }, // "Header levels should only increment by one" not required for TA
+
   { repoCode: 'TA', filename: 'translate/translate-textvariants/01.md', message: "Unexpected space after [ character", }, // 192
   { repoCode: 'TA', filename: 'translate/translate-formatsignals/01.md', message: "Unexpected space after ( character", }, // 192
 
