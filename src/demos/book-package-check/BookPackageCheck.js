@@ -48,6 +48,8 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
     // console.log(`checkingOptions.checkLinkedTAArticleFlag ${checkingOptions.checkLinkedTAArticleFlag} from '${props.checkLinkedTAArticleFlag}'`);
     // console.log(`checkingOptions.checkLinkedTWArticleFlag ${checkingOptions.checkLinkedTWArticleFlag} from '${props.checkLinkedTWArticleFlag}'`);
 
+    const repoPreloadList = ['TA', 'TW', 'TQ', 'TQ2'];
+
     useEffect(() => {
         // const newProps = { bookID, branch, checkingOptions, languageCode, cutoffPriorityLevel: props.cutoffPriorityLevel, displayType: props.displayType, errorPriorityLevel: props.errorPriorityLevel, maximumSimilarMessages: props.maximumSimilarMessages, sortBy: props.sortBy, username};
         // console.log("BookPackageCheck.useEffect() called with ", JSON.stringify(newProps));
@@ -81,7 +83,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
 
             // if (bookID !== 'OBS') { // Preload the reference repos
             setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for <b>{bookID}</b> book package check…</p>);
-            const successFlag = await preloadReposIfNecessary(username, languageCode, [bookID], branch);
+            const successFlag = await preloadReposIfNecessary(username, languageCode, [bookID], branch, repoPreloadList);
             if (!successFlag)
                 console.error(`BookPackageCheck error: Failed to pre-load all repos`)
             // }

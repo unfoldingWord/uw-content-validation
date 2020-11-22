@@ -7,7 +7,7 @@ import * as books from './books';
 import { clearCheckedArticleCache } from './tn-links-check';
 
 
-// const GETAPI_VERSION_STRING = '0.6.4';
+// const GETAPI_VERSION_STRING = '0.6.5';
 
 const MAX_INDIVIDUAL_FILES_TO_DOWNLOAD = 5; // More than this and it downloads the zipfile for the entire repo
 
@@ -227,20 +227,20 @@ export async function cachedGetBookFilenameFromManifest({ username, repository, 
  * @param {string} languageCode
  * @param {Array} bookIDList - one or more books that will be checked
  * @param {string} branch - optional, defaults to master
- * @param {Array} repos - optional, list of repos to pre-load
+ * @param {Array} repoList - optional, list of repos to pre-load
  * @return {Promise<Boolean>} resolves to true if file loads are successful
  */
-export async function preloadReposIfNecessary(username, languageCode, bookIDList, branch = 'master', repos = ['TA', 'TW', languageCode === 'en' ? 'TQ2' : 'TQ']) {
+export async function preloadReposIfNecessary(username, languageCode, bookIDList, branch, repoList) {
   // NOTE: We preload TA and TW by default because we are likely to have many links to those repos
   //        We preload TQ by default because it has thousands of files (17,337), so individual file fetches might be slow
   //          even for one book which might have several hundred files.
-  console.log(`preloadReposIfNecessary(${username}, ${languageCode}, ${bookIDList} (${typeof bookID}), ${branch}, [${repos}])…`);
+  console.log(`preloadReposIfNecessary(${username}, ${languageCode}, ${bookIDList} (${typeof bookID}), ${branch}, [${repoList}])…`);
   let success = true;
 
-  const repos_ = [...repos];
+  const repos_ = [...repoList];
   if (bookIDList.length === 1 && bookIDList[0] === 'OBS') {
     if (!repos_.includes('OBS'))
-      repos_.unshift('OBS');
+      repos_.unshift('OBS'); // push to beginning of list
   }
   if (bookIDList && Array.isArray(bookIDList) && bookIDList.length > MAX_INDIVIDUAL_FILES_TO_DOWNLOAD) { // Fetch individually if checking less books
     // make sure we have the original languages needed
@@ -284,9 +284,13 @@ export async function preloadReposIfNecessary(username, languageCode, bookIDList
     let adjustedLanguageCode = languageCode;
     if ((languageCode === 'hbo' && repoCode !== 'UHB') || (languageCode === 'el-x-koine' && repoCode !== 'UGNT'))
       adjustedLanguageCode = 'en'; // Assume English then
-    const repoName = formRepoName(adjustedLanguageCode, repoCode);
+    let adjustedBranch = branch;
+    let adjustedRepoCode = repoCode;
+    if (repoCode === 'TQ2') { adjustedRepoCode = 'TQ'; adjustedBranch = 'newFormat'; }
+    else if (repoCode === 'TN2') { adjustedRepoCode = 'TN'; adjustedBranch = 'newFormat'; }
+    const repoName = formRepoName(adjustedLanguageCode, adjustedRepoCode);
     // console.log(`preloadReposIfNecessary: preloading zip file for ${repoName}…`);
-    const zipFetchSucceeded = await cachedGetRepositoryZipFile({ username, repository: repoName, branch });
+    const zipFetchSucceeded = await cachedGetRepositoryZipFile({ username, repository: repoName, branch: adjustedBranch });
     if (!zipFetchSucceeded) {
       console.error(`preloadReposIfNecessary() misfetched zip file for ${repoCode} repo with ${zipFetchSucceeded}`);
       success = false;

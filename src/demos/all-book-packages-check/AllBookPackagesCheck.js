@@ -67,8 +67,8 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     // Or this allows the parameters to be specified as a BookPackagesCheck property
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
 
-    let preloadList = ['TA', 'TW', 'TQ2'];
-    if (bookIDList.length > 5) { preloadList.push('LT'); preloadList.push('ST'); preloadList.push('TN2'); }
+    let repoPreloadList = ['TA', 'TW', 'TQ', 'TQ2'];
+    if (bookIDList.length > 5) { repoPreloadList.push('LT'); repoPreloadList.push('ST'); repoPreloadList.push('TN'); repoPreloadList.push('TN2'); }
 
     useEffect(() => {
         // console.log("BookPackagesCheck.useEffect() called with ", JSON.stringify(props));
@@ -93,7 +93,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
           else await clearCheckedArticleCache();
 
           setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for all book packages check…</p>);
-            const successFlag = await preloadReposIfNecessary(username, languageCode, bookIDList, branch, preloadList);
+            const successFlag = await preloadReposIfNecessary(username, languageCode, bookIDList, branch, repoPreloadList);
             if (!successFlag)
                 console.log(`AllBookPackagesCheck error: Failed to pre-load all repos`)
 
