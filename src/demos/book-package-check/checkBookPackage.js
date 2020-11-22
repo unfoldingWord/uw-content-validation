@@ -261,7 +261,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   let bookNumberAndName, whichTestament;
   if (bookID === 'OBS') {
     // NOTE: No code below to handle OBS TN and TQ which are markdown repos
-    repoCodeList = ['TWL', 'OBS', 'TN2', 'TQ2', 'SN', 'SQ'];
+    repoCodeList = ['TWL', 'OBS', 'TN', 'TQ', 'SN', 'SQ'];
   } else { // not OBS
     // We also need to know the number for USFM books
     try {

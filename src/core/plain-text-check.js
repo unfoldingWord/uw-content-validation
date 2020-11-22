@@ -2,7 +2,7 @@ import { DEFAULT_EXTRACT_LENGTH, MATCHED_PUNCTUATION_PAIRS, PAIRED_PUNCTUATION_O
 import { checkTextField } from './field-text-check';
 
 
-const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.3.4';
+const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.3.5';
 
 
 /**
@@ -63,7 +63,7 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cPT addNotice: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "cPT addNotice: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `cPT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
-        
+
         // noticeObject.debugChain = noticeObject.debugChain ? `checkPlainText(${textType}, ${textName}) ${noticeObject.debugChain}` : `checkPlainText(${textType}, ${textName})`;
         cptResult.noticeList.push(noticeObject);
     }
@@ -183,7 +183,7 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
                             if (textType !== 'markdown' || char !== '>' || characterIndex > 2) { // Markdown uses > or >> or > > for block indents so ignore these -- might just be consequential error
                                 const extract = (characterIndex > halfLength ? '…' : '') + line.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < line.length ? '…' : '')
                                 const details = `'${lastEntry.char}' opened on line ${lastEntry.n} character ${lastEntry.x + 1}`;
-                                addNotice({ priority: 777, message: `Bad nesting: ${char} closing character doesn't match`, details, lineNumber: n, characterIndex, extract, location: ourLocation });
+                                addNotice({ priority: 777, message: `Bad punctuation nesting: ${char} closing character doesn't match`, details, lineNumber: n, characterIndex, extract, location: ourLocation });
                                 // console.log(`  ERROR 777: mismatched characters: ${details}`);
                             }
                     } else // Closed something unexpectedly without an opener

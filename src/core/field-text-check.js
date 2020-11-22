@@ -1,7 +1,7 @@
 import { DEFAULT_EXTRACT_LENGTH, MATCHED_PUNCTUATION_PAIRS, isWhitespace, countOccurrences } from './text-handling-functions'
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.2.4';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.2.5';
 
 
 /**
@@ -258,8 +258,8 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     }
     // Check for punctuation chars following space and at start of line
     //  Removed ©$€₱
-    let afterSpaceCheckList = ')}>⟩:,،、‒–—―!.›»‐-?’”;/⁄·@•^†‡°¡¿※#№÷×ºª%‰‱¶′″‴§~‖¦℗®℠™¤₳฿₵¢₡₢₫₯֏₠ƒ₣₲₴₭₺₾ℳ₥₦₧₰£៛₽₹₨₪৳₸₮₩¥';
-    if (fieldType !== 'markdown') afterSpaceCheckList += '_*'; // These are used for markdown formatting
+    let afterSpaceCheckList = ')}>⟩:,،、‒–—―!.›»‐-?’”;/⁄·@•^†‡°¡¿※#№÷×ºª%‰‱¶′″‴§‖¦℗®℠™¤₳฿₵¢₡₢₫₯֏₠ƒ₣₲₴₭₺₾ℳ₥₦₧₰£៛₽₹₨₪৳₸₮₩¥';
+    if (fieldType !== 'markdown') afterSpaceCheckList += '_*~'; // These are used for markdown formatting
     if (fieldType !== 'USFM' || (fieldText.indexOf('x-lemma') < 0 && fieldText.indexOf('x-tw') < 0)) afterSpaceCheckList += '|';
     if (fieldType !== 'YAML') afterSpaceCheckList += '\'"'; // These are used for YAML strings, e.g., version: '0.15'
     // if (fieldName === 'OrigQuote' || fieldName === 'Quote') afterSpaceCheckList += '…'; // NOT NEEDED -- this is specifically checked elsewhere
@@ -281,11 +281,11 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     if (fieldType === 'USFM')
         suggestion = suggestion.replace(/| /g, '|');
 
-    // Check for punctuation chars before space and at end of line
+    // Check for punctuation chars before space
     //  Removed ' (can be normal, e.g., Jesus' cloak)
     //  Removed ©
-    let beforeSpaceCheckList = '({<⟨،、‒–—―‹«‐‘“/⁄·@\\•^†‡°¡¿※№×ºª‰‱¶′″‴§~|‖¦℗℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥';
-    if (fieldType !== 'markdown') beforeSpaceCheckList += '_'; // These are used for markdown formatting
+    let beforeSpaceCheckList = '({<⟨،、‒–—―‹«‐‘“/⁄·@\\•^†‡°¡¿※№×ºª‰‱¶′″‴§|‖¦℗℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥';
+    if (fieldType !== 'markdown') beforeSpaceCheckList += '_~'; // These are used for markdown formatting
     if (fieldType !== 'markdown' && fieldType !== 'USFM') beforeSpaceCheckList += '*'; // There are used for markdown formatting and USFM closing markers
     if (fieldType !== 'YAML') beforeSpaceCheckList += '[';
     for (const punctChar of beforeSpaceCheckList) {
@@ -295,6 +295,14 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
             if (fieldType !== 'raw' || fieldName.substring(0, 6) !== 'from \\') notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
             addNoticePartial(notice);
         }
+    }
+
+    // Check for punctuation chars at end of line
+    //  Removed ' (can be normal, e.g., Jesus' cloak)
+    let beforeEOLCheckList = '([{<⟨،、‒–—―‹«‐‘“/⁄·@©\\•^†‡°¡¿※№×ºª‰‱¶′″‴§|‖¦℗℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥';
+    if (fieldType !== 'markdown') beforeEOLCheckList += '_~'; // These are used for markdown formatting
+    if (fieldType !== 'markdown' && fieldType !== 'USFM') beforeEOLCheckList += '*'; // There are used for markdown formatting and USFM closing markers
+    for (const punctChar of beforeEOLCheckList) {
         if (punctChar !== '—' && fieldText[fieldText.length - 1] === punctChar) {
             characterIndex = fieldText.length - 1;
             let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
