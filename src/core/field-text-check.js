@@ -1,7 +1,7 @@
 import { DEFAULT_EXTRACT_LENGTH, MATCHED_PUNCTUATION_PAIRS, isWhitespace, countOccurrences } from './text-handling-functions'
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.2.3';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.2.4';
 
 
 /**
@@ -169,12 +169,14 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
         while (suggestion.toLowerCase().substring(0, 6) === '<br />') suggestion = suggestion.substring(6);
     }
 
-    if (fieldText[fieldText.length - 1] === ' ') {
-        const extract = (fieldText.length > extractLength ? '…' : '') + fieldText.substring(fieldText.length - 10).replace(/ /g, '␣');
-        const notice = { priority: 95, message: "Unexpected trailing space(s)", extract, location: ourLocation };
-        if (fieldType !== 'raw' || fieldName.substring(0, 6) !== 'from \\') notice.characterIndex = fieldText.length - 1; // characterIndex means nothing for processed USFM
-        addNoticePartial(notice);
-    }
+    if (fieldText[fieldText.length - 1] === ' ')
+        // Markdown gives meaning to two spaces at the end of a line
+        if (fieldType !== 'markdown' || fieldText.length < 3 ||  fieldText[fieldText.length - 2] !== ' ' ||  fieldText[fieldText.length - 3] === ' ') {
+            const extract = (fieldText.length > extractLength ? '…' : '') + fieldText.substring(fieldText.length - 10).replace(/ /g, '␣');
+            const notice = { priority: 95, message: "Unexpected trailing space(s)", extract, location: ourLocation };
+            if (fieldType !== 'raw' || fieldName.substring(0, 6) !== 'from \\') notice.characterIndex = fieldText.length - 1; // characterIndex means nothing for processed USFM
+            addNoticePartial(notice);
+        }
     if ((characterIndex = fieldText.indexOf(' <br')) >= 0) {
         const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
         addNoticePartial({ priority: 94, message: "Unexpected trailing space(s) before break", characterIndex, extract, location: ourLocation });
