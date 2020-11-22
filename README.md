@@ -37,13 +37,13 @@ In addition, there are Styleguidist pages viewable at https://unfoldingword.gith
 This code is designed to thoroughly check various types of Bible-related content data files. This includes:
 
 1. [Unified Standard Format Marker](ubsicap.github.io/usfm/) (USFM) Bible content files, including original language Bibles and Bible translations aligned by word/phrase to the original words/phrases
-1. Translation Notes (TN2) tables in Tab-Separated Values (TSV) files
-1. General annotation tables in Tab-Separated Values (TSV) files (work-in-progress)
+1. Translation Notes (TN) tables in Tab-Separated Values (TSV) files
+1. General annotation tables in Tab-Separated Values (TSV) files (work-in-progress -uses TQ2 and TN2)
 1. Markdown files (and markdown fields in TSV files)
 1. Plain-text files
 1. Metadata (manifest) YAML files
 
-Note: There is also a separate function for checking individual TN2/TSV lines which is intended to be able to provide immediate user feedback if built into a TSV editor.
+Note: There is also a separate function for checking individual TSV lines (e.g., TN, TN2, TQ2) which is intended to be able to provide immediate user feedback if built into a TSV editor.
 
 The top-level checking demonstrations return:
 
@@ -56,23 +56,25 @@ However, the lower-level checking functions provide only the list of success mes
 
 There are two compulsory fields in all of these notice objects:
 
-1. `priority`: A notice priority number in the range 1-1000. Each different type of warning/error has a unique number (but not each instance of those warnings/errors). By default, notice priority numbers 700 and over are considered `errors` and 0-699 are considered `warnings`.
+1. `priority`: A notice priority number in the range 1-1000. Each different type of warning/error has a unique number (but not each instance of those warnings/errors). By default, notice priority numbers 700 and over are considered `errors` and 0-699 are considered `warnings`, but in truth, that's rather arbitrary.
 1. `message`: The actual general descriptive text of the notice
 
 All of the following fields may be missing or undefined, i.e., they're all optional:
 
-1. `details`: More details about the notice (if applicable)
+1. `details`: More helpful details about the notice (if applicable)
+1. `repoCode`: brief repository code (if available), e.g., 'UHB', 'LT', 'ST', 'TN', 'TQ', 'TN2', 'TQ2', etc.
+1. `repoName`: Door43 repository name (if available), e.g., 'en_ta', 'hi_tw'
+1. `filename`: filename string (if available)
 1. `bookID`: The 3-character UPPERCASE [book identifier](http://ubsicap.github.io/usfm/identification/books.html) or [OBS](https://www.openbiblestories.org/) (if relevant)
 1. `C`: The chapter number or OBS story number (if relevant)
 1. `V`: The verse number or OBS frame number (if relevant)
-1. `repoName`: repository name (if available)
-1. `filename`: filename string (if available)
 1. `rowID`: 4-character ID field for TSV row (if relevant)
 1. `lineNumber`: A one-based line number in the file (if available)
 1. `fieldName`: name of TSV field (if relevant)
 1. `characterIndex`: A **zero-based** integer character index which indicates the position of the error in the given text (line or field) (if available)
 1. `extract`: An excerpt (if available) from the checked text which indicates the area containing the problem. Where helpful, some character substitutions have already been made, for example, if the notice is about spaces, it is generally helpful to display spaces as a visible character in an attempt to best highlight the issue to the user. (The length of the extract defaults to ten characters, but is settable as an option.)
 1. `location`: A string indicating the context of the notice, e.g., "in line 17 of 'someBook.usfm'". (Still not completely sure what should be left in this string now that we have added optional `repoName`, `filename`, `rowID`, `lineNumber`, `fieldName` fields.)
+1. `extra`: for a check that looks in multiple repos, this contains extra identifying information (typically the `repoCode`) to help the user determine what resource/repo/file that the notice applies to (which, in the demos, is then often prepended to the `message`).
 
 Keeping our notices in this format, rather than the simplicity of just saving an array of single strings, allows the above *notice components* to be processed at a higher level, e.g., to allow user-controlled filtering, sorting, etc. The default is to funnel them all through the supplied `processNoticesToErrorsWarnings` function (in demos/notice-processing-functions.fs) which does the following:
 
@@ -88,15 +90,16 @@ However, the user is, of course, free to create their own alternative version of
 
 There is provision for checking to be altered and/or sped-up when the calling app sets some or all of the following fields in `optionalCheckingOptions`:
 
-- extractLength: an integer which defines how long excerpts of lines containing errors should be—the default is 15 characters—the package attempts to place the error in the middle of the extract
-- getFile: a function which takes the four parameters ({username, repository, path, branch}) and returns the full text of the relevant Door43 file—default is to use our own function and associated caching
-- fetchRepositoryZipFile: a function which takes the three parameters ({username, repository, branch}) and returns the contents of the zip file containing all the Door43 files—default is to use our own function and associated caching
-- getFileListFromZip: takes the same three parameters and returns a list/array containing the filepaths of all the files in the zip file from Door43—default is to use our own function and associated caching
-- originalLanguageVerseText: the Hebrew/Aramaic or Greek original language text for the book/chapter/verse of the TSV line being checked—this enables `OrigQuote` fields to be checked without needing to load and parse the actual USFM file
-- originalLanguageRepoUsername and originalLanguageRepoBranch: these two fields can be used to specify the username/organisation and/or the branch/tag name for fetching the UHB and UGNT files for checking
-- taRepoUsername, taRepoBranchName: these two fields can be used to specify the username/organisation and/or the branch/tag name for fetching the TA files for checking
-- taRepoLanguageCode, and taRepoSectionName: can be used to specify how the `SupportReference` field is checked in TA—defaults are 'en' and 'translate'
-- twRepoUsername, twRepoBranchName: these two fields can be used to specify the username/organisation and/or the branch/tag name for fetching the TW files for checking
+- `disableAllLinkFetchingFlag`: a boolean (true/false) which if set to true, stops the package from fetching and checking links, e.g., when a translation note refers to Translation Academy it won't check that the TA article actually exists, and also stops the checking of any extra files like LICENSE.md—this gives a dramatic speed-up to many checks (but, of course, it means that the data might still contain quite major errors)
+- `getFile`: a function which takes the four parameters ({username, repository, path, branch}) and returns the full text of the relevant Door43 file—default is to use our own function and associated caching
+- `fetchRepositoryZipFile`: a function which takes the three parameters ({username, repository, branch}) and returns the contents of the zip file containing all the Door43 files—default is to use our own function and associated caching
+- `getFileListFromZip`: takes the same three parameters and returns a list/array containing the filepaths of all the files in the zip file from Door43—default is to use our own function and associated caching
+- `originalLanguageVerseText`: the Hebrew/Aramaic or Greek original language text for the book/chapter/verse of the TSV line being checked—this enables `OrigQuote` fields to be checked without needing to load and parse the actual USFM file
+- `originalLanguageRepoUsername` and `originalLanguageRepoBranch`: these two fields can be used to specify the username/organisation and/or the branch/tag name for fetching the UHB and UGNT files for checking
+- `taRepoUsername`, `taRepoBranchName`: these two fields can be used to specify the username/organisation and/or the branch/tag name for fetching the TA files for checking
+- `taRepoLanguageCode`, and `taRepoSectionName`: can be used to specify how the `SupportReference` field is checked in TA—defaults are 'en' and 'translate'
+- `twRepoUsername`, `twRepoBranchName`: these two fields can be used to specify the username/organisation and/or the branch/tag name for fetching the TW files for checking
+- `extractLength`: an integer which defines how long excerpts of lines containing errors should be—the default is 15 characters—the package attempts to place the error in the middle of the extract
 
 Most of the high-level demonstrations allow a choice of one of three display formats for notices:
 
@@ -118,6 +121,9 @@ In addition, there are some options in the display of notices for the demonstrat
 
 Still unfinished (in rough priority order):
 
+1. Get checks of new formats working again (in `newFormat` branches)
+1. The `suggestion` mechanism is working, but more suggestions need to be created
+1. Consider moving `cutoffPriorityLevel` from `processingOptions` to `checkingOptions`
 1. Checking of general markdown and naked links (esp. in plain text and markdown files)
 1. Work through all [Issues](https://github.com/unfoldingWord/uw-content-validation/issues)
 1. Work through all `ToDo`s in code
@@ -132,7 +138,18 @@ Still unfinished (in rough priority order):
 
 Known bugs:
 
+1. Not all demos have all available options
+1. 'NEW' option not yet working again in Book Package Check
 1. Work on checking naked links in text files is not yet completed
+1. File caching (i.e., not checking latest file versions) is still a frustration that needs to be investigated—presumably it's out of control of this package and its demos???
+
+Known check deficiencies:
+
+1. Markdown image format `![xx](yy)` is not yet fully checked
+1. Filenames in manifests are not fully checked
+1. Naked HTTP links are not yet checked properly
+1. ULT/UST quotes in TranslationAcademy are not yet checked
+
 
 ## Functionality and Limitations
 
