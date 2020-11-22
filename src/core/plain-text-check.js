@@ -1,15 +1,15 @@
-import { checkTextField } from './field-text-check';
 import { DEFAULT_EXTRACT_LENGTH, MATCHED_PUNCTUATION_PAIRS, PAIRED_PUNCTUATION_OPENERS, PAIRED_PUNCTUATION_CLOSERS, isWhitespace, countOccurrences } from './text-handling-functions'
+import { checkTextField } from './field-text-check';
 
 
-const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.3.1';
+const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.3.4';
 
 
 /**
  *
- * @param {string} textType
+ * @param {string} textType 'markdown', 'USFM', 'YAML', 'text', or 'raw'
  * @param {string} textName
- * @param {string} plainText
+ * @param {string} plainText -- text to be checked
  * @param {string} givenLocation
  * @param {Object} optionalCheckingOptions
  */
@@ -20,9 +20,9 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
      Returns a result object containing a successList and a noticeList
      */
     // console.log(`checkPlainText(${textName}, (${plainText.length} chars), ${givenLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
-    console.assert(textType !== undefined, "checkPlainText: 'fieldType' parameter should be defined");
-    console.assert(typeof textType === 'string', `checkPlainText: 'fieldType' parameter should be a string not a '${typeof textType}': ${textType}`);
-    console.assert(textType === 'markdown' || textType === 'USFM' || textType === 'YAML' || textType === 'raw', `checkPlainText: unrecognised 'textType' parameter: '${textType}'`);
+    console.assert(textType !== undefined, "checkPlainText: 'textType' parameter should be defined");
+    console.assert(typeof textType === 'string', `checkPlainText: 'textType' parameter should be a string not a '${typeof textType}': ${textType}`);
+    console.assert(textType === 'markdown' || textType === 'USFM' || textType === 'YAML' || textType === 'text' || textType === 'raw', `checkPlainText: unrecognised 'textType' parameter: '${textType}'`);
     console.assert(textName !== undefined, "checkPlainText: 'textName' parameter should be defined");
     console.assert(typeof textName === 'string', `checkPlainText: 'textName' parameter should be a string not a '${typeof textName}': ${textName}`);
     console.assert(plainText !== undefined, "checkPlainText: 'plainText' parameter should be defined");
@@ -30,7 +30,6 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
-    if (textName) ourLocation = ` in ${textName}${ourLocation}`;
 
     let extractLength;
     try {
@@ -64,6 +63,8 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cPT addNotice: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "cPT addNotice: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `cPT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        
+        // noticeObject.debugChain = noticeObject.debugChain ? `checkPlainText(${textType}, ${textName}) ${noticeObject.debugChain}` : `checkPlainText(${textType}, ${textName})`;
         cptResult.noticeList.push(noticeObject);
     }
 
@@ -87,6 +88,8 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
         console.assert(fieldText !== undefined, "cPT ourCheckTextField: 'fieldText' parameter should be defined");
         console.assert(typeof fieldText === 'string', `cPT ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         console.assert(allowedLinks === true || allowedLinks === false, "cPT ourCheckTextField: allowedLinks parameter must be either true or false");
+        console.assert(optionalFieldLocation !== undefined, "cPT ourCheckTextField: 'optionalFieldLocation' parameter should be defined");
+        console.assert(typeof optionalFieldLocation === 'string', `cPT ourCheckTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
         const resultObject = checkTextField(textType, '', fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
 
@@ -103,13 +106,13 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
     function checkPlainLineContents(lineNumber, lineText, lineLocation) {
 
         // console.log(`checkPlainLineContents for '${lineName}', '${lineText}' at${lineLocation}`);
-        let thisText = lineText.trimStart(); // So we don't get "leading space" and "doubled spaces" errors
+        let thisText = lineText.trimStart(); // So we don't get "leading space" AND "doubled spaces" errors
 
         if (thisText)
             // Allow links as that's more general
             ourCheckTextField(lineNumber, thisText, true, lineLocation, optionalCheckingOptions);
     }
-    // end of checkPlainLine function
+    // end of checkPlainLineContents function
 
 
     // Main code for checkPlainText function
@@ -118,20 +121,46 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
         return cptResult;
     }
 
+    let characterIndex;
+    if ((characterIndex = plainText.indexOf('<<<<<<<')) >= 0) {
+        const iy = characterIndex + halfLength; // Want extract to focus more on what follows
+        const extract = (iy > halfLength ? '…' : '') + plainText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < plainText.length ? '…' : '')
+        addNotice({ priority: 993, message: "Unresolved GIT conflict", characterIndex, extract, location: ourLocation });
+    } else if ((characterIndex = plainText.indexOf('=======')) >= 0) {
+        const iy = characterIndex + halfLength; // Want extract to focus more on what follows
+        const extract = (iy > halfLength ? '…' : '') + plainText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < plainText.length ? '…' : '')
+        addNotice({ priority: 992, message: "Unresolved GIT conflict", characterIndex, extract, location: ourLocation });
+    } else if ((characterIndex = plainText.indexOf('>>>>>>>>')) >= 0) {
+        const iy = characterIndex + halfLength; // Want extract to focus more on what follows
+        const extract = (iy > halfLength ? '…' : '') + plainText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < plainText.length ? '…' : '')
+        addNotice({ priority: 991, message: "Unresolved GIT conflict", characterIndex, extract, location: ourLocation });
+    }
+
+    if (!plainText.endsWith('\n')) {
+        characterIndex = plainText.length - 1;
+        const extract = (plainText.length > extractLength ? '…' : '') + plainText.slice(-extractLength).replace(/ /g, '␣').replace(/\n/g, '\\n')
+        addNotice({ priority: 538, message: "File ends without newline character", characterIndex, extract, location: ourLocation });
+    }
+    else if (plainText.endsWith('\n\n')) {
+        characterIndex = plainText.length - 2;
+        const extract = (plainText.length > extractLength ? '…' : '') + plainText.slice(-extractLength).replace(/ /g, '␣').replace(/\n/g, '\\n')
+        addNotice({ priority: 138, message: "File ends with additional blank line(s)", characterIndex, extract, location: ourLocation });
+    }
+
     const lines = plainText.split('\n');
     // console.log(`  '${location}' has ${lines.length.toLocaleString()} total lines`);
-
+    //  checking nested markers (so that we can give the line number in the notice)
     // let headerLevel = 0;
     // let lastNumLeadingSpaces = 0;
     // let lastLineContents;
     // While checking individual lines,
-    //  checking nested markers (so that we can give the line number in the notice)
     const openMarkers = [];
     for (let n = 1; n <= lines.length; n++) {
 
         const line = lines[n - 1];
         if (line) {
-            checkPlainLineContents(n, line, ourLocation);
+            if (textType === 'text' || textType === 'raw') // other file-types do these checks themselves
+                checkPlainLineContents(n, line, ourLocation);
 
             // Check for nested brackets and quotes, etc.
             for (let characterIndex = 0; characterIndex < line.length; characterIndex++) {
@@ -150,17 +179,19 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
                         if (lastEntry.char === PAIRED_PUNCTUATION_OPENERS.charAt(closeCharacterIndex)) {
                             // console.log(`  Matched '${char}' with  '${openers.charAt(which)}' ${n} ${x}`);
                             openMarkers.pop();
-                        } else {
+                        } else // something is still open and this isn't a match -- might just be consequential error
+                            if (textType !== 'markdown' || char !== '>' || characterIndex > 2) { // Markdown uses > or >> or > > for block indents so ignore these -- might just be consequential error
+                                const extract = (characterIndex > halfLength ? '…' : '') + line.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < line.length ? '…' : '')
+                                const details = `'${lastEntry.char}' opened on line ${lastEntry.n} character ${lastEntry.x + 1}`;
+                                addNotice({ priority: 777, message: `Bad nesting: ${char} closing character doesn't match`, details, lineNumber: n, characterIndex, extract, location: ourLocation });
+                                // console.log(`  ERROR 777: mismatched characters: ${details}`);
+                            }
+                    } else // Closed something unexpectedly without an opener
+                        if (textType !== 'markdown' || char !== '>') { // Markdown uses > for block indents so ignore these
                             const extract = (characterIndex > halfLength ? '…' : '') + line.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < line.length ? '…' : '')
-                            const details = `'${lastEntry.char}' opened on line ${lastEntry.n} character ${lastEntry.x + 1}`;
-                            addNotice({ priority: 777, message: `Bad nesting: ${char} closing character doesn't match`, details, lineNumber: n, characterIndex, extract, location: ourLocation });
-                            // console.log(`  ERROR 777: mismatched characters: ${details}`);
+                            addNotice({ priority: 774, message: `Unexpected ${char} closing character (no matching opener)`, lineNumber: n, characterIndex, extract, location: ourLocation });
+                            // console.log(`  ERROR 774: closed with nothing open: ${char}`);
                         }
-                    } else { // Closed something without an opener
-                        const extract = (characterIndex > halfLength ? '…' : '') + line.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < line.length ? '…' : '')
-                        addNotice({ priority: 774, message: `Unexpected ${char} closing character (no matching opener)`, lineNumber: n, characterIndex, extract, location: ourLocation });
-                        // console.log(`  ERROR 774: closed with nothing open: ${char}`);
-                    }
                 }
 
             }
@@ -171,28 +202,15 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
         // lastLineContents = line;
     }
 
-    let characterIndex;
-    if ((characterIndex = plainText.indexOf('<<<<<<<')) >= 0) {
-        const iy = characterIndex + halfLength; // Want extract to focus more on what follows
-        const extract = (iy > halfLength ? '…' : '') + plainText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < plainText.length ? '…' : '')
-        addNotice({ priority: 993, message: "Unresolved GIT conflict", characterIndex, extract, location: ourLocation });
-    } else if ((characterIndex = plainText.indexOf('=======')) >= 0) {
-        const iy = characterIndex + halfLength; // Want extract to focus more on what follows
-        const extract = (iy > halfLength ? '…' : '') + plainText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < plainText.length ? '…' : '')
-        addNotice({ priority: 992, message: "Unresolved GIT conflict", characterIndex, extract, location: ourLocation });
-    } else if ((characterIndex = plainText.indexOf('>>>>>>>>')) >= 0) {
-        const iy = characterIndex + halfLength; // Want extract to focus more on what follows
-        const extract = (iy > halfLength ? '…' : '') + plainText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < plainText.length ? '…' : '')
-        addNotice({ priority: 991, message: "Unresolved GIT conflict", characterIndex, extract, location: ourLocation });
-    }
-
+    // TODO: Is this a duplicate of the above section about nesting?
     // Check matched pairs in the entire file
     for (const punctSet of MATCHED_PUNCTUATION_PAIRS) {
         // Can't check '‘’' coz they might be used as apostrophe
         const leftChar = punctSet[0], rightChar = punctSet[1];
         const leftCount = countOccurrences(plainText, leftChar);
         const rightCount = countOccurrences(plainText, rightChar);
-        if (leftCount !== rightCount)
+        if (leftCount !== rightCount
+            && (textType!=='markdown' || rightChar!=='>')) // markdown uses > as a block quote character
             // NOTE: These are lower priority than similar checks in a field
             //          since they occur only within the entire file
             addNotice({ priority: leftChar === '“' ? 162 : 462, message: `Mismatched ${leftChar}${rightChar} characters`, details: `(left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()})`, location: ourLocation });

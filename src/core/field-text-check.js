@@ -1,7 +1,7 @@
 import { DEFAULT_EXTRACT_LENGTH, MATCHED_PUNCTUATION_PAIRS, isWhitespace, countOccurrences } from './text-handling-functions'
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.2.0';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.2.4';
 
 
 /**
@@ -27,7 +27,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     // console.log(`checkTextField(${fieldName}, ${fieldText.length.toLocaleString()} chars, ${allowedLinks}, '${optionalFieldLocation}')…`);
     console.assert(fieldType !== undefined, "checkTextField: 'fieldType' parameter should be defined");
     console.assert(typeof fieldType === 'string', `checkTextField: 'fieldType' parameter should be a string not a '${typeof fieldType}': ${fieldType}`);
-    console.assert(fieldType !== '', `checkTextField: 'fieldType' ${fieldName} parameter should be not be an empty string`);
+    console.assert(fieldType !== '', `checkTextField: 'fieldType' ${fieldType} parameter should be not be an empty string`);
     console.assert(fieldType === 'markdown' || fieldType === 'USFM' || fieldType === 'YAML' || fieldType === 'raw' || fieldType === 'link', `checkTextField: unrecognised 'fieldType' parameter: '${fieldType}'`);
     console.assert(fieldName !== undefined, "checkTextField: 'fieldName' parameter should be defined");
     console.assert(typeof fieldName === 'string', `checkTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}': ${fieldName}`);
@@ -37,6 +37,11 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     console.assert(typeof fieldText === 'string', `checkTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}': ${fieldText}`);
     console.assert(allowedLinks === true || allowedLinks === false, "checkTextField: allowedLinks parameter must be either true or false");
     if (!allowedLinks) console.assert(fieldText.indexOf('x-tw') < 0, `checkTextField should be allowedLinks for ${fieldType} ${fieldName} ${fieldText}`)
+    console.assert(optionalFieldLocation !== undefined, "checkTextField: 'optionalFieldLocation' parameter should be defined");
+    console.assert(typeof optionalFieldLocation === 'string', `checkTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}': ${optionalFieldLocation}`);
+    console.assert(optionalFieldLocation.indexOf('true') === -1, `checkTextField: 'optionalFieldLocation' parameter should not be '${optionalFieldLocation}'`);
+    if (optionalCheckingOptions !== undefined)
+        console.assert(typeof optionalCheckingOptions === 'object', `checkTextField: 'optionalCheckingOptions' parameter should be an object not a '${typeof optionalCheckingOptions}': ${JSON.stringify(optionalCheckingOptions)}`);
 
     let result = { noticeList: [] };
 
@@ -53,6 +58,8 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `dBTCs addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "dBTCs addNoticePartial: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `dBTCs addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+
+        // noticeObject.debugChain = noticeObject.debugChain ? `checkTextField(${fieldType}, ${fieldName}, ${allowedLinks}) ${noticeObject.debugChain}` : `checkTextField(${fieldType}, ${fieldName}, ${allowedLinks})`;
         if (fieldName.length) noticeObject.fieldName = fieldName; // Don't add the field if it's blank
         result.noticeList.push(noticeObject);
     }
@@ -131,6 +138,14 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
         addNoticePartial({ priority: 771, message: `Unexpected leading zero-width joiner`, characterIndex: 0, extract, location: ourLocation });
         if (suggestion[0] === '\u200D') suggestion = suggestion.substring(1);
     }
+    if ((characterIndex = fieldText.indexOf('<br> ')) >= 0) {
+        const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
+        addNoticePartial({ priority: 64, message: "Unexpected leading space(s) after break", characterIndex, extract, location: ourLocation });
+    }
+    if ((characterIndex = fieldText.indexOf('\\n ')) >= 0) {
+        const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
+        addNoticePartial({ priority: 63, message: "Unexpected leading space(s) after line break", characterIndex, extract, location: ourLocation });
+    }
 
     if (fieldText[fieldText.length - 1] === '\u2060') {
         const extract = fieldText.substring(0, extractLength).replace(/\u2060/g, '‼') + (fieldText.length > extractLength ? '…' : '');
@@ -154,12 +169,14 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
         while (suggestion.toLowerCase().substring(0, 6) === '<br />') suggestion = suggestion.substring(6);
     }
 
-    if (fieldText[fieldText.length - 1] === ' ') {
-        const extract = (fieldText.length > extractLength ? '…' : '') + fieldText.substring(fieldText.length - 10).replace(/ /g, '␣');
-        const notice = { priority: 95, message: "Unexpected trailing space(s)", extract, location: ourLocation };
-        if (fieldType !== 'raw' || fieldName.substring(0,6) !== 'from \\') notice.characterIndex = fieldText.length - 1; // characterIndex means nothing for processed USFM
-        addNoticePartial(notice);
-    }
+    if (fieldText[fieldText.length - 1] === ' ')
+        // Markdown gives meaning to two spaces at the end of a line
+        if (fieldType !== 'markdown' || fieldText.length < 3 ||  fieldText[fieldText.length - 2] !== ' ' ||  fieldText[fieldText.length - 3] === ' ') {
+            const extract = (fieldText.length > extractLength ? '…' : '') + fieldText.substring(fieldText.length - 10).replace(/ /g, '␣');
+            const notice = { priority: 95, message: "Unexpected trailing space(s)", extract, location: ourLocation };
+            if (fieldType !== 'raw' || fieldName.substring(0, 6) !== 'from \\') notice.characterIndex = fieldText.length - 1; // characterIndex means nothing for processed USFM
+            addNoticePartial(notice);
+        }
     if ((characterIndex = fieldText.indexOf(' <br')) >= 0) {
         const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
         addNoticePartial({ priority: 94, message: "Unexpected trailing space(s) before break", characterIndex, extract, location: ourLocation });
@@ -182,7 +199,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     if ((characterIndex = fieldText.indexOf('  ')) >= 0) {
         const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
         const notice = { priority: 194, message: "Unexpected double spaces", extract, location: ourLocation }
-        if (fieldType !== 'raw' || fieldName.substring(0,6) !== 'from \\') notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
+        if (fieldType !== 'raw' || fieldName.substring(0, 6) !== 'from \\') notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
         addNoticePartial(notice);
     }
     if ((characterIndex = fieldText.indexOf('\n')) >= 0) {
@@ -203,7 +220,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     if ((characterIndex = fieldText.indexOf('\u202F')) >= 0) { // narrow non-break space
         const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/\u202F/g, '⍽') + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
         const notice = { priority: 580, message: "Unexpected narrow non-break space character", extract, location: ourLocation };
-        if (fieldType !== 'raw' || fieldName.substring(0,6) !== 'from \\') notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
+        if (fieldType !== 'raw' || fieldName.substring(0, 6) !== 'from \\') notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
         addNoticePartial(notice);
         suggestion = suggestion.replace(/\u202F/g, ' ');
     }
@@ -224,9 +241,9 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     // Check for doubled punctuation chars (international)
     // Doesn't check for doubled forward slash by default coz that might occur in a link, e.g., https://etc…
     //  or doubled # coz that occurs in markdown
-    let doubledPunctuationCheckList = '({}<>⟨⟩:،、‒–—―…!‹›«»‐?‘’“”\';⁄·&@•^†‡°¡¿※№÷×ºª%‰+−=‱¶′″‴§~|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥';
+    let doubledPunctuationCheckList = '({}<>⟨⟩:،、‒–—―…!‹›«»‐?‘’“”\';⁄·&@•^†‡°¡¿※№÷×ºª%‰+−=‱¶′″‴§|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥';
     if (!allowedLinks) doubledPunctuationCheckList += '/[].)'; // Double square brackets can be part of markdown links, double periods can be part of a path
-    if (fieldType !== 'markdown') doubledPunctuationCheckList += '_*#'; // There are used for markdown formatting
+    if (fieldType !== 'markdown') doubledPunctuationCheckList += '_*#~'; // There are used for markdown formatting
     if (fieldType !== 'USFM' || fieldText.indexOf('x-morph') < 0) doubledPunctuationCheckList += ',"'; // Allowed in original language morphology fields
     if (fieldType !== 'YAML' || !fieldText.startsWith('--')) // NOTE: First hyphen may have been removed in preprocessing
         doubledPunctuationCheckList += '-';
@@ -235,9 +252,9 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
         if (characterIndex >= 0) {
             let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
             const notice = { priority: 177, message: `Unexpected doubled ${punctChar} characters`, extract, location: ourLocation };
-            if (fieldType !== 'raw' || fieldName.substring(0,6) !== 'from \\') notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
+            if (fieldType !== 'raw' || fieldName.substring(0, 6) !== 'from \\') notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
             addNoticePartial(notice);
-            }
+        }
     }
     // Check for punctuation chars following space and at start of line
     //  Removed ©$€₱
@@ -250,10 +267,12 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
         if ((characterIndex = fieldText.indexOf(' ' + punctChar)) >= 0) {
             let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
             const notice = { priority: 191, message: `Unexpected ${punctChar} character after space`, extract, location: ourLocation };
-            if (fieldType !== 'raw' || fieldName.substring(0,6) !== 'from \\') notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
+            if (fieldType !== 'raw' || fieldName.substring(0, 6) !== 'from \\') notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
             addNoticePartial(notice);
-            }
-        if ((punctChar !== '-' || fieldType !== 'YAML') && fieldText[0] === punctChar) {
+        }
+        if ((punctChar !== '-' || fieldType !== 'YAML')
+            && (punctChar !== '!' || fieldType !== 'markdown') // image tag
+            && fieldText[0] === punctChar) {
             characterIndex = 0;
             let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
             addNoticePartial({ priority: 195, message: `Unexpected ${punctChar} character at start of line`, characterIndex, extract, location: ourLocation });
@@ -270,21 +289,33 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     if (fieldType !== 'markdown' && fieldType !== 'USFM') beforeSpaceCheckList += '*'; // There are used for markdown formatting and USFM closing markers
     if (fieldType !== 'YAML') beforeSpaceCheckList += '[';
     for (const punctChar of beforeSpaceCheckList) {
-        if ((characterIndex = fieldText.indexOf(punctChar + ' '))>= 0) {
+        if ((characterIndex = fieldText.indexOf(punctChar + ' ')) >= 0) {
             let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
             const notice = { priority: 192, message: `Unexpected space after ${punctChar} character`, extract, location: ourLocation };
-            if (fieldType !== 'raw' || fieldName.substring(0,6) !== 'from \\') notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
+            if (fieldType !== 'raw' || fieldName.substring(0, 6) !== 'from \\') notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
             addNoticePartial(notice);
-            }
+        }
         if (punctChar !== '—' && fieldText[fieldText.length - 1] === punctChar) {
             characterIndex = fieldText.length - 1;
             let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
             const notice = { priority: 193, message: `Unexpected ${punctChar} character at end of line`, extract, location: ourLocation };
-            if (fieldType !== 'raw' || fieldName.substring(0,6) !== 'from \\') notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
+            if (fieldType !== 'raw' || fieldName.substring(0, 6) !== 'from \\') notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
             addNoticePartial(notice);
-            }
+        }
     }
 
+    // Check for problems created by tC Create or something
+    characterIndex = fieldText.indexOf('\\[')
+    if (characterIndex === -1) characterIndex = fieldText.indexOf('\\]')
+    if (characterIndex !== -1) {
+        let extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
+        addNoticePartial({ priority: 849, message: "Unexpected \\[ or \\] characters", characterIndex, extract, location: ourLocation });
+    }
+
+    // if (countOccurrences(fieldText, '(') !== countOccurrences(fieldText, ')')) {
+    //     console.log(`checkTextField(${fieldType}, ${fieldName}, '${fieldText}', ${allowedLinks}, ${ourLocation}) found ${countOccurrences(fieldText, '(')} '(' but ${countOccurrences(fieldText, ')')} ')'`);
+    //     addNoticePartial({ priority: 1, message: `Mismatched ( ) characters`, details: `(left=${countOccurrences(fieldText, '(').toLocaleString()}, right=${countOccurrences(fieldText, ')').toLocaleString()})`, location: ourLocation });
+    // }
     // Check matched pairs in the field
     for (const punctSet of MATCHED_PUNCTUATION_PAIRS) {
         // Can't check '‘’' coz they might be used as apostrophe
@@ -292,6 +323,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
         // if (fieldType === 'markdown' && leftChar === '<') continue; // markdown uses this for block quote
         if ((fieldType === 'USFM' || fieldName.startsWith('from \\') || (fieldType === 'markdown' && fieldName === ''))
             && '([{“«'.indexOf(leftChar) >= 0) continue; // Start/end can be on different lines
+        if (fieldType === 'markdown' && leftChar === '<') continue; // > is a markdown block marker
         const rightChar = punctSet[1];
         const leftCount = countOccurrences(fieldText, leftChar);
         const rightCount = countOccurrences(fieldText, rightChar);

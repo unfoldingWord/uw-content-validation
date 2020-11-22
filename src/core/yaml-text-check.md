@@ -9,6 +9,9 @@ These raw notice components can then be filtered and/or sorted as required by th
 Note that we have a more specialised function for checking `manifest.yaml` files.
 
 ```js
+// The code in this box is editable for changing settings—
+//        Simply click inside here and add, change, or delete text as required.
+
 import { checkYAMLText } from './yaml-text-check';
 import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
@@ -217,7 +220,7 @@ projects:
 const chosenText = textG2;
 const chosenTextName = 'textG2';
 
-const rawResults = checkYAMLText(chosenTextName, chosenText, 'in YAML data that was supplied');
+const rawResults = checkYAMLText('en', chosenTextName, chosenText, 'in YAML data that was supplied');
 
 <>
 <b>YAML contents</b>: <RenderLines text={chosenText} />

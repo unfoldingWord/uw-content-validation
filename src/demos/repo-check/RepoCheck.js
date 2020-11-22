@@ -7,7 +7,7 @@ import { checkRepo } from './checkRepo';
 // import { consoleLogObject, displayPropertyNames } from '../../core/utilities';
 
 
-//const REPO_VALIDATOR_VERSION_STRING = '0.1.4';
+//const REPO_VALIDATOR_VERSION_STRING = '0.1.5';
 
 
 function RepoCheck(/*username, languageCode,*/ props) {
@@ -78,15 +78,15 @@ function RepoCheck(/*username, languageCode,*/ props) {
 
             let [languageCode, repoCode] = repoName.split('_');
             repoCode = repoCode.toUpperCase();
-            if (repoCode === 'TN') repoCode = 'TN1';
-            else if (repoCode === 'TQ') repoCode = 'TQ1';
+            if (repoCode === 'TN2') repoCode = 'TN';
+            else if (repoCode === 'TQ2') repoCode = 'TQ';
             // console.log(`RepoCheck languageCode='${languageCode}' repoCode='${repoCode}'`);
 
             setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for {repoName} repo check…</p>);
-            const repoList = ['TW'];
-            if (repoCode !== 'UHB' && repoCode !== 'UGNT') repoList.push('TA'); // Original languages only have TW links
-            if (repoCode !== 'TA' && repoCode !== 'TW') repoList.push(repoCode);
-            const successFlag = await preloadReposIfNecessary(username, languageCode, [], branch, repoList);
+            const repoPreloadList = ['TW'];
+            if (repoCode !== 'UHB' && repoCode !== 'UGNT') repoPreloadList.push('TA'); // Original languages only have TW links
+            if (repoCode !== 'TA' && repoCode !== 'TW') repoPreloadList.push(repoCode);
+            const successFlag = await preloadReposIfNecessary(username, languageCode, [], branch, repoPreloadList);
             if (!successFlag)
                 console.error(`RepoCheck error: Failed to pre-load all repos`)
 
@@ -111,9 +111,11 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 rawCRResults.languageCode = languageCode;
                 rawCRResults.checkedOptions = checkingOptions;
 
+
                 // Because we know here that we're only checking one repo, we don't need the repoName field in the notices
-                function deleteRepoNameField(notice) { delete notice.repoName; return notice; }
-                rawCRResults.noticeList = rawCRResults.noticeList.map(deleteRepoNameField);
+                // WRONG: We want the repoName so we can make the line numbers into live links
+                // function deleteRepoNameField(notice) { delete notice.repoName; return notice; }
+                // rawCRResults.noticeList = rawCRResults.noticeList.map(deleteRepoNameField);
 
                 // console.log("Here with RC rawCRResults", typeof rawCRResults);
                 // Now do our final handling of the result -- we have some options available

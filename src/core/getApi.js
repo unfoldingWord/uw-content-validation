@@ -5,10 +5,9 @@ import { setup } from 'axios-cache-adapter';
 import JSZip from 'jszip';
 import * as books from './books';
 import { clearCheckedArticleCache } from './tn-links-check';
-// import { consoleLogObject } from '../core/utilities';
 
 
-// const GETAPI_VERSION_STRING = '0.6.2';
+// const GETAPI_VERSION_STRING = '0.6.5';
 
 const MAX_INDIVIDUAL_FILES_TO_DOWNLOAD = 5; // More than this and it downloads the zipfile for the entire repo
 
@@ -72,14 +71,14 @@ export async function clearCaches() {
   await zipStore.clear();
   await cacheStore.clear(); // This is the one used by the Axion Door43Api (above)
   await unzipStore.clear();
-  await clearCheckedArticleCache(); // Used for checking TA and TW articles referred to by TN links
+  await clearCheckedArticleCache(); // Used for checking TA and TW articles referred to by TN2 links
 }
 
 
 /**
  * @description - Forms and returns a Door43 repoName string
  * @param {String} languageCode - the language code, e.g., 'en'
- * @param {String} repoCode - the repo code, e.g., 'TQ'
+ * @param {String} repoCode - the repo code, e.g., 'TQ2'
  * @return {String} - the Door43 repoName string
  */
 export function formRepoName(languageCode, repoCode) {
@@ -95,14 +94,9 @@ export function formRepoName(languageCode, repoCode) {
   else if (repoCode === 'UGNT') repo_languageCode = 'el-x-koine';
 
   let repoName;
-  if (repoCode === 'TWL' || repoCode === 'TN' || repoCode === 'TQ')
-    repoName = `${repo_languageCode}_translation-annotations`;
-  else if (repoCode === 'SN' || repoCode === 'SQ')
-    repoName = `${repo_languageCode}_study-annotations`;
-  else {
-    if (repoCode.endsWith('1')) repoCode = repoCode.substring(0, repoCode.length - 1);
-    repoName = `${repo_languageCode}_${repoCode.toLowerCase()}`;
-  }
+
+  // if (repoCode.endsWith('2')) repoCode = repoCode.substring(0, repoCode.length - 1);
+  repoName = `${repo_languageCode}_${repoCode.toLowerCase()}`;
   return repoName;
 }
 
@@ -145,7 +139,7 @@ async function getUnZippedFile(path) {
  */
 // This is the function that we call the most from the outside
 export async function cachedGetFile({ username, repository, path, branch }) {
-  // if (repository==='en_ta') console.log(`cachedGetFile(${username}, ${repository}, ${path}, ${branch})…`);
+  // console.log(`cachedGetFile(${username}, ${repository}, ${path}, ${branch})…`);
   console.assert(typeof username === 'string' && username.length, `cachedGetFile: username parameter should be a string`);
   console.assert(typeof repository === 'string' && repository.length, `cachedGetFile: repository parameter should be a string`);
   console.assert(typeof path === 'string' && path.length, `cachedGetFile: path parameter should be a string`);
@@ -160,7 +154,7 @@ export async function cachedGetFile({ username, repository, path, branch }) {
 
   contents = await getFileFromZip({ username, repository, path, branch });
   // if (contents)
-  //   if (filePath.indexOf('_tq/') < 0) // Don't log for TQ files coz too many
+  //   if (filePath.indexOf('_tq/') < 0) // Don't log for TQ2 files coz too many
   //     console.log(`  cachedGetFile got ${filePath} from zipfile`);
   if (!contents) {
     contents = await cachedFetchFileFromServer({ username, repository, path, branch });
@@ -169,7 +163,7 @@ export async function cachedGetFile({ username, repository, path, branch }) {
   if (contents) {
     // save unzipped file in cache to speed later retrieval
     await unzipStore.setItem(filePath.toLowerCase(), contents);
-    // if (filePath.indexOf('_tq/') < 0) // Don't log for TQ files coz too many
+    // if (filePath.indexOf('_tq/') < 0) // Don't log for TQ2 files coz too many
     //   console.log(`cachedGetFile saved ${filePath} to cache for next time`);
   }
   // else console.error(`cachedGetFile(${username}, ${repository}, ${path}, ${branch}) -- failed to get file`);
@@ -223,108 +217,6 @@ export async function cachedGetBookFilenameFromManifest({ username, repository, 
 
 
 /**
- * Clears the caches of stale data and preloads repo zips, before running book package checks
- *   This allows the calling app to clear cache and start loading repos in the backgound as soon as it starts up.
- *      In this case it would not need to use await to wait for results.
- *   TRICKY: note that even if the user is super fast in selecting books and clicking next, it will not hurt anything.
- *      cachedGetFileFromZipOrServer() would just be fetching files directly from repo until the zips are loaded.
- *      After that the files would be pulled out of zipStore.
- * @param {string} username
- * @param {string} languageCode
- * @param {Array} bookIDList - one or more books that will be checked
- * @param {string} branch - optional, defaults to master
- * @param {Array} repos - optional, list of repos to pre-load
- * @return {Promise<Boolean>} resolves to true if file loads are successful
- */
-/*
-async function clearCacheAndPreloadRepos(username, languageCode, bookIDList, branch = 'master', repos = ['TA', 'TW', 'TQ']) {
-  // NOTE: We preload TA and TW by default because we are likely to have many links to those repos
-  //        We preload TQ1 by default because it has thousands of files (17,337), so individual file fetches might be slow
-  //          even for one book which might have several hundred files.
-  console.log(`clearCacheAndPreloadRepos(${username}, ${languageCode}, ${bookIDList}, ${branch}, [${repos}])…`);
-  clearCaches(); // clear existing cached files so we know we have the latest
-  let success = true;
-
-  const repos_ = [...repos];
-  if (bookIDList && Array.isArray(bookIDList) && bookIDList.length > MAX_INDIVIDUAL_FILES_TO_DOWNLOAD) { // Fetch individually if checking less books
-    // make sure we have the original languages needed
-    for (const bookID of bookIDList) {
-      if (bookID !== 'OBS') {
-        const whichTestament = books.testament(bookID); // returns 'old' or 'new'
-        const origLang = whichTestament === 'old' ? 'UHB' : 'UGNT';
-        if (!repos_.includes(origLang))
-          repos_.unshift(origLang);
-      }
-    }
-  }
-
-  // Fetch zipped versions of all the repos needing to be preloaded
-  console.log(`Need to preload ${repos_.length} repos: ${repos_}`)
-  for (const repoCode of repos_) {
-    const repoName = formRepoName(languageCode, repoCode);
-    console.log(`clearCacheAndPreloadRepos: preloading zip file for ${repoName}…`);
-    const zipFetchSucceeded = await cachedGetRepositoryZipFile({ username, repository: repoName, branch });
-    if (!zipFetchSucceeded) {
-      console.log(`clearCacheAndPreloadRepos: misfetched zip file for ${repoCode} repo with ${zipFetchSucceeded}`);
-      success = false;
-    }
-  }
-
-  return success;
-}
-*/
-
-
-/**
- * preloads repo zips, before running book package checks.
- *   TRICKY: note that even if the user is super fast in selecting books and clicking next, it will not hurt anything.  getFile() would just be fetching files directly from repo until the zips are loaded.  After that the files would be pulled out of zipStore.
- * @param {string} username
- * @param {string} languageCode
- * @param {Array} bookIDList - one or more books that will be preloaded
- * @param {string} branch - optional, defaults to master
- * @param {Array} repos - optional, list of additional repos to pre-load
- * @param {boolean} loadOriginalLangs - if true will download original language books
- * @return {Promise<Boolean>} resolves to true if file loads are successful
- */
-/*
-async function PreLoadRepos(username, languageCode, bookIDList, branch = 'master', repos = [], loadOriginalLangs = false) {
-  console.log(`PreLoadRepos(${username}, ${languageCode}, ${bookIDList}, ${branch}, ${repos}, ${loadOriginalLangs})…`);
-
-  let success = true;
-  const repos_ = repos.map((repo) => (formRepoName(languageCode, repo)));
-
-  if (loadOriginalLangs) {
-    // make sure we have the original languages needed
-    for (const origLangBibles of [ 'UHB', 'UGNT' ]) {
-      addToListIfMissing(repos_, formRepoName(languageCode, origLangBibles));
-    }
-  }
-
-  if (bookIDList && Array.isArray(bookIDList)) {
-    for (const bookID of bookIDList) {
-      if (bookID !== 'OBS') {
-        addToListIfMissing(repos_, formRepoName(languageCode, 'LT'));
-        addToListIfMissing(repos_, formRepoName(languageCode, 'ST'));
-      }
-    }
-  }
-
-  // load all the repos needed
-  for (const repoName of repos_) {
-    console.log(`PreLoadRepos: preloading zip file for ${repoName}…`);
-    const zipFetchSucceeded = await cachedGetRepositoryZipFile({ username, repository: repoName, branch });
-    if (!zipFetchSucceeded) {
-      console.error(`PreLoadRepos: misfetched zip file for ${repoName} repo with ${zipFetchSucceeded}`);
-      success = false;
-    }
-  }
-
-  return success;
-}
-*/
-
-
-/**
  * Preloads any necessary repo zips, before running book package checks
  *   This allows the calling app to clear cache and start loading repos in the backgound as soon as it starts up.
  *      In this case it would not need to use await to wait for results.
@@ -335,20 +227,20 @@ async function PreLoadRepos(username, languageCode, bookIDList, branch = 'master
  * @param {string} languageCode
  * @param {Array} bookIDList - one or more books that will be checked
  * @param {string} branch - optional, defaults to master
- * @param {Array} repos - optional, list of repos to pre-load
+ * @param {Array} repoList - optional, list of repos to pre-load
  * @return {Promise<Boolean>} resolves to true if file loads are successful
  */
-export async function preloadReposIfNecessary(username, languageCode, bookIDList, branch = 'master', repos = ['TA', 'TW', 'TQ1']) {
+export async function preloadReposIfNecessary(username, languageCode, bookIDList, branch, repoList) {
   // NOTE: We preload TA and TW by default because we are likely to have many links to those repos
-  //        We preload TQ1 by default because it has thousands of files (17,337), so individual file fetches might be slow
+  //        We preload TQ by default because it has thousands of files (17,337), so individual file fetches might be slow
   //          even for one book which might have several hundred files.
-  console.log(`preloadReposIfNecessary(${username}, ${languageCode}, ${bookIDList} (${typeof bookID}), ${branch}, [${repos}])…`);
+  console.log(`preloadReposIfNecessary(${username}, ${languageCode}, ${bookIDList} (${typeof bookID}), ${branch}, [${repoList}])…`);
   let success = true;
 
-  const repos_ = [...repos];
-  if (bookIDList.length ===1 && bookIDList[0] === 'OBS') {
+  const repos_ = [...repoList];
+  if (bookIDList.length === 1 && bookIDList[0] === 'OBS') {
     if (!repos_.includes('OBS'))
-      repos_.unshift('OBS');
+      repos_.unshift('OBS'); // push to beginning of list
   }
   if (bookIDList && Array.isArray(bookIDList) && bookIDList.length > MAX_INDIVIDUAL_FILES_TO_DOWNLOAD) { // Fetch individually if checking less books
     // make sure we have the original languages needed
@@ -392,9 +284,13 @@ export async function preloadReposIfNecessary(username, languageCode, bookIDList
     let adjustedLanguageCode = languageCode;
     if ((languageCode === 'hbo' && repoCode !== 'UHB') || (languageCode === 'el-x-koine' && repoCode !== 'UGNT'))
       adjustedLanguageCode = 'en'; // Assume English then
-    const repoName = formRepoName(adjustedLanguageCode, repoCode);
+    let adjustedBranch = branch;
+    let adjustedRepoCode = repoCode;
+    if (repoCode === 'TQ2') { adjustedRepoCode = 'TQ'; adjustedBranch = 'newFormat'; }
+    else if (repoCode === 'TN2') { adjustedRepoCode = 'TN'; adjustedBranch = 'newFormat'; }
+    const repoName = formRepoName(adjustedLanguageCode, adjustedRepoCode);
     // console.log(`preloadReposIfNecessary: preloading zip file for ${repoName}…`);
-    const zipFetchSucceeded = await cachedGetRepositoryZipFile({ username, repository: repoName, branch });
+    const zipFetchSucceeded = await cachedGetRepositoryZipFile({ username, repository: repoName, branch: adjustedBranch });
     if (!zipFetchSucceeded) {
       console.error(`preloadReposIfNecessary() misfetched zip file for ${repoCode} repo with ${zipFetchSucceeded}`);
       success = false;

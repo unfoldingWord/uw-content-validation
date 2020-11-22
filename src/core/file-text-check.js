@@ -3,7 +3,7 @@ import { checkPlainText } from './plain-text-check';
 //const FILE_TEXT_VALIDATOR_VERSION_STRING = '0.3.0';
 
 
-export function checkTextfileContents(languageCode, filename, fileText, optionalFileLocation, optionalCheckingOptions) {
+export function checkTextfileContents(languageCode, fileType, filename, fileText, optionalFileLocation, optionalCheckingOptions) {
     // Does basic checks for small errors like mismatched punctuation pairs, etc.
     //  (Used by ourBasicFileChecks() in checkUSFMText() in usfm-text-check.js)
 
@@ -23,6 +23,10 @@ export function checkTextfileContents(languageCode, filename, fileText, optional
     // console.log(`checkTextfileContents(${filename}, ${fileText.length.toLocaleString()} chars, '${optionalFileLocation}')…`);
     console.assert(languageCode !== undefined, "checkTextfileContents: 'languageCode' parameter should be defined");
     console.assert(typeof languageCode === 'string', `checkTextfileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
+    console.assert(fileType !== undefined, "checkTextfileContents: 'fileType' parameter should be defined");
+    console.assert(typeof fileType === 'string', `checkTextfileContents: 'fileType' parameter should be a string not a '${typeof fileType}': ${fileType}`);
+    console.assert(fileType !== '', `checkTextfileContents: 'fileType' ${fileType} parameter should be not be an empty string`);
+    console.assert(fileType === 'markdown' || fileType === 'USFM' || fileType === 'YAML' || fileType === 'text', `checkTextfileContents: unrecognised 'fileType' parameter: '${fileType}'`);
     console.assert(filename !== undefined, "checkTextfileContents: 'filename' parameter should be defined");
     console.assert(typeof filename === 'string', `checkTextfileContents: 'filename' parameter should be a string not a '${typeof filename}': ${filename}`);
     console.assert(fileText !== undefined, "checkTextfileContents: 'fileText' parameter should be defined");
@@ -42,10 +46,11 @@ export function checkTextfileContents(languageCode, filename, fileText, optional
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `dBTCs addNotice: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "dBTCs addNotice: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `dBTCs addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        if (noticeObject.debugChain) noticeObject.debugChain = `checkTextfileContents(${languageCode}, ${fileType}, ${filename}) ${noticeObject.debugChain}`;
         result.noticeList.push(noticeObject);
     }
 
-    function ourCheckPlainText(textType, plainText, givenLocation, optionalCheckingOptions) {
+    function ourCheckPlainText(textType, textFilename, plainText, givenLocation, optionalCheckingOptions) {
         /**
         * @description - checks the given text field and processes the returned results
         * @param {String} plainText - the actual text of the field being checked
@@ -57,13 +62,13 @@ export function checkTextfileContents(languageCode, filename, fileText, optional
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global list of notices
-        // console.log(`cPT ourCheckTextField(${fieldName}, (${fieldText.length}), ${fieldLocation}, …)`);
-        // console.assert(textName !== undefined, "cPT ourCheckTextField: 'textName' parameter should be defined");
-        // console.assert(typeof textName === 'string', `cPT ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof textName}'`);
-        console.assert(plainText !== undefined, "cPT ourCheckTextField: 'plainText' parameter should be defined");
-        console.assert(typeof plainText === 'string', `cPT ourCheckTextField: 'plainText' parameter should be a string not a '${typeof plainText}'`);
+        // console.log(`cPT ourCheckPlainText(${fieldName}, (${fieldText.length}), ${fieldLocation}, …)`);
+        // console.assert(textName !== undefined, "cPT ourCheckPlainText: 'textName' parameter should be defined");
+        // console.assert(typeof textName === 'string', `cPT ourCheckPlainText: 'fieldName' parameter should be a string not a '${typeof textName}'`);
+        console.assert(plainText !== undefined, "cPT ourCheckPlainText: 'plainText' parameter should be defined");
+        console.assert(typeof plainText === 'string', `cPT ourCheckPlainText: 'plainText' parameter should be a string not a '${typeof plainText}'`);
 
-        const resultObject = checkPlainText(textType, '', plainText, givenLocation, optionalCheckingOptions);
+        const resultObject = checkPlainText(textType, textFilename, plainText, givenLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -71,7 +76,7 @@ export function checkTextfileContents(languageCode, filename, fileText, optional
         // If we need to put everything through addNotice9, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of resultObject.noticeList)
-            addNotice({ ...noticeEntry, filename });
+            addNotice({ ...noticeEntry, filename: textFilename });
     }
     // end of ourCheckTextField function
 
@@ -99,13 +104,14 @@ export function checkTextfileContents(languageCode, filename, fileText, optional
     // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
     */
 
+    /*
     let textType = 'raw';
     const filenameLower = filename.toLowerCase();
     if (filenameLower.endsWith('.usfm')) textType = 'USFM';
     else if (filenameLower.endsWith('.md')) textType = 'markdown';
     else if (filenameLower.endsWith('.yaml') || filenameLower.endsWith('.yml')) textType = 'YAML';
-
-    ourCheckPlainText(textType, fileText, ourLocation, optionalCheckingOptions);
+    */
+    ourCheckPlainText(fileType, filename, fileText, ourLocation, optionalCheckingOptions);
 
     //     // Simple check that there aren't any
     //     ix = fileText.indexOf('://');

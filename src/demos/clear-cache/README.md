@@ -11,6 +11,9 @@ Unless you use this `ClearCache` function below, these demos can cache files for
 Simply change `N` to `Y` below to clear the internal caches.
 
 ```js
+// The code in this box is editable for changing settings—
+//        Simply click inside here and add, change, or delete text as required.
+
 import ClearCache from './ClearCache';
 
 <ClearCache

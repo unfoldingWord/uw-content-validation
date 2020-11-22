@@ -7,7 +7,7 @@ import { ourParseInt } from './utilities';
 // import { consoleLogObject } from '../core/utilities';
 
 
-// const TN_LINKS_VALIDATOR_VERSION_STRING = '0.6.1';
+// const TN_LINKS_VALIDATOR_VERSION_STRING = '0.6.3';
 
 const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -19,8 +19,9 @@ const TA_REGEX = new RegExp('\\[\\[rc://([^ /]+?)/ta/man/([^ /]+?)/([^ \\]]+?)\\
 const TW_REGEX = new RegExp('\\[\\[rc://([^ /]+?)/tw/dict/bible/([^ /]+?)/([^ \\]]+?)\\]\\]', 'g');
 
 // TODO: Allow [Titus 1:9](../01/09/pzi1)
-const OTHER_BOOK_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})\\]\\(([123A-Z]{2,3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');
-const THIS_BOOK_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})\\]\\((\\.{2,3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');
+// TODO: See if "[2:23](../02/03.md)" is found by more than one regex below
+const OTHER_BOOK_BIBLE_REGEX =   new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})\\]\\(([123A-Z]{2,3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');
+const THIS_BOOK_BIBLE_REGEX =    new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})\\]\\((\\.{2,3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');
 const THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(?:(\\d{1,3}):)?(\\d{1,3})\\]\\(\\./(\\d{1,3})\\.md\\)', 'g');
 
 
@@ -133,6 +134,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cTNlnk addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "cTNlnk addNoticePartial: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `cTNlnk addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        // noticeObject.debugChain = noticeObject.debugChain ? `checkTNLinksToOutside ${noticeObject.debugChain}` : `checkTNLinksToOutside(${fieldName})`;
         ctarResult.noticeList.push({ ...noticeObject, bookID, fieldName });
     }
 
@@ -172,7 +174,6 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
     try { twRepoBranch = optionalCheckingOptions.twRepoBranch; } catch (trcBRerror) { }
     if (!twRepoBranch) twRepoBranch = DEFAULT_BRANCH;
 
-
     let regexResultArray;
 
     // Find total links
@@ -202,33 +203,35 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         const filepath = `${regexResultArray[2]}/${regexResultArray[3]}/01.md`; // Other files are title.md, sub-title.md
         // console.log(`Got tA filepath=${filepath}`);
 
-        // console.log(`Need to check against ${taRepoName}`);
-        const taPathParameters = { username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch };
-        let taFileContent; // Not really used here -- just to show that we got something valid
-        try {
-            taFileContent = await getFile_(taPathParameters);
-            // console.log("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
-        } catch (trcGCerror) {
-            // console.error(`checkTNLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
-            addNoticePartial({ priority: 885, message: `Error loading ${fieldName} TA link`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}: ${trcGCerror}` });
-        }
-        if (!taFileContent)
-            addNoticePartial({ priority: 886, message: `Unable to find ${fieldName} TA link`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}` });
-        else if (taFileContent.length < 10)
-            addNoticePartial({ priority: 884, message: `Linked ${fieldName} TA article seems empty`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}` });
-        else if (optionalCheckingOptions.checkLinkedTAArticleFlag === true) {
-            // console.log(`checkTNLinksToOutside got ${optionalCheckingOptions.checkLinkedTAArticleFlag} so checking TA article: ${filepath}`);
-            if (await alreadyChecked(taPathParameters) !== true) {
-                // console.log(`checkTNLinksToOutside needs to check TA article: ${filepath}`);
-                const checkTAFileResult = checkMarkdownText(`TA ${regexResultArray[3]}.md`, taFileContent, ourLocation, optionalCheckingOptions);
-                for (const noticeObject of checkTAFileResult.noticeList)
-                    ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
-                ctarResult.checkedFileCount += 1;
-                ctarResult.checkedFilenames.push(`${regexResultArray[3]}.md`);
-                ctarResult.checkedFilesizes = taFileContent.length;
-                ctarResult.checkedFilenameExtensions = ['md'];
-                ctarResult.checkedRepoNames.push(taRepoName);
-                markAsChecked(taPathParameters); // don't bother waiting for the result
+        if (!optionalCheckingOptions.disableAllLinkFetchingFlag) {
+            // console.log(`Need to check against ${taRepoName}`);
+            const taPathParameters = { username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch };
+            let taFileContent;
+            try {
+                taFileContent = await getFile_(taPathParameters);
+                // console.log("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
+            } catch (trcGCerror) {
+                // console.error(`checkTNLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
+                addNoticePartial({ priority: 885, message: `Error loading ${fieldName} TA link`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+            }
+            if (!taFileContent)
+                addNoticePartial({ priority: 886, message: `Unable to find ${fieldName} TA link`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}` });
+            else if (taFileContent.length < 10)
+                addNoticePartial({ priority: 884, message: `Linked ${fieldName} TA article seems empty`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}` });
+            else if (optionalCheckingOptions.checkLinkedTAArticleFlag === true) {
+                // console.log(`checkTNLinksToOutside got ${optionalCheckingOptions.checkLinkedTAArticleFlag} so checking TA article: ${filepath}`);
+                if (await alreadyChecked(taPathParameters) !== true) {
+                    // console.log(`checkTNLinksToOutside needs to check TA article: ${filepath}`);
+                    const checkTAFileResult = checkMarkdownText(languageCode, `TA ${regexResultArray[3]}.md`, taFileContent, ourLocation, optionalCheckingOptions);
+                    for (const noticeObject of checkTAFileResult.noticeList)
+                        ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
+                    ctarResult.checkedFileCount += 1;
+                    ctarResult.checkedFilenames.push(`${regexResultArray[3]}.md`);
+                    ctarResult.checkedFilesizes = taFileContent.length;
+                    ctarResult.checkedFilenameExtensions = ['md'];
+                    ctarResult.checkedRepoNames.push(taRepoName);
+                    markAsChecked(taPathParameters); // don't bother waiting for the result
+                }
             }
         }
     }
@@ -248,34 +251,36 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         const filepath = `bible/${regexResultArray[2]}/${regexResultArray[3]}.md`; // Other files are title.md, sub-title.md
         // console.log(`Got tW filepath=${filepath}`);
 
-        // console.log(`Need to check against ${twRepoName}`);
-        const twPathParameters = { username: twRepoUsername, repository: twRepoName, path: filepath, branch: twRepoBranch };
-        let twFileContent;
-        try {
-            twFileContent = await getFile_(twPathParameters);
-            // console.log("Fetched fileContent for", twRepoName, filepath, typeof fileContent, fileContent.length);
-        } catch (trcGCerror) {
-            console.error(`checkTNLinksToOutside(${bookID}, ${fieldName}, …) failed to load TW`, twRepoUsername, twRepoName, filepath, twRepoBranch, trcGCerror.message);
-            addNoticePartial({ priority: 882, message: `Error loading ${fieldName} TW link`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}: ${trcGCerror}` });
-        }
-        if (!twFileContent)
-            addNoticePartial({ priority: 883, message: `Unable to find ${fieldName} TW link`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}` });
-        else { // we got the content of the TW article
-            if (twFileContent.length < 10)
-                addNoticePartial({ priority: 881, message: `Linked ${fieldName} TW article seems empty`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}` });
-            else if (optionalCheckingOptions.checkLinkedTWArticleFlag === true) {
-                // console.log(`checkTNLinksToOutside got ${optionalCheckingOptions.checkLinkedTWArticleFlag} so checking TW article: ${filepath}`);
-                if (await alreadyChecked(twPathParameters) !== true) {
-                    // console.log(`checkTNLinksToOutside needs to check TW article: ${filepath}`);
-                    const checkTWFileResult = checkMarkdownText(`TW ${regexResultArray[3]}.md`, twFileContent, ourLocation, optionalCheckingOptions);
-                    for (const noticeObject of checkTWFileResult.noticeList)
-                        ctarResult.noticeList.push({ ...noticeObject, username: twRepoUsername, repoCode: 'TW', repoName: twRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TW' });
-                    ctarResult.checkedFileCount += 1;
-                    ctarResult.checkedFilenames.push(`${regexResultArray[3]}.md`);
-                    ctarResult.checkedFilesizes = twFileContent.length;
-                    ctarResult.checkedFilenameExtensions = ['md'];
-                    ctarResult.checkedRepoNames.push(twRepoName);
-                    markAsChecked(twPathParameters); // don't bother waiting for the result
+        if (!optionalCheckingOptions.disableAllLinkFetchingFlag) {
+            // console.log(`Need to check against ${twRepoName}`);
+            const twPathParameters = { username: twRepoUsername, repository: twRepoName, path: filepath, branch: twRepoBranch };
+            let twFileContent;
+            try {
+                twFileContent = await getFile_(twPathParameters);
+                // console.log("Fetched fileContent for", twRepoName, filepath, typeof fileContent, fileContent.length);
+            } catch (trcGCerror) {
+                console.error(`checkTNLinksToOutside(${bookID}, ${fieldName}, …) failed to load TW`, twRepoUsername, twRepoName, filepath, twRepoBranch, trcGCerror.message);
+                addNoticePartial({ priority: 882, message: `Error loading ${fieldName} TW link`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+            }
+            if (!twFileContent)
+                addNoticePartial({ priority: 883, message: `Unable to find ${fieldName} TW link`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}` });
+            else { // we got the content of the TW article
+                if (twFileContent.length < 10)
+                    addNoticePartial({ priority: 881, message: `Linked ${fieldName} TW article seems empty`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}` });
+                else if (optionalCheckingOptions.checkLinkedTWArticleFlag === true) {
+                    // console.log(`checkTNLinksToOutside got ${optionalCheckingOptions.checkLinkedTWArticleFlag} so checking TW article: ${filepath}`);
+                    if (await alreadyChecked(twPathParameters) !== true) {
+                        // console.log(`checkTNLinksToOutside needs to check TW article: ${filepath}`);
+                        const checkTWFileResult = checkMarkdownText(languageCode, `TW ${regexResultArray[3]}.md`, twFileContent, ourLocation, optionalCheckingOptions);
+                        for (const noticeObject of checkTWFileResult.noticeList)
+                            ctarResult.noticeList.push({ ...noticeObject, username: twRepoUsername, repoCode: 'TW', repoName: twRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TW' });
+                        ctarResult.checkedFileCount += 1;
+                        ctarResult.checkedFilenames.push(`${regexResultArray[3]}.md`);
+                        ctarResult.checkedFilesizes = twFileContent.length;
+                        ctarResult.checkedFilenameExtensions = ['md'];
+                        ctarResult.checkedRepoNames.push(twRepoName);
+                        markAsChecked(twPathParameters); // don't bother waiting for the result
+                    }
                 }
             }
         }
@@ -309,13 +314,13 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
             if (ourParseInt(C1) !== chapterInt)
                 addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don't match", details: `${C1} vs ${chapterInt}`, extract: totalLink, location: ourLocation });
         } catch (ccError) {
-            console.error(`TN Link Check couldn't compare chapter numbers: ${ccError}`);
+            console.error(`TN2 Link Check couldn't compare chapter numbers: ${ccError}`);
         }
         try {
             if (ourParseInt(V1) !== ourParseInt(verseInt))
                 addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don't match", details: `${V1} vs ${verseInt}`, extract: totalLink, location: ourLocation });
         } catch (vvError) {
-            console.error(`TN Link Check couldn't compare verse numbers: ${vvError}`);
+            console.error(`TN2 Link Check couldn't compare verse numbers: ${vvError}`);
         }
 
         if (linkBookCode) { // then we know which Bible book this link is to
@@ -361,13 +366,13 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
             if (ourParseInt(C1) !== chapterInt)
                 addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don't match", details: `${C1} vs ${chapterInt}`, extract: totalLink, location: ourLocation });
         } catch (ccError) {
-            console.error(`TN Link Check couldn't compare chapter numbers: ${ccError}`);
+            console.error(`TN2 Link Check couldn't compare chapter numbers: ${ccError}`);
         }
         try {
             if (ourParseInt(V1) !== ourParseInt(verseInt))
                 addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don't match", details: `${V1} vs ${verseInt}`, extract: totalLink, location: ourLocation });
         } catch (vvError) {
-            console.error(`TN Link Check couldn't compare verse numbers: ${vvError}`);
+            console.error(`TN2 Link Check couldn't compare verse numbers: ${vvError}`);
         }
 
         if (linkBookCode) { // then we know which Bible book this link is to
@@ -413,13 +418,13 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
             if (ourParseInt(C1) !== chapterInt)
                 addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don't match", details: `${C1} vs ${chapterInt}`, extract: totalLink, location: ourLocation });
         } catch (ccError) {
-            console.error(`TN Link Check couldn't compare chapter numbers: ${ccError}`);
+            console.error(`TN2 Link Check couldn't compare chapter numbers: ${ccError}`);
         }
         try {
             if (ourParseInt(V1) !== ourParseInt(verseInt))
                 addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don't match", details: `${V1} vs ${verseInt}`, extract: totalLink, location: ourLocation });
         } catch (vvError) {
-            console.error(`TN Link Check couldn't compare verse numbers: ${vvError}`);
+            console.error(`TN2 Link Check couldn't compare verse numbers: ${vvError}`);
         }
 
         if (linkBookCode) { // then we know which Bible book this link is to

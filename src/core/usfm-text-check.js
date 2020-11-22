@@ -1,5 +1,5 @@
-import * as books from '../core/books/books';
 import { DEFAULT_EXTRACT_LENGTH, isWhitespace, countOccurrences, ourDeleteAll } from './text-handling-functions'
+import * as books from '../core/books/books';
 import { checkTextField } from './field-text-check';
 import { checkTextfileContents } from './file-text-check';
 import { runUsfmJsCheck } from './usfm-js-check';
@@ -7,8 +7,10 @@ import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
 import { ourParseInt } from './utilities';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.7.0';
+// const USFM_VALIDATOR_VERSION_STRING = '0.7.2';
 
+
+const VALID_LINE_START_CHARACTERS = `([“‘`; // '{' gets added for STs
 
 // See http://ubsicap.github.io/usfm/master/index.html
 const COMPULSORY_MARKERS = ['id', 'ide'];
@@ -118,7 +120,7 @@ const MATCHED_CHARACTER_FORMATTING_PAIRS = [
 
 
 
-export function checkUSFMText(languageCode, bookID, filename, givenText, givenLocation, optionalCheckingOptions) {
+export function checkUSFMText(languageCode, repoCode, bookID, filename, givenText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
     bookID is a three-character UPPERCASE USFM book identifier.
@@ -130,13 +132,15 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
     // console.log(`checkUSFMText(${languageCode}, ${bookID}, ${givenText.length.toLocaleString()} chars, '${givenLocation}', ${JSON.stringify(optionalCheckingOptions)})…`);
     console.assert(languageCode !== undefined, "checkUSFMText: 'languageCode' parameter should be defined");
     console.assert(typeof languageCode === 'string', `checkUSFMText: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    console.assert(repoCode !== undefined, "checkUSFMText: 'repoCode' parameter should be defined");
+    console.assert(typeof repoCode === 'string', `checkUSFMText: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
     console.assert(bookID !== undefined, "checkUSFMText: 'bookID' parameter should be defined");
     console.assert(typeof bookID === 'string', `checkUSFMText: 'bookID' parameter should be a string not a '${typeof bookID}'`);
     console.assert(bookID.length === 3, `checkUSFMText: 'bookID' parameter should be three characters long not ${bookID.length}`);
     console.assert(bookID.toUpperCase() === bookID, `checkUSFMText: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
     console.assert(bookID === 'OBS' || books.isValidBookID(bookID), `checkUSFMText: '${bookID}' is not a valid USFM book identifier`);
-    console.assert(filename !== undefined, "checkUSFMText: 'line' parameter should be defined");
-    console.assert(typeof filename === 'string', `checkUSFMText: 'line' parameter should be a string not a '${typeof filename}'`);
+    console.assert(filename !== undefined, "checkUSFMText: 'filename' parameter should be defined");
+    console.assert(typeof filename === 'string', `checkUSFMText: 'filename' parameter should be a string not a '${typeof filename}'`);
     console.assert(givenLocation !== undefined, "checkUSFMText: 'givenRowLocation' parameter should be defined");
     console.assert(typeof givenLocation === 'string', `checkUSFMText: 'givenRowLocation' parameter should be a string not a '${typeof givenLocation}'`);
 
@@ -158,6 +162,9 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
     // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     const lowercaseBookID = bookID.toLowerCase();
+
+    let validLineStartCharacters = VALID_LINE_START_CHARACTERS;
+    if (repoCode==='ST') validLineStartCharacters += '{';
 
     const result = { successList: [], noticeList: [] };
 
@@ -185,6 +192,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
 
         // Doublecheck -- we don't want "Mismatched {}" per line, only per file
         console.assert(noticeObject.message.indexOf("Mismatched {}") < 0 || noticeObject.lineNumber === undefined, `checkUSFMText addNoticePartial: got bad notice: ${JSON.stringify(noticeObject)}`);
+        if (noticeObject.debugChain) noticeObject.debugChain = `checkUSFMText ${noticeObject.debugChain}`;
         result.noticeList.push({ ...noticeObject, bookID, filename });
     }
 
@@ -466,6 +474,8 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
         console.assert(fieldText !== undefined, "cUSFM ourCheckTextField: 'fieldText' parameter should be defined");
         console.assert(typeof fieldText === 'string', `cUSFM ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         console.assert(allowedLinks === true || allowedLinks === false, "cUSFM ourCheckTextField: allowedLinks parameter must be either true or false");
+        console.assert(fieldLocation !== undefined, "cUSFM ourCheckTextField: 'fieldLocation' parameter should be defined");
+        console.assert(typeof fieldLocation === 'string', `cUSFM ourCheckTextField: 'fieldLocation' parameter should be a string not a '${typeof fieldLocation}'`);
 
         const dbtcResultObject = checkTextField(fieldType, fieldName, fieldText, allowedLinks, fieldLocation, optionalCheckingOptions);
 
@@ -492,7 +502,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
         console.assert(fileText !== undefined, "cUSFM ourBasicFileChecks: 'fileText' parameter should be defined");
         console.assert(typeof fileText === 'string', `cUSFM ourBasicFileChecks: 'fileText' parameter should be a string not a '${typeof fileText}'`);
 
-        const resultObject = checkTextfileContents(languageCode, filename, fileText, fileLocation, optionalCheckingOptions);
+        const resultObject = checkTextfileContents(languageCode, 'USFM', filename, fileText, fileLocation, optionalCheckingOptions);
 
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
@@ -699,31 +709,36 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
     // end of checkUSFMLineText function
 
 
-    function checkUSFMLineInternals(lineNumber, C, V, marker, rest, lineLocation, optionalCheckingOptions) {
-        // Handles character formatting within the line contents
-        // console.log(`checkUSFMLineInternals(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
-
-        if (marker === 'c' && isNaN(rest))
-            addNoticePartial({ priority: 822, message: "Expected \\c field to contain an integer", lineNumber, C, V, characterIndex: 3, extract: `\\c ${rest}`, location: lineLocation });
-        if (marker === 'v') {
-            let Vstr = (rest) ? rest.split(' ', 1)[0] : '?';
-            if (isNaN(Vstr) && Vstr.indexOf('-') < 0)
-                addNoticePartial({ priority: 822, C, V, message: "Expected \\v field to contain an integer", characterIndex: 3, extract: `\\v ${rest}`, location: lineLocation });
-        }
-
-        if (rest) checkUSFMLineText(lineNumber, C, V, marker, rest, lineLocation, optionalCheckingOptions);
-
-        const allowedLinks = (marker === 'w' || marker === 'k-s' || marker === 'f' || marker === 'SPECIAL1')
-            // (because we don't know what marker SPECIAL1 is, so default to "no false alarms")
-            && rest.indexOf('x-tw') >= 0;
-        if (rest) ourCheckTextField(lineNumber, C, V, 'USFM', `\\${marker}`, rest, allowedLinks, lineLocation, optionalCheckingOptions);
-    }
-    // end of checkUSFMLineInternals function
-
-
     function checkUSFMLineContents(lineNumber, C, V, marker, rest, lineLocation, optionalCheckingOptions) {
         // Looks at the marker and determines what content is allowed/expected on the rest of the line
         // 'SPECIAL1' is used internally here when a character other than a backslash starts a line
+
+        function checkUSFMLineInternals(lineNumber, C, V, marker, rest, lineLocation, optionalCheckingOptions) {
+            // Handles character formatting within the line contents
+            // console.log(`checkUSFMLineInternals(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
+
+            if (marker === 'c' && isNaN(rest))
+                addNoticePartial({ priority: 822, message: "Expected field to contain an integer", lineNumber, characterIndex: 3, extract: `\\c ${rest}`, C, V, location: lineLocation });
+            if (marker === 'v') {
+                let Vstr = (rest) ? rest.split(' ', 1)[0] : '?';
+                if (isNaN(Vstr) && Vstr.indexOf('-') < 0)
+                    addNoticePartial({ priority: 822, message: "Expected field to contain an integer", characterIndex: 3, extract: `\\v ${rest}`, C, V, location: lineLocation });
+            }
+            else if (marker === 'h' || marker === 'toc1' || marker === 'toc2' || marker === 'toc3')
+                if (rest.toLowerCase() === rest || rest.toUpperCase() === rest)
+                    addNoticePartial({ priority: languageCode === 'en' || languageCode === 'fr' ? 490 : 190, message: "Expected header field to contain a mixed-case string", fieldName: `\\${marker}`, extract: rest, C, V, location: lineLocation });
+
+            if (rest) checkUSFMLineText(lineNumber, C, V, marker, rest, lineLocation, optionalCheckingOptions);
+
+            const allowedLinks = (marker === 'w' || marker === 'k-s' || marker === 'f' || marker === 'SPECIAL1')
+                // (because we don't know what marker SPECIAL1 is, so default to "no false alarms")
+                && rest.indexOf('x-tw') >= 0;
+            if (rest) ourCheckTextField(lineNumber, C, V, 'USFM', `\\${marker}`, rest, allowedLinks, lineLocation, optionalCheckingOptions);
+        }
+        // end of checkUSFMLineInternals function
+
+
+        // Main code for checkUSFMLineContents()
         if (ALLOWED_LINE_START_MARKERS.indexOf(marker) >= 0 || marker === 'SPECIAL1') {
             if (rest && MARKERS_WITHOUT_CONTENT.indexOf(marker) >= 0)
                 if (isWhitespace(rest))
@@ -811,7 +826,7 @@ export function checkUSFMText(languageCode, bookID, filename, givenText, givenLo
                 // NOTE: Some unfoldingWord USFM Bibles commonly have this
                 //          so it's not necessarily either an error or a warning
                 rest = line;
-                if (`([“‘`.indexOf(line[0]) < 0) { // These are the often expected characters
+                if (validLineStartCharacters.indexOf(line[0]) < 0) { // These are the often expected characters
                     // Drop the priority if it's a "half-likely" character
                     addNoticePartial({ priority: `"`.indexOf(line[0]) < 0 ? 880 : 280, C, V, message: "Expected line to start with backslash", lineNumber: n, characterIndex: 0, extract: line[0], location: ourLocation });
                     if (line[1] === '\\') { // Let's drop the leading punctuation and try to check the rest of the line

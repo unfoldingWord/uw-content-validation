@@ -9,6 +9,9 @@ Our packaged function returns a list of success messages and a list of (prioriti
 These raw notice components can then be filtered and/or sorted as required by the calling program, and then divided into a list of errors and a list of warnings or whatever as desired.
 
 ```js
+// The code in this box is editable for changing settings—
+//        Simply click inside here and add, change, or delete text as required.
+
 import { checkUSFMToJSON } from './usfm-js-check';
 import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
@@ -181,7 +184,7 @@ const textB = `\\id GEN Bad USFM test
 const chosenTextName = 'textH';
 const chosenText = textH;
 
-const rawResults = checkUSFMToJSON(chosenTextName, chosenText, 'that was supplied');
+const rawResults = checkUSFMToJSON('GEN', chosenTextName, chosenText, 'that was supplied');
 
 <>
 <b>Check</b><RenderLines text={chosenText} />

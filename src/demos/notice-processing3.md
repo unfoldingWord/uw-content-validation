@@ -20,6 +20,9 @@ Note below that the optional `processOptions` object allows the user to adjust t
 Although this demonstration here formats and colour the warning list, it's expected that the encapsulating program will format and use the fields as desired. Because they are returned as an array of fields rather than simply strings, it's certainly possible for the encapsulating program to sort or filter the messages as desired.
 
 ```js
+// The code in this box is editable for changing settings—
+//        Simply click inside here and add, change, or delete text as required.
+
 import { checkTextField } from '../core/field-text-check';
 import { processNoticesToSingleList } from './notice-processing-functions';
 import { RenderRawResults, RenderObject, RenderSuccessesWarningsGradient } from '../demos/RenderProcessedResults';

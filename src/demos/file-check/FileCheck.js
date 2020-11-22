@@ -11,7 +11,7 @@ import { checkFileContents } from './checkFileContents';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const FILE_CHECK_VERSION_STRING = '0.1.5';
+// const FILE_CHECK_VERSION_STRING = '0.2.1';
 
 
 function FileCheck(props) {
@@ -63,11 +63,24 @@ function FileCheck(props) {
       let rawCFResults = { noticeList: [{ priority: 990, message: "Unable to load file", details: `username=${username}`, repoName, filename }], elapsedSeconds: 0 };
       if (fileContent) {
         const languageCode = repoName.split('_')[0];
-        rawCFResults = await checkFileContents(languageCode, filename, fileContent, givenLocation, checkingOptions);
+
+        let repoCodeGuess;
+        if (repoName === 'hbo_uhb') repoCodeGuess = 'UHB'
+        else if (repoName === 'el-x-koine_ugnt') repoCodeGuess = 'UGNT'
+        else if (repoName.endsWith('_tn')) repoCodeGuess = 'TN'
+        else if (repoName.endsWith('_ta')) repoCodeGuess = 'TA'
+        else if (repoName.endsWith('_tq')) repoCodeGuess = 'TQ'
+        else if (repoName.endsWith('_sn')) repoCodeGuess = 'SN'
+        else if (repoName.endsWith('_sq')) repoCodeGuess = 'SQ'
+        else if (repoName.endsWith('lt')) repoCodeGuess = 'LT'
+        else if (repoName.endsWith('st')) repoCodeGuess = 'ST'
+
+        rawCFResults = await checkFileContents(languageCode, repoCodeGuess, filename, fileContent, givenLocation, checkingOptions);
 
         // Because we know here that we're only checking one file, we don't need the filename field in the notices
-        function deleteFilenameField(notice) { delete notice.filename; notice.username = username; return notice; }
-        rawCFResults.noticeList = rawCFResults.noticeList.map(deleteFilenameField);
+        // WRONG: We want the filename so that the lineNumber can be made into a live link
+        function addFields(notice) { notice.username = username; notice.repoName = repoName; notice.repoCode = repoCodeGuess; return notice; }
+        rawCFResults.noticeList = rawCFResults.noticeList.map(addFields);
       }
       // console.log(`FileCheck got initial results with ${rawCFResults.successList.length} success message(s) and ${rawCFResults.noticeList.length} notice(s)`);
 
@@ -186,6 +199,9 @@ function FileCheck(props) {
   };
   // Or this allows the parameters to be specified as a FileCheck property
   if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
+  if (props.disableAllLinkFetchingFlag) checkingOptions.disableAllLinkFetchingFlag = props.disableAllLinkFetchingFlag.toLowerCase() === 'true';
+  if (props.checkLinkedTAArticleFlag) checkingOptions.checkLinkedTAArticleFlag = props.checkLinkedTAArticleFlag.toLowerCase() === 'true';
+  if (props.checkLinkedTWArticleFlag) checkingOptions.checkLinkedTWArticleFlag = props.checkLinkedTWArticleFlag.toLowerCase() === 'true';
 
   // {/* <div className={classes.root}> */}
   return (

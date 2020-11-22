@@ -69,14 +69,17 @@ export async function checkBookPackages(username, languageCode, bookIDList, setR
         }
 
         // We only want to check the manifest files for ONE Bible BP AND for OBS
-        let checkManifestFlag = false;
-        if (bookID === 'OBS') checkManifestFlag = true;
+        let checkManifestFlag = false, checkReadmeFlag =false,    checkLicenseFlag = false;
+;
+        if (bookID === 'OBS') { checkManifestFlag = true; checkReadmeFlag =true; checkLicenseFlag = true; }
         else // it's a Bible book
             if (!checkedBibleBPManifestFlag) {
-                checkManifestFlag = true;
+                checkManifestFlag = true; checkReadmeFlag =true; checkLicenseFlag=true;
                 checkedBibleBPManifestFlag = true; // so we only do it once for Bible books
             }
         checkingOptions.checkManifestFlag = checkManifestFlag;
+        checkingOptions.checkReadmeFlag = checkReadmeFlag;
+        checkingOptions.checkLicenseFlag = checkLicenseFlag;
 
         // We use the generalLocation here (does not include repo name)
         //  so that we can adjust the returned strings ourselves

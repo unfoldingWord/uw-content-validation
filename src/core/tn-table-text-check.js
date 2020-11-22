@@ -3,7 +3,7 @@ import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { checkTN_TSVDataRow } from './tn-table-row-check';
 
 
-const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.2.5';
+const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.2.6';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -31,7 +31,6 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
-    // if (bookID) ourLocation = ` in ${bookID}${ourLocation}`;
 
     const ttResult = { successList: [], noticeList: [] };
 
@@ -55,6 +54,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `TSV addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "TSV addNoticePartial: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        if (noticeObject.debugChain) noticeObject.debugChain = `checkTN_TSVText ${noticeObject.debugChain}`;
         ttResult.noticeList.push({ ...noticeObject, bookID, filename });
     }
 
@@ -113,7 +113,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
                 // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
                 //  process results line by line
                 for (const drNoticeEntry of drResultObject.noticeList)
-                    if (drNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN check
+                    if (drNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN2 check
                         ttResult.noticeList.push(drNoticeEntry); // Just copy the complete notice as is
                     else
                         addNoticePartial({ ...drNoticeEntry, lineNumber: n + 1 });
@@ -226,6 +226,10 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
                 }
         }
     }
+
+    if (optionalCheckingOptions.disableAllLinkFetchingFlag)
+        addNoticePartial({ priority: 20, message: "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked", location: ourLocation });
+
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}.`);
     if (ttResult.noticeList)
         addSuccessMessage(`checkTN_TSVText v${TN_TABLE_TEXT_VALIDATOR_VERSION_STRING} finished with ${ttResult.noticeList.length ? ttResult.noticeList.length.toLocaleString() : "zero"} notice${ttResult.noticeList.length === 1 ? '' : 's'}`);

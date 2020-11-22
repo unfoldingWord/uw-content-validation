@@ -8,7 +8,7 @@ import { checkBookPackage } from './checkBookPackage';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.3.1';
+// const BP_VALIDATOR_VERSION_STRING = '0.3.3';
 
 
 function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
@@ -35,15 +35,20 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
 
     let checkingOptions = { // Uncomment any of these to test them
         dataSet: dataSet, // Can be 'OLD' (Markdown, etc.), 'NEW' (TSV only), or 'BOTH'
-        // extractLength: 25,
+        // extractLength: 25, // default is 15
         checkManifestFlag: true,
+        checkReadmeFlag: true,
+        checkLicenseFlag: true,
     };
     // Or this allows the parameters to be specified as a BookPackageCheck property
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
+    if (props.disableAllLinkFetchingFlag) checkingOptions.disableAllLinkFetchingFlag = props.disableAllLinkFetchingFlag.toLowerCase() === 'true';
     if (props.checkLinkedTAArticleFlag) checkingOptions.checkLinkedTAArticleFlag = props.checkLinkedTAArticleFlag.toLowerCase() === 'true';
     if (props.checkLinkedTWArticleFlag) checkingOptions.checkLinkedTWArticleFlag = props.checkLinkedTWArticleFlag.toLowerCase() === 'true';
     // console.log(`checkingOptions.checkLinkedTAArticleFlag ${checkingOptions.checkLinkedTAArticleFlag} from '${props.checkLinkedTAArticleFlag}'`);
     // console.log(`checkingOptions.checkLinkedTWArticleFlag ${checkingOptions.checkLinkedTWArticleFlag} from '${props.checkLinkedTWArticleFlag}'`);
+
+    const repoPreloadList = ['TA', 'TW', 'TQ', 'TQ2'];
 
     useEffect(() => {
         // const newProps = { bookID, branch, checkingOptions, languageCode, cutoffPriorityLevel: props.cutoffPriorityLevel, displayType: props.displayType, errorPriorityLevel: props.errorPriorityLevel, maximumSimilarMessages: props.maximumSimilarMessages, sortBy: props.sortBy, username};
@@ -78,7 +83,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
 
             // if (bookID !== 'OBS') { // Preload the reference repos
             setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for <b>{bookID}</b> book package check…</p>);
-            const successFlag = await preloadReposIfNecessary(username, languageCode, [bookID], branch);
+            const successFlag = await preloadReposIfNecessary(username, languageCode, [bookID], branch, repoPreloadList);
             if (!successFlag)
                 console.error(`BookPackageCheck error: Failed to pre-load all repos`)
             // }

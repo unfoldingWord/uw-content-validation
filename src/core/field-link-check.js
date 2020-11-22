@@ -63,6 +63,16 @@ export function checkFieldLinks(fieldName, fieldText, linkOptions, optionalField
     console.log(`checkFieldLinks('${fieldName}', '${fieldText}')…`);
     // console.log( "linkOptions", JSON.stringify(linkOptions));
     // console.log( "linkOptionsEC", linkOptions.expectedCount);
+    console.assert(fieldName !== undefined, "checkFieldLinks: 'fieldName' parameter should be defined");
+    console.assert(typeof fieldName === 'string', `checkFieldLinks: 'fieldName' parameter should be a string not a '${typeof fieldName}': ${fieldName}`);
+    console.assert(fieldText !== undefined, "checkFieldLinks: 'fieldText' parameter should be defined");
+    console.assert(typeof fieldText === 'string', `checkFieldLinks: 'fieldText' parameter should be a string not a '${typeof fieldText}': ${fieldText}`);
+    console.assert(optionalFieldLocation !== undefined, "checkFieldLinks: 'optionalFieldLocation' parameter should be defined");
+    console.assert(typeof optionalFieldLocation === 'string', `checkFieldLinks: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}': ${optionalFieldLocation}`);
+    console.assert(optionalFieldLocation.indexOf('true') === -1, `checkFieldLinks: 'optionalFieldLocation' parameter should not be '${optionalFieldLocation}'`);
+
+    let ourLocation = optionalFieldLocation;
+    if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
     let result = { noticeList: [] };
 
@@ -78,19 +88,21 @@ export function checkFieldLinks(fieldName, fieldText, linkOptions, optionalField
         if (extract) console.assert(typeof extract === 'string', `cFLs addNotice5: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
         console.assert(location !== undefined, "cFLs addNotice5: 'location' parameter should be defined");
         console.assert(typeof location === 'string', `cFLs addNotice5: 'location' parameter should be a string not a '${typeof location}': ${location}`);
+
         result.noticeList.push({ priority, message, characterIndex, extract, location });
     }
 
-    // Create our more detailed location string by prepending the fieldName
-    let ourAtString = ` in '${fieldName}'`;
-    if (optionalFieldLocation) {
-        if (optionalFieldLocation[0] !== ' ') ourAtString += ' ';
-        ourAtString += optionalFieldLocation;
-    }
+    // // Create our more detailed location string by prepending the fieldName
+    // let ourAtString = ` in '${fieldName}'`;
+    // if (optionalFieldLocation) {
+    //     if (optionalFieldLocation[0] !== ' ') ourAtString += ' ';
+    //     ourAtString += optionalFieldLocation;
+    // }
+
 
     if (!fieldText) { // Nothing to check
         if (linkOptions.expectedCount > 0)
-            addNotice5({ priority: 438, message: `Blank field / missing link (expected ${linkOptions.expectedCount} link${linkOptions.expectedCount === 1 ? "" : "s"})`, location: ourAtString });
+            addNotice5({ priority: 438, message: `Blank field / missing link (expected ${linkOptions.expectedCount} link${linkOptions.expectedCount === 1 ? "" : "s"})`, location: ourLocation });
         return result;
     }
 
@@ -132,11 +144,11 @@ export function checkFieldLinks(fieldName, fieldText, linkOptions, optionalField
     // console.log("checkFieldLinks regexResultsArray", regexResultsArray.length, JSON.stringify(regexResultsArray));
 
     if (regexResultsArray.length < linkOptions.expectedCount)
-        addNotice5({ priority: 287, message: `Not enough links (expected ${linkOptions.expectedCount} link${linkOptions.expectedCount === 1 ? "" : "s"})`, location: ` (only found ${regexResultsArray.length})${ourAtString}` });
+        addNotice5({ priority: 287, message: `Not enough links (expected ${linkOptions.expectedCount} link${linkOptions.expectedCount === 1 ? "" : "s"})`, location: ` (only found ${regexResultsArray.length})${ourLocation}` });
 
     if (linkOptions.checkTargets && linkOptions.callbackFunction && regexResultsArray) {
         startLiveLinksCheck(regexResultsArray, result.noticeList.slice(0), linkOptions.callbackFunction);
-        addNotice5({ priority: 600, message: `${regexResultsArray.length} link target${regexResultsArray.length === 1 ? ' is' : 's are'} still being checked…`, location: ourAtString });
+        addNotice5({ priority: 600, message: `${regexResultsArray.length} link target${regexResultsArray.length === 1 ? ' is' : 's are'} still being checked…`, location: ourLocation });
         console.log("checkFieldLinks now returning initial result…");
     }
 

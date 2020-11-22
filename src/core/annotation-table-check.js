@@ -3,7 +3,7 @@ import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { checkAnnotationTSVDataRow } from './annotation-row-check';
 
 
-const ANNOTATION_TABLE_VALIDATOR_VERSION_STRING = '0.2.6';
+const ANNOTATION_TABLE_VALIDATOR_VERSION_STRING = '0.2.7';
 
 const NUM_EXPECTED_ANNOTATION_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tAnnotation';
@@ -31,7 +31,6 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
-    // if (bookID) ourLocation = ` in ${bookID}${ourLocation}`;
 
     const carResult = { successList: [], noticeList: [] };
 
@@ -55,6 +54,8 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `TSV addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "ATSV addNoticePartial: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        
+        if (noticeObject.debugChain) noticeObject.debugChain = `checkAnnotationRows ${noticeObject.debugChain}`;
         carResult.noticeList.push({ ...noticeObject, bookID, filename });
     }
 
@@ -118,7 +119,7 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
                 // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
                 //  process results line by line
                 for (const drNoticeEntry of drResultObject.noticeList)
-                    if (drNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN check
+                    if (drNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN2 check
                         carResult.noticeList.push(drNoticeEntry); // Just copy the complete notice as is
                     else
                         addNoticePartial({ ...drNoticeEntry, lineNumber: n + 1 });
@@ -227,6 +228,10 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
                 }
         }
     }
+
+    if (optionalCheckingOptions.disableAllLinkFetchingFlag)
+        addNoticePartial({ priority: 20, message: "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked", location: ourLocation });
+
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}.`);
     if (carResult.noticeList)
         addSuccessMessage(`checkAnnotationRows v${ANNOTATION_TABLE_VALIDATOR_VERSION_STRING} finished with ${carResult.noticeList.length ? carResult.noticeList.length.toLocaleString() : "zero"} notice${carResult.noticeList.length === 1 ? '' : 's'}`);

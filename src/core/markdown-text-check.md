@@ -7,6 +7,9 @@ It returns a list of success messages and a list of notice components. (There is
 These raw notice components can then be filtered and/or sorted as required by the calling program, and then divided into a list of errors and a list of warnings or whatever as desired.
 
 ```js
+// The code in this box is editable for changing settings—
+//        Simply click inside here and add, change, or delete text as required.
+
 import Markdown from 'react-markdown'
 import { checkMarkdownText } from './markdown-text-check';
 import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
@@ -39,7 +42,7 @@ Another  paragraph.
 const chosenText = textSB;
 const chosenTextName = 'textSB';
 
-const rawResults = checkMarkdownText(chosenTextName, chosenText, 'that was supplied');
+const rawResults = checkMarkdownText('en', chosenTextName, chosenText, 'that was supplied');
 if (!rawResults.successList || !rawResults.successList.length)
   rawResults.successList = ["Done markdown text checks"];
 
