@@ -222,7 +222,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
                 // console.log(`checkTNLinksToOutside got ${optionalCheckingOptions.checkLinkedTAArticleFlag} so checking TA article: ${filepath}`);
                 if (await alreadyChecked(taPathParameters) !== true) {
                     // console.log(`checkTNLinksToOutside needs to check TA article: ${filepath}`);
-                    const checkTAFileResult = checkMarkdownText(languageCode, `TA ${regexResultArray[3]}.md`, taFileContent, ourLocation, optionalCheckingOptions);
+                    const checkTAFileResult = await checkMarkdownText(languageCode, `TA ${regexResultArray[3]}.md`, taFileContent, ourLocation, optionalCheckingOptions);
                     for (const noticeObject of checkTAFileResult.noticeList)
                         ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
                     ctarResult.checkedFileCount += 1;
@@ -271,7 +271,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
                     // console.log(`checkTNLinksToOutside got ${optionalCheckingOptions.checkLinkedTWArticleFlag} so checking TW article: ${filepath}`);
                     if (await alreadyChecked(twPathParameters) !== true) {
                         // console.log(`checkTNLinksToOutside needs to check TW article: ${filepath}`);
-                        const checkTWFileResult = checkMarkdownText(languageCode, `TW ${regexResultArray[3]}.md`, twFileContent, ourLocation, optionalCheckingOptions);
+                        const checkTWFileResult = await checkMarkdownText(languageCode, `TW ${regexResultArray[3]}.md`, twFileContent, ourLocation, optionalCheckingOptions);
                         for (const noticeObject of checkTWFileResult.noticeList)
                             ctarResult.noticeList.push({ ...noticeObject, username: twRepoUsername, repoCode: 'TW', repoName: twRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TW' });
                         ctarResult.checkedFileCount += 1;

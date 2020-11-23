@@ -29,7 +29,7 @@ import BookPackagesCheck from './BookPackagesCheck';
   languageCode='en'
   // Enter a string containing UPPERCASE USFM book identifiers separated only by commas
   //  and can also include OBS (for Open Bible Stories)
-  bookIDs='OBS,RUT,NEH,EST,OBA,JON,EPH,TIT,3JN'
+  bookIDs='OBS,RUT,EST,JON,EPH,TIT,3JN' // These English BPs should all be finished
 
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'
@@ -39,6 +39,6 @@ import BookPackagesCheck from './BookPackagesCheck';
   // Specifying maximumSimilarMessages and extractLength is just to show off options
   // —those fields are not necessary (or normal) here
   maximumSimilarMessages='4' // Default is 3 (0 means don't suppress)
-  // extractLength='13' // Default is 15
+  // extractLength='20' // Default is 15
   />
 ```

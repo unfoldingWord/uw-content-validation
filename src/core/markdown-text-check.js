@@ -1,8 +1,11 @@
 import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { checkTextField } from './field-text-check';
+import { cachedGetFileUsingFullURL } from '../core/getApi';
 
 
 const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.4.2';
+
+const IMAGE_REGEX = new RegExp('!\\[([^\\]]+?)\\]\\(([^ \\]]+?)\\)', 'g');
 
 
 /**
@@ -13,7 +16,7 @@ const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.4.2';
  * @param {string} givenLocation
  * @param {Object} optionalCheckingOptions
  */
-export function checkMarkdownText(languageCode, textOrFileName, markdownText, givenLocation, optionalCheckingOptions) {
+export async function checkMarkdownText(languageCode, textOrFileName, markdownText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire markdown text, i.e., all lines.
 
     This text may not necessarily be from a file -- it may be from a (multiline) field within a file
@@ -119,10 +122,33 @@ export function checkMarkdownText(languageCode, textOrFileName, markdownText, gi
      * @param {string} lineLocation
      * @returns {string} suggestion (may be undefined) -- suggested fixed replacement field
      */
-    function checkMarkdownLineContents(lineNumber, lineText, lineLocation) {
+    async function checkMarkdownLineContents(lineNumber, lineText, lineLocation) {
 
         // console.log(`checkMarkdownLineContents for ${lineNumber} '${lineText}' at${lineLocation}`);
-        let thisText = lineText;
+
+        // Check for image links
+        let regexResultArray;
+        // eslint-disable-next-line no-cond-assign
+        while (regexResultArray = IMAGE_REGEX.exec(lineText)) {
+            // console.log(`Got markdown image in line ${lineNumber}:`, JSON.stringify(regexResultArray));
+            if (regexResultArray[1] !== 'OBS Image') console.log("This code was only checked for 'OBS Image' links");
+            const fetchLink = regexResultArray[2];
+            if (!fetchLink.startsWith('https://'))
+                addNotice({ priority: 749, message: "Markdown image link seems faulty", lineNumber, extract: fetchLink, location: lineLocation });
+            else if (optionalCheckingOptions.disableAllLinkFetchingFlag !== true) {
+                // console.log(`Need to check existence of ${fetchLink}`);
+                try {
+                    const responseData = await cachedGetFileUsingFullURL({uri: fetchLink});
+                    console.assert(responseData.length > 10, `Expected ${fetchLink} image file to be longer: ${responseData.length}`);
+                    // console.log("Markdown link fetch got response: ", responseData.length);
+                } catch (flError) {
+                    console.error(`Markdown image link fetch had an error fetching '${fetchLink}': ${flError}`);
+                    addNotice({ priority: 748, message: "Error fetching markdown image link", lineNumber, extract: fetchLink, location: lineLocation });
+                }
+            }
+        }
+
+        let thisText = lineText; // so we can adjust it
 
         // Remove leading and trailing hash signs #
         thisText = thisText.replace(/^#+|#+$/g, '');
@@ -152,7 +178,7 @@ export function checkMarkdownText(languageCode, textOrFileName, markdownText, gi
         if (thisText && lineText[0] !== '|') // Doesn't really make sense to check table line entries
             suggestion = ourCheckTextField(textOrFileName, lineNumber, thisText, true, lineLocation, optionalCheckingOptions);
 
-        if (thisText === lineText) // i.e., we didn't premodify the field being checked
+        if (thisText === lineText) // i.e., we didn't premodify the field being checked (otherwise suggestion could be wrong)
             return suggestion;
     }
     // end of checkMarkdownLine function
@@ -185,7 +211,7 @@ export function checkMarkdownText(languageCode, textOrFileName, markdownText, gi
             if (numLeadingSpaces && lastNumLeadingSpaces && numLeadingSpaces !== lastNumLeadingSpaces)
                 addNotice({ priority: 472, message: "Nesting of header levels seems confused", lineNumber: n, characterIndex: 0, location: ourLocation });
 
-            const suggestedLine = checkMarkdownLineContents(n, line, ourLocation);
+            const suggestedLine = await checkMarkdownLineContents(n, line, ourLocation);
             suggestedLines.push(suggestedLine === undefined ? line : suggestedLine);
         } else {
             // This is a blank line

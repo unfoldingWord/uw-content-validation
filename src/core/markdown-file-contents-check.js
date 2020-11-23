@@ -82,7 +82,7 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
   * @param {String} optionalFieldLocation - description of where the field is located
   * @param {Object} optionalCheckingOptions - parameters that might affect the check
   */
-  function ourCheckMarkdownText(markdownText, optionalFieldLocation, optionalCheckingOptions) {
+  async function ourCheckMarkdownText(markdownText, optionalFieldLocation, optionalCheckingOptions) {
     // Does basic checks for small errors like leading/trailing spaces, etc.
 
     // We assume that checking for compulsory fields is done elsewhere
@@ -94,7 +94,7 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
     console.assert(optionalFieldLocation !== undefined, "cMdFC ourCheckMarkdownText: 'optionalFieldLocation' parameter should be defined");
     console.assert(typeof optionalFieldLocation === 'string', `cMdFC ourCheckMarkdownText: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
-    const dbtcResultObject = checkMarkdownText(languageCode, markdownFilename, markdownText, optionalFieldLocation, optionalCheckingOptions);
+    const dbtcResultObject = await checkMarkdownText(languageCode, markdownFilename, markdownText, optionalFieldLocation, optionalCheckingOptions);
 
     // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
     //  process results line by line
