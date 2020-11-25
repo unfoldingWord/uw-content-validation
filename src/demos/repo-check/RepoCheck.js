@@ -83,6 +83,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
             // console.log(`RepoCheck languageCode='${languageCode}' repoCode='${repoCode}'`);
 
             setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for {repoName} repo check…</p>);
+            // Load whole repos, especially if we are going to check files in manifests
             const repoPreloadList = ['TW'];
             if (repoCode !== 'UHB' && repoCode !== 'UGNT') repoPreloadList.push('TA'); // Original languages only have TW links
             if (repoCode !== 'TA' && repoCode !== 'TW') repoPreloadList.push(repoCode);
@@ -111,19 +112,13 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 rawCRResults.languageCode = languageCode;
                 rawCRResults.checkedOptions = checkingOptions;
 
-
-                // Because we know here that we're only checking one repo, we don't need the repoName field in the notices
-                // WRONG: We want the repoName so we can make the line numbers into live links
-                // function deleteRepoNameField(notice) { delete notice.repoName; return notice; }
-                // rawCRResults.noticeList = rawCRResults.noticeList.map(deleteRepoNameField);
-
                 // console.log("Here with RC rawCRResults", typeof rawCRResults);
                 // Now do our final handling of the result -- we have some options available
                 let processOptions = { // Uncomment any of these to test them
                     // 'maximumSimilarMessages': 4, // default is 3 -- 0 means don't suppress
                     // 'errorPriorityLevel': 800, // default is 700
                     // 'cutoffPriorityLevel': 100, // default is 0
-                    // 'sortBy': 'ByPriority', // default is 'AsFound'
+                    // 'sortBy': 'ByRepo', // default is 'ByPriority', also have 'AsFound'
                     // 'ignorePriorityNumberList': [123, 202], // default is []
                 };
                 // Or this allows the parameters to be specified as a RepoCheck property

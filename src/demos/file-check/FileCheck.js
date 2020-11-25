@@ -11,7 +11,7 @@ import { checkFileContents } from './checkFileContents';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const FILE_CHECK_VERSION_STRING = '0.2.1';
+// const FILE_CHECK_VERSION_STRING = '0.2.2';
 
 
 function FileCheck(props) {
@@ -79,7 +79,11 @@ function FileCheck(props) {
 
         // Because we know here that we're only checking one file, we don't need the filename field in the notices
         // WRONG: We want the filename so that the lineNumber can be made into a live link
-        function addFields(notice) { notice.username = username; notice.repoName = repoName; notice.repoCode = repoCodeGuess; return notice; }
+        function addFields(notice) {
+          notice.username = username; notice.repoName = repoName; notice.repoCode = repoCodeGuess;
+          if (!notice.extra) notice.extra = repoCodeGuess;
+          return notice;
+        }
         rawCFResults.noticeList = rawCFResults.noticeList.map(addFields);
       }
       // console.log(`FileCheck got initial results with ${rawCFResults.successList.length} success message(s) and ${rawCFResults.noticeList.length} notice(s)`);
@@ -101,7 +105,7 @@ function FileCheck(props) {
         // 'maximumSimilarMessages': 4, // default is 3  -- 0 means don't suppress
         // 'errorPriorityLevel': 800, // default is 700
         // 'cutoffPriorityLevel': 100, // default is 0
-        // 'sortBy': 'ByPriority', // default is 'AsFound'
+        // 'sortBy': 'ByRepo', // default is 'ByPriority', also have 'AsFound'
         // 'ignorePriorityNumberList': [123, 202], // default is []
       };
       // Or this allows the parameters to be specified as a FileCheck property

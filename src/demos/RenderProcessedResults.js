@@ -5,7 +5,7 @@ import React from 'react';
 import MaterialTable from 'material-table';
 
 
-// const RENDER_PROCESSED_RESULTS_VERSION = '0.5.5';
+// const RENDER_PROCESSED_RESULTS_VERSION = '0.5.6';
 
 
 export function RenderSuccesses({ username, results }) {
@@ -303,7 +303,7 @@ function RenderProcessedArray({ arrayType, results }) {
                     <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
                     <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
                     {listEntry.characterIndex > 0 ? " (at character " + (listEntry.characterIndex + 1) + ")" : ""}
-                    <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
+                    <span style={{ color: 'DimGray' }}>{listEntry.extract ? ` around ►${listEntry.extract}◄` : ""}</span>
                     {listEntry.location}
                     <RenderPriority entry={listEntry} />
                 </li>;
@@ -331,7 +331,7 @@ function RenderGivenArray({ array, color }) {
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
                 <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
                 {listEntry.characterIndex !== undefined && listEntry.characterIndex >= 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
-                <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
+                <span style={{ color: 'DimGray' }}>{listEntry.extract ? ` around ►${listEntry.extract}◄` : ""}</span>
                 {listEntry.location}
                 <RenderPriority entry={listEntry} />
             </li>;
@@ -369,7 +369,7 @@ function RenderWarningsGradient({ results }) {
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
                 <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
                 {listEntry.characterIndex !== undefined && listEntry.characterIndex >= 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
-                <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
+                <span style={{ color: 'DimGray' }}>{listEntry.extract ? ` around ►${listEntry.extract}◄` : ""}</span>
                 {listEntry.location}
                 <RenderPriority entry={listEntry} />
             </li>;

@@ -210,7 +210,7 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
         const leftCount = countOccurrences(plainText, leftChar);
         const rightCount = countOccurrences(plainText, rightChar);
         if (leftCount !== rightCount
-            && (textType!=='markdown' || rightChar!=='>')) // markdown uses > as a block quote character
+            && (textType !== 'markdown' || rightChar !== '>')) // markdown uses > as a block quote character
             // NOTE: These are lower priority than similar checks in a field
             //          since they occur only within the entire file
             addNotice({ priority: leftChar === '“' ? 162 : 462, message: `Mismatched ${leftChar}${rightChar} characters`, details: `(left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()})`, location: ourLocation });

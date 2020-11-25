@@ -5,7 +5,7 @@ import { checkFileContents } from '../file-check/checkFileContents';
 import { checkRepo } from '../repo-check/checkRepo';
 
 
-//const BP_VALIDATOR_VERSION_STRING = '0.5.1';
+//const BP_VALIDATOR_VERSION_STRING = '0.5.2';
 
 const MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -47,7 +47,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   let checkBookPackageResult = { successList: [], noticeList: [] };
 
   let dataSet = checkingOptions.dataSet; // Can be 'DEFAULT', 'OLD' (Markdown, etc.), 'NEW' (TSV only), or 'BOTH'
-  if (!dataSet) dataSet = 'OLD'; // TODO: Change back to DEFAULT
+  if (!dataSet) dataSet = 'DEFAULT';
 
   const newCheckingOptions = checkingOptions ? { ...checkingOptions } : {}; // clone before modify
   const getFile_ = newCheckingOptions.getFile ? newCheckingOptions.getFile : cachedGetFile; // default to using caching of files
@@ -173,7 +173,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       }
     }
     if (manifestFileContent) {
-      const cmtResultObject = checkManifestText('Manifest', manifestFileContent, manifestLocation, optionalCheckingOptions);
+      const cmtResultObject = await checkManifestText(username, repoName, manifestFileContent, manifestLocation, optionalCheckingOptions);
       // console.log(`ourCheckManifest checkManifestText(${repoName}) returned ${cmtResultObject.successList.length} success message(s) and ${cmtResultObject.noticeList.length} notice(s)`);
       // console.log(`ourCheckManifest checkManifestText(${repoName}) returned ${JSON.stringify(cmtResultObject)}`);
       // NOTE: We ignore the returned success messages here
@@ -230,7 +230,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       }
     }
     if (manifestFileContent) {
-      const cmtResultObject = checkManifestText('Manifest', manifestFileContent, manifestLocation, optionalCheckingOptions);
+      const cmtResultObject = await checkManifestText(username, repoName, manifestFileContent, manifestLocation, optionalCheckingOptions);
       // console.log(`ourCheckMarkdown checkManifestText(${repoName}) returned ${cmtResultObject.successList.length} success message(s) and ${cmtResultObject.noticeList.length} notice(s)`);
       // console.log(`ourCheckMarkdown checkManifestText(${repoName}) returned ${JSON.stringify(cmtResultObject)}`);
       // NOTE: We ignore the returned success messages here
@@ -279,12 +279,12 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     // So now we want to work through checking this one specified Bible book in various repos
     const origLangRepoCode = whichTestament === 'old' ? 'UHB' : 'UGNT';
     if (dataSet === 'DEFAULT')
-      repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ2'] : [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'];
+      repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'] : [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'];
     else if (dataSet === 'OLD')
       repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'] : [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'];
     else if (dataSet === 'NEW')
       repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'TWL', 'LT', 'ST', 'TN2', 'TQ2', 'SN', 'SQ'] : [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'];
-    else // assume BOTH
+    else if (dataSet === 'BOTH')
       repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'TWL', 'LT', 'ST', 'TN2', 'TN', 'TQ2', 'TQ', 'SN', 'SQ'] : [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'];
   }
 
@@ -297,9 +297,9 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     const repoLocation = ` in ${repoCode}${generalLocation}`;
     let repoName = formRepoName(languageCode, repoCode);
     const adjustedRepoCode = (repoCode.endsWith('1') ? repoCode.substring(0, repoCode.length - 1) : repoCode).toLowerCase();
-    if (bookID === 'OBS' && repoCode !== 'OBS' && repoName === `${languageCode}_${adjustedRepoCode}`)
+    if (bookID === 'OBS' && repoCode !== 'OBS' && repoCode !== 'TWL' && repoName === `${languageCode}_${adjustedRepoCode}`)
       repoName = `${languageCode}_obs-${adjustedRepoCode}`;
-    console.log(`checkBookPackage: check ${languageCode} ${bookID} in ${repoCode} from ${username} ${repoName}`);
+    console.log(`checkBookPackage: check ${languageCode} ${bookID} in ${repoCode} from ${username} ${repoName}…`);
 
     // Update our "waiting" message
     setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookID}</b> book package in <b>{repoCode}</b> (checked <b>{numCheckedRepos}</b>/{repoCodeList.length} repos)…</p>);

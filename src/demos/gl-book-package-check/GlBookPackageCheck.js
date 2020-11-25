@@ -8,7 +8,7 @@ import { checkBookPackage } from '../book-package-check/checkBookPackage';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.5';
+// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.6';
 
 
 function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
@@ -26,6 +26,8 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
     // console.log(`languageCode='${languageCode}'`);
     let bookID = props.bookID;
     // console.log(`bookID='${bookID}'`);
+    let dataSet = props.dataSet;
+    // console.log(`dataSet='${dataSet}'`);
     let branch = props.branch;
     // console.log(`branch='${branch}'`);
 
@@ -41,7 +43,14 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
     // Or this allows the parameters to be specified as a GlBookPackageCheck property
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
 
-    const repoPreloadList = ['TA', 'TW', 'TQ', 'TQ2'];
+    // Load whole repos, especially if we are going to check files in manifests
+    let repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
+    if (dataSet === 'OLD')
+        repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ'];
+    else if (dataSet === 'NEW')
+        repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN2', 'TWL', 'TA', 'TW', 'TQ2'];
+    else if (dataSet === 'BOTH')
+        repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TN2', 'TWL', 'TA', 'TW', 'TQ', 'TQ2'];
 
     useEffect(() => {
         // console.log("GlBookPackageCheck.useEffect() called with ", JSON.stringify(props));
@@ -96,7 +105,7 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
                 // 'maximumSimilarMessages': 4, // default is 3 -- 0 means don't suppress
                 // 'errorPriorityLevel': 800, // default is 700
                 // 'cutoffPriorityLevel': 100, // default is 0
-                // 'sortBy': 'ByPriority', // default is 'AsFound'
+                // 'sortBy': 'ByRepo', // default is 'ByPriority', also have 'AsFound'
                 // 'ignorePriorityNumberList': [123, 202], // default is []
             };
             // Or this allows the parameters to be specified as a GlBookPackageCheck property

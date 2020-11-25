@@ -7,7 +7,7 @@ import * as books from './books';
 import { clearCheckedArticleCache } from './tn-links-check';
 
 
-// const GETAPI_VERSION_STRING = '0.6.5';
+// const GETAPI_VERSION_STRING = '0.6.6';
 
 const MAX_INDIVIDUAL_FILES_TO_DOWNLOAD = 5; // More than this and it downloads the zipfile for the entire repo
 
@@ -247,9 +247,9 @@ export async function preloadReposIfNecessary(username, languageCode, bookIDList
     for (const bookID of bookIDList) {
       if (bookID !== 'OBS') {
         const whichTestament = books.testament(bookID); // returns 'old' or 'new'
-        const origLang = whichTestament === 'old' ? 'UHB' : 'UGNT';
-        if (!repos_.includes(origLang))
-          repos_.unshift(origLang);
+        const origLangRepo = whichTestament === 'old' ? 'UHB' : 'UGNT';
+        if (!repos_.includes(origLangRepo))
+          repos_.unshift(origLangRepo);
       }
     }
   }

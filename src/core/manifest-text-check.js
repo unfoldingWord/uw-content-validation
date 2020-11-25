@@ -1,5 +1,6 @@
 import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { checkYAMLText } from './yaml-text-check';
+import { cachedGetFile } from '../core/getApi';
 import Ajv from 'ajv';
 
 
@@ -536,14 +537,26 @@ const ajv = new Ajv();
 const validate = ajv.compile(MANIFEST_SCHEMA);
 
 
-export function checkManifestText(textName, manifestText, givenLocation, optionalCheckingOptions) {
+export async function checkManifestText(username, repoName, manifestText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
     See the specification at https://resource-container.readthedocs.io/en/latest/manifest.html.
 
     Returns a result object containing a successList and a noticeList
     */
-    // console.log(`checkManifestText(${textName}, ${manifestText.length} chars, ${givenLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
+    // console.log(`checkManifestText(${username}, ${repoName}, ${manifestText.length} chars, ${givenLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
+    console.assert(username !== undefined, "checkManifestText: 'username' parameter should be defined");
+    console.assert(typeof username === 'string', `checkManifestText: 'username' parameter should be a string not a '${typeof username}': ${username}`);
+    console.assert(repoName !== undefined, "checkManifestText: 'repoName' parameter should be defined");
+    console.assert(typeof repoName === 'string', `checkManifestText: 'repoName' parameter should be a string not a '${typeof repoName}': ${repoName}`);
+    console.assert(manifestText !== undefined, "checkManifestText: 'manifestText' parameter should be defined");
+    console.assert(typeof manifestText === 'string', `checkManifestText: 'manifestText' parameter should be a string not a '${typeof manifestText}': ${manifestText}`);
+    console.assert(givenLocation !== undefined, "checkManifestText: 'optionalFieldLocation' parameter should be defined");
+    console.assert(typeof givenLocation === 'string', `checkManifestText: 'optionalFieldLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
+    console.assert(givenLocation.indexOf('true') === -1, `checkManifestText: 'optionalFieldLocation' parameter should not be '${givenLocation}'`);
+    if (optionalCheckingOptions !== undefined)
+        console.assert(typeof optionalCheckingOptions === 'object', `checkManifestText: 'optionalCheckingOptions' parameter should be an object not a '${typeof optionalCheckingOptions}': ${JSON.stringify(optionalCheckingOptions)}`);
+
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
@@ -579,7 +592,8 @@ export function checkManifestText(textName, manifestText, givenLocation, optiona
         if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cManT addNotice: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
         console.assert(noticeObject.location !== undefined, "cManT addNotice: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `cManT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
-        
+
+        if (repoName) noticeObject.repoName = repoName;
         if (noticeObject.debugChain) noticeObject.debugChain = `checkManifestText ${noticeObject.debugChain}`;
         cmtResult.noticeList.push(noticeObject);
     }
@@ -609,7 +623,7 @@ export function checkManifestText(textName, manifestText, givenLocation, optiona
 
 
     // Main code for checkManifestText function
-    const formData = ourYAMLTextChecks(textName, manifestText, ourLocation, optionalCheckingOptions);
+    const formData = ourYAMLTextChecks(repoName, manifestText, ourLocation, optionalCheckingOptions);
     if (formData) {
         // console.log("formData", JSON.stringify(formData));
         const formDataKeys = Object.keys(formData);
@@ -654,6 +668,37 @@ export function checkManifestText(textName, manifestText, givenLocation, optiona
                 // console.log("checkManifestText schema validation errorObject", JSON.stringify(errorObject));
                 // Can't give a lineNumber unfortunately
                 addNotice({ priority: 985, message: `Field does not match schema ${errorObject.keyword}`, details: errorObject.message, fieldName: errorObject.dataPath, location: ourLocation });
+            }
+        }
+
+        // Check the project files in the manifest actually exist
+        const getFile_ = (optionalCheckingOptions && optionalCheckingOptions.getFile) ? optionalCheckingOptions.getFile : cachedGetFile;
+        for (const projectEntry of formData['projects']) {
+            // console.log(`Manifest project: ${JSON.stringify(projectEntry)}`);
+            const projectKeys = Object.keys(projectEntry); // Expect title, versification, identifier, sort, path, categories
+            // console.log("Project keys", JSON.stringify(projectKeys));
+            for (const keyName of ['identifier', 'path', 'sort'])
+                if (projectKeys.indexOf(keyName) === -1)
+                    addNotice({ priority: 939, message: "Key is missing for project", details: keyName, extract: JSON.stringify(projectEntry), location: ourLocation });
+
+            const projectFilepath = projectEntry['path'];
+            if (repoName
+                && projectFilepath !== './content' // Ignore this common folder path
+                && projectFilepath !== './intro' && projectFilepath !== './process' && projectFilepath !== './translate' && projectFilepath !== './checking' // Ignore these TA folder paths
+                && (!optionalCheckingOptions || optionalCheckingOptions.disableAllLinkFetchingFlag !== true)) { // Try fetching the file
+                const branch = 'master'; // TODO: Is this always correct?
+                let projectFileContent;
+                try {
+                    projectFileContent = await getFile_({ username, repository: repoName, path: projectFilepath, branch });
+                    // console.log("Fetched manifest project fileContent for", repoName, projectFilepath, typeof projectFileContent, projectFileContent.length);
+                    if (!projectFileContent)
+                        addNotice({ priority: 938, message: `Unable to find project file mentioned in manifest`, extract: projectFilepath, location: ourLocation });
+                    else if (projectFileContent.length < 10)
+                        addNotice({ priority: 937, message: `Linked project file seems empty`, extract: projectFilepath, location: ourLocation });
+                } catch (trcGCerror) {
+                    addNotice({ priority: 936, message: `Error loading manifest project link`, details: trcGCerror, extract: projectFilepath, location: ourLocation });
+                }
+
             }
         }
     }

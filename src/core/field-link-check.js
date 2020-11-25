@@ -36,8 +36,8 @@ export async function startLiveLinksCheck(linksList, existingNoticeList, callbac
         console.log("startLiveLinksCheck attempting to fetch", fetchLink, '…');
         try {
             const responseData = await cachedGetFileUsingFullURL(fetchLink);
-            const responseText = responseData.text();
-            console.log("startLiveLinksCheck got response: ", responseText.length, responseText);
+            const responseText = responseData;
+            console.log("startLiveLinksCheck got response: ", responseText.length);
         } catch (lcError) {
             console.error(`startLiveLinksCheck had an error fetching '${fetchLink}': ${lcError}`);
             addNoticePartial({ priority: 439, message: "Error fetching link", location: ` ${fetchLink}` });

@@ -8,7 +8,7 @@ import { checkBookPackage } from './checkBookPackage';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.3.3';
+// const BP_VALIDATOR_VERSION_STRING = '0.3.4';
 
 
 function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
@@ -34,7 +34,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
     //  autoClearCache(bookID); // This technique avoids the complications of needing a button
 
     let checkingOptions = { // Uncomment any of these to test them
-        dataSet: dataSet, // Can be 'OLD' (Markdown, etc.), 'NEW' (TSV only), or 'BOTH'
+        dataSet: dataSet, // Can be 'OLD' (Markdown, etc.), 'NEW' (TSV only), or 'BOTH', or 'DEFAULT'
         // extractLength: 25, // default is 15
         checkManifestFlag: true,
         checkReadmeFlag: true,
@@ -48,7 +48,19 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
     // console.log(`checkingOptions.checkLinkedTAArticleFlag ${checkingOptions.checkLinkedTAArticleFlag} from '${props.checkLinkedTAArticleFlag}'`);
     // console.log(`checkingOptions.checkLinkedTWArticleFlag ${checkingOptions.checkLinkedTWArticleFlag} from '${props.checkLinkedTWArticleFlag}'`);
 
-    const repoPreloadList = ['TA', 'TW', 'TQ', 'TQ2'];
+    // Load whole repos, especially if we are going to check files in manifests
+    let repoPreloadList = ['LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
+    if (dataSet === 'OLD')
+        repoPreloadList = ['LT', 'ST', 'TN', 'TA', 'TW', 'TQ'];
+    else if (dataSet === 'NEW')
+        repoPreloadList = ['LT', 'ST', 'TN2', 'TWL', 'TA', 'TW', 'TQ2'];
+    else if (dataSet === 'BOTH')
+        repoPreloadList = ['LT', 'ST', 'TN', 'TN2', 'TWL', 'TA', 'TW', 'TQ', 'TQ2'];
+    if (bookID !== 'OBS') {
+        const whichTestament = books.testament(bookID); // returns 'old' or 'new'
+        const origLangRepo = whichTestament === 'old' ? 'UHB' : 'UGNT';
+        repoPreloadList.unshift(origLangRepo);
+    }
 
     useEffect(() => {
         // const newProps = { bookID, branch, checkingOptions, languageCode, cutoffPriorityLevel: props.cutoffPriorityLevel, displayType: props.displayType, errorPriorityLevel: props.errorPriorityLevel, maximumSimilarMessages: props.maximumSimilarMessages, sortBy: props.sortBy, username};
@@ -106,7 +118,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
                 // 'maximumSimilarMessages': 4, // default is 3 -- 0 means don't suppress
                 // 'errorPriorityLevel': 800, // default is 700
                 // 'cutoffPriorityLevel': 100, // default is 0
-                // 'sortBy': 'ByPriority', // default is 'AsFound'
+                // 'sortBy': 'ByRepo', // default is 'ByPriority', also have 'AsFound'
                 // 'ignorePriorityNumberList': [123, 202], // default is []
             };
             // Or this allows the parameters to be specified as a BookPackageCheck property

@@ -1,5 +1,5 @@
 import * as books from '../../core/books/books';
-import { checkUSFMText, checkMarkdownFileContents, checkPlainText, checkYAMLText, checkManifestText, checkTN_TSVText, checkAnnotationRows } from '../../core';
+import { formRepoName, checkUSFMText, checkMarkdownFileContents, checkPlainText, checkYAMLText, checkManifestText, checkTN_TSVText, checkAnnotationRows } from '../../core';
 
 
 // const CHECK_FILE_CONTENTS_VERSION_STRING = '0.2.3';
@@ -68,7 +68,7 @@ export async function checkFileContents(languageCode, repoCode, filename, fileCo
   else if (filenameLower.endsWith('.txt'))
     checkFileResult = checkPlainText('text', filename, fileContent, ourCFLocation, checkingOptions);
   else if (filenameLower === 'manifest.yaml')
-    checkFileResult = checkManifestText('', fileContent, ourCFLocation, checkingOptions);
+    checkFileResult = await checkManifestText('', formRepoName(languageCode, repoCode), fileContent, ourCFLocation, checkingOptions);
   else if (filenameLower.endsWith('.yaml'))
     checkFileResult = checkYAMLText(languageCode, filename, fileContent, ourCFLocation, checkingOptions);
   else {

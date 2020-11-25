@@ -110,7 +110,7 @@ Most of the high-level demonstrations allow a choice of one of three display for
 In addition, there are some options in the display of notices for the demonstrations, set in `optionalProcessingOptions` used by the sample notice processing functions:
 
 - ignorePriorityNumberList: a list (array) of integers that causes of notices with these priority values to be dropped during notice processing
-- sortBy: a string which can be set to 'ByPriority'—the default is 'AsFound', i.e., unsorted
+- sortBy: a string which can be set to 'ByPriority', 'ByRepo', or 'AsFound'—the default is 'ByPriority', i.e., unsorted
 - errorPriorityLevel: an integer which can define *errors* (vs *warnings*) (if relevant)—defaults to 700 (and above)
 - severePriorityLevel: an integer which can define *severe* errors (if relevant)—defaults to 800 (and above)
 - mediumPriorityLevel: an integer which can define *medium* errors (if relevant)—defaults to 600 (and up to `severePriorityLevel`)

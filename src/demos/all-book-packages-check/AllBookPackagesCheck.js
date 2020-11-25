@@ -30,6 +30,8 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     // console.log(`testament='${testament}'`);
     let includeOBS = props.includeOBS;
     // console.log(`includeOBS='${includeOBS}'`);
+    let dataSet = props.dataSet;
+    // console.log(`dataSet='${dataSet}'`);
     let branch = props.branch;
     // console.log(`branch='${branch}'`);
 
@@ -67,8 +69,14 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     // Or this allows the parameters to be specified as a BookPackagesCheck property
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
 
-    let repoPreloadList = ['TA', 'TW', 'TQ', 'TQ2'];
-    if (bookIDList.length > 5) { repoPreloadList.push('LT'); repoPreloadList.push('ST'); repoPreloadList.push('TN'); repoPreloadList.push('TN2'); }
+    // Load whole repos, especially if we are going to check files in manifests
+    let repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
+    if (dataSet === 'OLD')
+        repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ'];
+    else if (dataSet === 'NEW')
+        repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN2', 'TWL', 'TA', 'TW', 'TQ2'];
+    else if (dataSet === 'BOTH')
+        repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TN2', 'TWL', 'TA', 'TW', 'TQ', 'TQ2'];
 
     useEffect(() => {
         // console.log("BookPackagesCheck.useEffect() called with ", JSON.stringify(props));
@@ -118,7 +126,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
             // 'maximumSimilarMessages': 4, // default is 3 -- 0 means don't suppress
             // 'errorPriorityLevel': 800, // default is 700
             // 'cutoffPriorityLevel': 100, // default is 0
-            // 'sortBy': 'ByPriority', // default is 'AsFound'
+            // 'sortBy': 'ByRepo', // default is 'ByPriority', also have 'AsFound'
             // 'ignorePriorityNumberList': [123, 202], // default is []
           };
           // Or this allows the parameters to be specified as a BookPackagesCheck property

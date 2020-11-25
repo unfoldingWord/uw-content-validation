@@ -1,5 +1,5 @@
-Last updated 2020-11-23 13:45:17.695847 by makeNoticeList.py
-Got 294 notices:
+Last updated 2020-11-25 09:40:53.304909 by makeNoticeList.py
+Got 298 notices:
   checkRepoResult.noticeList.push( 997, "Repository doesn't exist", details, username, repoCode, repoName, location: givenLocation, extra: repoCode	from checkRepo.js line 243
   languageCode === 'en' || languageCode === 'fr' ? 490 : 190, "Expected header field to contain a mixed-case string", fieldName: `\\$marker`, extract: rest, C, V, location: lineLocation	from usfm-text-check.js line 729
   marker === 's5' ? 111 : 809, `$marker === 's5' ? 'Deprecated' : 'Unexpected' '\\$marker' marker at start of line`, C, V, lineNumber, characterIndex: 1, location: lineLocation	from usfm-text-check.js line 752
@@ -19,7 +19,7 @@ Got 294 notices:
   notice	from field-text-check.js line 296
   const notice =  193, `Unexpected $punctChar character at end of line`, extract, location: ourLocation ;	from field-text-check.js line 309
   notice	from field-text-check.js line 311
-  leftChar === '“' ? 163 : 563, `Mismatched $leftChar$rightChar characters`, details: `(left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString())`, location: ourLocation	from field-text-check.js line 340
+  leftChar === '“' ? 163 : 563, `Mismatched $leftChar$rightChar characters`, details: `(left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString())`, location: ourLocation	from field-text-check.js line 347
   leftChar === '“' ? 162 : 462, `Mismatched $leftChar$rightChar characters`, details: `(left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString())`, location: ourLocation	from plain-text-check.js line 216
   999, "checkRepo function FAILED", repoName, extract: checkRepoError, location: repoName	from RepoCheck.js line 103
   997, "Repository doesn't exist", details, username, repoCode, repoName, location: manifestLocation, extra: repoCode	from checkBookPackage.js line 168
@@ -46,7 +46,7 @@ Got 294 notices:
   988, `Wrong number of tabbed fields (expected $NUM_EXPECTED_ANNOTATION_TSV_FIELDS)`, extract: `Found $fields.length field$fields.length === 1 ? '' : 's'`, C, V, rowID, lineNumber: n + 1, location: ourLocation	from annotation-table-check.js line 227
   987, C, V, "Expected \\id line to start with book identifier", lineNumber: n, characterIndex: 4, extract, location: ourLocation	from usfm-text-check.js line 908
   986, "Repository doesn't seem to exist", details: `username=$username`, location: givenLocation, extra: repoName	from checkRepo.js line 150
-  985, `Field does not match schema $errorObject.keyword`, details: errorObject.message, fieldName: errorObject.dataPath, location: ourLocation	from manifest-text-check.js line 656
+  985, `Field does not match schema $errorObject.keyword`, details: errorObject.message, fieldName: errorObject.dataPath, location: ourLocation	from manifest-text-check.js line 670
   984, `Found wrong number of TSV fields (expected $NUM_EXPECTED_TN_TSV_FIELDS)`, details: `Found $fields.length field$fields.length === 1 ? '' : 's'`, rowID, location: ourRowLocation	from tn-table-row-check.js line 523
   984, `Found wrong number of TSV fields (expected $NUM_EXPECTED_ANNOTATION_TSV_FIELDS)`, details: `Found $fields.length field$fields.length === 1 ? '' : 's'`, rowID, location: ourRowLocation	from annotation-row-check.js line 528
   979, "Invalid book identifier passed to checkTN_TSVDataRow", location: ` '$bookID' in first parameter: $tlcNCerror`	from tn-table-row-check.js line 326
@@ -64,8 +64,12 @@ Got 294 notices:
   944, `USFM3 Grammar Check ($strictnessString mode) doesn't pass`, filename, location: ourLocation	from BCS-usfm-grammar-check.js line 177
   943, `USFM3 toJSON Check doesn't pass`, location: ourLocation	from usfm-js-check.js line 90
   942, "USFM Grammar check fails", location	from usfm-text-check.js line 957
-  929, "'projects' key is missing", location: ourLocation	from manifest-text-check.js line 621
-  928, "'dublin_core' key is missing", location: ourLocation	from manifest-text-check.js line 619
+  939, "Key is missing for project", details: keyName, extract: JSON.stringify(projectEntry), location: ourLocation	from manifest-text-check.js line 682
+  938, `Unable to find project file mentioned in manifest`, extract: projectFilepath, location: ourLocation	from manifest-text-check.js line 692
+  937, `Linked project file seems empty`, extract: projectFilepath, location: ourLocation	from manifest-text-check.js line 694
+  936, `Error loading manifest project link`, details: trcGCerror, extract: projectFilepath, location: ourLocation	from manifest-text-check.js line 696
+  929, "'projects' key is missing", location: ourLocation	from manifest-text-check.js line 635
+  928, "'dublin_core' key is missing", location: ourLocation	from manifest-text-check.js line 633
   920, yamlError.message, location: ourLocation )	from yaml-text-check.js line 158
   919, "Missing OrigQuote field", fieldName: 'OrigQuote', rowID, location: ourRowLocation	from tn-table-row-check.js line 453
   919, "Missing Quote field", fieldName: 'Quote', rowID, location: ourRowLocation	from annotation-row-check.js line 469
@@ -100,7 +104,7 @@ Got 294 notices:
   867, C: chapterNumberString, V: `$v`, "Verse appears to be missing", location: CVlocation	from usfm-text-check.js line 428
   866, C: chapterNumberString, V: `$v`, "Verse seems to have no text", location: CVlocation	from usfm-text-check.js line 433
   851, bookID === 'OBS' ? "Unable to load OBS story text" : "Unable to load original language verse text", location: ourLocation	from orig-quote-check.js line 276
-  849, "Unexpected \\[ or \\] characters", characterIndex, extract, location: ourLocation	from field-text-check.js line 320
+  849, `Unexpected '$badCharCombination' character combination`, characterIndex, extract, location: ourLocation	from field-text-check.js line 319
   845, `Mismatched [[ ]] link characters`, details: `(left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString())`, location: ourLocation	from tn-links-check.js line 460
   844, `Mismatched [[rc:// ]] link characters`, details: `(left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString())`, location: ourLocation	from tn-links-check.js line 464
   843, `Mismatched [ ]( ) link characters`, details: `(left=$leftCount.toLocaleString(), middle=$middleCount.toLocaleString(), right=$rightCount.toLocaleString())`, location: ourLocation	from tn-links-check.js line 471
@@ -153,7 +157,7 @@ Got 294 notices:
   770, `Unexpected leading word joiner`, characterIndex: 0, extract, location: ourLocation	from field-text-check.js line 134
   769, C, V, "Verse bridge numbers not in ascending order", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, Math.max(9, extractLength))$rest.length > extractLength ? '…' : '' ($firstV → $secondV)`, location: ourLocation	from usfm-text-check.js line 884
   766, C, V, "Bridged verse numbers didn't increment correctly", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, Math.max(9, extractLength))$rest.length > extractLength ? '…' : '' ($lastV → $firstV)`, location: ourLocation	from usfm-text-check.js line 886
-  765, "Unexpected link", characterIndex, extract, location: ourLocation	from field-text-check.js line 355
+  765, "Unexpected link", characterIndex, extract, location: ourLocation	from field-text-check.js line 362
   764, C, V, "Chapter number didn't increment correctly", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, halfLength)$rest.length > halfLength ? '…' : '' ($lastC ? lastC : '0' → $C)`, location: ourLocation	from usfm-text-check.js line 857
   763, C, V, "Verse number didn't increment correctly", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, halfLength)$rest.length > halfLength ? '…' : '' ($lastV ? lastV : '0' → $V)`, location: ourLocation	from usfm-text-check.js line 870
   762, "Unable to convert verse bridge numbers to integers", C: chapterNumberString, V: verseNumberString, characterIndex: 3, extract: verseNumberString, location: `$CVlocation with $usfmVIerror`	from usfm-text-check.js line 402
@@ -272,7 +276,7 @@ Got 294 notices:
   158, "Unexpected space(s) beside ellipse character", characterIndex, extract, location: ourLocation	from orig-quote-check.js line 246
   157, "Unexpected space(s) beside ↔ divider character", characterIndex, extract, location: ourLocation	from orig-quote-check.js line 253
   156, "Unexpected space(s) beside ellipse characters", characterIndex, extract, location: ourLocation	from orig-quote-check.js line 260
-  148, "'checking' key is missing", location: ourLocation	from manifest-text-check.js line 623
+  148, "'checking' key is missing", location: ourLocation	from manifest-text-check.js line 637
   143, "Unknown Bible book name in link", details: totalLink, extract: optionalB1, location: ourLocation	from tn-links-check.js line 306
   143, "Unknown Bible book name in link", details: totalLink, extract: optionalB1, location: ourLocation	from tn-links-check.js line 358
   143, "Unknown Bible book name in link", details: totalLink, extract: optionalB1, location: ourLocation	from tn-links-check.js line 410
