@@ -82,7 +82,7 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
             }
             else await clearCheckedArticleCache();
 
-            setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for GL book package check…</p>);
+            setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for {username} {languageCode} ready for GL book package check…</p>);
             const successFlag = await preloadReposIfNecessary(username, languageCode, [bookID], branch, repoPreloadList);
             if (!successFlag)
                 console.error(`AllBookPackagesCheck error: Failed to pre-load all repos`)

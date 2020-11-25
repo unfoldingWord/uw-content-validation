@@ -4,7 +4,7 @@ import { cachedGetFile } from '../core/getApi';
 import Ajv from 'ajv';
 
 
-const MANIFEST_VALIDATOR_VERSION_STRING = '0.3.3';
+const MANIFEST_VALIDATOR_VERSION_STRING = '0.3.4';
 
 // Pasted in 2020-10-02 from https://raw.githubusercontent.com/unfoldingWord/dcs/master/options/schema/rc.schema.json
 const MANIFEST_SCHEMA = {
@@ -537,18 +537,20 @@ const ajv = new Ajv();
 const validate = ajv.compile(MANIFEST_SCHEMA);
 
 
-export async function checkManifestText(username, repoName, manifestText, givenLocation, optionalCheckingOptions) {
+export async function checkManifestText(username, repoName, repoBranch, manifestText, givenLocation, optionalCheckingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
     See the specification at https://resource-container.readthedocs.io/en/latest/manifest.html.
 
     Returns a result object containing a successList and a noticeList
     */
-    // console.log(`checkManifestText(${username}, ${repoName}, ${manifestText.length} chars, ${givenLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
+    // console.log(`checkManifestText(${username}, ${repoName}, ${repoBranch}, ${manifestText.length} chars, ${givenLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
     console.assert(username !== undefined, "checkManifestText: 'username' parameter should be defined");
     console.assert(typeof username === 'string', `checkManifestText: 'username' parameter should be a string not a '${typeof username}': ${username}`);
     console.assert(repoName !== undefined, "checkManifestText: 'repoName' parameter should be defined");
     console.assert(typeof repoName === 'string', `checkManifestText: 'repoName' parameter should be a string not a '${typeof repoName}': ${repoName}`);
+    console.assert(repoBranch !== undefined, "checkManifestText: 'repoBranch' parameter should be defined");
+    console.assert(typeof repoBranch === 'string', `checkManifestText: 'repoBranch' parameter should be a string not a '${typeof repoBranch}': ${repoBranch}`);
     console.assert(manifestText !== undefined, "checkManifestText: 'manifestText' parameter should be defined");
     console.assert(typeof manifestText === 'string', `checkManifestText: 'manifestText' parameter should be a string not a '${typeof manifestText}': ${manifestText}`);
     console.assert(givenLocation !== undefined, "checkManifestText: 'optionalFieldLocation' parameter should be defined");
@@ -686,10 +688,9 @@ export async function checkManifestText(username, repoName, manifestText, givenL
                 && projectFilepath !== './content' // Ignore this common folder path
                 && projectFilepath !== './intro' && projectFilepath !== './process' && projectFilepath !== './translate' && projectFilepath !== './checking' // Ignore these TA folder paths
                 && (!optionalCheckingOptions || optionalCheckingOptions.disableAllLinkFetchingFlag !== true)) { // Try fetching the file
-                const branch = 'master'; // TODO: Is this always correct?
                 let projectFileContent;
                 try {
-                    projectFileContent = await getFile_({ username, repository: repoName, path: projectFilepath, branch });
+                    projectFileContent = await getFile_({ username, repository: repoName, path: projectFilepath, branch: repoBranch });
                     // console.log("Fetched manifest project fileContent for", repoName, projectFilepath, typeof projectFileContent, projectFileContent.length);
                     if (!projectFileContent)
                         addNotice({ priority: 938, message: `Unable to find project file mentioned in manifest`, extract: projectFilepath, location: ourLocation });

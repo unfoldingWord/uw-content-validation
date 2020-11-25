@@ -82,11 +82,11 @@ function RepoCheck(/*username, languageCode,*/ props) {
             else if (repoCode === 'TQ2') repoCode = 'TQ';
             // console.log(`RepoCheck languageCode='${languageCode}' repoCode='${repoCode}'`);
 
-            setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for {repoName} repo check…</p>);
             // Load whole repos, especially if we are going to check files in manifests
             const repoPreloadList = ['TW'];
             if (repoCode !== 'UHB' && repoCode !== 'UGNT') repoPreloadList.push('TA'); // Original languages only have TW links
             if (repoCode !== 'TA' && repoCode !== 'TW') repoPreloadList.push(repoCode);
+            setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for {username} {languageCode} ready for {repoName} repo check…</p>);
             const successFlag = await preloadReposIfNecessary(username, languageCode, [], branch, repoPreloadList);
             if (!successFlag)
                 console.error(`RepoCheck error: Failed to pre-load all repos`)

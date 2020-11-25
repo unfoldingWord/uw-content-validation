@@ -68,7 +68,7 @@ export async function checkFileContents(languageCode, repoCode, filename, fileCo
   else if (filenameLower.endsWith('.txt'))
     checkFileResult = checkPlainText('text', filename, fileContent, ourCFLocation, checkingOptions);
   else if (filenameLower === 'manifest.yaml')
-    checkFileResult = await checkManifestText('', formRepoName(languageCode, repoCode), fileContent, ourCFLocation, checkingOptions);
+    checkFileResult = await checkManifestText('', formRepoName(languageCode, repoCode), '', fileContent, ourCFLocation, checkingOptions); // don't know username or branch
   else if (filenameLower.endsWith('.yaml'))
     checkFileResult = checkYAMLText(languageCode, filename, fileContent, ourCFLocation, checkingOptions);
   else {

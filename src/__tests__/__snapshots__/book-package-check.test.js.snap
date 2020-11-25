@@ -205,6 +205,18 @@ Object {
       "username": "unfoldingWord",
     },
     Object {
+      "bookID": "RUT",
+      "details": "username=unfoldingWord error=Could not find src/__tests__/fixtures/unfoldingWord/en_twl/RUT_twl.tsv",
+      "extra": "TWL",
+      "filename": "RUT_twl.tsv",
+      "location": " in TWL in en RUT book package from unfoldingWord master branch",
+      "message": "Unable to load",
+      "priority": 996,
+      "repoCode": "TWL",
+      "repoName": "en_twl",
+      "username": "unfoldingWord",
+    },
+    Object {
       "C": "2",
       "V": "1",
       "bookID": "RUT",
@@ -7118,6 +7130,18 @@ Object {
     "en_tq",
   ],
   "noticeList": Array [
+    Object {
+      "bookID": "TIT",
+      "details": "username=unfoldingWord error=Could not find src/__tests__/fixtures/unfoldingWord/en_twl/TIT_twl.tsv",
+      "extra": "TWL",
+      "filename": "TIT_twl.tsv",
+      "location": " in TWL in en TIT book package from unfoldingWord master branch",
+      "message": "Unable to load",
+      "priority": 996,
+      "repoCode": "TWL",
+      "repoName": "en_twl",
+      "username": "unfoldingWord",
+    },
     Object {
       "C": "1",
       "V": "1",

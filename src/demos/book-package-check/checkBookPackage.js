@@ -57,9 +57,9 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
 
   // No point in passing the branch through as a parameter
   //  coz if it's not 'master', it's unlikely to be common for all the repos
-  const branch = 'master';
+  let originalBranch = 'master';
 
-  const generalLocation = ` in ${languageCode} ${bookID} book package from ${username} ${branch} branch`;
+  const generalLocation = ` in ${languageCode} ${bookID} book package from ${username} ${originalBranch} branch`;
 
 
   function addSuccessMessage(successString) {
@@ -147,22 +147,26 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
    * @param {string} manifestLocation
    * @param {Object} optionalCheckingOptions
    */
-  async function ourCheckManifest(repoCode, repoName, manifestLocation, optionalCheckingOptions) {
+  async function ourCheckManifest(repoCode, repoName, repoBranch, manifestLocation, optionalCheckingOptions) {
     // Updates the global list of notices
-    // console.log(`checkBookPackage ourCheckManifest(${repoCode}, ${repoName}, ${manifestLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
+    // console.log(`checkBookPackage ourCheckManifest(${repoCode}, ${repoName}, ${repoBranch}, ${manifestLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
     console.assert(repoCode !== undefined, "cBP ourCheckManifest: 'repoCode' parameter should be defined");
-    console.assert(typeof repoCode === 'string', `cBP ourCheckManifest: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
+    console.assert(typeof repoCode === 'string', `cBP ourCheckManifest: 'repoCode' parameter should be a string not a '${typeof repoCode}' : ${repoCode}`);
+    console.assert(repoName !== undefined, "cBP ourCheckManifest: 'repoName' parameter should be defined");
+    console.assert(typeof repoName === 'string', `cBP ourCheckManifest: 'repoName' parameter should be a string not a '${typeof repoName}': ${repoName}`);
+    console.assert(repoBranch !== undefined, "cBP ourCheckManifest: 'repoBranch' parameter should be defined");
+    console.assert(typeof repoBranch === 'string', `cBP ourCheckManifest: 'repoBranch' parameter should be a string not a '${typeof repoBranch}': ${repoBranch}`);
     console.assert(manifestLocation !== undefined, "cBP ourCheckManifest: 'manifestLocation' parameter should be defined");
     console.assert(typeof manifestLocation === 'string', `cBP ourCheckManifest: 'manifestLocation' parameter should be a string not a '${typeof manifestLocation}'`);
 
     let manifestFileContent;
     try {
-      // console.log("checkBookPackage ourCheckManifest about to fetch manifest", username, repoName, branch);
-      manifestFileContent = await getFile_({ username, repository: repoName, path: MANIFEST_FILENAME, branch });
-      // console.log("checkBookPackage ourCheckManifest fetched content for manifest", username, repoName, branch, typeof manifestFileContent, manifestFileContent.length);
+      // console.log("checkBookPackage ourCheckManifest about to fetch manifest", username, repoName, repoBranch);
+      manifestFileContent = await getFile_({ username, repository: repoName, path: MANIFEST_FILENAME, branch: repoBranch });
+      // console.log("checkBookPackage ourCheckManifest fetched content for manifest", username, repoName, repoBranch, typeof manifestFileContent, manifestFileContent.length);
       // console.log(manifestFileContent);
     } catch (cBPgfError) {
-      console.error(`checkBookPackage ourCheckManifest(${username}, ${languageCode}, ${bookID}, (fn), ${JSON.stringify(checkingOptions)}) failed to load manifest`, username, repoName, branch, cBPgfError + '');
+      console.error(`checkBookPackage ourCheckManifest(${username}, ${languageCode}, ${bookID}, (fn), ${JSON.stringify(checkingOptions)}) failed to load manifest`, username, repoName, repoBranch, cBPgfError + '');
       let details = `username=${username}`;
       if (! await repositoryExistsOnDoor43({ username, repository: repoName }))
         checkBookPackageResult.noticeList.push({ priority: 997, message: "Repository doesn't exist", details, username, repoCode, repoName, location: manifestLocation, extra: repoCode });
@@ -173,7 +177,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       }
     }
     if (manifestFileContent) {
-      const cmtResultObject = await checkManifestText(username, repoName, manifestFileContent, manifestLocation, optionalCheckingOptions);
+      const cmtResultObject = await checkManifestText(username, repoName, repoBranch, manifestFileContent, manifestLocation, optionalCheckingOptions);
       // console.log(`ourCheckManifest checkManifestText(${repoName}) returned ${cmtResultObject.successList.length} success message(s) and ${cmtResultObject.noticeList.length} notice(s)`);
       // console.log(`ourCheckManifest checkManifestText(${repoName}) returned ${JSON.stringify(cmtResultObject)}`);
       // NOTE: We ignore the returned success messages here
@@ -204,22 +208,26 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
      * @param {string} manifestLocation
      * @param {Object} optionalCheckingOptions
      */
-  async function ourCheckMarkdown(repoCode, repoName, filename, manifestLocation, optionalCheckingOptions) {
+  async function ourCheckMarkdown(repoCode, repoName, repoBranch, filename, manifestLocation, optionalCheckingOptions) {
     // Updates the global list of notices
-    // console.log(`checkBookPackage ourCheckMarkdown(${repoCode}, ${repoName}, ${manifestLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
+    // console.log(`checkBookPackage ourCheckMarkdown(${repoCode}, ${repoName}, #{repoBranch}, ${manifestLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
     console.assert(repoCode !== undefined, "cBP ourCheckMarkdown: 'repoCode' parameter should be defined");
     console.assert(typeof repoCode === 'string', `cBP ourCheckMarkdown: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
+    console.assert(repoName !== undefined, "cBP ourCheckMarkdown: 'repoName' parameter should be defined");
+    console.assert(typeof repoName === 'string', `cBP ourCheckMarkdown: 'repoName' parameter should be a string not a '${typeof repoName}'`);
+    console.assert(repoBranch !== undefined, "cBP ourCheckMarkdown: 'repoBranch' parameter should be defined");
+    console.assert(typeof repoBranch === 'string', `cBP ourCheckMarkdown: 'repoBranch' parameter should be a string not a '${typeof repoBranch}'`);
     console.assert(manifestLocation !== undefined, "cBP ourCheckMarkdown: 'manifestLocation' parameter should be defined");
     console.assert(typeof manifestLocation === 'string', `cBP ourCheckMarkdown: 'manifestLocation' parameter should be a string not a '${typeof manifestLocation}'`);
 
     let manifestFileContent;
     try {
-      // console.log("checkBookPackage ourCheckMarkdown about to fetch manifest", username, repoName, branch);
-      manifestFileContent = await getFile_({ username, repository: repoName, path: filename, branch });
-      // console.log("checkBookPackage ourCheckMarkdown fetched content for manifest", username, repoName, branch, typeof manifestFileContent, manifestFileContent.length);
+      // console.log("checkBookPackage ourCheckMarkdown about to fetch manifest", username, repoName, repoBranch);
+      manifestFileContent = await getFile_({ username, repository: repoName, path: filename, branch: repoBranch });
+      // console.log("checkBookPackage ourCheckMarkdown fetched content for manifest", username, repoName, repoBranch, typeof manifestFileContent, manifestFileContent.length);
       // console.log(manifestFileContent);
     } catch (cBPgfError) {
-      console.error(`checkBookPackage ourCheckMarkdown(${username}, ${languageCode}, ${bookID}, (fn), ${JSON.stringify(checkingOptions)}) failed to load manifest`, username, repoName, branch, cBPgfError + '');
+      console.error(`checkBookPackage ourCheckMarkdown(${username}, ${languageCode}, ${bookID}, (fn), ${JSON.stringify(checkingOptions)}) failed to load manifest`, username, repoName, originalBranch, cBPgfError + '');
       let details = `username=${username}`;
       if (! await repositoryExistsOnDoor43({ username, repository: repoName }))
         checkBookPackageResult.noticeList.push({ priority: 997, message: "Repository doesn't exist", details, username, repoCode, repoName, location: manifestLocation, extra: repoCode });
@@ -279,7 +287,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     // So now we want to work through checking this one specified Bible book in various repos
     const origLangRepoCode = whichTestament === 'old' ? 'UHB' : 'UGNT';
     if (dataSet === 'DEFAULT')
-      repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'] : [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'];
+      repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'TWL', 'LT', 'ST', 'TN', 'TQ'] : [origLangRepoCode, 'TWL', 'LT', 'ST', 'TN', 'TQ'];
     else if (dataSet === 'OLD')
       repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'] : [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'];
     else if (dataSet === 'NEW')
@@ -295,49 +303,48 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   for (const repoCode of repoCodeList) {
     if (abortFlag) break;
     const repoLocation = ` in ${repoCode}${generalLocation}`;
-    let repoName = formRepoName(languageCode, repoCode);
-    const adjustedRepoCode = (repoCode.endsWith('1') ? repoCode.substring(0, repoCode.length - 1) : repoCode).toLowerCase();
-    if (bookID === 'OBS' && repoCode !== 'OBS' && repoCode !== 'TWL' && repoName === `${languageCode}_${adjustedRepoCode}`)
-      repoName = `${languageCode}_obs-${adjustedRepoCode}`;
+    let adjustedRepoCode = repoCode, adjustedBranch = originalBranch;
+    if (repoCode.endsWith('2')) {
+      adjustedRepoCode = repoCode.substring(0, repoCode.length - 1);
+      adjustedBranch = 'newFormat';
+    }
+    let repoName = formRepoName(languageCode, adjustedRepoCode);
+    if (bookID === 'OBS' && repoCode !== 'OBS' && repoCode !== 'TWL' && repoName === `${languageCode}_${adjustedRepoCode.toLowerCase()}`)
+      repoName = `${languageCode}_obs-${adjustedRepoCode.toLowerCase()}`;
     console.log(`checkBookPackage: check ${languageCode} ${bookID} in ${repoCode} from ${username} ${repoName}…`);
 
     // Update our "waiting" message
     setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookID}</b> book package in <b>{repoCode}</b> (checked <b>{numCheckedRepos}</b>/{repoCodeList.length} repos)…</p>);
 
     let filename;
-    if (repoCode === 'UHB' || repoCode === 'UGNT' || repoCode === 'LT' || repoCode === 'ST') {
+    if (repoCode === 'UHB' || repoCode === 'UGNT' || repoCode === 'LT' || repoCode === 'ST')
       // TODO: Might we need specific releases/tags for some of these (e.g., from the TN2 manifest)???
       // TODO: Do we need to hard-code where to find the UHB and UGNT???
       filename = `${bookNumberAndName}.usfm`;
-    }
-    else if (repoCode === 'TWL' || repoCode === 'TN2' || repoCode === 'TQ2') {
-      let adjustedRepoCode = repoCode;
-      if (adjustedRepoCode.endsWith('2')) adjustedRepoCode = adjustedRepoCode.substring(0, adjustedRepoCode.length - 1);
+    else if (repoCode === 'TWL' || repoCode === 'TN2' || repoCode === 'TQ2')
       filename = `${bookID}_${adjustedRepoCode.toLowerCase()}.tsv`
-    }
-    else if (repoCode === 'SN' || repoCode === 'SQ') {
+    else if (repoCode === 'SN' || repoCode === 'SQ')
       filename = `${bookID}_${repoCode.toLowerCase()}.tsv`
-    }
     else if (repoCode === 'TN') {
       try {
-        filename = await cachedGetBookFilenameFromManifest({ username, repository: repoName, branch, bookID: bookID.toLowerCase() });
-        console.assert(filename.startsWith(`${languageCode}_`), `Expected TN2 filename '${filename}' to start with the language code '${languageCode}_'`);
+        filename = await cachedGetBookFilenameFromManifest({ username, repository: repoName, branch: originalBranch, bookID: bookID.toLowerCase() });
+        console.assert(filename.startsWith(`${languageCode}_`), `Expected TN filename '${filename}' to start with the language code '${languageCode}_'`);
       } catch (e) {
         // console.error(`cachedGetBookFilenameFromManifest failed with: ${e}`);
         filename = `${languageCode}_tn_${bookNumberAndName}.tsv`; // Take a guess
       }
-      console.assert(filename.endsWith('.tsv'), `Expected TN2 filename '${filename}' to end with '.tsv'`);
+      console.assert(filename.endsWith('.tsv'), `Expected TN filename '${filename}' to end with '.tsv'`);
     }
 
     if (repoCode === 'OBS') {
       // console.log("Calling OBS checkRepo()…");
-      checkBookPackageResult = await checkRepo(username, `${languageCode}_obs`, branch, generalLocation, setResultValue, newCheckingOptions); // Adds the notices to checkBookPackageResult
+      checkBookPackageResult = await checkRepo(username, `${languageCode}_obs`, originalBranch, generalLocation, setResultValue, newCheckingOptions); // Adds the notices to checkBookPackageResult
       // console.log(`checkRepo() returned ${checkBookPackageResult.successList.length} success message(s) and ${checkBookPackageResult.noticeList.length} notice(s)`);
       // console.log("crResultObject keys", JSON.stringify(Object.keys(checkBookPackageResult)));
       addSuccessMessage(`Checked ${languageCode} OBS repo from ${username}`);
     } else if (repoCode === 'TQ') {
       // This is the old markdown resource with hundreds/thousands of files
-      const tqResultObject = await checkTQMarkdownBook(username, languageCode, repoName, branch, bookID, newCheckingOptions);
+      const tqResultObject = await checkTQMarkdownBook(username, languageCode, repoName, originalBranch, bookID, newCheckingOptions);
       checkBookPackageResult.successList = checkBookPackageResult.successList.concat(tqResultObject.successList);
       checkBookPackageResult.noticeList = checkBookPackageResult.noticeList.concat(tqResultObject.noticeList);
       if (tqResultObject.checkedFileCount > 0) {
@@ -351,9 +358,9 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       let repoFileContent;
       try {
         const path = repoName.endsWith('-annotations') ? `${bookID}/${filename}` : filename;
-        // console.log("checkBookPackage about to fetch fileContent for", username, repoName, branch, path);
-        repoFileContent = await getFile_({ username, repository: repoName, path, branch });
-        // console.log("checkBookPackage fetched fileContent for", username, repoName, branch, filename, typeof repoFileContent, repoFileContent.length);
+        // console.log("checkBookPackage about to fetch fileContent for", username, repoName, adjustedBranch, path);
+        repoFileContent = await getFile_({ username, repository: repoName, path, branch: adjustedBranch });
+        // console.log("checkBookPackage fetched fileContent for", username, repoName, adjustedBranch, filename, typeof repoFileContent, repoFileContent.length);
         checkedFilenames.push(filename);
         totalCheckedSize += repoFileContent.length;
         checkedRepoNames.add(repoName);
@@ -385,7 +392,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
           if (!checkedManifestDetails.includes(repoName)) { // Don't want to check more than once, esp. for annotations repos
             checkedManifestDetails.push(repoName); // Remember that we checked this one
             // console.log("BEFORE", checkBookPackageResult.noticeList.length);
-            const numCheckedCharacters = await ourCheckManifest(repoCode, repoName, generalLocation, newCheckingOptions);
+            const numCheckedCharacters = await ourCheckManifest(repoCode, repoName, adjustedBranch, generalLocation, newCheckingOptions);
             // console.log("AFTER", checkBookPackageResult.noticeList.length);
             if (numCheckedCharacters > 0) {
               checkedFileCount += 1;
@@ -402,7 +409,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
             checkedManifestDetails.push(repoName); // Remember that we checked this one
             // console.log("BEFORE", checkBookPackageResult.noticeList.length);
             const filename = 'README.md';
-            const numCheckedCharacters = await ourCheckMarkdown(repoCode, repoName, filename, generalLocation, newCheckingOptions);
+            const numCheckedCharacters = await ourCheckMarkdown(repoCode, repoName, adjustedBranch, filename, generalLocation, newCheckingOptions);
             // console.log("AFTER", checkBookPackageResult.noticeList.length);
             if (numCheckedCharacters > 0) {
               checkedFileCount += 1;
