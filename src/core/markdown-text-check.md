@@ -10,6 +10,7 @@ These raw notice components can then be filtered and/or sorted as required by th
 // The code in this box is editable for changing settings—
 //        Simply click inside here and add, change, or delete text as required.
 
+import React, { useState, useEffect } from 'react';
 import Markdown from 'react-markdown'
 import { checkMarkdownText } from './markdown-text-check';
 import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
@@ -37,18 +38,42 @@ Another  paragraph.
    * List item 2
 `;
 
-// You can choose any of the above texts here
-//  (to demonstrate differing results)
-const chosenText = textSB;
-const chosenTextName = 'textSB';
+const data = {
+  // You can choose any of the above lines here
+  //  (to demonstrate differing results)
+  chosenTextName : 'textSB',
+  chosenText : textSB,
+  languageCode : 'en',
+  givenLocation : "that was supplied",
+}
 
-const rawResults = checkMarkdownText('en', chosenTextName, chosenText, 'that was supplied');
-if (!rawResults.successList || !rawResults.successList.length)
-  rawResults.successList = ["Done markdown text checks"];
+function CheckMarkdownText(props) {
+  const { languageCode, chosenText, chosenTextName, givenLocation } = props.data;
 
-<>
-<b>Raw Markdown (but normalized)</b>: <RenderLines text={chosenText} />
-<b>Formatted Text</b>: <Markdown source={chosenText} />
-<RenderRawResults results={rawResults} />
-</>
+  const [results, setResults] = useState(null);
+
+  // We need the following construction because checkTN_TSVDataRow is an ASYNC function
+  useEffect(() => {
+    // Use an IIFE (Immediately Invoked Function Expression)
+    //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
+    (async () => {
+      // Display our "waiting" message
+      setResults(<p style={{ color: 'magenta' }}>Checking {chosenTextName}…</p>);
+      const optionalCheckingOptions = {};
+      const rawResults = await checkMarkdownText(languageCode, chosenTextName, chosenText, givenLocation, optionalCheckingOptions);
+      if (!rawResults.successList || !rawResults.successList.length)
+        rawResults.successList = ["Done markdown text checks"];
+      setResults(
+        <div>
+          <b>Check</b> {chosenTextName}: "{chosenText.substr(0,256)}…"<br/><br/>
+          <RenderRawResults results={rawResults} />
+        </div>
+      );
+    })(); // end of async part in unnamedFunction
+  }, []); // end of useEffect part
+
+  return results;
+} // end of CheckMarkdownText function
+
+<CheckMarkdownText data={data}/>
 ```

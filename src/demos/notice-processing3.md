@@ -48,7 +48,7 @@ const processOptions = {
     // Uncomment any of these to test them
     // 'maximumSimilarMessages': 3, // default is 2
     // 'cutoffPriorityLevel': 200, // default is 0
-    // 'sortBy': 'ByPriority', // default is 'AsFound'
+    // 'sortBy': 'ByRepo', // default is 'ByPriority', also have 'AsFound'
     // 'ignorePriorityNumberList': [123, 202], // default is []
 };
 const processedResults = processNoticesToSingleList(rawResults, processOptions);

@@ -59,8 +59,8 @@ function CheckTNTSVText(props) {
     (async () => {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {tableTextName} <b>{bookID}</b>…</p>);
-      // (Final unused parameter is optionalCheckingOptions)
-      const rawResults = await checkTN_TSVText(languageCode, bookID, filename, tableText, givenLocation, {});
+      const optionalCheckingOptions = {};
+      const rawResults = await checkTN_TSVText(languageCode, bookID, filename, tableText, givenLocation, optionalCheckingOptions);
       setResults(
         <div>
           <b>Check</b> {tableTextName}: "{tableText.substr(0,256)}…"<br/><br/>

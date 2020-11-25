@@ -62,8 +62,8 @@ function CheckAnnotationRow(props) {
     (async () => {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {tableLineName} <b>{bookID}</b>…</p>);
-      // (Final unused parameter is optionalCheckingOptions)
-      const rawResults = await checkAnnotationTSVDataRow(languageCode, annotationType, tableLine, bookID, C, V, givenLocation, {});
+      const optionalCheckingOptions = {};
+      const rawResults = await checkAnnotationTSVDataRow(languageCode, annotationType, tableLine, bookID, C, V, givenLocation, optionalCheckingOptions);
       setResults(
         <div>
           <b>Check</b> {tableLineName}: "{tableLine.substr(0,256)}…"<br/><br/>

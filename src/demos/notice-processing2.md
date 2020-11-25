@@ -50,7 +50,7 @@ const processOptions = {
     // 'severePriorityLevel': 700, // default is 800
     // 'mediumPriorityLevel': 500, // default is 600
     // 'cutoffPriorityLevel': 200, // default is 0
-    // 'sortBy': 'ByPriority', // default is 'AsFound'
+    // 'sortBy': 'ByRepo', // default is 'ByPriority', also have 'AsFound'
     // 'ignorePriorityNumberList': [123, 202], // default is []
 };
 const processedResults = processNoticesToSevereMediumLow(rawResults, processOptions);

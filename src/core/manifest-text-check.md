@@ -10,6 +10,7 @@ These raw notice components can then be filtered and/or sorted as required by th
 // The code in this box is editable for changing settings—
 //        Simply click inside here and add, change, or delete text as required.
 
+import React, { useState, useEffect } from 'react';
 import { checkManifestText } from './manifest-text-check';
 import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
@@ -213,15 +214,43 @@ projects:
        url: 'https://cdn.door43.org/en/ult/v{latest}/pdf/en_ult_67-REV_v{latest}.pdf'
 `;
 
-// You can choose any of the above texts here
-//  (to demonstrate differing results)
-const chosenText = textG;
-const chosenTextName = 'textG';
+const data = {
+  // You can choose any of the above lines here
+  //  (to demonstrate differing results)
+  chosenTextName : 'textG',
+  chosenText : textG,
+  languageCode : 'en',
+  givenLocation : "that was supplied",
+}
 
-const rawResults = checkManifestText(chosenTextName, chosenText, 'in manifest data that was supplied');
+function CheckManifestText(props) {
+  const { languageCode, chosenText, chosenTextName, givenLocation } = props.data;
 
-<>
-<b>Manifest contents</b>: <RenderLines text={chosenText} />
-<RenderRawResults results={rawResults} />
-</>
+  const [results, setResults] = useState(null);
+
+  // We need the following construction because checkTN_TSVDataRow is an ASYNC function
+  useEffect(() => {
+    // Use an IIFE (Immediately Invoked Function Expression)
+    //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
+    (async () => {
+      // Display our "waiting" message
+      setResults(<p style={{ color: 'magenta' }}>Checking {chosenTextName}…</p>);
+      const optionalCheckingOptions = {};
+      const rawResults = await checkManifestText('', '', chosenText, 'in manifest data that was supplied', optionalCheckingOptions);
+      if (!rawResults.successList || !rawResults.successList.length)
+        rawResults.successList = ["Done manifest text checks"];
+      setResults(
+        <div>
+          <b>Check</b> {chosenTextName}: "{chosenText.substr(0,256)}…"<br/><br/>
+          // <b>Manifest contents</b>: <RenderLines text={chosenText} />
+          <RenderRawResults results={rawResults} />
+        </div>
+      );
+    })(); // end of async part in unnamedFunction
+  }, []); // end of useEffect part
+
+  return results;
+} // end of CheckManifestText function
+
+<CheckManifestText data={data}/>
 ```

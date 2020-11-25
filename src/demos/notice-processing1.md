@@ -49,7 +49,7 @@ const processOptions = {
     // 'maximumSimilarMessages': 3, // default is 2
     // 'errorPriorityLevel': 600, // default is 700
     // 'cutoffPriorityLevel': 200, // default is 0
-    // 'sortBy': 'ByPriority', // default is 'AsFound'
+    // 'sortBy': 'ByRepo', // default is 'ByPriority', also have 'AsFound'
     // 'ignorePriorityNumberList': [123, 202], // default is []
 };
 const processedResults = processNoticesToErrorsWarnings(rawResults, processOptions);

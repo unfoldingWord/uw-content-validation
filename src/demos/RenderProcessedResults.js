@@ -5,7 +5,7 @@ import React from 'react';
 import MaterialTable from 'material-table';
 
 
-// const RENDER_PROCESSED_RESULTS_VERSION = '0.5.4';
+// const RENDER_PROCESSED_RESULTS_VERSION = '0.5.6';
 
 
 export function RenderSuccesses({ username, results }) {
@@ -226,9 +226,10 @@ function RenderFileDetails({ username, repoName, filename, lineNumber, rowID, fi
         resultStart += ' on ';
         if (username && repoName && filename && lineNumber) {
             try {
-                if (filename.endsWith('.tsv') || filename.endsWith('.md')) // use blame so we can see the line!
-                    fileLink = `https://git.door43.org/${username}/${repoName}/blame/branch/master/${filename}#L${lineNumber}`;
-                else fileLink = `https://git.door43.org/${username}/${repoName}/src/branch/master/${filename}#L${lineNumber}`;
+                if (filename.endsWith('.tsv') || filename.endsWith('.md')) { // use blame so we can see the line!
+                    const folder = repoName.endsWith('_obs') && filename !== 'README.md' && filename !== 'LICENSE.md' ? 'content/' : '';
+                    fileLink = `https://git.door43.org/${username}/${repoName}/blame/branch/master/${folder}${filename}#L${lineNumber}`;
+                } else fileLink = `https://git.door43.org/${username}/${repoName}/src/branch/master/${filename}#L${lineNumber}`;
             } catch { }
         }
         // else if (!username) resultEnd += " no username";
@@ -274,9 +275,9 @@ function RenderSuccessesColored({ results }) {
 function RenderPriority({ entry }) {
     // Also displays the debugChain (after the priority) if the debugChain string exists
     if (entry.debugChain)
-    return <small><span style={{ color: 'Gray' }}> ({entry.priority >= 0 ? "Priority " + entry.priority : ""})</span> <span style={{ color: 'Purple' }}>[{entry.debugChain}]</span></small>
+        return <small><span style={{ color: 'Gray' }}> ({entry.priority >= 0 ? "Priority " + entry.priority : ""})</span> <span style={{ color: 'Purple' }}>[{entry.debugChain}]</span></small>
     else
-    return <small style={{ color: 'Gray' }}> ({entry.priority >= 0 ? "Priority " + entry.priority : ""})</small>
+        return <small style={{ color: 'Gray' }}> ({entry.priority >= 0 ? "Priority " + entry.priority : ""})</small>
 }
 
 function RenderProcessedArray({ arrayType, results }) {
@@ -302,7 +303,7 @@ function RenderProcessedArray({ arrayType, results }) {
                     <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
                     <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
                     {listEntry.characterIndex > 0 ? " (at character " + (listEntry.characterIndex + 1) + ")" : ""}
-                    <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
+                    <span style={{ color: 'DimGray' }}>{listEntry.extract ? ` around ►${listEntry.extract}◄` : ""}</span>
                     {listEntry.location}
                     <RenderPriority entry={listEntry} />
                 </li>;
@@ -330,7 +331,7 @@ function RenderGivenArray({ array, color }) {
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
                 <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
                 {listEntry.characterIndex !== undefined && listEntry.characterIndex >= 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
-                <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
+                <span style={{ color: 'DimGray' }}>{listEntry.extract ? ` around ►${listEntry.extract}◄` : ""}</span>
                 {listEntry.location}
                 <RenderPriority entry={listEntry} />
             </li>;
@@ -368,7 +369,7 @@ function RenderWarningsGradient({ results }) {
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
                 <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
                 {listEntry.characterIndex !== undefined && listEntry.characterIndex >= 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
-                <span style={{ color: 'DimGray' }}>{listEntry.extract ? " around '" + listEntry.extract + "'" : ""}</span>
+                <span style={{ color: 'DimGray' }}>{listEntry.extract ? ` around ►${listEntry.extract}◄` : ""}</span>
                 {listEntry.location}
                 <RenderPriority entry={listEntry} />
             </li>;

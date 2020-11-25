@@ -94,7 +94,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         drResult.noticeList.push({ ...noticeObject, bookID, C: givenC, V: givenV });
     }
 
-    function ourMarkdownTextChecks(rowID, fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions) {
+    async function ourMarkdownTextChecks(rowID, fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions) {
         /**
         * @description - checks the given markdown field and processes the returned results
         * @param {String} rowID - 4-character row ID field
@@ -125,7 +125,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         console.assert(typeof rowLocation === 'string', `checkTN_TSVDataRow ourMarkdownTextChecks: 'rowLocation' parameter should be a string not a '${typeof rowLocation}'`);
         console.assert(rowLocation.indexOf(fieldName) < 0, `checkTN_TSVDataRow ourMarkdownTextChecks: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const omtcResultObject = checkMarkdownText(languageCode, fieldName, fieldText, rowLocation, optionalCheckingOptions);
+        const omtcResultObject = await checkMarkdownText(languageCode, fieldName, fieldText, rowLocation, optionalCheckingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -492,7 +492,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
             if (isWhitespace(occurrenceNote))
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation });
             else { // More than just whitespace
-                ONSuggestion = ourMarkdownTextChecks(rowID, 'OccurrenceNote', occurrenceNote, true, ourRowLocation, optionalCheckingOptions);
+                ONSuggestion = await ourMarkdownTextChecks(rowID, 'OccurrenceNote', occurrenceNote, true, ourRowLocation, optionalCheckingOptions);
                 await ourCheckTNLinksToOutside(rowID, 'OccurrenceNote', occurrenceNote, ourRowLocation, linkCheckingOptions);
                 let regexResultArray;
                 // eslint-disable-next-line no-cond-assign

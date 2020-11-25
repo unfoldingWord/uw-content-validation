@@ -5,6 +5,9 @@ const disabledNotices = [
   // Just enter enough details to disable the required message(s) and no unwanted ones
   //  i.e., you can be as specific as you need about username and/or lineNumber, etc.
 
+  // TODO: Remove this -- it's only temporary to handle valid TN links like [](../02/20/zu5f) that are checked as issues
+  { repoCode: 'TN', priority: 648, }, // "More [ ]( ) links than valid Bible links" not yet properly handled by this package
+
   { repoCode: 'TN', priority: 450, }, // "TN2 Resource container link should have '*' language code with (not 'en')" as tC can't handle it yet!
 
   { repoCode: 'LT', priority: 638, fieldName: '\\p', }, // "Only found whitespace" tC3 outputs trailing spaces here
@@ -18,6 +21,8 @@ const disabledNotices = [
 
   { repoCode: 'TA', message: "Unexpected – character after space", }, // 191 -- temp en-dashes
   { repoCode: 'TA', message: "Unexpected space after – character", }, // 192 -- temp en-dashes
+
+  { repoCode: 'TA', priority: 172, }, // "Header levels should only increment by one" not required for TA
 
   { repoCode: 'TA', filename: 'translate/translate-textvariants/01.md', message: "Unexpected space after [ character", }, // 192
   { repoCode: 'TA', filename: 'translate/translate-formatsignals/01.md', message: "Unexpected space after ( character", }, // 192
