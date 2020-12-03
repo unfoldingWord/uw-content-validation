@@ -227,7 +227,8 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
         }
     }
 
-    if (optionalCheckingOptions.disableAllLinkFetchingFlag)
+    if ((!optionalCheckingOptions.cutoffPriorityLevel || optionalCheckingOptions.cutoffPriorityLevel < 20)
+        && optionalCheckingOptions.disableAllLinkFetchingFlag)
         addNoticePartial({ priority: 20, message: "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked", location: ourLocation });
 
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}.`);

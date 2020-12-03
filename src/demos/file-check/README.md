@@ -52,9 +52,10 @@ and then validates the content of one file selected from the repo.
   // The location field appears in check messages to help the user locate the issue
   location="as specified in FileCheck demo"
 
-  // Default displayType is 'ErrorsWarnings'
-  //  Alternatives are `SevereMediumLow', 'SingleList'
-  displayType='SingleList'
+  // Specifying extractLength and cutoffPriorityLevel is just to show off options
+  // —those fields are not necessary (or normal) here
+  extractLength='12' // Default is 15
+  // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
 
   // Normally links in files are downloaded to check that they really exist
   disableAllLinkFetchingFlag='true' // 'true' or 'false'
@@ -62,9 +63,12 @@ and then validates the content of one file selected from the repo.
   checkLinkedTAArticleFlag='true' // 'true' or 'false'
   checkLinkedTWArticleFlag='true' // 'true' or 'false'
 
-  // Specifying maximumSimilarMessages and extractLength is just to show off options
+  // Default displayType is 'ErrorsWarnings'
+  //  Alternatives are `SevereMediumLow', 'SingleList'
+  displayType='SingleList'
+
+  // Specifying maximumSimilarMessages is just to show off options
   // —those fields are not necessary (or normal) here
   maximumSimilarMessages='0' // Default is 3 (0 means don't suppress)
-  extractLength='12' // Default is 15
   />
 ```

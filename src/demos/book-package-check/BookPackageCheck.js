@@ -42,6 +42,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
     };
     // Or this allows the parameters to be specified as a BookPackageCheck property
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
+    if (props.cutoffPriorityLevel) checkingOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
     if (props.disableAllLinkFetchingFlag) checkingOptions.disableAllLinkFetchingFlag = props.disableAllLinkFetchingFlag.toLowerCase() === 'true';
     if (props.checkLinkedTAArticleFlag) checkingOptions.checkLinkedTAArticleFlag = props.checkLinkedTAArticleFlag.toLowerCase() === 'true';
     if (props.checkLinkedTWArticleFlag) checkingOptions.checkLinkedTWArticleFlag = props.checkLinkedTWArticleFlag.toLowerCase() === 'true';
@@ -125,7 +126,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             // Or this allows the parameters to be specified as a BookPackageCheck property
             if (props.maximumSimilarMessages) processOptions.maximumSimilarMessages = ourParseInt(props.maximumSimilarMessages);
             if (props.errorPriorityLevel) processOptions.errorPriorityLevel = ourParseInt(props.errorPriorityLevel);
-            if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
+            // if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
             if (props.sortBy) processOptions.sortBy = props.sortBy;
             if (props.ignorePriorityNumberList) { // We need to convert from string to Array
                 console.assert(props.ignorePriorityNumberList[0] === '[' && props.ignorePriorityNumberList[props.ignorePriorityNumberList.length - 1] === ']', `Format of props.ignorePriorityNumberList '${props.ignorePriorityNumberList}' is wrong should be enclosed in []`)

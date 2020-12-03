@@ -11,7 +11,7 @@ import { checkFileContents } from './checkFileContents';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const FILE_CHECK_VERSION_STRING = '0.2.2';
+// const FILE_CHECK_VERSION_STRING = '0.2.3';
 
 
 function FileCheck(props) {
@@ -111,7 +111,7 @@ function FileCheck(props) {
       // Or this allows the parameters to be specified as a FileCheck property
       if (props.maximumSimilarMessages) processOptions.maximumSimilarMessages = ourParseInt(props.maximumSimilarMessages);
       if (props.errorPriorityLevel) processOptions.errorPriorityLevel = ourParseInt(props.errorPriorityLevel);
-      if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
+      // if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
       if (props.sortBy) processOptions.sortBy = props.sortBy;
       // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
 
@@ -126,7 +126,7 @@ function FileCheck(props) {
             {processedResults.numIgnoredNotices ? `${processedResults.numIgnoredNotices.toLocaleString()} ignored notice(s)` : ""}
             {processedResults.numIgnoredNotices && processedResults.numDisabledNotices ? ' and ' : ''}
             {processedResults.numDisabledNotices ? `${processedResults.numDisabledNotices.toLocaleString()} disabled notice(s)` : ""}
-            {processedResults.numIgnoredNotices || processedResults.numDisabledNotices ? ')' : ''}.</p>
+            {processedResults.numIgnoredNotices || processedResults.numDisabledNotices ? ')' : ''}.{rawCFResults.checkedOptions.cutoffPriorityLevel? ` Priority level ${rawCFResults.checkedOptions.cutoffPriorityLevel} or lower were not included.`:''}</p>
           {/* <RenderRawResults results={rawCFResults} /> */}
         </div>);
       }
@@ -203,6 +203,7 @@ function FileCheck(props) {
   };
   // Or this allows the parameters to be specified as a FileCheck property
   if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
+  if (props.cutoffPriorityLevel) checkingOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
   if (props.disableAllLinkFetchingFlag) checkingOptions.disableAllLinkFetchingFlag = props.disableAllLinkFetchingFlag.toLowerCase() === 'true';
   if (props.checkLinkedTAArticleFlag) checkingOptions.checkLinkedTAArticleFlag = props.checkLinkedTAArticleFlag.toLowerCase() === 'true';
   if (props.checkLinkedTWArticleFlag) checkingOptions.checkLinkedTWArticleFlag = props.checkLinkedTWArticleFlag.toLowerCase() === 'true';

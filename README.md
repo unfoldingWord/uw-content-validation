@@ -100,6 +100,7 @@ There is provision for checking to be altered and/or sped-up when the calling ap
 - `taRepoLanguageCode`, and `taRepoSectionName`: can be used to specify how the `SupportReference` field is checked in TA—defaults are 'en' and 'translate'
 - `twRepoUsername`, `twRepoBranchName`: these two fields can be used to specify the username/organisation and/or the branch/tag name for fetching the TW files for checking
 - `extractLength`: an integer which defines how long excerpts of lines containing errors should be—the default is 15 characters—the package attempts to place the error in the middle of the extract
+- `cutoffPriorityLevel`: an integer which can define notices to not be detected—defaults to 0 so none are dropped. Note that this will also affect the `suggestion` response.
 
 Most of the high-level demonstrations allow a choice of one of three display formats for notices:
 
@@ -109,21 +110,21 @@ Most of the high-level demonstrations allow a choice of one of three display for
 
 In addition, there are some options in the display of notices for the demonstrations, set in `optionalProcessingOptions` used by the sample notice processing functions:
 
-- ignorePriorityNumberList: a list (array) of integers that causes of notices with these priority values to be dropped during notice processing
-- sortBy: a string which can be set to 'ByPriority', 'ByRepo', or 'AsFound'—the default is 'ByPriority', i.e., unsorted
-- errorPriorityLevel: an integer which can define *errors* (vs *warnings*) (if relevant)—defaults to 700 (and above)
-- severePriorityLevel: an integer which can define *severe* errors (if relevant)—defaults to 800 (and above)
-- mediumPriorityLevel: an integer which can define *medium* errors (if relevant)—defaults to 600 (and up to `severePriorityLevel`)
-- cutoffPriorityLevel: an integer which can define notices to be dropped/ignored—defaults to 0 so none are dropped
-- maximumSimilarMessages: an integer which defines how many of a certain notice to display, before summarising and saying something like *99 similar errors suppressed*—zero means don't ever summarise notices—defaults to 3
+- `ignorePriorityNumberList`: a list (array) of integers that causes of notices with these priority values to be dropped during notice processing
+- `sortBy`: a string which can be set to 'ByPriority', 'ByRepo', or 'AsFound'—the default is 'ByPriority', i.e., unsorted
+- `errorPriorityLevel`: an integer which can define *errors* (vs *warnings*) (if relevant)—defaults to 700 (and above)
+- `severePriorityLevel`: an integer which can define *severe* errors (if relevant)—defaults to 800 (and above)
+- `mediumPriorityLevel`: an integer which can define *medium* errors (if relevant)—defaults to 600 (and up to `severePriorityLevel`)
+- `cutoffPriorityLevel` (deprecated): an integer which can define notices to be dropped/ignored—defaults to 0 so none are dropped
+- `maximumSimilarMessages`: an integer which defines how many of a certain notice to display, before summarising and saying something like *99 similar errors suppressed*—zero means don't ever summarise notices—defaults to 3
 
 ## Still To Do
 
 Still unfinished (in rough priority order):
 
-1. Get checks of new formats working again (in `newFormat` branches)
+1. Finish checking that new formats working are again (in `newFormat` branches)
+1. Finish moving `cutoffPriorityLevel` from `processingOptions` to `checkingOptions`
 1. The `suggestion` mechanism is working, but more suggestions need to be created
-1. Consider moving `cutoffPriorityLevel` from `processingOptions` to `checkingOptions`
 1. Checking of general markdown and naked links (esp. in plain text and markdown files)
 1. Work through all [Issues](https://github.com/unfoldingWord/uw-content-validation/issues)
 1. Work through all `ToDo`s in code

@@ -35,5 +35,6 @@ import AllBookPackagesCheck from './AllBookPackagesCheck';
   // —those fields are not necessary (or normal) here
   maximumSimilarMessages='2' // Default is 3 (0 means don't suppress)
   // extractLength='13' // Default is 15
+  // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
   />
 ```

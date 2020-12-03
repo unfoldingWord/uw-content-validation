@@ -68,6 +68,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     };
     // Or this allows the parameters to be specified as a BookPackagesCheck property
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
+    if (props.cutoffPriorityLevel) checkingOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
 
     // Load whole repos, especially if we are going to check files in manifests
     let repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
@@ -132,7 +133,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
           // Or this allows the parameters to be specified as a BookPackagesCheck property
           if (props.maximumSimilarMessages) processOptions.maximumSimilarMessages = ourParseInt(props.maximumSimilarMessages);
           if (props.errorPriorityLevel) processOptions.errorPriorityLevel = ourParseInt(props.errorPriorityLevel);
-          if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
+          // if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
           if (props.sortBy) processOptions.sortBy = props.sortBy;
           // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
 

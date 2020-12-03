@@ -90,7 +90,9 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                         checkedRepos -- list of strings
                     depending on the type of check that was made.
     */
-    //     console.log(`processNoticesCommon v${NOTICE_PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
+    // console.log(`processNoticesCommon v${NOTICE_PROCESSOR_VERSION_STRING}
+    //     with ${JSON.stringify(givenNoticeObject)}
+    //     with options=${JSON.stringify(optionalProcessingOptions)}
     //   Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
 
 
@@ -439,7 +441,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         console.error(`Sorting '${sortBy}' is not implemented yet!!!`);
     if (sortBy === 'ByRepo') // sort again by repoCode string
         remainingNoticeList.sort(function (a, b) { return SORT_LIST.indexOf(a.repoCode) - SORT_LIST.indexOf(b.repoCode); });
-        // remainingNoticeList.sort(function (a, b) { return b.repoCode > a.repoCode; });
+    // remainingNoticeList.sort(function (a, b) { return b.repoCode > a.repoCode; });
 
     // Add in extra info if it's there -- default is to prepend it to the msg
     //  Doing this prevents errors/warnings from different repos or books from being combined
@@ -469,6 +471,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         else allTotals[thisCombinedID]++;
     }
 
+    // console.log(`processNoticesCommon is returning resultObject=${JSON.stringify(resultObject)}`);
     return [remainingNoticeList, allTotals, resultObject];
 }
 // end of processNoticesCommon function

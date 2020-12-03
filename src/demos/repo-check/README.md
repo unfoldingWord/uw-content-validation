@@ -36,6 +36,8 @@ import RepoCheck from './RepoCheck';
   // If we don't put the branch here, the default branch is used
   // branch='master'
 
+  location="as specified in repo-check/README.md"
+
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'
   displayType='SingleList'
@@ -45,6 +47,6 @@ import RepoCheck from './RepoCheck';
   // The location field appears in check messages to help the user locate the issue
   maximumSimilarMessages='4' // Default is 3 (0 means don't suppress)
   // extractLength='13' // Default is 15
-  location="as specified in repo-check/README.md"
+  // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
 />
 ```
