@@ -8,7 +8,7 @@ import { checkBookPackage } from '../book-package-check/checkBookPackage';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.6';
+// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.7';
 
 
 function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
@@ -44,15 +44,6 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
     if (props.cutoffPriorityLevel) checkingOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
 
-    // Load whole repos, especially if we are going to check files in manifests
-    let repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
-    if (dataSet === 'OLD')
-        repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ'];
-    else if (dataSet === 'NEW')
-        repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN2', 'TWL', 'TA', 'TW', 'TQ2'];
-    else if (dataSet === 'BOTH')
-        repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TN2', 'TWL', 'TA', 'TW', 'TQ', 'TQ2'];
-
     useEffect(() => {
         // console.log("GlBookPackageCheck.useEffect() called with ", JSON.stringify(props));
 
@@ -82,6 +73,15 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
                 await clearCaches();
             }
             else await clearCheckedArticleCache();
+
+            // Load whole repos, especially if we are going to check files in manifests
+            let repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
+            if (dataSet === 'OLD')
+                repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ'];
+            else if (dataSet === 'NEW')
+                repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN2', 'TWL', 'TA', 'TW', 'TQ2'];
+            else if (dataSet === 'BOTH')
+                repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TN2', 'TWL', 'TA', 'TW', 'TQ', 'TQ2'];
 
             setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for {username} {languageCode} ready for GL book package check…</p>);
             const successFlag = await preloadReposIfNecessary(username, languageCode, [bookID], branch, repoPreloadList);

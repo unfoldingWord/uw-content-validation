@@ -8,7 +8,7 @@ import { checkBookPackage } from './checkBookPackage';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.3.4';
+// const BP_VALIDATOR_VERSION_STRING = '0.3.5';
 
 
 function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
@@ -49,21 +49,6 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
     // console.log(`checkingOptions.checkLinkedTAArticleFlag ${checkingOptions.checkLinkedTAArticleFlag} from '${props.checkLinkedTAArticleFlag}'`);
     // console.log(`checkingOptions.checkLinkedTWArticleFlag ${checkingOptions.checkLinkedTWArticleFlag} from '${props.checkLinkedTWArticleFlag}'`);
 
-    // Load whole repos, especially if we are going to check files in manifests
-    let repoPreloadList = ['LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
-    if (dataSet === 'OLD')
-        repoPreloadList = ['LT', 'ST', 'TN', 'TA', 'TW', 'TQ'];
-    else if (dataSet === 'NEW')
-        repoPreloadList = ['LT', 'ST', 'TN2', 'TWL', 'TA', 'TW', 'TQ2'];
-    else if (dataSet === 'BOTH')
-        repoPreloadList = ['LT', 'ST', 'TN', 'TN2', 'TWL', 'TA', 'TW', 'TQ', 'TQ2'];
-    if (bookID !== 'OBS') {
-        const whichTestament = books.testament(bookID); // returns 'old' or 'new'
-        const origLangRepo = whichTestament === 'old' ? 'UHB' : 'UGNT';
-        repoPreloadList.unshift(origLangRepo);
-    }
-    // console.log(`BookPackageCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
-
     useEffect(() => {
         // const newProps = { bookID, branch, checkingOptions, languageCode, cutoffPriorityLevel: props.cutoffPriorityLevel, displayType: props.displayType, errorPriorityLevel: props.errorPriorityLevel, maximumSimilarMessages: props.maximumSimilarMessages, sortBy: props.sortBy, username};
         // console.log("BookPackageCheck.useEffect() called with ", JSON.stringify(newProps));
@@ -94,6 +79,21 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
                 await clearCaches();
             }
             else await clearCheckedArticleCache();
+
+            // Load whole repos, especially if we are going to check files in manifests
+            let repoPreloadList = ['LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
+            if (dataSet === 'OLD')
+                repoPreloadList = ['LT', 'ST', 'TN', 'TA', 'TW', 'TQ'];
+            else if (dataSet === 'NEW')
+                repoPreloadList = ['LT', 'ST', 'TN2', 'TWL', 'TA', 'TW', 'TQ2'];
+            else if (dataSet === 'BOTH')
+                repoPreloadList = ['LT', 'ST', 'TN', 'TN2', 'TWL', 'TA', 'TW', 'TQ', 'TQ2'];
+            if (bookID !== 'OBS') {
+                const whichTestament = books.testament(bookID); // returns 'old' or 'new'
+                const origLangRepo = whichTestament === 'old' ? 'UHB' : 'UGNT';
+                repoPreloadList.unshift(origLangRepo);
+            }
+            // console.log(`BookPackageCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
 
             // if (bookID !== 'OBS') { // Preload the reference repos
             setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for {username} {languageCode} ready for <b>{bookID}</b> book package check…</p>);
