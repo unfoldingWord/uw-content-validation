@@ -2,10 +2,9 @@ import * as books from '../core/books/books';
 import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { cachedGetFile } from '../core/getApi';
 import { ourParseInt } from './utilities';
-// import { consoleLogObject } from '../core/utilities';
 
 
-// const QUOTE_VALIDATOR_VERSION_STRING = '0.7.2';
+// const QUOTE_VALIDATOR_VERSION_STRING = '0.7.3';
 
 
 export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldText, occurrenceString, bookID, C, V, givenLocation, optionalCheckingOptions) {
@@ -27,6 +26,7 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
     console.assert(typeof fieldName === 'string', `checkOriginalLanguageQuote: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
     console.assert(fieldText !== undefined, "checkOriginalLanguageQuote: 'fieldText' parameter should be defined");
     console.assert(typeof fieldText === 'string', `checkOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+    console.assert(fieldText.length >= 1, `checkOriginalLanguageQuote: 'fieldText' parameter should have text not ${fieldText.length} characters`);
     console.assert(occurrenceString !== undefined, "checkOriginalLanguageQuote: 'occurrenceString' parameter should be defined");
     console.assert(typeof occurrenceString === 'string', `checkOriginalLanguageQuote: 'occurrenceString' parameter should be a string not a '${typeof occurrenceString}'`);
     console.assert(bookID !== undefined, "checkOriginalLanguageQuote: 'bookID' parameter should be defined");
@@ -316,7 +316,7 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
                     remainingBits = [remainingBits[0], remainingBits.slice(1).join('…')];
                 console.assert(remainingBits.length === 2, `remaining bits are ${remainingBits.length}`);
                 // Note: There's some Hebrew (RTL) characters at the beginning of the following regex
-                if (fieldText.slice(0) !== ' ' && remainingBits[0] && remainingBits[0].slice(-1).search(/[^־A-Za-z\s*[(]/) !== -1) {
+                if (fieldText.slice(0) !== ' ' && remainingBits[0] && remainingBits[0].slice(-1).search(/[^־A-Za-z\s*[("“‘]/) !== -1) {
                     // const badChar = remainingBits[0].slice(-1);
                     // const badCharString = ` by '{badChar}' {unicodedata.name(badChar)}={hex(ord(badChar))}`;
                     // console.log(`Seems '${fieldText}' might not start at the beginning of a word—it's preceded ${badCharString} in '${verseText}'`);
