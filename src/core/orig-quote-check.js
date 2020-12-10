@@ -74,12 +74,12 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
         // console.log(`getOriginalPassage(${bookID}, ${C}, ${V})…`);
         let username;
         try {
-            username = optionalCheckingOptions.originalLanguageRepoUsername;
+            username = optionalCheckingOptions?.originalLanguageRepoUsername;
         } catch (qcoError) { }
         if (!username) username = languageCode === 'en' ? 'unfoldingWord' : 'Door43-Catalog'; // ??? !!!
         let branch;
         try {
-            branch = optionalCheckingOptions.originalLanguageRepoBranch;
+            branch = optionalCheckingOptions?.originalLanguageRepoBranch;
         } catch (qcunError) { }
         if (!branch) branch = 'master';
         const getFile_ = (optionalCheckingOptions && optionalCheckingOptions.getFile) ? optionalCheckingOptions.getFile : cachedGetFile;
@@ -268,7 +268,7 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
         verseText = optionalCheckingOptions.originalLanguageVerseText;
     } catch (gcVTerror) { }
     if (!verseText) {// not supplied, so then we need to get it ourselves
-        if (optionalCheckingOptions.disableAllLinkFetchingFlag)
+        if (optionalCheckingOptions?.disableAllLinkFetchingFlag)
             return colqResult; // nothing else we can do here
         else {
             verseText = await getOriginalPassage(bookID, C, V, optionalCheckingOptions);
