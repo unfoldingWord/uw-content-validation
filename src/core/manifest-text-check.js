@@ -1,10 +1,11 @@
 import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { checkYAMLText } from './yaml-text-check';
-import { cachedGetFile } from '../core/getApi';
+import { cachedGetFile } from './getApi';
+import { BibleBookData } from './books/books'
 import Ajv from 'ajv';
 
 
-const MANIFEST_VALIDATOR_VERSION_STRING = '0.3.4';
+const MANIFEST_VALIDATOR_VERSION_STRING = '0.3.6';
 
 // Pasted in 2020-10-02 from https://raw.githubusercontent.com/unfoldingWord/dcs/master/options/schema/rc.schema.json
 const MANIFEST_SCHEMA = {
@@ -686,20 +687,25 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
             const projectFilepath = projectEntry['path'];
             if (repoName
                 && projectFilepath !== './content' // Ignore this common folder path
+                && projectFilepath !== './bible' // Ignore this common folder path
                 && projectFilepath !== './intro' && projectFilepath !== './process' && projectFilepath !== './translate' && projectFilepath !== './checking' // Ignore these TA folder paths
-                && (!optionalCheckingOptions || optionalCheckingOptions.disableAllLinkFetchingFlag !== true)) { // Try fetching the file
-                let projectFileContent;
-                try {
-                    projectFileContent = await getFile_({ username, repository: repoName, path: projectFilepath, branch: repoBranch });
-                    // console.log("Fetched manifest project fileContent for", repoName, projectFilepath, typeof projectFileContent, projectFileContent.length);
-                    if (!projectFileContent)
-                        addNotice({ priority: 938, message: `Unable to find project file mentioned in manifest`, extract: projectFilepath, location: ourLocation });
-                    else if (projectFileContent.length < 10)
-                        addNotice({ priority: 937, message: `Linked project file seems empty`, extract: projectFilepath, location: ourLocation });
-                } catch (trcGCerror) {
-                    addNotice({ priority: 936, message: `Error loading manifest project link`, details: trcGCerror, extract: projectFilepath, location: ourLocation });
+                && (!optionalCheckingOptions || optionalCheckingOptions.disableAllLinkFetchingFlag !== true)) { // Try fetching the file maybe
+                let isBookFolder = false;
+                for (const thisBookID of Object.keys(BibleBookData))
+                    if (projectFilepath === `./${thisBookID}`) { isBookFolder = true; break; }
+                if (!isBookFolder) {
+                    let projectFileContent;
+                    try {
+                        projectFileContent = await getFile_({ username, repository: repoName, path: projectFilepath, branch: repoBranch });
+                        // console.log("Fetched manifest project fileContent for", repoName, projectFilepath, typeof projectFileContent, projectFileContent.length);
+                        if (!projectFileContent)
+                            addNotice({ priority: 938, message: `Unable to find project file mentioned in manifest`, extract: projectFilepath, location: ourLocation });
+                        else if (projectFileContent.length < 10)
+                            addNotice({ priority: 937, message: `Linked project file seems empty`, extract: projectFilepath, location: ourLocation });
+                    } catch (trcGCerror) {
+                        addNotice({ priority: 936, message: `Error loading manifest project link`, details: trcGCerror, extract: projectFilepath, location: ourLocation });
+                    }
                 }
-
             }
         }
     }

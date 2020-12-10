@@ -4,7 +4,7 @@ import { cachedGetFile } from '../core/getApi';
 import { ourParseInt } from './utilities';
 
 
-// const QUOTE_VALIDATOR_VERSION_STRING = '0.7.3';
+// const QUOTE_VALIDATOR_VERSION_STRING = '0.7.5';
 
 
 export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldText, occurrenceString, bookID, C, V, givenLocation, optionalCheckingOptions) {
@@ -316,7 +316,8 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
                     remainingBits = [remainingBits[0], remainingBits.slice(1).join('…')];
                 console.assert(remainingBits.length === 2, `remaining bits are ${remainingBits.length}`);
                 // Note: There's some Hebrew (RTL) characters at the beginning of the following regex
-                if (fieldText.slice(0) !== ' ' && remainingBits[0] && remainingBits[0].slice(-1).search(/[^־A-Za-z\s*[("“‘]/) !== -1) {
+                // Note: Straight quotes are included here (even though unwanted) as other code warns about them
+                if (fieldText.slice(0) !== ' ' && remainingBits[0] && remainingBits[0].slice(-1).search(/[^־A-Za-z\s*[("'“‘]/) !== -1) {
                     // const badChar = remainingBits[0].slice(-1);
                     // const badCharString = ` by '{badChar}' {unicodedata.name(badChar)}={hex(ord(badChar))}`;
                     // console.log(`Seems '${fieldText}' might not start at the beginning of a word—it's preceded ${badCharString} in '${verseText}'`);
@@ -329,7 +330,7 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
                     // const badCharString = ` by '${badChar}' {unicodedata.name(badChar)}={hex(ord(badChar))}`;
                     // console.log(`Seems '${fieldText}' might not finish at the end of a word—it's followed ${badCharString} in '${verseText}'`);
                     const extract = (fieldText.length > extractLength - 3 ? '…' : '') + fieldText.substring(fieldText.length - extractLength + 3, fieldText.length) + `(${remainingBits[1][0]}=D${remainingBits[1].charCodeAt(0)}/H${remainingBits[1].charCodeAt(0).toString(16)})`;
-                    addNotice({ priority: 621, message: "Seems original language quote might not finish at the end of a word", details: `passage ⸢${verseText}⸣`, characterIndex: fieldText.length, extract, location: ourLocation });
+                    addNotice({ priority: 621, message: "Seems original language quote might not finish at the end of a word", details: `passage ►${verseText}◄`, characterIndex: fieldText.length, extract, location: ourLocation });
                 }
             }
         } else { // can't find the given text

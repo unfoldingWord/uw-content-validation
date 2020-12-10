@@ -7,7 +7,7 @@ import * as books from './books';
 import { clearCheckedArticleCache } from './tn-links-check';
 
 
-// const GETAPI_VERSION_STRING = '0.6.6';
+// const GETAPI_VERSION_STRING = '0.6.7';
 
 const MAX_INDIVIDUAL_FILES_TO_DOWNLOAD = 5; // More than this and it downloads the zipfile for the entire repo
 
@@ -140,10 +140,10 @@ async function getUnZippedFile(path) {
 // This is the function that we call the most from the outside
 export async function cachedGetFile({ username, repository, path, branch }) {
   // console.log(`cachedGetFile(${username}, ${repository}, ${path}, ${branch})…`);
-  console.assert(typeof username === 'string' && username.length, `cachedGetFile: username parameter should be a string`);
-  console.assert(typeof repository === 'string' && repository.length, `cachedGetFile: repository parameter should be a string`);
-  console.assert(typeof path === 'string' && path.length, `cachedGetFile: path parameter should be a string`);
-  console.assert(typeof branch === 'string' && branch.length, `cachedGetFile: branch parameter should be a string`);
+  console.assert(typeof username === 'string' && username.length, `cachedGetFile: username parameter should be a non-empty string not ${typeof username}: ${username}`);
+  console.assert(typeof repository === 'string' && repository.length, `cachedGetFile: repository parameter should be a non-empty string not ${typeof repository}: ${repository}`);
+  console.assert(typeof path === 'string' && path.length, `cachedGetFile: path parameter should be a non-empty string not ${typeof path}: ${path}`);
+  console.assert(typeof branch === 'string' && branch.length, `cachedGetFile: branch parameter should be a non-empty string not ${typeof branch}: ${branch}`);
 
   const filePath = Path.join(username, repository, path, branch);
   let contents = await getUnZippedFile(filePath);

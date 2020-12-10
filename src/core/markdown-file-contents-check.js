@@ -140,7 +140,8 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
   else
     addSuccessMessage(`No errors or warnings found by checkMarkdownFileContents v${MARKDOWN_FILE_VALIDATOR_VERSION_STRING}`)
   // console.log(`  checkMarkdownFileContents returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
-  // console.log("checkMarkdownFileContents result is", JSON.stringify(result));
+  if (markdownFilename.endsWith('walk.md'))
+    console.log("checkMarkdownFileContents result is", JSON.stringify(result));
   return result;
 }
 // end of checkMarkdownFileContents function

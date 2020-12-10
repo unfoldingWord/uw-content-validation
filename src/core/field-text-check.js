@@ -1,7 +1,7 @@
 import { DEFAULT_EXTRACT_LENGTH, MATCHED_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, isWhitespace, countOccurrences } from './text-handling-functions'
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.0';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.1';
 
 
 /**
@@ -59,7 +59,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
         console.assert(noticeObject.location !== undefined, "dBTCs addNoticePartial: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `dBTCs addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
-        // noticeObject.debugChain = noticeObject.debugChain ? `checkTextField(${fieldType}, ${fieldName}, ${allowedLinks}) ${noticeObject.debugChain}` : `checkTextField(${fieldType}, ${fieldName}, ${allowedLinks})`;
+        //noticeObject.debugChain = noticeObject.debugChain ? `checkTextField(${fieldType}, ${fieldName}, ${allowedLinks}) ${noticeObject.debugChain}` : `checkTextField(${fieldType}, ${fieldName}, ${allowedLinks})`;
         if (fieldName.length) noticeObject.fieldName = fieldName; // Don't add the field if it's blank
         result.noticeList.push(noticeObject);
     }
@@ -133,7 +133,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
             addNoticePartial({ priority: 109, message: `Unexpected leading space`, characterIndex: 0, extract, location: ourLocation });
     } else if (fieldText[0] === '\u2060') {
         const extract = fieldText.substring(0, extractLength).replace(/\u2060/g, '‼') + (fieldText.length > extractLength ? '…' : '');
-        addNoticePartial({ priority: 770, message: `Unexpected leading word joiner`, characterIndex: 0, extract, location: ourLocation });
+        addNoticePartial({ priority: 770, message: `Unexpected leading word-joiner`, characterIndex: 0, extract, location: ourLocation });
         if (suggestion[0] === '\u2060') suggestion = suggestion.substring(1);
     } else if (fieldText[0] === '\u200D') {
         const extract = fieldText.substring(0, extractLength).replace(/\u200D/g, '‼') + (fieldText.length > extractLength ? '…' : '');
@@ -154,7 +154,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     if ((!optionalCheckingOptions.cutoffPriorityLevel || optionalCheckingOptions.cutoffPriorityLevel < 772)
         && fieldText[fieldText.length - 1] === '\u2060') {
         const extract = fieldText.substring(0, extractLength).replace(/\u2060/g, '‼') + (fieldText.length > extractLength ? '…' : '');
-        addNoticePartial({ priority: 772, message: `Unexpected trailing word joiner`, characterIndex: 0, extract, location: ourLocation });
+        addNoticePartial({ priority: 772, message: `Unexpected trailing word-joiner`, characterIndex: 0, extract, location: ourLocation });
         if (suggestion[suggestion.length - 1] === '\u2060') suggestion = suggestion.substring(0, suggestion.length - 1);
     } else if ((!optionalCheckingOptions.cutoffPriorityLevel || optionalCheckingOptions.cutoffPriorityLevel < 773)
         && fieldText[fieldText.length - 1] === '\u200D') {
@@ -369,19 +369,40 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     // Check matched pairs in the field
     for (const punctSet of MATCHED_PUNCTUATION_PAIRS) {
         // Can't check '‘’' coz they might be used as apostrophe
-        const leftChar = punctSet[0];
+        const leftChar = punctSet[0], rightChar = punctSet[1];
         // if (fieldType === 'markdown' && leftChar === '<') continue; // markdown uses this for block quote
+        // TODO: The following 'continue' might not be doing the 2nd lot of checks
         if ((fieldType === 'USFM' || fieldName.startsWith('from \\') || (fieldType === 'markdown' && fieldName === ''))
             && '([{“«'.indexOf(leftChar) >= 0) continue; // Start/end can be on different lines
-        if (fieldType === 'markdown' && leftChar === '<') continue; // > is a markdown block marker
-        const rightChar = punctSet[1];
-        const leftCount = countOccurrences(fieldText, leftChar);
-        const rightCount = countOccurrences(fieldText, rightChar);
-        if (leftCount !== rightCount) {
-            // NOTE: These are higher priority than similar checks in a whole file which is less specific
-            const thisPriority = leftChar === '“' ? 163 : 563;
-            if (!optionalCheckingOptions.cutoffPriorityLevel || optionalCheckingOptions.cutoffPriorityLevel < thisPriority)
+        if (fieldType !== 'markdown' || leftChar !== '<') { // > is a markdown block marker and also used for HTML, e.g., <br>
+            const leftCount = countOccurrences(fieldText, leftChar),
+            rightCount = countOccurrences(fieldText, rightChar);
+            if (leftCount !== rightCount) {
+                // NOTE: These are higher priority than similar checks in a whole file which is less specific
+                const thisPriority = leftChar === '“' ? 163 : 563;
+                if (!optionalCheckingOptions.cutoffPriorityLevel || optionalCheckingOptions.cutoffPriorityLevel < thisPriority)
                 addNoticePartial({ priority: thisPriority, message: `Mismatched ${leftChar}${rightChar} characters`, details: `(left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()})`, location: ourLocation });
+            }
+            try {
+                const leftRegex = new RegExp(`(\\w)\\${leftChar}(\\w)`, 'g'), rightRegex = new RegExp(`(\\w)\\${rightChar}(\\w)`, 'g'); // This regex build fails for some of the characters
+                // console.log(`leftRegex is ${leftRegex}`);
+                let regexResultArray;
+                // eslint-disable-next-line no-cond-assign
+                while (regexResultArray = leftRegex.exec(fieldText))
+                    if (fieldType !== 'markdown' || regexResultArray[0][0] !== '_') {
+                        // console.log(`Got misplaced left ${leftChar} in ${fieldType} ${fieldName} '${fieldText}':`, JSON.stringify(regexResultArray));
+                        const thisPriority = leftChar === '(' && regexResultArray[0][2] === 's' ? 317 : 717; // Lower priority for 'thing(s)'
+                        if (!optionalCheckingOptions.cutoffPriorityLevel || optionalCheckingOptions.cutoffPriorityLevel < thisPriority)
+                            addNoticePartial({ priority: thisPriority, message: `Misplaced ${leftChar} character`, extract: regexResultArray[0], location: ourLocation });
+                    }
+                // eslint-disable-next-line no-cond-assign
+                while (regexResultArray = rightRegex.exec(fieldText))
+                    if (fieldType !== 'markdown' || regexResultArray[0][2] !== '_') {
+                        // console.log(`Got misplaced right ${rightChar} in ${fieldType} ${fieldName} '${fieldText}':`, JSON.stringify(regexResultArray));
+                        if (!optionalCheckingOptions.cutoffPriorityLevel || optionalCheckingOptions.cutoffPriorityLevel < 716)
+                            addNoticePartial({ priority: 716, message: `Misplaced ${rightChar} character`, extract: regexResultArray[0], location: ourLocation });
+                    }
+            } catch { }
         }
     }
 

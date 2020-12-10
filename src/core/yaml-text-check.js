@@ -3,7 +3,7 @@ import yaml from 'yaml';
 import { checkTextField } from './field-text-check';
 import { checkTextfileContents } from './file-text-check';
 
-const YAML_VALIDATOR_VERSION_STRING = '0.4.0';
+const YAML_VALIDATOR_VERSION_STRING = '0.4.1';
 
 
 export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, optionalCheckingOptions) {
@@ -115,7 +115,7 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, o
         thisText = thisText.replace(/^ +/g, '')
         // console.log(`After removing more leading spaces have '${thisText}'`);
 
-        const allowedLinksInLine = thisText.startsWith('url:') || thisText.startsWith('chapter_url:');
+        const allowedLinksInLine = thisText.startsWith('url:') || thisText.startsWith('chapter_url:') || thisText.startsWith('rc:');
         if (thisText)
             ourCheckTextField(lineNumber, thisText, allowedLinksInLine, lineLocation, optionalCheckingOptions);
     }

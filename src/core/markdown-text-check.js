@@ -74,7 +74,7 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
         console.assert(noticeObject.location !== undefined, "cMdT addNotice: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `cMdT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
-        // noticeObject.debugChain = noticeObject.debugChain ? `checkMarkdownText(${languageCode}, ${textName}) ${noticeObject.debugChain}` : `checkMarkdownText(${languageCode}, ${textName})`;
+        //noticeObject.debugChain = noticeObject.debugChain ? `checkMarkdownText(${languageCode}, ${textOrFileName}) ${noticeObject.debugChain}` : `checkMarkdownText(${languageCode}, ${textOrFileName})`;
         result.noticeList.push(noticeObject); // Used to have filename: textName, but that isn't always a filename !!!
     }
     // end of addNotice function
@@ -138,7 +138,7 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
             else if (optionalCheckingOptions.disableAllLinkFetchingFlag !== true) {
                 // console.log(`Need to check existence of ${fetchLink}`);
                 try {
-                    const responseData = await cachedGetFileUsingFullURL({uri: fetchLink});
+                    const responseData = await cachedGetFileUsingFullURL({ uri: fetchLink });
                     console.assert(responseData.length > 10, `Expected ${fetchLink} image file to be longer: ${responseData.length}`);
                     // console.log("Markdown link fetch got response: ", responseData.length);
                 } catch (flError) {
@@ -236,7 +236,8 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
     else
         addSuccessMessage(`No errors or warnings found by checkMarkdownText v${MARKDOWN_TEXT_VALIDATOR_VERSION_STRING}`)
     // console.log(`  checkMarkdownText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
-    // console.log("checkMarkdownText result is", JSON.stringify(result));
+    if (textOrFileName.endsWith('walk.md'))
+        console.log("checkMarkdownText result is", JSON.stringify(result));
     return result;
 }
 // end of checkMarkdownText function

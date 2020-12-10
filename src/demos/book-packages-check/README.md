@@ -29,7 +29,7 @@ import BookPackagesCheck from './BookPackagesCheck';
   languageCode='en'
   // Enter a string containing UPPERCASE USFM book identifiers separated only by commas
   //  and can also include OBS (for Open Bible Stories)
-  bookIDs='OBS,RUT,EST,JON,EPH,TIT,3JN' // These English BPs should all be finished
+  bookIDs='OBS,RUT,NEH,EST,JON,EPH,1TI,2TI,TIT,3JN' // These English BPs should all be finished
 
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'
