@@ -49,7 +49,7 @@ import BookPackageCheck from './BookPackageCheck';
   // —those fields are not necessary (or normal) here
   extractLength='20' // Default is 15
   // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
-  maximumSimilarMessages='5' // Default is 3 (0 means don't suppress)
+  maximumSimilarMessages='5' // Default is 3 (0 means don't suppress any)
   //ignorePriorityNumberList='[]'
   //sortBy='ByRepo' // Default is 'ByPriority'; also have 'ByRepo' and 'AsFound'
   ignoreDisabledNoticesFlag='false' // Show known non-issues: 'true' or 'false'

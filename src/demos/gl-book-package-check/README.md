@@ -48,8 +48,8 @@ clearCheckedArticleCache();
   // Lines starting with // are ignored -- you can add or remove // as desired
   // Specifying maximumSimilarMessages and extractLength is just to show off options
   // —those fields are not necessary (or normal) here
-  maximumSimilarMessages='2' // Default is 3 (0 means don't suppress)
-  // extractLength='13' // Default is 15
+  maximumSimilarMessages='4' // Default is 3 (0 means don't suppress any)
+  // extractLength='20' // Default is 15
   // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
   />
 ```

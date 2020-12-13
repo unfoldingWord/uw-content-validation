@@ -376,12 +376,12 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
             && '([{“«'.indexOf(leftChar) >= 0) continue; // Start/end can be on different lines
         if (fieldType !== 'markdown' || leftChar !== '<') { // > is a markdown block marker and also used for HTML, e.g., <br>
             const leftCount = countOccurrences(fieldText, leftChar),
-            rightCount = countOccurrences(fieldText, rightChar);
+                rightCount = countOccurrences(fieldText, rightChar);
             if (leftCount !== rightCount) {
                 // NOTE: These are higher priority than similar checks in a whole file which is less specific
                 const thisPriority = leftChar === '“' ? 163 : 563;
                 if (!optionalCheckingOptions.cutoffPriorityLevel || optionalCheckingOptions.cutoffPriorityLevel < thisPriority)
-                addNoticePartial({ priority: thisPriority, message: `Mismatched ${leftChar}${rightChar} characters`, details: `(left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()})`, location: ourLocation });
+                    addNoticePartial({ priority: thisPriority, message: `Mismatched ${leftChar}${rightChar} characters`, details: `(left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()})`, location: ourLocation });
             }
             try {
                 const leftRegex = new RegExp(`(\\w)\\${leftChar}(\\w)`, 'g'), rightRegex = new RegExp(`(\\w)\\${rightChar}(\\w)`, 'g'); // This regex build fails for some of the characters
@@ -391,9 +391,10 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
                 while (regexResultArray = leftRegex.exec(fieldText))
                     if (fieldType !== 'markdown' || regexResultArray[0][0] !== '_') {
                         // console.log(`Got misplaced left ${leftChar} in ${fieldType} ${fieldName} '${fieldText}':`, JSON.stringify(regexResultArray));
-                        const thisPriority = leftChar === '(' && regexResultArray[0][2] === 's' ? 317 : 717; // Lower priority for 'thing(s)'
+                        let thisPriority = 717, thisMessage = `Misplaced ${leftChar} character`;
+                        if (leftChar === '(' && regexResultArray[0][2] === 's') { thisPriority = 17; thisMessage = `Possible misplaced ${leftChar} character`; } // Lower priority for words like 'thing(s)'
                         if (!optionalCheckingOptions.cutoffPriorityLevel || optionalCheckingOptions.cutoffPriorityLevel < thisPriority)
-                            addNoticePartial({ priority: thisPriority, message: `Misplaced ${leftChar} character`, extract: regexResultArray[0], location: ourLocation });
+                            addNoticePartial({ priority: thisPriority, message: thisMessage, extract: regexResultArray[0], location: ourLocation });
                     }
                 // eslint-disable-next-line no-cond-assign
                 while (regexResultArray = rightRegex.exec(fieldText))

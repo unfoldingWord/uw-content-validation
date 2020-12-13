@@ -23,10 +23,11 @@ import RepoCheck from './RepoCheck';
   username = 'unfoldingWord'
 
   // Lines starting with // are ignored -- you can add or remove // as desired
+  // NOTE: Some of these whole repository checks can take a looong time!
   // repoName='hbo_uhb' // includes OT books only—some large files with parsing info!
   // repoName='el-x-koine_ugnt' // includes NT books only—some large files with parsing info!
   // repoName='en_ult' // Can use ult or ust here—some large files with alignment info!
-  // repoName='en_tn' // Translation Notes (TSV tables)
+  // repoName='en_tn' // Translation Notes (TSV tables -- MANY links to check!)
   // repoName='en_tq' // Translation Questions (17,000+ markdown files!)
   repoName='en_ta' // Translation Academy (700+ markdown files)
   // repoName='en_tw' // Translation Words (1000+ markdown files)
@@ -36,6 +37,7 @@ import RepoCheck from './RepoCheck';
   // If we don't put the branch here, the default branch is used
   // branch='master'
 
+  // The location field appears in check messages to help the user locate the issue
   location="as specified in repo-check/README.md"
 
   // Default displayType is 'ErrorsWarnings'
@@ -44,9 +46,8 @@ import RepoCheck from './RepoCheck';
 
   // Specifying maximumSimilarMessages and extractLength is just to show off options
   // —those fields are not necessary (or normal) here
-  // The location field appears in check messages to help the user locate the issue
-  maximumSimilarMessages='4' // Default is 3 (0 means don't suppress)
-  // extractLength='13' // Default is 15
+  maximumSimilarMessages='4' // Default is 3 (0 means don't suppress any)
+  // extractLength='20' // Default is 15
   // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
 />
 ```

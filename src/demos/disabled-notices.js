@@ -1,6 +1,12 @@
-// NOTE: This is only recommended for resources which are relatively stable,
-//          e.g., completed book packages
-//        as it relies on details like filename and maybe line number.
+/* This file handles the suppression of notices where we don't want to disable or remove the actual check,
+    but we just want to disable it for certain resources to handle special cases.
+    In some cases, it's to handle software deficiencies.
+
+  NOTE: This is only recommended for resources which are relatively stable,
+          e.g., completed book packages
+        as it can rely on details like filename and maybe line number.
+*/
+
 const disabledNotices = [
   // Just enter enough details to disable the required message(s) and no unwanted ones
   //  i.e., you can be as specific as you need about username and/or lineNumber, etc.

@@ -256,6 +256,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     else console.log(`Using supplied cutoffPriorityLevel=${cutoffPriorityLevel} cf. default=${DEFAULT_CUTOFF_PRIORITY_LEVEL}`);
     // if (cutoffPriorityLevel > errorPriorityLevel)
     // resultObject.errorList.push({999, "Cutoff level must not be higher than error level", extract:`(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
+
     let ignoreDisabledNoticesFlag = optionalProcessingOptions.ignoreDisabledNoticesFlag === true;
     if (ignoreDisabledNoticesFlag) console.log(`ignoreDisabledNoticesFlag=${ignoreDisabledNoticesFlag}`);
 
@@ -399,6 +400,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     }
 
     // Remove any notices that they have asked us to ignore
+    //  plus any from our list of disabled notices (for certain repos/files, etc.)
     let remainingNoticeList;
     if (ignorePriorityNumberList.length || !ignoreDisabledNoticesFlag) {
         // console.log("Doing ignore of", ignorePriorityNumberList.length,"value(s)");

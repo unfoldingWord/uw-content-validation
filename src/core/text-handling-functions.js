@@ -15,7 +15,7 @@ export const MATCHED_PUNCTUATION_PAIRS = [
     ['**_', '_**']
 ];
 export const BAD_CHARACTER_COMBINATIONS = [
-    '\\[', '\\]', // These were introduced by a tC Create bug
+    '\\[\\[', '\\]\\]', // These were introduced by a tC Create bug (NOTE: \[ or \] is quite legal)
     '] (http', '] (.', // Bad markdown links (with a space between the parts)
 ];
 
