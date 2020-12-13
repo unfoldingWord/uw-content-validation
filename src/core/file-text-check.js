@@ -91,7 +91,7 @@ export function checkTextfileContents(languageCode, fileType, filename, fileText
     /*
     let extractLength;
     try {
-        extractLength = optionalCheckingOptions.extractLength;
+        extractLength = optionalCheckingOptions?.extractLength;
     } catch (bfcError) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;

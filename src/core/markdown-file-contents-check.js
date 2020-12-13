@@ -39,7 +39,7 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
 
   let extractLength;
   try {
-    extractLength = optionalCheckingOptions.extractLength;
+    extractLength = optionalCheckingOptions?.extractLength;
   } catch (mdtcError) { }
   if (typeof extractLength !== 'number' || isNaN(extractLength)) {
     extractLength = DEFAULT_EXTRACT_LENGTH;

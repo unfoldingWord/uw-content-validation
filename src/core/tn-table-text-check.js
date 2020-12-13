@@ -61,7 +61,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
 
     let extractLength;
     try {
-        extractLength = optionalCheckingOptions.extractLength;
+        extractLength = optionalCheckingOptions?.extractLength;
     } catch (ttcError) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
@@ -113,7 +113,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
                 // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
                 //  process results line by line
                 for (const drNoticeEntry of drResultObject.noticeList)
-                    if (drNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN2 check
+                    if (drNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN check
                         ttResult.noticeList.push(drNoticeEntry); // Just copy the complete notice as is
                     else
                         addNoticePartial({ ...drNoticeEntry, lineNumber: n + 1 });
@@ -227,7 +227,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
         }
     }
 
-    if ((!optionalCheckingOptions.cutoffPriorityLevel || optionalCheckingOptions.cutoffPriorityLevel < 20)
+    if ((!optionalCheckingOptions?.cutoffPriorityLevel || optionalCheckingOptions?.cutoffPriorityLevel < 20)
         && optionalCheckingOptions?.disableAllLinkFetchingFlag)
         addNoticePartial({ priority: 20, message: "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked", location: ourLocation });
 

@@ -14,12 +14,12 @@ const disabledNotices = [
   // TODO: Remove this -- it's only temporary to handle valid TN links like [](../02/20/zu5f) that are checked as issues
   { repoCode: 'TN', priority: 648, }, // "More [ ]( ) links than valid Bible links" not yet properly handled by this package
 
-  { repoCode: 'TN', priority: 450, }, // "TN2 Resource container link should have '*' language code with (not 'en')" as tC can't handle it yet!
+  { repoCode: 'TN', priority: 450, }, // TN "Resource container link should have '*' language code with (not 'en')" as tC can't handle it yet!
 
   { repoCode: 'LT', priority: 638, fieldName: '\\p', }, // "Only found whitespace" tC3 outputs trailing spaces here
   { repoCode: 'ST', priority: 638, fieldName: '\\p', }, // "Only found whitespace" tC3 outputs trailing spaces here
-  { repoCode: 'LT', priority: 194, extract: '\\p␣␣', }, // "Unexpected double spaces" tC3 outputs trailing spaces here
-  { repoCode: 'ST', priority: 194, extract: '\\p␣␣', }, // "Unexpected double spaces" tC3 outputs trailing spaces here
+  { repoCode: 'LT', priority: 124, extract: '\\p␣␣', }, // "Unexpected double spaces" tC3 outputs trailing spaces here
+  { repoCode: 'ST', priority: 124, extract: '\\p␣␣', }, // "Unexpected double spaces" tC3 outputs trailing spaces here
   { repoCode: 'LT', message: "Unexpected space after | character", }, // 192 tC3 outputs an unneeded/unwanted space in \zaln-s
   { repoCode: 'ST', message: "Unexpected space after | character", }, // 192 tC3 outputs an unneeded/unwanted space in \zaln-s
   { repoCode: 'LT', priority: 95, }, // "Unexpected trailing space(s)" tC3 outputs trailing spaces all over the place

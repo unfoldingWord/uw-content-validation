@@ -13,11 +13,11 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
     // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
 
     // Note that the original language verse text can be passed in as
-    //      optionalCheckingOptions.originalLanguageVerseText.
+    //      optionalCheckingOptions?.originalLanguageVerseText.
     // Alternatively, we can fetch it from Door43 -- you can control this with:
-    //      optionalCheckingOptions.originalLanguageRepoUsername
+    //      optionalCheckingOptions?.originalLanguageRepoUsername
     //      (UHB or UGNT will be used for the repo name)
-    //      optionalCheckingOptions.originalLanguageRepoBranch (or tag)
+    //      optionalCheckingOptions?.originalLanguageRepoBranch (or tag)
 
     // console.log(`checkOriginalLanguageQuote v${QUOTE_VALIDATOR_VERSION_STRING} (${fieldName}, (${fieldText.length}) '${fieldText}', ${occurrenceString}, ${bookID} ${C}:${V} ${givenLocation}, …)…`);
     console.assert(languageCode !== undefined, "checkOriginalLanguageQuote: 'languageCode' parameter should be defined");
@@ -82,7 +82,7 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
             branch = optionalCheckingOptions?.originalLanguageRepoBranch;
         } catch (qcunError) { }
         if (!branch) branch = 'master';
-        const getFile_ = (optionalCheckingOptions && optionalCheckingOptions.getFile) ? optionalCheckingOptions.getFile : cachedGetFile;
+        const getFile_ = (optionalCheckingOptions && optionalCheckingOptions?.getFile) ? optionalCheckingOptions?.getFile : cachedGetFile;
 
         let verseText = '';
         if (bookID === 'OBS') {
@@ -209,7 +209,7 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
     // Main code for checkOriginalLanguageQuote
     let extractLength;
     try {
-        extractLength = optionalCheckingOptions.extractLength;
+        extractLength = optionalCheckingOptions?.extractLength;
     } catch (gcELerror) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
@@ -265,7 +265,7 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
     // Find the verse text in the original language
     let verseText;
     try {
-        verseText = optionalCheckingOptions.originalLanguageVerseText;
+        verseText = optionalCheckingOptions?.originalLanguageVerseText;
     } catch (gcVTerror) { }
     if (!verseText) {// not supplied, so then we need to get it ourselves
         if (optionalCheckingOptions?.disableAllLinkFetchingFlag)

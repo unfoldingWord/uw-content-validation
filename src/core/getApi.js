@@ -71,7 +71,7 @@ export async function clearCaches() {
   await zipStore.clear();
   await cacheStore.clear(); // This is the one used by the Axion Door43Api (above)
   await unzipStore.clear();
-  await clearCheckedArticleCache(); // Used for checking TA and TW articles referred to by TN2 links
+  await clearCheckedArticleCache(); // Used for checking TA and TW articles referred to by TN links
 }
 
 

@@ -565,7 +565,7 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
 
     let extractLength;
     try {
-        extractLength = optionalCheckingOptions.extractLength;
+        extractLength = optionalCheckingOptions?.extractLength;
     } catch (mfcError) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
@@ -675,7 +675,7 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
         }
 
         // Check the project files in the manifest actually exist
-        const getFile_ = (optionalCheckingOptions && optionalCheckingOptions.getFile) ? optionalCheckingOptions.getFile : cachedGetFile;
+        const getFile_ = (optionalCheckingOptions && optionalCheckingOptions?.getFile) ? optionalCheckingOptions?.getFile : cachedGetFile;
         for (const projectEntry of formData['projects']) {
             // console.log(`Manifest project: ${JSON.stringify(projectEntry)}`);
             const projectKeys = Object.keys(projectEntry); // Expect title, versification, identifier, sort, path, categories
@@ -689,7 +689,7 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
                 && projectFilepath !== './content' // Ignore this common folder path
                 && projectFilepath !== './bible' // Ignore this common folder path
                 && projectFilepath !== './intro' && projectFilepath !== './process' && projectFilepath !== './translate' && projectFilepath !== './checking' // Ignore these TA folder paths
-                && (!optionalCheckingOptions || optionalCheckingOptions.disableAllLinkFetchingFlag !== true)) { // Try fetching the file maybe
+                && (!optionalCheckingOptions || optionalCheckingOptions?.disableAllLinkFetchingFlag !== true)) { // Try fetching the file maybe
                 let isBookFolder = false;
                 for (const thisBookID of Object.keys(BibleBookData))
                     if (projectFilepath === `./${thisBookID}`) { isBookFolder = true; break; }

@@ -1,27 +1,28 @@
-Last updated 2020-12-11 10:12:21.185654 by makeNoticeList.py
-Got 300 notices:
+Last updated 2020-12-14 10:03:05.655683 by makeNoticeList.py
+Got 301 notices:
   checkRepoResult.noticeList.push( 997, "Repository doesn't exist", details, username, repoCode, repoName, location: givenLocation, extra: repoCode	from checkRepo.js line 243
   languageCode === 'en' || languageCode === 'fr' ? 490 : 190, "Expected header field to contain a mixed-case string", fieldName: `\\$marker`, extract: rest, C, V, location: lineLocation	from usfm-text-check.js line 729
   marker === 's5' ? 111 : 809, `$marker === 's5' ? 'Deprecated' : 'Unexpected' '\\$marker' marker at start of line`, C, V, lineNumber, characterIndex: 1, location: lineLocation	from usfm-text-check.js line 752
   `"`.indexOf(line[0]) < 0 ? 880 : 280, C, V, "Expected line to start with backslash", lineNumber: n, characterIndex: 0, extract: line[0], location: ourLocation	from usfm-text-check.js line 831
-  C === '1' ? 657 : 457, C, V, "Paragraph marker expected before first verse", lineNumber: n, characterIndex: 1, details: `('\\$marker' after '\\$lastMarker')`, location: ourLocation	from usfm-text-check.js line 923
+  C === '1' ? 657 : 457, C, V, "Paragraph marker expected before first verse", lineNumber: n, characterIndex: 1, details: `'\\$marker' after '\\$lastMarker'`, location: ourLocation	from usfm-text-check.js line 923
   const notice =  95, "Unexpected trailing space(s)", extract, location: ourLocation ;	from field-text-check.js line 184
   notice	from field-text-check.js line 187
-  const notice =  194, "Unexpected double spaces", extract, location: ourLocation	from field-text-check.js line 214
-  notice	from field-text-check.js line 217
-  const notice =  580, "Unexpected narrow non-break space character", extract, location: ourLocation ;	from field-text-check.js line 240
-  notice	from field-text-check.js line 243
-  const notice =  177, `Unexpected doubled $punctChar characters`, extract, location: ourLocation ;	from field-text-check.js line 275
-  notice	from field-text-check.js line 278
-  const notice =  191, `Unexpected $punctChar character after space`, extract, location: ourLocation ;	from field-text-check.js line 294
-  notice	from field-text-check.js line 297
-  const notice =  192, `Unexpected space after $punctChar character`, extract, location: ourLocation ;	from field-text-check.js line 323
-  notice	from field-text-check.js line 326
-  const notice =  193, `Unexpected $punctChar character at end of line`, extract, location: ourLocation ;	from field-text-check.js line 341
-  notice	from field-text-check.js line 344
-  thisPriority, `Mismatched $leftChar$rightChar characters`, details: `(left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString())`, location: ourLocation	from field-text-check.js line 384
-  thisPriority, thisMessage, extract: regexResultArray[0], location: ourLocation	from field-text-check.js line 397
-  leftChar === '“' ? 162 : 462, `Mismatched $leftChar$rightChar characters`, details: `(left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString())`, location: ourLocation	from plain-text-check.js line 216
+  notice =  124, "Unexpected double spaces", extract, location: ourLocation ;	from field-text-check.js line 217
+  notice =  224, "Multiple unexpected double spaces", details: `$doubleCount occurrences—first is displayed`, extract, location: ourLocation ;	from field-text-check.js line 219
+  notice	from field-text-check.js line 222
+  const notice =  580, "Unexpected narrow non-break space character", extract, location: ourLocation ;	from field-text-check.js line 246
+  notice	from field-text-check.js line 249
+  const notice =  177, `Unexpected doubled $punctChar characters`, extract, location: ourLocation ;	from field-text-check.js line 281
+  notice	from field-text-check.js line 284
+  const notice =  191, `Unexpected $punctChar character after space`, extract, location: ourLocation ;	from field-text-check.js line 300
+  notice	from field-text-check.js line 303
+  const notice =  192, `Unexpected space after $punctChar character`, extract, location: ourLocation ;	from field-text-check.js line 329
+  notice	from field-text-check.js line 332
+  const notice =  193, `Unexpected $punctChar character at end of line`, extract, location: ourLocation ;	from field-text-check.js line 347
+  notice	from field-text-check.js line 350
+  thisPriority, `Mismatched $leftChar$rightChar characters`, details: `left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString()`, location: ourLocation	from field-text-check.js line 390
+  thisPriority, thisMessage, extract: regexResultArray[0], location: ourLocation	from field-text-check.js line 403
+  leftChar === '“' ? 162 : 462, `Mismatched $leftChar$rightChar characters`, details: `left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString()`, location: ourLocation	from plain-text-check.js line 216
   999, "checkRepo function FAILED", repoName, extract: checkRepoError, location: repoName	from RepoCheck.js line 105
   997, "Repository doesn't exist", details, username, repoCode, repoName, location: manifestLocation, extra: repoCode	from checkBookPackage.js line 172
   997, "Repository doesn't exist", details, username, repoCode, repoName, location: manifestLocation, extra: repoCode	from checkBookPackage.js line 233
@@ -52,12 +53,12 @@ Got 300 notices:
   984, `Found wrong number of TSV fields (expected $NUM_EXPECTED_ANNOTATION_TSV_FIELDS)`, details: `Found $fields.length field$fields.length === 1 ? '' : 's'`, rowID, location: ourRowLocation	from annotation-row-check.js line 528
   979, "Invalid book identifier passed to checkTN_TSVDataRow", location: ` '$bookID' in first parameter: $tlcNCerror`	from tn-table-row-check.js line 326
   979, "Invalid book identifier passed to checkAnnotationTSVDataRow", location: ` '$bookID' in first parameter: $tlcNCerror`	from annotation-row-check.js line 338
-  978, "Wrong book identifier", details: `(expected '$bookID')`, fieldName: 'Book', rowID, extract: B, location: ourRowLocation	from tn-table-row-check.js line 341
+  978, "Wrong book identifier", details: `expected '$bookID'`, fieldName: 'Book', rowID, extract: B, location: ourRowLocation	from tn-table-row-check.js line 341
   977, "Missing book identifier", characterIndex: 0, rowID, location: ourRowLocation	from tn-table-row-check.js line 344
-  976, "Wrong chapter number", details: `(expected '$givenC')`, fieldName: 'Chapter', rowID, extract: C, location: ourRowLocation	from tn-table-row-check.js line 349
-  976, "Wrong chapter number", details: `(expected '$givenC')`, fieldName: 'Reference', rowID, extract: C, location: ourRowLocation	from annotation-row-check.js line 356
-  975, "Wrong verse number", details: `(expected '$givenV')`, rowID, fieldName: 'Verse', extract: V, location: ourRowLocation	from tn-table-row-check.js line 381
-  975, "Wrong verse number", details: `(expected '$givenV')`, rowID, fieldName: 'Reference', extract: V, location: ourRowLocation	from annotation-row-check.js line 392
+  976, "Wrong chapter number", details: `expected '$givenC'`, fieldName: 'Chapter', rowID, extract: C, location: ourRowLocation	from tn-table-row-check.js line 349
+  976, "Wrong chapter number", details: `expected '$givenC'`, fieldName: 'Reference', rowID, extract: C, location: ourRowLocation	from annotation-row-check.js line 356
+  975, "Wrong verse number", details: `expected '$givenV'`, rowID, fieldName: 'Verse', extract: V, location: ourRowLocation	from tn-table-row-check.js line 381
+  975, "Wrong verse number", details: `expected '$givenV'`, rowID, fieldName: 'Reference', extract: V, location: ourRowLocation	from annotation-row-check.js line 392
   956, "Got empty manifest file", repoName, filename: MANIFEST_FILENAME, location: manifestLocation, extra: `$repoCode MANIFEST`	from checkBookPackage.js line 197
   956, "Got empty manifest file", repoName, filename: MANIFEST_FILENAME, location: manifestLocation, extra: `$repoCode MANIFEST`	from checkBookPackage.js line 258
   947, "Missing manifest.yaml", location: ourLocation, extra: `$repoName MANIFEST`	from checkRepo.js line 272
@@ -105,10 +106,10 @@ Got 300 notices:
   867, C: chapterNumberString, V: `$v`, "Verse appears to be missing", location: CVlocation	from usfm-text-check.js line 428
   866, C: chapterNumberString, V: `$v`, "Verse seems to have no text", location: CVlocation	from usfm-text-check.js line 433
   851, bookID === 'OBS' ? "Unable to load OBS story text" : "Unable to load original language verse text", location: ourLocation	from orig-quote-check.js line 276
-  849, `Unexpected '$badCharCombination' character combination`, characterIndex, extract, location: ourLocation	from field-text-check.js line 354
-  845, `Mismatched [[ ]] link characters`, details: `(left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString())`, location: ourLocation	from tn-links-check.js line 460
-  844, `Mismatched [[rc:// ]] link characters`, details: `(left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString())`, location: ourLocation	from tn-links-check.js line 464
-  843, `Mismatched [ ]( ) link characters`, details: `(left=$leftCount.toLocaleString(), middle=$middleCount.toLocaleString(), right=$rightCount.toLocaleString())`, location: ourLocation	from tn-links-check.js line 471
+  849, `Unexpected '$badCharCombination' character combination`, characterIndex, extract, location: ourLocation	from field-text-check.js line 360
+  845, `Mismatched [[ ]] link characters`, details: `left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString()`, location: ourLocation	from tn-links-check.js line 460
+  844, `Mismatched [[rc:// ]] link characters`, details: `left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString()`, location: ourLocation	from tn-links-check.js line 464
+  843, `Mismatched [ ]( ) link characters`, details: `left=$leftCount.toLocaleString(), middle=$middleCount.toLocaleString(), right=$rightCount.toLocaleString()`, location: ourLocation	from tn-links-check.js line 471
   824, `Invalid zero chapter number`, extract: C, rowID, fieldName: 'Chapter', location: ourRowLocation	from tn-table-row-check.js line 354
   824, `Invalid zero chapter number`, extract: C, rowID, fieldName: 'Reference', location: ourRowLocation	from annotation-row-check.js line 361
   823, `Invalid large chapter number`, extract: C, rowID, fieldName: 'Chapter', location: ourRowLocation	from tn-table-row-check.js line 359
@@ -146,8 +147,8 @@ Got 300 notices:
   786, "Link to TA should also be in SupportReference", details, rowID, fieldName: 'Annotation', extract: adjustedLink, location: ourRowLocation	from annotation-row-check.js line 507
   779, "Missing row ID field", fieldName: 'Verse', location: ourRowLocation	from tn-table-row-check.js line 402
   779, "Missing row ID field", fieldName: 'Reference', location: ourRowLocation	from annotation-row-check.js line 413
-  778, "Row ID should be exactly 4 characters", details: `(not $rowID.length)`, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation	from tn-table-row-check.js line 405
-  778, "Row ID should be exactly 4 characters", details: `(not $rowID.length)`, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation	from annotation-row-check.js line 416
+  778, "Row ID should be exactly 4 characters", details: `not $rowID.length`, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation	from tn-table-row-check.js line 405
+  778, "Row ID should be exactly 4 characters", details: `not $rowID.length`, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation	from annotation-row-check.js line 416
   777, `Bad punctuation nesting: $char closing character doesn't match`, details, lineNumber: n, characterIndex, extract, location: ourLocation	from plain-text-check.js line 186
   776, 'Unexpected " straight quote character', details, lineNumber, C, V, extract, location: lineLocation	from usfm-text-check.js line 689
   775, "Unexpected ' straight quote character", details, lineNumber, C, V, extract, location: lineLocation	from usfm-text-check.js line 694
@@ -158,7 +159,7 @@ Got 300 notices:
   770, `Unexpected leading word-joiner`, characterIndex: 0, extract, location: ourLocation	from field-text-check.js line 136
   769, C, V, "Verse bridge numbers not in ascending order", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, Math.max(9, extractLength))$rest.length > extractLength ? '…' : '' ($firstV → $secondV)`, location: ourLocation	from usfm-text-check.js line 884
   766, C, V, "Bridged verse numbers didn't increment correctly", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, Math.max(9, extractLength))$rest.length > extractLength ? '…' : '' ($lastV → $firstV)`, location: ourLocation	from usfm-text-check.js line 886
-  765, "Unexpected link", characterIndex, extract, location: ourLocation	from field-text-check.js line 423
+  765, "Unexpected link", characterIndex, extract, location: ourLocation	from field-text-check.js line 429
   764, C, V, "Chapter number didn't increment correctly", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, halfLength)$rest.length > halfLength ? '…' : '' ($lastC ? lastC : '0' → $C)`, location: ourLocation	from usfm-text-check.js line 857
   763, C, V, "Verse number didn't increment correctly", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, halfLength)$rest.length > halfLength ? '…' : '' ($lastV ? lastV : '0' → $V)`, location: ourLocation	from usfm-text-check.js line 870
   762, "Unable to convert verse bridge numbers to integers", C: chapterNumberString, V: verseNumberString, characterIndex: 3, extract: verseNumberString, location: `$CVlocation with $usfmVIerror`	from usfm-text-check.js line 402
@@ -206,7 +207,7 @@ Got 300 notices:
   723, C, V, "Unable to convert verse number to integer", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, halfLength)$rest.length > halfLength ? '…' : ''`, location: ourLocation	from usfm-text-check.js line 866
   721, "Unable to find original language quote in verse text", extract, location: ourLocation	from orig-quote-check.js line 297
   720, C, V, "Unable to convert internal verse number to integer", lineNumber: n, characterIndex: 3, extract: `$restRest.substring(0, halfLength)$restRest.length > halfLength ? '…' : ''`, location: ourLocation	from usfm-text-check.js line 897
-  716, `Misplaced $rightChar character`, extract: regexResultArray[0], location: ourLocation	from field-text-check.js line 404
+  716, `Misplaced $rightChar character`, extract: regexResultArray[0], location: ourLocation	from field-text-check.js line 410
   711, "Expected compulsory content", C, V, lineNumber, characterIndex: marker.length, location: ` after \\$marker marker$lineLocation`	from usfm-text-check.js line 749
   703, C, V, "Unexpected CarriageReturn character", lineNumber: n, characterIndex, extract, location: ourLocation	from usfm-text-check.js line 817
   655, "Bad chapter number in markdown Bible link", details: `$linkBookCode $chapterInt vs $numChaptersThisBook chapters`, extract: totalLink, location: ourLocation	from tn-links-check.js line 337
@@ -227,9 +228,9 @@ Got 300 notices:
   601, "Unable to load", details: `username=$username error=$gcUHBerror`, filename, location: ourLocation, extra: originalLanguageRepoName	from orig-quote-check.js line 131
   601, "Unable to load", details: `username=$username error=$gcUGNTerror`, filename, location: ourLocation, extra: originalLanguageRepoName	from orig-quote-check.js line 139
   600, `$regexResultsArray.length link target$regexResultsArray.length === 1 ? ' is' : 's are' still being checked…`, location: ourLocation	from field-link-check.js line 151
-  583, "Unexpected newLine character", characterIndex, extract, location: ourLocation	from field-text-check.js line 222
-  582, "Unexpected carriageReturn character", characterIndex, extract, location: ourLocation	from field-text-check.js line 228
-  581, "Unexpected non-break space character", characterIndex, extract, location: ourLocation	from field-text-check.js line 234
+  583, "Unexpected newLine character", characterIndex, extract, location: ourLocation	from field-text-check.js line 228
+  582, "Unexpected carriageReturn character", characterIndex, extract, location: ourLocation	from field-text-check.js line 234
+  581, "Unexpected non-break space character", characterIndex, extract, location: ourLocation	from field-text-check.js line 240
   552, C, V, "Invalid zero verse number", details: `for chapter $C`, rowID, lineNumber: n + 1, extract: V, location: ourLocation	from tn-table-text-check.js line 188
   552, C, V, "Invalid zero verse number", details: `for chapter $C`, rowID, lineNumber: n + 1, extract: V, location: ourLocation	from annotation-table-check.js line 190
   551, C, V, `Invalid zero chapter number`, rowID, lineNumber: n + 1, extract: C, location: ourLocation	from tn-table-text-check.js line 166
@@ -239,12 +240,12 @@ Got 300 notices:
   518, "Missing expected USFM line", extract: `missing \\$expectedMarker`, location: fileLocation	from usfm-text-check.js line 558
   517, "Missing expected USFM line", extract: `missing \\$expectedMarker`, location: fileLocation	from usfm-text-check.js line 554
   472, "Nesting of header levels seems confused", lineNumber: n, characterIndex: 0, location: ourLocation	from markdown-text-check.js line 212
-  450, "Resource container link should have '*' language code", details: `(not '$languageCode')`, characterIndex, extract, location: ourLocation	from tn-links-check.js line 198
+  450, "Resource container link should have '*' language code", details: `not '$languageCode'`, characterIndex, extract, location: ourLocation	from tn-links-check.js line 198
   441, `Unknown linkType parameter`, extract: linkType	from field-link-check.js line 133
   439, "Error fetching link", location: ` $fetchLink`	from field-link-check.js line 43
   438, `Blank field / missing link (expected $linkOptions.expectedCount link$linkOptions.expectedCount === 1 ? "" : "s")`, location: ourLocation	from field-link-check.js line 105
   401, `Unexpected content after \\$marker marker`, C, V, lineNumber, characterIndex: marker.length, extract: rest, location: lineLocation	from usfm-text-check.js line 747
-  399, C, V, "Useless paragraph marker", lineNumber: n, characterIndex: 1, details: `('\\$lastMarker' before '\\$marker')`, location: ourLocation	from usfm-text-check.js line 921
+  399, C, V, "Useless paragraph marker", lineNumber: n, characterIndex: 1, details: `'\\$lastMarker' before '\\$marker'`, location: ourLocation	from usfm-text-check.js line 921
   375, "Ellipsis without surrounding snippet", location: ourLocation	from orig-quote-check.js line 301
   374, "Field contains zero-width space(s)", fieldName: 'SupportReference', rowID, location: ourRowLocation	from tn-table-row-check.js line 438
   374, "Field contains zero-width space(s)", fieldName: 'GLQuote', rowID, location: ourRowLocation	from tn-table-row-check.js line 478
@@ -262,9 +263,9 @@ Got 300 notices:
   274, "Missing OccurrenceNote field", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation	from tn-table-row-check.js line 509
   274, "Missing Annotation field", fieldName: 'Annotation', rowID, location: ourRowLocation	from annotation-row-check.js line 514
   218, "Using deprecated USFM marker", extract: `\\$deprecatedMarker`, location: fileLocation	from usfm-text-check.js line 561
-  195, `Unexpected $punctChar character at start of line`, characterIndex, extract, location: ourLocation	from field-text-check.js line 305
-  179, "Unexpected space before ellipse character", characterIndex, extract, location: ourLocation	from field-text-check.js line 250
-  178, "Unexpected space after ellipse character", characterIndex, extract, location: ourLocation	from field-text-check.js line 256
+  195, `Unexpected $punctChar character at start of line`, characterIndex, extract, location: ourLocation	from field-text-check.js line 311
+  179, "Unexpected space before ellipse character", characterIndex, extract, location: ourLocation	from field-text-check.js line 256
+  178, "Unexpected space after ellipse character", characterIndex, extract, location: ourLocation	from field-text-check.js line 262
   176, "Row ID should start with a lowercase letter", characterIndex: 0, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation	from tn-table-row-check.js line 412
   176, "Row ID should start with a lowercase letter", characterIndex: 0, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation	from annotation-row-check.js line 423
   175, "Row ID should end with a lowercase letter or digit", characterIndeX: 3, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation	from tn-table-row-check.js line 414
@@ -293,8 +294,8 @@ Got 300 notices:
   101, `USFMGrammar: $warningString`, filename, location: ourLocation	from BCS-usfm-grammar-check.js line 185
   94, "Unexpected trailing space(s) before break", characterIndex, extract, location: ourLocation	from field-text-check.js line 192
   93, "Unexpected trailing space(s) before line break", characterIndex, extract, location: ourLocation	from field-text-check.js line 197
-  87, C, V, "Expected \\toc2 line to follow \\toc1", lineNumber: n, characterIndex: 1, details: `(not '\\$lastMarker')`, location: ourLocation	from usfm-text-check.js line 914
-  87, C, V, "Expected \\toc3 line to follow \\toc2", lineNumber: n, characterIndex: 1, details: `(not '\\$lastMarker')`, location: ourLocation	from usfm-text-check.js line 916
+  87, C, V, "Expected \\toc2 line to follow \\toc1", lineNumber: n, characterIndex: 1, details: `not '\\$lastMarker'`, location: ourLocation	from usfm-text-check.js line 914
+  87, C, V, "Expected \\toc3 line to follow \\toc2", lineNumber: n, characterIndex: 1, details: `not '\\$lastMarker'`, location: ourLocation	from usfm-text-check.js line 916
   67, C: chapterNumberString, V: `$v`, "Verse appears to be left out", location: CVlocation	from usfm-text-check.js line 426
   64, "Unexpected leading space(s) after break", characterIndex, extract, location: ourLocation	from field-text-check.js line 146
   63, "Unexpected leading space(s) after line break", characterIndex, extract, location: ourLocation	from field-text-check.js line 151

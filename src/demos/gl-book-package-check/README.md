@@ -28,11 +28,11 @@ clearCheckedArticleCache();
   originalLanguagesUsername='unfoldingWord' // repo organisation name for work-in-progress Door43 UHB and UGNT versions
 
   // Uncomment or change ONE of the following lines
-  // otherLanguageUsername='Door43-Catalog' // repo organisation name for all published Door43 LT, ST, TN2, etc. versions
+  // otherLanguageUsername='Door43-Catalog' // repo organisation name for all published Door43 LT, ST, TN, etc. versions
   // otherLanguageUsername='unfoldingWord' // repo organisation name for work-in-progress en Door43 ULT, UST, UTN, etc. versions
-  // otherLanguageUsername='Es-419_gl' // repo organisation name for work-in-progress es-419 Door43 LT, ST, TN2, etc. versions
-  // otherLanguageUsername='translationCore-Create-BCS' // repo organisation name for work-in-progress hi/kn Door43 LT, ST, TN2, etc. versions
-  otherLanguageUsername='ru_gl' // repo organisation name for work-in-progress ru Door43 LT, ST, TN2, etc. versions
+  // otherLanguageUsername='Es-419_gl' // repo organisation name for work-in-progress es-419 Door43 LT, ST, TN, etc. versions
+  // otherLanguageUsername='translationCore-Create-BCS' // repo organisation name for work-in-progress hi/kn Door43 LT, ST, TN, etc. versions
+  otherLanguageUsername='ru_gl' // repo organisation name for work-in-progress ru Door43 LT, ST, TN, etc. versions
 
   // Of course, this languageCode has to match the chosen otherLanguageUsername above
   languageCode='ru' // Tested with es-419, hi, kn, ru

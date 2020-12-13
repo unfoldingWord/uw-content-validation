@@ -43,7 +43,7 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
 
     let extractLength;
     try {
-        extractLength = optionalCheckingOptions.extractLength;
+        extractLength = optionalCheckingOptions?.extractLength;
     } catch (mdtcError) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
@@ -135,7 +135,7 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
             const fetchLink = regexResultArray[2];
             if (!fetchLink.startsWith('https://'))
                 addNotice({ priority: 749, message: "Markdown image link seems faulty", lineNumber, extract: fetchLink, location: lineLocation });
-            else if (optionalCheckingOptions.disableAllLinkFetchingFlag !== true) {
+            else if (optionalCheckingOptions?.disableAllLinkFetchingFlag !== true) {
                 // console.log(`Need to check existence of ${fetchLink}`);
                 try {
                     const responseData = await cachedGetFileUsingFullURL({ uri: fetchLink });
