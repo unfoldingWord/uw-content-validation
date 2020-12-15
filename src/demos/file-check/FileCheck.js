@@ -11,7 +11,7 @@ import { checkFileContents } from './checkFileContents';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const FILE_CHECK_VERSION_STRING = '0.2.3';
+// const FILE_CHECK_VERSION_STRING = '0.2.4';
 
 
 function FileCheck(props) {
@@ -125,7 +125,7 @@ function FileCheck(props) {
             {processedResults.numIgnoredNotices || processedResults.numDisabledNotices ? ' (but ' : ''}
             {processedResults.numIgnoredNotices ? `${processedResults.numIgnoredNotices.toLocaleString()} ignored notice(s)` : ""}
             {processedResults.numIgnoredNotices && processedResults.numDisabledNotices ? ' and ' : ''}
-            {processedResults.numDisabledNotices ? `${processedResults.numDisabledNotices.toLocaleString()} disabled notice(s)` : ""}
+            {processedResults.numDisabledNotices ? `${processedResults.numDisabledNotices.toLocaleString()} expected/disabled notice(s)` : ""}
             {processedResults.numIgnoredNotices || processedResults.numDisabledNotices ? ')' : ''}.{rawCFResults.checkedOptions.cutoffPriorityLevel? ` Priority level ${rawCFResults.checkedOptions.cutoffPriorityLevel} or lower were not included.`:''}</p>
           {/* <RenderRawResults results={rawCFResults} /> */}
         </div>);

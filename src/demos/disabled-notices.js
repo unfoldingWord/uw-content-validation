@@ -16,6 +16,9 @@ const disabledNotices = [
 
   { repoCode: 'TN', priority: 450, }, // TN "Resource container link should have '*' language code with (not 'en')" as tC can't handle it yet!
 
+  { repoCode: 'ST', message: "Bad punctuation nesting: } closing character doesn't match", bookID: 'NEH', }, // 777 - complex { } nesting in direct speech
+  { repoCode: 'ST', message: "Bad punctuation nesting: ” closing character doesn't match", bookID: 'NEH', }, // 777 - complex { } nesting in direct speech
+  
   { repoCode: 'LT', priority: 638, fieldName: '\\p', }, // "Only found whitespace" tC3 outputs trailing spaces here
   { repoCode: 'ST', priority: 638, fieldName: '\\p', }, // "Only found whitespace" tC3 outputs trailing spaces here
   { repoCode: 'LT', priority: 124, extract: '\\p␣␣', }, // "Unexpected double spaces" tC3 outputs trailing spaces here
@@ -33,6 +36,7 @@ const disabledNotices = [
   { repoCode: 'TA', filename: 'translate/translate-textvariants/01.md', message: "Unexpected space after [ character", }, // 192
   { repoCode: 'TA', filename: 'translate/translate-formatsignals/01.md', message: "Unexpected space after ( character", }, // 192
 
+  // This file has a space-separated list of typical quotation symbols
   { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected space after “ character", lineNumber: 3, }, // 192
   { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected space after “ character", lineNumber: 16, }, // 192
   { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected space after ‘ character", lineNumber: 16, }, // 192

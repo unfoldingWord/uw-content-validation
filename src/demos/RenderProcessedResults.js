@@ -40,7 +40,7 @@ const tableIcons = {
 };
 
 
-// const RENDER_PROCESSED_RESULTS_VERSION = '0.5.7';
+// const RENDER_PROCESSED_RESULTS_VERSION = '0.5.8';
 
 
 export function RenderSuccesses({ username, results }) {
@@ -58,7 +58,7 @@ export function RenderTotals({ rawNoticeListLength, results }) {
              ({rawNoticeListLength === 0 ? 'no' : rawNoticeListLength.toLocaleString()} raw notice{rawNoticeListLength === 1 ? '' : 's'} but
             {results.numIgnoredNotices ? ` ${results.numIgnoredNotices.toLocaleString()} ignored notice${results.numIgnoredNotices === 1 ? '' : 's'}` : ""}
             {results.numIgnoredNotices && results.numDisabledNotices ? ' and' : ''}
-            {results.numDisabledNotices ? ` ${results.numDisabledNotices.toLocaleString()} disabled notice${results.numDisabledNotices === 1 ? '' : 's'}` : ""}
+            {results.numDisabledNotices ? ` ${results.numDisabledNotices.toLocaleString()} expected/disabled notice${results.numDisabledNotices === 1 ? '' : 's'}` : ""}
             ).
             {results.checkedOptions.cutoffPriorityLevel ? ` Priority level ${results.checkedOptions.cutoffPriorityLevel} or lower were not included.` : ''}
         </p>);

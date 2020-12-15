@@ -209,7 +209,8 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
         while (suggestion.toLowerCase().substring(suggestion.length - 6) === '<br />') suggestion = suggestion.substring(0, suggestion.length - 6);
     }
     if ((!optionalCheckingOptions?.cutoffPriorityLevel || optionalCheckingOptions?.cutoffPriorityLevel < 124)
-        && (characterIndex = fieldText.indexOf('  ')) >= 0) {
+        && (characterIndex = fieldText.indexOf('  ')) >= 0
+        && (fieldType !== 'markdown' || characterIndex !== fieldText.length-2)) {
         const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
         const doubleCount = countOccurrences(fieldText, '  ');
         let notice;
@@ -219,7 +220,8 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
             notice = { priority: 224, message: "Multiple unexpected double spaces", details: `${doubleCount} occurrences—only first is displayed`, extract, location: ourLocation };
         if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.substring(0, 6) !== 'from \\')
             notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
-        addNoticePartial(notice);
+        if (!optionalCheckingOptions?.cutoffPriorityLevel || optionalCheckingOptions?.cutoffPriorityLevel < notice.priority)
+            addNoticePartial(notice);
         // Note: replacing double-spaces in the suggestion is done later -- after other suggestion modifications which might affect it
     }
     if ((!optionalCheckingOptions?.cutoffPriorityLevel || optionalCheckingOptions?.cutoffPriorityLevel < 583)
