@@ -164,7 +164,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
     const lowercaseBookID = bookID.toLowerCase();
 
     let validLineStartCharacters = VALID_LINE_START_CHARACTERS;
-    if (repoCode==='ST') validLineStartCharacters += '{';
+    if (repoCode === 'ST') validLineStartCharacters += '{';
 
     const result = { successList: [], noticeList: [] };
 
@@ -328,8 +328,33 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                                                                                     return true;
                                                                                 if (someSub8object['type'] === 'word' && someSub8object['text'].length > MINIMUM_WORD_LENGTH)
                                                                                     return true;
-                                                                                if (someSub8object['type'] === 'milestone') gotDeep = true;
-                                                                                // console.assert(someSub5object['type'] !== 'milestone', `We need to add more depth levels to hasText() for ${chapterNumberString}:${verseNumberString}`);
+                                                                                if (someSub8object['type'] === 'milestone')
+                                                                                    for (const someSub9object of someSub8object['children']) {
+                                                                                        // console.log("someSub9object", bookID, CVlocation, JSON.stringify(someSub9object));
+                                                                                        if (someSub9object['type'] === 'text' && someSub9object['text'].length > MINIMUM_TEXT_WORDS)
+                                                                                            return true;
+                                                                                        if (someSub9object['type'] === 'word' && someSub9object['text'].length > MINIMUM_WORD_LENGTH)
+                                                                                            return true;
+                                                                                        if (someSub9object['type'] === 'milestone')
+                                                                                            for (const someSub10object of someSub9object['children']) {
+                                                                                                // console.log("someSub10object", bookID, CVlocation, JSON.stringify(someSub10object));
+                                                                                                if (someSub10object['type'] === 'text' && someSub10object['text'].length > MINIMUM_TEXT_WORDS)
+                                                                                                    return true;
+                                                                                                if (someSub10object['type'] === 'word' && someSub10object['text'].length > MINIMUM_WORD_LENGTH)
+                                                                                                    return true;
+                                                                                                if (someSub10object['type'] === 'milestone')
+                                                                                                    // UST Obadiah 1:8 has eleven levels of nesting !!!
+                                                                                                    for (const someSub11object of someSub10object['children']) {
+                                                                                                        // console.log("someSub11object", bookID, CVlocation, JSON.stringify(someSub11object));
+                                                                                                        if (someSub11object['type'] === 'text' && someSub11object['text'].length > MINIMUM_TEXT_WORDS)
+                                                                                                            return true;
+                                                                                                        if (someSub11object['type'] === 'word' && someSub11object['text'].length > MINIMUM_WORD_LENGTH)
+                                                                                                            return true;
+                                                                                                        if (someSub11object['type'] === 'milestone')
+                                                                                                            gotDeep = true;
+                                                                                                    }
+                                                                                            }
+                                                                                    }
                                                                             }
                                                                     }
                                                             }
