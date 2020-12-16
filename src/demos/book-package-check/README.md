@@ -52,6 +52,6 @@ import BookPackageCheck from './BookPackageCheck';
   maximumSimilarMessages='5' // Default is 3 (0 means don't suppress any)
   //ignorePriorityNumberList='[]'
   //sortBy='ByRepo' // Default is 'ByPriority'; also have 'ByRepo' and 'AsFound'
-  ignoreDisabledNoticesFlag='false' // Show known non-issues: 'true' or 'false'
+  showDisabledNoticesFlag='false' // Display known specific non-issues: 'true' or 'false'
   />
 ```

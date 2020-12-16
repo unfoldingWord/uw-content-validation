@@ -2,7 +2,7 @@ import { isDisabledNotice } from './disabled-notices';
 // import { displayPropertyNames, consoleLogObject } from './utilities';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.2';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.3';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -38,7 +38,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                       considered `errors` and 0-699 are considered `warnings`,
                       but in truth, that's rather arbitrary.
                 message: The actual general description text of the notice
-                details: Extra notice information (if relevant)
+                details: Additional clarifying notice information (if relevant)
                 The next three fields may be ommitted if irrelevant
                  (since BCV is not relevant to all types of files/repos)
                     bookID: book identifier 3-character UPPERCASE string
@@ -201,7 +201,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             }
             if (thisLineNumber) {
                 console.assert(typeof thisLineNumber === 'number' && thisLineNumber > 0, `lineNumber '${thisLineNumber}' contains unexpected value in ${JSON.stringify(thisGivenNotice)}`);
-                // Note: lineNumber can occur in location, e.g., in 3 in '3JN' or 'Door43' so have to take extra care not to give false alarms
+                // Note: lineNumber can occur in location, e.g., in 3 in '3JN' or 'Door43' so have to take additional care not to give false alarms
                 if (thisLocation && thisLineNumber > 4 && thisLineNumber !== 43)
                     // && (!thisGivenNotice.bookID || thisGivenNotice.bookID.indexOf(thisLineNumber + '') < 0)
                     console.assert(thisLocation.indexOf(thisLineNumber + '') < 0 && thisLocation.indexOf(thisLineNumber.toLocaleString()) < 0, `lineNumber might be repeated in location in ${JSON.stringify(thisGivenNotice)}`);
@@ -257,8 +257,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     // if (cutoffPriorityLevel > errorPriorityLevel)
     // resultObject.errorList.push({999, "Cutoff level must not be higher than error level", extract:`(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
 
-    let ignoreDisabledNoticesFlag = optionalProcessingOptions.ignoreDisabledNoticesFlag === true;
-    if (ignoreDisabledNoticesFlag) console.log(`ignoreDisabledNoticesFlag=${ignoreDisabledNoticesFlag}`);
+    let showDisabledNoticesFlag = optionalProcessingOptions.showDisabledNoticesFlag === true;
+    if (showDisabledNoticesFlag) console.log(`showDisabledNoticesFlag=${showDisabledNoticesFlag}`);
 
     // Adjust the list of success notices to combine multiple similar messages, e.g., Checked this book, Checked that book
     //  into one summary message, e.g., Checked this and that books.
@@ -401,23 +401,24 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
 
     // Remove any notices that they have asked us to ignore
     //  plus any from our list of disabled notices (for certain repos/files, etc.)
-    let remainingNoticeList;
-    if (ignorePriorityNumberList.length || !ignoreDisabledNoticesFlag) {
-        // console.log("Doing ignore of", ignorePriorityNumberList.length,"value(s)");
-        remainingNoticeList = [];
-        for (const thisNotice of standardisedNoticeList) {
-            if (ignorePriorityNumberList.includes(thisNotice.priority))
-                resultObject.numIgnoredNotices++;
-            else if (!ignoreDisabledNoticesFlag && isDisabledNotice(thisNotice)) {
-                // console.log(`Disabled ${JSON.stringify(thisNotice)}`);
-                resultObject.numDisabledNotices++;
-            } else {
-                // if (thisNotice.repoCode==='TA' && thisNotice.priority === 177) console.log(`Didn't ignore or disable ${JSON.stringify(thisNotice)}`);
+    // let remainingNoticeList;
+    // if (ignorePriorityNumberList.length || !showDisabledNoticesFlag) {
+    // console.log("Doing ignore of", ignorePriorityNumberList.length,"value(s)");
+    let remainingNoticeList = [];
+    for (const thisNotice of standardisedNoticeList) {
+        if (ignorePriorityNumberList.includes(thisNotice.priority))
+            resultObject.numIgnoredNotices++;
+        else if (isDisabledNotice(thisNotice))
+            if (showDisabledNoticesFlag) {
+                thisNotice.message = `(disabled) ${thisNotice.message}`;
                 remainingNoticeList.push(thisNotice);
-            }
-        }
-    } else
-        remainingNoticeList = standardisedNoticeList;
+            } else // ignore it as usual
+                resultObject.numDisabledNotices++;
+        else
+            remainingNoticeList.push(thisNotice);
+    }
+    // } else
+    // remainingNoticeList = standardisedNoticeList;
     if (resultObject.numIgnoredNotices)
         console.log(`Ignored ${resultObject.numIgnoredNotices.toLocaleString()} generic notice(s) out of ${givenNoticeObject.noticeList.length.toLocaleString()}`);
     if (resultObject.numDisabledNotices)

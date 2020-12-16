@@ -3,7 +3,7 @@
 
 # uW Content/Resource Validation functions
 
-GH Pages: https://unfoldingword.github.io/uw-content-validation/
+GH Pages: [[https://unfoldingword.github.io/uw-content-validation/]]
 
 This repository contains JavaScript functions for validating/checking for errors in text that is passed to the functions. This text might be a line in a file (especially a TSV file when a line contains a number of distinct fields), or the entire text of a file that's perhaps open in an editor in the enclosing app.
 
@@ -20,7 +20,7 @@ There are three sample notice processing functions that show how to:
 1. Divide the noticeList into a list of severe, medium, and low priority warnings,
 1. Convert the noticeList into a list of warnings sorted by priority,
 
-In addition, there are Styleguidist pages viewable at https://unfoldingword.github.io/uw-content-validation/ which show how these core functions may be used, effectively producing a primitive app that checks Door43.org files, repositories (repos), book packages, etc. as well as demonstrating the basic functions.
+In addition, there are Styleguidist pages viewable at [[https://unfoldingword.github.io/uw-content-validation/]] which show how these core functions may be used, effectively producing a primitive app that checks Door43.org files, repositories (repos), book packages, etc. as well as demonstrating the basic functions.
 
 ## The Stack
 
@@ -117,10 +117,11 @@ In addition, there are some options in the display of notices for the demonstrat
 - `mediumPriorityLevel`: an integer which can define *medium* errors (if relevant)—defaults to 600 (and up to `severePriorityLevel`)
 - `cutoffPriorityLevel` (deprecated): an integer which can define notices to be dropped/ignored—defaults to 0 so none are dropped
 - `maximumSimilarMessages`: an integer which defines how many of a certain notice to display, before summarising and saying something like *99 similar errors suppressed*—zero means don't ever summarise notices—defaults to 3
+- `showDisabledNoticesFlag`: some content files produce false alarms, e.g., a discussion of using the , as punctuation. Where known, these false alarm notices are disabled from being shown. Setting this flag to 'true' would show these notices (with the word "(disabled)" added) instead—the default is 'false'.
 
 ## Still To Do
 
-Still unfinished (in rough priority order):
+There is a list of open issues at [[https://github.com/unfoldingWord/uw-content-validation/issues]] (and you can add suggestions and bug reports there at any time). But in summary, still unfinished (in rough priority order):
 
 1. Finish checking that new formats working are again (in `newFormat` branches)
 1. Finish moving `cutoffPriorityLevel` from `processingOptions` to `checkingOptions`
@@ -150,7 +151,6 @@ Known check deficiencies:
 1. Filenames in manifests are not fully checked
 1. Naked HTTP links are not yet checked properly
 1. ULT/UST quotes in TranslationAcademy are not yet checked
-
 
 ## Functionality and Limitations
 

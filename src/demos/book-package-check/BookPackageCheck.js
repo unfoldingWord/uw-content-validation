@@ -8,7 +8,7 @@ import { checkBookPackage } from './checkBookPackage';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.3.5';
+// const BP_VALIDATOR_VERSION_STRING = '0.3.6';
 
 
 function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
@@ -136,8 +136,8 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
                     processOptions.ignorePriorityNumberList.push(intBit);
                 }
                 // console.log(`Now have processOptions.ignorePriorityNumberList=${JSON.stringify(processOptions.ignorePriorityNumberList)}`);
-                if (props.ignoreDisabledNoticesFlag) processOptions.ignoreDisabledNoticesFlag = props.ignoreDisabledNoticesFlag.toLowerCase() === 'true';
             }
+            if (props.showDisabledNoticesFlag) processOptions.showDisabledNoticesFlag = props.showDisabledNoticesFlag.toLowerCase() === 'true';
 
             let displayType = 'ErrorsWarnings'; // default
             if (props.displayType) displayType = props.displayType;

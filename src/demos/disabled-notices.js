@@ -50,6 +50,8 @@ const disabledNotices = [
   { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected » character after space", }, // 191
   { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected › character after space", }, // 191
   { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected — character after space", }, // 191
+  
+  { repoCode: 'TA', filename: 'translate/figs-metaphor/01.md', message: "Possible misplaced ( character", }, // 17
 ];
 
 /**
