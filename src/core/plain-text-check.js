@@ -2,7 +2,7 @@ import { DEFAULT_EXTRACT_LENGTH, MATCHED_PUNCTUATION_PAIRS, PAIRED_PUNCTUATION_O
 import { checkTextField } from './field-text-check';
 
 
-const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.3.6';
+const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.3.9';
 
 
 /**
@@ -136,7 +136,12 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
         addNotice({ priority: 991, message: "Unresolved GIT conflict", characterIndex, extract, location: ourLocation });
     }
 
-    if (!plainText.endsWith('\n')) {
+    if (plainText[0] === '\n') {
+        characterIndex = 0;
+        const extract = (plainText.length > extractLength ? '…' : '') + plainText.slice(-extractLength).replace(/ /g, '␣').replace(/\n/g, '\\n')
+        addNotice({ priority: 539, message: "File starts with empty line", characterIndex, extract, location: ourLocation });        
+    }
+    if (!plainText.endsWith('\n') && !textName.endsWith('title.md')) {
         characterIndex = plainText.length - 1;
         const extract = (plainText.length > extractLength ? '…' : '') + plainText.slice(-extractLength).replace(/ /g, '␣').replace(/\n/g, '\\n')
         addNotice({ priority: 538, message: "File ends without newline character", characterIndex, extract, location: ourLocation });
@@ -180,7 +185,7 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
                             // console.log(`  Matched '${char}' with  '${openers.charAt(which)}' ${n} ${x}`);
                             openMarkers.pop();
                         } else // something is still open and this isn't a match -- might just be consequential error
-                            if (textType !== 'markdown' || char !== '>' || characterIndex > 2) { // Markdown uses > or >> or > > for block indents so ignore these -- might just be consequential error
+                            if (textType !== 'markdown' || char !== '>' || characterIndex > 4) { // Markdown uses > or >> or > > or > > > for block indents so ignore these -- might just be consequential error
                                 const extract = (characterIndex > halfLength ? '…' : '') + line.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < line.length ? '…' : '')
                                 const details = `'${lastEntry.char}' opened on line ${lastEntry.n} character ${lastEntry.x + 1}`;
                                 addNotice({ priority: 777, message: `Bad punctuation nesting: ${char} closing character doesn't match`, details, lineNumber: n, characterIndex, extract, location: ourLocation });

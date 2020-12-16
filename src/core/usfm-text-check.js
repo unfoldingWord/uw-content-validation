@@ -7,7 +7,7 @@ import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
 import { ourParseInt } from './utilities';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.7.3';
+// const USFM_VALIDATOR_VERSION_STRING = '0.7.4';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘`; // '{' gets added for STs

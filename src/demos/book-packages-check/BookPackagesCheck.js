@@ -59,7 +59,7 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
           // NOTE from RJH: I can't find the correct React place for this / way to do this
           //                  so it shows a warning for the user, and doesn't continue to try to process
           if (!props.wait || props.wait !== 'N') {
-            setResultValue(<p><span style={{ color: 'blue' }}>Waiting for user…</span> (Adjust settings below and then set <b>wait='N'</b> to start)</p>);
+            setResultValue(<p><span style={{ color: 'blue' }}>Waiting for user…</span> (Adjust settings below as necessary and then set <b>wait='N'</b> to start)</p>);
             return;
         }
 
