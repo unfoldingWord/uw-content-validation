@@ -207,5 +207,4 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
 //   },
 // });
 
-//export default withStyles(styles)(GlBookPackageCheck);
 export default GlBookPackageCheck;

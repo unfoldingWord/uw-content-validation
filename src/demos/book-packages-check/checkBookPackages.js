@@ -2,7 +2,7 @@ import * as books from '../../core/books/books';
 import { checkBookPackage } from '../book-package-check/checkBookPackage';
 // import { consoleLogObject } from '../../core/utilities';
 
-//const BPs_VALIDATOR_VERSION_STRING = '0.2.4';
+// const BPs_VALIDATOR_VERSION_STRING = '0.2.4';
 
 
 export async function checkBookPackages(username, languageCode, bookIDList, setResultValue, checkingOptions) {
@@ -57,7 +57,7 @@ export async function checkBookPackages(username, languageCode, bookIDList, setR
         // const generalLocation = ` ${languageCode} ${bookID} book packages from ${username}`;
         if (bookID !== 'OBS') {
             // eslint-disable-next-line no-unused-vars
-            let bookNumberAndName; //, whichTestament;
+            let bookNumberAndName;
             try {
                 bookNumberAndName = books.usfmNumberName(bookID);
                 // whichTestament = books.testament(bookID); // returns 'old' or 'new'

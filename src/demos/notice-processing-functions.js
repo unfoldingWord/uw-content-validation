@@ -401,9 +401,6 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
 
     // Remove any notices that they have asked us to ignore
     //  plus any from our list of disabled notices (for certain repos/files, etc.)
-    // let remainingNoticeList;
-    // if (ignorePriorityNumberList.length || !showDisabledNoticesFlag) {
-    // console.log("Doing ignore of", ignorePriorityNumberList.length,"value(s)");
     let remainingNoticeList = [];
     for (const thisNotice of standardisedNoticeList) {
         if (ignorePriorityNumberList.includes(thisNotice.priority))
@@ -417,8 +414,6 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         else
             remainingNoticeList.push(thisNotice);
     }
-    // } else
-    // remainingNoticeList = standardisedNoticeList;
     if (resultObject.numIgnoredNotices)
         console.log(`Ignored ${resultObject.numIgnoredNotices.toLocaleString()} generic notice(s) out of ${givenNoticeObject.noticeList.length.toLocaleString()}`);
     if (resultObject.numDisabledNotices)

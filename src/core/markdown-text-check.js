@@ -74,7 +74,7 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
         console.assert(noticeObject.location !== undefined, "cMdT addNotice: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `cMdT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
-        //noticeObject.debugChain = noticeObject.debugChain ? `checkMarkdownText(${languageCode}, ${textOrFileName}) ${noticeObject.debugChain}` : `checkMarkdownText(${languageCode}, ${textOrFileName})`;
+        // noticeObject.debugChain = noticeObject.debugChain ? `checkMarkdownText(${languageCode}, ${textOrFileName}) ${noticeObject.debugChain}` : `checkMarkdownText(${languageCode}, ${textOrFileName})`;
         result.noticeList.push(noticeObject); // Used to have filename: textName, but that isn't always a filename !!!
     }
     // end of addNotice function

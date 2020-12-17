@@ -29,7 +29,7 @@ import BookPackagesCheck from './BookPackagesCheck';
   languageCode='en'
   // Enter a string containing UPPERCASE USFM book identifiers separated only by commas
   //  and can also include OBS (for Open Bible Stories)
-  bookIDs='OBS,RUT,NEH,EST,JON,EPH,1TI,2TI,TIT,3JN' // These English BPs should all be finished
+  bookIDs='OBS,RUT,NEH,EST,OBA,JON,EPH,1TI,2TI,TIT,3JN' // These English BPs should all be finished
 
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'
@@ -41,6 +41,6 @@ import BookPackagesCheck from './BookPackagesCheck';
   maximumSimilarMessages='4' // Default is 3 (0 means don't suppress any)
   // extractLength='20' // Default is 15
   // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
-  //sortBy='ByRepo' // Default is 'ByPriority'; also have 'ByRepo' and 'AsFound'
+  // sortBy='ByRepo' // Default is 'ByPriority'; also have 'ByRepo' and 'AsFound'
   />
 ```

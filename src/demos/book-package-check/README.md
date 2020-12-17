@@ -50,8 +50,8 @@ import BookPackageCheck from './BookPackageCheck';
   extractLength='20' // Default is 15
   // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
   maximumSimilarMessages='5' // Default is 3 (0 means don't suppress any)
-  //ignorePriorityNumberList='[]'
-  //sortBy='ByRepo' // Default is 'ByPriority'; also have 'ByRepo' and 'AsFound'
+  // ignorePriorityNumberList='[]'
+  // sortBy='ByRepo' // Default is 'ByPriority'; also have 'ByRepo' and 'AsFound'
   showDisabledNoticesFlag='false' // Display known specific non-issues: 'true' or 'false'
   />
 ```

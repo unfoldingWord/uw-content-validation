@@ -7,7 +7,7 @@ import { checkRepo } from './checkRepo';
 // import { consoleLogObject, displayPropertyNames } from '../../core/utilities';
 
 
-//const REPO_VALIDATOR_VERSION_STRING = '0.1.5';
+// const REPO_VALIDATOR_VERSION_STRING = '0.1.5';
 
 
 function RepoCheck(/*username, languageCode,*/ props) {

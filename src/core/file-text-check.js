@@ -1,6 +1,6 @@
 import { checkPlainText } from './plain-text-check';
 
-//const FILE_TEXT_VALIDATOR_VERSION_STRING = '0.3.0';
+// const FILE_TEXT_VALIDATOR_VERSION_STRING = '0.3.0';
 
 
 export function checkTextfileContents(languageCode, fileType, filename, fileText, optionalFileLocation, optionalCheckingOptions) {
