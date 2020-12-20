@@ -2,7 +2,7 @@ import { DEFAULT_EXTRACT_LENGTH, MATCHED_PUNCTUATION_PAIRS, PAIRED_PUNCTUATION_O
 import { checkTextField } from './field-text-check';
 
 
-const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.3.9';
+const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.3.10';
 
 
 /**
@@ -139,7 +139,7 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
     if (plainText[0] === '\n') {
         characterIndex = 0;
         const extract = (plainText.length > extractLength ? '…' : '') + plainText.slice(-extractLength).replace(/ /g, '␣').replace(/\n/g, '\\n')
-        addNotice({ priority: 539, message: "File starts with empty line", characterIndex, extract, location: ourLocation });        
+        addNotice({ priority: 539, message: "File starts with empty line", characterIndex, extract, location: ourLocation });
     }
     if (!plainText.endsWith('\n') && !textName.endsWith('title.md')) {
         characterIndex = plainText.length - 1;
@@ -185,14 +185,16 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
                             // console.log(`  Matched '${char}' with  '${openers.charAt(which)}' ${n} ${x}`);
                             openMarkers.pop();
                         } else // something is still open and this isn't a match -- might just be consequential error
-                            if (textType !== 'markdown' || char !== '>' || characterIndex > 4) { // Markdown uses > or >> or > > or > > > for block indents so ignore these -- might just be consequential error
+                            if (char !== '’' // Closing single quote is also used as apostrophe in English
+                            && (textType !== 'markdown' || char !== '>' || characterIndex > 4)) { // Markdown uses > or >> or > > or > > > for block indents so ignore these -- might just be consequential error
                                 const extract = (characterIndex > halfLength ? '…' : '') + line.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < line.length ? '…' : '')
                                 const details = `'${lastEntry.char}' opened on line ${lastEntry.n} character ${lastEntry.x + 1}`;
                                 addNotice({ priority: 777, message: `Bad punctuation nesting: ${char} closing character doesn't match`, details, lineNumber: n, characterIndex, extract, location: ourLocation });
                                 // console.log(`  ERROR 777: mismatched characters: ${details}`);
                             }
                     } else // Closed something unexpectedly without an opener
-                        if (textType !== 'markdown' || char !== '>') { // Markdown uses > for block indents so ignore these
+                        if (char !== '’' // Closing single quote is also used as apostrophe in English
+                            && (textType !== 'markdown' || char !== '>')) { // Markdown uses > for block indents so ignore these
                             const extract = (characterIndex > halfLength ? '…' : '') + line.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < line.length ? '…' : '')
                             addNotice({ priority: 774, message: `Unexpected ${char} closing character (no matching opener)`, lineNumber: n, characterIndex, extract, location: ourLocation });
                             // console.log(`  ERROR 774: closed with nothing open: ${char}`);
@@ -215,6 +217,7 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
         const leftCount = countOccurrences(plainText, leftChar);
         const rightCount = countOccurrences(plainText, rightChar);
         if (leftCount !== rightCount
+            && (rightChar !== '’' || leftCount > rightCount) // Closing single quote is also used as apostrophe in English
             && (textType !== 'markdown' || rightChar !== '>')) // markdown uses > as a block quote character
             // NOTE: These are lower priority than similar checks in a field
             //          since they occur only within the entire file
