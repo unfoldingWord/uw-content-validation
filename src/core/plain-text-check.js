@@ -222,8 +222,8 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
     for (const punctSet of MATCHED_PUNCTUATION_PAIRS) {
         // Can't check '‘’' coz they might be used as apostrophe
         const leftChar = punctSet[0], rightChar = punctSet[1];
-        const leftCount = countOccurrences(plainText, leftChar);
-        const rightCount = countOccurrences(plainText, rightChar);
+        const leftCount = countOccurrences(plainText, leftChar),
+            rightCount = countOccurrences(plainText, rightChar);
         if (leftCount !== rightCount
             && (rightChar !== '’' || leftCount > rightCount) // Closing single quote is also used as apostrophe in English
             && (textType !== 'markdown' || rightChar !== '>')) // markdown uses > as a block quote character

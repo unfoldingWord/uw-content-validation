@@ -28,6 +28,8 @@ const disabledNotices = [
   { repoCode: 'LT', priority: 95, }, // "Unexpected trailing space(s)" tC3 outputs trailing spaces all over the place
   { repoCode: 'ST', priority: 95, }, // "Unexpected trailing space(s)" tC3 outputs trailing spaces all over the place
 
+  { repoCode: 'TA', priority: 104, }, // "Unexpected trailing line break" UTA uses trailing <BR> for (1) (2) (3) style numbered lists
+
   { repoCode: 'TA', message: "Unexpected – character after space", }, // 191 -- temp en-dashes
   { repoCode: 'TA', message: "Unexpected space after – character", }, // 192 -- temp en-dashes
 

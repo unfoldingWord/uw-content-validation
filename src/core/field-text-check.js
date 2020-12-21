@@ -210,7 +210,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     }
     if ((!optionalCheckingOptions?.cutoffPriorityLevel || optionalCheckingOptions?.cutoffPriorityLevel < 124)
         && (characterIndex = fieldText.indexOf('  ')) >= 0
-        && (fieldType !== 'markdown' || characterIndex !== fieldText.length-2)) {
+        && (fieldType !== 'markdown' || characterIndex !== fieldText.length - 2)) {
         const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
         const doubleCount = countOccurrences(fieldText, '  ');
         let notice;
@@ -381,18 +381,19 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
         // if (fieldType === 'markdown' && leftChar === '<') continue; // markdown uses this for block quote
         // TODO: The following 'continue' might not be doing the 2nd lot of checks
         if ((fieldType === 'USFM' || fieldName.startsWith('from \\') || (fieldType === 'markdown' && fieldName === ''))
-            && '([{“«'.indexOf(leftChar) >= 0) continue; // Start/end can be on different lines
+            && '([{“‘«'.indexOf(leftChar) >= 0) continue; // Start/end can be on different lines
         if (fieldType !== 'markdown' || leftChar !== '<') { // > is a markdown block marker and also used for HTML, e.g., <br>
             const leftCount = countOccurrences(fieldText, leftChar),
                 rightCount = countOccurrences(fieldText, rightChar);
-            if (leftCount !== rightCount) {
+            if (leftCount !== rightCount
+                && (rightChar !== '’' || leftCount > rightCount)) { // Closing single quote is also used as apostrophe in English
                 // NOTE: These are higher priority than similar checks in a whole file which is less specific
                 const thisPriority = leftChar === '“' ? 163 : 563;
                 if (!optionalCheckingOptions?.cutoffPriorityLevel || optionalCheckingOptions?.cutoffPriorityLevel < thisPriority)
                     addNoticePartial({ priority: thisPriority, message: `Mismatched ${leftChar}${rightChar} characters`, details: `left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()}`, location: ourLocation });
             }
-            try {
-                const leftRegex = new RegExp(`(\\w)\\${leftChar}(\\w)`, 'g'), rightRegex = new RegExp(`(\\w)\\${rightChar}(\\w)`, 'g'); // This regex build fails for some of the characters
+            try { // This regex build fails for some of the characters
+                const leftRegex = new RegExp(`(\\w)\\${leftChar}(\\w)`, 'g'), rightRegex = new RegExp(`(\\w)\\${rightChar}(\\w)`, 'g');
                 // console.log(`leftRegex is ${leftRegex}`);
                 let regexResultArray;
                 // eslint-disable-next-line no-cond-assign
@@ -404,6 +405,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
                         if (!optionalCheckingOptions?.cutoffPriorityLevel || optionalCheckingOptions?.cutoffPriorityLevel < thisPriority)
                             addNoticePartial({ priority: thisPriority, message: thisMessage, extract: regexResultArray[0], location: ourLocation });
                     }
+                    if (rightChar !== '’') // Can't check '‘’' coz they might be used as apostrophe
                 // eslint-disable-next-line no-cond-assign
                 while (regexResultArray = rightRegex.exec(fieldText))
                     if (fieldType !== 'markdown' || regexResultArray[0][2] !== '_') {
