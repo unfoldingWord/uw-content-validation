@@ -4,7 +4,7 @@ import { cachedGetFile } from '../core/getApi';
 import { ourParseInt } from './utilities';
 
 
-// const QUOTE_VALIDATOR_VERSION_STRING = '0.7.5';
+// const QUOTE_VALIDATOR_VERSION_STRING = '0.7.6';
 
 
 export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldText, occurrenceString, bookID, C, V, givenLocation, optionalCheckingOptions) {
@@ -281,7 +281,10 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
 
     // Now check if the quote can be found in the verse text
     if (quoteBits) { // it had an ellipsis
-        console.assert(occurrence === 1, `Oh -- can get '${fieldText}' with occurrence=${occurrence} in ${bookID} ${C}:${V}`);
+        // console.assert(occurrence === 1, `Oh -- can get '${fieldText}' with occurrence=${occurrence} in ${bookID} ${C}:${V}`);
+        if (occurrence !== 1) {
+            addNotice({ priority: 50, message: "Is this quote/occurrence correct???", details: `Occurrence=${occurrence}`, extract: quoteBits, location: ourLocation });
+        }
         const numQuoteBits = quoteBits.length;
         if (numQuoteBits >= 2) {
             for (let bitIndex = 0; bitIndex < numQuoteBits; bitIndex++) {

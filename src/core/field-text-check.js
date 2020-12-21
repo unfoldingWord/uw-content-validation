@@ -1,7 +1,7 @@
 import { DEFAULT_EXTRACT_LENGTH, MATCHED_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, isWhitespace, countOccurrences } from './text-handling-functions'
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.2';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.3';
 
 
 /**
@@ -398,21 +398,23 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
                 let regexResultArray;
                 // eslint-disable-next-line no-cond-assign
                 while (regexResultArray = leftRegex.exec(fieldText))
-                    if (fieldType !== 'markdown' || regexResultArray[0][0] !== '_') {
+                    if ((fieldType !== 'markdown' || regexResultArray[0][0] !== '_')
+                        && (fieldType !== 'YAML' || leftChar !== '{')) {
                         // console.log(`Got misplaced left ${leftChar} in ${fieldType} ${fieldName} '${fieldText}':`, JSON.stringify(regexResultArray));
                         let thisPriority = 717, thisMessage = `Misplaced ${leftChar} character`;
                         if (leftChar === '(' && regexResultArray[0][2] === 's') { thisPriority = 17; thisMessage = `Possible misplaced ${leftChar} character`; } // Lower priority for words like 'thing(s)'
                         if (!optionalCheckingOptions?.cutoffPriorityLevel || optionalCheckingOptions?.cutoffPriorityLevel < thisPriority)
                             addNoticePartial({ priority: thisPriority, message: thisMessage, extract: regexResultArray[0], location: ourLocation });
                     }
-                    if (rightChar !== '’') // Can't check '‘’' coz they might be used as apostrophe
-                // eslint-disable-next-line no-cond-assign
-                while (regexResultArray = rightRegex.exec(fieldText))
-                    if (fieldType !== 'markdown' || regexResultArray[0][2] !== '_') {
-                        // console.log(`Got misplaced right ${rightChar} in ${fieldType} ${fieldName} '${fieldText}':`, JSON.stringify(regexResultArray));
-                        if (!optionalCheckingOptions?.cutoffPriorityLevel || optionalCheckingOptions?.cutoffPriorityLevel < 716)
-                            addNoticePartial({ priority: 716, message: `Misplaced ${rightChar} character`, extract: regexResultArray[0], location: ourLocation });
-                    }
+                if (rightChar !== '’') // Can't check '‘’' coz they might be used as apostrophe
+                    // eslint-disable-next-line no-cond-assign
+                    while (regexResultArray = rightRegex.exec(fieldText))
+                        if ((fieldType !== 'markdown' || regexResultArray[0][2] !== '_')
+                            && (fieldType !== 'YAML' || rightChar !== '}')) {
+                            // console.log(`Got misplaced right ${rightChar} in ${fieldType} ${fieldName} '${fieldText}':`, JSON.stringify(regexResultArray));
+                            if (!optionalCheckingOptions?.cutoffPriorityLevel || optionalCheckingOptions?.cutoffPriorityLevel < 716)
+                                addNoticePartial({ priority: 716, message: `Misplaced ${rightChar} character`, extract: regexResultArray[0], location: ourLocation });
+                        }
             } catch { }
         }
     }
