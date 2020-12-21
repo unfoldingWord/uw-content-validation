@@ -186,7 +186,7 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
                             openMarkers.pop();
                         } else // something is still open and this isn't a match -- might just be consequential error
                             if (char !== '’' // Closing single quote is also used as apostrophe in English
-                            && (textType !== 'markdown' || char !== '>' || characterIndex > 4)) { // Markdown uses > or >> or > > or > > > for block indents so ignore these -- might just be consequential error
+                                && (textType !== 'markdown' || char !== '>' || characterIndex > 4)) { // Markdown uses > or >> or > > or > > > for block indents so ignore these -- might just be consequential error
                                 const extract = (characterIndex > halfLength ? '…' : '') + line.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < line.length ? '…' : '')
                                 const details = `'${lastEntry.char}' opened on line ${lastEntry.n} character ${lastEntry.x + 1}`;
                                 addNotice({ priority: 777, message: `Bad punctuation nesting: ${char} closing character doesn't match`, details, lineNumber: n, characterIndex, extract, location: ourLocation });
@@ -207,6 +207,14 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
         }
 
         // lastLineContents = line;
+    }
+    //  At the end of the text -- check for left-over opening characters (unclosed)
+    if (openMarkers.length) {
+        const [{ char, n, x }] = openMarkers.slice(-1);
+        const line = lines[n - 1];
+        const extract = (x > halfLength ? '…' : '') + line.substring(x - halfLength, x + halfLengthPlus).replace(/ /g, '␣') + (x + halfLengthPlus < line.length ? '…' : '')
+        const details = openMarkers.length > 1 ? `${openMarkers.length} unclosed set${openMarkers.length === 1 ? '' : 's'}` : null;
+        addNotice({ priority: 768, message: `At end of text with unclosed ${char} opening character`, details, lineNumber: n, characterIndex: x, extract, location: ourLocation });
     }
 
     // TODO: Is this a duplicate of the above section about nesting?

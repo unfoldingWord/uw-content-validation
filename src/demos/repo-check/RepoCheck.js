@@ -7,7 +7,7 @@ import { checkRepo } from './checkRepo';
 // import { consoleLogObject, displayPropertyNames } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.1.5';
+// const REPO_VALIDATOR_VERSION_STRING = '0.1.6';
 
 
 function RepoCheck(/*username, languageCode,*/ props) {
@@ -128,6 +128,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 // if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
                 if (props.sortBy) processOptions.sortBy = props.sortBy;
                 // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
+                if (props.showDisabledNoticesFlag) processOptions.showDisabledNoticesFlag = props.showDisabledNoticesFlag.toLowerCase() === 'true';
 
                 let displayType = 'ErrorsWarnings'; // default
                 if (props.displayType) displayType = props.displayType;

@@ -49,5 +49,6 @@ import RepoCheck from './RepoCheck';
   maximumSimilarMessages='4' // Default is 3 (0 means don't suppress any)
   // extractLength='20' // Default is 15
   // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
+  showDisabledNoticesFlag='false' // Display known specific non-issues: 'true' or 'false'
 />
 ```

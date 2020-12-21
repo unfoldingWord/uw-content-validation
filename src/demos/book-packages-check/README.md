@@ -42,5 +42,6 @@ import BookPackagesCheck from './BookPackagesCheck';
   // extractLength='20' // Default is 15
   // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
   // sortBy='ByRepo' // Default is 'ByPriority'; also have 'ByRepo' and 'AsFound'
+  // showDisabledNoticesFlag='false' // Display known specific non-issues: 'true' or 'false'
   />
 ```

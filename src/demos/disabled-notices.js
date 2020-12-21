@@ -33,6 +33,7 @@ const disabledNotices = [
 
   { repoCode: 'TA', priority: 172, }, // "Header levels should only increment by one" not required for TA
 
+  { repoCode: 'TA', filename: 'translate/translate-alphabet/01.md', message: "At end of text with unclosed ‘ opening character", }, // 768
   { repoCode: 'TA', filename: 'translate/translate-alphabet/01.md', message: "Mismatched ‘’ characters", }, // 462
   { repoCode: 'TA', filename: 'translate/translate-textvariants/01.md', message: "Unexpected space after [ character", }, // 192
   { repoCode: 'TA', filename: 'translate/translate-formatsignals/01.md', message: "Unexpected space after ( character", }, // 192
