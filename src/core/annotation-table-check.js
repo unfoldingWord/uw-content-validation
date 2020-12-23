@@ -1,15 +1,16 @@
 import * as books from './books/books';
 import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { checkAnnotationTSVDataRow } from './annotation-row-check';
+import { removeDisabledNotices } from './disabled-notices';
 
 
-const ANNOTATION_TABLE_VALIDATOR_VERSION_STRING = '0.2.7';
+const ANNOTATION_TABLE_VALIDATOR_VERSION_STRING = '0.3.0';
 
 const NUM_EXPECTED_ANNOTATION_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tAnnotation';
 
 
-export async function checkAnnotationRows(languageCode, annotationType, bookID, filename, tableText, givenLocation, optionalCheckingOptions) {
+export async function checkAnnotationRows(languageCode, annotationType, bookID, filename, tableText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire file, i.e., all rows.
 
       It also has the advantage of being able to compare one row with the previous one.
@@ -18,7 +19,7 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
 
      Returns a result object containing a successList and a noticeList
      */
-    // console.log(`checkAnnotationRows(${languageCode}, ${annotationType}, ${bookID}, ${tableText.length}, ${givenLocation},${JSON.stringify(optionalCheckingOptions)})…`);
+    // console.log(`checkAnnotationRows(${languageCode}, ${annotationType}, ${bookID}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
     console.assert(languageCode !== undefined, "checkAnnotationRows: 'languageCode' parameter should be defined");
     console.assert(typeof languageCode === 'string', `checkAnnotationRows: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
     console.assert(bookID !== undefined, "checkAnnotationRows: 'bookID' parameter should be defined");
@@ -62,7 +63,7 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
 
     let extractLength;
     try {
-        extractLength = optionalCheckingOptions?.extractLength;
+        extractLength = checkingOptions?.extractLength;
     } catch (ttcError) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
@@ -79,7 +80,7 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
     if (bookID === 'OBS')
         numChaptersThisBook = 50; // There's 50 Open Bible Stories
     else {
-        console.assert(lowercaseBookID !== 'obs', "Shouldn't happen in annotation-table-check");
+        console.assert(lowercaseBookID !== 'obs', "Shouldn’t happen in annotation-table-check");
         try {
             numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
         }
@@ -112,7 +113,7 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
                 const [C, V] = reference.split(':')
 
                 // Use the row check to do most basic checks
-                const drResultObject = await checkAnnotationTSVDataRow(languageCode, annotationType, lines[n], bookID, C, V, ourLocation, optionalCheckingOptions);
+                const drResultObject = await checkAnnotationTSVDataRow(languageCode, annotationType, lines[n], bookID, C, V, ourLocation, checkingOptions);
                 // Choose only ONE of the following
                 // This is the fast way of append the results from this field
                 // result.noticeList = result.noticeList.concat(firstResult.noticeList);
@@ -146,13 +147,13 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
                     uniqueRowList = []; // Same for these
                 }
 
-                // TODO: Check if we need this at all (even though tC 3.0 can't display these "duplicate" notes)
+                // TODO: Check if we need this at all (even though tC 3.0 can’t display these "duplicate" notes)
                 // Check for duplicate notes
                 const uniqueID = C + V + supportReference + quote + occurrence; // This combination should not be repeated
                 // if (uniqueRowList.includes(uniqueID))
                 //     addNoticePartial({ priority: 880, C, V, message: `Duplicate note`, rowID, lineNumber: n + 1, location: ourLocation });
                 // if (uniqueRowList.includes(uniqueID))
-                //     addNoticePartial({ priority: 80, C, V, message: `Note: tC 3.0 won't display duplicate note`, rowID, lineNumber: n + 1, location: ourLocation });
+                //     addNoticePartial({ priority: 80, C, V, message: `Note: tC 3.0 won’t display duplicate note`, rowID, lineNumber: n + 1, location: ourLocation });
                 uniqueRowList.push(uniqueID);
 
                 if (C) {
@@ -215,10 +216,10 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
                 lastC = C; lastV = V;
 
             } else // wrong number of fields in the row
-                // if (n === lines.length - 1) // it's the last line
+                // if (n === lines.length - 1) // it’s the last line
                 //     console.log(`  Line ${n}: Has ${fields.length} field(s) instead of ${NUM_EXPECTED_TN_FIELDS}: ${EXPECTED_TN_HEADING_LINE.replace(/\t/g, ', ')}`);
                 // else
-                if (n !== lines.length - 1) { // it's not the last line
+                if (n !== lines.length - 1) { // it’s not the last line
                     // Have a go at getting some of the first fields out of the line
                     let reference = '?:?', C = '?', V = '?', rowID = '????';
                     try { reference = fields[0]; } catch { }
@@ -229,8 +230,13 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
         }
     }
 
-    if ((!optionalCheckingOptions?.cutoffPriorityLevel || optionalCheckingOptions?.cutoffPriorityLevel < 20)
-        && optionalCheckingOptions?.disableAllLinkFetchingFlag)
+    if (!checkingOptions?.suppressNoticeDisablingFlag) {
+        console.log(`checkAnnotationRows: calling removeDisabledNotices(${carResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        carResult.noticeList = removeDisabledNotices(carResult.noticeList);
+    }
+
+    if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 20)
+        && checkingOptions?.disableAllLinkFetchingFlag)
         addNoticePartial({ priority: 20, message: "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked", location: ourLocation });
 
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}.`);

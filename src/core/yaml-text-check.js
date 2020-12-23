@@ -2,11 +2,12 @@ import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import yaml from 'yaml';
 import { checkTextField } from './field-text-check';
 import { checkTextfileContents } from './file-text-check';
+import { removeDisabledNotices } from './disabled-notices';
 
-const YAML_VALIDATOR_VERSION_STRING = '0.4.1';
+const YAML_VALIDATOR_VERSION_STRING = '0.4.2';
 
 
-export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, optionalCheckingOptions) {
+export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
      Returns a result object containing a successList and a noticeList,
@@ -23,8 +24,9 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, o
     console.assert(givenLocation !== undefined, "checkYAMLText: 'optionalFieldLocation' parameter should be defined");
     console.assert(typeof givenLocation === 'string', `checkYAMLText: 'optionalFieldLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
     console.assert(givenLocation.indexOf('true') === -1, `checkYAMLText: 'optionalFieldLocation' parameter should not be '${givenLocation}'`);
-    if (optionalCheckingOptions !== undefined)
-        console.assert(typeof optionalCheckingOptions === 'object', `checkYAMLText: 'optionalCheckingOptions' parameter should be an object not a '${typeof optionalCheckingOptions}': ${JSON.stringify(optionalCheckingOptions)}`);
+    console.assert(checkingOptions !== undefined, "checkYAMLText: 'checkingOptions' parameter should be defined");
+    if (checkingOptions !== undefined)
+        console.assert(typeof checkingOptions === 'object', `checkYAMLText: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -32,7 +34,7 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, o
 
     let extractLength;
     try {
-        extractLength = optionalCheckingOptions?.extractLength;
+        extractLength = checkingOptions?.extractLength;
     } catch (ytcError) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
@@ -66,14 +68,14 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, o
         cytResult.noticeList.push(noticeObject);
     }
 
-    function ourCheckTextField(lineNumber, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
+    function ourCheckTextField(lineNumber, fieldText, allowedLinks, optionalFieldLocation, checkingOptions) {
         /**
         * @description - checks the given text field and processes the returned results
         * @param {String} fieldName - name of the field being checked
         * @param {String} fieldText - the actual text of the field being checked
         * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
         * @param {String} optionalFieldLocation - description of where the field is located
-        * @param {Object} optionalCheckingOptions - parameters that might affect the check
+        * @param {Object} checkingOptions - parameters that might affect the check
         */
         // Does basic checks for small errors like leading/trailing spaces, etc.
 
@@ -87,9 +89,9 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, o
         console.assert(optionalFieldLocation !== undefined, "cYt ourCheckTextField: 'optionalFieldLocation' parameter should be defined");
         console.assert(typeof optionalFieldLocation === 'string', `cYt ourCheckTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
-        const resultObject = checkTextField('YAML', '', fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
+        const resultObject = checkTextField('YAML', '', fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
 
-        // Concat is faster if we don't need to process each notice individually
+        // Concat is faster if we don’t need to process each notice individually
         // cytResult.noticeList = cytResult.noticeList.concat(resultObject.noticeList);
         // // Process noticeList line by line
         // //  suppressing undesired errors
@@ -117,12 +119,12 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, o
 
         const allowedLinksInLine = thisText.startsWith('url:') || thisText.startsWith('chapter_url:') || thisText.startsWith('rc:');
         if (thisText)
-            ourCheckTextField(lineNumber, thisText, allowedLinksInLine, lineLocation, optionalCheckingOptions);
+            ourCheckTextField(lineNumber, thisText, allowedLinksInLine, lineLocation, checkingOptions);
     }
     // end of checkYAMLLine function
 
 
-    function ourBasicFileChecks(filename, fileText, fileLocation, optionalCheckingOptions) {
+    function ourBasicFileChecks(filename, fileText, fileLocation, checkingOptions) {
         // Does basic checks for small errors like leading/trailing spaces, etc.
 
         // We assume that checking for compulsory fields is done elsewhere
@@ -132,8 +134,9 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, o
         console.assert(typeof filename === 'string', `cYT ourBasicFileChecks: 'filename' parameter should be a string not a '${typeof filename}'`);
         console.assert(fileText !== undefined, "cYT ourBasicFileChecks: 'fileText' parameter should be defined");
         console.assert(typeof fileText === 'string', `cYT ourBasicFileChecks: 'fileText' parameter should be a string not a '${typeof fileText}'`);
+        console.assert(checkingOptions !== undefined, "cYT ourBasicFileChecks: 'checkingOptions' parameter should be defined");
 
-        const resultObject = checkTextfileContents(languageCode, 'YAML', filename, fileText, fileLocation, optionalCheckingOptions);
+        const resultObject = checkTextfileContents(languageCode, 'YAML', filename, fileText, fileLocation, checkingOptions);
 
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
@@ -183,7 +186,12 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, o
     }
 
     // Do basic file checks
-    ourBasicFileChecks(textName, YAMLText, givenLocation, optionalCheckingOptions);
+    ourBasicFileChecks(textName, YAMLText, givenLocation, checkingOptions);
+
+    if (!checkingOptions?.suppressNoticeDisablingFlag) {
+        console.log(`checkYAMLText: calling removeDisabledNotices(${cytResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        cytResult.noticeList = removeDisabledNotices(cytResult.noticeList);
+    }
 
     addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length === 1 ? '' : 's'}${ourLocation}.`);
     if (cytResult.noticeList)

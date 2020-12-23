@@ -24,7 +24,7 @@ const lineB2 = "GEN\t99\t3\tw3r5\t\t1\t\tBoo";
 const lineB3 = "GEN\t2\tboo\tw3r5\t\t1\t\tNote3";
 const lineB4 = "GEN\t2\t3\tw3r5q\t\t1\t\tNote4";
 const lineB5 = "GEN\t2\t3\tw3r5\tLaugh\t\t1\t\tNote5";
-const lineB6 = "GEN\t2\t3\tw3r5\t\tCan't remember\t1\t\tNote6 (See: [[rc://en/tw/dict/bible/kt/fairyland]])";
+const lineB6 = "GEN\t2\t3\tw3r5\t\tCan’t remember\t1\t\tNote6 (See: [[rc://en/tw/dict/bible/kt/fairyland]])";
 const lineB7 = "GEN\t2\t3\tw3r5\t\t17\t\tNote7.";
 const lineB8 = "GEN\t2\t3\tw3r5\t\t\t1\tBad ellipse...\tNote8—see how you translated it in [Odyssey 1:7](../01/07.md).";
 const lineB9 = "GEN\t2\t3\tw3r\t\t\t1\t\t<br>Boo hoo,, lost my shoe ! See how you translated it in [Genesis 1:77](../91/07.md).";
@@ -61,8 +61,8 @@ function CheckTNTSVRow(props) {
     (async () => {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {tableLineName} <b>{bookID}</b>…</p>);
-      const optionalCheckingOptions = {};
-      const rawResults = await checkTN_TSVDataRow(languageCode, tableLine, bookID, C, V, givenLocation, optionalCheckingOptions);
+      const checkingOptions = {};
+      const rawResults = await checkTN_TSVDataRow(languageCode, tableLine, bookID, C, V, givenLocation, checkingOptions);
       setResults(
         <div>
           <b>Check</b> {tableLineName}: "{tableLine.substr(0,256)}…"<br/><br/>

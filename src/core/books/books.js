@@ -132,7 +132,7 @@ export const usfmNumberName = (bookId) => {
 }
 
 export const chaptersInBook = (bookId) => {
-  // console.assert(bookId.toLowerCase() !== 'obs', `chaptersInBook shouldn't be passed '${bookId}'`);
+  // console.assert(bookId.toLowerCase() !== 'obs', `chaptersInBook shouldn’t be passed '${bookId}'`);
   let chapters;
   try {
     chapters = BibleBookData[bookId.toLowerCase()].chapters;
@@ -146,7 +146,7 @@ export const chaptersInBook = (bookId) => {
 };
 
 export const versesInChapter = (bookId, chapter) => {
-  // console.assert(bookId.toLowerCase() !== 'obs', `versesInChapter shouldn't be passed '${bookId}'`);
+  // console.assert(bookId.toLowerCase() !== 'obs', `versesInChapter shouldn’t be passed '${bookId}'`);
   const verses = chaptersInBook(bookId)[chapter - 1];
   if (verses === undefined) {
     throw new Error(`versesInChapter(${bookId}) given invalid chapter: ${chapter}`);

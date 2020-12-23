@@ -3,7 +3,7 @@ import { checkPlainText } from './plain-text-check';
 // const FILE_TEXT_VALIDATOR_VERSION_STRING = '0.3.0';
 
 
-export function checkTextfileContents(languageCode, fileType, filename, fileText, optionalFileLocation, optionalCheckingOptions) {
+export function checkTextfileContents(languageCode, fileType, filename, fileText, optionalFileLocation, checkingOptions) {
     // Does basic checks for small errors like mismatched punctuation pairs, etc.
     //  (Used by ourBasicFileChecks() in checkUSFMText() in usfm-text-check.js)
 
@@ -31,6 +31,7 @@ export function checkTextfileContents(languageCode, fileType, filename, fileText
     console.assert(typeof filename === 'string', `checkTextfileContents: 'filename' parameter should be a string not a '${typeof filename}': ${filename}`);
     console.assert(fileText !== undefined, "checkTextfileContents: 'fileText' parameter should be defined");
     console.assert(typeof fileText === 'string', `checkTextfileContents: 'fileText' parameter should be a string not a '${typeof fileText}': ${fileText}`);
+    console.assert(checkingOptions !== undefined, "checkTextfileContents: 'checkingOptions' parameter should be defined");
 
     let result = { noticeList: [] };
 
@@ -50,12 +51,12 @@ export function checkTextfileContents(languageCode, fileType, filename, fileText
         result.noticeList.push(noticeObject);
     }
 
-    function ourCheckPlainText(textType, textFilename, plainText, givenLocation, optionalCheckingOptions) {
+    function ourCheckPlainText(textType, textFilename, plainText, givenLocation, checkingOptions) {
         /**
         * @description - checks the given text field and processes the returned results
         * @param {String} plainText - the actual text of the field being checked
         * @param {String} givenLocation - description of where the field is located
-        * @param {Object} optionalCheckingOptions - parameters that might affect the check
+        * @param {Object} checkingOptions - parameters that might affect the check
         */
         // Does basic checks for small errors like leading/trailing spaces, etc.
 
@@ -67,8 +68,9 @@ export function checkTextfileContents(languageCode, fileType, filename, fileText
         // console.assert(typeof textName === 'string', `cPT ourCheckPlainText: 'fieldName' parameter should be a string not a '${typeof textName}'`);
         console.assert(plainText !== undefined, "cPT ourCheckPlainText: 'plainText' parameter should be defined");
         console.assert(typeof plainText === 'string', `cPT ourCheckPlainText: 'plainText' parameter should be a string not a '${typeof plainText}'`);
+        console.assert(checkingOptions !== undefined, "cPT ourCheckPlainText: 'checkingOptions' parameter should be defined");
 
-        const resultObject = checkPlainText(textType, textFilename, plainText, givenLocation, optionalCheckingOptions);
+        const resultObject = checkPlainText(textType, textFilename, plainText, givenLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -91,7 +93,7 @@ export function checkTextfileContents(languageCode, fileType, filename, fileText
     /*
     let extractLength;
     try {
-        extractLength = optionalCheckingOptions?.extractLength;
+        extractLength = checkingOptions?.extractLength;
     } catch (bfcError) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
@@ -111,9 +113,9 @@ export function checkTextfileContents(languageCode, fileType, filename, fileText
     else if (filenameLower.endsWith('.md')) textType = 'markdown';
     else if (filenameLower.endsWith('.yaml') || filenameLower.endsWith('.yml')) textType = 'YAML';
     */
-    ourCheckPlainText(fileType, filename, fileText, ourLocation, optionalCheckingOptions);
+    ourCheckPlainText(fileType, filename, fileText, ourLocation, checkingOptions);
 
-    //     // Simple check that there aren't any
+    //     // Simple check that there aren’t any
     //     ix = fileText.indexOf('://');
     //     if (ix === -1) ix = fileText.indexOf('http');
     //     if (ix === -1) ix = fileText.indexOf('ftp');

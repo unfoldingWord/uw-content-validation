@@ -7,7 +7,7 @@ import { checkRepo } from './checkRepo';
 // import { consoleLogObject, displayPropertyNames } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.1.6';
+// const REPO_VALIDATOR_VERSION_STRING = '0.1.7';
 
 
 function RepoCheck(/*username, languageCode,*/ props) {
@@ -32,9 +32,10 @@ function RepoCheck(/*username, languageCode,*/ props) {
 
     const checkingOptions = { // Uncomment any of these to test them
         // extractLength: 25,
+        suppressNoticeDisablingFlag: true, // Leave this one as true (otherwise demo checks are less efficient)
     };
-    // NOTE: I removed this again as it didn't really seem to make sense to enable it here
-    //          Also, I don't think the results were getting returned correctly yet
+    // NOTE: I removed this again as it didn’t really seem to make sense to enable it here
+    //          Also, I don’t think the results were getting returned correctly yet
     // if (repoName && repoName.endsWith('_tn')) {
     //     // TODO: Should the user be able to turn this off and on ????
     //     checkingOptions.checkLinkedTAArticleFlag = true;
@@ -54,8 +55,8 @@ function RepoCheck(/*username, languageCode,*/ props) {
         (async () => {
             // console.log("Started RepoCheck.unnamedFunction()");
 
-            // NOTE from RJH: I can't find the correct React place for this / way to do this
-            //                  so it shows a warning for the user, and doesn't continue to try to process
+            // NOTE from RJH: I can’t find the correct React place for this / way to do this
+            //                  so it shows a warning for the user, and doesn’t continue to try to process
             if (!props.wait || props.wait !== 'N') {
                 setResultValue(<p><span style={{ color: 'blue' }}>Waiting for user…</span> (Adjust settings below as necessary and then set <b>wait='N'</b> to start)</p>);
                 return;
@@ -95,7 +96,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
             // Display our "waiting" message
             setResultValue(<p style={{ color: 'magenta' }}>Checking <b>{repoName}</b> repo…</p>);
 
-            // Put all this in a try/catch block coz otherwise it's difficult to debug/view errors
+            // Put all this in a try/catch block coz otherwise it’s difficult to debug/view errors
             try {
                 let rawCRResults = {};
                 try {
@@ -116,7 +117,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 // console.log("Here with RC rawCRResults", typeof rawCRResults);
                 // Now do our final handling of the result -- we have some options available
                 let processOptions = { // Uncomment any of these to test them
-                    // 'maximumSimilarMessages': 4, // default is 3 -- 0 means don't suppress
+                    // 'maximumSimilarMessages': 4, // default is 3 -- 0 means don’t suppress
                     // 'errorPriorityLevel': 800, // default is 700
                     // 'cutoffPriorityLevel': 100, // default is 0
                     // 'sortBy': 'ByRepo', // default is 'ByPriority', also have 'AsFound'
@@ -200,7 +201,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 </>);
             }
         })(); // end of async part in unnamedFunction
-        // Doesn't work if we add this to next line: languageCode,username,repoName,branch,checkingOptions,props
+        // Doesn’t work if we add this to next line: languageCode,username,repoName,branch,checkingOptions,props
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []); // end of useEffect part
 

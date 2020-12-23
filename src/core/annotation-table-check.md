@@ -21,7 +21,7 @@ const textA = `Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tAnnotat
 2:boo\tw3r5\t\t\t\t1\tBad verse number
 2:3\tw3r5q\t\t\t\t1\tNote4
 2:3\tw3r5\t\tLaugh\t\t\t1\tNote5
-2:3\tw3r5\t\t\tCan't remember\t\t1\tNote6
+2:3\tw3r5\t\t\tCan’t remember\t\t1\tNote6
 2:3\tw3r5\t\t\t\t17\tNote7
 2:3\tw3r5\t\t\tBad ellipse...\t1\tNote8
 2:3\tw3r5\t\t\t\t1\t<br>Boo hoo,, lost my shoe !`;
@@ -60,8 +60,8 @@ function CheckAnnotationRows(props) {
     (async () => {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {languageCode} {annotationType} for {tableTextName} <b>{bookID}</b>…</p>);
-      const optionalCheckingOptions = {};
-      const rawResults = await checkAnnotationRows(languageCode, annotationType, bookID, filename, tableText, givenLocation, optionalCheckingOptions);
+      const checkingOptions = {};
+      const rawResults = await checkAnnotationRows(languageCode, annotationType, bookID, filename, tableText, givenLocation, checkingOptions);
       setResults(
         <div>
           <b>Check</b> {tableTextName}: "{tableText.substr(0,256)}…"<br/><br/>

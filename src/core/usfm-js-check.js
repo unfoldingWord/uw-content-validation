@@ -12,20 +12,20 @@ export function runUsfmJsCheck(fileText, convertOptions) {
     const numJSONkeys = jsonKeys.length;
     // console.log(`  Finished USFM-JS converter check with ${numJSONkeys} json key(s)`);
     // console.log(`  jsonResult: ${JSON.stringify(jsonResult)}`)
-    // NOTE: We don't know how to get the errors out yet
+    // NOTE: We don’t know how to get the errors out yet
 
     return { isValidUSFM: numJSONkeys >= 2, returnedJSON: jsonResult }; // Expect 'headers', 'chapters'
 }
 // end of runUsfmJsCheck function
 
 
-export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, optionalCheckingOptions) {
+export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, checkingOptions) {
     /*
     This function is only used for the demonstration pages -- not for the core!
 
     bookID is a three-character UPPERCASE USFM book identifier.
 
-        filename parameter can be an empty string if we don't have one.
+        filename parameter can be an empty string if we don’t have one.
 
      Returns a result object containing a successList and a noticeList
      */
@@ -84,10 +84,10 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, opti
         'convertToInt': []
     };
     const convertCheckResult = runUsfmJsCheck(givenText, ourLocation, convertOptions);
-    // NOTE: We haven't figured out how to get ERRORS out of this parser yet
+    // NOTE: We haven’t figured out how to get ERRORS out of this parser yet
 
     if (!convertCheckResult.isValidUSFM)
-        addNotice6to7({ priority: 943, message: `USFM3 toJSON Check doesn't pass`, location: ourLocation });
+        addNotice6to7({ priority: 943, message: `USFM3 toJSON Check doesn’t pass`, location: ourLocation });
 
     addSuccessMessage(`Checked USFM-JS`);
     // console.log(`  checkUSFMToJSON returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);

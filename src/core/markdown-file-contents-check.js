@@ -12,9 +12,9 @@ const MARKDOWN_FILE_VALIDATOR_VERSION_STRING = '0.4.0';
  * @param {string} markdownFilename -- used for identification
  * @param {string} markdownText -- the actual text to be checked
  * @param {string} givenLocation
- * @param {Object} optionalCheckingOptions
+ * @param {Object} checkingOptions
  */
-export function checkMarkdownFileContents(languageCode, markdownFilename, markdownText, givenLocation, optionalCheckingOptions) {
+export function checkMarkdownFileContents(languageCode, markdownFilename, markdownText, givenLocation, checkingOptions) {
   /* This function is optimised for checking the entire markdown file, i.e., all lines.
 
   Note: This function does not check that any link targets in the markdown are valid links.
@@ -31,15 +31,15 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
   console.assert(givenLocation !== undefined, "checkMarkdownFileContents: 'givenLocation' parameter should be defined");
   console.assert(typeof givenLocation === 'string', `checkMarkdownFileContents: 'givenLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
   console.assert(givenLocation.indexOf('true') === -1, `checkMarkdownFileContents: 'givenLocation' parameter should not be '${givenLocation}'`);
-  if (optionalCheckingOptions !== undefined)
-    console.assert(typeof optionalCheckingOptions === 'object', `checkMarkdownFileContents: 'optionalCheckingOptions' parameter should be an object not a '${typeof optionalCheckingOptions}': ${JSON.stringify(optionalCheckingOptions)}`);
+  if (checkingOptions !== undefined)
+    console.assert(typeof checkingOptions === 'object', `checkMarkdownFileContents: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
 
   let ourLocation = givenLocation;
   if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
   let extractLength;
   try {
-    extractLength = optionalCheckingOptions?.extractLength;
+    extractLength = checkingOptions?.extractLength;
   } catch (mdtcError) { }
   if (typeof extractLength !== 'number' || isNaN(extractLength)) {
     extractLength = DEFAULT_EXTRACT_LENGTH;
@@ -80,9 +80,9 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
   * @param {String} markdownText - the actual text of the file being checked
   * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
   * @param {String} optionalFieldLocation - description of where the field is located
-  * @param {Object} optionalCheckingOptions - parameters that might affect the check
+  * @param {Object} checkingOptions - parameters that might affect the check
   */
-  async function ourCheckMarkdownText(markdownText, optionalFieldLocation, optionalCheckingOptions) {
+  async function ourCheckMarkdownText(markdownText, optionalFieldLocation, checkingOptions) {
     // Does basic checks for small errors like leading/trailing spaces, etc.
 
     // We assume that checking for compulsory fields is done elsewhere
@@ -94,7 +94,7 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
     console.assert(optionalFieldLocation !== undefined, "cMdFC ourCheckMarkdownText: 'optionalFieldLocation' parameter should be defined");
     console.assert(typeof optionalFieldLocation === 'string', `cMdFC ourCheckMarkdownText: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
-    const dbtcResultObject = await checkMarkdownText(languageCode, markdownFilename, markdownText, optionalFieldLocation, optionalCheckingOptions);
+    const dbtcResultObject = await checkMarkdownText(languageCode, markdownFilename, markdownText, optionalFieldLocation, checkingOptions);
 
     // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
     //  process results line by line
@@ -108,9 +108,9 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
   * @description - checks the given text field and processes the returned results
   * @param {String} markdownText - the actual text of the file being checked
   * @param {String} optionalFieldLocation - description of where the field is located
-  * @param {Object} optionalCheckingOptions - parameters that might affect the check
+  * @param {Object} checkingOptions - parameters that might affect the check
   */
-  function ourFileTextCheck(markdownText, optionalFieldLocation, optionalCheckingOptions) {
+  function ourFileTextCheck(markdownText, optionalFieldLocation, checkingOptions) {
     // Does basic checks for small errors like leading/trailing spaces, etc.
 
     // We assume that checking for compulsory fields is done elsewhere
@@ -119,8 +119,9 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
     // console.log(`cMdT ourFileTextCheck(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${optionalFieldLocation}, …)`);
     console.assert(markdownText !== undefined, "cMdFC ourFileTextCheck: 'markdownText' parameter should be defined");
     console.assert(typeof markdownText === 'string', `cMdFC ourFileTextCheck: 'markdownText' parameter should be a string not a '${typeof markdownText}'`);
+    console.assert(checkingOptions !== undefined, "cMdFC ourFileTextCheck: 'checkingOptions' parameter should be defined");
 
-    const dbtcResultObject = checkTextfileContents(languageCode, 'markdown', markdownFilename, markdownText, optionalFieldLocation, optionalCheckingOptions);
+    const dbtcResultObject = checkTextfileContents(languageCode, 'markdown', markdownFilename, markdownText, optionalFieldLocation, checkingOptions);
 
     // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
     //  process results line by line
@@ -131,8 +132,8 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
 
 
   // Main code for checkMarkdownFileContents function
-  ourCheckMarkdownText(markdownText, givenLocation, optionalCheckingOptions);
-  ourFileTextCheck(markdownText, givenLocation, optionalCheckingOptions);
+  ourCheckMarkdownText(markdownText, givenLocation, checkingOptions);
+  ourFileTextCheck(markdownText, givenLocation, checkingOptions);
 
   addSuccessMessage(`Checked markdown file: ${markdownFilename}`);
   if (result.noticeList)

@@ -4,7 +4,7 @@
 
 
 export function consoleLogObject(clTitle, clObject) {
-    // Print an object's componenets to the console
+    // Print an object’s componenets to the console
     // Note: the following line succeeds even if length and/or size are undefined
     let clOutput = `cLO: ${clTitle} ${typeof clObject} (length=${clObject.length}) (size=${clObject.size}):\n`;
     for (const clPropertyName in clObject) {
@@ -46,11 +46,11 @@ export function ourParseInt(givenString) {
 
     See https://stackoverflow.com/questions/1133770/how-to-convert-a-string-to-an-integer-in-javascript
 
-    This one throws an error if the entire field doesn't give an integer.
+    This one throws an error if the entire field doesn’t give an integer.
     */
 
     /* First attempt
-    const int1 = parseInt(givenString, 10); // Don't let the function guess the base (if the string has a leading zero)
+    const int1 = parseInt(givenString, 10); // Don’t let the function guess the base (if the string has a leading zero)
     const int2 = givenString * 1; // This one is less forgiving it seems
     if (int1!==int2) console.log(`From '${givenString}' we got ${int1} (${typeof int1}) and ${int2} (${typeof int2})`)
     if (isNaN(int2) || isNaN(int1)

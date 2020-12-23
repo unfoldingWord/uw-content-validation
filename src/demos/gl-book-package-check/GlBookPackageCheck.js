@@ -8,7 +8,7 @@ import { checkBookPackage } from '../book-package-check/checkBookPackage';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.7';
+// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.8';
 
 
 function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
@@ -34,11 +34,12 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
     // Clear cached files if we've changed repo
     //  autoClearCache(bookIDs); // This technique avoids the complications of needing a button
 
-    let checkingOptions = { // Uncomment any of these to test them
+    const checkingOptions = { // Uncomment any of these to test them
         // extractLength: 25,
         checkManifestFlag: true,
         checkReadmeFlag: true,
         checkLicenseFlag: true,
+        suppressNoticeDisablingFlag: true, // Leave this one as true (otherwise demo checks are less efficient)
     };
     // Or this allows the parameters to be specified as a GlBookPackageCheck property
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
@@ -52,15 +53,15 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
         (async () => {
             // console.log("Started GlBookPackageCheck.unnamedFunction()");
 
-            // NOTE from RJH: I can't find the correct React place for this / way to do this
-            //                  so it shows a warning for the user, and doesn't continue to try to process
+            // NOTE from RJH: I can’t find the correct React place for this / way to do this
+            //                  so it shows a warning for the user, and doesn’t continue to try to process
             if (!props.wait || props.wait !== 'N') {
                 setResultValue(<p><span style={{ color: 'blue' }}>Waiting for user…</span> (Adjust settings below as necessary and then set <b>wait='N'</b> to start)</p>);
                 return;
             }
 
-            // NOTE from RJH: I can't find the correct React place for this or way to do this
-            //                  so it shows a warning for the user, and doesn't continue to try to process
+            // NOTE from RJH: I can’t find the correct React place for this or way to do this
+            //                  so it shows a warning for the user, and doesn’t continue to try to process
             if (bookID !== 'OBS' && !books.isValidBookID(bookID)) {
                 console.log(`Invalid '${bookID}' bookID given!`)
                 setResultValue(<p style={{ color: 'red' }}>Please enter a valid USFM book identifier or 'OBS'. ('<b>{bookID}</b>' is not valid.)</p>);
@@ -103,7 +104,7 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
             // console.log("Here with CBPs rawCBPsResults", typeof rawCBPsResults);
             // Now do our final handling of the result -- we have some options available
             let processOptions = { // Uncomment any of these to test them
-                // 'maximumSimilarMessages': 4, // default is 3 -- 0 means don't suppress
+                // 'maximumSimilarMessages': 4, // default is 3 -- 0 means don’t suppress
                 // 'errorPriorityLevel': 800, // default is 700
                 // 'cutoffPriorityLevel': 100, // default is 0
                 // 'sortBy': 'ByRepo', // default is 'ByPriority', also have 'AsFound'
@@ -181,7 +182,7 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
 
             // console.log("Finished rendering bit.");
         })(); // end of async part in unnamedFunction
-        // Doesn't work if we add this to next line: bookIDList,bookIDs,username,branch,checkingOptions,languageCode,props
+        // Doesn’t work if we add this to next line: bookIDList,bookIDs,username,branch,checkingOptions,languageCode,props
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [bookID, branch, JSON.stringify(checkingOptions), languageCode, JSON.stringify(props), username]); // end of useEffect part
 

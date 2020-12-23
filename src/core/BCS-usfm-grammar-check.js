@@ -6,7 +6,7 @@ import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 // const USFM_GRAMMAR_VALIDATOR_VERSION_STRING = '0.3.2';
 
 
-export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLocation, optionalCheckingOptions) {
+export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLocation, checkingOptions) {
     // Runs the BCS USFM Grammar checker
     //  which can be quite time-consuming on large, complex USFM files
     // console.log(`Running ${strictnessString} BCS USFM grammar check${givenLocation} (can take quite a while for a large book)…`);
@@ -14,7 +14,7 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
 
     let extractLength;
     try {
-        extractLength = optionalCheckingOptions?.extractLength;
+        extractLength = checkingOptions?.extractLength;
     } catch (usfmELerror) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
@@ -67,7 +67,7 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
 
         // Some of these "errors" need to be degraded in priority
 
-        let adjustedPriority = 594; // We don't make these extra high coz the messages are hard for users to interpret
+        let adjustedPriority = 594; // We don’t make these extra high coz the messages are hard for users to interpret
         if (extract === '\\s5' // Temporarily, even though \s5 fields are not valid USFM
             || ourErrorMessage.startsWith('Expected "f*", "+"') // Might neeed a OHM schema fix?
         )
@@ -83,7 +83,7 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
         // Save our line number
         if (lineNumberString && lineNumberString.length) {
             /*
-            //  but we need a temporary fix for the BCS bug which doesn't include blank lines in the count
+            //  but we need a temporary fix for the BCS bug which doesn’t include blank lines in the count
             let lineNumber = Number(lineNumberString)
             let notified = false;
             const lines = fileText.split('\n');
@@ -119,13 +119,13 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
 // end of runBCSGrammarCheck function
 
 
-export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, givenLocation, optionalCheckingOptions) {
+export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, givenLocation, checkingOptions) {
     /*
     This function is only used for the demonstration pages -- not for the core!
 
     bookID is a three-character UPPERCASE USFM book identifier.
 
-    filename parameter can be an empty string if we don't have one.
+    filename parameter can be an empty string if we don’t have one.
 
      Returns a result object containing a successList and a noticeList
      */
@@ -167,14 +167,14 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
 
 
     // Main code for checkUSFMGrammar function
-    if (books.isExtraBookID(bookID)) // doesn't work for these
+    if (books.isExtraBookID(bookID)) // doesn’t work for these
         return cugResult;
 
-    const grammarCheckResult = runBCSGrammarCheck(strictnessString, givenText, filename, ourLocation, optionalCheckingOptions);
+    const grammarCheckResult = runBCSGrammarCheck(strictnessString, givenText, filename, ourLocation, checkingOptions);
     // console.log(`grammarCheckResult=${JSON.stringify(grammarCheckResult)}`);
 
     if (!grammarCheckResult.isValidUSFM)
-        addNotice6to7({ priority: 944, message: `USFM3 Grammar Check (${strictnessString} mode) doesn't pass`, filename, location: ourLocation });
+        addNotice6to7({ priority: 944, message: `USFM3 Grammar Check (${strictnessString} mode) doesn’t pass`, filename, location: ourLocation });
 
     // We only get one error if it fails
     if (grammarCheckResult.error && grammarCheckResult.priority)
@@ -184,7 +184,7 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
     for (const warningString of grammarCheckResult.warnings)
         addNotice6to7({ priority: 101, message: `USFMGrammar: ${warningString}`, filename, location: ourLocation });
 
-    addSuccessMessage(`Checked USFM Grammar (${strictnessString} mode) ${grammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN'T validate)"}`);
+    addSuccessMessage(`Checked USFM Grammar (${strictnessString} mode) ${grammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN’T validate)"}`);
     // console.log(`  checkUSFMGrammar returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
     // console.log(`checkUSFMGrammar result is ${JSON.stringify(result)}`);
     return cugResult;

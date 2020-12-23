@@ -1,8 +1,8 @@
-import { isDisabledNotice } from './disabled-notices';
+import { isDisabledNotice } from '../core/disabled-notices';
 // import { displayPropertyNames, consoleLogObject } from './utilities';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.3';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.5';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -36,7 +36,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                       (but not each instance of those warnings/errors).
                     By default, notice priority numbers 700 and over are
                       considered `errors` and 0-699 are considered `warnings`,
-                      but in truth, that's rather arbitrary.
+                      but in truth, that’s rather arbitrary.
                 message: The actual general description text of the notice
                 details: Additional clarifying notice information (if relevant)
                 The next three fields may be ommitted if irrelevant
@@ -127,7 +127,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         }
         for (const thisGivenNotice of standardisedNoticeList) {
             let xx;
-            if ((xx = uniqueListContains(thisGivenNotice)) === -1) // wasn't found
+            if ((xx = uniqueListContains(thisGivenNotice)) === -1) // wasn’t found
                 uniqueList.push(thisGivenNotice);
             else console.log(`Duplicate notices:\n${JSON.stringify(thisGivenNotice)}\nwhen had\n${JSON.stringify(uniqueList[xx])}`);
         }
@@ -159,6 +159,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 && !thisMsg.startsWith('Unexpected space after ')
                 && !thisMsg.startsWith('Unexpected content after \\')
                 && !thisMsg.startsWith('USFMGrammar: ')
+                && !thisMsg.startsWith('Bad punctuation nesting: ')
                 && !thisMsg.endsWith(' character combination')
                 && !thisMsg.endsWith(' character after space')
                 && !thisMsg.endsWith(' character at start of line')
@@ -182,7 +183,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             if (thisFilename) {
                 console.assert(thisFilename.indexOf(':') < 0 && thisFilename.indexOf('\\') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 console.assert(ALL_TSV_FIELDNAMES.indexOf(thisFilename) < 0, `filename '${thisFilename}' contains a TSV fieldName!`);
-                // NOTE: Some OBS and other messages have to include part of the part in the 'filename' (to prevent ambiguity) so we don't disallow forward slash
+                // NOTE: Some OBS and other messages have to include part of the part in the 'filename' (to prevent ambiguity) so we don’t disallow forward slash
                 // if (!thisRepoName || !(thisRepoName.endsWith('_obs') || thisRepoName.endsWith('_ta') || thisRepoName.endsWith('_tw')))
                 //     console.assert(thisFilename.indexOf('/') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 if (thisLocation)
@@ -219,7 +220,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         numSuppressedWarnings: 0,
         processingOptions: optionalProcessingOptions, // Just helpfully includes what we were given (may be undefined)
     };
-    // Copy across all the other properties that we aren't interested in
+    // Copy across all the other properties that we aren’t interested in
     for (const gnoPropertyName in givenNoticeObject)
         if (gnoPropertyName !== 'successList' && gnoPropertyName !== 'noticeList')
             resultObject[gnoPropertyName] = givenNoticeObject[gnoPropertyName];
@@ -298,11 +299,11 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 else if (thisParticularSuccessMsg.startsWith('Checked TWL ') && thisParticularSuccessMsg.substring(15, 21) === ' file:')
                     TWLList.push(thisParticularSuccessMsg.substring(22, thisParticularSuccessMsg.length))
                 else if ((regexResult = BibleRegex.exec(thisParticularSuccessMsg)) !== null
-                    // but don't do it for Book Package checks (in different repos)
+                    // but don’t do it for Book Package checks (in different repos)
                     && thisParticularSuccessMsg.startsWith(`Checked ${regexResult[1]} file`))
                     USFMBookList.push(regexResult[1]);
                 else if ((regexResult = NotesRegex.exec(thisParticularSuccessMsg)) !== null
-                    // but don't do it for Book Package checks (in different repos)
+                    // but don’t do it for Book Package checks (in different repos)
                     && thisParticularSuccessMsg.startsWith(`Checked ${regexResult[1]} file`))
                     TSVNotesList.push(regexResult[1]);
                 else if ((regexResult = manifestRegex.exec(thisParticularSuccessMsg)) !== null)
@@ -415,9 +416,9 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             remainingNoticeList.push(thisNotice);
     }
     if (resultObject.numIgnoredNotices)
-        console.log(`Ignored ${resultObject.numIgnoredNotices.toLocaleString()} generic notice(s) out of ${givenNoticeObject.noticeList.length.toLocaleString()}`);
+        console.log(`processNoticesCommon: Ignored ${resultObject.numIgnoredNotices.toLocaleString()} generic notice(s) out of ${givenNoticeObject.noticeList.length.toLocaleString()}`);
     if (resultObject.numDisabledNotices)
-        console.log(`Disabled ${resultObject.numDisabledNotices.toLocaleString()} specific notice(s) out of ${givenNoticeObject.noticeList.length.toLocaleString()}`);
+        console.log(`processNoticesCommon: Disabled ${resultObject.numDisabledNotices.toLocaleString()} specific notice(s) out of ${givenNoticeObject.noticeList.length.toLocaleString()}`);
 
     // Cut off the lowest priority notices if requested
     if (cutoffPriorityLevel > 0) {
@@ -441,7 +442,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         remainingNoticeList.sort(function (a, b) { return SORT_LIST.indexOf(a.repoCode) - SORT_LIST.indexOf(b.repoCode); });
     // remainingNoticeList.sort(function (a, b) { return b.repoCode > a.repoCode; });
 
-    // Add in extra info if it's there -- default is to prepend it to the msg
+    // Add in extra info if it’s there -- default is to prepend it to the msg
     //  Doing this prevents errors/warnings from different repos or books from being combined
     if (remainingNoticeList.length
         && remainingNoticeList[0].extra && remainingNoticeList[0].extra.length) {
@@ -451,7 +452,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             const thisExtra = thisNotice.extra;
             console.assert(thisExtra && thisExtra.length, `Expect thisNotice to have an "extra" field: ${JSON.stringify(thisNotice)}`)
             const newNotice = { ...thisNotice };
-            // We don't need the extra field if we've already got this info
+            // We don’t need the extra field if we've already got this info
             if (thisExtra !== thisNotice.repoName && thisExtra !== thisNotice.bookID)
                 newNotice.message = `${thisNotice.extra} ${thisNotice.message}`;
             delete newNotice.extra; // since we've used it (if it existed)
@@ -535,12 +536,12 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
         if (maximumSimilarMessages > 0 && allTotals[thisCombinedID] > maximumSimilarMessages + 1 && counter[thisCombinedID] === maximumSimilarMessages + 1) {
             if (thisPriority >= errorPriorityLevel) {
                 const numSuppressed = allTotals[thisCombinedID] - maximumSimilarMessages;
-                console.assert(numSuppressed !== 1, `Shouldn't suppress just one error of priority ${thisPriority}`);
+                console.assert(numSuppressed !== 1, `Shouldn’t suppress just one error of priority ${thisPriority}`);
                 resultObject.errorList.push({ priority: -1, message: thisMsg, location: ` ▲ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
                 resultObject.numSuppressedErrors++;
             } else {
                 const numSuppressed = allTotals[thisCombinedID] - maximumSimilarMessages;
-                console.assert(numSuppressed !== 1, `Shouldn't suppress just one warning of priority ${thisPriority}`);
+                console.assert(numSuppressed !== 1, `Shouldn’t suppress just one warning of priority ${thisPriority}`);
                 resultObject.warningList.push({ priority: -1, message: thisMsg, location: ` ▲ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
                 resultObject.numSuppressedWarnings++;
             }
@@ -633,17 +634,17 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
         if (maximumSimilarMessages > 0 && allTotals[thisCombinedID] > maximumSimilarMessages + 1 && counter[thisCombinedID] === maximumSimilarMessages + 1) {
             if (thisPriority >= severePriorityLevel) {
                 const numSuppressed = allTotals[thisCombinedID] - maximumSimilarMessages;
-                console.assert(numSuppressed !== 1, `Shouldn't suppress just one severe error of priority ${thisPriority}`);
+                console.assert(numSuppressed !== 1, `Shouldn’t suppress just one severe error of priority ${thisPriority}`);
                 resultObject.severeList.push({ priority: -1, message: thisMsg, location: ` ▲ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
                 resultObject.numSevereSuppressed++;
             } else if (thisPriority >= mediumPriorityLevel) {
                 const numSuppressed = allTotals[thisCombinedID] - maximumSimilarMessages;
-                console.assert(numSuppressed !== 1, `Shouldn't suppress just one medium error of priority ${thisPriority}`);
+                console.assert(numSuppressed !== 1, `Shouldn’t suppress just one medium error of priority ${thisPriority}`);
                 resultObject.mediumList.push({ priority: -1, message: thisMsg, location: ` ▲ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
                 resultObject.numMediumSuppressed++;
             } else {
                 const numSuppressed = allTotals[thisCombinedID] - maximumSimilarMessages;
-                console.assert(numSuppressed !== 1, `Shouldn't suppress just one low warning of priority ${thisPriority}`);
+                console.assert(numSuppressed !== 1, `Shouldn’t suppress just one low warning of priority ${thisPriority}`);
                 resultObject.lowList.push({ priority: -1, message: thisMsg, location: ` ▲ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
                 resultObject.numLowSuppressed++;
             }
@@ -718,7 +719,7 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
         else counter[thisCombinedID]++;
         if (maximumSimilarMessages > 0 && allTotals[thisCombinedID] > maximumSimilarMessages + 1 && counter[thisCombinedID] === maximumSimilarMessages + 1) {
             const numSuppressed = allTotals[thisCombinedID] - maximumSimilarMessages;
-            console.assert(numSuppressed !== 1, `Shouldn't suppress just one notice of priority ${thisPriority}`);
+            console.assert(numSuppressed !== 1, `Shouldn’t suppress just one notice of priority ${thisPriority}`);
             resultObject.warningList.push({ priority: thisPriority, message: thisMsg, location: ` ▲ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
             resultObject.numSuppressedWarnings++;
         } else if (maximumSimilarMessages > 0 && counter[thisCombinedID] > maximumSimilarMessages + 1) {

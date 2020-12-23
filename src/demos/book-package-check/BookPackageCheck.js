@@ -33,12 +33,13 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
     // Clear cached files if we've changed repo
     //  autoClearCache(bookID); // This technique avoids the complications of needing a button
 
-    let checkingOptions = { // Uncomment any of these to test them
+    const checkingOptions = { // Uncomment any of these to test them
         dataSet: dataSet, // Can be 'OLD' (Markdown, etc.), 'NEW' (TSV only), or 'BOTH', or 'DEFAULT'
         // extractLength: 25, // default is 15
         checkManifestFlag: true,
         checkReadmeFlag: true,
         checkLicenseFlag: true,
+        suppressNoticeDisablingFlag: true, // Leave this one as true (otherwise demo checks are less efficient)
     };
     // Or this allows the parameters to be specified as a BookPackageCheck property
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
@@ -58,15 +59,15 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
         (async () => {
             // console.log("Started BookPackageCheck.unnamedFunction()");
 
-            // NOTE from RJH: I can't find the correct React place for this / way to do this
-            //                  so it shows a warning for the user, and doesn't continue to try to process
+            // NOTE from RJH: I can’t find the correct React place for this / way to do this
+            //                  so it shows a warning for the user, and doesn’t continue to try to process
             if (!props.wait || props.wait !== 'N') {
                 setResultValue(<p><span style={{ color: 'blue' }}>Waiting for user…</span> (Adjust settings below as necessary and then set <b>wait='N'</b> to start)</p>);
                 return;
             }
 
-            // NOTE from RJH: I can't find the correct React place for this / way to do this
-            //                  so it shows a warning for the user, and doesn't continue to try to process
+            // NOTE from RJH: I can’t find the correct React place for this / way to do this
+            //                  so it shows a warning for the user, and doesn’t continue to try to process
             if (bookID !== 'OBS' && !books.isValidBookID(bookID)) {
                 console.log(`Invalid '${bookID}' bookID given!`)
                 setResultValue(<p style={{ color: 'red' }}>Please enter a valid USFM book identifier or 'OBS'. ('<b>{bookID}</b>' is not valid.)</p>);
@@ -117,7 +118,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             // console.log("Here with CBP rawCBPResults", typeof rawCBPResults);
             // Now do our final handling of the result -- we have some options available
             let processOptions = { // Uncomment any of these to test them
-                // 'maximumSimilarMessages': 4, // default is 3 -- 0 means don't suppress
+                // 'maximumSimilarMessages': 4, // default is 3 -- 0 means don’t suppress
                 // 'errorPriorityLevel': 800, // default is 700
                 // 'cutoffPriorityLevel': 100, // default is 0
                 // 'sortBy': 'ByRepo', // default is 'ByPriority', also have 'AsFound'

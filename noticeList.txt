@@ -1,6 +1,6 @@
 Last updated 2020-12-22 11:12:17.716890 by makeNoticeList.py
 Got 305 notices:
-  checkRepoResult.noticeList.push( 997, "Repository doesn't exist", details, username, repoCode, repoName, location: givenLocation, extra: repoCode	from checkRepo.js line 243
+  checkRepoResult.noticeList.push( 997, "Repository doesn’t exist", details, username, repoCode, repoName, location: givenLocation, extra: repoCode	from checkRepo.js line 243
   languageCode === 'en' || languageCode === 'fr' ? 490 : 190, "Expected header field to contain a mixed-case string", fieldName: `\\$marker`, extract: rest, C, V, location: lineLocation	from usfm-text-check.js line 754
   marker === 's5' ? 111 : 809, `$marker === 's5' ? 'Deprecated' : 'Unexpected' '\\$marker' marker at start of line`, C, V, lineNumber, characterIndex: 1, location: lineLocation	from usfm-text-check.js line 777
   `"`.indexOf(line[0]) < 0 ? 880 : 280, C, V, "Expected line to start with backslash", lineNumber: n, characterIndex: 0, extract: line[0], location: ourLocation	from usfm-text-check.js line 856
@@ -24,11 +24,11 @@ Got 305 notices:
   thisPriority, thisMessage, extract: regexResultArray[0], location: ourLocation	from field-text-check.js line 407
   leftChar === '“' ? 162 : 462, `Mismatched $leftChar$rightChar characters`, details: `left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString()`, location: ourLocation	from plain-text-check.js line 232
   999, "checkRepo function FAILED", repoName, extract: checkRepoError, location: repoName	from RepoCheck.js line 105
-  997, "Repository doesn't exist", details, username, repoCode, repoName, location: manifestLocation, extra: repoCode	from checkBookPackage.js line 172
-  997, "Repository doesn't exist", details, username, repoCode, repoName, location: manifestLocation, extra: repoCode	from checkBookPackage.js line 233
-  997, "Repository doesn't exist", details, username, repoCode, repoName, location: repoLocation, extra: repoCode	from checkBookPackage.js line 372
-  997, "Repository doesn't exist", details, username, repoCode, repoName, location: generalLocation, extra: repoCode	from checkBookPackage.js line 534
-  997, "Repository doesn't exist", details, username, repoCode, repoName, location: generalLocation, extra: repoCode	from checkBookPackage.js line 560
+  997, "Repository doesn’t exist", details, username, repoCode, repoName, location: manifestLocation, extra: repoCode	from checkBookPackage.js line 172
+  997, "Repository doesn’t exist", details, username, repoCode, repoName, location: manifestLocation, extra: repoCode	from checkBookPackage.js line 233
+  997, "Repository doesn’t exist", details, username, repoCode, repoName, location: repoLocation, extra: repoCode	from checkBookPackage.js line 372
+  997, "Repository doesn’t exist", details, username, repoCode, repoName, location: generalLocation, extra: repoCode	from checkBookPackage.js line 534
+  997, "Repository doesn’t exist", details, username, repoCode, repoName, location: generalLocation, extra: repoCode	from checkBookPackage.js line 560
   996, "Unable to load", details: `username=$username error=$cBPgfError`, repoName, filename: MANIFEST_FILENAME, location: manifestLocation, extra: repoCode	from checkBookPackage.js line 176
   996, "Unable to load", details: `username=$username error=$cBPgfError`, repoName, filename: MANIFEST_FILENAME, location: manifestLocation, extra: repoCode	from checkBookPackage.js line 237
   996, "Unable to load", details, repoCode, repoName, filename, location: repoLocation, extra: repoCode	from checkBookPackage.js line 376
@@ -47,7 +47,7 @@ Got 305 notices:
   988, `Wrong number of tabbed fields (expected $NUM_EXPECTED_TN_TSV_FIELDS)`, extract: `Found $fields.length field$fields.length === 1 ? '' : 's'`, C, V, rowID, lineNumber: n + 1, location: ourLocation	from tn-table-text-check.js line 225
   988, `Wrong number of tabbed fields (expected $NUM_EXPECTED_ANNOTATION_TSV_FIELDS)`, extract: `Found $fields.length field$fields.length === 1 ? '' : 's'`, C, V, rowID, lineNumber: n + 1, location: ourLocation	from annotation-table-check.js line 227
   987, C, V, "Expected \\id line to start with book identifier", lineNumber: n, characterIndex: 4, extract, location: ourLocation	from usfm-text-check.js line 933
-  986, "Repository doesn't seem to exist", details: `username=$username`, location: givenLocation, extra: repoName	from checkRepo.js line 150
+  986, "Repository doesn’t seem to exist", details: `username=$username`, location: givenLocation, extra: repoName	from checkRepo.js line 150
   985, `Field does not match schema $errorObject.keyword`, details: errorObject.message, fieldName: errorObject.dataPath, location: ourLocation	from manifest-text-check.js line 673
   984, `Found wrong number of TSV fields (expected $NUM_EXPECTED_TN_TSV_FIELDS)`, details: `Found $fields.length field$fields.length === 1 ? '' : 's'`, rowID, location: ourRowLocation	from tn-table-row-check.js line 523
   984, `Found wrong number of TSV fields (expected $NUM_EXPECTED_ANNOTATION_TSV_FIELDS)`, details: `Found $fields.length field$fields.length === 1 ? '' : 's'`, rowID, location: ourRowLocation	from annotation-row-check.js line 528
@@ -64,8 +64,8 @@ Got 305 notices:
   950, "tC cannot yet process '*' language code", characterIndex, extract, location: ourLocation	from tn-links-check.js line 202
   947, "Missing manifest.yaml", location: ourLocation, extra: `$repoName MANIFEST`	from checkRepo.js line 272
   946, "Missing LICENSE.md", location: ourLocation, extra: `$repoName LICENSE`	from checkRepo.js line 270
-  944, `USFM3 Grammar Check ($strictnessString mode) doesn't pass`, filename, location: ourLocation	from BCS-usfm-grammar-check.js line 177
-  943, `USFM3 toJSON Check doesn't pass`, location: ourLocation	from usfm-js-check.js line 90
+  944, `USFM3 Grammar Check ($strictnessString mode) doesn’t pass`, filename, location: ourLocation	from BCS-usfm-grammar-check.js line 177
+  943, `USFM3 toJSON Check doesn’t pass`, location: ourLocation	from usfm-js-check.js line 90
   942, "USFM Grammar check fails", location	from usfm-text-check.js line 982
   939, "Key is missing for project", details: keyName, extract: JSON.stringify(projectEntry), location: ourLocation	from manifest-text-check.js line 685
   938, `Unable to find project file mentioned in manifest`, extract: projectFilepath, location: ourLocation	from manifest-text-check.js line 702
@@ -150,7 +150,7 @@ Got 305 notices:
   779, "Missing row ID field", fieldName: 'Reference', location: ourRowLocation	from annotation-row-check.js line 413
   778, "Row ID should be exactly 4 characters", details: `not $rowID.length`, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation	from tn-table-row-check.js line 405
   778, "Row ID should be exactly 4 characters", details: `not $rowID.length`, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation	from annotation-row-check.js line 416
-  777, `Bad punctuation nesting: $char closing character doesn't match`, details, lineNumber: n, characterIndex, extract, location: ourLocation	from plain-text-check.js line 192
+  777, `Bad punctuation nesting: $char closing character doesn’t match`, details, lineNumber: n, characterIndex, extract, location: ourLocation	from plain-text-check.js line 192
   776, 'Unexpected " straight quote character', details, lineNumber, C, V, extract, location: lineLocation	from usfm-text-check.js line 714
   775, "Unexpected ' straight quote character", details, lineNumber, C, V, extract, location: lineLocation	from usfm-text-check.js line 719
   774, `Unexpected $char closing character (no matching opener)`, lineNumber: n, characterIndex, extract, location: ourLocation	from plain-text-check.js line 199
@@ -160,13 +160,13 @@ Got 305 notices:
   770, `Unexpected leading word-joiner`, characterIndex: 0, extract, location: ourLocation	from field-text-check.js line 136
   769, C, V, "Verse bridge numbers not in ascending order", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, Math.max(9, extractLength))$rest.length > extractLength ? '…' : '' ($firstV → $secondV)`, location: ourLocation	from usfm-text-check.js line 909
   768, `At end of text with unclosed $char opening character`, details, lineNumber: n, characterIndex: x, extract, location: ourLocation	from plain-text-check.js line 217
-  766, C, V, "Bridged verse numbers didn't increment correctly", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, Math.max(9, extractLength))$rest.length > extractLength ? '…' : '' ($lastV → $firstV)`, location: ourLocation	from usfm-text-check.js line 911
+  766, C, V, "Bridged verse numbers didn’t increment correctly", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, Math.max(9, extractLength))$rest.length > extractLength ? '…' : '' ($lastV → $firstV)`, location: ourLocation	from usfm-text-check.js line 911
   765, "Unexpected link", characterIndex, extract, location: ourLocation	from field-text-check.js line 435
-  764, C, V, "Chapter number didn't increment correctly", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, halfLength)$rest.length > halfLength ? '…' : '' ($lastC ? lastC : '0' → $C)`, location: ourLocation	from usfm-text-check.js line 882
-  763, C, V, "Verse number didn't increment correctly", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, halfLength)$rest.length > halfLength ? '…' : '' ($lastV ? lastV : '0' → $V)`, location: ourLocation	from usfm-text-check.js line 895
+  764, C, V, "Chapter number didn’t increment correctly", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, halfLength)$rest.length > halfLength ? '…' : '' ($lastC ? lastC : '0' → $C)`, location: ourLocation	from usfm-text-check.js line 882
+  763, C, V, "Verse number didn’t increment correctly", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, halfLength)$rest.length > halfLength ? '…' : '' ($lastV ? lastV : '0' → $V)`, location: ourLocation	from usfm-text-check.js line 895
   762, "Unable to convert verse bridge numbers to integers", C: chapterNumberString, V: verseNumberString, characterIndex: 3, extract: verseNumberString, location: `$CVlocation with $usfmVIerror`	from usfm-text-check.js line 427
   762, C, V, "Unable to convert verse bridge numbers to integers", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, Math.max(9, extractLength))$rest.length > extractLength ? '…' : ''`, location: ourLocation	from usfm-text-check.js line 905
-  761, C, V, "Verse number didn't increment correctly", lineNumber: n, characterIndex: 3, extract: `$restRest.substring(0, halfLength)$restRest.length > halfLength ? '…' : '' ($lastV ? lastV : '0' → $V)`, location: ourLocation	from usfm-text-check.js line 926
+  761, C, V, "Verse number didn’t increment correctly", lineNumber: n, characterIndex: 3, extract: `$restRest.substring(0, halfLength)$restRest.length > halfLength ? '…' : '' ($lastV ? lastV : '0' → $V)`, location: ourLocation	from usfm-text-check.js line 926
   751, "Invalid zero occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, extract: occurrence, location: ourRowLocation	from tn-table-row-check.js line 458
   751, "Invalid zero occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, extract: occurrence, location: ourRowLocation	from annotation-row-check.js line 474
   750, "Missing occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, location: ourRowLocation	from tn-table-row-check.js line 449
@@ -179,12 +179,12 @@ Got 305 notices:
   746, "Bad TSV header", lineNumber: n + 1, location: `$ourLocation: '$lines[0]'`	from annotation-table-check.js line 104
   745, C, V, `Wrong '$B' book identifier (expected '$bookID')`, rowID, lineNumber: n + 1, location: ourLocation	from tn-table-text-check.js line 154
   744, C, V, "Missing book identifier", rowID, lineNumber: n + 1, location: ourLocation	from tn-table-text-check.js line 157
-  743, "Chapter numbers of markdown Bible link don't match", details: `$C1 vs $chapterInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 319
-  743, "Chapter numbers of markdown Bible link don't match", details: `$C1 vs $chapterInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 371
-  743, "Chapter numbers of markdown Bible link don't match", details: `$C1 vs $chapterInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 423
-  742, "Verse numbers of markdown Bible link don't match", details: `$V1 vs $verseInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 325
-  742, "Verse numbers of markdown Bible link don't match", details: `$V1 vs $verseInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 377
-  742, "Verse numbers of markdown Bible link don't match", details: `$V1 vs $verseInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 429
+  743, "Chapter numbers of markdown Bible link don’t match", details: `$C1 vs $chapterInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 319
+  743, "Chapter numbers of markdown Bible link don’t match", details: `$C1 vs $chapterInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 371
+  743, "Chapter numbers of markdown Bible link don’t match", details: `$C1 vs $chapterInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 423
+  742, "Verse numbers of markdown Bible link don’t match", details: `$V1 vs $verseInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 325
+  742, "Verse numbers of markdown Bible link don’t match", details: `$V1 vs $verseInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 377
+  742, "Verse numbers of markdown Bible link don’t match", details: `$V1 vs $verseInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 429
   739, C, V, "Missing chapter number", rowID, lineNumber: n + 1, location: ` after $lastC:$V$ourLocation`	from tn-table-text-check.js line 181
   739, C, V, "Missing chapter number", rowID, lineNumber: n + 1, location: ` after $lastC:$V$ourLocation`	from annotation-table-check.js line 183
   738, C, V, "Bad verse number", rowID, lineNumber: n + 1, location: ourLocation	from tn-table-text-check.js line 200
@@ -220,12 +220,12 @@ Got 305 notices:
   653, "Bad verse number in markdown Bible link", details: `$linkBookCode $chapterInt:$verseInt vs $numVersesThisChapter verses`, extract: totalLink, location: ourLocation	from tn-links-check.js line 447
   649, "More [[ ]] links than valid TA/TW links", details: `detected $totalLinks2 link$totalLinks2 === 1 ? '' : 's' but $twaLinkCount ? `only $twaLinkCount` : 'no' TA/TW link$twaLinkCount === 1 ? '' : 's' from $JSON.stringify(linksList2)`, location: ourLocation	from tn-links-check.js line 457
   648, "More [ ]( ) links than valid Bible links", details: `detected $totalLinks1 link$totalLinks1 === 1 ? '' : 's' but $BibleLinkCount ? `only $BibleLinkCount` : 'no' Bible link$BibleLinkCount === 1 ? '' : 's' from $JSON.stringify(linksList1)`, location: ourLocation	from tn-links-check.js line 454
-  644, "USFM3 Grammar Check (relaxed mode) doesn't pass either", location: fileLocation	from usfm-text-check.js line 237
+  644, "USFM3 Grammar Check (relaxed mode) doesn’t pass either", location: fileLocation	from usfm-text-check.js line 237
   638, "Only found whitespace", location: ourLocation	from field-text-check.js line 102
   638, "Only found whitespace", location: ourLocation	from plain-text-check.js line 120
   621, "Seems original language quote might not finish at the end of a word", details: `passage ►$verseText◄`, characterIndex: fieldText.length, extract, location: ourLocation	from orig-quote-check.js line 336
   620, "Seems original language quote might not start at the beginning of a word", details: `passage ⸢$verseText⸣`, characterIndex: 0, extract, location: ourLocation	from orig-quote-check.js line 328
-  603, "USFM marker doesn't end with space", C, V, lineNumber, characterIndex, extract, location: ourLocation	from usfm-text-check.js line 812
+  603, "USFM marker doesn’t end with space", C, V, lineNumber, characterIndex, extract, location: ourLocation	from usfm-text-check.js line 812
   601, "Unable to load", details: `username=$username error=$gcUHBerror`, OBSPathname, location: ourLocation, extra: OBSRepoName	from orig-quote-check.js line 99
   601, "Unable to load", details: `username=$username error=$gcUHBerror`, filename, location: ourLocation, extra: originalLanguageRepoName	from orig-quote-check.js line 131
   601, "Unable to load", details: `username=$username error=$gcUGNTerror`, filename, location: ourLocation, extra: originalLanguageRepoName	from orig-quote-check.js line 139

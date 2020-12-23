@@ -1,15 +1,16 @@
 import * as books from './books/books';
 import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { checkTN_TSVDataRow } from './tn-table-row-check';
+import { removeDisabledNotices } from './disabled-notices';
 
 
-const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.2.6';
+const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.3.0';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
 
 
-export async function checkTN_TSVText(languageCode, bookID, filename, tableText, givenLocation, optionalCheckingOptions) {
+export async function checkTN_TSVText(languageCode, bookID, filename, tableText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire file, i.e., all rows.
 
       It also has the advantage of being able to compare one row with the previous one.
@@ -18,7 +19,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
 
      Returns a result object containing a successList and a noticeList
      */
-    // console.log(`checkTN_TSVText(${bookID}, ${tableText.length}, ${location},${JSON.stringify(optionalCheckingOptions)})…`);
+    // console.log(`checkTN_TSVText(${bookID}, ${tableText.length}, ${location},${JSON.stringify(checkingOptions)})…`);
     console.assert(languageCode !== undefined, "checkTN_TSVText: 'languageCode' parameter should be defined");
     console.assert(typeof languageCode === 'string', `checkTN_TSVText: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
     console.assert(bookID !== undefined, "checkTN_TSVText: 'bookID' parameter should be defined");
@@ -28,6 +29,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
     console.assert(books.isValidBookID(bookID), `checkTN_TSVText: '${bookID}' is not a valid USFM book identifier`);
     console.assert(givenLocation !== undefined, "checkTN_TSVText: 'givenLocation' parameter should be defined");
     console.assert(typeof givenLocation === 'string', `checkTN_TSVText: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
+    console.assert(checkingOptions !== undefined, "checkTN_TSVText: 'checkingOptions' parameter should be defined");
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -61,7 +63,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
 
     let extractLength;
     try {
-        extractLength = optionalCheckingOptions?.extractLength;
+        extractLength = checkingOptions?.extractLength;
     } catch (ttcError) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
@@ -76,7 +78,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
     let lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook = 0;
     try {
-        console.assert(lowercaseBookID !== 'obs', "Shouldn't happen in tn_table-text-check");
+        console.assert(lowercaseBookID !== 'obs', "Shouldn’t happen in tn_table-text-check");
         numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
     }
     catch {
@@ -106,7 +108,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
                 const [B, C, V, rowID, supportReference, origQuote, occurrence, _GLQuote, _occurrenceNote] = fields;
 
                 // Use the row check to do most basic checks
-                const drResultObject = await checkTN_TSVDataRow(languageCode, lines[n], bookID, C, V, ourLocation, optionalCheckingOptions);
+                const drResultObject = await checkTN_TSVDataRow(languageCode, lines[n], bookID, C, V, ourLocation, checkingOptions);
                 // Choose only ONE of the following
                 // This is the fast way of append the results from this field
                 // result.noticeList = result.noticeList.concat(firstResult.noticeList);
@@ -140,13 +142,13 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
                     uniqueRowList = []; // Same for these
                 }
 
-                // TODO: Check if we need this at all (even though tC 3.0 can't display these "duplicate" notes)
+                // TODO: Check if we need this at all (even though tC 3.0 can’t display these "duplicate" notes)
                 // Check for duplicate notes
                 const uniqueID = C + V + supportReference + origQuote + occurrence; // This combination should not be repeated
                 // if (uniqueRowList.includes(uniqueID))
                 //     addNoticePartial({ priority: 880, C, V, message: `Duplicate note`, rowID, lineNumber: n + 1, location: ourLocation });
                 // if (uniqueRowList.includes(uniqueID))
-                //     addNoticePartial({ priority: 80, C, V, message: `Note: tC 3.0 won't display duplicate note`, rowID, lineNumber: n + 1, location: ourLocation });
+                //     addNoticePartial({ priority: 80, C, V, message: `Note: tC 3.0 won’t display duplicate note`, rowID, lineNumber: n + 1, location: ourLocation });
                 uniqueRowList.push(uniqueID);
 
                 if (B) {
@@ -213,10 +215,10 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
                 lastB = B; lastC = C; lastV = V;
 
             } else // wrong number of fields in the row
-                // if (n === lines.length - 1) // it's the last line
+                // if (n === lines.length - 1) // it’s the last line
                 //     console.log(`  Line ${n}: Has ${fields.length} field(s) instead of ${NUM_EXPECTED_TN_FIELDS}: ${EXPECTED_TN_HEADING_LINE.replace(/\t/g, ', ')}`);
                 // else
-                if (n !== lines.length - 1) { // it's not the last line
+                if (n !== lines.length - 1) { // it’s not the last line
                     // Have a go at getting some of the first fields out of the line
                     let C = '?', V = '?', rowID = '????';
                     try { C = fields[1]; } catch { }
@@ -227,8 +229,13 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
         }
     }
 
-    if ((!optionalCheckingOptions?.cutoffPriorityLevel || optionalCheckingOptions?.cutoffPriorityLevel < 20)
-        && optionalCheckingOptions?.disableAllLinkFetchingFlag)
+    if (!checkingOptions?.suppressNoticeDisablingFlag) {
+        console.log(`checkTN_TSVText: calling removeDisabledNotices(${ttResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        ttResult.noticeList = removeDisabledNotices(ttResult.noticeList);
+    }
+
+    if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 20)
+        && checkingOptions?.disableAllLinkFetchingFlag)
         addNoticePartial({ priority: 20, message: "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked", location: ourLocation });
 
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}.`);

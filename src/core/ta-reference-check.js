@@ -5,17 +5,17 @@ import { cachedGetFile } from '../core/getApi';
 // const TA_REFERENCE_VALIDATOR_VERSION_STRING = '0.3.1';
 
 
-export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocation, optionalCheckingOptions) {
+export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocation, checkingOptions) {
     // This is for the case of the full SupportReference field being the article link
     //  which is assumed to be in the translate part of the TA manual.
 
-    // We fetch the TA link from Door43 to test that it's really there
+    // We fetch the TA link from Door43 to test that it’s really there
     //  -- you can control this with:
-    //      optionalCheckingOptions?.taRepoUsername
-    //      optionalCheckingOptions?.taRepoBranch (or tag)
-    //      optionalCheckingOptions?.taRepoLanguageCode
-    //      optionalCheckingOptions?.taRepoSectionName
-    //      optionalCheckingOptions?.expectFullLink (bool)
+    //      checkingOptions?.taRepoUsername
+    //      checkingOptions?.taRepoBranch (or tag)
+    //      checkingOptions?.taRepoLanguageCode
+    //      checkingOptions?.taRepoSectionName
+    //      checkingOptions?.expectFullLink (bool)
 
     // console.log(`checkSupportReferenceInTA v${TA_REFERENCE_VALIDATOR_VERSION_STRING} (${fieldName}, (${fieldText.length}) '${fieldText}', ${givenLocation}, …)`);
     console.assert(fieldName !== undefined, "checkSupportReferenceInTA: 'fieldText' parameter should be defined");
@@ -54,7 +54,7 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
     /*
     let extractLength;
     try {
-        extractLength = optionalCheckingOptions?.extractLength;
+        extractLength = checkingOptions?.extractLength;
     } catch (trcELerror) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
@@ -69,27 +69,27 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
 
     let taRepoUsername;
     try {
-        taRepoUsername = optionalCheckingOptions?.taRepoUsername;
+        taRepoUsername = checkingOptions?.taRepoUsername;
     } catch (trcUNerror) { }
     if (!taRepoUsername) taRepoUsername = 'Door43-Catalog'; // or unfoldingWord ???
     let taRepoBranch;
     try {
-        taRepoBranch = optionalCheckingOptions?.taRepoBranch;
+        taRepoBranch = checkingOptions?.taRepoBranch;
     } catch (trcBRerror) { }
     if (!taRepoBranch) taRepoBranch = 'master';
     let taRepoLanguageCode;
     try {
-        taRepoLanguageCode = optionalCheckingOptions?.taRepoLanguageCode;
+        taRepoLanguageCode = checkingOptions?.taRepoLanguageCode;
     } catch (trcLCerror) { }
     if (!taRepoLanguageCode) taRepoLanguageCode = 'en';
     let taRepoSectionName;
     try {
-        taRepoSectionName = optionalCheckingOptions?.taRepoSectionName;
+        taRepoSectionName = checkingOptions?.taRepoSectionName;
     } catch (trcSNerror) { }
     if (!taRepoSectionName) taRepoSectionName = 'translate';
     const taRepoName = `${taRepoLanguageCode}_ta`;
     let filepath;
-    if (optionalCheckingOptions?.expectFullLink) {
+    if (checkingOptions?.expectFullLink) {
         // console.log("checkSupportReferenceInTA expect full link")
         if (!fieldText.startsWith('rc://*/'))
             addNoticePartial({ priority: 879, message: `Badly formatted Resource Container link`, extract: fieldText, location: `${ourLocation} ${filepath}` });
@@ -101,7 +101,7 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
     // console.log(`Need to check against ${taRepoName}`);
     let taFileContent; // Not really used here -- just to show that we got something valid
     try {
-        const getFile_ = (optionalCheckingOptions && optionalCheckingOptions?.getFile) ? optionalCheckingOptions?.getFile : cachedGetFile;
+        const getFile_ = (checkingOptions && checkingOptions?.getFile) ? checkingOptions?.getFile : cachedGetFile;
         taFileContent = await getFile_({ username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch });
         // console.log("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
         if (!taFileContent)

@@ -24,7 +24,7 @@ const lineB2 = "99:3\tw3r5\t\t1\t\tBoo";
 const lineB3 = "2:boo\tw3r5\t\t1\t\tNote3";
 const lineB4 = "2:3\tw3r5q\t\t1\t\tNote4";
 const lineB5 = "2:3\tw3r5\tLaugh\t\t1\t\tNote5";
-const lineB6 = "2:3\tw3r5\t\tCan't remember\t1\t\tNote6";
+const lineB6 = "2:3\tw3r5\t\tCan’t remember\t1\t\tNote6";
 const lineB7 = "2:3\tw3r5\t\t17\t\tNote7";
 const lineB8 = "2:3\tw3r5\t\t1\tBad ellipse...\tNote8";
 const lineB9 = "2:3\tw3r\t\t1\t\t<br>Boo hoo,, lost my shoe !";
@@ -62,8 +62,8 @@ function CheckAnnotationRow(props) {
     (async () => {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {tableLineName} <b>{bookID}</b>…</p>);
-      const optionalCheckingOptions = {};
-      const rawResults = await checkAnnotationTSVDataRow(languageCode, annotationType, tableLine, bookID, C, V, givenLocation, optionalCheckingOptions);
+      const checkingOptions = {};
+      const rawResults = await checkAnnotationTSVDataRow(languageCode, annotationType, tableLine, bookID, C, V, givenLocation, checkingOptions);
       setResults(
         <div>
           <b>Check</b> {tableLineName}: "{tableLine.substr(0,256)}…"<br/><br/>

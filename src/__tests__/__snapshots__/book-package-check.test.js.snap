@@ -366,7 +366,7 @@ Object {
       "filename": "08-RUT.usfm",
       "lineNumber": 2274,
       "location": " in en RUT book package from unfoldingWord master branch",
-      "message": "Bad punctuation nesting: ” closing character doesn't match",
+      "message": "Bad punctuation nesting: ” closing character doesn’t match",
       "priority": 777,
       "repoCode": "LT",
       "repoName": "en_ult",

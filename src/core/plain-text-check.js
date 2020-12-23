@@ -1,8 +1,9 @@
 import { DEFAULT_EXTRACT_LENGTH, MATCHED_PUNCTUATION_PAIRS, PAIRED_PUNCTUATION_OPENERS, PAIRED_PUNCTUATION_CLOSERS, isWhitespace, countOccurrences } from './text-handling-functions'
 import { checkTextField } from './field-text-check';
+import { removeDisabledNotices } from './disabled-notices';
 
 
-const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.3.10';
+const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.3.11';
 
 
 /**
@@ -11,15 +12,15 @@ const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.3.10';
  * @param {string} textName
  * @param {string} plainText -- text to be checked
  * @param {string} givenLocation
- * @param {Object} optionalCheckingOptions
+ * @param {Object} checkingOptions
  */
-export function checkPlainText(textType, textName, plainText, givenLocation, optionalCheckingOptions) {
+export function checkPlainText(textType, textName, plainText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire text, i.e., all lines.
         It is used in checkFileContents() in book-package-check.js
 
      Returns a result object containing a successList and a noticeList
      */
-    // console.log(`checkPlainText(${textName}, (${plainText.length} chars), ${givenLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
+    // console.log(`checkPlainText(${textName}, (${plainText.length} chars), ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
     console.assert(textType !== undefined, "checkPlainText: 'textType' parameter should be defined");
     console.assert(typeof textType === 'string', `checkPlainText: 'textType' parameter should be a string not a '${typeof textType}': ${textType}`);
     console.assert(textType === 'markdown' || textType === 'USFM' || textType === 'YAML' || textType === 'text' || textType === 'raw', `checkPlainText: unrecognised 'textType' parameter: '${textType}'`);
@@ -27,13 +28,14 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
     console.assert(typeof textName === 'string', `checkPlainText: 'textName' parameter should be a string not a '${typeof textName}': ${textName}`);
     console.assert(plainText !== undefined, "checkPlainText: 'plainText' parameter should be defined");
     console.assert(typeof plainText === 'string', `checkPlainText: 'plainText' parameter should be a string not a '${typeof plainText}': ${plainText}`);
+    console.assert(checkingOptions !== undefined, "checkPlainText: 'checkingOptions' parameter should be defined");
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
     let extractLength;
     try {
-        extractLength = optionalCheckingOptions?.extractLength;
+        extractLength = checkingOptions?.extractLength;
     } catch (ptcError) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
@@ -68,14 +70,14 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
         cptResult.noticeList.push(noticeObject);
     }
 
-    function ourCheckTextField(lineNumber, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
+    function ourCheckTextField(lineNumber, fieldText, allowedLinks, optionalFieldLocation, checkingOptions) {
         /**
         * @description - checks the given text field and processes the returned results
         * @param {String} fieldName - name of the field being checked
         * @param {String} fieldText - the actual text of the field being checked
         * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
         * @param {String} optionalFieldLocation - description of where the field is located
-        * @param {Object} optionalCheckingOptions - parameters that might affect the check
+        * @param {Object} checkingOptions - parameters that might affect the check
         */
         // Does basic checks for small errors like leading/trailing spaces, etc.
 
@@ -91,7 +93,7 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
         console.assert(optionalFieldLocation !== undefined, "cPT ourCheckTextField: 'optionalFieldLocation' parameter should be defined");
         console.assert(typeof optionalFieldLocation === 'string', `cPT ourCheckTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
-        const resultObject = checkTextField(textType, '', fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
+        const resultObject = checkTextField(textType, '', fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -106,11 +108,11 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
     function checkPlainLineContents(lineNumber, lineText, lineLocation) {
 
         // console.log(`checkPlainLineContents for '${lineName}', '${lineText}' at${lineLocation}`);
-        let thisText = lineText.trimStart(); // So we don't get "leading space" AND "doubled spaces" errors
+        let thisText = lineText.trimStart(); // So we don’t get "leading space" AND "doubled spaces" errors
 
         if (thisText)
-            // Allow links as that's more general
-            ourCheckTextField(lineNumber, thisText, true, lineLocation, optionalCheckingOptions);
+            // Allow links as that’s more general
+            ourCheckTextField(lineNumber, thisText, true, lineLocation, checkingOptions);
     }
     // end of checkPlainLineContents function
 
@@ -184,12 +186,12 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
                         if (lastEntry.char === PAIRED_PUNCTUATION_OPENERS.charAt(closeCharacterIndex)) {
                             // console.log(`  Matched '${char}' with  '${openers.charAt(which)}' ${n} ${x}`);
                             openMarkers.pop();
-                        } else // something is still open and this isn't a match -- might just be consequential error
+                        } else // something is still open and this isn’t a match -- might just be consequential error
                             if (char !== '’' // Closing single quote is also used as apostrophe in English
                                 && (textType !== 'markdown' || char !== '>' || characterIndex > 4)) { // Markdown uses > or >> or > > or > > > for block indents so ignore these -- might just be consequential error
                                 const extract = (characterIndex > halfLength ? '…' : '') + line.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < line.length ? '…' : '')
                                 const details = `'${lastEntry.char}' opened on line ${lastEntry.n} character ${lastEntry.x + 1}`;
-                                addNotice({ priority: 777, message: `Bad punctuation nesting: ${char} closing character doesn't match`, details, lineNumber: n, characterIndex, extract, location: ourLocation });
+                                addNotice({ priority: 777, message: `Bad punctuation nesting: ${char} closing character doesn’t match`, details, lineNumber: n, characterIndex, extract, location: ourLocation });
                                 // console.log(`  ERROR 777: mismatched characters: ${details}`);
                             }
                     } else // Closed something unexpectedly without an opener
@@ -220,7 +222,7 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
     // TODO: Is this a duplicate of the above section about nesting?
     // Check matched pairs in the entire file
     for (const punctSet of MATCHED_PUNCTUATION_PAIRS) {
-        // Can't check '‘’' coz they might be used as apostrophe
+        // Can’t check '‘’' coz they might be used as apostrophe
         const leftChar = punctSet[0], rightChar = punctSet[1];
         const leftCount = countOccurrences(plainText, leftChar),
             rightCount = countOccurrences(plainText, rightChar);
@@ -230,6 +232,11 @@ export function checkPlainText(textType, textName, plainText, givenLocation, opt
             // NOTE: These are lower priority than similar checks in a field
             //          since they occur only within the entire file
             addNotice({ priority: leftChar === '“' ? 162 : 462, message: `Mismatched ${leftChar}${rightChar} characters`, details: `left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()}`, location: ourLocation });
+    }
+
+    if (!checkingOptions?.suppressNoticeDisablingFlag) {
+        console.log(`checkPlainText: calling removeDisabledNotices(${cptResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        cptResult.noticeList = removeDisabledNotices(cptResult.noticeList);
     }
 
     addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length === 1 ? '' : 's'}${ourLocation}.`);
