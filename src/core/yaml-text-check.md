@@ -219,8 +219,9 @@ projects:
 //  (to demonstrate differing results)
 const chosenText = textG2;
 const chosenTextName = 'textG2';
+const checkingOptions = {};
 
-const rawResults = checkYAMLText('en', chosenTextName, chosenText, 'in YAML data that was supplied');
+const rawResults = checkYAMLText('en', chosenTextName, chosenText, 'in YAML data that was supplied', checkingOptions);
 
 <>
 <b>YAML contents</b>: <RenderLines text={chosenText} />

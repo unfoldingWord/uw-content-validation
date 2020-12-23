@@ -231,7 +231,7 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
     }
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        console.log(`checkAnnotationRows: calling removeDisabledNotices(${carResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        // console.log(`checkAnnotationRows: calling removeDisabledNotices(${carResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
         carResult.noticeList = removeDisabledNotices(carResult.noticeList);
     }
 

@@ -713,7 +713,7 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
     }
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        console.log(`checkManifestText: calling removeDisabledNotices(${cmtResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        // console.log(`checkManifestText: calling removeDisabledNotices(${cmtResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
         cmtResult.noticeList = removeDisabledNotices(cmtResult.noticeList);
     }
 

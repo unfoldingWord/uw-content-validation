@@ -230,7 +230,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
     }
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        console.log(`checkTN_TSVText: calling removeDisabledNotices(${ttResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        // console.log(`checkTN_TSVText: calling removeDisabledNotices(${ttResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
         ttResult.noticeList = removeDisabledNotices(ttResult.noticeList);
     }
 

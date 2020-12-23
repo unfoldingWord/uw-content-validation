@@ -189,7 +189,7 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, c
     ourBasicFileChecks(textName, YAMLText, givenLocation, checkingOptions);
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        console.log(`checkYAMLText: calling removeDisabledNotices(${cytResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        // console.log(`checkYAMLText: calling removeDisabledNotices(${cytResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
         cytResult.noticeList = removeDisabledNotices(cytResult.noticeList);
     }
 

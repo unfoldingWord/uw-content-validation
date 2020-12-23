@@ -1006,7 +1006,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
     // addNoticePartial({priority:103, `USFMGrammar: ${warningString.trim()}`, location});
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        console.log(`checkUSFMText: calling removeDisabledNotices(${result.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        // console.log(`checkUSFMText: calling removeDisabledNotices(${result.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
         result.noticeList = removeDisabledNotices(result.noticeList);
     }
 

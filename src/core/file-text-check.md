@@ -26,8 +26,9 @@ const textB = `{ Peace  on Earth,,
 // Just change these next two lines to change the text being used (to demonstrate differing results)
 const chosenTextName = "textB";
 const chosenText = textB;
+const checkingOptions = {};
 
-const rawResults = checkTextfileContents('en', 'text', 'Sample', chosenText, 'in '+chosenTextName+' that was supplied', {});
+const rawResults = checkTextfileContents('en', 'text', 'Sample', chosenText, 'in '+chosenTextName+' that was supplied', checkingOptions);
 
 // Because we know here that we're only checking one file, we don’t need the filename field in the notices
 function deleteFilenameField(notice) { delete notice.filename; return notice; }

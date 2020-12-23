@@ -235,7 +235,7 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
     }
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        console.log(`checkPlainText: calling removeDisabledNotices(${cptResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        // console.log(`checkPlainText: calling removeDisabledNotices(${cptResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
         cptResult.noticeList = removeDisabledNotices(cptResult.noticeList);
     }
 

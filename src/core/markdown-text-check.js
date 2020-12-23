@@ -233,7 +233,7 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
     }
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        console.log(`checkMarkdownText: calling removeDisabledNotices(${result.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        // console.log(`checkMarkdownText: calling removeDisabledNotices(${result.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
         result.noticeList = removeDisabledNotices(result.noticeList);
     }
 

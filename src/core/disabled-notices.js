@@ -94,6 +94,6 @@ export function removeDisabledNotices(givenNoticeList) {
       if (!isDisabledNotice(thisNotice))
           remainingNoticeList.push(thisNotice);
   }
-  console.log(`removeDisabledNotices: returning ${remainingNoticeList.length} from ${givenNoticeList.length} notices`);
+  // console.log(`removeDisabledNotices: returning ${remainingNoticeList.length} from ${givenNoticeList.length} notices`);
   return remainingNoticeList;
 }
