@@ -1,9 +1,10 @@
 import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { checkTextField } from './field-text-check';
 import { cachedGetFileUsingFullURL } from '../core/getApi';
+import { removeDisabledNotices } from './disabled-notices';
 
 
-const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.4.2';
+const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.4.3';
 
 const IMAGE_REGEX = new RegExp('!\\[([^\\]]+?)\\]\\(([^ \\]]+?)\\)', 'g');
 
@@ -14,9 +15,9 @@ const IMAGE_REGEX = new RegExp('!\\[([^\\]]+?)\\]\\(([^ \\]]+?)\\)', 'g');
  * @param {string} textOrFileName -- used for identification
  * @param {string} markdownText -- the actual text to be checked
  * @param {string} givenLocation
- * @param {Object} optionalCheckingOptions
+ * @param {Object} checkingOptions
  */
-export async function checkMarkdownText(languageCode, textOrFileName, markdownText, givenLocation, optionalCheckingOptions) {
+export async function checkMarkdownText(languageCode, textOrFileName, markdownText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire markdown text, i.e., all lines.
 
     This text may not necessarily be from a file -- it may be from a (multiline) field within a file
@@ -35,15 +36,16 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
     console.assert(givenLocation !== undefined, "checkMarkdownText: 'optionalFieldLocation' parameter should be defined");
     console.assert(typeof givenLocation === 'string', `checkMarkdownText: 'optionalFieldLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
     console.assert(givenLocation.indexOf('true') === -1, `checkMarkdownText: 'optionalFieldLocation' parameter should not be '${givenLocation}'`);
-    if (optionalCheckingOptions !== undefined)
-        console.assert(typeof optionalCheckingOptions === 'object', `checkMarkdownText: 'optionalCheckingOptions' parameter should be an object not a '${typeof optionalCheckingOptions}': ${JSON.stringify(optionalCheckingOptions)}`);
+    console.assert(checkingOptions !== undefined, "checkMarkdownText: 'checkingOptions' parameter should be defined");
+    if (checkingOptions !== undefined)
+        console.assert(typeof checkingOptions === 'object', `checkMarkdownText: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
     let extractLength;
     try {
-        extractLength = optionalCheckingOptions.extractLength;
+        extractLength = checkingOptions?.extractLength;
     } catch (mdtcError) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
@@ -74,19 +76,19 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
         console.assert(noticeObject.location !== undefined, "cMdT addNotice: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `cMdT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
-        // noticeObject.debugChain = noticeObject.debugChain ? `checkMarkdownText(${languageCode}, ${textName}) ${noticeObject.debugChain}` : `checkMarkdownText(${languageCode}, ${textName})`;
-        result.noticeList.push(noticeObject); // Used to have filename: textName, but that isn't always a filename !!!
+        // noticeObject.debugChain = noticeObject.debugChain ? `checkMarkdownText(${languageCode}, ${textOrFileName}) ${noticeObject.debugChain}` : `checkMarkdownText(${languageCode}, ${textOrFileName})`;
+        result.noticeList.push(noticeObject); // Used to have filename: textName, but that isn’t always a filename !!!
     }
     // end of addNotice function
 
-    function ourCheckTextField(fieldName, lineNumber, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions) {
+    function ourCheckTextField(fieldName, lineNumber, fieldText, allowedLinks, optionalFieldLocation, checkingOptions) {
         /**
         * @description - checks the given text field and processes the returned results
         * @param {String} fieldName - name of the field being checked
         * @param {String} fieldText - the actual text of the field being checked
         * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
         * @param {String} optionalFieldLocation - description of where the field is located
-        * @param {Object} optionalCheckingOptions - parameters that might affect the check
+        * @param {Object} checkingOptions - parameters that might affect the check
         */
         // Does basic checks for small errors like leading/trailing spaces, etc.
 
@@ -104,7 +106,7 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
         console.assert(optionalFieldLocation !== undefined, "cMdT ourCheckTextField: 'optionalFieldLocation' parameter should be defined");
         console.assert(typeof optionalFieldLocation === 'string', `cMdT ourCheckTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
-        const dbtcResultObject = checkTextField('markdown', fieldName, fieldText, allowedLinks, optionalFieldLocation, optionalCheckingOptions);
+        const dbtcResultObject = checkTextField('markdown', fieldName, fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
 
         // If we need to put everything through addNotice, e.g., for debugging or filtering
         //  process results line by line
@@ -135,10 +137,10 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
             const fetchLink = regexResultArray[2];
             if (!fetchLink.startsWith('https://'))
                 addNotice({ priority: 749, message: "Markdown image link seems faulty", lineNumber, extract: fetchLink, location: lineLocation });
-            else if (optionalCheckingOptions.disableAllLinkFetchingFlag !== true) {
+            else if (checkingOptions?.disableAllLinkFetchingFlag !== true) {
                 // console.log(`Need to check existence of ${fetchLink}`);
                 try {
-                    const responseData = await cachedGetFileUsingFullURL({uri: fetchLink});
+                    const responseData = await cachedGetFileUsingFullURL({ uri: fetchLink });
                     console.assert(responseData.length > 10, `Expected ${fetchLink} image file to be longer: ${responseData.length}`);
                     // console.log("Markdown link fetch got response: ", responseData.length);
                 } catch (flError) {
@@ -175,10 +177,10 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
         // console.log(`After removing more leading spaces have '${thisText}'`);
 
         let suggestion;
-        if (thisText && lineText[0] !== '|') // Doesn't really make sense to check table line entries
-            suggestion = ourCheckTextField(textOrFileName, lineNumber, thisText, true, lineLocation, optionalCheckingOptions);
+        if (thisText && lineText[0] !== '|') // Doesn’t really make sense to check table line entries
+            suggestion = ourCheckTextField(textOrFileName, lineNumber, thisText, true, lineLocation, checkingOptions);
 
-        if (thisText === lineText) // i.e., we didn't premodify the field being checked (otherwise suggestion could be wrong)
+        if (thisText === lineText) // i.e., we didn’t premodify the field being checked (otherwise suggestion could be wrong)
             return suggestion;
     }
     // end of checkMarkdownLine function
@@ -230,13 +232,19 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
         result.suggestion = suggestion;
     }
 
+    if (!checkingOptions?.suppressNoticeDisablingFlag) {
+        // console.log(`checkMarkdownText: calling removeDisabledNotices(${result.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        result.noticeList = removeDisabledNotices(result.noticeList);
+    }
+
     addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length === 1 ? '' : 's'}${ourLocation}.`);
     if (result.noticeList)
         addSuccessMessage(`checkMarkdownText v${MARKDOWN_TEXT_VALIDATOR_VERSION_STRING} finished with ${result.noticeList.length ? result.noticeList.length.toLocaleString() : "zero"} notice${result.noticeList.length === 1 ? '' : 's'}`);
     else
         addSuccessMessage(`No errors or warnings found by checkMarkdownText v${MARKDOWN_TEXT_VALIDATOR_VERSION_STRING}`)
     // console.log(`  checkMarkdownText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
-    // console.log("checkMarkdownText result is", JSON.stringify(result));
+    if (textOrFileName.endsWith('walk.md'))
+        console.log("checkMarkdownText result is", JSON.stringify(result));
     return result;
 }
 // end of checkMarkdownText function

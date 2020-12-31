@@ -8,7 +8,7 @@ import { checkBookPackage } from './checkBookPackage';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.3.4';
+// const BP_VALIDATOR_VERSION_STRING = '0.3.6';
 
 
 function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
@@ -33,34 +33,22 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
     // Clear cached files if we've changed repo
     //  autoClearCache(bookID); // This technique avoids the complications of needing a button
 
-    let checkingOptions = { // Uncomment any of these to test them
+    const checkingOptions = { // Uncomment any of these to test them
         dataSet: dataSet, // Can be 'OLD' (Markdown, etc.), 'NEW' (TSV only), or 'BOTH', or 'DEFAULT'
         // extractLength: 25, // default is 15
         checkManifestFlag: true,
         checkReadmeFlag: true,
         checkLicenseFlag: true,
+        suppressNoticeDisablingFlag: true, // Leave this one as true (otherwise demo checks are less efficient)
     };
     // Or this allows the parameters to be specified as a BookPackageCheck property
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
+    if (props.cutoffPriorityLevel) checkingOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
     if (props.disableAllLinkFetchingFlag) checkingOptions.disableAllLinkFetchingFlag = props.disableAllLinkFetchingFlag.toLowerCase() === 'true';
     if (props.checkLinkedTAArticleFlag) checkingOptions.checkLinkedTAArticleFlag = props.checkLinkedTAArticleFlag.toLowerCase() === 'true';
     if (props.checkLinkedTWArticleFlag) checkingOptions.checkLinkedTWArticleFlag = props.checkLinkedTWArticleFlag.toLowerCase() === 'true';
     // console.log(`checkingOptions.checkLinkedTAArticleFlag ${checkingOptions.checkLinkedTAArticleFlag} from '${props.checkLinkedTAArticleFlag}'`);
     // console.log(`checkingOptions.checkLinkedTWArticleFlag ${checkingOptions.checkLinkedTWArticleFlag} from '${props.checkLinkedTWArticleFlag}'`);
-
-    // Load whole repos, especially if we are going to check files in manifests
-    let repoPreloadList = ['LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
-    if (dataSet === 'OLD')
-        repoPreloadList = ['LT', 'ST', 'TN', 'TA', 'TW', 'TQ'];
-    else if (dataSet === 'NEW')
-        repoPreloadList = ['LT', 'ST', 'TN2', 'TWL', 'TA', 'TW', 'TQ2'];
-    else if (dataSet === 'BOTH')
-        repoPreloadList = ['LT', 'ST', 'TN', 'TN2', 'TWL', 'TA', 'TW', 'TQ', 'TQ2'];
-    if (bookID !== 'OBS') {
-        const whichTestament = books.testament(bookID); // returns 'old' or 'new'
-        const origLangRepo = whichTestament === 'old' ? 'UHB' : 'UGNT';
-        repoPreloadList.unshift(origLangRepo);
-    }
 
     useEffect(() => {
         // const newProps = { bookID, branch, checkingOptions, languageCode, cutoffPriorityLevel: props.cutoffPriorityLevel, displayType: props.displayType, errorPriorityLevel: props.errorPriorityLevel, maximumSimilarMessages: props.maximumSimilarMessages, sortBy: props.sortBy, username};
@@ -71,15 +59,15 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
         (async () => {
             // console.log("Started BookPackageCheck.unnamedFunction()");
 
-            // NOTE from RJH: I can't find the correct React place for this / way to do this
-            //                  so it shows a warning for the user, and doesn't continue to try to process
+            // NOTE from RJH: I can’t find the correct React place for this / way to do this
+            //                  so it shows a warning for the user, and doesn’t continue to try to process
             if (!props.wait || props.wait !== 'N') {
-                setResultValue(<p><span style={{ color: 'blue' }}>Waiting for user…</span> (Adjust settings below and then set <b>wait='N'</b> to start)</p>);
+                setResultValue(<p><span style={{ color: 'blue' }}>Waiting for user…</span> (Adjust settings below as necessary and then set <b>wait='N'</b> to start)</p>);
                 return;
             }
 
-            // NOTE from RJH: I can't find the correct React place for this / way to do this
-            //                  so it shows a warning for the user, and doesn't continue to try to process
+            // NOTE from RJH: I can’t find the correct React place for this / way to do this
+            //                  so it shows a warning for the user, and doesn’t continue to try to process
             if (bookID !== 'OBS' && !books.isValidBookID(bookID)) {
                 console.log(`Invalid '${bookID}' bookID given!`)
                 setResultValue(<p style={{ color: 'red' }}>Please enter a valid USFM book identifier or 'OBS'. ('<b>{bookID}</b>' is not valid.)</p>);
@@ -93,8 +81,23 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             }
             else await clearCheckedArticleCache();
 
+            // Load whole repos, especially if we are going to check files in manifests
+            let repoPreloadList = ['LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
+            if (dataSet === 'OLD')
+                repoPreloadList = ['LT', 'ST', 'TN', 'TA', 'TW', 'TQ'];
+            else if (dataSet === 'NEW')
+                repoPreloadList = ['LT', 'ST', 'TN2', 'TWL', 'TA', 'TW', 'TQ2'];
+            else if (dataSet === 'BOTH')
+                repoPreloadList = ['LT', 'ST', 'TN', 'TN2', 'TWL', 'TA', 'TW', 'TQ', 'TQ2'];
+            if (bookID !== 'OBS') {
+                const whichTestament = books.testament(bookID); // returns 'old' or 'new'
+                const origLangRepo = whichTestament === 'old' ? 'UHB' : 'UGNT';
+                repoPreloadList.unshift(origLangRepo);
+            }
+            // console.log(`BookPackageCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
+
             // if (bookID !== 'OBS') { // Preload the reference repos
-            setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for <b>{bookID}</b> book package check…</p>);
+            setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for {username} {languageCode} ready for <b>{bookID}</b> book package check…</p>);
             const successFlag = await preloadReposIfNecessary(username, languageCode, [bookID], branch, repoPreloadList);
             if (!successFlag)
                 console.error(`BookPackageCheck error: Failed to pre-load all repos`)
@@ -115,7 +118,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             // console.log("Here with CBP rawCBPResults", typeof rawCBPResults);
             // Now do our final handling of the result -- we have some options available
             let processOptions = { // Uncomment any of these to test them
-                // 'maximumSimilarMessages': 4, // default is 3 -- 0 means don't suppress
+                // 'maximumSimilarMessages': 4, // default is 3 -- 0 means don’t suppress
                 // 'errorPriorityLevel': 800, // default is 700
                 // 'cutoffPriorityLevel': 100, // default is 0
                 // 'sortBy': 'ByRepo', // default is 'ByPriority', also have 'AsFound'
@@ -124,7 +127,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             // Or this allows the parameters to be specified as a BookPackageCheck property
             if (props.maximumSimilarMessages) processOptions.maximumSimilarMessages = ourParseInt(props.maximumSimilarMessages);
             if (props.errorPriorityLevel) processOptions.errorPriorityLevel = ourParseInt(props.errorPriorityLevel);
-            if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
+            // if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
             if (props.sortBy) processOptions.sortBy = props.sortBy;
             if (props.ignorePriorityNumberList) { // We need to convert from string to Array
                 console.assert(props.ignorePriorityNumberList[0] === '[' && props.ignorePriorityNumberList[props.ignorePriorityNumberList.length - 1] === ']', `Format of props.ignorePriorityNumberList '${props.ignorePriorityNumberList}' is wrong should be enclosed in []`)
@@ -134,8 +137,8 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
                     processOptions.ignorePriorityNumberList.push(intBit);
                 }
                 // console.log(`Now have processOptions.ignorePriorityNumberList=${JSON.stringify(processOptions.ignorePriorityNumberList)}`);
-                if (props.ignoreDisabledNoticesFlag) processOptions.ignoreDisabledNoticesFlag = props.ignoreDisabledNoticesFlag.toLowerCase() === 'true';
             }
+            if (props.showDisabledNoticesFlag) processOptions.showDisabledNoticesFlag = props.showDisabledNoticesFlag.toLowerCase() === 'true';
 
             let displayType = 'ErrorsWarnings'; // default
             if (props.displayType) displayType = props.displayType;
@@ -225,5 +228,4 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
 //   },
 // });
 
-//export default withStyles(styles)(BookPackageCheck);
 export default BookPackageCheck;

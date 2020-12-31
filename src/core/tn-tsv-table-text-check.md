@@ -1,4 +1,4 @@
-## TN2 TSV Table Text Check Sandbox
+## TN TSV Table Text Check Sandbox
 
 This function checks the given block of TranslationNote TSV table lines for typical formatting errors.
 
@@ -21,7 +21,7 @@ GEN\t99\t3\tw3r5\t\\tt1\t\tBoo
 GEN\t2\tboo\tw3r5\t\\tt1\t\tNote3
 GEN\t2\t3\tw3r5q\t\t\t1\t\tNote4
 GEN\t2\t3\tw3r5\tLaugh\t\t\t1\t\tNote5
-GEN\t2\t3\tw3r5\t\tCan't remember\t\t1\t\tNote6
+GEN\t2\t3\tw3r5\t\tCan’t remember\t\t1\t\tNote6
 GEN\t2\t3\tw3r5\t\t\t17\t\tNote7
 GEN\t2\t3\tw3r5\t\t\t1\tBad ellipse...\tNote8
 GEN\t2\t3\tw3r5\t\t\t1\t\t<br>Boo hoo,, lost my shoe !`;
@@ -59,8 +59,8 @@ function CheckTNTSVText(props) {
     (async () => {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {tableTextName} <b>{bookID}</b>…</p>);
-      const optionalCheckingOptions = {};
-      const rawResults = await checkTN_TSVText(languageCode, bookID, filename, tableText, givenLocation, optionalCheckingOptions);
+      const checkingOptions = {};
+      const rawResults = await checkTN_TSVText(languageCode, bookID, filename, tableText, givenLocation, checkingOptions);
       setResults(
         <div>
           <b>Check</b> {tableTextName}: "{tableText.substr(0,256)}…"<br/><br/>

@@ -49,7 +49,7 @@ export async function startLiveLinksCheck(linksList, existingNoticeList, callbac
 }
 
 
-export function checkFieldLinks(fieldName, fieldText, linkOptions, optionalFieldLocation, optionalCheckingOptions) {
+export function checkFieldLinks(fieldName, fieldText, linkOptions, optionalFieldLocation, checkingOptions) {
     // Does basic checks for fields that are links or that contain links
 
     // We assume that checking for compulsory fields is done elsewhere
@@ -108,7 +108,7 @@ export function checkFieldLinks(fieldName, fieldText, linkOptions, optionalField
 
     // Ok, we have something in our field
     if (linkOptions.otherTextAllowed)
-        result = checkTextField('link', fieldName, fieldText, true, optionalFieldLocation, optionalCheckingOptions);
+        result = checkTextField('link', fieldName, fieldText, true, optionalFieldLocation, checkingOptions);
 
     // Parameter nonsense check
     if (linkOptions.allowedCount > 0 && linkOptions.expectedCount > linkOptions.allowedCount)

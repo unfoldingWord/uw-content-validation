@@ -2,7 +2,7 @@ import * as books from '../../core/books/books';
 import { checkBookPackage } from '../book-package-check/checkBookPackage';
 // import { consoleLogObject } from '../../core/utilities';
 
-//const BPs_VALIDATOR_VERSION_STRING = '0.2.4';
+// const BPs_VALIDATOR_VERSION_STRING = '0.2.4';
 
 
 export async function checkBookPackages(username, languageCode, bookIDList, setResultValue, checkingOptions) {
@@ -57,7 +57,7 @@ export async function checkBookPackages(username, languageCode, bookIDList, setR
         // const generalLocation = ` ${languageCode} ${bookID} book packages from ${username}`;
         if (bookID !== 'OBS') {
             // eslint-disable-next-line no-unused-vars
-            let bookNumberAndName; //, whichTestament;
+            let bookNumberAndName;
             try {
                 bookNumberAndName = books.usfmNumberName(bookID);
                 // whichTestament = books.testament(bookID); // returns 'old' or 'new'
@@ -72,7 +72,7 @@ export async function checkBookPackages(username, languageCode, bookIDList, setR
         let checkManifestFlag = false, checkReadmeFlag =false,    checkLicenseFlag = false;
 ;
         if (bookID === 'OBS') { checkManifestFlag = true; checkReadmeFlag =true; checkLicenseFlag = true; }
-        else // it's a Bible book
+        else // it’s a Bible book
             if (!checkedBibleBPManifestFlag) {
                 checkManifestFlag = true; checkReadmeFlag =true; checkLicenseFlag=true;
                 checkedBibleBPManifestFlag = true; // so we only do it once for Bible books
@@ -86,7 +86,7 @@ export async function checkBookPackages(username, languageCode, bookIDList, setR
         const cbpResultObject = await checkBookPackage(username, languageCode, bookID, setResultValue, checkingOptions);
         // console.log(`checkBookPackage() returned ${cbpResultObject.successList.length} success message(s) and ${cbpResultObject.noticeList.length} notice(s)`);
 
-        // Concat is faster if we don't need to process each success message individually
+        // Concat is faster if we don’t need to process each success message individually
         checkBookPackagesResult.successList = checkBookPackagesResult.successList.concat(cbpResultObject.successList);
         // Process noticeList line by line,  appending the repoCode/bookID as an extra field as we go
         // for (const successEntry of cbpResultObject.successList) {
@@ -94,7 +94,7 @@ export async function checkBookPackages(username, languageCode, bookIDList, setR
         //     addSuccessMessage(successEntry);
         // }
 
-        // Concat is faster if we don't need to process each notice individually
+        // Concat is faster if we don’t need to process each notice individually
         checkBookPackagesResult.noticeList = checkBookPackagesResult.noticeList.concat(cbpResultObject.noticeList);
         // for (const noticeEntry of cbpResultObject.noticeList)
         //     // noticeEntry is an array of eight fields: 1=priority, 2=bookID, 3=C, 4=V, 5=msg, 6=characterIndex, 7=extract, 8=location

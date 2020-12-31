@@ -7,7 +7,7 @@ import * as books from './books';
 import { clearCheckedArticleCache } from './tn-links-check';
 
 
-// const GETAPI_VERSION_STRING = '0.6.6';
+// const GETAPI_VERSION_STRING = '0.6.7';
 
 const MAX_INDIVIDUAL_FILES_TO_DOWNLOAD = 5; // More than this and it downloads the zipfile for the entire repo
 
@@ -15,7 +15,7 @@ const baseURL = 'https://git.door43.org/';
 const apiPath = 'api/v1';
 
 
-// caches failed http file fetches so we don't waste time with repeated attempts
+// caches failed http file fetches so we don’t waste time with repeated attempts
 const failedStore = localforage.createInstance({
   driver: [localforage.INDEXEDDB],
   name: 'CV-failed-store',
@@ -33,14 +33,14 @@ const cacheStore = localforage.createInstance({
   name: 'CV-web-cache',
 });
 
-// caches the unzipped files requested so we don't do repeated unzipping of the same file which is slow in JS
+// caches the unzipped files requested so we don’t do repeated unzipping of the same file which is slow in JS
 const unzipStore = localforage.createInstance({
   driver: [localforage.INDEXEDDB],
   name: 'CV-unzip-store',
 });
 
 // API for http requests
-// NOTE: Even if data expires in this AxiosCacheAdapter, the localforage caches don't have the same / any expiry ages
+// NOTE: Even if data expires in this AxiosCacheAdapter, the localforage caches don’t have the same / any expiry ages
 //        (We expect the users of the demos to manually clear the caches when an update is required.)
 const Door43Api = setup({
   baseURL: baseURL,
@@ -71,7 +71,7 @@ export async function clearCaches() {
   await zipStore.clear();
   await cacheStore.clear(); // This is the one used by the Axion Door43Api (above)
   await unzipStore.clear();
-  await clearCheckedArticleCache(); // Used for checking TA and TW articles referred to by TN2 links
+  await clearCheckedArticleCache(); // Used for checking TA and TW articles referred to by TN links
 }
 
 
@@ -85,7 +85,7 @@ export function formRepoName(languageCode, repoCode) {
   //    console.log(`formRepoName('${languageCode}', '${repoCode}')…`);
 
   // TODO: Should we also check the username 'unfoldingWord' and/or 'Door43-Catalog' here???
-  //        (We don't currently have the username available in this function.)
+  //        (We don’t currently have the username available in this function.)
   if (repoCode === 'LT') repoCode = languageCode === 'en' ? 'ULT' : 'GLT';
   if (repoCode === 'ST') repoCode = languageCode === 'en' ? 'UST' : 'GST';
 
@@ -140,10 +140,10 @@ async function getUnZippedFile(path) {
 // This is the function that we call the most from the outside
 export async function cachedGetFile({ username, repository, path, branch }) {
   // console.log(`cachedGetFile(${username}, ${repository}, ${path}, ${branch})…`);
-  console.assert(typeof username === 'string' && username.length, `cachedGetFile: username parameter should be a string`);
-  console.assert(typeof repository === 'string' && repository.length, `cachedGetFile: repository parameter should be a string`);
-  console.assert(typeof path === 'string' && path.length, `cachedGetFile: path parameter should be a string`);
-  console.assert(typeof branch === 'string' && branch.length, `cachedGetFile: branch parameter should be a string`);
+  console.assert(typeof username === 'string' && username.length, `cachedGetFile: username parameter should be a non-empty string not ${typeof username}: ${username}`);
+  console.assert(typeof repository === 'string' && repository.length, `cachedGetFile: repository parameter should be a non-empty string not ${typeof repository}: ${repository}`);
+  console.assert(typeof path === 'string' && path.length, `cachedGetFile: path parameter should be a non-empty string not ${typeof path}: ${path}`);
+  console.assert(typeof branch === 'string' && branch.length, `cachedGetFile: branch parameter should be a non-empty string not ${typeof branch}: ${branch}`);
 
   const filePath = Path.join(username, repository, path, branch);
   let contents = await getUnZippedFile(filePath);
@@ -154,7 +154,7 @@ export async function cachedGetFile({ username, repository, path, branch }) {
 
   contents = await getFileFromZip({ username, repository, path, branch });
   // if (contents)
-  //   if (filePath.indexOf('_tq/') < 0) // Don't log for TQ2 files coz too many
+  //   if (filePath.indexOf('_tq/') < 0) // Don’t log for TQ2 files coz too many
   //     console.log(`  cachedGetFile got ${filePath} from zipfile`);
   if (!contents) {
     contents = await cachedFetchFileFromServer({ username, repository, path, branch });
@@ -163,7 +163,7 @@ export async function cachedGetFile({ username, repository, path, branch }) {
   if (contents) {
     // save unzipped file in cache to speed later retrieval
     await unzipStore.setItem(filePath.toLowerCase(), contents);
-    // if (filePath.indexOf('_tq/') < 0) // Don't log for TQ2 files coz too many
+    // if (filePath.indexOf('_tq/') < 0) // Don’t log for TQ2 files coz too many
     //   console.log(`cachedGetFile saved ${filePath} to cache for next time`);
   }
   // else console.error(`cachedGetFile(${username}, ${repository}, ${path}, ${branch}) -- failed to get file`);
@@ -311,7 +311,7 @@ export async function preloadReposIfNecessary(username, languageCode, bookIDList
 async function cachedFetchFileFromServer({ username, repository, path, branch = 'master' }) {
   // console.log(`cachedFetchFileFromServer(${username}, ${repository}, ${path}, ${branch})…`);
   // TODO: Check how slow this next call is -- can it be avoided or cached?
-  // RJH removed this 2Oct2020 -- what's the point -- it just slows things down --
+  // RJH removed this 2Oct2020 -- what’s the point -- it just slows things down --
   //      if it needs to be checked, should be checked before this point
   // const repositoryExistsOnDoor43 = await repositoryExistsOnDoor43({ username, repository });
   // let uri;
@@ -341,7 +341,7 @@ async function cachedFetchFileFromServer({ username, repository, path, branch = 
 
 
 /**
- *  older getFile without that doesn't use the unzipStore
+ *  older getFile without that doesn’t use the unzipStore
  * @param {string} username
  * @param {string} repository
  * @param {string} path
@@ -468,11 +468,11 @@ export async function cachedGetRepositoryZipFile({ username, repository, branch 
 
 async function downloadRepositoryZipFile({ username, repository, branch }) {
   console.log(`downloadRepositoryZipFile(${username}, ${repository}, ${branch})…`);
-  // RJH removed this 2Oct2020 -- what's the point -- it just slows things down --
+  // RJH removed this 2Oct2020 -- what’s the point -- it just slows things down --
   //      if it needs to be checked, should be checked before this point
   // const repoExists = await repositoryExistsOnDoor43({ username, repository });
   // if (!repoExists) {
-  //   console.error(`downloadRepositoryZipFile(${username}, ${repository}, ${branch}) -- repo doesn't even exist`);
+  //   console.error(`downloadRepositoryZipFile(${username}, ${repository}, ${branch}) -- repo doesn’t even exist`);
   //   return null;
   // }
 
@@ -527,14 +527,14 @@ export async function getFileListFromZip({ username, repository, branch, optiona
       zip.forEach(function (relativePath) {
         // console.log(`relPath=${relativePath}`)
         // consoleLogObject('fileObject', fileObject);
-        if (!relativePath.endsWith('/')) // it's not a folder
+        if (!relativePath.endsWith('/')) // it’s not a folder
         {
           if (relativePath.startsWith(`${repository}/`)) // remove repo name prefix
             relativePath = relativePath.substring(repository.length + 1);
           if (relativePath.length
             && !relativePath.startsWith('.git') // skips files in these folders
             && !relativePath.startsWith('.apps') // skips files in this folder
-            && (!optionalPrefix || relativePath.startsWith(optionalPrefix))) // it's the correct prefix
+            && (!optionalPrefix || relativePath.startsWith(optionalPrefix))) // it’s the correct prefix
             pathList.push(relativePath);
         }
       })

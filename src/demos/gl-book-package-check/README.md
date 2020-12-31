@@ -10,7 +10,7 @@ Note that `OBS` can also be entered here as a *pseudo book identifier* in order 
 
 **Warning**: Some book packages contain many files and/or very large files, and downloading them all and then checking them might slow down your browser—maybe even causing pop-up messages asking to confirm that you want to keep waiting.
 
-**Note**: This demonstration can use saved (cached) copies of files stored inside the local browser. This makes reruns of the checks faster, but it won't notice if you have recently updated the files on Door43. If you want to clear the local caches, use either the `reloadAllFilesFirst` variable below, or the `Clear Cache` function from the menu.
+**Note**: This demonstration can use saved (cached) copies of files stored inside the local browser. This makes reruns of the checks faster, but it won’t notice if you have recently updated the files on Door43. If you want to clear the local caches, use either the `reloadAllFilesFirst` variable below, or the `Clear Cache` function from the menu.
 
 ```js
 // The code in this box is editable for changing settings—
@@ -28,11 +28,11 @@ clearCheckedArticleCache();
   originalLanguagesUsername='unfoldingWord' // repo organisation name for work-in-progress Door43 UHB and UGNT versions
 
   // Uncomment or change ONE of the following lines
-  // otherLanguageUsername='Door43-Catalog' // repo organisation name for all published Door43 LT, ST, TN2, etc. versions
+  // otherLanguageUsername='Door43-Catalog' // repo organisation name for all published Door43 LT, ST, TN, etc. versions
   // otherLanguageUsername='unfoldingWord' // repo organisation name for work-in-progress en Door43 ULT, UST, UTN, etc. versions
-  // otherLanguageUsername='Es-419_gl' // repo organisation name for work-in-progress es-419 Door43 LT, ST, TN2, etc. versions
-  // otherLanguageUsername='translationCore-Create-BCS' // repo organisation name for work-in-progress hi/kn Door43 LT, ST, TN2, etc. versions
-  otherLanguageUsername='ru_gl' // repo organisation name for work-in-progress ru Door43 LT, ST, TN2, etc. versions
+  // otherLanguageUsername='Es-419_gl' // repo organisation name for work-in-progress es-419 Door43 LT, ST, TN, etc. versions
+  // otherLanguageUsername='translationCore-Create-BCS' // repo organisation name for work-in-progress hi/kn Door43 LT, ST, TN, etc. versions
+  otherLanguageUsername='ru_gl' // repo organisation name for work-in-progress ru Door43 LT, ST, TN, etc. versions
 
   // Of course, this languageCode has to match the chosen otherLanguageUsername above
   languageCode='ru' // Tested with es-419, hi, kn, ru
@@ -48,7 +48,8 @@ clearCheckedArticleCache();
   // Lines starting with // are ignored -- you can add or remove // as desired
   // Specifying maximumSimilarMessages and extractLength is just to show off options
   // —those fields are not necessary (or normal) here
-  maximumSimilarMessages='2' // Default is 3 (0 means don't suppress)
-  // extractLength='13' // Default is 15
+  maximumSimilarMessages='4' // Default is 3 (0 means don’t suppress any)
+  // extractLength='20' // Default is 15
+  // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
   />
 ```

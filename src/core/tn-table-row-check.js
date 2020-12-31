@@ -7,7 +7,7 @@ import { checkTNLinksToOutside } from './tn-links-check';
 import { checkOriginalLanguageQuote } from './orig-quote-check';
 
 
-// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.3';
+// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.4';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -29,18 +29,18 @@ const TA_REGEX = new RegExp('\\[\\[rc://[^ /]+?/ta/man/[^ /]+?/([^ \\]]+?)\\]\\]
  * @param {String} givenC - chapter number or (for OBS) story number string
  * @param {String} givenV - verse number or (for OBS) frame number string
  * @param {String} givenRowLocation - description of where the line is located
- * @param {Object} optionalCheckingOptions - may contain extractLength parameter
+ * @param {Object} checkingOptions - may contain extractLength parameter
  * @return {Object} - containing noticeList
  */
-export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, givenV, givenRowLocation, optionalCheckingOptions) {
+export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, givenV, givenRowLocation, checkingOptions) {
     /* This function is only for checking one data row
-          and the function doesn't assume that it has any previous context.
+          and the function doesn’t assume that it has any previous context.
 
-        It's designed to be able to quickly show errors for a single row being displayed/edited.
+        It’s designed to be able to quickly show errors for a single row being displayed/edited.
 
         Returns an object containing the noticeList.
     */
-    // console.log(`checkTN_TSVDataRow(${languageCode}, ${line}, ${bookID}, ${givenRowLocation}, ${JSON.stringify(optionalCheckingOptions)})…`);
+    // console.log(`checkTN_TSVDataRow(${languageCode}, ${line}, ${bookID}, ${givenRowLocation}, ${JSON.stringify(checkingOptions)})…`);
     console.assert(languageCode !== undefined, "checkTN_TSVDataRow: 'languageCode' parameter should be defined");
     console.assert(typeof languageCode === 'string', `checkTN_TSVDataRow: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
     console.assert(line !== undefined, "checkTN_TSVDataRow: 'line' parameter should be defined");
@@ -60,7 +60,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
     let ourRowLocation = givenRowLocation;
     if (ourRowLocation && ourRowLocation[0] !== ' ') ourRowLocation = ` ${ourRowLocation}`;
 
-    const linkCheckingOptions = { ...optionalCheckingOptions };
+    const linkCheckingOptions = { ...checkingOptions };
     linkCheckingOptions.taRepoLanguageCode = languageCode;
 
     let drResult = { noticeList: [] };
@@ -94,7 +94,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         drResult.noticeList.push({ ...noticeObject, bookID, C: givenC, V: givenV });
     }
 
-    async function ourMarkdownTextChecks(rowID, fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions) {
+    async function ourMarkdownTextChecks(rowID, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions) {
         /**
         * @description - checks the given markdown field and processes the returned results
         * @param {String} rowID - 4-character row ID field
@@ -102,7 +102,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         * @param {String} fieldText - the actual text of the field being checked
         * @param {} allowedLinks - true if links are allowed in the field, otherwise false
         * @param {String} rowLocation - description of where the line is located
-        * @param {Object} optionalCheckingOptions - parameters that might affect the check
+        * @param {Object} checkingOptions - parameters that might affect the check
         */
         // Does markdown checks for small errors like leading/trailing spaces, etc.
 
@@ -110,7 +110,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
 
         // Updates the global list of notices
 
-        // We don't currently use the allowedLinks parameter
+        // We don’t currently use the allowedLinks parameter
 
         // console.log(`checkTN_TSVDataRow ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
         console.assert(rowID !== undefined, "checkTN_TSVDataRow ourMarkdownTextChecks: 'rowID' parameter should be defined");
@@ -125,7 +125,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         console.assert(typeof rowLocation === 'string', `checkTN_TSVDataRow ourMarkdownTextChecks: 'rowLocation' parameter should be a string not a '${typeof rowLocation}'`);
         console.assert(rowLocation.indexOf(fieldName) < 0, `checkTN_TSVDataRow ourMarkdownTextChecks: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const omtcResultObject = await checkMarkdownText(languageCode, fieldName, fieldText, rowLocation, optionalCheckingOptions);
+        const omtcResultObject = await checkMarkdownText(languageCode, fieldName, fieldText, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -145,7 +145,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
     }
     // end of ourMarkdownTextChecks function
 
-    function ourCheckTextField(rowID, fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions) {
+    function ourCheckTextField(rowID, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions) {
         /**
         * @description - checks the given text field and processes the returned results
         * @param {String} rowID - 4-character row ID field
@@ -153,7 +153,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         * @param {String} fieldText - the actual text of the field being checked
         * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
         * @param {String} rowLocation - description of where the line is located
-        * @param {Object} optionalCheckingOptions - parameters that might affect the check
+        * @param {Object} checkingOptions - parameters that might affect the check
         */
         // Does basic checks for small errors like leading/trailing spaces, etc.
 
@@ -174,7 +174,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         console.assert(rowLocation.indexOf(fieldName) < 0, `checkTN_TSVDataRow ourCheckTextField: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
         const fieldType = fieldName === 'OccurrenceNote' ? 'markdown' : 'raw';
-        const octfResultObject = checkTextField(fieldType, fieldName, fieldText, allowedLinks, rowLocation, optionalCheckingOptions);
+        const octfResultObject = checkTextField(fieldType, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -189,7 +189,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
     }
     // end of ourCheckTextField function
 
-    async function ourCheckSupportReferenceInTA(rowID, fieldName, taLinkText, rowLocation, optionalCheckingOptions) {
+    async function ourCheckSupportReferenceInTA(rowID, fieldName, taLinkText, rowLocation, checkingOptions) {
         // Checks that the TA reference can be found
 
         // Updates the global list of notices
@@ -203,7 +203,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         console.assert(typeof taLinkText === 'string', `checkTN_TSVDataRow ourCheckSupportReferenceInTA: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
         console.assert(rowLocation.indexOf(fieldName) < 0, `checkTN_TSVDataRow ourCheckSupportReferenceInTA: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const coqResultObject = await checkSupportReferenceInTA(fieldName, taLinkText, rowLocation, { ...optionalCheckingOptions, taRepoLanguageCode: languageCode });
+        const coqResultObject = await checkSupportReferenceInTA(fieldName, taLinkText, rowLocation, { ...checkingOptions, taRepoLanguageCode: languageCode });
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -218,7 +218,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
     // end of ourCheckSupportReferenceInTA function
 
 
-    async function ourCheckTNOriginalLanguageQuote(rowID, fieldName, fieldText, occurrence, rowLocation, optionalCheckingOptions) {
+    async function ourCheckTNOriginalLanguageQuote(rowID, fieldName, fieldText, occurrence, rowLocation, checkingOptions) {
         // Checks that the Hebrew/Greek quote can be found in the original texts
 
         // Uses the bookID,C,V values from the main function call
@@ -236,7 +236,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         console.assert(typeof occurrence === 'string', `checkTN_TSVDataRow ourCheckTNOriginalLanguageQuote: 'occurrence' parameter should be a string not a '${typeof occurrence}'`);
         console.assert(rowLocation.indexOf(fieldName) < 0, `checkTN_TSVDataRow ourCheckTNOriginalLanguageQuote: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const coqResultObject = await checkOriginalLanguageQuote(languageCode, fieldName, fieldText, occurrence, bookID, givenC, givenV, rowLocation, optionalCheckingOptions);
+        const coqResultObject = await checkOriginalLanguageQuote(languageCode, fieldName, fieldText, occurrence, bookID, givenC, givenV, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -251,7 +251,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
     // end of ourCheckTNOriginalLanguageQuote function
 
 
-    async function ourCheckTNLinksToOutside(rowID, fieldName, taLinkText, rowLocation, optionalCheckingOptions) {
+    async function ourCheckTNLinksToOutside(rowID, fieldName, taLinkText, rowLocation, checkingOptions) {
         // Checks that the TA/TW/Bible reference can be found
 
         // Updates the global list of notices
@@ -265,7 +265,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         console.assert(taLinkText !== undefined, "checkTN_TSVDataRow ourCheckTNLinksToOutside: 'taLinkText' parameter should be defined");
         console.assert(typeof taLinkText === 'string', `checkTN_TSVDataRow ourCheckTNLinksToOutside: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
 
-        const coqResultObject = await checkTNLinksToOutside(bookID, givenC, givenV, fieldName, taLinkText, rowLocation, { ...optionalCheckingOptions, defaultLanguageCode: languageCode });
+        const coqResultObject = await checkTNLinksToOutside(bookID, givenC, givenV, fieldName, taLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: languageCode });
         // console.log("coqResultObject", JSON.stringify(coqResultObject));
 
         // Choose only ONE of the following
@@ -301,11 +301,11 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
 
     // Main code for checkTN_TSVDataRow function
     if (line === EXPECTED_TN_HEADING_LINE) // Assume it must be ok
-        return drResult; // We can't detect if it's in the wrong place
+        return drResult; // We can’t detect if it’s in the wrong place
 
     let extractLength;
     try {
-        extractLength = optionalCheckingOptions.extractLength;
+        extractLength = checkingOptions?.extractLength;
     } catch (tlcELerror) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
@@ -320,7 +320,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
     const lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook;
     try {
-        console.assert(lowercaseBookID !== 'obs', "Shouldn't happen in tn_table-row-check");
+        console.assert(lowercaseBookID !== 'obs', "Shouldn’t happen in tn_table-row-check");
         numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
     } catch (tlcNCerror) {
         addNoticePartial({ priority: 979, message: "Invalid book identifier passed to checkTN_TSVDataRow", location: ` '${bookID}' in first parameter: ${tlcNCerror}` });
@@ -338,7 +338,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         // Check the fields one-by-one
         if (B.length) {
             if (B !== bookID)
-                addNoticePartial({ priority: 978, message: "Wrong book identifier", details: `(expected '${bookID}')`, fieldName: 'Book', rowID, extract: B, location: ourRowLocation });
+                addNoticePartial({ priority: 978, message: "Wrong book identifier", details: `expected '${bookID}'`, fieldName: 'Book', rowID, extract: B, location: ourRowLocation });
         }
         else
             addNoticePartial({ priority: 977, message: "Missing book identifier", characterIndex: 0, rowID, location: ourRowLocation });
@@ -346,7 +346,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         let numVersesThisChapter, haveGoodChapterNumber;
         if (C.length) {
             if (C !== givenC)
-                addNoticePartial({ priority: 976, message: "Wrong chapter number", details: `(expected '${givenC}')`, fieldName: 'Chapter', rowID, extract: C, location: ourRowLocation });
+                addNoticePartial({ priority: 976, message: "Wrong chapter number", details: `expected '${givenC}'`, fieldName: 'Chapter', rowID, extract: C, location: ourRowLocation });
             if (C === 'front') { }
             else if (/^\d+$/.test(C)) {
                 let intC = Number(C);
@@ -378,7 +378,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
 
         if (V.length) {
             if (V !== givenV)
-                addNoticePartial({ priority: 975, message: "Wrong verse number", details: `(expected '${givenV}')`, rowID, fieldName: 'Verse', extract: V, location: ourRowLocation });
+                addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected '${givenV}'`, rowID, fieldName: 'Verse', extract: V, location: ourRowLocation });
             if (V === 'intro') { }
             else if (/^\d+$/.test(V)) {
                 let intV = Number(V);
@@ -402,7 +402,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
             addNoticePartial({ priority: 779, message: "Missing row ID field", fieldName: 'Verse', location: ourRowLocation });
         else {
             if (rowID.length !== 4) {
-                addNoticePartial({ priority: 778, message: "Row ID should be exactly 4 characters", details: `(not ${rowID.length})`, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 778, message: "Row ID should be exactly 4 characters", details: `not ${rowID.length}`, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation });
                 if (rowID.length > 4) RIDSuggestion = rowID.substring(0, 5);
                 else { // must be < 4
                     RIDSuggestion = rowID;
@@ -428,9 +428,9 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
                     && !supportReference.startsWith('writing-')
                     && supportReference !== 'guidelines-sonofgodprinciples')
                     addNoticePartial({ priority: 788, message: "Only 'Just-In-Time Training' TA articles allowed here", fieldName: 'SupportReference', extract: supportReference, rowID, location: ourRowLocation });
-                SRSuggestion = ourCheckTextField(rowID, 'SupportReference', supportReference, true, ourRowLocation, optionalCheckingOptions);
-                if (!optionalCheckingOptions?.disableAllLinkFetchingFlag)
-                    await ourCheckSupportReferenceInTA(rowID, 'SupportReference', supportReference, ourRowLocation, optionalCheckingOptions);
+                SRSuggestion = ourCheckTextField(rowID, 'SupportReference', supportReference, true, ourRowLocation, checkingOptions);
+                if (!checkingOptions?.disableAllLinkFetchingFlag)
+                    await ourCheckSupportReferenceInTA(rowID, 'SupportReference', supportReference, ourRowLocation, checkingOptions);
                 if (occurrenceNote.indexOf(supportReference) < 0) // The full link is NOT in the note!
                     addNoticePartial({ priority: 787, message: "Link to TA should also be in OccurrenceNote", fieldName: 'SupportReference', extract: supportReference, rowID, location: ourRowLocation });
             }
@@ -442,9 +442,9 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         //     addNoticePartial({ priority: 877, message: "Missing SupportReference field", fieldName: 'SupportReference', rowID, location: ourRowLocation });
 
         if (origQuote.length) { // need to check UTN against UHB and UGNT
-            OQSuggestion = ourCheckTextField(rowID, 'OrigQuote', origQuote, false, ourRowLocation, optionalCheckingOptions);
+            OQSuggestion = ourCheckTextField(rowID, 'OrigQuote', origQuote, false, ourRowLocation, checkingOptions);
             if (occurrence.length)
-                await ourCheckTNOriginalLanguageQuote(rowID, 'OrigQuote', origQuote, occurrence, ourRowLocation, optionalCheckingOptions);
+                await ourCheckTNOriginalLanguageQuote(rowID, 'OrigQuote', origQuote, occurrence, ourRowLocation, checkingOptions);
             else
                 addNoticePartial({ priority: 750, message: "Missing occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, location: ourRowLocation });
         }
@@ -453,7 +453,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
                 addNoticePartial({ priority: 919, message: "Missing OrigQuote field", fieldName: 'OrigQuote', rowID, location: ourRowLocation });
 
         if (occurrence.length) { // This should usually be a digit
-            if (occurrence === '0') { // zero means that it doesn't occur
+            if (occurrence === '0') { // zero means that it doesn’t occur
                 if (origQuote.length) {
                     addNoticePartial({ priority: 751, message: "Invalid zero occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, extract: occurrence, location: ourRowLocation });
                     OSuggestion = '1';
@@ -463,7 +463,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
             }
             else if (occurrence === '-1') // TODO check the special conditions when this can occur???
                 ;
-            else if ('1234567'.indexOf(occurrence) < 0) { // it's not one of these integers
+            else if ('1234567'.indexOf(occurrence) < 0) { // it’s not one of these integers
                 addNoticePartial({ priority: 792, message: `Invalid occurrence field`, fieldName: 'Occurrence', rowID, extract: occurrence, location: ourRowLocation });
                 OSuggestion = '1';
             }
@@ -480,7 +480,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'GLQuote', rowID, location: ourRowLocation });
             else // More than just whitespace
                 if (V !== 'intro')
-                    GLQSuggestion = ourCheckTextField(rowID, 'GLQuote', GLQuote, false, ourRowLocation, optionalCheckingOptions);
+                    GLQSuggestion = ourCheckTextField(rowID, 'GLQuote', GLQuote, false, ourRowLocation, checkingOptions);
         }
         // else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
         //     if (V !== 'intro')
@@ -492,7 +492,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
             if (isWhitespace(occurrenceNote))
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation });
             else { // More than just whitespace
-                ONSuggestion = await ourMarkdownTextChecks(rowID, 'OccurrenceNote', occurrenceNote, true, ourRowLocation, optionalCheckingOptions);
+                ONSuggestion = await ourMarkdownTextChecks(rowID, 'OccurrenceNote', occurrenceNote, true, ourRowLocation, checkingOptions);
                 await ourCheckTNLinksToOutside(rowID, 'OccurrenceNote', occurrenceNote, ourRowLocation, linkCheckingOptions);
                 let regexResultArray;
                 // eslint-disable-next-line no-cond-assign

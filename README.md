@@ -3,9 +3,9 @@
 
 # uW Content/Resource Validation functions
 
-GH Pages: https://unfoldingword.github.io/uw-content-validation/
+GH Pages: [[https://unfoldingword.github.io/uw-content-validation/]]
 
-This repository contains JavaScript functions for validating/checking for errors in text that is passed to the functions. This text might be a line in a file (especially a TSV file when a line contains a number of distinct fields), or the entire text of a file that's perhaps open in an editor in the enclosing app.
+This repository contains JavaScript functions for validating/checking for errors in text that is passed to the functions. This text might be a line in a file (especially a TSV file when a line contains a number of distinct fields), or the entire text of a file that’s perhaps open in an editor in the enclosing app.
 
 The basic functions return an object containing two lists:
 
@@ -20,7 +20,7 @@ There are three sample notice processing functions that show how to:
 1. Divide the noticeList into a list of severe, medium, and low priority warnings,
 1. Convert the noticeList into a list of warnings sorted by priority,
 
-In addition, there are Styleguidist pages viewable at https://unfoldingword.github.io/uw-content-validation/ which show how these core functions may be used, effectively producing a primitive app that checks Door43.org files, repositories (repos), book packages, etc. as well as demonstrating the basic functions.
+In addition, there are Styleguidist pages viewable at [[https://unfoldingword.github.io/uw-content-validation/]] which show how these core functions may be used, effectively producing a primitive app that checks Door43.org files, repositories (repos), book packages, etc. as well as demonstrating the basic functions.
 
 ## The Stack
 
@@ -37,8 +37,8 @@ In addition, there are Styleguidist pages viewable at https://unfoldingword.gith
 This code is designed to thoroughly check various types of Bible-related content data files. This includes:
 
 1. [Unified Standard Format Marker](ubsicap.github.io/usfm/) (USFM) Bible content files, including original language Bibles and Bible translations aligned by word/phrase to the original words/phrases
-1. Translation Notes (TN) tables in Tab-Separated Values (TSV) files
-1. General annotation tables in Tab-Separated Values (TSV) files (work-in-progress -uses TQ2 and TN2)
+1. Translation Notes (TN) tables in Tab-Separated Values (9-column TSV) files
+1. General annotation tables in Tab-Separated Values (7-column TSV) files (uses TN2 and TQ2)
 1. Markdown files (and markdown fields in TSV files)
 1. Plain-text files
 1. Metadata (manifest) YAML files
@@ -56,10 +56,10 @@ However, the lower-level checking functions provide only the list of success mes
 
 There are two compulsory fields in all of these notice objects:
 
-1. `priority`: A notice priority number in the range 1-1000. Each different type of warning/error has a unique number (but not each instance of those warnings/errors). By default, notice priority numbers 700 and over are considered `errors` and 0-699 are considered `warnings`, but in truth, that's rather arbitrary.
+1. `priority`: A notice priority number in the range 1-1000. Each different type of warning/error has a unique number (but not each instance of those warnings/errors). By default, notice priority numbers 700 and over are considered `errors` and 0-699 are considered `warnings`, but in truth, that’s rather arbitrary.
 1. `message`: The actual general descriptive text of the notice
 
-All of the following fields may be missing or undefined, i.e., they're all optional:
+All of the following fields may be missing or undefined, i.e., they’re all optional:
 
 1. `details`: More helpful details about the notice (if applicable)
 1. `repoCode`: brief repository code (if available), e.g., 'UHB', 'LT', 'ST', 'TN', 'TQ', 'TN2', 'TQ2', etc.
@@ -78,7 +78,7 @@ All of the following fields may be missing or undefined, i.e., they're all optio
 
 Keeping our notices in this format, rather than the simplicity of just saving an array of single strings, allows the above *notice components* to be processed at a higher level, e.g., to allow user-controlled filtering, sorting, etc. The default is to funnel them all through the supplied `processNoticesToErrorsWarnings` function (in demos/notice-processing-functions.fs) which does the following:
 
-1. Removes excess repeated errors. For example, if there's a systematic error in a file, say with unneeded leading spaces in every field, rather than returning with hundreds of errors, only the first several errors will be returned, followed by an "errors suppressed" message. (The number of each error displayed is settable as an option—zero means display all errors with no suppression.)
+1. Removes excess repeated errors. For example, if there’s a systematic error in a file, say with unneeded leading spaces in every field, rather than returning with hundreds of errors, only the first several errors will be returned, followed by an "errors suppressed" message. (The number of each error displayed is settable as an option—zero means display all errors with no suppression.)
 1. Separates notices into error and warning lists based on the priority number. (The switch-over point is settable as an option.)
 1. Optionally drops the lowest priority notices and/or certain given notice types (by priority number).
 
@@ -88,9 +88,11 @@ However, the user is, of course, free to create their own alternative version of
 
 ## User-settable Options
 
-There is provision for checking to be altered and/or sped-up when the calling app sets some or all of the following fields in `optionalCheckingOptions`:
+### Checking Options
 
-- `disableAllLinkFetchingFlag`: a boolean (true/false) which if set to true, stops the package from fetching and checking links, e.g., when a translation note refers to Translation Academy it won't check that the TA article actually exists, and also stops the checking of any extra files like LICENSE.md—this gives a dramatic speed-up to many checks (but, of course, it means that the data might still contain quite major errors)
+There is provision for checking to be altered and/or sped-up when the calling app sets some or all of the following fields in `checkingOptions`:
+
+- `disableAllLinkFetchingFlag`: a boolean (true/false) which if set to true, stops the package from fetching and checking links, e.g., when a translation note refers to Translation Academy it won’t check that the TA article actually exists, and also stops the checking of any extra files like LICENSE.md—this gives a dramatic speed-up to many checks (but, of course, it means that the data might still contain quite major errors)
 - `getFile`: a function which takes the four parameters ({username, repository, path, branch}) and returns the full text of the relevant Door43 file—default is to use our own function and associated caching
 - `fetchRepositoryZipFile`: a function which takes the three parameters ({username, repository, branch}) and returns the contents of the zip file containing all the Door43 files—default is to use our own function and associated caching
 - `getFileListFromZip`: takes the same three parameters and returns a list/array containing the filepaths of all the files in the zip file from Door43—default is to use our own function and associated caching
@@ -100,6 +102,10 @@ There is provision for checking to be altered and/or sped-up when the calling ap
 - `taRepoLanguageCode`, and `taRepoSectionName`: can be used to specify how the `SupportReference` field is checked in TA—defaults are 'en' and 'translate'
 - `twRepoUsername`, `twRepoBranchName`: these two fields can be used to specify the username/organisation and/or the branch/tag name for fetching the TW files for checking
 - `extractLength`: an integer which defines how long excerpts of lines containing errors should be—the default is 15 characters—the package attempts to place the error in the middle of the extract
+- `cutoffPriorityLevel`: an integer which can define notices to not be detected—defaults to 0 so none are dropped. Note that this will also affect the `suggestion` response.
+- `suppressNoticeDisablingFlag`: Defaults to `false`, i.e., to removing (thus suppressing) notices for warnings which are expected in certain files and hence we don’t want them displayed. Note that this is always set to `true` for the demos (because they suppress these notices later—see the `showDisabledNoticesFlag` below).
+
+    Currently this supressing is only done in the (exported) `checkTN_TSVText` and `checkAnnotationRows` functions which we know to be called by [tC Create](https://github.com/unfoldingWord/tc-create-app) as well as `checkManifestText`, `checkMarkdownText`, `checkPlainText`, `checkTN_TSVText`, `checkUSFMText`, and `checkYAMLText` called by the [Content Validation App](https://github.com/unfoldingWord-box3/content-validation-app).
 
 Most of the high-level demonstrations allow a choice of one of three display formats for notices:
 
@@ -107,23 +113,26 @@ Most of the high-level demonstrations allow a choice of one of three display for
 - 'ErrorsWarnings': arbitrarily divides notices into a list of *errors* and a list of *warnings*, each displayed in different colours
 - 'SevereMediumLow': divides notices into three lists which are displayed in different colours
 
+### Processing Options
+
 In addition, there are some options in the display of notices for the demonstrations, set in `optionalProcessingOptions` used by the sample notice processing functions:
 
-- ignorePriorityNumberList: a list (array) of integers that causes of notices with these priority values to be dropped during notice processing
-- sortBy: a string which can be set to 'ByPriority', 'ByRepo', or 'AsFound'—the default is 'ByPriority', i.e., unsorted
-- errorPriorityLevel: an integer which can define *errors* (vs *warnings*) (if relevant)—defaults to 700 (and above)
-- severePriorityLevel: an integer which can define *severe* errors (if relevant)—defaults to 800 (and above)
-- mediumPriorityLevel: an integer which can define *medium* errors (if relevant)—defaults to 600 (and up to `severePriorityLevel`)
-- cutoffPriorityLevel: an integer which can define notices to be dropped/ignored—defaults to 0 so none are dropped
-- maximumSimilarMessages: an integer which defines how many of a certain notice to display, before summarising and saying something like *99 similar errors suppressed*—zero means don't ever summarise notices—defaults to 3
+- `ignorePriorityNumberList`: a list (array) of integers that causes of notices with these priority values to be dropped during notice processing
+- `sortBy`: a string which can be set to 'ByPriority', 'ByRepo', or 'AsFound'—the default is 'ByPriority', i.e., unsorted
+- `errorPriorityLevel`: an integer which can define *errors* (vs *warnings*) (if relevant)—defaults to 700 (and above)
+- `severePriorityLevel`: an integer which can define *severe* errors (if relevant)—defaults to 800 (and above)
+- `mediumPriorityLevel`: an integer which can define *medium* errors (if relevant)—defaults to 600 (and up to `severePriorityLevel`)
+- `cutoffPriorityLevel` (deprecated): an integer which can define notices to be dropped/ignored—defaults to 0 so none are dropped
+- `maximumSimilarMessages`: an integer which defines how many of a certain notice to display, before summarising and saying something like *99 similar errors suppressed*—zero means don’t ever summarise notices—defaults to 3
+- `showDisabledNoticesFlag`: some content files produce false alarms, e.g., a discussion of using the , as punctuation. Where known, these false alarm notices are disabled from being shown. Setting this flag to 'true' would show these notices (with the word "(disabled)" added) instead—the default is 'false'.
 
 ## Still To Do
 
-Still unfinished (in rough priority order):
+There is a list of open issues at [[https://github.com/unfoldingWord/uw-content-validation/issues]] (and you can add suggestions and bug reports there at any time). But in summary, still unfinished (in rough priority order):
 
-1. Get checks of new formats working again (in `newFormat` branches)
+1. Finish checking that new formats working are again (in `newFormat` branches)
+1. Finish moving `cutoffPriorityLevel` from `processingOptions` to `checkingOptions`
 1. The `suggestion` mechanism is working, but more suggestions need to be created
-1. Consider moving `cutoffPriorityLevel` from `processingOptions` to `checkingOptions`
 1. Checking of general markdown and naked links (esp. in plain text and markdown files)
 1. Work through all [Issues](https://github.com/unfoldingWord/uw-content-validation/issues)
 1. Work through all `ToDo`s in code
@@ -141,7 +150,7 @@ Known bugs:
 1. Not all demos have all available options
 1. 'NEW' option not yet working again in Book Package Check
 1. Work on checking naked links in text files is not yet completed
-1. File caching (i.e., not checking latest file versions) is still a frustration that needs to be investigated—presumably it's out of control of this package and its demos???
+1. File caching (i.e., not checking latest file versions) is still a frustration that needs to be investigated—presumably it’s out of control of this package and its demos???
 
 Known check deficiencies:
 
@@ -149,7 +158,6 @@ Known check deficiencies:
 1. Filenames in manifests are not fully checked
 1. Naked HTTP links are not yet checked properly
 1. ULT/UST quotes in TranslationAcademy are not yet checked
-
 
 ## Functionality and Limitations
 
@@ -176,7 +184,7 @@ Once you have this codebase forked and cloned to your local machine, you can sta
 1. Update the `package.json`:
     - change the `name` and `description` of your app
     - change the URLs of your `homepage` and `repository`
-1. Create an account on `npmjs.org` if you don't have one already.
+1. Create an account on `npmjs.org` if you don’t have one already.
 
 ### Publishing to NPM
 
@@ -197,7 +205,7 @@ You can optionally deploy the styleguide to GHPages without publishing to NPM.
 
 1. Run `yarn deploy`
 1. There is a `predeploy` hook that builds the Styleguide.
-1. That's it!
+1. That’s it!
 
 ## Chromebook Linux Beta Notes
 

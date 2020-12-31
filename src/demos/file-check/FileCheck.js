@@ -11,7 +11,7 @@ import { checkFileContents } from './checkFileContents';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const FILE_CHECK_VERSION_STRING = '0.2.2';
+// const FILE_CHECK_VERSION_STRING = '0.2.5';
 
 
 function FileCheck(props) {
@@ -27,10 +27,10 @@ function FileCheck(props) {
     (async () => {
       // console.log("Started FileCheck.unnamedFunction()");
 
-      // NOTE from RJH: I can't find the correct React place for this / way to do this
-      //                  so it shows a warning for the user, and doesn't continue to try to process
+      // NOTE from RJH: I can’t find the correct React place for this / way to do this
+      //                  so it shows a warning for the user, and doesn’t continue to try to process
       if (!props.wait || props.wait !== 'N') {
-        setResultValue(<p><span style={{ color: 'blue' }}>Waiting for user…</span> (Adjust settings below and then set <b>wait='N'</b> to start)</p>);
+        setResultValue(<p><span style={{ color: 'blue' }}>Waiting for user…</span> (Adjust settings below as necessary and then set <b>wait='N'</b> to start)</p>);
         return;
       }
 
@@ -77,7 +77,7 @@ function FileCheck(props) {
 
         rawCFResults = await checkFileContents(languageCode, repoCodeGuess, filename, fileContent, givenLocation, checkingOptions);
 
-        // Because we know here that we're only checking one file, we don't need the filename field in the notices
+        // Because we know here that we're only checking one file, we don’t need the filename field in the notices
         // WRONG: We want the filename so that the lineNumber can be made into a live link
         function addFields(notice) {
           notice.username = username; notice.repoName = repoName; notice.repoCode = repoCodeGuess;
@@ -102,7 +102,7 @@ function FileCheck(props) {
 
       // Now do our final handling of the result
       let processOptions = { // Uncomment any of these to test them
-        // 'maximumSimilarMessages': 4, // default is 3  -- 0 means don't suppress
+        // 'maximumSimilarMessages': 4, // default is 3  -- 0 means don’t suppress
         // 'errorPriorityLevel': 800, // default is 700
         // 'cutoffPriorityLevel': 100, // default is 0
         // 'sortBy': 'ByRepo', // default is 'ByPriority', also have 'AsFound'
@@ -111,7 +111,7 @@ function FileCheck(props) {
       // Or this allows the parameters to be specified as a FileCheck property
       if (props.maximumSimilarMessages) processOptions.maximumSimilarMessages = ourParseInt(props.maximumSimilarMessages);
       if (props.errorPriorityLevel) processOptions.errorPriorityLevel = ourParseInt(props.errorPriorityLevel);
-      if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
+      // if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
       if (props.sortBy) processOptions.sortBy = props.sortBy;
       // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
 
@@ -125,8 +125,8 @@ function FileCheck(props) {
             {processedResults.numIgnoredNotices || processedResults.numDisabledNotices ? ' (but ' : ''}
             {processedResults.numIgnoredNotices ? `${processedResults.numIgnoredNotices.toLocaleString()} ignored notice(s)` : ""}
             {processedResults.numIgnoredNotices && processedResults.numDisabledNotices ? ' and ' : ''}
-            {processedResults.numDisabledNotices ? `${processedResults.numDisabledNotices.toLocaleString()} disabled notice(s)` : ""}
-            {processedResults.numIgnoredNotices || processedResults.numDisabledNotices ? ')' : ''}.</p>
+            {processedResults.numDisabledNotices ? `${processedResults.numDisabledNotices.toLocaleString()} expected/disabled notice(s)` : ""}
+            {processedResults.numIgnoredNotices || processedResults.numDisabledNotices ? ')' : ''}.{rawCFResults.checkedOptions.cutoffPriorityLevel? ` Priority level ${rawCFResults.checkedOptions.cutoffPriorityLevel} or lower were not included.`:''}</p>
           {/* <RenderRawResults results={rawCFResults} /> */}
         </div>);
       }
@@ -178,7 +178,7 @@ function FileCheck(props) {
           </>);
       } else setResultValue(<b style={{ color: 'red' }}>Invalid displayType='{displayType}'</b>)
     })(); // end of async part in unnamedFunction
-    // Doesn't work if we add this to next line: username,repoName,branch,checkingOptions,filename,givenLocation,props
+    // Doesn’t work if we add this to next line: username,repoName,branch,checkingOptions,filename,givenLocation,props
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // end of useEffect part
 
@@ -200,9 +200,11 @@ function FileCheck(props) {
 
   const checkingOptions = { // Uncomment any of these to test them
     // extractLength: 25,
+    suppressNoticeDisablingFlag: true, // Leave this one as true (otherwise demo checks are less efficient)
   };
   // Or this allows the parameters to be specified as a FileCheck property
   if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
+  if (props.cutoffPriorityLevel) checkingOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
   if (props.disableAllLinkFetchingFlag) checkingOptions.disableAllLinkFetchingFlag = props.disableAllLinkFetchingFlag.toLowerCase() === 'true';
   if (props.checkLinkedTAArticleFlag) checkingOptions.checkLinkedTAArticleFlag = props.checkLinkedTAArticleFlag.toLowerCase() === 'true';
   if (props.checkLinkedTWArticleFlag) checkingOptions.checkLinkedTWArticleFlag = props.checkLinkedTWArticleFlag.toLowerCase() === 'true';

@@ -7,7 +7,7 @@ import { ourParseInt } from './utilities';
 // import { consoleLogObject } from '../core/utilities';
 
 
-// const TN_LINKS_VALIDATOR_VERSION_STRING = '0.6.3';
+// const TN_LINKS_VALIDATOR_VERSION_STRING = '0.6.6';
 
 const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -20,8 +20,8 @@ const TW_REGEX = new RegExp('\\[\\[rc://([^ /]+?)/tw/dict/bible/([^ /]+?)/([^ \\
 
 // TODO: Allow [Titus 1:9](../01/09/pzi1)
 // TODO: See if "[2:23](../02/03.md)" is found by more than one regex below
-const OTHER_BOOK_BIBLE_REGEX =   new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})\\]\\(([123A-Z]{2,3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');
-const THIS_BOOK_BIBLE_REGEX =    new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})\\]\\((\\.{2,3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');
+const OTHER_BOOK_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})\\]\\(([123A-Z]{2,3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');
+const THIS_BOOK_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})\\]\\((\\.{2,3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');
 const THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(?:(\\d{1,3}):)?(\\d{1,3})\\]\\(\\./(\\d{1,3})\\.md\\)', 'g');
 
 
@@ -70,9 +70,9 @@ async function alreadyChecked({ username, repository, path, branch }) {
  * @param {string} fieldName
  * @param {string} fieldText
  * @param {string} givenLocation
- * @param {Object} optionalCheckingOptions
+ * @param {Object} checkingOptions
  */
-export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, fieldText, givenLocation, optionalCheckingOptions) {
+export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, fieldText, givenLocation, checkingOptions) {
     /* This is for the case of the OccurrenceNote field containing markdown links
 
     bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
@@ -83,21 +83,21 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         To Bibles, e.g., “… how you translated this in [Revelation 3:11](../03/11.md).”
 
     // You can supply the function to try to load outside links
-    //      optionalCheckingOptions.getFile takes parameters ({username, repository, path, branch})
+    //      checkingOptions?.getFile takes parameters ({username, repository, path, branch})
     // and
-    //      optionalCheckingOptions.defaultLanguageCode
+    //      checkingOptions?.defaultLanguageCode
 
     // We attempt to fetch any TA links to test that the destination is really there
     //  -- you can control this with:
-    //      optionalCheckingOptions.taRepoUsername
-    //      optionalCheckingOptions.taRepoBranch (or tag)
-    //      optionalCheckingOptions.checkLinkedTAArticleFlag
+    //      checkingOptions?.taRepoUsername
+    //      checkingOptions?.taRepoBranch (or tag)
+    //      checkingOptions?.checkLinkedTAArticleFlag
 
     // We attempt to fetch any TW links to test that the destination is really there
     //  -- you can control this with:
-    //      optionalCheckingOptions.twRepoUsername
-    //      optionalCheckingOptions.twRepoBranch (or tag)
-    //      optionalCheckingOptions.checkLinkedTWArticleFlag
+    //      checkingOptions?.twRepoUsername
+    //      checkingOptions?.twRepoBranch (or tag)
+    //      checkingOptions?.checkLinkedTWArticleFlag
     */
 
     // console.log(`checkTNLinksToOutside v${TN_LINKS_VALIDATOR_VERSION_STRING} ${bookID} (${fieldName}, (${fieldText.length}) '${fieldText}', ${givenLocation}, …)…`);
@@ -143,7 +143,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
     // Get any options that were suppplied, or else set default values
     let extractLength;
     try {
-        extractLength = optionalCheckingOptions.extractLength;
+        extractLength = checkingOptions?.extractLength;
     } catch (trcELerror) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
@@ -155,23 +155,23 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
     // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
-    const getFile_ = (optionalCheckingOptions && optionalCheckingOptions.getFile) ? optionalCheckingOptions.getFile : cachedGetFile;
+    const getFile_ = (checkingOptions && checkingOptions?.getFile) ? checkingOptions?.getFile : cachedGetFile;
     let defaultLanguageCode;
-    try { defaultLanguageCode = optionalCheckingOptions.defaultLanguageCode; } catch (trcLCerror) { }
+    try { defaultLanguageCode = checkingOptions?.defaultLanguageCode; } catch (trcLCerror) { }
     if (!defaultLanguageCode) defaultLanguageCode = DEFAULT_LANGUAGE_CODE;
     // console.log("checkTNLinksToOutside defaultLanguageCode", defaultLanguageCode);
 
     let taRepoUsername;
-    try { taRepoUsername = optionalCheckingOptions.taRepoUsername; } catch (trcUNerror) { }
+    try { taRepoUsername = checkingOptions?.taRepoUsername; } catch (trcUNerror) { }
     if (!taRepoUsername) taRepoUsername = defaultLanguageCode === 'en' ? 'unfoldingWord' : 'Door43-Catalog';
     let taRepoBranch;
-    try { taRepoBranch = optionalCheckingOptions.taRepoBranch; } catch (trcBRerror) { }
+    try { taRepoBranch = checkingOptions?.taRepoBranch; } catch (trcBRerror) { }
     if (!taRepoBranch) taRepoBranch = DEFAULT_BRANCH;
     let twRepoUsername;
-    try { twRepoUsername = optionalCheckingOptions.twRepoUsername; } catch (trcUNerror) { }
+    try { twRepoUsername = checkingOptions?.twRepoUsername; } catch (trcUNerror) { }
     if (!twRepoUsername) twRepoUsername = defaultLanguageCode === 'en' ? 'unfoldingWord' : 'Door43-Catalog';
     let twRepoBranch;
-    try { twRepoBranch = optionalCheckingOptions.twRepoBranch; } catch (trcBRerror) { }
+    try { twRepoBranch = checkingOptions?.twRepoBranch; } catch (trcBRerror) { }
     if (!twRepoBranch) twRepoBranch = DEFAULT_BRANCH;
 
     let regexResultArray;
@@ -195,7 +195,11 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         if (languageCode !== '*') {
             const characterIndex = TA_REGEX.lastIndex - regexResultArray[0].length + 7; // lastIndex points to the end of the field that was found
             const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
-            addNoticePartial({ priority: 450, message: "Resource container link should have '*' language code", details: `(not '${languageCode}')`, characterIndex, extract, location: ourLocation });
+            addNoticePartial({ priority: 450, message: "Resource container link should have '*' language code", details: `not '${languageCode}'`, characterIndex, extract, location: ourLocation });
+        } else { // At the moment, tC can’t handle these links with * so we have to ensure that they're not there
+            const characterIndex = TA_REGEX.lastIndex - regexResultArray[0].length + 7; // lastIndex points to the end of the field that was found
+            const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
+            addNoticePartial({ priority: 950, message: "tC cannot yet process '*' language code", characterIndex, extract, location: ourLocation });
         }
         if (!languageCode || languageCode === '*') languageCode = defaultLanguageCode;
         const taRepoName = `${languageCode}_ta`;
@@ -203,7 +207,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         const filepath = `${regexResultArray[2]}/${regexResultArray[3]}/01.md`; // Other files are title.md, sub-title.md
         // console.log(`Got tA filepath=${filepath}`);
 
-        if (!optionalCheckingOptions.disableAllLinkFetchingFlag) {
+        if (!checkingOptions?.disableAllLinkFetchingFlag) {
             // console.log(`Need to check against ${taRepoName}`);
             const taPathParameters = { username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch };
             let taFileContent;
@@ -218,11 +222,11 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
                 addNoticePartial({ priority: 886, message: `Unable to find ${fieldName} TA link`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}` });
             else if (taFileContent.length < 10)
                 addNoticePartial({ priority: 884, message: `Linked ${fieldName} TA article seems empty`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}` });
-            else if (optionalCheckingOptions.checkLinkedTAArticleFlag === true) {
-                // console.log(`checkTNLinksToOutside got ${optionalCheckingOptions.checkLinkedTAArticleFlag} so checking TA article: ${filepath}`);
+            else if (checkingOptions?.checkLinkedTAArticleFlag === true) {
+                // console.log(`checkTNLinksToOutside got ${checkingOptions?.checkLinkedTAArticleFlag} so checking TA article: ${filepath}`);
                 if (await alreadyChecked(taPathParameters) !== true) {
                     // console.log(`checkTNLinksToOutside needs to check TA article: ${filepath}`);
-                    const checkTAFileResult = await checkMarkdownText(languageCode, `TA ${regexResultArray[3]}.md`, taFileContent, ourLocation, optionalCheckingOptions);
+                    const checkTAFileResult = await checkMarkdownText(languageCode, `TA ${regexResultArray[3]}.md`, taFileContent, ourLocation, checkingOptions);
                     for (const noticeObject of checkTAFileResult.noticeList)
                         ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
                     ctarResult.checkedFileCount += 1;
@@ -230,7 +234,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
                     ctarResult.checkedFilesizes = taFileContent.length;
                     ctarResult.checkedFilenameExtensions = ['md'];
                     ctarResult.checkedRepoNames.push(taRepoName);
-                    markAsChecked(taPathParameters); // don't bother waiting for the result
+                    markAsChecked(taPathParameters); // don’t bother waiting for the result
                 }
             }
         }
@@ -251,7 +255,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         const filepath = `bible/${regexResultArray[2]}/${regexResultArray[3]}.md`; // Other files are title.md, sub-title.md
         // console.log(`Got tW filepath=${filepath}`);
 
-        if (!optionalCheckingOptions.disableAllLinkFetchingFlag) {
+        if (!checkingOptions?.disableAllLinkFetchingFlag) {
             // console.log(`Need to check against ${twRepoName}`);
             const twPathParameters = { username: twRepoUsername, repository: twRepoName, path: filepath, branch: twRepoBranch };
             let twFileContent;
@@ -267,11 +271,11 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
             else { // we got the content of the TW article
                 if (twFileContent.length < 10)
                     addNoticePartial({ priority: 881, message: `Linked ${fieldName} TW article seems empty`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}` });
-                else if (optionalCheckingOptions.checkLinkedTWArticleFlag === true) {
-                    // console.log(`checkTNLinksToOutside got ${optionalCheckingOptions.checkLinkedTWArticleFlag} so checking TW article: ${filepath}`);
+                else if (checkingOptions?.checkLinkedTWArticleFlag === true) {
+                    // console.log(`checkTNLinksToOutside got ${checkingOptions?.checkLinkedTWArticleFlag} so checking TW article: ${filepath}`);
                     if (await alreadyChecked(twPathParameters) !== true) {
                         // console.log(`checkTNLinksToOutside needs to check TW article: ${filepath}`);
-                        const checkTWFileResult = await checkMarkdownText(languageCode, `TW ${regexResultArray[3]}.md`, twFileContent, ourLocation, optionalCheckingOptions);
+                        const checkTWFileResult = await checkMarkdownText(languageCode, `TW ${regexResultArray[3]}.md`, twFileContent, ourLocation, checkingOptions);
                         for (const noticeObject of checkTWFileResult.noticeList)
                             ctarResult.noticeList.push({ ...noticeObject, username: twRepoUsername, repoCode: 'TW', repoName: twRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TW' });
                         ctarResult.checkedFileCount += 1;
@@ -279,7 +283,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
                         ctarResult.checkedFilesizes = twFileContent.length;
                         ctarResult.checkedFilenameExtensions = ['md'];
                         ctarResult.checkedRepoNames.push(twRepoName);
-                        markAsChecked(twPathParameters); // don't bother waiting for the result
+                        markAsChecked(twPathParameters); // don’t bother waiting for the result
                     }
                 }
             }
@@ -312,21 +316,21 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         const chapterInt = ourParseInt(givenC), verseInt = ourParseInt(V2);
         try {
             if (ourParseInt(C1) !== chapterInt)
-                addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don't match", details: `${C1} vs ${chapterInt}`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don’t match", details: `${C1} vs ${chapterInt}`, extract: totalLink, location: ourLocation });
         } catch (ccError) {
-            console.error(`TN2 Link Check couldn't compare chapter numbers: ${ccError}`);
+            console.error(`TN Link Check couldn’t compare chapter numbers: ${ccError}`);
         }
         try {
             if (ourParseInt(V1) !== ourParseInt(verseInt))
-                addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don't match", details: `${V1} vs ${verseInt}`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don’t match", details: `${V1} vs ${verseInt}`, extract: totalLink, location: ourLocation });
         } catch (vvError) {
-            console.error(`TN2 Link Check couldn't compare verse numbers: ${vvError}`);
+            console.error(`TN Link Check couldn’t compare verse numbers: ${vvError}`);
         }
 
         if (linkBookCode) { // then we know which Bible book this link is to
             // So we can check for valid C:V numbers
             let numChaptersThisBook, numVersesThisChapter;
-            console.assert(linkBookCode.toLowerCase() !== 'obs', "Shouldn't happen in tn-links-check");
+            console.assert(linkBookCode.toLowerCase() !== 'obs', "Shouldn’t happen in tn-links-check");
             try {
                 numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
             } catch (tlcNCerror) { }
@@ -364,21 +368,21 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         const chapterInt = ourParseInt(C2), verseInt = ourParseInt(V2);
         try {
             if (ourParseInt(C1) !== chapterInt)
-                addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don't match", details: `${C1} vs ${chapterInt}`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don’t match", details: `${C1} vs ${chapterInt}`, extract: totalLink, location: ourLocation });
         } catch (ccError) {
-            console.error(`TN2 Link Check couldn't compare chapter numbers: ${ccError}`);
+            console.error(`TN Link Check couldn’t compare chapter numbers: ${ccError}`);
         }
         try {
             if (ourParseInt(V1) !== ourParseInt(verseInt))
-                addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don't match", details: `${V1} vs ${verseInt}`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don’t match", details: `${V1} vs ${verseInt}`, extract: totalLink, location: ourLocation });
         } catch (vvError) {
-            console.error(`TN2 Link Check couldn't compare verse numbers: ${vvError}`);
+            console.error(`TN Link Check couldn’t compare verse numbers: ${vvError}`);
         }
 
         if (linkBookCode) { // then we know which Bible book this link is to
             // So we can check for valid C:V numbers
             let numChaptersThisBook, numVersesThisChapter;
-            console.assert(linkBookCode.toLowerCase() !== 'obs', "Shouldn't happen in tn-links-check");
+            console.assert(linkBookCode.toLowerCase() !== 'obs', "Shouldn’t happen in tn-links-check");
             try {
                 numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
             } catch (tlcNCerror) { }
@@ -416,21 +420,21 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         const chapterInt = ourParseInt(C2), verseInt = ourParseInt(V2);
         try {
             if (ourParseInt(C1) !== chapterInt)
-                addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don't match", details: `${C1} vs ${chapterInt}`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don’t match", details: `${C1} vs ${chapterInt}`, extract: totalLink, location: ourLocation });
         } catch (ccError) {
-            console.error(`TN2 Link Check couldn't compare chapter numbers: ${ccError}`);
+            console.error(`TN Link Check couldn’t compare chapter numbers: ${ccError}`);
         }
         try {
             if (ourParseInt(V1) !== ourParseInt(verseInt))
-                addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don't match", details: `${V1} vs ${verseInt}`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don’t match", details: `${V1} vs ${verseInt}`, extract: totalLink, location: ourLocation });
         } catch (vvError) {
-            console.error(`TN2 Link Check couldn't compare verse numbers: ${vvError}`);
+            console.error(`TN Link Check couldn’t compare verse numbers: ${vvError}`);
         }
 
         if (linkBookCode) { // then we know which Bible book this link is to
             // So we can check for valid C:V numbers
             let numChaptersThisBook, numVersesThisChapter;
-            console.assert(linkBookCode.toLowerCase() !== 'obs', "Shouldn't happen in tn-links-check");
+            console.assert(linkBookCode.toLowerCase() !== 'obs', "Shouldn’t happen in tn-links-check");
             try {
                 numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
             } catch (tlcNCerror) { }
@@ -444,7 +448,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         }
     }
 
-    // Check for additional links that we can't explain
+    // Check for additional links that we can’t explain
     const BibleLinkCount = thisChapterBibleLinkCount + thisBookBibleLinkCount + otherBookBibleLinkCount;
     if (totalLinks1 > BibleLinkCount)
         addNoticePartial({ priority: 648, message: "More [ ]( ) links than valid Bible links", details: `detected ${totalLinks1} link${totalLinks1 === 1 ? '' : 's'} but ${BibleLinkCount ? `only ${BibleLinkCount}` : 'no'} Bible link${BibleLinkCount === 1 ? '' : 's'} from ${JSON.stringify(linksList1)}`, location: ourLocation });
@@ -457,18 +461,18 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
     let leftCount = countOccurrences(fieldText, '[[');
     let rightCount = countOccurrences(fieldText, ']]');
     if (leftCount !== rightCount)
-        addNoticePartial({ priority: 845, message: `Mismatched [[ ]] link characters`, details: `(left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()})`, location: ourLocation });
+        addNoticePartial({ priority: 845, message: `Mismatched [[ ]] link characters`, details: `left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()}`, location: ourLocation });
     else {
         leftCount = countOccurrences(fieldText, '[[rc://');
         if (leftCount !== rightCount)
-            addNoticePartial({ priority: 844, message: `Mismatched [[rc:// ]] link characters`, details: `(left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()})`, location: ourLocation });
+            addNoticePartial({ priority: 844, message: `Mismatched [[rc:// ]] link characters`, details: `left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()}`, location: ourLocation });
     }
     // Check for badly formed [ ]( ) links
     leftCount = countOccurrences(fieldText, '[');
     const middleCount = countOccurrences(fieldText, '](');
     rightCount = countOccurrences(fieldText, ')');
     if (leftCount < middleCount || rightCount < middleCount)
-        addNoticePartial({ priority: 843, message: `Mismatched [ ]( ) link characters`, details: `(left=${leftCount.toLocaleString()}, middle=${middleCount.toLocaleString()}, right=${rightCount.toLocaleString()})`, location: ourLocation });
+        addNoticePartial({ priority: 843, message: `Mismatched [ ]( ) link characters`, details: `left=${leftCount.toLocaleString()}, middle=${middleCount.toLocaleString()}, right=${rightCount.toLocaleString()}`, location: ourLocation });
 
 
     // console.log(`checkTNLinksToOutside is returning ${JSON.stringify(ctarResult)}`);

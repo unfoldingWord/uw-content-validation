@@ -8,7 +8,7 @@ import { checkBookPackage } from '../book-package-check/checkBookPackage';
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.6';
+// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.8';
 
 
 function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
@@ -34,23 +34,16 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
     // Clear cached files if we've changed repo
     //  autoClearCache(bookIDs); // This technique avoids the complications of needing a button
 
-    let checkingOptions = { // Uncomment any of these to test them
+    const checkingOptions = { // Uncomment any of these to test them
         // extractLength: 25,
         checkManifestFlag: true,
         checkReadmeFlag: true,
         checkLicenseFlag: true,
+        suppressNoticeDisablingFlag: true, // Leave this one as true (otherwise demo checks are less efficient)
     };
     // Or this allows the parameters to be specified as a GlBookPackageCheck property
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
-
-    // Load whole repos, especially if we are going to check files in manifests
-    let repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
-    if (dataSet === 'OLD')
-        repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ'];
-    else if (dataSet === 'NEW')
-        repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN2', 'TWL', 'TA', 'TW', 'TQ2'];
-    else if (dataSet === 'BOTH')
-        repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TN2', 'TWL', 'TA', 'TW', 'TQ', 'TQ2'];
+    if (props.cutoffPriorityLevel) checkingOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
 
     useEffect(() => {
         // console.log("GlBookPackageCheck.useEffect() called with ", JSON.stringify(props));
@@ -60,15 +53,15 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
         (async () => {
             // console.log("Started GlBookPackageCheck.unnamedFunction()");
 
-            // NOTE from RJH: I can't find the correct React place for this / way to do this
-            //                  so it shows a warning for the user, and doesn't continue to try to process
+            // NOTE from RJH: I can’t find the correct React place for this / way to do this
+            //                  so it shows a warning for the user, and doesn’t continue to try to process
             if (!props.wait || props.wait !== 'N') {
-                setResultValue(<p><span style={{ color: 'blue' }}>Waiting for user…</span> (Adjust settings below and then set <b>wait='N'</b> to start)</p>);
+                setResultValue(<p><span style={{ color: 'blue' }}>Waiting for user…</span> (Adjust settings below as necessary and then set <b>wait='N'</b> to start)</p>);
                 return;
             }
 
-            // NOTE from RJH: I can't find the correct React place for this or way to do this
-            //                  so it shows a warning for the user, and doesn't continue to try to process
+            // NOTE from RJH: I can’t find the correct React place for this or way to do this
+            //                  so it shows a warning for the user, and doesn’t continue to try to process
             if (bookID !== 'OBS' && !books.isValidBookID(bookID)) {
                 console.log(`Invalid '${bookID}' bookID given!`)
                 setResultValue(<p style={{ color: 'red' }}>Please enter a valid USFM book identifier or 'OBS'. ('<b>{bookID}</b>' is not valid.)</p>);
@@ -82,7 +75,16 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
             }
             else await clearCheckedArticleCache();
 
-            setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for GL book package check…</p>);
+            // Load whole repos, especially if we are going to check files in manifests
+            let repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
+            if (dataSet === 'OLD')
+                repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ'];
+            else if (dataSet === 'NEW')
+                repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN2', 'TWL', 'TA', 'TW', 'TQ2'];
+            else if (dataSet === 'BOTH')
+                repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TN2', 'TWL', 'TA', 'TW', 'TQ', 'TQ2'];
+
+            setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for {username} {languageCode} ready for GL book package check…</p>);
             const successFlag = await preloadReposIfNecessary(username, languageCode, [bookID], branch, repoPreloadList);
             if (!successFlag)
                 console.error(`AllBookPackagesCheck error: Failed to pre-load all repos`)
@@ -102,7 +104,7 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
             // console.log("Here with CBPs rawCBPsResults", typeof rawCBPsResults);
             // Now do our final handling of the result -- we have some options available
             let processOptions = { // Uncomment any of these to test them
-                // 'maximumSimilarMessages': 4, // default is 3 -- 0 means don't suppress
+                // 'maximumSimilarMessages': 4, // default is 3 -- 0 means don’t suppress
                 // 'errorPriorityLevel': 800, // default is 700
                 // 'cutoffPriorityLevel': 100, // default is 0
                 // 'sortBy': 'ByRepo', // default is 'ByPriority', also have 'AsFound'
@@ -111,7 +113,7 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
             // Or this allows the parameters to be specified as a GlBookPackageCheck property
             if (props.maximumSimilarMessages) processOptions.maximumSimilarMessages = ourParseInt(props.maximumSimilarMessages);
             if (props.errorPriorityLevel) processOptions.errorPriorityLevel = ourParseInt(props.errorPriorityLevel);
-            if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
+            // if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
             if (props.sortBy) processOptions.sortBy = props.sortBy;
             // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
 
@@ -180,7 +182,7 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
 
             // console.log("Finished rendering bit.");
         })(); // end of async part in unnamedFunction
-        // Doesn't work if we add this to next line: bookIDList,bookIDs,username,branch,checkingOptions,languageCode,props
+        // Doesn’t work if we add this to next line: bookIDList,bookIDs,username,branch,checkingOptions,languageCode,props
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [bookID, branch, JSON.stringify(checkingOptions), languageCode, JSON.stringify(props), username]); // end of useEffect part
 
@@ -206,5 +208,4 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
 //   },
 // });
 
-//export default withStyles(styles)(GlBookPackageCheck);
 export default GlBookPackageCheck;

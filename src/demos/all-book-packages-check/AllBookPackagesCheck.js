@@ -8,7 +8,7 @@ import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMe
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const ALL_BPS_VALIDATOR_VERSION_STRING = '0.3.0';
+// const ALL_BPS_VALIDATOR_VERSION_STRING = '0.3.2';
 
 const OLD_TESTAMENT_BOOK_CODES = 'GEN,EXO,LEV,NUM,DEU,JOS,JDG,RUT,1SA,2SA,1KI,2KI,1CH,2CH,EZR,NEH,EST,JOB,PSA,PRO,ECC,SNG,ISA,JER,LAM,EZK,DAN,HOS,JOL,AMO,OBA,JON,MIC,NAM,HAB,ZEP,HAG,ZEC,MAL';
 const NEW_TESTAMENT_BOOK_CODES = 'MAT,MRK,LUK,JHN,ACT,ROM,1CO,2CO,GAL,EPH,PHP,COL,1TH,2TH,1TI,2TI,TIT,PHM,HEB,JAS,1PE,2PE,1JN,2JN,3JN,JUD,REV';
@@ -63,20 +63,13 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     }
     console.log(`AllBookPackagesCheck bookIDList (${bookIDList.length}) = ${bookIDList.join(', ')}`);
 
-    let checkingOptions = { // Uncomment any of these to test them
+    const checkingOptions = { // Uncomment any of these to test them
         // extractLength: 25,
+        suppressNoticeDisablingFlag: true, // Leave this one as true (otherwise demo checks are less efficient)
     };
     // Or this allows the parameters to be specified as a BookPackagesCheck property
     if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
-
-    // Load whole repos, especially if we are going to check files in manifests
-    let repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
-    if (dataSet === 'OLD')
-        repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ'];
-    else if (dataSet === 'NEW')
-        repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN2', 'TWL', 'TA', 'TW', 'TQ2'];
-    else if (dataSet === 'BOTH')
-        repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TN2', 'TWL', 'TA', 'TW', 'TQ', 'TQ2'];
+    if (props.cutoffPriorityLevel) checkingOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
 
     useEffect(() => {
         // console.log("BookPackagesCheck.useEffect() called with ", JSON.stringify(props));
@@ -86,10 +79,10 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         (async () => {
         // console.log("Started BookPackagesCheck.unnamedFunction()");
 
-            // NOTE from RJH: I can't find the correct React place for this / way to do this
-            //                  so it shows a warning for the user, and doesn't continue to try to process
+            // NOTE from RJH: I can’t find the correct React place for this / way to do this
+            //                  so it shows a warning for the user, and doesn’t continue to try to process
             if (!props.wait || props.wait !== 'N') {
-              setResultValue(<p><span style={{ color: 'blue' }}>Waiting for user…</span> (Adjust settings below and then set <b>wait='N'</b> to start)</p>);
+              setResultValue(<p><span style={{ color: 'blue' }}>Waiting for user…</span> (Adjust settings below as necessary and then set <b>wait='N'</b> to start)</p>);
               return;
           }
 
@@ -100,7 +93,16 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
           }
           else await clearCheckedArticleCache();
 
-          setResultValue(<p style={{ color: 'magenta' }}>Preloading repos for {username} {languageCode} ready for all book packages check…</p>);
+        // Load whole repos, especially if we are going to check files in manifests
+        let repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
+        if (dataSet === 'OLD')
+            repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ'];
+        else if (dataSet === 'NEW')
+            repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN2', 'TWL', 'TA', 'TW', 'TQ2'];
+        else if (dataSet === 'BOTH')
+            repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TN2', 'TWL', 'TA', 'TW', 'TQ', 'TQ2'];
+
+        setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for {username} {languageCode} ready for all book packages check…</p>);
             const successFlag = await preloadReposIfNecessary(username, languageCode, bookIDList, branch, repoPreloadList);
             if (!successFlag)
                 console.log(`AllBookPackagesCheck error: Failed to pre-load all repos`)
@@ -123,7 +125,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
           // console.log("Here with CBPs rawCBPsResults", typeof rawCBPsResults);
           // Now do our final handling of the result -- we have some options available
           let processOptions = { // Uncomment any of these to test them
-            // 'maximumSimilarMessages': 4, // default is 3 -- 0 means don't suppress
+            // 'maximumSimilarMessages': 4, // default is 3 -- 0 means don’t suppress
             // 'errorPriorityLevel': 800, // default is 700
             // 'cutoffPriorityLevel': 100, // default is 0
             // 'sortBy': 'ByRepo', // default is 'ByPriority', also have 'AsFound'
@@ -132,7 +134,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
           // Or this allows the parameters to be specified as a BookPackagesCheck property
           if (props.maximumSimilarMessages) processOptions.maximumSimilarMessages = ourParseInt(props.maximumSimilarMessages);
           if (props.errorPriorityLevel) processOptions.errorPriorityLevel = ourParseInt(props.errorPriorityLevel);
-          if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
+          // if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
           if (props.sortBy) processOptions.sortBy = props.sortBy;
           // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
 
@@ -199,7 +201,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
 
           // console.log("Finished rendering bit.");
         })(); // end of async part in unnamedFunction
-        // Doesn't work if we add this to next line: bookIDList,bookIDs,username,branch,checkingOptions,languageCode,props
+        // Doesn’t work if we add this to next line: bookIDList,bookIDs,username,branch,checkingOptions,languageCode,props
       // eslint-disable-next-line react-hooks/exhaustive-deps
       }, [JSON.stringify(bookIDList), bookIDs, branch, JSON.stringify(checkingOptions), languageCode, JSON.stringify(props), username]); // end of useEffect part
 

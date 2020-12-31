@@ -17,7 +17,7 @@ It should be noted that although the success messages are simple strings, the no
 
 Note below that the optional `processOptions` object allows the user to adjust things like the division point between error and warning priorities, and allows low priority or certain notices to simply be dropped, etc. The system defaults to suppressing multiple cases of similar errors, but this can also be fine-tuned through these parameters.
 
-Although this demonstration here formats and colour the warning list, it's expected that the encapsulating program will format and use the fields as desired. Because they are returned as an array of fields rather than simply strings, it's certainly possible for the encapsulating program to sort or filter the messages as desired.
+Although this demonstration here formats and colour the warning list, it’s expected that the encapsulating program will format and use the fields as desired. Because they are returned as an array of fields rather than simply strings, it’s certainly possible for the encapsulating program to sort or filter the messages as desired.
 
 ```js
 // The code in this box is editable for changing settings—

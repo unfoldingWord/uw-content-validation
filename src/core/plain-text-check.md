@@ -41,8 +41,9 @@ Another  paragraph.
 //  (to demonstrate differing results)
 const chosenText = textSB;
 const chosenTextName = 'textSB';
+const checkingOptions = {};
 
-const rawResults = checkPlainText('raw', chosenTextName, chosenText, 'that was supplied');
+const rawResults = checkPlainText('raw', chosenTextName, chosenText, 'that was supplied', checkingOptions);
 if (!rawResults.successList || !rawResults.successList.length)
   rawResults.successList = ["Done plain text checks"];
 

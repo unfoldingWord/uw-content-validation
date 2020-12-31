@@ -235,8 +235,8 @@ function CheckManifestText(props) {
     (async () => {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {chosenTextName}…</p>);
-      const optionalCheckingOptions = {};
-      const rawResults = await checkManifestText('', '', chosenText, 'in manifest data that was supplied', optionalCheckingOptions);
+      const checkingOptions = {};
+      const rawResults = await checkManifestText('', '', '', chosenText, 'in manifest data that was supplied', checkingOptions);
       if (!rawResults.successList || !rawResults.successList.length)
         rawResults.successList = ["Done manifest text checks"];
       setResults(

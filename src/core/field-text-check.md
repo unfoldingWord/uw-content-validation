@@ -2,9 +2,9 @@
 
 This `checkTextField()` function can be passed a text (incl. markdown) field and checks for basic errors like leading/trailing spaces, bad punctuation, etc.
 
-This generic function returns a list/array of notices, that can then be post-processed to eliminate any warning types that don't apply to this particular type of field so we don't flood the user with a lot of false positives.
+This generic function returns a list/array of notices, that can then be post-processed to eliminate any warning types that don’t apply to this particular type of field so we don’t flood the user with a lot of false positives.
 
-This demonstration doesn't display the raw notices, but rather displays the processed and formatted lists of errors and warnings.
+This demonstration doesn’t display the raw notices, but rather displays the processed and formatted lists of errors and warnings.
 
 ```js
 // The code in this box is editable for changing settings—

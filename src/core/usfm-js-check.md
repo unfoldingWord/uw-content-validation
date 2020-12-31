@@ -2,7 +2,7 @@
 
 This function simply packages the [USFM-JS converter](https://www.npmjs.com/package/usfm-js) and runs it on the given USFM snippet just for our testing.
 
-This might be removed again if it's not at all helpful.
+This might be removed again if it’s not at all helpful.
 
 Our packaged function returns a list of success messages and a list of (prioritised) notice components.
 

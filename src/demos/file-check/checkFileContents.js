@@ -27,6 +27,7 @@ export async function checkFileContents(languageCode, repoCode, filename, fileCo
   console.assert(typeof fileContent === 'string', `checkFileContents: 'fileContent' parameter should be a string not a '${typeof fileContent}'`);
   console.assert(givenLocation !== undefined, "checkFileContents: 'givenRowLocation' parameter should be defined");
   console.assert(typeof givenLocation === 'string', `checkFileContents: 'givenRowLocation' parameter should be a string not a '${typeof givenLocation}'`);
+  console.assert(checkingOptions !== undefined, "checkFileContents: 'checkingOptions' parameter should be defined");
 
   const startTime = new Date();
 
@@ -68,7 +69,7 @@ export async function checkFileContents(languageCode, repoCode, filename, fileCo
   else if (filenameLower.endsWith('.txt'))
     checkFileResult = checkPlainText('text', filename, fileContent, ourCFLocation, checkingOptions);
   else if (filenameLower === 'manifest.yaml')
-    checkFileResult = await checkManifestText('', formRepoName(languageCode, repoCode), fileContent, ourCFLocation, checkingOptions);
+    checkFileResult = await checkManifestText('', formRepoName(languageCode, repoCode), '', fileContent, ourCFLocation, checkingOptions); // don’t know username or branch
   else if (filenameLower.endsWith('.yaml'))
     checkFileResult = checkYAMLText(languageCode, filename, fileContent, ourCFLocation, checkingOptions);
   else {

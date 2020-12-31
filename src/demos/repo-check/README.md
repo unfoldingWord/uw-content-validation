@@ -4,7 +4,7 @@ The code below requests some info and then checks a Door43 repository.You can en
 
 **Warning**: Some repos contain many files and/or very large files, and downloading them all and then checking them might slow down your browser—maybe even causing pop-up messages asking to confirm that you want to keep waiting.
 
-**Note**: This demonstration can use saved (cached) copies of files stored inside the local browser. This makes reruns of the checks faster, but it won't notice if you have recently updated the files on Door43. If you want to clear the local caches, use either the `reloadAllFilesFirst` variable below, or the `Clear Cache` function from the menu.
+**Note**: This demonstration can use saved (cached) copies of files stored inside the local browser. This makes reruns of the checks faster, but it won’t notice if you have recently updated the files on Door43. If you want to clear the local caches, use either the `reloadAllFilesFirst` variable below, or the `Clear Cache` function from the menu.
 
 ```js
 // The code in this box is editable for changing settings—
@@ -23,18 +23,23 @@ import RepoCheck from './RepoCheck';
   username = 'unfoldingWord'
 
   // Lines starting with // are ignored -- you can add or remove // as desired
+  // NOTE: Some of these whole repository checks can take a looong time!
   // repoName='hbo_uhb' // includes OT books only—some large files with parsing info!
   // repoName='el-x-koine_ugnt' // includes NT books only—some large files with parsing info!
   // repoName='en_ult' // Can use ult or ust here—some large files with alignment info!
-  // repoName='en_tn' // Translation Notes (TSV tables)
-  // repoName='en_tq' // Translation Questions (17,000+ markdown files!)
-  repoName='en_ta' // Translation Academy (700+ markdown files)
+  // repoName='en_tn' // Translation Notes (TSV tables -- MANY links to check!)
+  // repoName='en_twl' // Translation Words (TSV files but looks up 1000+ markdown files)
   // repoName='en_tw' // Translation Words (1000+ markdown files)
+  repoName='en_ta' // Translation Academy (700+ markdown files)
+  // repoName='en_tq' // Translation Questions (17,000+ markdown files!)
   // repoName='en_obs' // Open Bible Stories (50+ markdown files)
   // repoName='fr_ulb' // No alignment so smaller files (faster demo)
 
-  // If we don't put the branch here, the default branch is used
+  // If we don’t put the branch here, the default branch is used
   // branch='master'
+
+  // The location field appears in check messages to help the user locate the issue
+  location="as specified in repo-check/README.md"
 
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'
@@ -42,9 +47,9 @@ import RepoCheck from './RepoCheck';
 
   // Specifying maximumSimilarMessages and extractLength is just to show off options
   // —those fields are not necessary (or normal) here
-  // The location field appears in check messages to help the user locate the issue
-  maximumSimilarMessages='4' // Default is 3 (0 means don't suppress)
-  // extractLength='13' // Default is 15
-  location="as specified in repo-check/README.md"
+  maximumSimilarMessages='4' // Default is 3 (0 means don’t suppress any)
+  // extractLength='20' // Default is 15
+  // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
+  showDisabledNoticesFlag='false' // Display known specific non-issues: 'true' or 'false'
 />
 ```

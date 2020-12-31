@@ -3,7 +3,7 @@
 The code below requests some info to select an online repository
 and then validates the content of one file selected from the repo.
 
-**Note**: This demonstration can use saved (cached) copies of files stored inside the local browser. This makes reruns of the checks faster, but it won't notice if you have recently updated the files on Door43. If you want to clear the local caches, use either the `reloadAllFilesFirst` variable below, or the `Clear Cache` function from the menu.
+**Note**: This demonstration can use saved (cached) copies of files stored inside the local browser. This makes reruns of the checks faster, but it won’t notice if you have recently updated the files on Door43. If you want to clear the local caches, use either the `reloadAllFilesFirst` variable below, or the `Clear Cache` function from the menu.
 
 ```js
 // The code in this box is editable for changing settings—
@@ -24,7 +24,7 @@ and then validates the content of one file selected from the repo.
   // repoName='en_ult' // Can use ult or ust here
   repoName='en_tn'
 
-  // If we don't put the branch here, the default branch is used
+  // If we don’t put the branch here, the default branch is used
   // branch='master'
 
   // Of course, the filename must be correct for the chosen repository
@@ -39,22 +39,23 @@ and then validates the content of one file selected from the repo.
   // filename= '57-TIT.usfm' // e.g., for UGNT, LT, or ST
   // filename= '65-3JN.usfm' // e.g., for UGNT, LT, or ST
   // filename= '67-REV.usfm' // e.g., for UGNT, LT, or ST
-  // filename= 'en_tn_01-GEN.tsv' // for TN2
-  // filename= 'en_tn_16-NEH.tsv' // for TN2
-  filename= 'en_tn_17-EST.tsv' // for TN2
-  // filename= 'en_tn_31-OBA.tsv' // for TN2
-  // filename= 'en_tn_50-EPH.tsv' // for TN2
-  // filename= 'en_tn_57-TIT.tsv' // for TN2
-  // filename= 'en_tn_58-PHM.tsv' // for TN2
-  // filename= 'en_tn_61-1PE.tsv' // for TN2
-  // filename= 'en_tn_65-3JN.tsv' // for TN2
+  // filename= 'en_tn_01-GEN.tsv' // for TN
+  // filename= 'en_tn_16-NEH.tsv' // for TN
+  filename= 'en_tn_17-EST.tsv' // for TN
+  // filename= 'en_tn_31-OBA.tsv' // for TN
+  // filename= 'en_tn_50-EPH.tsv' // for TN
+  // filename= 'en_tn_57-TIT.tsv' // for TN
+  // filename= 'en_tn_58-PHM.tsv' // for TN
+  // filename= 'en_tn_61-1PE.tsv' // for TN
+  // filename= 'en_tn_65-3JN.tsv' // for TN
 
   // The location field appears in check messages to help the user locate the issue
   location="as specified in FileCheck demo"
 
-  // Default displayType is 'ErrorsWarnings'
-  //  Alternatives are `SevereMediumLow', 'SingleList'
-  displayType='SingleList'
+  // Specifying extractLength and cutoffPriorityLevel is just to show off options
+  // —those fields are not necessary (or normal) here
+  extractLength='12' // Default is 15
+  // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
 
   // Normally links in files are downloaded to check that they really exist
   disableAllLinkFetchingFlag='true' // 'true' or 'false'
@@ -62,9 +63,12 @@ and then validates the content of one file selected from the repo.
   checkLinkedTAArticleFlag='true' // 'true' or 'false'
   checkLinkedTWArticleFlag='true' // 'true' or 'false'
 
-  // Specifying maximumSimilarMessages and extractLength is just to show off options
+  // Default displayType is 'ErrorsWarnings'
+  //  Alternatives are `SevereMediumLow', 'SingleList'
+  displayType='SingleList'
+
+  // Specifying maximumSimilarMessages is just to show off options
   // —those fields are not necessary (or normal) here
-  maximumSimilarMessages='0' // Default is 3 (0 means don't suppress)
-  extractLength='12' // Default is 15
+  maximumSimilarMessages='0' // Default is 3 (0 means don’t suppress any)
   />
 ```

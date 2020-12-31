@@ -51,7 +51,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
   function addNoticePartial(noticeObject) {
     // Adds the notices to the result that we will later return
     // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
-    // Note that bookID,C,V might all be empty strings (as some repos don't have BCV)
+    // Note that bookID,C,V might all be empty strings (as some repos don’t have BCV)
     // console.log(`checkRepo addNoticePartial: ${noticeObject.priority}:${noticeObject.message} ${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.filename}:${noticeObject.lineNumber} ${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
     console.assert(noticeObject.priority !== undefined, "cR addNoticePartial: 'priority' parameter should be defined");
     console.assert(typeof noticeObject.priority === 'number', `cR addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}'`);
@@ -81,7 +81,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
   }
 
 
-  async function ourCheckRepoFileContents(bookOrFileCode, cfBookID, filename, fileContent, fileLocation, optionalCheckingOptions) {
+  async function ourCheckRepoFileContents(bookOrFileCode, cfBookID, filename, fileContent, fileLocation, checkingOptions) {
     // We assume that checking for compulsory fields is done elsewhere
     // console.log(`checkRepo ourCheckRepoFileContents(${bookOrFileCode}, ${cfBookID}, ${filename})…`);
 
@@ -101,15 +101,16 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
     console.assert(typeof fileContent === 'string', `ourCheckRepoFileContents: 'fileContent' parameter should be a string not a '${typeof fileContent}'`);
     console.assert(fileLocation !== undefined, "ourCheckRepoFileContents: 'fileLocation' parameter should be defined");
     console.assert(typeof fileLocation === 'string', `ourCheckRepoFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
+    console.assert(checkingOptions !== undefined, "ourCheckRepoFileContents: 'checkingOptions' parameter should be defined");
 
-    const cfcResultObject = await checkFileContents(languageCode, repoCode, filename, fileContent, fileLocation, optionalCheckingOptions);
+    const cfcResultObject = await checkFileContents(languageCode, repoCode, filename, fileContent, fileLocation, checkingOptions);
     // console.log("checkFileContents() returned", resultObject.successList.length, "success message(s) and", resultObject.noticeList.length, "notice(s)");
     // for (const successEntry of resultObject.successList)
     //     console.log("  ", successEntry);
 
     // Process noticeList line by line,  appending the bookOrFileCode as an extra field as we go
     for (const cfcNoticeEntry of cfcResultObject.noticeList)
-      // We add the bookOrFileCode as an extra value (unless it's already there from a TA or TW check)
+      // We add the bookOrFileCode as an extra value (unless it’s already there from a TA or TW check)
       if (cfcNoticeEntry.extra)
         checkRepoResult.noticeList.push(cfcNoticeEntry); // Add this notice directly
       else {
@@ -119,8 +120,8 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
         // addNoticePartial(newNoticeObject);
         addNoticePartial({ ...cfcNoticeEntry, bookID: cfBookID, extra: bookOrFileCode.toUpperCase() });
       }
-    /* Removing the following code as it's unneeded
-    //  as we don't enable TA or TW checking per repo anyway
+    /* Removing the following code as it’s unneeded
+    //  as we don’t enable TA or TW checking per repo anyway
     // Anyway, not sure that the following code was working yet
     if (repoName.endsWith('_tn')) {
       // The following is needed coz we might be checking the linked TA and/or TW articles from TN2 TSV files
@@ -146,11 +147,11 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
   // Main code for checkRepo()
   if (! await repositoryExistsOnDoor43({ username, repository: repoName })) {
     setResultValue(<p style={{ color: 'red' }}>No such <b>{username}/{repoName}</b> repository!</p>);
-    console.error(`checkRepo ${username}/${repoName} doesn't seem to exist`);
-    addNoticePartial({ priority: 986, message: "Repository doesn't seem to exist", details: `username=${username}`, location: givenLocation, extra: repoName });
+    console.error(`checkRepo ${username}/${repoName} doesn’t seem to exist`);
+    addNoticePartial({ priority: 986, message: "Repository doesn’t seem to exist", details: `username=${username}`, location: givenLocation, extra: repoName });
   } else {
 
-    // Put all this in a try/catch block coz otherwise it's difficult to debug/view errors
+    // Put all this in a try/catch block coz otherwise it’s difficult to debug/view errors
     try {
       let ourLocation = givenLocation;
       if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -160,7 +161,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
       // Update our "waiting" message
       setResultValue(<p style={{ color: 'magenta' }}>Fetching zipped files from <b>{username}/{repoName}</b> repository…</p>);
 
-      // Let's fetch the zipped repo since it should be much more efficient than individual fetches
+      // Let’s fetch the zipped repo since it should be much more efficient than individual fetches
       // console.log(`checkRepo: fetch zip file for ${repoName}…`);
       const fetchRepositoryZipFile_ = (checkingOptions && checkingOptions.fetchRepositoryZipFile) ? checkingOptions.fetchRepositoryZipFile : cachedGetRepositoryZipFile;
       const zipFetchSucceeded = await fetchRepositoryZipFile_({ username, repository: repoName, branch });
@@ -240,7 +241,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
           console.error(`checkRepo(${username}, ${repoName}, ${branch}, ${givenLocation}, (fn), ${JSON.stringify(checkingOptions)})) failed to load`, thisFilepath, branch, `${cRgfError}`);
           let details = `username=${username}`;
           if (! await repositoryExistsOnDoor43({ username, repository: repoName }))
-            checkRepoResult.noticeList.push({ priority: 997, message: "Repository doesn't exist", details, username, repoCode, repoName, location: givenLocation, extra: repoCode });
+            checkRepoResult.noticeList.push({ priority: 997, message: "Repository doesn’t exist", details, username, repoCode, repoName, location: givenLocation, extra: repoCode });
           else {
             // eslint-disable-next-line eqeqeq
             if (cRgfError != 'TypeError: repoFileContent is null') details += ` error=${cRgfError}`;

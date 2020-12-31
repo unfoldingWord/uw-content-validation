@@ -128,7 +128,7 @@ let sections = [
 				// description: ''
 			},
 			{
-				name: 'TN2 TSV table check',
+				name: 'TN TSV table check',
 				content: 'src/core/tn-tsv-table-text-check.md',
 				// description: ''
 			},
@@ -202,7 +202,7 @@ let sections = [
 				// description: ''
 			},
 			{
-				name: 'TN2 TSV table row check',
+				name: 'TN TSV table row check',
 				content: 'src/core/tn-tsv-table-row-check.md',
 				// description: ''
 			},

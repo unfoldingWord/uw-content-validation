@@ -59,8 +59,8 @@ function CheckMarkdownText(props) {
     (async () => {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {chosenTextName}…</p>);
-      const optionalCheckingOptions = {};
-      const rawResults = await checkMarkdownText(languageCode, chosenTextName, chosenText, givenLocation, optionalCheckingOptions);
+      const checkingOptions = {};
+      const rawResults = await checkMarkdownText(languageCode, chosenTextName, chosenText, givenLocation, checkingOptions);
       if (!rawResults.successList || !rawResults.successList.length)
         rawResults.successList = ["Done markdown text checks"];
       setResults(
