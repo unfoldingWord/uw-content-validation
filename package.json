@@ -84,9 +84,6 @@
     "not op_mini all"
   ],
   "main": "dist/index.js",
-  "files": [
-    "dist/*"
-  ],
   "jest": {
     "collectCoverageFrom": [
       "src/core/**.{js,jsx,ts}",
