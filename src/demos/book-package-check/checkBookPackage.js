@@ -112,7 +112,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     console.assert(typeof fileLocation === 'string', `cBP ourCheckBPFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
     console.assert(checkingOptions !== undefined, "cBP ourCheckBPFileContents: 'checkingOptions' parameter should be defined");
 
-    const cfcResultObject = await checkFileContents(languageCode, repoCode, cfFilename, fileContent, fileLocation, checkingOptions);
+    const cfcResultObject = await checkFileContents(username, languageCode, repoCode, cfFilename, fileContent, fileLocation, checkingOptions);
     // console.log("checkFileContents() returned", cfResultObject.successList.length, "success message(s) and", cfResultObject.noticeList.length, "notice(s)");
     // for (const successEntry of cfResultObject.successList) console.log("  ourCheckBPFileContents:", successEntry);
     // console.log("cfcResultObject", JSON.stringify(cfcResultObject));
@@ -509,7 +509,7 @@ async function checkTQMarkdownBook(username, languageCode, repoName, branch, boo
     console.assert(typeof fileLocation === 'string', `cTQ ourCheckTQFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
     console.assert(checkingOptions !== undefined, "cTQ ourCheckTQFileContents: 'checkingOptions' parameter should be defined");
 
-    const cfResultObject = await checkFileContents(languageCode, repoCode, cfFilename, fileContent, fileLocation, checkingOptions);
+    const cfResultObject = await checkFileContents(username, languageCode, repoCode, cfFilename, fileContent, fileLocation, checkingOptions);
     // console.log("checkFileContents() returned", cfResultObject.successList.length, "success message(s) and", cfResultObject.noticeList.length, "notice(s)");
     // for (const successEntry of cfResultObject.successList) console.log("  ourCheckTQFileContents:", successEntry);
 

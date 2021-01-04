@@ -75,7 +75,7 @@ function FileCheck(props) {
         else if (repoName.endsWith('lt')) repoCodeGuess = 'LT'
         else if (repoName.endsWith('st')) repoCodeGuess = 'ST'
 
-        rawCFResults = await checkFileContents(languageCode, repoCodeGuess, filename, fileContent, givenLocation, checkingOptions);
+        rawCFResults = await checkFileContents(username, languageCode, repoCodeGuess, filename, fileContent, givenLocation, checkingOptions);
 
         // Because we know here that we're only checking one file, we don’t need the filename field in the notices
         // WRONG: We want the filename so that the lineNumber can be made into a live link

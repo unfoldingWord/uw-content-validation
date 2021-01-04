@@ -699,7 +699,7 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
                     let projectFileContent;
                     try {
                         projectFileContent = await getFile_({ username, repository: repoName, path: projectFilepath, branch: repoBranch });
-                        // console.log("Fetched manifest project fileContent for", repoName, projectFilepath, typeof projectFileContent, projectFileContent.length);
+                        console.log("Fetched manifest project fileContent for", repoName, projectFilepath, typeof projectFileContent, projectFileContent.length);
                         if (!projectFileContent)
                             addNotice({ priority: 938, message: `Unable to find project file mentioned in manifest`, extract: projectFilepath, location: ourLocation });
                         else if (projectFileContent.length < 10)

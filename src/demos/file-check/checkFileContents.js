@@ -2,7 +2,7 @@ import * as books from '../../core/books/books';
 import { formRepoName, checkUSFMText, checkMarkdownFileContents, checkPlainText, checkYAMLText, checkManifestText, checkTN_TSVText, checkAnnotationRows } from '../../core';
 
 
-// const CHECK_FILE_CONTENTS_VERSION_STRING = '0.2.3';
+// const CHECK_FILE_CONTENTS_VERSION_STRING = '0.3.0';
 
 
 /**
@@ -13,20 +13,22 @@ import { formRepoName, checkUSFMText, checkMarkdownFileContents, checkPlainText,
  * @param {string} givenLocation
  * @param {Object} checkingOptions
  */
-export async function checkFileContents(languageCode, repoCode, filename, fileContent, givenLocation, checkingOptions) {
+export async function checkFileContents(username, languageCode, repoCode, filename, fileContent, givenLocation, checkingOptions) {
   // Determine the file type from the filename extension
   //  and return the results of checking that kind of file text
-  // console.log(`checkFileContents(${languageCode}, ${filename}, ${fileContent.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
+  // console.log(`checkFileContents(${username}, ${languageCode}, ${filename}, ${fileContent.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
+  console.assert(username !== undefined, "checkFileContents: 'username' parameter should be defined");
+  console.assert(typeof username === 'string', `checkFileContents: 'username' parameter should be a string not a '${typeof username}': ${username}`);
   console.assert(languageCode !== undefined, "checkFileContents: 'languageCode' parameter should be defined");
-  console.assert(typeof languageCode === 'string', `checkFileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+  console.assert(typeof languageCode === 'string', `checkFileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
   console.assert(repoCode !== undefined, "checkFileContents: 'repoCode' parameter should be defined");
-  console.assert(typeof repoCode === 'string', `checkFileContents: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
+  console.assert(typeof repoCode === 'string', `checkFileContents: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
   console.assert(filename !== undefined, "checkFileContents: 'filename' parameter should be defined");
-  console.assert(typeof filename === 'string', `checkFileContents: 'filename' parameter should be a string not a '${typeof filename}'`);
+  console.assert(typeof filename === 'string', `checkFileContents: 'filename' parameter should be a string not a '${typeof filename}': ${filename}`);
   console.assert(fileContent !== undefined, "checkFileContents: 'fileContent' parameter should be defined");
-  console.assert(typeof fileContent === 'string', `checkFileContents: 'fileContent' parameter should be a string not a '${typeof fileContent}'`);
+  console.assert(typeof fileContent === 'string', `checkFileContents: 'fileContent' parameter should be a string not a '${typeof fileContent}': ${fileContent.length}`);
   console.assert(givenLocation !== undefined, "checkFileContents: 'givenRowLocation' parameter should be defined");
-  console.assert(typeof givenLocation === 'string', `checkFileContents: 'givenRowLocation' parameter should be a string not a '${typeof givenLocation}'`);
+  console.assert(typeof givenLocation === 'string', `checkFileContents: 'givenRowLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
   console.assert(checkingOptions !== undefined, "checkFileContents: 'checkingOptions' parameter should be defined");
 
   const startTime = new Date();
@@ -69,7 +71,7 @@ export async function checkFileContents(languageCode, repoCode, filename, fileCo
   else if (filenameLower.endsWith('.txt'))
     checkFileResult = checkPlainText('text', filename, fileContent, ourCFLocation, checkingOptions);
   else if (filenameLower === 'manifest.yaml')
-    checkFileResult = await checkManifestText('', formRepoName(languageCode, repoCode), '', fileContent, ourCFLocation, checkingOptions); // don’t know username or branch
+    checkFileResult = await checkManifestText(username, formRepoName(languageCode, repoCode), 'master', fileContent, ourCFLocation, checkingOptions); // don’t know username or branch
   else if (filenameLower.endsWith('.yaml'))
     checkFileResult = checkYAMLText(languageCode, filename, fileContent, ourCFLocation, checkingOptions);
   else {
