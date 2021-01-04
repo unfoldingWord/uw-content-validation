@@ -71,6 +71,7 @@ export async function checkFileContents(username, languageCode, repoCode, filena
   else if (filenameLower.endsWith('.txt'))
     checkFileResult = checkPlainText('text', filename, fileContent, ourCFLocation, checkingOptions);
   else if (filenameLower === 'manifest.yaml')
+    // TODO: Does the branch need to be passed in as a parameter???
     checkFileResult = await checkManifestText(username, formRepoName(languageCode, repoCode), 'master', fileContent, ourCFLocation, checkingOptions); // don’t know username or branch
   else if (filenameLower.endsWith('.yaml'))
     checkFileResult = checkYAMLText(languageCode, filename, fileContent, ourCFLocation, checkingOptions);

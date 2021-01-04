@@ -6,7 +6,7 @@ import Ajv from 'ajv';
 import { removeDisabledNotices } from './disabled-notices';
 
 
-const MANIFEST_VALIDATOR_VERSION_STRING = '0.3.7';
+const MANIFEST_VALIDATOR_VERSION_STRING = '0.4.0';
 
 // Pasted in 2020-10-02 from https://raw.githubusercontent.com/unfoldingWord/dcs/master/options/schema/rc.schema.json
 const MANIFEST_SCHEMA = {
@@ -699,7 +699,7 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
                     let projectFileContent;
                     try {
                         projectFileContent = await getFile_({ username, repository: repoName, path: projectFilepath, branch: repoBranch });
-                        console.log("Fetched manifest project fileContent for", repoName, projectFilepath, typeof projectFileContent, projectFileContent.length);
+                        // console.log("Fetched manifest project fileContent for", repoName, projectFilepath, typeof projectFileContent, projectFileContent.length);
                         if (!projectFileContent)
                             addNotice({ priority: 938, message: `Unable to find project file mentioned in manifest`, extract: projectFilepath, location: ourLocation });
                         else if (projectFileContent.length < 10)
