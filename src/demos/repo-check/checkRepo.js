@@ -4,12 +4,18 @@ import { repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetR
 import { checkFileContents } from '../file-check/checkFileContents';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.4.3';
+// const REPO_VALIDATOR_VERSION_STRING = '0.4.4';
 
 
-/*
-    checkRepo
-*/
+/**
+ *
+ * @param {String} username
+ * @param {String} repoName
+ * @param {String} branch
+ * @param {String} givenLocation
+ * @param {*} setResultValue
+ * @param {Object} checkingOptions
+ */
 export async function checkRepo(username, repoName, branch, givenLocation, setResultValue, checkingOptions) {
   /*
   It returns an object containing:
@@ -81,9 +87,18 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
   }
 
 
+  /**
+   *
+   * @param {String} bookOrFileCode
+   * @param {String} cfBookID
+   * @param {String} filename
+   * @param {String} fileContent
+   * @param {String} fileLocation
+   * @param {Object} checkingOptions
+   */
   async function ourCheckRepoFileContents(bookOrFileCode, cfBookID, filename, fileContent, fileLocation, checkingOptions) {
     // We assume that checking for compulsory fields is done elsewhere
-    // console.log(`checkRepo ourCheckRepoFileContents(${bookOrFileCode}, ${cfBookID}, ${filename})…`);
+    // console.log(`checkRepo ourCheckRepoFileContents(${bookOrFileCode}, ${cfBookID}, ${filename}, ${fileContent.length}, ${fileLocation}, ${JSON.stringify(checkingOptions)})…`);
 
     // Updates the global list of notices
     console.assert(bookOrFileCode !== undefined, "ourCheckRepoFileContents: 'bookOrFileCode' parameter should be defined");

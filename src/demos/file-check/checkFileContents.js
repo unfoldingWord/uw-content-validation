@@ -2,12 +2,13 @@ import * as books from '../../core/books/books';
 import { formRepoName, checkUSFMText, checkMarkdownFileContents, checkPlainText, checkYAMLText, checkManifestText, checkTN_TSVText, checkAnnotationRows } from '../../core';
 
 
-// const CHECK_FILE_CONTENTS_VERSION_STRING = '0.3.0';
+// const CHECK_FILE_CONTENTS_VERSION_STRING = '0.3.1';
 
 
 /**
  *
- * @param {string} languageCode
+ * @param {string} username for Door43.org
+ * @param {string} languageCode, e.g., 'en'
  * @param {string} filename
  * @param {string} fileContent
  * @param {string} givenLocation
@@ -27,8 +28,8 @@ export async function checkFileContents(username, languageCode, repoCode, filena
   console.assert(typeof filename === 'string', `checkFileContents: 'filename' parameter should be a string not a '${typeof filename}': ${filename}`);
   console.assert(fileContent !== undefined, "checkFileContents: 'fileContent' parameter should be defined");
   console.assert(typeof fileContent === 'string', `checkFileContents: 'fileContent' parameter should be a string not a '${typeof fileContent}': ${fileContent.length}`);
-  console.assert(givenLocation !== undefined, "checkFileContents: 'givenRowLocation' parameter should be defined");
-  console.assert(typeof givenLocation === 'string', `checkFileContents: 'givenRowLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
+  console.assert(givenLocation !== undefined, "checkFileContents: 'givenLocation' parameter should be defined");
+  console.assert(typeof givenLocation === 'string', `checkFileContents: 'givenLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
   console.assert(checkingOptions !== undefined, "checkFileContents: 'checkingOptions' parameter should be defined");
 
   const startTime = new Date();
@@ -42,7 +43,7 @@ export async function checkFileContents(username, languageCode, repoCode, filena
   if (filenameLower.endsWith('.tsv')) {
     const filenameMain = filename.substring(0, filename.length - 4); // drop .tsv
     // console.log(`checkFileContents have TSV filenameMain=${filenameMain}`);
-    const bookID = filenameMain.startsWith(`${languageCode}_`) ? filenameMain.substring(filenameMain.length - 3) : filenameMain.substring(0, 3).toUpperCase();
+    const bookID = filenameMain.startsWith(`${languageCode}_`) || filenameMain.startsWith(`en_`) ? filenameMain.substring(filenameMain.length - 3) : filenameMain.substring(0, 3).toUpperCase();
     // console.log(`checkFileContents have TSV bookID=${bookID}`);
     console.assert(bookID === 'OBS' || books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
     if (filename.startsWith(`${languageCode}_`))

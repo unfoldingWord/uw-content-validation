@@ -1,8 +1,7 @@
 import { isDisabledNotice } from '../core/disabled-notices';
-// import { displayPropertyNames, consoleLogObject } from './utilities';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.5';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.6';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -104,7 +103,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     // This entire section may be commented out of production code
     // It only really makes sense if the debugChain is enabled
     if (givenNoticeObject.noticeList && givenNoticeObject.noticeList.length) {
-        console.log("processNoticesCommon: Checking for duplicate notices…")
+        console.log(`processNoticesCommon: Checking ${givenNoticeObject.noticeList.length} notices for duplicates…`);
         const uniqueList = [];
         function uniqueListContains(item) { // returns -1 or the index of the first match
             for (let ix = 0; ix < uniqueList.length; ix++) {
