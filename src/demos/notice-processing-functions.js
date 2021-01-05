@@ -1,8 +1,7 @@
 import { isDisabledNotice } from '../core/disabled-notices';
-// import { displayPropertyNames, consoleLogObject } from './utilities';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.5';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.6';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -103,37 +102,40 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     // This might indicate that a function is being called twice unnecessarily
     // This entire section may be commented out of production code
     // It only really makes sense if the debugChain is enabled
-    if (givenNoticeObject.noticeList && givenNoticeObject.noticeList.length) {
-        console.log("processNoticesCommon: Checking for duplicate notices…")
-        const uniqueList = [];
-        function uniqueListContains(item) { // returns -1 or the index of the first match
-            for (let ix = 0; ix < uniqueList.length; ix++) {
-                const thisUniqueNotice = uniqueList[ix];
-                if ( // compare as few essentialfields as possible to find matches
-                    thisUniqueNotice.priority === item.priority
-                    && thisUniqueNotice.message === item.message
-                    && (thisUniqueNotice.details === item.details || thisUniqueNotice.details === undefined || item.details === undefined)
-                    && (thisUniqueNotice.repoCode === item.repoCode || thisUniqueNotice.repoCode === undefined || item.repoCode === undefined)
-                    && (thisUniqueNotice.filename === item.filename || thisUniqueNotice.filename === undefined || item.filename === undefined)
-                    && (thisUniqueNotice.rowID === item.rowID || thisUniqueNotice.rowID === undefined || item.rowID === undefined)
-                    && (thisUniqueNotice.lineNumber === item.lineNumber || thisUniqueNotice.lineNumber === undefined || item.lineNumber === undefined)
-                    && (thisUniqueNotice.characterIndex === item.characterIndex || thisUniqueNotice.characterIndex === undefined || item.characterIndex === undefined)
-                    && (thisUniqueNotice.extract === item.extract || thisUniqueNotice.extract === undefined || item.extract === undefined)
-                    && (thisUniqueNotice.extra === item.extra || thisUniqueNotice.extra === undefined || item.extra === undefined)
-                )
-                    return ix;
+    if (givenNoticeObject.noticeList && givenNoticeObject.noticeList.length)
+        if (givenNoticeObject.noticeList.length > 8000)
+            console.log(`processNoticesCommon: ${givenNoticeObject.noticeList.length} notices is too many to search for duplicates!`);
+        else {
+            console.log(`processNoticesCommon: Checking ${givenNoticeObject.noticeList.length} notices for duplicates…`);
+            const uniqueList = [];
+            function uniqueListContains(item) { // returns -1 or the index of the first match
+                for (let ix = 0; ix < uniqueList.length; ix++) {
+                    const thisUniqueNotice = uniqueList[ix];
+                    if ( // compare as few essentialfields as possible to find matches
+                        thisUniqueNotice.priority === item.priority
+                        && thisUniqueNotice.message === item.message
+                        && (thisUniqueNotice.details === item.details || thisUniqueNotice.details === undefined || item.details === undefined)
+                        && (thisUniqueNotice.repoCode === item.repoCode || thisUniqueNotice.repoCode === undefined || item.repoCode === undefined)
+                        && (thisUniqueNotice.filename === item.filename || thisUniqueNotice.filename === undefined || item.filename === undefined)
+                        && (thisUniqueNotice.rowID === item.rowID || thisUniqueNotice.rowID === undefined || item.rowID === undefined)
+                        && (thisUniqueNotice.lineNumber === item.lineNumber || thisUniqueNotice.lineNumber === undefined || item.lineNumber === undefined)
+                        && (thisUniqueNotice.characterIndex === item.characterIndex || thisUniqueNotice.characterIndex === undefined || item.characterIndex === undefined)
+                        && (thisUniqueNotice.extract === item.extract || thisUniqueNotice.extract === undefined || item.extract === undefined)
+                        && (thisUniqueNotice.extra === item.extra || thisUniqueNotice.extra === undefined || item.extra === undefined)
+                    )
+                        return ix;
+                }
+                return -1;
             }
-            return -1;
+            for (const thisGivenNotice of standardisedNoticeList) {
+                let xx;
+                if ((xx = uniqueListContains(thisGivenNotice)) === -1) // wasn’t found
+                    uniqueList.push(thisGivenNotice);
+                else console.log(`Duplicate notices:\n${JSON.stringify(thisGivenNotice)}\nwhen had\n${JSON.stringify(uniqueList[xx])}`);
+            }
+            if (uniqueList.length !== givenNoticeObject.noticeList.length)
+                console.log(`Here with ${givenNoticeObject.noticeList.length.toLocaleString()} notices and ${uniqueList.length.toLocaleString()} unique notices`);
         }
-        for (const thisGivenNotice of standardisedNoticeList) {
-            let xx;
-            if ((xx = uniqueListContains(thisGivenNotice)) === -1) // wasn’t found
-                uniqueList.push(thisGivenNotice);
-            else console.log(`Duplicate notices:\n${JSON.stringify(thisGivenNotice)}\nwhen had\n${JSON.stringify(uniqueList[xx])}`);
-        }
-        if (uniqueList.length !== givenNoticeObject.noticeList.length)
-            console.log(`Here with ${givenNoticeObject.noticeList.length.toLocaleString()} notices and ${uniqueList.length.toLocaleString()} unique notices`);
-    }
 
 
     // Run a check through the noticeList to help discover any programming errors that need fixing
@@ -147,7 +149,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         for (const thisGivenNotice of standardisedNoticeList) {
             const thisPriority = thisGivenNotice.priority, thisMsg = thisGivenNotice.message;
             console.assert(typeof thisPriority === 'number' && thisPriority > 0 && thisPriority < 10000, `BAD PRIORITY for ${JSON.stringify(thisGivenNotice)}`);
-            console.assert(typeof thisMsg === 'string' && thisMsg.length > 10, `BAD MESSAGE for ${JSON.stringify(thisGivenNotice)}`);
+            console.assert(typeof thisMsg === 'string' && thisMsg.length >= 10, `BAD MESSAGE for ${JSON.stringify(thisGivenNotice)}`);
 
             // Check that notice priority numbers are unique (to detect programming errors)
             const oldMsg = numberStore[thisPriority];

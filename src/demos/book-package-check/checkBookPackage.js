@@ -5,7 +5,7 @@ import { checkFileContents } from '../file-check/checkFileContents';
 import { checkRepo } from '../repo-check/checkRepo';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.5.2';
+// const BP_VALIDATOR_VERSION_STRING = '0.5.3';
 
 const MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -46,7 +46,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0, checkedRepoNames = new Set();
   let checkBookPackageResult = { successList: [], noticeList: [] };
 
-  let dataSet = checkingOptions.dataSet; // Can be 'DEFAULT', 'OLD' (Markdown, etc.), 'NEW' (TSV only), or 'BOTH'
+  let dataSet = checkingOptions?.dataSet; // Can be 'DEFAULT', 'OLD' (Markdown, etc.), 'NEW' (TSV only), or 'BOTH'
   if (!dataSet) dataSet = 'DEFAULT';
 
   const newCheckingOptions = checkingOptions ? { ...checkingOptions } : {}; // clone before modify
@@ -112,7 +112,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     console.assert(typeof fileLocation === 'string', `cBP ourCheckBPFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
     console.assert(checkingOptions !== undefined, "cBP ourCheckBPFileContents: 'checkingOptions' parameter should be defined");
 
-    const cfcResultObject = await checkFileContents(languageCode, repoCode, cfFilename, fileContent, fileLocation, checkingOptions);
+    const cfcResultObject = await checkFileContents(username, languageCode, repoCode, originalBranch, cfFilename, fileContent, fileLocation, checkingOptions);
     // console.log("checkFileContents() returned", cfResultObject.successList.length, "success message(s) and", cfResultObject.noticeList.length, "notice(s)");
     // for (const successEntry of cfResultObject.successList) console.log("  ourCheckBPFileContents:", successEntry);
     // console.log("cfcResultObject", JSON.stringify(cfcResultObject));
@@ -288,7 +288,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     // So now we want to work through checking this one specified Bible book in various repos
     const origLangRepoCode = whichTestament === 'old' ? 'UHB' : 'UGNT';
     if (dataSet === 'DEFAULT')
-      repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'TWL', 'LT', 'ST', 'TN', 'TQ'] : [origLangRepoCode, 'TWL', 'LT', 'ST', 'TN', 'TQ'];
+      repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'] : [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'];
     else if (dataSet === 'OLD')
       repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'] : [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'];
     else if (dataSet === 'NEW')
@@ -509,7 +509,7 @@ async function checkTQMarkdownBook(username, languageCode, repoName, branch, boo
     console.assert(typeof fileLocation === 'string', `cTQ ourCheckTQFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
     console.assert(checkingOptions !== undefined, "cTQ ourCheckTQFileContents: 'checkingOptions' parameter should be defined");
 
-    const cfResultObject = await checkFileContents(languageCode, repoCode, cfFilename, fileContent, fileLocation, checkingOptions);
+    const cfResultObject = await checkFileContents(username, languageCode, repoCode, branch, cfFilename, fileContent, fileLocation, checkingOptions);
     // console.log("checkFileContents() returned", cfResultObject.successList.length, "success message(s) and", cfResultObject.noticeList.length, "notice(s)");
     // for (const successEntry of cfResultObject.successList) console.log("  ourCheckTQFileContents:", successEntry);
 

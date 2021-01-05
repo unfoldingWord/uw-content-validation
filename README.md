@@ -102,7 +102,7 @@ There is provision for checking to be altered and/or sped-up when the calling ap
 - `taRepoLanguageCode`, and `taRepoSectionName`: can be used to specify how the `SupportReference` field is checked in TA—defaults are 'en' and 'translate'
 - `twRepoUsername`, `twRepoBranchName`: these two fields can be used to specify the username/organisation and/or the branch/tag name for fetching the TW files for checking
 - `extractLength`: an integer which defines how long excerpts of lines containing errors should be—the default is 15 characters—the package attempts to place the error in the middle of the extract
-- `cutoffPriorityLevel`: an integer which can define notices to not be detected—defaults to 0 so none are dropped. Note that this will also affect the `suggestion` response.
+- `cutoffPriorityLevel`: an integer which can define notices to not be detected—defaults to 0 so none are dropped. Note that this will also affect the `suggestion` response. (Only partially implemented at present, so drops some but not all low priority notices.)
 - `suppressNoticeDisablingFlag`: Defaults to `false`, i.e., to removing (thus suppressing) notices for warnings which are expected in certain files and hence we don’t want them displayed. Note that this is always set to `true` for the demos (because they suppress these notices later—see the `showDisabledNoticesFlag` below).
 
     Currently this supressing is only done in the (exported) `checkTN_TSVText` and `checkAnnotationRows` functions which we know to be called by [tC Create](https://github.com/unfoldingWord/tc-create-app) as well as `checkManifestText`, `checkMarkdownText`, `checkPlainText`, `checkTN_TSVText`, `checkUSFMText`, and `checkYAMLText` called by the [Content Validation App](https://github.com/unfoldingWord-box3/content-validation-app).
@@ -155,7 +155,7 @@ Known bugs:
 Known check deficiencies:
 
 1. Markdown image format `![xx](yy)` is not yet fully checked
-1. Filenames in manifests are not fully checked
+1. Manifests are not checked against all files, i.e., to find files potentially missing from the manifest
 1. Naked HTTP links are not yet checked properly
 1. ULT/UST quotes in TranslationAcademy are not yet checked
 

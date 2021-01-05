@@ -6,7 +6,7 @@ import Ajv from 'ajv';
 import { removeDisabledNotices } from './disabled-notices';
 
 
-const MANIFEST_VALIDATOR_VERSION_STRING = '0.3.7';
+const MANIFEST_VALIDATOR_VERSION_STRING = '0.4.0';
 
 // Pasted in 2020-10-02 from https://raw.githubusercontent.com/unfoldingWord/dcs/master/options/schema/rc.schema.json
 const MANIFEST_SCHEMA = {
