@@ -118,7 +118,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
     console.assert(typeof fileLocation === 'string', `ourCheckRepoFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
     console.assert(checkingOptions !== undefined, "ourCheckRepoFileContents: 'checkingOptions' parameter should be defined");
 
-    const cfcResultObject = await checkFileContents(username, languageCode, repoCode, filename, fileContent, fileLocation, checkingOptions);
+    const cfcResultObject = await checkFileContents(username, languageCode, repoCode, branch, filename, fileContent, fileLocation, checkingOptions);
     // console.log("checkFileContents() returned", resultObject.successList.length, "success message(s) and", resultObject.noticeList.length, "notice(s)");
     // for (const successEntry of resultObject.successList)
     //     console.log("  ", successEntry);

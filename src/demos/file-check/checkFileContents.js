@@ -9,12 +9,14 @@ import { formRepoName, checkUSFMText, checkMarkdownFileContents, checkPlainText,
  *
  * @param {string} username for Door43.org
  * @param {string} languageCode, e.g., 'en'
+ * @param {string} repoCode, e.g., 'TN'
+ * @param {string} branch, e.g., 'master'
  * @param {string} filename
  * @param {string} fileContent
  * @param {string} givenLocation
  * @param {Object} checkingOptions
  */
-export async function checkFileContents(username, languageCode, repoCode, filename, fileContent, givenLocation, checkingOptions) {
+export async function checkFileContents(username, languageCode, repoCode, branch, filename, fileContent, givenLocation, checkingOptions) {
   // Determine the file type from the filename extension
   //  and return the results of checking that kind of file text
   // console.log(`checkFileContents(${username}, ${languageCode}, ${filename}, ${fileContent.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
@@ -24,6 +26,8 @@ export async function checkFileContents(username, languageCode, repoCode, filena
   console.assert(typeof languageCode === 'string', `checkFileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
   console.assert(repoCode !== undefined, "checkFileContents: 'repoCode' parameter should be defined");
   console.assert(typeof repoCode === 'string', `checkFileContents: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
+  console.assert(branch !== undefined, "checkFileContents: 'branch' parameter should be defined");
+  console.assert(typeof branch === 'string', `checkFileContents: 'branch' parameter should be a string not a '${typeof branch}': ${branch}`);
   console.assert(filename !== undefined, "checkFileContents: 'filename' parameter should be defined");
   console.assert(typeof filename === 'string', `checkFileContents: 'filename' parameter should be a string not a '${typeof filename}': ${filename}`);
   console.assert(fileContent !== undefined, "checkFileContents: 'fileContent' parameter should be defined");
@@ -43,10 +47,10 @@ export async function checkFileContents(username, languageCode, repoCode, filena
   if (filenameLower.endsWith('.tsv')) {
     const filenameMain = filename.substring(0, filename.length - 4); // drop .tsv
     // console.log(`checkFileContents have TSV filenameMain=${filenameMain}`);
-    const bookID = filenameMain.startsWith(`${languageCode}_`) || filenameMain.startsWith(`en_`) ? filenameMain.substring(filenameMain.length - 3) : filenameMain.substring(0, 3).toUpperCase();
+    const bookID = filenameMain.startsWith(`${languageCode}_`) || filenameMain.startsWith('en_') ? filenameMain.substring(filenameMain.length - 3) : filenameMain.substring(0, 3).toUpperCase();
     // console.log(`checkFileContents have TSV bookID=${bookID}`);
     console.assert(bookID === 'OBS' || books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
-    if (filename.startsWith(`${languageCode}_`))
+    if (filename.startsWith(`${languageCode}_`) || filenameMain.startsWith('en_'))
       checkFileResult = await checkTN_TSVText(languageCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
     else {
       const annotationType = filenameMain.substring(4).toUpperCase();
@@ -72,8 +76,7 @@ export async function checkFileContents(username, languageCode, repoCode, filena
   else if (filenameLower.endsWith('.txt'))
     checkFileResult = checkPlainText('text', filename, fileContent, ourCFLocation, checkingOptions);
   else if (filenameLower === 'manifest.yaml')
-    // TODO: Does the branch need to be passed in as a parameter???
-    checkFileResult = await checkManifestText(username, formRepoName(languageCode, repoCode), 'master', fileContent, ourCFLocation, checkingOptions); // don’t know username or branch
+    checkFileResult = await checkManifestText(username, formRepoName(languageCode, repoCode), branch, fileContent, ourCFLocation, checkingOptions); // don’t know username or branch
   else if (filenameLower.endsWith('.yaml'))
     checkFileResult = checkYAMLText(languageCode, filename, fileContent, ourCFLocation, checkingOptions);
   else {
