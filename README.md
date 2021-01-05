@@ -155,7 +155,7 @@ Known bugs:
 Known check deficiencies:
 
 1. Markdown image format `![xx](yy)` is not yet fully checked
-1. Filenames in manifests are not fully checked
+1. Manifests are not checked against all files, i.e., to find files potentially missing from the manifest
 1. Naked HTTP links are not yet checked properly
 1. ULT/UST quotes in TranslationAcademy are not yet checked
 
