@@ -47,7 +47,7 @@ const data = {
   givenLocation : 'that was supplied',
 }
 
-function CheckTNTSVText(props) {
+function CheckTN_TSVText(props) {
   const { languageCode, bookID, filename, tableText, tableTextName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
@@ -71,7 +71,7 @@ function CheckTNTSVText(props) {
   }, []); // end of useEffect part
 
   return results;
-} // end of CheckTNTSVText function
+} // end of CheckTN_TSVText function
 
-<CheckTNTSVText data={data}/>
+<CheckTN_TSVText data={data}/>
 ```

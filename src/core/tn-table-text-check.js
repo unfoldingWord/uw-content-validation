@@ -4,12 +4,21 @@ import { checkTN_TSVDataRow } from './tn-table-row-check';
 import { removeDisabledNotices } from './disabled-notices';
 
 
-const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.3.0';
+const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.3.1';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
 
 
+/**
+ *
+ * @param {string} languageCode
+ * @param {string} bookID
+ * @param {string} filename
+ * @param {string} tableText
+ * @param {string} givenLocation
+ * @param {Object} checkingOptions
+ */
 export async function checkTN_TSVText(languageCode, bookID, filename, tableText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire file, i.e., all rows.
 
@@ -19,7 +28,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
 
      Returns a result object containing a successList and a noticeList
      */
-    // console.log(`checkTN_TSVText(${bookID}, ${tableText.length}, ${location},${JSON.stringify(checkingOptions)})…`);
+    // console.log(`checkTN_TSVText(${languageCode}, ${bookID}, ${filename}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
     console.assert(languageCode !== undefined, "checkTN_TSVText: 'languageCode' parameter should be defined");
     console.assert(typeof languageCode === 'string', `checkTN_TSVText: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
     console.assert(bookID !== undefined, "checkTN_TSVText: 'bookID' parameter should be defined");
@@ -57,7 +66,9 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
         console.assert(noticeObject.location !== undefined, "TSV addNoticePartial: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
         if (noticeObject.debugChain) noticeObject.debugChain = `checkTN_TSVText ${noticeObject.debugChain}`;
-        ttResult.noticeList.push({ ...noticeObject, bookID, filename });
+        // NOTE: We only add the repoCode here because this function is called directly by tC Create
+        //          and notice disabling currently depends on knowing the repoCode
+        ttResult.noticeList.push({ ...noticeObject, bookID, filename, repoCode: 'TN' });
     }
 
 

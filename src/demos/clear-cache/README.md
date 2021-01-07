@@ -17,7 +17,7 @@ Simply change `N` to `Y` below to clear the internal caches.
 import ClearCache from './ClearCache';
 
 <ClearCache
-  // Change N to Y to activate the cache clearing
+  // Change N to Y below to activate the cache clearing
   areYouSure='N'
 />
 ```

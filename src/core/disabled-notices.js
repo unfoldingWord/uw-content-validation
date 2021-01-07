@@ -8,7 +8,7 @@
 */
 
 
-// const DISABLED_NOTICES_VERSION_STRING = '0.2.0';
+// const DISABLED_NOTICES_VERSION_STRING = '0.3.0';
 
 
 const disabledNotices = [
@@ -69,15 +69,20 @@ const disabledNotices = [
  * @returns true if the givenNotice has a match in the disabledNotices list above
  */
 export function isDisabledNotice(givenNotice) {
-  // if (givenNotice.priority===638) console.log(`isDisabledNotice(${JSON.stringify(givenNotice)})…`);
+  // console.log(`isDisabledNotice(${JSON.stringify(givenNotice)})…`);
   for (const disabledNotice of disabledNotices) {
-    let matched = true;
+    let matchedAllSpecifiedFields = true;
     for (const propertyName in disabledNotice)
+      // if ((propertyName !== 'repoCode' || givenNotice.repoCode !== undefined) // Some individual checks don't set repoCode
+      // && (givenNotice[propertyName] !== disabledNotice[propertyName])) {
       if (givenNotice[propertyName] !== disabledNotice[propertyName]) {
-        matched = false;
+        matchedAllSpecifiedFields = false;
         break;
       }
-    if (matched) return true;
+    if (matchedAllSpecifiedFields) {
+      // console.log(`  isDisabledNotice() returning true for ${JSON.stringify(disabledNotice)}`);
+      return true;
+    }
   }
   return false;
 }
@@ -91,9 +96,10 @@ export function isDisabledNotice(givenNotice) {
 export function removeDisabledNotices(givenNoticeList) {
   const remainingNoticeList = [];
   for (const thisNotice of givenNoticeList) {
-      if (!isDisabledNotice(thisNotice))
-          remainingNoticeList.push(thisNotice);
+    if (!isDisabledNotice(thisNotice))
+      remainingNoticeList.push(thisNotice);
+    // else console.log(`  Removing disabled ${JSON.stringify(thisNotice)}`);
   }
-  // console.log(`removeDisabledNotices: returning ${remainingNoticeList.length} from ${givenNoticeList.length} notices`);
+  if (remainingNoticeList.length !== givenNoticeList.length) console.log(`removeDisabledNotices() returning ${remainingNoticeList.length} out of ${givenNoticeList.length} notices`);
   return remainingNoticeList;
 }
