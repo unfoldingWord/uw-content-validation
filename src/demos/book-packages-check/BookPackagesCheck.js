@@ -8,9 +8,13 @@ import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMe
 // import { consoleLogObject } from '../../core/utilities';
 
 
-// const BPS_VALIDATOR_VERSION_STRING = '0.1.7';
+// const BPS_VALIDATOR_VERSION_STRING = '0.2.0';
 
 
+/**
+ *
+ * @param {Object} props
+ */
 function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     // Check a single Bible book across many repositories
     const [result, setResultValue] = useState("Waiting-CheckBookPackages");
@@ -32,12 +36,16 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
 
     let bookIDList = [];
     let bookIDInvalid;
+    let haveOT = false, haveNT = false;
     for (let bookID of bookIDs.split(',')) {
         bookID = bookID.trim();
         if (!books.isValidBookID(bookID) && bookID!=='OBS') {
             bookIDInvalid = bookID;
         }
         bookIDList.push(bookID);
+        const whichTestament = books.testament(bookID);
+        if (whichTestament==='old') haveOT = true;
+        if (whichTestament==='new') haveNT = true;
     }
     // console.log(`bookIDList (${bookIDList.length}) = ${bookIDList.join(', ')}`);
 
@@ -72,13 +80,15 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         else await clearCheckedArticleCache();
 
         // Load whole repos, especially if we are going to check files in manifests
-        let repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
+        let repoPreloadList = ['LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
         if (dataSet === 'OLD')
-            repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ'];
+            repoPreloadList = ['LT', 'ST', 'TN', 'TA', 'TW', 'TQ'];
         else if (dataSet === 'NEW')
-            repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN2', 'TWL', 'TA', 'TW', 'TQ2'];
+            repoPreloadList = ['LT', 'ST', 'TN2', 'TWL', 'TA', 'TW', 'TQ2'];
         else if (dataSet === 'BOTH')
-            repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TN2', 'TWL', 'TA', 'TW', 'TQ', 'TQ2'];
+            repoPreloadList = ['LT', 'ST', 'TN', 'TN2', 'TWL', 'TA', 'TW', 'TQ', 'TQ2'];
+        if (haveNT) repoPreloadList.unshift('UGNT');
+        if (haveOT) repoPreloadList.unshift('UHB');
 
         setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for {username} {languageCode} ready for book packages check…</p>);
           const successFlag = await preloadReposIfNecessary(username, languageCode, bookIDList, branch, repoPreloadList);
