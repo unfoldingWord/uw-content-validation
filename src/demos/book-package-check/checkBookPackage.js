@@ -5,7 +5,7 @@ import { checkFileContents } from '../file-check/checkFileContents';
 import { checkRepo } from '../repo-check/checkRepo';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.5.3';
+// const BP_VALIDATOR_VERSION_STRING = '0.5.4';
 
 const MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -30,11 +30,11 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   */
   // console.log(`checkBookPackage(${username}, ${languageCode}, ${bookID}, (fn), ${JSON.stringify(checkingOptions)})…`)
   console.assert(username !== undefined, "checkBookPackage: 'username' parameter should be defined");
-  console.assert(typeof username === 'string', `checkBookPackage: 'username' parameter should be a string not a '${typeof username}'`);
+  console.assert(typeof username === 'string', `checkBookPackage: 'username' parameter should be a string not a '${typeof username}': ${username}`);
   console.assert(languageCode !== undefined, "checkBookPackage: 'languageCode' parameter should be defined");
-  console.assert(typeof languageCode === 'string', `checkBookPackage: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+  console.assert(typeof languageCode === 'string', `checkBookPackage: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
   console.assert(bookID !== undefined, "checkBookPackage: 'bookID' parameter should be defined");
-  console.assert(typeof bookID === 'string', `checkBookPackage: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+  console.assert(typeof bookID === 'string', `checkBookPackage: 'bookID' parameter should be a string not a '${typeof bookID}': ${bookID}`);
   console.assert(bookID.length === 3, `checkBookPackage: 'bookID' parameter should be three characters long not ${bookID.length}`);
   console.assert(bookID.toUpperCase() === bookID, `checkBookPackage: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
   console.assert(bookID === 'OBS' || books.isValidBookID(bookID), `checkBookPackage: '${bookID}' is not a valid USFM book identifier`);
@@ -72,27 +72,27 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
     // console.log(`checkBookPackage addNoticePartial: (priority=${noticeObject.priority}) ${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
     console.assert(noticeObject.priority !== undefined, "cBP addNoticePartial: 'priority' parameter should be defined");
-    console.assert(typeof noticeObject.priority === 'number', `cBP addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}'`);
+    console.assert(typeof noticeObject.priority === 'number', `cBP addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
     console.assert(noticeObject.message !== undefined, "cBP addNoticePartial: 'message' parameter should be defined");
-    console.assert(typeof noticeObject.message === 'string', `cBP addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}'`);
+    console.assert(typeof noticeObject.message === 'string', `cBP addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
     // console.assert(bookID !== undefined, "cBP addNoticePartial: 'bookID' parameter should be defined");
     if (noticeObject.bookID) {
-      console.assert(typeof noticeObject.bookID === 'string', `cBP addNoticePartial: 'bookID' parameter should be a string not a '${typeof noticeObject.bookID}'`);
+      console.assert(typeof noticeObject.bookID === 'string', `cBP addNoticePartial: 'bookID' parameter should be a string not a '${typeof noticeObject.bookID}': ${noticeObject.bookID}`);
       console.assert(noticeObject.bookID.length === 3, `cBP addNoticePartial: 'bookID' parameter should be three characters long not ${noticeObject.bookID.length}`);
       console.assert(bookID === 'OBS' || books.isValidBookID(noticeObject.bookID), `cBP addNoticePartial: '${noticeObject.bookID}' is not a valid USFM book identifier`);
     }
     // console.assert(C !== undefined, "cBP addNoticePartial: 'C' parameter should be defined");
-    if (noticeObject.C) console.assert(typeof noticeObject.C === 'string', `cBP addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}'`);
+    if (noticeObject.C) console.assert(typeof noticeObject.C === 'string', `cBP addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
     // console.assert(V !== undefined, "cBP addNoticePartial: 'V' parameter should be defined");
-    if (noticeObject.V) console.assert(typeof noticeObject.V === 'string', `cBP addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}'`);
+    if (noticeObject.V) console.assert(typeof noticeObject.V === 'string', `cBP addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
     // console.assert(characterIndex !== undefined, "cBP addNoticePartial: 'characterIndex' parameter should be defined");
-    if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `cBP addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}'`);
+    if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `cBP addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
     // console.assert(extract !== undefined, "cBP addNoticePartial: 'extract' parameter should be defined");
-    if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cBP addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}'`);
+    if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cBP addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
     console.assert(noticeObject.location !== undefined, "cBP addNoticePartial: 'location' parameter should be defined");
-    console.assert(typeof noticeObject.location === 'string', `cBP addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}'`);
+    console.assert(typeof noticeObject.location === 'string', `cBP addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
     console.assert(noticeObject.extra !== undefined, "cBP addNoticePartial: 'extra' parameter should be defined");
-    console.assert(typeof noticeObject.extra === 'string', `cBP addNoticePartial: 'extra' parameter should be a string not a '${typeof noticeObject.extra}'`);
+    console.assert(typeof noticeObject.extra === 'string', `cBP addNoticePartial: 'extra' parameter should be a string not a '${typeof noticeObject.extra}': ${noticeObject.extra}`);
     if (noticeObject.debugChain) noticeObject.debugChain = `checkBookPackage ${noticeObject.debugChain}`;
     checkBookPackageResult.noticeList.push({ ...noticeObject, bookID, username });
   }

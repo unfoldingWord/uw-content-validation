@@ -4,9 +4,21 @@ import { cachedGetFile } from '../core/getApi';
 import { ourParseInt } from './utilities';
 
 
-// const QUOTE_VALIDATOR_VERSION_STRING = '0.7.6';
+// const QUOTE_VALIDATOR_VERSION_STRING = '0.7.8';
 
 
+/**
+ *
+ * @param {string} languageCode
+ * @param {string} fieldName
+ * @param {string} fieldText
+ * @param {string} occurrenceString
+ * @param {string} bookID
+ * @param {string} C
+ * @param {string} V
+ * @param {string} givenLocation
+ * @param {Object} checkingOptions
+ */
 export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldText, occurrenceString, bookID, C, V, givenLocation, checkingOptions) {
     // Checks that the Hebrew/Greek quote can be found in the original texts
 
@@ -55,7 +67,7 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
         // console.assert(characterIndex !== undefined, "cOLQ addNotice: 'characterIndex' parameter should be defined");
         if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `cOLQ addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
         // console.assert(extract !== undefined, "cOLQ addNotice: 'extract' parameter should be defined");
-        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cOLQ addNotice: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cOLQ addNotice: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract} for ${noticeObject.priority}`);
         console.assert(noticeObject.location !== undefined, "cOLQ addNotice: 'location' parameter should be defined");
         console.assert(typeof noticeObject.location === 'string', `cOLQ addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
         colqResult.noticeList.push(noticeObject);
@@ -283,7 +295,7 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
     if (quoteBits) { // it had an ellipsis
         // console.assert(occurrence === 1, `Oh -- can get '${fieldText}' with occurrence=${occurrence} in ${bookID} ${C}:${V}`);
         if (occurrence !== 1) {
-            addNotice({ priority: 50, message: "Is this quote/occurrence correct???", details: `Occurrence=${occurrence}`, extract: quoteBits, location: ourLocation });
+            addNotice({ priority: 50, message: "Is this quote/occurrence correct???", details: `Occurrence=${occurrence}`, extract: fieldText, location: ourLocation });
         }
         const numQuoteBits = quoteBits.length;
         if (numQuoteBits >= 2) {
@@ -308,7 +320,7 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
                 // console.log(`checkOriginalLanguageQuote is checking for ${occurrence} occurrences of ${fieldText}`);
                 if (verseText.split(fieldText).length <= occurrence) { // There's not enough of them
                     const extract = fieldText.substring(0, halfLength) + (fieldText.length > 2 * halfLength ? '…' : '') + fieldText.substring(fieldText.length - halfLength, fieldText.length);
-                    addNotice({ priority: 917, message: "Unable to find duplicate original language quote in verse text", details: `occurrence=${occurrenceString}, passage ⸢${verseText}⸣`, extract, location: ourLocation });
+                    addNotice({ priority: 917, message: "Unable to find duplicate original language quote in verse text", details: `occurrence=${occurrenceString}, passage ►${verseText}◄`, extract, location: ourLocation });
                 }
             } else { // We only need to check for one occurrence
                 // Double check that it doesn’t start/stop in the middle of a word
@@ -325,7 +337,7 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
                     // const badCharString = ` by '{badChar}' {unicodedata.name(badChar)}={hex(ord(badChar))}`;
                     // console.log(`Seems '${fieldText}' might not start at the beginning of a word—it’s preceded ${badCharString} in '${verseText}'`);
                     const extract = `(${remainingBits[0].slice(-1)}=D${remainingBits[0].slice(-1).charCodeAt()}/H${remainingBits[0].slice(-1).charCodeAt().toString(16)})` + fieldText.substring(0, extractLength - 3) + (fieldText.length > extractLength - 3 ? '…' : '');
-                    addNotice({ priority: 620, message: "Seems original language quote might not start at the beginning of a word", details: `passage ⸢${verseText}⸣`, characterIndex: 0, extract, location: ourLocation });
+                    addNotice({ priority: 620, message: "Seems original language quote might not start at the beginning of a word", details: `passage ►${verseText}◄`, characterIndex: 0, extract, location: ourLocation });
                 }
                 // Note: There's some Hebrew (RTL) characters at the beginning of the following regex
                 if (fieldText.slice(-1) !== ' ' && remainingBits[1] && remainingBits[1][0].search(/[^׃־A-Za-z\s.,:;?!–)]/) !== -1) {
@@ -362,7 +374,7 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
                 addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which ends with 'zero-width joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation });
             } else {
                 const extract = fieldText.substring(0, halfLength) + (fieldText.length > 2 * halfLength ? '…' : '') + fieldText.substring(fieldText.length - halfLength, fieldText.length);
-                addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: noBreakSpaceText ? noBreakSpaceText : `passage ⸢${verseText}⸣`, extract, location: ourLocation });
+                addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: noBreakSpaceText ? noBreakSpaceText : `passage ►${verseText}◄`, extract, location: ourLocation });
             }
         }
     }

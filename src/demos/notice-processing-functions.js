@@ -1,7 +1,7 @@
 import { isDisabledNotice } from '../core/disabled-notices';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.6';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.7';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -162,6 +162,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 && !thisMsg.startsWith('Unexpected content after \\')
                 && !thisMsg.startsWith('USFMGrammar: ')
                 && !thisMsg.startsWith('Bad punctuation nesting: ')
+                && !thisMsg.startsWith('At end of text with unclosed ')
                 && !thisMsg.endsWith(' character combination')
                 && !thisMsg.endsWith(' character after space')
                 && !thisMsg.endsWith(' character at start of line')
