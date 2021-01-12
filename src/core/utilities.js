@@ -3,6 +3,44 @@
 // import { isUndefined } from 'lodash';
 
 
+/**
+ *
+ * @param {*} truthStatement
+ * @param {string} optionalMessage
+ */
+export function parameterAssert(truthStatement, optionalMessage) {
+    // We can remove them all by disabling the next line
+    // console.assert(truthStatement, optionalMessage);
+}
+
+
+/**
+ *
+ * @param {*} truthStatement
+ * @param {string} optionalMessage
+ */
+export function logicAssert(truthStatement, optionalMessage) {
+    // We can remove them all by disabling the next line
+    console.assert(truthStatement, optionalMessage);
+}
+
+
+/**
+ *
+ * @param {*} truthStatement
+ * @param {string} optionalMessage
+ */
+export function dataAssert(truthStatement, optionalMessage) {
+    // We can remove them all by disabling the next line
+    console.assert(truthStatement, optionalMessage);
+}
+
+
+/**
+ *
+ * @param {string} clTitle
+ * @param {Object} clObject
+ */
 export function consoleLogObject(clTitle, clObject) {
     // Print an object’s componenets to the console
     // Note: the following line succeeds even if length and/or size are undefined
@@ -29,6 +67,11 @@ export function consoleLogObject(clTitle, clObject) {
 // end of consoleLogObject function
 
 
+/**
+ *
+ * @param {string} givenTitle
+ * @param {Object} givenObject
+ */
 export function displayPropertyNames(givenTitle, givenObject) {
     let output = `dPN: ${givenTitle} ${typeof givenObject}:
 `;
@@ -40,6 +83,10 @@ export function displayPropertyNames(givenTitle, givenObject) {
 // end of displayPropertyNames function
 
 
+/**
+ *
+ * @param {string} givenString
+ */
 export function ourParseInt(givenString) {
     /*
     The regular parseInt() function is too forgiving

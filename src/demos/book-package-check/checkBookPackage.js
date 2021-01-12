@@ -1,4 +1,5 @@
 import React from 'react';
+import { parameterAssert } from '../../core/utilities';
 import * as books from '../../core/books/books';
 import { formRepoName, repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetBookFilenameFromManifest, checkManifestText } from '../../core';
 import { checkFileContents } from '../file-check/checkFileContents';
@@ -29,15 +30,15 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   Note that bookID here can also be the 'OBS' pseudo bookID.
   */
   // console.log(`checkBookPackage(${username}, ${languageCode}, ${bookID}, (fn), ${JSON.stringify(checkingOptions)})…`)
-  console.assert(username !== undefined, "checkBookPackage: 'username' parameter should be defined");
-  console.assert(typeof username === 'string', `checkBookPackage: 'username' parameter should be a string not a '${typeof username}': ${username}`);
-  console.assert(languageCode !== undefined, "checkBookPackage: 'languageCode' parameter should be defined");
-  console.assert(typeof languageCode === 'string', `checkBookPackage: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
-  console.assert(bookID !== undefined, "checkBookPackage: 'bookID' parameter should be defined");
-  console.assert(typeof bookID === 'string', `checkBookPackage: 'bookID' parameter should be a string not a '${typeof bookID}': ${bookID}`);
-  console.assert(bookID.length === 3, `checkBookPackage: 'bookID' parameter should be three characters long not ${bookID.length}`);
-  console.assert(bookID.toUpperCase() === bookID, `checkBookPackage: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-  console.assert(bookID === 'OBS' || books.isValidBookID(bookID), `checkBookPackage: '${bookID}' is not a valid USFM book identifier`);
+  parameterAssert(username !== undefined, "checkBookPackage: 'username' parameter should be defined");
+  parameterAssert(typeof username === 'string', `checkBookPackage: 'username' parameter should be a string not a '${typeof username}': ${username}`);
+  parameterAssert(languageCode !== undefined, "checkBookPackage: 'languageCode' parameter should be defined");
+  parameterAssert(typeof languageCode === 'string', `checkBookPackage: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
+  parameterAssert(bookID !== undefined, "checkBookPackage: 'bookID' parameter should be defined");
+  parameterAssert(typeof bookID === 'string', `checkBookPackage: 'bookID' parameter should be a string not a '${typeof bookID}': ${bookID}`);
+  parameterAssert(bookID.length === 3, `checkBookPackage: 'bookID' parameter should be three characters long not ${bookID.length}`);
+  parameterAssert(bookID.toUpperCase() === bookID, `checkBookPackage: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+  parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkBookPackage: '${bookID}' is not a valid USFM book identifier`);
 
   let abortFlag = false;
   const startTime = new Date();
@@ -71,28 +72,28 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   function addNoticePartial(noticeObject) {
     // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
     // console.log(`checkBookPackage addNoticePartial: (priority=${noticeObject.priority}) ${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-    console.assert(noticeObject.priority !== undefined, "cBP addNoticePartial: 'priority' parameter should be defined");
-    console.assert(typeof noticeObject.priority === 'number', `cBP addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-    console.assert(noticeObject.message !== undefined, "cBP addNoticePartial: 'message' parameter should be defined");
-    console.assert(typeof noticeObject.message === 'string', `cBP addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-    // console.assert(bookID !== undefined, "cBP addNoticePartial: 'bookID' parameter should be defined");
+    parameterAssert(noticeObject.priority !== undefined, "cBP addNoticePartial: 'priority' parameter should be defined");
+    parameterAssert(typeof noticeObject.priority === 'number', `cBP addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+    parameterAssert(noticeObject.message !== undefined, "cBP addNoticePartial: 'message' parameter should be defined");
+    parameterAssert(typeof noticeObject.message === 'string', `cBP addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+    // parameterAssert(bookID !== undefined, "cBP addNoticePartial: 'bookID' parameter should be defined");
     if (noticeObject.bookID) {
-      console.assert(typeof noticeObject.bookID === 'string', `cBP addNoticePartial: 'bookID' parameter should be a string not a '${typeof noticeObject.bookID}': ${noticeObject.bookID}`);
-      console.assert(noticeObject.bookID.length === 3, `cBP addNoticePartial: 'bookID' parameter should be three characters long not ${noticeObject.bookID.length}`);
-      console.assert(bookID === 'OBS' || books.isValidBookID(noticeObject.bookID), `cBP addNoticePartial: '${noticeObject.bookID}' is not a valid USFM book identifier`);
+      parameterAssert(typeof noticeObject.bookID === 'string', `cBP addNoticePartial: 'bookID' parameter should be a string not a '${typeof noticeObject.bookID}': ${noticeObject.bookID}`);
+      parameterAssert(noticeObject.bookID.length === 3, `cBP addNoticePartial: 'bookID' parameter should be three characters long not ${noticeObject.bookID.length}`);
+      parameterAssert(bookID === 'OBS' || books.isValidBookID(noticeObject.bookID), `cBP addNoticePartial: '${noticeObject.bookID}' is not a valid USFM book identifier`);
     }
-    // console.assert(C !== undefined, "cBP addNoticePartial: 'C' parameter should be defined");
-    if (noticeObject.C) console.assert(typeof noticeObject.C === 'string', `cBP addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
-    // console.assert(V !== undefined, "cBP addNoticePartial: 'V' parameter should be defined");
-    if (noticeObject.V) console.assert(typeof noticeObject.V === 'string', `cBP addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
-    // console.assert(characterIndex !== undefined, "cBP addNoticePartial: 'characterIndex' parameter should be defined");
-    if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `cBP addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-    // console.assert(extract !== undefined, "cBP addNoticePartial: 'extract' parameter should be defined");
-    if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cBP addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
-    console.assert(noticeObject.location !== undefined, "cBP addNoticePartial: 'location' parameter should be defined");
-    console.assert(typeof noticeObject.location === 'string', `cBP addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
-    console.assert(noticeObject.extra !== undefined, "cBP addNoticePartial: 'extra' parameter should be defined");
-    console.assert(typeof noticeObject.extra === 'string', `cBP addNoticePartial: 'extra' parameter should be a string not a '${typeof noticeObject.extra}': ${noticeObject.extra}`);
+    // parameterAssert(C !== undefined, "cBP addNoticePartial: 'C' parameter should be defined");
+    if (noticeObject.C) parameterAssert(typeof noticeObject.C === 'string', `cBP addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
+    // parameterAssert(V !== undefined, "cBP addNoticePartial: 'V' parameter should be defined");
+    if (noticeObject.V) parameterAssert(typeof noticeObject.V === 'string', `cBP addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
+    // parameterAssert(characterIndex !== undefined, "cBP addNoticePartial: 'characterIndex' parameter should be defined");
+    if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cBP addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+    // parameterAssert(extract !== undefined, "cBP addNoticePartial: 'extract' parameter should be defined");
+    if (noticeObject.extract) parameterAssert(typeof noticeObject.extract === 'string', `cBP addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+    parameterAssert(noticeObject.location !== undefined, "cBP addNoticePartial: 'location' parameter should be defined");
+    parameterAssert(typeof noticeObject.location === 'string', `cBP addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+    parameterAssert(noticeObject.extra !== undefined, "cBP addNoticePartial: 'extra' parameter should be defined");
+    parameterAssert(typeof noticeObject.extra === 'string', `cBP addNoticePartial: 'extra' parameter should be a string not a '${typeof noticeObject.extra}': ${noticeObject.extra}`);
     if (noticeObject.debugChain) noticeObject.debugChain = `checkBookPackage ${noticeObject.debugChain}`;
     checkBookPackageResult.noticeList.push({ ...noticeObject, bookID, username });
   }
@@ -102,15 +103,15 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     // console.log(`checkBookPackage ourCheckBPFileContents(${repoCode}, ${cfFilename}, ${fileContent.length}, ${fileLocation}, ${JSON.stringify(checkingOptions)})…`);
 
     // Updates the global list of notices
-    console.assert(repoCode !== undefined, "cBP ourCheckBPFileContents: 'repoCode' parameter should be defined");
-    console.assert(typeof repoCode === 'string', `cBP ourCheckBPFileContents: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
-    console.assert(cfFilename !== undefined, "cBP ourCheckBPFileContents: 'cfFilename' parameter should be defined");
-    console.assert(typeof cfFilename === 'string', `cBP ourCheckBPFileContents: 'cfFilename' parameter should be a string not a '${typeof cfFilename}'`);
-    console.assert(fileContent !== undefined, "cBP ourCheckBPFileContents: 'fileContent' parameter should be defined");
-    console.assert(typeof fileContent === 'string', `cBP ourCheckBPFileContents: 'fileContent' parameter should be a string not a '${typeof fileContent}'`);
-    console.assert(fileLocation !== undefined, "cBP ourCheckBPFileContents: 'fileLocation' parameter should be defined");
-    console.assert(typeof fileLocation === 'string', `cBP ourCheckBPFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
-    console.assert(checkingOptions !== undefined, "cBP ourCheckBPFileContents: 'checkingOptions' parameter should be defined");
+    parameterAssert(repoCode !== undefined, "cBP ourCheckBPFileContents: 'repoCode' parameter should be defined");
+    parameterAssert(typeof repoCode === 'string', `cBP ourCheckBPFileContents: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
+    parameterAssert(cfFilename !== undefined, "cBP ourCheckBPFileContents: 'cfFilename' parameter should be defined");
+    parameterAssert(typeof cfFilename === 'string', `cBP ourCheckBPFileContents: 'cfFilename' parameter should be a string not a '${typeof cfFilename}'`);
+    parameterAssert(fileContent !== undefined, "cBP ourCheckBPFileContents: 'fileContent' parameter should be defined");
+    parameterAssert(typeof fileContent === 'string', `cBP ourCheckBPFileContents: 'fileContent' parameter should be a string not a '${typeof fileContent}'`);
+    parameterAssert(fileLocation !== undefined, "cBP ourCheckBPFileContents: 'fileLocation' parameter should be defined");
+    parameterAssert(typeof fileLocation === 'string', `cBP ourCheckBPFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
+    parameterAssert(checkingOptions !== undefined, "cBP ourCheckBPFileContents: 'checkingOptions' parameter should be defined");
 
     const cfcResultObject = await checkFileContents(username, languageCode, repoCode, originalBranch, cfFilename, fileContent, fileLocation, checkingOptions);
     // console.log("checkFileContents() returned", cfResultObject.successList.length, "success message(s) and", cfResultObject.noticeList.length, "notice(s)");
@@ -151,14 +152,14 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   async function ourCheckManifest(repoCode, repoName, repoBranch, manifestLocation, checkingOptions) {
     // Updates the global list of notices
     // console.log(`checkBookPackage ourCheckManifest(${repoCode}, ${repoName}, ${repoBranch}, ${manifestLocation}, ${JSON.stringify(checkingOptions)})…`);
-    console.assert(repoCode !== undefined, "cBP ourCheckManifest: 'repoCode' parameter should be defined");
-    console.assert(typeof repoCode === 'string', `cBP ourCheckManifest: 'repoCode' parameter should be a string not a '${typeof repoCode}' : ${repoCode}`);
-    console.assert(repoName !== undefined, "cBP ourCheckManifest: 'repoName' parameter should be defined");
-    console.assert(typeof repoName === 'string', `cBP ourCheckManifest: 'repoName' parameter should be a string not a '${typeof repoName}': ${repoName}`);
-    console.assert(repoBranch !== undefined, "cBP ourCheckManifest: 'repoBranch' parameter should be defined");
-    console.assert(typeof repoBranch === 'string', `cBP ourCheckManifest: 'repoBranch' parameter should be a string not a '${typeof repoBranch}': ${repoBranch}`);
-    console.assert(manifestLocation !== undefined, "cBP ourCheckManifest: 'manifestLocation' parameter should be defined");
-    console.assert(typeof manifestLocation === 'string', `cBP ourCheckManifest: 'manifestLocation' parameter should be a string not a '${typeof manifestLocation}'`);
+    parameterAssert(repoCode !== undefined, "cBP ourCheckManifest: 'repoCode' parameter should be defined");
+    parameterAssert(typeof repoCode === 'string', `cBP ourCheckManifest: 'repoCode' parameter should be a string not a '${typeof repoCode}' : ${repoCode}`);
+    parameterAssert(repoName !== undefined, "cBP ourCheckManifest: 'repoName' parameter should be defined");
+    parameterAssert(typeof repoName === 'string', `cBP ourCheckManifest: 'repoName' parameter should be a string not a '${typeof repoName}': ${repoName}`);
+    parameterAssert(repoBranch !== undefined, "cBP ourCheckManifest: 'repoBranch' parameter should be defined");
+    parameterAssert(typeof repoBranch === 'string', `cBP ourCheckManifest: 'repoBranch' parameter should be a string not a '${typeof repoBranch}': ${repoBranch}`);
+    parameterAssert(manifestLocation !== undefined, "cBP ourCheckManifest: 'manifestLocation' parameter should be defined");
+    parameterAssert(typeof manifestLocation === 'string', `cBP ourCheckManifest: 'manifestLocation' parameter should be a string not a '${typeof manifestLocation}'`);
 
     let manifestFileContent;
     try {
@@ -212,14 +213,14 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   async function ourCheckMarkdown(repoCode, repoName, repoBranch, filename, manifestLocation, checkingOptions) {
     // Updates the global list of notices
     // console.log(`checkBookPackage ourCheckMarkdown(${repoCode}, ${repoName}, #{repoBranch}, ${manifestLocation}, ${JSON.stringify(checkingOptions)})…`);
-    console.assert(repoCode !== undefined, "cBP ourCheckMarkdown: 'repoCode' parameter should be defined");
-    console.assert(typeof repoCode === 'string', `cBP ourCheckMarkdown: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
-    console.assert(repoName !== undefined, "cBP ourCheckMarkdown: 'repoName' parameter should be defined");
-    console.assert(typeof repoName === 'string', `cBP ourCheckMarkdown: 'repoName' parameter should be a string not a '${typeof repoName}'`);
-    console.assert(repoBranch !== undefined, "cBP ourCheckMarkdown: 'repoBranch' parameter should be defined");
-    console.assert(typeof repoBranch === 'string', `cBP ourCheckMarkdown: 'repoBranch' parameter should be a string not a '${typeof repoBranch}'`);
-    console.assert(manifestLocation !== undefined, "cBP ourCheckMarkdown: 'manifestLocation' parameter should be defined");
-    console.assert(typeof manifestLocation === 'string', `cBP ourCheckMarkdown: 'manifestLocation' parameter should be a string not a '${typeof manifestLocation}'`);
+    parameterAssert(repoCode !== undefined, "cBP ourCheckMarkdown: 'repoCode' parameter should be defined");
+    parameterAssert(typeof repoCode === 'string', `cBP ourCheckMarkdown: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
+    parameterAssert(repoName !== undefined, "cBP ourCheckMarkdown: 'repoName' parameter should be defined");
+    parameterAssert(typeof repoName === 'string', `cBP ourCheckMarkdown: 'repoName' parameter should be a string not a '${typeof repoName}'`);
+    parameterAssert(repoBranch !== undefined, "cBP ourCheckMarkdown: 'repoBranch' parameter should be defined");
+    parameterAssert(typeof repoBranch === 'string', `cBP ourCheckMarkdown: 'repoBranch' parameter should be a string not a '${typeof repoBranch}'`);
+    parameterAssert(manifestLocation !== undefined, "cBP ourCheckMarkdown: 'manifestLocation' parameter should be defined");
+    parameterAssert(typeof manifestLocation === 'string', `cBP ourCheckMarkdown: 'manifestLocation' parameter should be a string not a '${typeof manifestLocation}'`);
 
     let manifestFileContent;
     try {
@@ -329,12 +330,12 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     else if (repoCode === 'TN') {
       try {
         filename = await cachedGetBookFilenameFromManifest({ username, repository: repoName, branch: originalBranch, bookID: bookID.toLowerCase() });
-        console.assert(filename.startsWith(`${languageCode}_`), `Expected TN filename '${filename}' to start with the language code '${languageCode}_'`);
+        parameterAssert(filename.startsWith(`${languageCode}_`), `Expected TN filename '${filename}' to start with the language code '${languageCode}_'`);
       } catch (e) {
         // console.error(`cachedGetBookFilenameFromManifest failed with: ${e}`);
         filename = `${languageCode}_tn_${bookNumberAndName}.tsv`; // Take a guess
       }
-      console.assert(filename.endsWith('.tsv'), `Expected TN filename '${filename}' to end with '.tsv'`);
+      parameterAssert(filename.endsWith('.tsv'), `Expected TN filename '${filename}' to end with '.tsv'`);
     }
 
     if (repoCode === 'OBS') {
@@ -471,26 +472,26 @@ async function checkTQMarkdownBook(username, languageCode, repoName, branch, boo
   function addNoticePartial(noticeObject) {
     // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
     // console.log(`checkTQMarkdownBook addNoticePartial: ${noticeObject.priority}:${noticeObject.message} ${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.filename}:${noticeObject.lineNumber} ${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
-    console.assert(noticeObject.priority !== undefined, "cTQ addNoticePartial: 'priority' parameter should be defined");
-    console.assert(typeof noticeObject.priority === 'number', `cTQ addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}'`);
-    console.assert(noticeObject.message !== undefined, "cTQ addNoticePartial: 'message' parameter should be defined");
-    console.assert(typeof noticeObject.message === 'string', `cTQ addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}'`);
-    console.assert(noticeObject.bookID !== undefined, "cTQ addNoticePartial: 'bookID' parameter should be defined");
-    console.assert(typeof noticeObject.bookID === 'string', `cTQ addNoticePartial: 'bookID' parameter should be a string not a '${typeof noticeObject.bookID}'`);
-    console.assert(noticeObject.bookID.length === 3, `cTQ addNoticePartial: 'bookID' parameter should be three characters long not ${noticeObject.bookID.length}`);
-    console.assert(books.isValidBookID(noticeObject.bookID), `cTQ addNoticePartial: '${noticeObject.bookID}' is not a valid USFM book identifier`);
-    // console.assert(C !== undefined, "cTQ addNoticePartial: 'C' parameter should be defined");
-    if (noticeObject.C) console.assert(typeof noticeObject.C === 'string', `cTQ addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}'`);
-    // console.assert(V !== undefined, "cTQ addNoticePartial: 'V' parameter should be defined");
-    if (noticeObject.V) console.assert(typeof noticeObject.V === 'string', `cTQ addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}'`);
-    // console.assert(characterIndex !== undefined, "cTQ addNoticePartial: 'characterIndex' parameter should be defined");
-    if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `cTQ addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}'`);
-    // console.assert(extract !== undefined, "cTQ addNoticePartial: 'extract' parameter should be defined");
-    if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cTQ addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}'`);
-    console.assert(noticeObject.location !== undefined, "cTQ addNoticePartial: 'location' parameter should be defined");
-    console.assert(typeof noticeObject.location === 'string', `cTQ addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}'`);
-    console.assert(noticeObject.extra !== undefined, "cTQ addNoticePartial: 'extra' parameter should be defined");
-    console.assert(typeof noticeObject.extra === 'string', `cTQ addNoticePartial: 'extra' parameter should be a string not a '${typeof noticeObject.extra}'`);
+    parameterAssert(noticeObject.priority !== undefined, "cTQ addNoticePartial: 'priority' parameter should be defined");
+    parameterAssert(typeof noticeObject.priority === 'number', `cTQ addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}'`);
+    parameterAssert(noticeObject.message !== undefined, "cTQ addNoticePartial: 'message' parameter should be defined");
+    parameterAssert(typeof noticeObject.message === 'string', `cTQ addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}'`);
+    parameterAssert(noticeObject.bookID !== undefined, "cTQ addNoticePartial: 'bookID' parameter should be defined");
+    parameterAssert(typeof noticeObject.bookID === 'string', `cTQ addNoticePartial: 'bookID' parameter should be a string not a '${typeof noticeObject.bookID}'`);
+    parameterAssert(noticeObject.bookID.length === 3, `cTQ addNoticePartial: 'bookID' parameter should be three characters long not ${noticeObject.bookID.length}`);
+    parameterAssert(books.isValidBookID(noticeObject.bookID), `cTQ addNoticePartial: '${noticeObject.bookID}' is not a valid USFM book identifier`);
+    // parameterAssert(C !== undefined, "cTQ addNoticePartial: 'C' parameter should be defined");
+    if (noticeObject.C) parameterAssert(typeof noticeObject.C === 'string', `cTQ addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}'`);
+    // parameterAssert(V !== undefined, "cTQ addNoticePartial: 'V' parameter should be defined");
+    if (noticeObject.V) parameterAssert(typeof noticeObject.V === 'string', `cTQ addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}'`);
+    // parameterAssert(characterIndex !== undefined, "cTQ addNoticePartial: 'characterIndex' parameter should be defined");
+    if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cTQ addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}'`);
+    // parameterAssert(extract !== undefined, "cTQ addNoticePartial: 'extract' parameter should be defined");
+    if (noticeObject.extract) parameterAssert(typeof noticeObject.extract === 'string', `cTQ addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}'`);
+    parameterAssert(noticeObject.location !== undefined, "cTQ addNoticePartial: 'location' parameter should be defined");
+    parameterAssert(typeof noticeObject.location === 'string', `cTQ addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}'`);
+    parameterAssert(noticeObject.extra !== undefined, "cTQ addNoticePartial: 'extra' parameter should be defined");
+    parameterAssert(typeof noticeObject.extra === 'string', `cTQ addNoticePartial: 'extra' parameter should be a string not a '${typeof noticeObject.extra}'`);
     ctqResult.noticeList.push({ ...noticeObject, username, repoCode, repoName, bookID });
   }
 
@@ -499,15 +500,15 @@ async function checkTQMarkdownBook(username, languageCode, repoName, branch, boo
     // console.log(`checkBookPackage ourCheckTQFileContents(${cfFilename})`);
 
     // Updates the global list of notices
-    console.assert(repoCode !== undefined, "cTQ ourCheckTQFileContents: 'repoCode' parameter should be defined");
-    console.assert(typeof repoCode === 'string', `cTQ ourCheckTQFileContents: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
-    console.assert(cfFilename !== undefined, "cTQ ourCheckTQFileContents: 'cfFilename' parameter should be defined");
-    console.assert(typeof cfFilename === 'string', `cTQ ourCheckTQFileContents: 'cfFilename' parameter should be a string not a '${typeof cfFilename}'`);
-    console.assert(fileContent !== undefined, "cTQ ourCheckTQFileContents: 'fileContent' parameter should be defined");
-    console.assert(typeof fileContent === 'string', `cTQ ourCheckTQFileContents: 'fileContent' parameter should be a string not a '${typeof fileContent}'`);
-    console.assert(fileLocation !== undefined, "cTQ ourCheckTQFileContents: 'fileLocation' parameter should be defined");
-    console.assert(typeof fileLocation === 'string', `cTQ ourCheckTQFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
-    console.assert(checkingOptions !== undefined, "cTQ ourCheckTQFileContents: 'checkingOptions' parameter should be defined");
+    parameterAssert(repoCode !== undefined, "cTQ ourCheckTQFileContents: 'repoCode' parameter should be defined");
+    parameterAssert(typeof repoCode === 'string', `cTQ ourCheckTQFileContents: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
+    parameterAssert(cfFilename !== undefined, "cTQ ourCheckTQFileContents: 'cfFilename' parameter should be defined");
+    parameterAssert(typeof cfFilename === 'string', `cTQ ourCheckTQFileContents: 'cfFilename' parameter should be a string not a '${typeof cfFilename}'`);
+    parameterAssert(fileContent !== undefined, "cTQ ourCheckTQFileContents: 'fileContent' parameter should be defined");
+    parameterAssert(typeof fileContent === 'string', `cTQ ourCheckTQFileContents: 'fileContent' parameter should be a string not a '${typeof fileContent}'`);
+    parameterAssert(fileLocation !== undefined, "cTQ ourCheckTQFileContents: 'fileLocation' parameter should be defined");
+    parameterAssert(typeof fileLocation === 'string', `cTQ ourCheckTQFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
+    parameterAssert(checkingOptions !== undefined, "cTQ ourCheckTQFileContents: 'checkingOptions' parameter should be defined");
 
     const cfResultObject = await checkFileContents(username, languageCode, repoCode, branch, cfFilename, fileContent, fileLocation, checkingOptions);
     // console.log("checkFileContents() returned", cfResultObject.successList.length, "success message(s) and", cfResultObject.noticeList.length, "notice(s)");
@@ -516,7 +517,7 @@ async function checkTQMarkdownBook(username, languageCode, repoName, branch, boo
     // Process noticeList line by line,  appending the repoCode as an extra field as we go
     for (const noticeEntry of cfResultObject.noticeList) {
       // noticeEntry is an array of eight fields: 1=priority, 2=bookID, 3=C, 4=V, 5=msg, 6=characterIndex, 7=extract, 8=location
-      // console.assert(Object.keys(noticeEntry).length === 5, `cTQ ourCheckTQFileContents notice length=${Object.keys(noticeEntry).length}`);
+      // parameterAssert(Object.keys(noticeEntry).length === 5, `cTQ ourCheckTQFileContents notice length=${Object.keys(noticeEntry).length}`);
       // We add the repoCode as an extra value
       addNoticePartial({ ...noticeEntry, bookID, C, V, extra: repoCode });
     }
@@ -542,7 +543,7 @@ async function checkTQMarkdownBook(username, languageCode, repoName, branch, boo
     for (const thisPath of pathList) {
       // console.log("checkTQMarkdownBook: Try to load", username, repoName, thisPath, branch);
 
-      console.assert(thisPath.endsWith('.md'), `Expected ${thisPath} to end with .md`);
+      parameterAssert(thisPath.endsWith('.md'), `Expected ${thisPath} to end with .md`);
       // const filename = thisPath.split('/').pop();
       const pathParts = thisPath.slice(0, -3).split('/');
       const C = pathParts[pathParts.length - 2].replace(/^0+(?=\d)/, ''); // Remove leading zeroes

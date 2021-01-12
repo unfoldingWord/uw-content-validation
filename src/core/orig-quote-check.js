@@ -1,7 +1,7 @@
 import * as books from '../core/books/books';
 import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { cachedGetFile } from '../core/getApi';
-import { ourParseInt } from './utilities';
+import { parameterAssert, ourParseInt } from './utilities';
 
 
 // const QUOTE_VALIDATOR_VERSION_STRING = '0.7.8';
@@ -32,26 +32,26 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
     //      checkingOptions?.originalLanguageRepoBranch (or tag)
 
     // console.log(`checkOriginalLanguageQuote v${QUOTE_VALIDATOR_VERSION_STRING} (${fieldName}, (${fieldText.length}) '${fieldText}', ${occurrenceString}, ${bookID} ${C}:${V} ${givenLocation}, …)…`);
-    console.assert(languageCode !== undefined, "checkOriginalLanguageQuote: 'languageCode' parameter should be defined");
-    console.assert(typeof languageCode === 'string', `checkOriginalLanguageQuote: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
-    console.assert(fieldName !== undefined, "checkOriginalLanguageQuote: 'fieldName' parameter should be defined");
-    console.assert(typeof fieldName === 'string', `checkOriginalLanguageQuote: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-    console.assert(fieldText !== undefined, "checkOriginalLanguageQuote: 'fieldText' parameter should be defined");
-    console.assert(typeof fieldText === 'string', `checkOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-    console.assert(fieldText.length >= 1, `checkOriginalLanguageQuote: 'fieldText' parameter should have text not ${fieldText.length} characters`);
-    console.assert(occurrenceString !== undefined, "checkOriginalLanguageQuote: 'occurrenceString' parameter should be defined");
-    console.assert(typeof occurrenceString === 'string', `checkOriginalLanguageQuote: 'occurrenceString' parameter should be a string not a '${typeof occurrenceString}'`);
-    console.assert(bookID !== undefined, "checkOriginalLanguageQuote: 'bookID' parameter should be defined");
-    console.assert(typeof bookID === 'string', `checkOriginalLanguageQuote: 'bookID' parameter should be a string not a '${typeof bookID}'`);
-    console.assert(bookID.length === 3, `checkOriginalLanguageQuote: 'bookID' parameter should be three characters long not ${bookID.length}`);
-    console.assert(bookID.toUpperCase() === bookID, `checkOriginalLanguageQuote: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-    console.assert(bookID === 'OBS' || books.isValidBookID(bookID), `checkOriginalLanguageQuote: '${bookID}' is not a valid USFM book identifier`);
-    console.assert(C !== undefined, "checkOriginalLanguageQuote: 'C' parameter should be defined");
-    console.assert(typeof C === 'string', `checkOriginalLanguageQuote: 'C' parameter should be a string not a '${typeof C}'`);
-    console.assert(V !== undefined, "checkOriginalLanguageQuote: 'V' parameter should be defined");
-    console.assert(typeof V === 'string', `checkOriginalLanguageQuote: 'V' parameter should be a string not a '${typeof V}'`);
-    console.assert(givenLocation !== undefined, "checkOriginalLanguageQuote: 'givenLocation' parameter should be defined");
-    console.assert(typeof givenLocation === 'string', `checkOriginalLanguageQuote: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
+    parameterAssert(languageCode !== undefined, "checkOriginalLanguageQuote: 'languageCode' parameter should be defined");
+    parameterAssert(typeof languageCode === 'string', `checkOriginalLanguageQuote: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    parameterAssert(fieldName !== undefined, "checkOriginalLanguageQuote: 'fieldName' parameter should be defined");
+    parameterAssert(typeof fieldName === 'string', `checkOriginalLanguageQuote: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+    parameterAssert(fieldText !== undefined, "checkOriginalLanguageQuote: 'fieldText' parameter should be defined");
+    parameterAssert(typeof fieldText === 'string', `checkOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+    parameterAssert(fieldText.length >= 1, `checkOriginalLanguageQuote: 'fieldText' parameter should have text not ${fieldText.length} characters`);
+    parameterAssert(occurrenceString !== undefined, "checkOriginalLanguageQuote: 'occurrenceString' parameter should be defined");
+    parameterAssert(typeof occurrenceString === 'string', `checkOriginalLanguageQuote: 'occurrenceString' parameter should be a string not a '${typeof occurrenceString}'`);
+    parameterAssert(bookID !== undefined, "checkOriginalLanguageQuote: 'bookID' parameter should be defined");
+    parameterAssert(typeof bookID === 'string', `checkOriginalLanguageQuote: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+    parameterAssert(bookID.length === 3, `checkOriginalLanguageQuote: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    parameterAssert(bookID.toUpperCase() === bookID, `checkOriginalLanguageQuote: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+    parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkOriginalLanguageQuote: '${bookID}' is not a valid USFM book identifier`);
+    parameterAssert(C !== undefined, "checkOriginalLanguageQuote: 'C' parameter should be defined");
+    parameterAssert(typeof C === 'string', `checkOriginalLanguageQuote: 'C' parameter should be a string not a '${typeof C}'`);
+    parameterAssert(V !== undefined, "checkOriginalLanguageQuote: 'V' parameter should be defined");
+    parameterAssert(typeof V === 'string', `checkOriginalLanguageQuote: 'V' parameter should be a string not a '${typeof V}'`);
+    parameterAssert(givenLocation !== undefined, "checkOriginalLanguageQuote: 'givenLocation' parameter should be defined");
+    parameterAssert(typeof givenLocation === 'string', `checkOriginalLanguageQuote: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -60,16 +60,16 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
 
     function addNotice(noticeObject) {
         // console.log(`checkOriginalLanguageQuote Notice: (priority=${noticeObject.priority}) ${noticeObject.message}${characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
-        console.assert(noticeObject.priority !== undefined, "cOLQ addNotice: 'priority' parameter should be defined");
-        console.assert(typeof noticeObject.priority === 'number', `cOLQ addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        console.assert(noticeObject.message !== undefined, "cOLQ addNotice: 'message' parameter should be defined");
-        console.assert(typeof noticeObject.message === 'string', `cOLQ addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // console.assert(characterIndex !== undefined, "cOLQ addNotice: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `cOLQ addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // console.assert(extract !== undefined, "cOLQ addNotice: 'extract' parameter should be defined");
-        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cOLQ addNotice: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract} for ${noticeObject.priority}`);
-        console.assert(noticeObject.location !== undefined, "cOLQ addNotice: 'location' parameter should be defined");
-        console.assert(typeof noticeObject.location === 'string', `cOLQ addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        parameterAssert(noticeObject.priority !== undefined, "cOLQ addNotice: 'priority' parameter should be defined");
+        parameterAssert(typeof noticeObject.priority === 'number', `cOLQ addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        parameterAssert(noticeObject.message !== undefined, "cOLQ addNotice: 'message' parameter should be defined");
+        parameterAssert(typeof noticeObject.message === 'string', `cOLQ addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+        // parameterAssert(characterIndex !== undefined, "cOLQ addNotice: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cOLQ addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        // parameterAssert(extract !== undefined, "cOLQ addNotice: 'extract' parameter should be defined");
+        if (noticeObject.extract) parameterAssert(typeof noticeObject.extract === 'string', `cOLQ addNotice: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract} for ${noticeObject.priority}`);
+        parameterAssert(noticeObject.location !== undefined, "cOLQ addNotice: 'location' parameter should be defined");
+        parameterAssert(typeof noticeObject.location === 'string', `cOLQ addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
         colqResult.noticeList.push(noticeObject);
     }
 
@@ -205,11 +205,11 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
 
             // Final clean-up (shouldn’t be necessary, but just in case)
             verseText = verseText.replace(/ {2}/g, ' ');
-            console.assert(verseText.indexOf('\\w') === -1, `getOriginalPassage: Should be no \\w in ${bookID} ${C}:${V} '${verseText}'`);
-            console.assert(verseText.indexOf('\\k') === -1, `getOriginalPassage: Should be no \\k in ${bookID} ${C}:${V} '${verseText}'`);
-            console.assert(verseText.indexOf('x-') === -1, `getOriginalPassage: Should be no x- in ${bookID} ${C}:${V} '${verseText}'`);
-            console.assert(verseText.indexOf('\\f') === -1, `getOriginalPassage: Should be no \\f in ${bookID} ${C}:${V} '${verseText}'`);
-            console.assert(verseText.indexOf('\\x') === -1, `getOriginalPassage: Should be no \\x in ${bookID} ${C}:${V} '${verseText}'`);
+            parameterAssert(verseText.indexOf('\\w') === -1, `getOriginalPassage: Should be no \\w in ${bookID} ${C}:${V} '${verseText}'`);
+            parameterAssert(verseText.indexOf('\\k') === -1, `getOriginalPassage: Should be no \\k in ${bookID} ${C}:${V} '${verseText}'`);
+            parameterAssert(verseText.indexOf('x-') === -1, `getOriginalPassage: Should be no x- in ${bookID} ${C}:${V} '${verseText}'`);
+            parameterAssert(verseText.indexOf('\\f') === -1, `getOriginalPassage: Should be no \\f in ${bookID} ${C}:${V} '${verseText}'`);
+            parameterAssert(verseText.indexOf('\\x') === -1, `getOriginalPassage: Should be no \\x in ${bookID} ${C}:${V} '${verseText}'`);
         }
 
         // console.log(`  getOriginalPassage(${bookID} ${C}:${V}) is returning '${verseText}'`);
@@ -293,7 +293,7 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
 
     // Now check if the quote can be found in the verse text
     if (quoteBits) { // it had an ellipsis
-        // console.assert(occurrence === 1, `Oh -- can get '${fieldText}' with occurrence=${occurrence} in ${bookID} ${C}:${V}`);
+        // parameterAssert(occurrence === 1, `Oh -- can get '${fieldText}' with occurrence=${occurrence} in ${bookID} ${C}:${V}`);
         if (occurrence !== 1) {
             addNotice({ priority: 50, message: "Is this quote/occurrence correct???", details: `Occurrence=${occurrence}`, extract: fieldText, location: ourLocation });
         }
@@ -329,7 +329,7 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
                 // console.log(`remaingBits=${JSON.stringify(remainingBits)}`);
                 if (remainingBits.length > 2) // Join the extra bits back up
                     remainingBits = [remainingBits[0], remainingBits.slice(1).join('…')];
-                console.assert(remainingBits.length === 2, `remaining bits are ${remainingBits.length}`);
+                parameterAssert(remainingBits.length === 2, `remaining bits are ${remainingBits.length}`);
                 // Note: There's some Hebrew (RTL) characters at the beginning of the following regex
                 // Note: Straight quotes are included here (even though unwanted) as other code warns about them
                 if (fieldText.slice(0) !== ' ' && remainingBits[0] && remainingBits[0].slice(-1).search(/[^־A-Za-z\s*[("'“‘]/) !== -1) {

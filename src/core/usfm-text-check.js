@@ -4,7 +4,7 @@ import { checkTextField } from './field-text-check';
 import { checkTextfileContents } from './file-text-check';
 import { runUsfmJsCheck } from './usfm-js-check';
 import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
-import { ourParseInt } from './utilities';
+import { parameterAssert, ourParseInt } from './utilities';
 import { removeDisabledNotices } from './disabled-notices';
 
 
@@ -131,20 +131,20 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
      Returns a result object containing a successList and a noticeList
      */
     // console.log(`checkUSFMText(${languageCode}, ${bookID}, ${givenText.length.toLocaleString()} chars, '${givenLocation}', ${JSON.stringify(checkingOptions)})…`);
-    console.assert(languageCode !== undefined, "checkUSFMText: 'languageCode' parameter should be defined");
-    console.assert(typeof languageCode === 'string', `checkUSFMText: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
-    console.assert(repoCode !== undefined, "checkUSFMText: 'repoCode' parameter should be defined");
-    console.assert(typeof repoCode === 'string', `checkUSFMText: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
-    console.assert(bookID !== undefined, "checkUSFMText: 'bookID' parameter should be defined");
-    console.assert(typeof bookID === 'string', `checkUSFMText: 'bookID' parameter should be a string not a '${typeof bookID}'`);
-    console.assert(bookID.length === 3, `checkUSFMText: 'bookID' parameter should be three characters long not ${bookID.length}`);
-    console.assert(bookID.toUpperCase() === bookID, `checkUSFMText: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-    console.assert(bookID === 'OBS' || books.isValidBookID(bookID), `checkUSFMText: '${bookID}' is not a valid USFM book identifier`);
-    console.assert(filename !== undefined, "checkUSFMText: 'filename' parameter should be defined");
-    console.assert(typeof filename === 'string', `checkUSFMText: 'filename' parameter should be a string not a '${typeof filename}'`);
-    console.assert(givenLocation !== undefined, "checkUSFMText: 'givenRowLocation' parameter should be defined");
-    console.assert(typeof givenLocation === 'string', `checkUSFMText: 'givenRowLocation' parameter should be a string not a '${typeof givenLocation}'`);
-    console.assert(checkingOptions !== undefined, "checkUSFMText: 'checkingOptions' parameter should be defined");
+    parameterAssert(languageCode !== undefined, "checkUSFMText: 'languageCode' parameter should be defined");
+    parameterAssert(typeof languageCode === 'string', `checkUSFMText: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    parameterAssert(repoCode !== undefined, "checkUSFMText: 'repoCode' parameter should be defined");
+    parameterAssert(typeof repoCode === 'string', `checkUSFMText: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
+    parameterAssert(bookID !== undefined, "checkUSFMText: 'bookID' parameter should be defined");
+    parameterAssert(typeof bookID === 'string', `checkUSFMText: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+    parameterAssert(bookID.length === 3, `checkUSFMText: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    parameterAssert(bookID.toUpperCase() === bookID, `checkUSFMText: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+    parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkUSFMText: '${bookID}' is not a valid USFM book identifier`);
+    parameterAssert(filename !== undefined, "checkUSFMText: 'filename' parameter should be defined");
+    parameterAssert(typeof filename === 'string', `checkUSFMText: 'filename' parameter should be a string not a '${typeof filename}'`);
+    parameterAssert(givenLocation !== undefined, "checkUSFMText: 'givenRowLocation' parameter should be defined");
+    parameterAssert(typeof givenLocation === 'string', `checkUSFMText: 'givenRowLocation' parameter should be a string not a '${typeof givenLocation}'`);
+    parameterAssert(checkingOptions !== undefined, "checkUSFMText: 'checkingOptions' parameter should be defined");
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -177,23 +177,23 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
     function addNoticePartial(noticeObject) {
         // console.log("checkUSFMText addNoticePartial:", JSON.stringify(noticeObject));
         // console.log(`checkUSFMText addNoticePartial: (priority=${noticeObject.priority}) ${noticeObject.C}:${noticeObject.V} ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
-        console.assert(noticeObject.priority !== undefined, "cUSFM addNoticePartial: 'priority' parameter should be defined");
-        console.assert(typeof noticeObject.priority === 'number', `cUSFM addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        console.assert(noticeObject.message !== undefined, "cUSFM addNoticePartial: 'message' parameter should be defined");
-        console.assert(typeof noticeObject.message === 'string', `cUSFM addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // console.assert(C !== undefined, "cUSFM addNoticePartial: 'C' parameter should be defined");
-        if (noticeObject.C) console.assert(typeof noticeObject.C === 'string', `cUSFM addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
-        // console.assert(V !== undefined, "cUSFM addNoticePartial: 'V' parameter should be defined");
-        if (noticeObject.V) console.assert(typeof noticeObject.V === 'string', `cUSFM addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
-        // console.assert(characterIndex !== undefined, "cUSFM addNoticePartial: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex !== undefined) console.assert(typeof noticeObject.characterIndex === 'number', `cUSFM addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // console.assert(extract !== undefined, "cUSFM addNoticePartial: 'extract' parameter should be defined");
-        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cUSFM addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
-        console.assert(noticeObject.location !== undefined, "cUSFM addNoticePartial: 'location' parameter should be defined");
-        console.assert(typeof noticeObject.location === 'string', `cUSFM addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        parameterAssert(noticeObject.priority !== undefined, "cUSFM addNoticePartial: 'priority' parameter should be defined");
+        parameterAssert(typeof noticeObject.priority === 'number', `cUSFM addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        parameterAssert(noticeObject.message !== undefined, "cUSFM addNoticePartial: 'message' parameter should be defined");
+        parameterAssert(typeof noticeObject.message === 'string', `cUSFM addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+        // parameterAssert(C !== undefined, "cUSFM addNoticePartial: 'C' parameter should be defined");
+        if (noticeObject.C) parameterAssert(typeof noticeObject.C === 'string', `cUSFM addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
+        // parameterAssert(V !== undefined, "cUSFM addNoticePartial: 'V' parameter should be defined");
+        if (noticeObject.V) parameterAssert(typeof noticeObject.V === 'string', `cUSFM addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
+        // parameterAssert(characterIndex !== undefined, "cUSFM addNoticePartial: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex !== undefined) parameterAssert(typeof noticeObject.characterIndex === 'number', `cUSFM addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        // parameterAssert(extract !== undefined, "cUSFM addNoticePartial: 'extract' parameter should be defined");
+        if (noticeObject.extract) parameterAssert(typeof noticeObject.extract === 'string', `cUSFM addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        parameterAssert(noticeObject.location !== undefined, "cUSFM addNoticePartial: 'location' parameter should be defined");
+        parameterAssert(typeof noticeObject.location === 'string', `cUSFM addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
         // Doublecheck -- we don’t want "Mismatched {}" per line, only per file
-        console.assert(noticeObject.message.indexOf("Mismatched {}") < 0 || noticeObject.lineNumber === undefined, `checkUSFMText addNoticePartial: got bad notice: ${JSON.stringify(noticeObject)}`);
+        parameterAssert(noticeObject.message.indexOf("Mismatched {}") < 0 || noticeObject.lineNumber === undefined, `checkUSFMText addNoticePartial: got bad notice: ${JSON.stringify(noticeObject)}`);
         if (noticeObject.debugChain) noticeObject.debugChain = `checkUSFMText ${noticeObject.debugChain}`;
         result.noticeList.push({ ...noticeObject, bookID, filename });
     }
@@ -366,7 +366,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                             }
                     }
             }
-            if (gotDeep) console.assert(false, `We need to add more depth levels to hasText() for ${bookID} ${chapterNumberString}:${verseNumberString}`);
+            if (gotDeep) parameterAssert(false, `We need to add more depth levels to hasText() for ${bookID} ${chapterNumberString}:${verseNumberString}`);
             // console.log(`hasText() for ${chapterNumberString}:${verseNumberString} returning false with ${typeof verseObjects} (${verseObjects.length}): ${JSON.stringify(verseObjects)}`);
             return false;
         }
@@ -377,7 +377,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         // const lowercaseBookID = bookID.toLowerCase();
         let expectedVersesPerChapterList = [];
         try {
-            console.assert(lowercaseBookID !== 'obs', "Shouldn’t happen in usfm-text-check1");
+            parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in usfm-text-check1");
             expectedVersesPerChapterList = books.chaptersInBook(lowercaseBookID); // A list of integers -- numVerses for each chapter
             // console.log("Got chapterList", JSON.stringify(expectedVersesPerChapterList));
         }
@@ -486,23 +486,23 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
 
         // Updates the global list of notices
         // console.log(`cUSFM ourCheckTextField(${lineNumber}, ${C}:${V}, ${fieldName}, (${fieldText.length} chars), ${allowedLinks}, ${fieldLocation}, ${JSON.stringify(checkingOptions)})…`);
-        console.assert(lineNumber !== undefined, "cUSFM ourCheckTextField: 'lineNumber' parameter should be defined");
-        console.assert(typeof lineNumber === 'number', `cUSFM ourCheckTextField: 'lineNumber' parameter should be a number not a '${typeof lineNumber}'`);
-        console.assert(C !== undefined, "cUSFM ourCheckTextField: 'C' parameter should be defined");
-        console.assert(typeof C === 'string', `cUSFM ourCheckTextField: 'C' parameter should be a string not a '${typeof C}'`);
-        console.assert(V !== undefined, "cUSFM ourCheckTextField: 'V' parameter should be defined");
-        console.assert(typeof V === 'string', `cUSFM ourCheckTextField: 'V' parameter should be a string not a '${typeof V}'`);
-        console.assert(fieldType !== undefined, "cUSFM ourCheckTextField: 'fieldType' parameter should be defined");
-        console.assert(typeof fieldType === 'string', `cUSFM ourCheckTextField: 'fieldType' parameter should be a string not a '${typeof fieldType}'`);
-        console.assert(fieldType === 'USFM' || fieldType === 'raw', `cUSFM ourCheckTextField: Unrecognized 'fieldType' parameter: ${fieldType}`);
-        console.assert(fieldName !== undefined, "cUSFM ourCheckTextField: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName === 'string', `cUSFM ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        console.assert(fieldName !== '', `cUSFM ourCheckTextField: ${fieldType} 'fieldName' parameter should be not be an empty string`);
-        console.assert(fieldText !== undefined, "cUSFM ourCheckTextField: 'fieldText' parameter should be defined");
-        console.assert(typeof fieldText === 'string', `cUSFM ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-        console.assert(allowedLinks === true || allowedLinks === false, "cUSFM ourCheckTextField: allowedLinks parameter must be either true or false");
-        console.assert(fieldLocation !== undefined, "cUSFM ourCheckTextField: 'fieldLocation' parameter should be defined");
-        console.assert(typeof fieldLocation === 'string', `cUSFM ourCheckTextField: 'fieldLocation' parameter should be a string not a '${typeof fieldLocation}'`);
+        parameterAssert(lineNumber !== undefined, "cUSFM ourCheckTextField: 'lineNumber' parameter should be defined");
+        parameterAssert(typeof lineNumber === 'number', `cUSFM ourCheckTextField: 'lineNumber' parameter should be a number not a '${typeof lineNumber}'`);
+        parameterAssert(C !== undefined, "cUSFM ourCheckTextField: 'C' parameter should be defined");
+        parameterAssert(typeof C === 'string', `cUSFM ourCheckTextField: 'C' parameter should be a string not a '${typeof C}'`);
+        parameterAssert(V !== undefined, "cUSFM ourCheckTextField: 'V' parameter should be defined");
+        parameterAssert(typeof V === 'string', `cUSFM ourCheckTextField: 'V' parameter should be a string not a '${typeof V}'`);
+        parameterAssert(fieldType !== undefined, "cUSFM ourCheckTextField: 'fieldType' parameter should be defined");
+        parameterAssert(typeof fieldType === 'string', `cUSFM ourCheckTextField: 'fieldType' parameter should be a string not a '${typeof fieldType}'`);
+        parameterAssert(fieldType === 'USFM' || fieldType === 'raw', `cUSFM ourCheckTextField: Unrecognized 'fieldType' parameter: ${fieldType}`);
+        parameterAssert(fieldName !== undefined, "cUSFM ourCheckTextField: 'fieldName' parameter should be defined");
+        parameterAssert(typeof fieldName === 'string', `cUSFM ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        parameterAssert(fieldName !== '', `cUSFM ourCheckTextField: ${fieldType} 'fieldName' parameter should be not be an empty string`);
+        parameterAssert(fieldText !== undefined, "cUSFM ourCheckTextField: 'fieldText' parameter should be defined");
+        parameterAssert(typeof fieldText === 'string', `cUSFM ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+        parameterAssert(allowedLinks === true || allowedLinks === false, "cUSFM ourCheckTextField: allowedLinks parameter must be either true or false");
+        parameterAssert(fieldLocation !== undefined, "cUSFM ourCheckTextField: 'fieldLocation' parameter should be defined");
+        parameterAssert(typeof fieldLocation === 'string', `cUSFM ourCheckTextField: 'fieldLocation' parameter should be a string not a '${typeof fieldLocation}'`);
 
         const dbtcResultObject = checkTextField(fieldType, fieldName, fieldText, allowedLinks, fieldLocation, checkingOptions);
 
@@ -510,7 +510,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         //  for this particular kind of text field
         for (const noticeEntry of dbtcResultObject.noticeList) {
             // console.log("Notice keys", JSON.stringify(Object.keys(noticeEntry)));
-            console.assert(Object.keys(noticeEntry).length >= 4, `USFM ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
+            parameterAssert(Object.keys(noticeEntry).length >= 4, `USFM ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
             addNoticePartial({ ...noticeEntry, lineNumber, C, V });
             // }
         }
@@ -524,18 +524,18 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global list of notices
-        console.assert(filename !== undefined, "cUSFM ourBasicFileChecks: 'filename' parameter should be defined");
-        console.assert(typeof filename === 'string', `cUSFM ourBasicFileChecks: 'filename' parameter should be a string not a '${typeof filename}'`);
-        console.assert(fileText !== undefined, "cUSFM ourBasicFileChecks: 'fileText' parameter should be defined");
-        console.assert(typeof fileText === 'string', `cUSFM ourBasicFileChecks: 'fileText' parameter should be a string not a '${typeof fileText}'`);
-        console.assert(checkingOptions !== undefined, "cUSFM ourBasicFileChecks: 'checkingOptions' parameter should be defined");
+        parameterAssert(filename !== undefined, "cUSFM ourBasicFileChecks: 'filename' parameter should be defined");
+        parameterAssert(typeof filename === 'string', `cUSFM ourBasicFileChecks: 'filename' parameter should be a string not a '${typeof filename}'`);
+        parameterAssert(fileText !== undefined, "cUSFM ourBasicFileChecks: 'fileText' parameter should be defined");
+        parameterAssert(typeof fileText === 'string', `cUSFM ourBasicFileChecks: 'fileText' parameter should be a string not a '${typeof fileText}'`);
+        parameterAssert(checkingOptions !== undefined, "cUSFM ourBasicFileChecks: 'checkingOptions' parameter should be defined");
 
         const resultObject = checkTextfileContents(languageCode, 'USFM', filename, fileText, fileLocation, checkingOptions);
 
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of resultObject.noticeList) {
-            console.assert(Object.keys(noticeEntry).length >= 5, `USFM ourBasicFileChecks notice length=${Object.keys(noticeEntry).length}`);
+            parameterAssert(Object.keys(noticeEntry).length >= 5, `USFM ourBasicFileChecks notice length=${Object.keys(noticeEntry).length}`);
             addNoticePartial(noticeEntry);
         }
     }
@@ -626,28 +626,28 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 const extract = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
                 addNoticePartial({ priority: 912, message: 'Missing | character in \\w line', lineNumber, C, V, characterIndex, extract, location: lineLocation });
             }
-            console.assert(ixWordEnd >= 1, `Why1 is w| = ${ixWordEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
+            parameterAssert(ixWordEnd >= 1, `Why1 is w| = ${ixWordEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
             ixEnd = adjustedRest.indexOf('\\w*');
             if (ixEnd >= 0)
                 adjustedRest = adjustedRest.substring(0, ixWordEnd) + adjustedRest.substring(ixEnd + 3, adjustedRest.length);
-            else console.assert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
+            else parameterAssert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
         } else if (marker === 'zaln-s') { // Remove first \zaln-s milestone (if marker == zaln-s)
             ixEnd = adjustedRest.indexOf('\\*');
             if (ixEnd >= 0)
                 adjustedRest = adjustedRest.substring(ixEnd + 2, adjustedRest.length);
-            else console.assert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
+            else parameterAssert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
         } else if (marker === 'k-s') { // Remove first \k-s milestone (if marker == k-s)
             ixEnd = adjustedRest.indexOf('\\*');
             if (ixEnd >= 0)
                 adjustedRest = adjustedRest.substring(ixEnd + 2, adjustedRest.length);
-            else console.assert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
+            else parameterAssert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
         } else if (marker === 'f') { // Handle first footnote (if marker == f)
             ixEnd = adjustedRest.indexOf('\\f*');
             const startIndex = adjustedRest.startsWith('+ ') ? 2 : 0;
             if (ixEnd >= 0)
                 adjustedRest = adjustedRest.substring(startIndex, ixEnd) + adjustedRest.substring(ixEnd + 3, adjustedRest.length);
             else {
-                // console.assert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
+                // parameterAssert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
                 addNoticePartial({ priority: 312, message: 'Possible unclosed footnote', details, lineNumber, C, V, location: lineLocation });
             }
             // console.log(`After removing f field: '${adjustedRest}' from '${rest}'`);
@@ -665,7 +665,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
             const ixZEnd = adjustedRest.indexOf('\\*');
             // console.log(`  ${nextZIndex} and ${ixZEnd}`);
             if (ixZEnd >= 0) {
-                // console.assert(ixZEnd > nextZIndex, `Exected closure at ${ixZEnd} to be AFTER \\zaln-s (${nextZIndex})`);
+                // parameterAssert(ixZEnd > nextZIndex, `Exected closure at ${ixZEnd} to be AFTER \\zaln-s (${nextZIndex})`);
                 adjustedRest = adjustedRest.substring(0, nextZIndex) + adjustedRest.substring(ixZEnd + 2, adjustedRest.length);
                 // console.log(`  Now '${adjustedRest}'`);
             } else {
@@ -684,10 +684,10 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 adjustedRest = ''; // Avoid follow-on errors
                 break;
             }
-            console.assert(ixWordEnd > nextWIndex + 3, `Why2 is w| = ${ixWordEnd}? nextWIndex=${nextWIndex} ${languageCode} ${bookID} ${C}:${V} ${lineNumber}`);
+            parameterAssert(ixWordEnd > nextWIndex + 3, `Why2 is w| = ${ixWordEnd}? nextWIndex=${nextWIndex} ${languageCode} ${bookID} ${C}:${V} ${lineNumber}`);
             const ixWEnd = adjustedRest.indexOf('\\w*');
             if (ixWEnd >= 0) {
-                console.assert(ixWEnd > nextWIndex, `Exected closure at ${ixWEnd} to be AFTER \\w (${nextWIndex})`);
+                parameterAssert(ixWEnd > nextWIndex, `Exected closure at ${ixWEnd} to be AFTER \\w (${nextWIndex})`);
                 adjustedRest = adjustedRest.substring(0, nextWIndex) + adjustedRest.substring(nextWIndex + 3, ixWordEnd) + adjustedRest.substring(ixWEnd + 3, adjustedRest.length);
                 // console.log(`After removing w field, got '${adjustedRest}'`);
             } else {
@@ -700,7 +700,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         while ((nextFIndex = adjustedRest.indexOf('\\f + ')) >= 0) {
             const ixFEnd = adjustedRest.indexOf('\\f*');
             if (ixFEnd >= 0) {
-                console.assert(ixFEnd > nextWIndex, `Exected closure at ${ixFEnd} to be AFTER \\w (${nextFIndex})`);
+                parameterAssert(ixFEnd > nextWIndex, `Exected closure at ${ixFEnd} to be AFTER \\w (${nextFIndex})`);
                 adjustedRest = adjustedRest.substring(0, nextFIndex) + adjustedRest.substring(nextFIndex + 5, ixFEnd) + adjustedRest.substring(ixFEnd + 3, adjustedRest.length);
                 // console.log(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
                 // console.log(`After removing footnote: '${adjustedRest}'`);
@@ -793,7 +793,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         // eslint-disable-next-line no-unused-vars
         let numChaptersThisBook = 0;
         try {
-            console.assert(lowercaseBookID !== 'obs', "Shouldn’t happen in usfm-text-check2");
+            parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in usfm-text-check2");
             numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
         }
         catch {
@@ -804,7 +804,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         function findStartMarker(C, V, lineNumber, USFMline) {
             // Returns the USFM marker at the start of the line
             //  (without the leading backslash but including full self-closing milestones)
-            console.assert(USFMline && USFMline[0] === '\\', `Programming error in findStartMarker(${C}:${V}, ${lineNumber}, ${USFMline})`);
+            parameterAssert(USFMline && USFMline[0] === '\\', `Programming error in findStartMarker(${C}:${V}, ${lineNumber}, ${USFMline})`);
             let foundMarker = '';
             for (let characterIndex = 1; characterIndex < USFMline.length; characterIndex++) {
                 const char = USFMline[characterIndex];
@@ -996,7 +996,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
     allResults.push(CVCheck(bookID, givenText, ourLocation));
     if (!books.isExtraBookID(bookID))
         allResults.push(ourRunBCSGrammarCheck(filename, givenText, ourLocation));
-    // console.assert(allResults.length === 2);
+    // parameterAssert(allResults.length === 2);
     // console.log("allResults", JSON.stringify(allResults));
     // if (!allResults[1].isValidUSFM)
     //     addNoticePartial({priority: 941, "USFM Grammar check fails", location});

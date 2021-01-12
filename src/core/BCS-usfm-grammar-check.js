@@ -1,6 +1,7 @@
 import grammar from 'usfm-grammar';
 import * as books from '../core/books/books';
 import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
+import { parameterAssert } from './utilities';
 
 
 // const USFM_GRAMMAR_VALIDATOR_VERSION_STRING = '0.3.2';
@@ -10,7 +11,7 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
     // Runs the BCS USFM Grammar checker
     //  which can be quite time-consuming on large, complex USFM files
     // console.log(`Running ${strictnessString} BCS USFM grammar check${givenLocation} (can take quite a while for a large book)…`);
-    console.assert(strictnessString === 'strict' || strictnessString === 'relaxed', `Unexpected strictnessString='${strictnessString}'`);
+    parameterAssert(strictnessString === 'strict' || strictnessString === 'relaxed', `Unexpected strictnessString='${strictnessString}'`);
 
     let extractLength;
     try {
@@ -130,7 +131,7 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
      Returns a result object containing a successList and a noticeList
      */
     console.log(`checkUSFMGrammar(${givenText.length.toLocaleString()} chars, '${givenLocation}')…`);
-    console.assert(strictnessString === 'strict' || strictnessString === 'relaxed', `Unexpected strictnessString='${strictnessString}'`);
+    parameterAssert(strictnessString === 'strict' || strictnessString === 'relaxed', `Unexpected strictnessString='${strictnessString}'`);
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -152,16 +153,16 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
         * @param {String} location - description of where the issue is located
         */
         // console.log(`checkUSFMGrammar notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(noticeObject.priority !== undefined, "cUSFMgr addNotice6to7: 'priority' parameter should be defined");
-        console.assert(typeof noticeObject.priority === 'number', `cUSFMgr addNotice6to7: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        console.assert(noticeObject.message !== undefined, "cUSFMgr addNotice6to7: 'message' parameter should be defined");
-        console.assert(typeof noticeObject.message === 'string', `cUSFMgr addNotice6to7: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // console.assert(characterIndex !== undefined, "cUSFMgr addNotice6to7: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `cUSFMgr addNotice6to7: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // console.assert(extract !== undefined, "cUSFMgr addNotice6to7: 'extract' parameter should be defined");
-        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cUSFMgr addNotice6to7: 'extract' parameter should be a string not a '${typeof extract}': ${noticeObject.extract}`);
-        console.assert(noticeObject.location !== undefined, "cUSFMgr addNotice6to7: 'location' parameter should be defined");
-        console.assert(typeof noticeObject.location === 'string', `cUSFMgr addNotice6to7: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        parameterAssert(noticeObject.priority !== undefined, "cUSFMgr addNotice6to7: 'priority' parameter should be defined");
+        parameterAssert(typeof noticeObject.priority === 'number', `cUSFMgr addNotice6to7: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        parameterAssert(noticeObject.message !== undefined, "cUSFMgr addNotice6to7: 'message' parameter should be defined");
+        parameterAssert(typeof noticeObject.message === 'string', `cUSFMgr addNotice6to7: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+        // parameterAssert(characterIndex !== undefined, "cUSFMgr addNotice6to7: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cUSFMgr addNotice6to7: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        // parameterAssert(extract !== undefined, "cUSFMgr addNotice6to7: 'extract' parameter should be defined");
+        if (noticeObject.extract) parameterAssert(typeof noticeObject.extract === 'string', `cUSFMgr addNotice6to7: 'extract' parameter should be a string not a '${typeof extract}': ${noticeObject.extract}`);
+        parameterAssert(noticeObject.location !== undefined, "cUSFMgr addNotice6to7: 'location' parameter should be defined");
+        parameterAssert(typeof noticeObject.location === 'string', `cUSFMgr addNotice6to7: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
         cugResult.noticeList.push({ ...noticeObject, bookID, filename });
     }
 

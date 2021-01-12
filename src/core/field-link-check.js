@@ -1,5 +1,6 @@
 import { checkTextField } from './field-text-check'
 import { cachedGetFileUsingFullURL } from './getApi';
+import { parameterAssert } from './utilities';
 
 
 const LINK_VALIDATOR_VERSION_STRING = '0.3.4';
@@ -16,16 +17,16 @@ export async function startLiveLinksCheck(linksList, existingNoticeList, callbac
 
     function addNoticePartial({ priority, message, characterIndex, extract, location }) {
         console.log(`sLLC Link Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(priority !== undefined, "sLLC addNoticePartial: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', `sLLC addNoticePartial: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        console.assert(message !== undefined, "sLLC addNoticePartial: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', `sLLC addNoticePartial: 'message' parameter should be a string not a '${typeof message}':${message}`);
-        // console.assert(characterIndex!==undefined, "sLLC addNoticePartial: 'characterIndex' parameter should be defined");
-        if (characterIndex) console.assert(typeof characterIndex === 'number', `sLLC addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
-        // console.assert(extract!==undefined, "sLLC addNoticePartial: 'extract' parameter should be defined");
-        if (extract) console.assert(typeof extract === 'string', `sLLC addNoticePartial: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
-        // console.assert(location!==undefined, "sLLC addNoticePartial: 'location' parameter should be defined");
-        // console.assert(typeof location==='string', `sLLC addNoticePartial: 'location' parameter should be a string not a '${typeof location}': ${location}`);
+        parameterAssert(priority !== undefined, "sLLC addNoticePartial: 'priority' parameter should be defined");
+        parameterAssert(typeof priority === 'number', `sLLC addNoticePartial: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
+        parameterAssert(message !== undefined, "sLLC addNoticePartial: 'message' parameter should be defined");
+        parameterAssert(typeof message === 'string', `sLLC addNoticePartial: 'message' parameter should be a string not a '${typeof message}':${message}`);
+        // parameterAssert(characterIndex!==undefined, "sLLC addNoticePartial: 'characterIndex' parameter should be defined");
+        if (characterIndex) parameterAssert(typeof characterIndex === 'number', `sLLC addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
+        // parameterAssert(extract!==undefined, "sLLC addNoticePartial: 'extract' parameter should be defined");
+        if (extract) parameterAssert(typeof extract === 'string', `sLLC addNoticePartial: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
+        // parameterAssert(location!==undefined, "sLLC addNoticePartial: 'location' parameter should be defined");
+        // parameterAssert(typeof location==='string', `sLLC addNoticePartial: 'location' parameter should be a string not a '${typeof location}': ${location}`);
         result.noticeList.push({ priority, message, characterIndex, extract, location });
     }
 
@@ -63,13 +64,13 @@ export function checkFieldLinks(fieldName, fieldText, linkOptions, optionalField
     console.log(`checkFieldLinks('${fieldName}', '${fieldText}')…`);
     // console.log( "linkOptions", JSON.stringify(linkOptions));
     // console.log( "linkOptionsEC", linkOptions.expectedCount);
-    console.assert(fieldName !== undefined, "checkFieldLinks: 'fieldName' parameter should be defined");
-    console.assert(typeof fieldName === 'string', `checkFieldLinks: 'fieldName' parameter should be a string not a '${typeof fieldName}': ${fieldName}`);
-    console.assert(fieldText !== undefined, "checkFieldLinks: 'fieldText' parameter should be defined");
-    console.assert(typeof fieldText === 'string', `checkFieldLinks: 'fieldText' parameter should be a string not a '${typeof fieldText}': ${fieldText}`);
-    console.assert(optionalFieldLocation !== undefined, "checkFieldLinks: 'optionalFieldLocation' parameter should be defined");
-    console.assert(typeof optionalFieldLocation === 'string', `checkFieldLinks: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}': ${optionalFieldLocation}`);
-    console.assert(optionalFieldLocation.indexOf('true') === -1, `checkFieldLinks: 'optionalFieldLocation' parameter should not be '${optionalFieldLocation}'`);
+    parameterAssert(fieldName !== undefined, "checkFieldLinks: 'fieldName' parameter should be defined");
+    parameterAssert(typeof fieldName === 'string', `checkFieldLinks: 'fieldName' parameter should be a string not a '${typeof fieldName}': ${fieldName}`);
+    parameterAssert(fieldText !== undefined, "checkFieldLinks: 'fieldText' parameter should be defined");
+    parameterAssert(typeof fieldText === 'string', `checkFieldLinks: 'fieldText' parameter should be a string not a '${typeof fieldText}': ${fieldText}`);
+    parameterAssert(optionalFieldLocation !== undefined, "checkFieldLinks: 'optionalFieldLocation' parameter should be defined");
+    parameterAssert(typeof optionalFieldLocation === 'string', `checkFieldLinks: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}': ${optionalFieldLocation}`);
+    parameterAssert(optionalFieldLocation.indexOf('true') === -1, `checkFieldLinks: 'optionalFieldLocation' parameter should not be '${optionalFieldLocation}'`);
 
     let ourLocation = optionalFieldLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -78,16 +79,16 @@ export function checkFieldLinks(fieldName, fieldText, linkOptions, optionalField
 
     function addNoticePartial({ priority, message, characterIndex, extract, location }) {
         console.log(`cFLs addNoticePartial: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(priority !== undefined, "cFLs addNoticePartial: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', `cFLs addNoticePartial: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        console.assert(message !== undefined, "cFLs addNoticePartial: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', `cFLs addNoticePartial: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        // console.assert(characterIndex!==undefined, "cFLs addNoticePartial: 'characterIndex' parameter should be defined");
-        if (characterIndex) console.assert(typeof characterIndex === 'number', `cFLs addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
-        // console.assert(extract!==undefined, "cFLs addNoticePartial: 'extract' parameter should be defined");
-        if (extract) console.assert(typeof extract === 'string', `cFLs addNoticePartial: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
-        console.assert(location !== undefined, "cFLs addNoticePartial: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', `cFLs addNoticePartial: 'location' parameter should be a string not a '${typeof location}': ${location}`);
+        parameterAssert(priority !== undefined, "cFLs addNoticePartial: 'priority' parameter should be defined");
+        parameterAssert(typeof priority === 'number', `cFLs addNoticePartial: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
+        parameterAssert(message !== undefined, "cFLs addNoticePartial: 'message' parameter should be defined");
+        parameterAssert(typeof message === 'string', `cFLs addNoticePartial: 'message' parameter should be a string not a '${typeof message}': ${message}`);
+        // parameterAssert(characterIndex!==undefined, "cFLs addNoticePartial: 'characterIndex' parameter should be defined");
+        if (characterIndex) parameterAssert(typeof characterIndex === 'number', `cFLs addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
+        // parameterAssert(extract!==undefined, "cFLs addNoticePartial: 'extract' parameter should be defined");
+        if (extract) parameterAssert(typeof extract === 'string', `cFLs addNoticePartial: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
+        parameterAssert(location !== undefined, "cFLs addNoticePartial: 'location' parameter should be defined");
+        parameterAssert(typeof location === 'string', `cFLs addNoticePartial: 'location' parameter should be a string not a '${typeof location}': ${location}`);
 
         result.noticeList.push({ priority, message, characterIndex, extract, location });
     }

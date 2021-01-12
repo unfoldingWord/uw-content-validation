@@ -1,5 +1,6 @@
 import React from 'react';
 import { forwardRef } from 'react';
+import { parameterAssert } from '../core/utilities';
 
 // NOTE: The following line is currently giving compile warnings -- a problem in a dependency it seems
 import MaterialTable from 'material-table';
@@ -557,6 +558,6 @@ export function RenderElapsedTime({ elapsedSeconds }) {
     remainingTime = Math.floor(remainingTime / 60);
     const hours = Math.round(remainingTime % 24);
     remainingTime = Math.floor(remainingTime / 24);
-    console.assert(remainingTime === 0, `Elapsed time also contains ${remainingTime} days`);
+    parameterAssert(remainingTime === 0, `Elapsed time also contains ${remainingTime} days`);
     return <>{hours ? `${hours} hour` : ''}{hours && hours !== 1 ? 's' : ''}{hours ? ', ' : ''}{minutes ? `${minutes} minute` : ''}{minutes && minutes !== 1 ? 's' : ''}{minutes ? ', ' : ''}{seconds} second{seconds === 1 ? '' : 's'}</>;
 }

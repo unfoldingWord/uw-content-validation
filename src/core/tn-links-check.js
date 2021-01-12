@@ -3,11 +3,11 @@ import Path from 'path';
 import * as books from '../core/books/books';
 import { DEFAULT_EXTRACT_LENGTH, countOccurrences } from './text-handling-functions'
 import { cachedGetFile, checkMarkdownText } from '../core';
-import { ourParseInt } from './utilities';
+import { parameterAssert, ourParseInt } from './utilities';
 // import { consoleLogObject } from '../core/utilities';
 
 
-// const TN_LINKS_VALIDATOR_VERSION_STRING = '0.6.6';
+// const TN_LINKS_VALIDATOR_VERSION_STRING = '0.7.0';
 
 const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -101,21 +101,21 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
     */
 
     // console.log(`checkTNLinksToOutside v${TN_LINKS_VALIDATOR_VERSION_STRING} ${bookID} (${fieldName}, (${fieldText.length}) '${fieldText}', ${givenLocation}, …)…`);
-    console.assert(bookID !== undefined, "checkTNLinksToOutside: 'bookID' parameter should be defined");
-    console.assert(typeof bookID === 'string', `checkTNLinksToOutside: 'bookID' parameter should be a string not a '${typeof bookID}'`);
-    console.assert(bookID.length === 3, `checkTNLinksToOutside: 'bookID' parameter should be three characters long not ${bookID.length}`);
-    console.assert(bookID.toUpperCase() === bookID, `checkTNLinksToOutside: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-    console.assert(bookID === 'OBS' || books.isValidBookID(bookID), `checkTNLinksToOutside: '${bookID}' is not a valid USFM book identifier`);
-    console.assert(typeof givenC === 'string', `checkTNLinksToOutside: 'givenC' parameter should be a string not a '${typeof givenC}'`);
-    console.assert(typeof givenV === 'string', `checkTNLinksToOutside: 'givenV' parameter should be a string not a '${typeof givenV}'`);
-    console.assert(fieldName !== undefined, "checkTNLinksToOutside: 'fieldText' parameter should be defined");
-    console.assert(typeof fieldName === 'string', `checkTNLinksToOutside: 'fieldText' parameter should be a string not a '${typeof fieldName}'`);
-    console.assert(fieldName === 'OccurrenceNote' || fieldName === 'Annotation', `checkTNLinksToOutside: 'fieldName' parameter should be 'OccurrenceNote' or 'Annotation' not '${fieldName}'`);
-    console.assert(fieldText !== undefined, "checkTNLinksToOutside: 'fieldText' parameter should be defined");
-    console.assert(typeof fieldText === 'string', `checkTNLinksToOutside: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-    console.assert(givenLocation !== undefined, "checkTNLinksToOutside: 'fieldText' parameter should be defined");
-    console.assert(typeof givenLocation === 'string', `checkTNLinksToOutside: 'fieldText' parameter should be a string not a '${typeof givenLocation}'`);
-    console.assert(fieldName === 'OccurrenceNote' || fieldName === 'Annotation', `Unexpected checkTNLinksToOutside fieldName='${fieldName}'`);
+    parameterAssert(bookID !== undefined, "checkTNLinksToOutside: 'bookID' parameter should be defined");
+    parameterAssert(typeof bookID === 'string', `checkTNLinksToOutside: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+    parameterAssert(bookID.length === 3, `checkTNLinksToOutside: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    parameterAssert(bookID.toUpperCase() === bookID, `checkTNLinksToOutside: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+    parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkTNLinksToOutside: '${bookID}' is not a valid USFM book identifier`);
+    parameterAssert(typeof givenC === 'string', `checkTNLinksToOutside: 'givenC' parameter should be a string not a '${typeof givenC}'`);
+    parameterAssert(typeof givenV === 'string', `checkTNLinksToOutside: 'givenV' parameter should be a string not a '${typeof givenV}'`);
+    parameterAssert(fieldName !== undefined, "checkTNLinksToOutside: 'fieldText' parameter should be defined");
+    parameterAssert(typeof fieldName === 'string', `checkTNLinksToOutside: 'fieldText' parameter should be a string not a '${typeof fieldName}'`);
+    parameterAssert(fieldName === 'OccurrenceNote' || fieldName === 'Annotation', `checkTNLinksToOutside: 'fieldName' parameter should be 'OccurrenceNote' or 'Annotation' not '${fieldName}'`);
+    parameterAssert(fieldText !== undefined, "checkTNLinksToOutside: 'fieldText' parameter should be defined");
+    parameterAssert(typeof fieldText === 'string', `checkTNLinksToOutside: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+    parameterAssert(givenLocation !== undefined, "checkTNLinksToOutside: 'fieldText' parameter should be defined");
+    parameterAssert(typeof givenLocation === 'string', `checkTNLinksToOutside: 'fieldText' parameter should be a string not a '${typeof givenLocation}'`);
+    parameterAssert(fieldName === 'OccurrenceNote' || fieldName === 'Annotation', `Unexpected checkTNLinksToOutside fieldName='${fieldName}'`);
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -124,16 +124,16 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
 
     function addNoticePartial(noticeObject) {
         // console.log(`checkTNLinksToOutside Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(noticeObject.priority !== undefined, "cTNlnk addNoticePartial: 'priority' parameter should be defined");
-        console.assert(typeof noticeObject.priority === 'number', `cTNlnk addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        console.assert(noticeObject.message !== undefined, "cTNlnk addNoticePartial: 'message' parameter should be defined");
-        console.assert(typeof noticeObject.message === 'string', `cTNlnk addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // console.assert(characterIndex !== undefined, "cTNlnk addNoticePartial: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `cTNlnk addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // console.assert(extract !== undefined, "cTNlnk addNoticePartial: 'extract' parameter should be defined");
-        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cTNlnk addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
-        console.assert(noticeObject.location !== undefined, "cTNlnk addNoticePartial: 'location' parameter should be defined");
-        console.assert(typeof noticeObject.location === 'string', `cTNlnk addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        parameterAssert(noticeObject.priority !== undefined, "cTNlnk addNoticePartial: 'priority' parameter should be defined");
+        parameterAssert(typeof noticeObject.priority === 'number', `cTNlnk addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        parameterAssert(noticeObject.message !== undefined, "cTNlnk addNoticePartial: 'message' parameter should be defined");
+        parameterAssert(typeof noticeObject.message === 'string', `cTNlnk addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+        // parameterAssert(characterIndex !== undefined, "cTNlnk addNoticePartial: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cTNlnk addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        // parameterAssert(extract !== undefined, "cTNlnk addNoticePartial: 'extract' parameter should be defined");
+        if (noticeObject.extract) parameterAssert(typeof noticeObject.extract === 'string', `cTNlnk addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        parameterAssert(noticeObject.location !== undefined, "cTNlnk addNoticePartial: 'location' parameter should be defined");
+        parameterAssert(typeof noticeObject.location === 'string', `cTNlnk addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
         // noticeObject.debugChain = noticeObject.debugChain ? `checkTNLinksToOutside ${noticeObject.debugChain}` : `checkTNLinksToOutside(${fieldName})`;
         ctarResult.noticeList.push({ ...noticeObject, bookID, fieldName });
     }
@@ -190,7 +190,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
     while (regexResultArray = TA_REGEX.exec(fieldText)) {
         // console.log(`  checkTNLinksToOutside TA resultArray=${JSON.stringify(resultArray)}`);
         taLinkCount += 1;
-        console.assert(regexResultArray.length === 4, `Expected 4 fields (not ${regexResultArray.length})`)
+        parameterAssert(regexResultArray.length === 4, `Expected 4 fields (not ${regexResultArray.length})`)
         let languageCode = regexResultArray[1];
         if (languageCode !== '*') {
             const characterIndex = TA_REGEX.lastIndex - regexResultArray[0].length + 7; // lastIndex points to the end of the field that was found
@@ -247,7 +247,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
     while (regexResultArray = TW_REGEX.exec(fieldText)) {
         // console.log(`  checkTNLinksToOutside TW resultArray=${JSON.stringify(resultArray)}`);
         twLinkCount += 1;
-        console.assert(regexResultArray.length === 4, `Expected 4 fields (not ${regexResultArray.length})`)
+        parameterAssert(regexResultArray.length === 4, `Expected 4 fields (not ${regexResultArray.length})`)
         let languageCode = regexResultArray[1];
         if (!languageCode || languageCode === '*') languageCode = defaultLanguageCode;
         const twRepoName = `${languageCode}_tw`;
@@ -297,10 +297,10 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
     while (regexResultArray = THIS_CHAPTER_BIBLE_REGEX.exec(fieldText)) {
         // console.log(`  checkTNLinksToOutside THIS_CHAPTER_BIBLE_REGEX regexResultArray=${JSON.stringify(regexResultArray)}`);
         thisChapterBibleLinkCount += 1;
-        console.assert(regexResultArray.length === 6, `Expected 6 fields (not ${regexResultArray.length})`);
+        parameterAssert(regexResultArray.length === 6, `Expected 6 fields (not ${regexResultArray.length})`);
         let [totalLink, optionalN1, optionalB1, C1, V1, V2] = regexResultArray;
 
-        if (optionalN1) console.assert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+        if (optionalN1) parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
         if (optionalB1) {
             optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
             if (defaultLanguageCode === 'en') { // should be able to check the book name
@@ -330,7 +330,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         if (linkBookCode) { // then we know which Bible book this link is to
             // So we can check for valid C:V numbers
             let numChaptersThisBook, numVersesThisChapter;
-            console.assert(linkBookCode.toLowerCase() !== 'obs', "Shouldn’t happen in tn-links-check");
+            parameterAssert(linkBookCode.toLowerCase() !== 'obs', "Shouldn’t happen in tn-links-check");
             try {
                 numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
             } catch (tlcNCerror) { }
@@ -349,10 +349,10 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
     while (regexResultArray = THIS_BOOK_BIBLE_REGEX.exec(fieldText)) {
         // console.log(`  checkTNLinksToOutside THIS_BOOK_BIBLE_REGEX regexResultArray=${JSON.stringify(regexResultArray)}`);
         thisBookBibleLinkCount += 1;
-        console.assert(regexResultArray.length === 8, `Expected 8 fields (not ${regexResultArray.length})`);
+        parameterAssert(regexResultArray.length === 8, `Expected 8 fields (not ${regexResultArray.length})`);
         let [totalLink, optionalN1, optionalB1, C1, V1, B2, C2, V2] = regexResultArray;
 
-        if (optionalN1) console.assert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+        if (optionalN1) parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
         if (optionalB1) {
             optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
             if (defaultLanguageCode === 'en') { // should be able to check the book name
@@ -382,7 +382,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         if (linkBookCode) { // then we know which Bible book this link is to
             // So we can check for valid C:V numbers
             let numChaptersThisBook, numVersesThisChapter;
-            console.assert(linkBookCode.toLowerCase() !== 'obs', "Shouldn’t happen in tn-links-check");
+            parameterAssert(linkBookCode.toLowerCase() !== 'obs', "Shouldn’t happen in tn-links-check");
             try {
                 numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
             } catch (tlcNCerror) { }
@@ -401,10 +401,10 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
     while (regexResultArray = OTHER_BOOK_BIBLE_REGEX.exec(fieldText)) {
         console.log(`  checkTNLinksToOutside OTHER_BOOK_BIBLE_REGEX regexResultArray=${JSON.stringify(regexResultArray)}`);
         otherBookBibleLinkCount += 1;
-        console.assert(regexResultArray.length === 8, `Expected 8 fields (not ${regexResultArray.length})`);
+        parameterAssert(regexResultArray.length === 8, `Expected 8 fields (not ${regexResultArray.length})`);
         let [totalLink, optionalN1, optionalB1, C1, V1, B2, C2, V2] = regexResultArray;
 
-        if (optionalN1) console.assert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+        if (optionalN1) parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
         if (optionalB1) {
             optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
             if (defaultLanguageCode === 'en') { // should be able to check the book name
@@ -434,7 +434,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         if (linkBookCode) { // then we know which Bible book this link is to
             // So we can check for valid C:V numbers
             let numChaptersThisBook, numVersesThisChapter;
-            console.assert(linkBookCode.toLowerCase() !== 'obs', "Shouldn’t happen in tn-links-check");
+            parameterAssert(linkBookCode.toLowerCase() !== 'obs', "Shouldn’t happen in tn-links-check");
             try {
                 numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
             } catch (tlcNCerror) { }
@@ -450,11 +450,13 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
 
     // Check for additional links that we can’t explain
     const BibleLinkCount = thisChapterBibleLinkCount + thisBookBibleLinkCount + otherBookBibleLinkCount;
-    if (totalLinks1 > BibleLinkCount)
+    if (totalLinks1 > BibleLinkCount) {
         addNoticePartial({ priority: 648, message: "More [ ]( ) links than valid Bible links", details: `detected ${totalLinks1} link${totalLinks1 === 1 ? '' : 's'} but ${BibleLinkCount ? `only ${BibleLinkCount}` : 'no'} Bible link${BibleLinkCount === 1 ? '' : 's'} from ${JSON.stringify(linksList1)}`, location: ourLocation });
+    }
     const twaLinkCount = twLinkCount + taLinkCount;
-    if (totalLinks2 > twaLinkCount)
+    if (totalLinks2 > twaLinkCount) {
         addNoticePartial({ priority: 649, message: "More [[ ]] links than valid TA/TW links", details: `detected ${totalLinks2} link${totalLinks2 === 1 ? '' : 's'} but ${twaLinkCount ? `only ${twaLinkCount}` : 'no'} TA/TW link${twaLinkCount === 1 ? '' : 's'} from ${JSON.stringify(linksList2)}`, location: ourLocation });
+    }
 
     // Check for badly formed links (not processed by the above code)
     // Check for badly formed [[ ]] links

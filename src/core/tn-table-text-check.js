@@ -2,9 +2,10 @@ import * as books from './books/books';
 import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { checkTN_TSVDataRow } from './tn-table-row-check';
 import { removeDisabledNotices } from './disabled-notices';
+import { parameterAssert } from './utilities';
 
 
-const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.3.1';
+const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.3.2';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -29,42 +30,50 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
      Returns a result object containing a successList and a noticeList
      */
     // console.log(`checkTN_TSVText(${languageCode}, ${bookID}, ${filename}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
-    console.assert(languageCode !== undefined, "checkTN_TSVText: 'languageCode' parameter should be defined");
-    console.assert(typeof languageCode === 'string', `checkTN_TSVText: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
-    console.assert(bookID !== undefined, "checkTN_TSVText: 'bookID' parameter should be defined");
-    console.assert(typeof bookID === 'string', `checkTN_TSVText: 'bookID' parameter should be a string not a '${typeof bookID}'`);
-    console.assert(bookID.length === 3, `checkTN_TSVText: 'bookID' parameter should be three characters long not ${bookID.length}`);
-    console.assert(bookID.toUpperCase() === bookID, `checkTN_TSVText: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-    console.assert(books.isValidBookID(bookID), `checkTN_TSVText: '${bookID}' is not a valid USFM book identifier`);
-    console.assert(givenLocation !== undefined, "checkTN_TSVText: 'givenLocation' parameter should be defined");
-    console.assert(typeof givenLocation === 'string', `checkTN_TSVText: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
-    console.assert(checkingOptions !== undefined, "checkTN_TSVText: 'checkingOptions' parameter should be defined");
+    parameterAssert(languageCode !== undefined, "checkTN_TSVText: 'languageCode' parameter should be defined");
+    parameterAssert(typeof languageCode === 'string', `checkTN_TSVText: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    parameterAssert(bookID !== undefined, "checkTN_TSVText: 'bookID' parameter should be defined");
+    parameterAssert(typeof bookID === 'string', `checkTN_TSVText: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+    parameterAssert(bookID.length === 3, `checkTN_TSVText: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    parameterAssert(bookID.toUpperCase() === bookID, `checkTN_TSVText: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+    parameterAssert(books.isValidBookID(bookID), `checkTN_TSVText: '${bookID}' is not a valid USFM book identifier`);
+    parameterAssert(givenLocation !== undefined, "checkTN_TSVText: 'givenLocation' parameter should be defined");
+    parameterAssert(typeof givenLocation === 'string', `checkTN_TSVText: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
+    parameterAssert(checkingOptions !== undefined, "checkTN_TSVText: 'checkingOptions' parameter should be defined");
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
     const ttResult = { successList: [], noticeList: [] };
 
+    /**
+     *
+     * @param {string} successString
+     */
     function addSuccessMessage(successString) {
         // console.log(`checkTN_TSVText success: ${successString}`);
         ttResult.successList.push(successString);
     }
+    /**
+     *
+     * @param {Object} noticeObject
+     */
     function addNoticePartial(noticeObject) {
         // console.log(`checkTN_TSVText notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(noticeObject.priority !== undefined, "TSV addNoticePartial: 'priority' parameter should be defined");
-        console.assert(typeof noticeObject.priority === 'number', `TSV addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        console.assert(noticeObject.message !== undefined, "TSV addNoticePartial: 'message' parameter should be defined");
-        console.assert(typeof noticeObject.message === 'string', `TSV addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // console.assert(C !== undefined, "TSV addNoticePartial: 'C' parameter should be defined");
-        if (noticeObject.C) console.assert(typeof noticeObject.C === 'string', `TSV addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
-        // console.assert(V !== undefined, "TSV addNoticePartial: 'V' parameter should be defined");
-        if (noticeObject.V) console.assert(typeof noticeObject.V === 'string', `TSV addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
-        // console.assert(characterIndex !== undefined, "TSV addNoticePartial: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `TSV addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // console.assert(extract !== undefined, "TSV addNoticePartial: 'extract' parameter should be defined");
-        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `TSV addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
-        console.assert(noticeObject.location !== undefined, "TSV addNoticePartial: 'location' parameter should be defined");
-        console.assert(typeof noticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        parameterAssert(noticeObject.priority !== undefined, "TSV addNoticePartial: 'priority' parameter should be defined");
+        parameterAssert(typeof noticeObject.priority === 'number', `TSV addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        parameterAssert(noticeObject.message !== undefined, "TSV addNoticePartial: 'message' parameter should be defined");
+        parameterAssert(typeof noticeObject.message === 'string', `TSV addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+        // parameterAssert(C !== undefined, "TSV addNoticePartial: 'C' parameter should be defined");
+        if (noticeObject.C) parameterAssert(typeof noticeObject.C === 'string', `TSV addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
+        // parameterAssert(V !== undefined, "TSV addNoticePartial: 'V' parameter should be defined");
+        if (noticeObject.V) parameterAssert(typeof noticeObject.V === 'string', `TSV addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
+        // parameterAssert(characterIndex !== undefined, "TSV addNoticePartial: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `TSV addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        // parameterAssert(extract !== undefined, "TSV addNoticePartial: 'extract' parameter should be defined");
+        if (noticeObject.extract) parameterAssert(typeof noticeObject.extract === 'string', `TSV addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        parameterAssert(noticeObject.location !== undefined, "TSV addNoticePartial: 'location' parameter should be defined");
+        parameterAssert(typeof noticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
         if (noticeObject.debugChain) noticeObject.debugChain = `checkTN_TSVText ${noticeObject.debugChain}`;
         // NOTE: We only add the repoCode here because this function is called directly by tC Create
         //          and notice disabling currently depends on knowing the repoCode
@@ -89,7 +98,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
     let lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook = 0;
     try {
-        console.assert(lowercaseBookID !== 'obs', "Shouldn’t happen in tn_table-text-check");
+        parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in tn_table-text-check");
         numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
     }
     catch {

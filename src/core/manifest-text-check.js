@@ -4,6 +4,7 @@ import { cachedGetFile } from './getApi';
 import { BibleBookData } from './books/books'
 import Ajv from 'ajv';
 import { removeDisabledNotices } from './disabled-notices';
+import { parameterAssert } from './utilities';
 
 
 const MANIFEST_VALIDATOR_VERSION_STRING = '0.4.0';
@@ -547,20 +548,20 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
     Returns a result object containing a successList and a noticeList
     */
     // console.log(`checkManifestText(${username}, ${repoName}, ${repoBranch}, ${manifestText.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
-    console.assert(username !== undefined, "checkManifestText: 'username' parameter should be defined");
-    console.assert(typeof username === 'string', `checkManifestText: 'username' parameter should be a string not a '${typeof username}': ${username}`);
-    console.assert(repoName !== undefined, "checkManifestText: 'repoName' parameter should be defined");
-    console.assert(typeof repoName === 'string', `checkManifestText: 'repoName' parameter should be a string not a '${typeof repoName}': ${repoName}`);
-    console.assert(repoBranch !== undefined, "checkManifestText: 'repoBranch' parameter should be defined");
-    console.assert(typeof repoBranch === 'string', `checkManifestText: 'repoBranch' parameter should be a string not a '${typeof repoBranch}': ${repoBranch}`);
-    console.assert(manifestText !== undefined, "checkManifestText: 'manifestText' parameter should be defined");
-    console.assert(typeof manifestText === 'string', `checkManifestText: 'manifestText' parameter should be a string not a '${typeof manifestText}': ${manifestText}`);
-    console.assert(givenLocation !== undefined, "checkManifestText: 'optionalFieldLocation' parameter should be defined");
-    console.assert(typeof givenLocation === 'string', `checkManifestText: 'optionalFieldLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
-    console.assert(givenLocation.indexOf('true') === -1, `checkManifestText: 'optionalFieldLocation' parameter should not be '${givenLocation}'`);
-    console.assert(checkingOptions !== undefined, "checkManifestText: 'checkingOptions' parameter should be defined");
+    parameterAssert(username !== undefined, "checkManifestText: 'username' parameter should be defined");
+    parameterAssert(typeof username === 'string', `checkManifestText: 'username' parameter should be a string not a '${typeof username}': ${username}`);
+    parameterAssert(repoName !== undefined, "checkManifestText: 'repoName' parameter should be defined");
+    parameterAssert(typeof repoName === 'string', `checkManifestText: 'repoName' parameter should be a string not a '${typeof repoName}': ${repoName}`);
+    parameterAssert(repoBranch !== undefined, "checkManifestText: 'repoBranch' parameter should be defined");
+    parameterAssert(typeof repoBranch === 'string', `checkManifestText: 'repoBranch' parameter should be a string not a '${typeof repoBranch}': ${repoBranch}`);
+    parameterAssert(manifestText !== undefined, "checkManifestText: 'manifestText' parameter should be defined");
+    parameterAssert(typeof manifestText === 'string', `checkManifestText: 'manifestText' parameter should be a string not a '${typeof manifestText}': ${manifestText}`);
+    parameterAssert(givenLocation !== undefined, "checkManifestText: 'optionalFieldLocation' parameter should be defined");
+    parameterAssert(typeof givenLocation === 'string', `checkManifestText: 'optionalFieldLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
+    parameterAssert(givenLocation.indexOf('true') === -1, `checkManifestText: 'optionalFieldLocation' parameter should not be '${givenLocation}'`);
+    parameterAssert(checkingOptions !== undefined, "checkManifestText: 'checkingOptions' parameter should be defined");
     if (checkingOptions !== undefined)
-        console.assert(typeof checkingOptions === 'object', `checkManifestText: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
+        parameterAssert(typeof checkingOptions === 'object', `checkManifestText: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -587,16 +588,16 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
     }
     function addNotice(noticeObject) {
         // console.log(`checkManifestText Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(noticeObject.priority !== undefined, "cManT addNotice: 'priority' parameter should be defined");
-        console.assert(typeof noticeObject.priority === 'number', `cManT addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        console.assert(noticeObject.message !== undefined, "cManT addNotice: 'message' parameter should be defined");
-        console.assert(typeof noticeObject.message === 'string', `cManT addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // console.assert(characterIndex !== undefined, "cManT addNotice: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `cManT addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // console.assert(extract !== undefined, "cManT addNotice: 'extract' parameter should be defined");
-        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `cManT addNotice: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
-        console.assert(noticeObject.location !== undefined, "cManT addNotice: 'location' parameter should be defined");
-        console.assert(typeof noticeObject.location === 'string', `cManT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        parameterAssert(noticeObject.priority !== undefined, "cManT addNotice: 'priority' parameter should be defined");
+        parameterAssert(typeof noticeObject.priority === 'number', `cManT addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        parameterAssert(noticeObject.message !== undefined, "cManT addNotice: 'message' parameter should be defined");
+        parameterAssert(typeof noticeObject.message === 'string', `cManT addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+        // parameterAssert(characterIndex !== undefined, "cManT addNotice: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cManT addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        // parameterAssert(extract !== undefined, "cManT addNotice: 'extract' parameter should be defined");
+        if (noticeObject.extract) parameterAssert(typeof noticeObject.extract === 'string', `cManT addNotice: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        parameterAssert(noticeObject.location !== undefined, "cManT addNotice: 'location' parameter should be defined");
+        parameterAssert(typeof noticeObject.location === 'string', `cManT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
         if (repoName) noticeObject.repoName = repoName;
         if (noticeObject.debugChain) noticeObject.debugChain = `checkManifestText ${noticeObject.debugChain}`;
@@ -611,11 +612,11 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
 
         // Updates the global list of notices
         // console.log(`cManT ourYAMLTextChecks(${textName}, (${fieldText.length}), ${allowedLinks}, ${fieldLocation}, …)`);
-        console.assert(textName !== undefined, "cManT ourYAMLTextChecks: 'textName' parameter should be defined");
-        console.assert(typeof textName === 'string', `cManT ourYAMLTextChecks: 'textName' parameter should be a string not a '${typeof textName}'`);
-        console.assert(manifestText !== undefined, "cManT ourYAMLTextChecks: 'manifestText' parameter should be defined");
-        console.assert(typeof manifestText === 'string', `cManT ourYAMLTextChecks: 'manifestText' parameter should be a string not a '${typeof manifestText}'`);
-        // console.assert( allowedLinks===true || allowedLinks===false, "cManT ourYAMLTextChecks: allowedLinks parameter must be either true or false");
+        parameterAssert(textName !== undefined, "cManT ourYAMLTextChecks: 'textName' parameter should be defined");
+        parameterAssert(typeof textName === 'string', `cManT ourYAMLTextChecks: 'textName' parameter should be a string not a '${typeof textName}'`);
+        parameterAssert(manifestText !== undefined, "cManT ourYAMLTextChecks: 'manifestText' parameter should be defined");
+        parameterAssert(typeof manifestText === 'string', `cManT ourYAMLTextChecks: 'manifestText' parameter should be a string not a '${typeof manifestText}'`);
+        // parameterAssert( allowedLinks===true || allowedLinks===false, "cManT ourYAMLTextChecks: allowedLinks parameter must be either true or false");
 
         const cYtResultObject = checkYAMLText('en', textName, manifestText, givenLocation, checkingOptions);
 
