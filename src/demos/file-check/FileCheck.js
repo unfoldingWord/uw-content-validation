@@ -15,17 +15,17 @@ import { checkFileContents } from './checkFileContents';
 
 
 function FileCheck(props) {
-  // console.log(`I'm here in FileCheck v${FILE_CHECK_VERSION_STRING}`);
+  // debugLog(`I'm here in FileCheck v${FILE_CHECK_VERSION_STRING}`);
   // consoleLogObject("props", props);
 
   const [result, setResultValue] = useState("Waiting-FileCheck");
   useEffect(() => {
-    // console.log("FileCheck.useEffect() called with ", JSON.stringify(props));
+    // debugLog("FileCheck.useEffect() called with ", JSON.stringify(props));
 
     // Use an IIFE (Immediately Invoked Function Expression)
     //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
     (async () => {
-      // console.log("Started FileCheck.unnamedFunction()");
+      // debugLog("Started FileCheck.unnamedFunction()");
 
       // NOTE from RJH: I can’t find the correct React place for this / way to do this
       //                  so it shows a warning for the user, and doesn’t continue to try to process
@@ -48,7 +48,7 @@ function FileCheck(props) {
       }
 
       if (props.reloadAllFilesFirst && props.reloadAllFilesFirst.slice(0).toUpperCase() === 'Y') {
-        console.log("Clearing cache before running book package check…");
+        userLog("Clearing cache before running book package check…");
         setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running book package check…</p>);
         await clearCaches();
       }
@@ -56,7 +56,7 @@ function FileCheck(props) {
 
       // Display our "waiting" message
       setResultValue(<p style={{ color: 'magenta' }}>Fetching {username} {repoName} <b>{filename}</b>…</p>);
-      // console.log(`FileCheck about to call cachedGetFile(${username}, ${repoName}, ${filename}, ${branch})…`);
+      // debugLog(`FileCheck about to call cachedGetFile(${username}, ${repoName}, ${filename}, ${branch})…`);
       const fileContent = await cachedGetFile({ username: username, repository: repoName, path: filename, branch: branch });
 
       setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {repoName} <b>{filename}</b>…</p>);
@@ -86,7 +86,7 @@ function FileCheck(props) {
         }
         rawCFResults.noticeList = rawCFResults.noticeList.map(addFields);
       }
-      // console.log(`FileCheck got initial results with ${rawCFResults.successList.length} success message(s) and ${rawCFResults.noticeList.length} notice(s)`);
+      // debugLog(`FileCheck got initial results with ${rawCFResults.successList.length} success message(s) and ${rawCFResults.noticeList.length} notice(s)`);
 
       // // Since we know the repoName here, add it to our notices
       // for (const thisNotice of rawCFResults.noticeList)
@@ -133,7 +133,7 @@ function FileCheck(props) {
 
       if (displayType === 'ErrorsWarnings') {
         const processedResults = processNoticesToErrorsWarnings(rawCFResults, processOptions);
-        //                 console.log(`${`FileCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)`}
+        //                 userLog(`${`FileCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)`}
         //   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
         if (processedResults.errorList.length || processedResults.warningList.length)
@@ -148,7 +148,7 @@ function FileCheck(props) {
           </>);
       } else if (displayType === 'SevereMediumLow') {
         const processedResults = processNoticesToSevereMediumLow(rawCFResults, processOptions);
-        //                 console.log(`FileCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
+        //                 userLog(`FileCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
         //   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
         if (processedResults.severeList.length || processedResults.mediumList.length || processedResults.lowList.length)
@@ -163,7 +163,7 @@ function FileCheck(props) {
           </>);
       } else if (displayType === 'SingleList') {
         const processedResults = processNoticesToSingleList(rawCFResults, processOptions);
-        //       console.log(`FileCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s) and ${processedResults.warningList.length.toLocaleString()} notice(s)
+        //       userLog(`FileCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s) and ${processedResults.warningList.length.toLocaleString()} notice(s)
         // numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
         if (processedResults.warningList.length)
@@ -183,16 +183,16 @@ function FileCheck(props) {
   }, []); // end of useEffect part
 
   const username = props.username;
-  // console.log(`FileCheck username='${username}'`);
+  // debugLog(`FileCheck username='${username}'`);
   if (!username) return <><b>ERROR</b>: The Door43 <b>username</b> must be specified</>;
   const repoName = props.repoName;
-  // console.log(`FileCheck repoName='${repoName}'`);
+  // debugLog(`FileCheck repoName='${repoName}'`);
   if (!repoName) return <><b>ERROR</b>: The Door43 <b>repository name</b> must be specified</>;
   let branch = props.branch;
-  // console.log(`FileCheck branch='${branch}'`);
+  // debugLog(`FileCheck branch='${branch}'`);
   if (branch === undefined) branch = 'master';
   const filename = props.filename;
-  // console.log(`filename='${filename}'`);
+  // debugLog(`filename='${filename}'`);
   if (!filename) return <><b>ERROR</b>: The Door43 <b>filename</b> must be specified</>;
 
   let givenLocation = props['location'] ? props['location'] : "";

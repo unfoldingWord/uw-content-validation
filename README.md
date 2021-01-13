@@ -178,7 +178,7 @@ Once you have this codebase forked and cloned to your local machine, you can sta
 1. Ensure that the Styleguide is running by visiting `localhost:6060` on your web browser. (for Chromebooks see note below)
 1. Modify the code and documentation in your code editor and check out the Styleguide.
     - Update the styleguide.config.js to match your new component names.
-1. See debug `console.log()` output in browser console—in chrome, CTRL-SHIFT-J to open.
+1. See debug `userLog()` output in browser console—in chrome, CTRL-SHIFT-J to open.
 
 ### Setting up NPM Publishing
 

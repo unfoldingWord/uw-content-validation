@@ -20,7 +20,7 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
 
      Returns a result object containing a successList and a noticeList
      */
-    // console.log(`checkAnnotationRows(${languageCode}, ${annotationType}, ${bookID}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
+    // debugLog(`checkAnnotationRows(${languageCode}, ${annotationType}, ${bookID}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
     parameterAssert(languageCode !== undefined, "checkAnnotationRows: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkAnnotationRows: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
     parameterAssert(bookID !== undefined, "checkAnnotationRows: 'bookID' parameter should be defined");
@@ -37,11 +37,11 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
     const carResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        // console.log(`checkAnnotationRows success: ${successString}`);
+        // debugLog(`checkAnnotationRows success: ${successString}`);
         carResult.successList.push(successString);
     }
     function addNoticePartial(noticeObject) {
-        // console.log(`checkAnnotationRows notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // debugLog(`checkAnnotationRows notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "ATSV addNoticePartial: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `TSV addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "ATSV addNoticePartial: 'message' parameter should be defined");
@@ -68,13 +68,13 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
     } catch (ttcError) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
-        // console.log(`Using default extractLength=${extractLength}`);
+        // debugLog(`Using default extractLength=${extractLength}`);
     }
     // else
-    // console.log(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
+    // debugLog(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
     // const halfLength = Math.floor(extractLength / 2); // rounded down
     // const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
-    // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     let lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook = 0;
@@ -92,13 +92,13 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
     }
 
     let lines = tableText.split('\n');
-    // console.log(`  '${location}' has ${lines.length.toLocaleString()} total lines (expecting ${NUM_EXPECTED_TN_FIELDS} fields in each line)`);
+    // debugLog(`  '${location}' has ${lines.length.toLocaleString()} total lines (expecting ${NUM_EXPECTED_TN_FIELDS} fields in each line)`);
 
     let lastC = '', lastV = '';
     let rowIDList = [], uniqueRowList = [];
     let numVersesThisChapter = 0;
     for (let n = 0; n < lines.length; n++) {
-        // console.log(`checkAnnotationRows checking line ${n}: ${JSON.stringify(lines[n])}`);
+        // debugLog(`checkAnnotationRows checking line ${n}: ${JSON.stringify(lines[n])}`);
         if (n === 0) {
             if (lines[0] === EXPECTED_TN_HEADING_LINE)
                 addSuccessMessage(`Checked TSV header ${ourLocation}`);
@@ -140,7 +140,7 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
                     for (const checkedFilenameExtension of drResultObject.checkedFilenameExtensions)
                         try { if (carResult.checkedFilenameExtensions.indexOf(checkedFilenameExtension) < 0) carResult.checkedFilenameExtensions.push(checkedFilenameExtension); }
                         catch { carResult.checkedFilenameExtensions = [checkedFilenameExtension]; }
-                // if (ttResult.checkedFilenameExtensions) console.log("ttResult", JSON.stringify(ttResult));
+                // if (ttResult.checkedFilenameExtensions) userLog("ttResult", JSON.stringify(ttResult));
 
                 // So here we only have to check against the previous and next fields for out-of-order problems and duplicate problems
                 if (C !== lastC || V !== lastV) {
@@ -218,7 +218,7 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
 
             } else // wrong number of fields in the row
                 // if (n === lines.length - 1) // it’s the last line
-                //     console.log(`  Line ${n}: Has ${fields.length} field(s) instead of ${NUM_EXPECTED_TN_FIELDS}: ${EXPECTED_TN_HEADING_LINE.replace(/\t/g, ', ')}`);
+                //     userLog(`  Line ${n}: Has ${fields.length} field(s) instead of ${NUM_EXPECTED_TN_FIELDS}: ${EXPECTED_TN_HEADING_LINE.replace(/\t/g, ', ')}`);
                 // else
                 if (n !== lines.length - 1) { // it’s not the last line
                     // Have a go at getting some of the first fields out of the line
@@ -232,7 +232,7 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
     }
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        // console.log(`checkAnnotationRows: calling removeDisabledNotices(${carResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        // debugLog(`checkAnnotationRows: calling removeDisabledNotices(${carResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
         carResult.noticeList = removeDisabledNotices(carResult.noticeList);
     }
 
@@ -245,8 +245,8 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
         addSuccessMessage(`checkAnnotationRows v${ANNOTATION_TABLE_VALIDATOR_VERSION_STRING} finished with ${carResult.noticeList.length ? carResult.noticeList.length.toLocaleString() : "zero"} notice${carResult.noticeList.length === 1 ? '' : 's'}`);
     else
         addSuccessMessage(`No errors or warnings found by checkAnnotationRows v${ANNOTATION_TABLE_VALIDATOR_VERSION_STRING}`)
-    // console.log(`  checkAnnotationRows returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
-    // console.log("checkAnnotationRows result is", JSON.stringify(carResult));
+    // debugLog(`  checkAnnotationRows returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
+    // debugLog("checkAnnotationRows result is", JSON.stringify(carResult));
     return carResult;
 }
 // end of checkAnnotationRows function

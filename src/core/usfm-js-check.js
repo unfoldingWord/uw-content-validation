@@ -6,13 +6,13 @@ import { parameterAssert } from './utilities';
 export function runUsfmJsCheck(fileText, convertOptions) {
     // Runs the USFM-JS converter as a check
     //  which can be quite time-consuming on large, complex USFM files
-    // console.log("Running USFM-JS converter check (can take quite a while for a large book)…");
+    // debugLog("Running USFM-JS converter check (can take quite a while for a large book)…");
 
     const jsonResult = toJSON(fileText, convertOptions);
     const jsonKeys = Object.keys(jsonResult); // Expect 'headers', 'chapters'
     const numJSONkeys = jsonKeys.length;
-    // console.log(`  Finished USFM-JS converter check with ${numJSONkeys} json key(s)`);
-    // console.log(`  jsonResult: ${JSON.stringify(jsonResult)}`)
+    // debugLog(`  Finished USFM-JS converter check with ${numJSONkeys} json key(s)`);
+    // debugLog(`  jsonResult: ${JSON.stringify(jsonResult)}`)
     // NOTE: We don’t know how to get the errors out yet
 
     return { isValidUSFM: numJSONkeys >= 2, returnedJSON: jsonResult }; // Expect 'headers', 'chapters'
@@ -30,7 +30,7 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, chec
 
      Returns a result object containing a successList and a noticeList
      */
-    // console.log(`checkUSFMToJSON(${givenText.length.toLocaleString()} chars, '${givenLocation}')…`);
+    // debugLog(`checkUSFMToJSON(${givenText.length.toLocaleString()} chars, '${givenLocation}')…`);
     parameterAssert(bookID !== undefined, "checkUSFMToJSON: 'bookID' parameter should be defined");
     parameterAssert(typeof bookID === 'string', `checkUSFMToJSON: 'bookID' parameter should be a string not a '${typeof bookID}': ${bookID}`);
     parameterAssert(bookID.length === 3, `checkUSFMToJSON: 'bookID' parameter should be three characters long not ${bookID.length}`);
@@ -51,7 +51,7 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, chec
     const result = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        // console.log(`checkUSFMToJSON success: ${successString}`);
+        // debugLog(`checkUSFMToJSON success: ${successString}`);
         result.successList.push(successString);
     }
     function addNotice6to7({ priority, message, lineNumber, characterIndex, extract, location }) {
@@ -63,7 +63,7 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, chec
         * @param {String} extract - short extract from the line centred on the problem (if available)
         * @param {String} location - description of where the issue is located
         */
-        // console.log(`checkUSFMToJSON notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // debugLog(`checkUSFMToJSON notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         parameterAssert(priority !== undefined, "cUSFMjs addNotice6to7: 'priority' parameter should be defined");
         parameterAssert(typeof priority === 'number', `cUSFMjs addNotice6to7: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         parameterAssert(message !== undefined, "cUSFMjs addNotice6to7: 'message' parameter should be defined");
@@ -91,8 +91,8 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, chec
         addNotice6to7({ priority: 943, message: `USFM3 toJSON Check doesn’t pass`, location: ourLocation });
 
     addSuccessMessage(`Checked USFM-JS`);
-    // console.log(`  checkUSFMToJSON returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
-    // console.log(`checkUSFMToJSON result is ${JSON.stringify(result)}`);
+    // debugLog(`  checkUSFMToJSON returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
+    // debugLog(`checkUSFMToJSON result is ${JSON.stringify(result)}`);
     return result;
 }
 // end of checkUSFMToJSON function

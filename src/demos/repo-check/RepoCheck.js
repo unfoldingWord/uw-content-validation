@@ -18,16 +18,16 @@ function RepoCheck(/*username, languageCode,*/ props) {
         and then checks all the individual files
     */
 
-    // console.log(`I'm here in RepoCheck v${REPO_VALIDATOR_VERSION_STRING}`);
+    // debugLog(`I'm here in RepoCheck v${REPO_VALIDATOR_VERSION_STRING}`);
     // consoleLogObject("props", props);
     // consoleLogObject("props.classes", props.classes);
 
     const username = props.username;
-    // console.log(`username='${username}'`);
+    // debugLog(`username='${username}'`);
     const repoName = props.repoName;
-    // console.log(`repoName='${repoName}'`);
+    // debugLog(`repoName='${repoName}'`);
     let branch = props.branch;
-    // console.log(`branch='${branch}'`);
+    // debugLog(`branch='${branch}'`);
     if (branch === undefined) branch = 'master';
 
     const checkingOptions = { // Uncomment any of these to test them
@@ -48,12 +48,12 @@ function RepoCheck(/*username, languageCode,*/ props) {
 
     const [result, setResultValue] = useState("Waiting-checkRepo");
     useEffect(() => {
-        // console.log("RepoCheck.useEffect() called with ", JSON.stringify(props));
+        // debugLog("RepoCheck.useEffect() called with ", JSON.stringify(props));
 
         // Use an IIFE (Immediately Invoked Function Expression)
         //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
         (async () => {
-            // console.log("Started RepoCheck.unnamedFunction()");
+            // debugLog("Started RepoCheck.unnamedFunction()");
 
             // NOTE from RJH: I can’t find the correct React place for this / way to do this
             //                  so it shows a warning for the user, and doesn’t continue to try to process
@@ -72,7 +72,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
             }
 
             if (props.reloadAllFilesFirst && props.reloadAllFilesFirst.slice(0).toUpperCase() === 'Y') {
-                console.log("Clearing cache before running book package check…");
+                userLog("Clearing cache before running book package check…");
                 setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running book package check…</p>);
                 await clearCaches();
             }
@@ -82,7 +82,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
             repoCode = repoCode.toUpperCase();
             if (repoCode === 'TN2') repoCode = 'TN';
             else if (repoCode === 'TQ2') repoCode = 'TQ';
-            // console.log(`RepoCheck languageCode='${languageCode}' repoCode='${repoCode}'`);
+            // debugLog(`RepoCheck languageCode='${languageCode}' repoCode='${repoCode}'`);
 
             // Load whole repos, especially if we are going to check files in manifests
             const repoPreloadList = ['TW'];
@@ -104,9 +104,9 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 } catch (checkRepoError) {
                     rawCRResults = { successList: [], noticeList: [] };
                     rawCRResults.noticeList.push({ priority: 999, message: "checkRepo function FAILED", repoName, extract: checkRepoError, location: repoName });
-                    // console.log("RepoCheck trace is", checkRepoError.trace);
+                    // debugLog("RepoCheck trace is", checkRepoError.trace);
                 }
-                // console.log("checkRepo() returned", typeof rawCRResults); //, JSON.stringify(rawCRResults));
+                // debugLog("checkRepo() returned", typeof rawCRResults); //, JSON.stringify(rawCRResults));
 
                 // Add some extra fields to our rawCRResults object in case we need this information again later
                 rawCRResults.checkType = 'Repo';
@@ -114,7 +114,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 rawCRResults.languageCode = languageCode;
                 rawCRResults.checkedOptions = checkingOptions;
 
-                // console.log("Here with RC rawCRResults", typeof rawCRResults);
+                // debugLog("Here with RC rawCRResults", typeof rawCRResults);
                 // Now do our final handling of the result -- we have some options available
                 let processOptions = { // Uncomment any of these to test them
                     // 'maximumSimilarMessages': 4, // default is 3 -- 0 means don’t suppress
@@ -146,10 +146,10 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 if (displayType === 'ErrorsWarnings') {
                     const processedResults = processNoticesToErrorsWarnings(rawCRResults, processOptions);
                     // displayPropertyNames("RC processedResults", processedResults);
-                    //             console.log(`RepoCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
+                    //             userLog(`RepoCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
                     //   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()}`, "numSuppressedErrors=" + processedResults.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + processedResults.numSuppressedWarnings.toLocaleString());
 
-                    // console.log("Here now in rendering bit!");
+                    // debugLog("Here now in rendering bit!");
 
                     if (processedResults.errorList.length || processedResults.warningList.length)
                         setResultValue(<>
@@ -163,7 +163,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
                         </>);
                 } else if (displayType === 'SevereMediumLow') {
                     const processedResults = processNoticesToSevereMediumLow(rawCRResults, processOptions);
-                    //             console.log(`RepoCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
+                    //             userLog(`RepoCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
                     //   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()}`, "numSuppressedErrors=" + processedResults.numSuppressedErrors.toLocaleString(), "numSuppressedWarnings=" + processedResults.numSuppressedWarnings.toLocaleString());
 
                     if (processedResults.severeList.length || processedResults.mediumList.length || processedResults.lowList.length)
@@ -178,7 +178,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
                         </>);
                 } else if (displayType === 'SingleList') {
                     const processedResults = processNoticesToSingleList(rawCRResults, processOptions);
-                    // console.log(`RepoCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s) and ${processedResults.warningList.length.toLocaleString()} notice(s)
+                    // debugLog(`RepoCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s) and ${processedResults.warningList.length.toLocaleString()} notice(s)
                     //   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
                     if (processedResults.warningList.length)
@@ -193,7 +193,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
                         </>);
                 } else setResultValue(<b style={{ color: 'red' }}>Invalid displayType='{displayType}'</b>)
 
-                // console.log("Finished rendering bit.");
+                // debugLog("Finished rendering bit.");
             } catch (rcError) {
                 console.error(`RepoCheck main code block got error: ${rcError.message}`);
                 setResultValue(<>

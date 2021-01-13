@@ -547,7 +547,7 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
 
     Returns a result object containing a successList and a noticeList
     */
-    // console.log(`checkManifestText(${username}, ${repoName}, ${repoBranch}, ${manifestText.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
+    // debugLog(`checkManifestText(${username}, ${repoName}, ${repoBranch}, ${manifestText.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
     parameterAssert(username !== undefined, "checkManifestText: 'username' parameter should be defined");
     parameterAssert(typeof username === 'string', `checkManifestText: 'username' parameter should be a string not a '${typeof username}': ${username}`);
     parameterAssert(repoName !== undefined, "checkManifestText: 'repoName' parameter should be defined");
@@ -572,22 +572,22 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
     } catch (mfcError) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
-        // console.log(`Using default extractLength=${extractLength}`);
+        // debugLog(`Using default extractLength=${extractLength}`);
     }
     // else
-    // console.log(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
+    // debugLog(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
     // const halfLength = Math.floor(extractLength / 2); // rounded down
     // const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
-    // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     const cmtResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        // console.log(`checkManifestText success: ${successString}`);
+        // debugLog(`checkManifestText success: ${successString}`);
         cmtResult.successList.push(successString);
     }
     function addNotice(noticeObject) {
-        // console.log(`checkManifestText Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // debugLog(`checkManifestText Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "cManT addNotice: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `cManT addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "cManT addNotice: 'message' parameter should be defined");
@@ -611,7 +611,7 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global list of notices
-        // console.log(`cManT ourYAMLTextChecks(${textName}, (${fieldText.length}), ${allowedLinks}, ${fieldLocation}, …)`);
+        // debugLog(`cManT ourYAMLTextChecks(${textName}, (${fieldText.length}), ${allowedLinks}, ${fieldLocation}, …)`);
         parameterAssert(textName !== undefined, "cManT ourYAMLTextChecks: 'textName' parameter should be defined");
         parameterAssert(typeof textName === 'string', `cManT ourYAMLTextChecks: 'textName' parameter should be a string not a '${typeof textName}'`);
         parameterAssert(manifestText !== undefined, "cManT ourYAMLTextChecks: 'manifestText' parameter should be defined");
@@ -631,9 +631,9 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
     // Main code for checkManifestText function
     const formData = ourYAMLTextChecks(repoName, manifestText, ourLocation, checkingOptions);
     if (formData) {
-        // console.log("formData", JSON.stringify(formData));
+        // debugLog("formData", JSON.stringify(formData));
         const formDataKeys = Object.keys(formData);
-        // console.log("formData keys", JSON.stringify(formDataKeys));
+        // debugLog("formData keys", JSON.stringify(formDataKeys));
 
         if (formDataKeys.indexOf('dublin_core') < 0)
             addNotice({ priority: 928, message: "'dublin_core' key is missing", location: ourLocation });
@@ -644,17 +644,17 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
 
         // Check Dublin Core stuff
         // const DublinCoreData = formData.dublin_core
-        // console.log("checkManifestText DublinCoreData", JSON.stringify(DublinCoreData));
+        // debugLog("checkManifestText DublinCoreData", JSON.stringify(DublinCoreData));
 
         // TODO: We could add a lot more checking here
         // for (const mainKey in formData) {
-        //     console.log("mainKey", typeof mainKey, mainKey);
+        //     userLog("mainKey", typeof mainKey, mainKey);
         //     const mainSection = formData[mainKey];
-        //     console.log("mainSection", typeof mainSection, JSON.stringify(mainSection));
+        //     userLog("mainSection", typeof mainSection, JSON.stringify(mainSection));
         //     for (const key2 in mainSection) {
-        //         console.log(mainKey, "key2", typeof key2, key2);
+        //         userLog(mainKey, "key2", typeof key2, key2);
         //         const section2 = mainSection[key2];
-        //         console.log(mainKey, "section2", typeof section2, JSON.stringify(section2));
+        //         userLog(mainKey, "section2", typeof section2, JSON.stringify(section2));
 
         //     }
         // }
@@ -663,7 +663,7 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
         //  using AJV from https://www.npmjs.com/package/ajv
         const valid = validate(formData);
         if (!valid) {
-            // console.log("checkManifestText validationResult", valid, JSON.stringify(validate.errors));
+            // debugLog("checkManifestText validationResult", valid, JSON.stringify(validate.errors));
             // Here's a typical error entry:
             //  {"keyword":"pattern",
             //   "dataPath":".dublin_core.source[0].identifier",
@@ -671,7 +671,7 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
             //   "params":{"pattern":"^[a-z][a-z0-9-]"},
             //   "message":"should match pattern \"^[a-z][a-z0-9-]\""}
             for (const errorObject of validate.errors) {
-                // console.log("checkManifestText schema validation errorObject", JSON.stringify(errorObject));
+                // debugLog("checkManifestText schema validation errorObject", JSON.stringify(errorObject));
                 // Can’t give a lineNumber unfortunately
                 addNotice({ priority: 985, message: `Field does not match schema ${errorObject.keyword}`, details: errorObject.message, fieldName: errorObject.dataPath, location: ourLocation });
             }
@@ -680,9 +680,9 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
         // Check the project files in the manifest actually exist
         const getFile_ = (checkingOptions && checkingOptions?.getFile) ? checkingOptions?.getFile : cachedGetFile;
         for (const projectEntry of formData['projects']) {
-            // console.log(`Manifest project: ${JSON.stringify(projectEntry)}`);
+            // debugLog(`Manifest project: ${JSON.stringify(projectEntry)}`);
             const projectKeys = Object.keys(projectEntry); // Expect title, versification, identifier, sort, path, categories
-            // console.log("Project keys", JSON.stringify(projectKeys));
+            // debugLog("Project keys", JSON.stringify(projectKeys));
             for (const keyName of ['identifier', 'path', 'sort'])
                 if (projectKeys.indexOf(keyName) === -1)
                     addNotice({ priority: 939, message: "Key is missing for project", details: keyName, extract: JSON.stringify(projectEntry), location: ourLocation });
@@ -700,7 +700,7 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
                     let projectFileContent;
                     try {
                         projectFileContent = await getFile_({ username, repository: repoName, path: projectFilepath, branch: repoBranch });
-                        // console.log("Fetched manifest project fileContent for", repoName, projectFilepath, typeof projectFileContent, projectFileContent.length);
+                        // debugLog("Fetched manifest project fileContent for", repoName, projectFilepath, typeof projectFileContent, projectFileContent.length);
                         if (!projectFileContent)
                             addNotice({ priority: 938, message: `Unable to find project file mentioned in manifest`, extract: projectFilepath, location: ourLocation });
                         else if (projectFileContent.length < 10)
@@ -714,7 +714,7 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
     }
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        // console.log(`checkManifestText: calling removeDisabledNotices(${cmtResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        // debugLog(`checkManifestText: calling removeDisabledNotices(${cmtResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
         cmtResult.noticeList = removeDisabledNotices(cmtResult.noticeList);
     }
 
@@ -723,8 +723,8 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
         addSuccessMessage(`checkManifestText v${MANIFEST_VALIDATOR_VERSION_STRING} finished with ${cmtResult.noticeList.length ? cmtResult.noticeList.length.toLocaleString() : "zero"} notice${cmtResult.noticeList.length === 1 ? '' : 's'}`);
     else
         addSuccessMessage(`No errors or warnings found by checkManifestText v${MANIFEST_VALIDATOR_VERSION_STRING}`)
-    // console.log(`  checkManifestText returning with ${cmtResult.successList.length.toLocaleString()} success(es), ${cmtResult.noticeList.length.toLocaleString()} notice(s).`);
-    // console.log("checkManifestText result is", JSON.stringify(cmtResult));
+    // debugLog(`  checkManifestText returning with ${cmtResult.successList.length.toLocaleString()} success(es), ${cmtResult.noticeList.length.toLocaleString()} notice(s).`);
+    // debugLog("checkManifestText result is", JSON.stringify(cmtResult));
     return cmtResult;
 }
 // end of checkManifestText function

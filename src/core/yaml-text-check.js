@@ -16,7 +16,7 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, c
         as well as the parsed YAML for further checking.
 
      */
-    // console.log(`checkYAMLText(${textName}, ${YAMLText.length}, ${givenLocation})…`);
+    // debugLog(`checkYAMLText(${textName}, ${YAMLText.length}, ${givenLocation})…`);
     parameterAssert(languageCode !== undefined, "checkYAMLText: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkYAMLText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
     parameterAssert(textName !== undefined, "checkYAMLText: 'textName' parameter should be defined");
@@ -40,22 +40,22 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, c
     } catch (ytcError) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
-        // console.log(`Using default extractLength=${extractLength}`);
+        // debugLog(`Using default extractLength=${extractLength}`);
     }
     // else
-    // console.log(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
+    // debugLog(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
     // const halfLength = Math.floor(extractLength / 2); // rounded down
     // const halfLengthPlus = Math.floor((extractLength+1) / 2); // rounded up
-    // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     const cytResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        // console.log(`checkYAMLText success: ${successString}`);
+        // debugLog(`checkYAMLText success: ${successString}`);
         cytResult.successList.push(successString);
     }
     function addNotice(noticeObject) {
-        // console.log(`checkYAMLText Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // debugLog(`checkYAMLText Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "cYt addNotice: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `cManT addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "cYt addNotice: 'message' parameter should be defined");
@@ -84,7 +84,7 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, c
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global list of notices
-        // console.log(`cYt ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${fieldLocation}, …)`);
+        // debugLog(`cYt ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${fieldLocation}, …)`);
         parameterAssert(fieldText !== undefined, "cYt ourCheckTextField: 'fieldText' parameter should be defined");
         parameterAssert(typeof fieldText === 'string', `cYt ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         parameterAssert(allowedLinks === true || allowedLinks === false, "cYt ourCheckTextField: allowedLinks parameter must be either true or false");
@@ -104,20 +104,20 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, c
 
     function checkYAMLLineContents(lineNumber, lineText, lineLocation) {
 
-        // console.log(`checkYAMLLineContents for '${lineNumber} ${lineText}' at${lineLocation}`);
+        // debugLog(`checkYAMLLineContents for '${lineNumber} ${lineText}' at${lineLocation}`);
         let thisText = lineText
 
         // Remove leading spaces
         thisText = thisText.replace(/^ +/g, '')
-        // console.log(`After removing leading spaces have '${thisText}'`);
+        // debugLog(`After removing leading spaces have '${thisText}'`);
 
         // Remove leading hyphens
         thisText = thisText.replace(/^-/g, '')
-        // console.log(`After removing hyphens have '${thisText}'`);
+        // debugLog(`After removing hyphens have '${thisText}'`);
 
         // Remove leading spaces again now
         thisText = thisText.replace(/^ +/g, '')
-        // console.log(`After removing more leading spaces have '${thisText}'`);
+        // debugLog(`After removing more leading spaces have '${thisText}'`);
 
         const allowedLinksInLine = thisText.startsWith('url:') || thisText.startsWith('chapter_url:') || thisText.startsWith('rc:');
         if (thisText)
@@ -152,11 +152,11 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, c
 
     // Main code for checkYAMLText function
     const lines = YAMLText.split('\n');
-    // console.log(`  '${location}' has ${lines.length.toLocaleString()} total lines`);
+    // debugLog(`  '${location}' has ${lines.length.toLocaleString()} total lines`);
     let formData;
     try {
         formData = yaml.parse(YAMLText);
-        // console.log("yaml.parse(YAMLText) got formData", JSON.stringify(formData));
+        // debugLog("yaml.parse(YAMLText) got formData", JSON.stringify(formData));
     }
     catch (yamlError) {
         // console.error(`yaml parse error: ${yamlError.message}`);
@@ -173,7 +173,7 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, c
         // let numLeadingSpaces;
         // if (line) {
         //     numLeadingSpaces = line.match(/^ */)[0].length;
-        // console.log(`Got numLeadingSpaces=${numLeadingSpaces} for ${line}${atString}`);
+        // debugLog(`Got numLeadingSpaces=${numLeadingSpaces} for ${line}${atString}`);
         //     if (numLeadingSpaces && lastNumLeadingSpaces && numLeadingSpaces!=lastNumLeadingSpaces)
         //         addNotice({472, "Nesting seems confused", 0, '', atString);
 
@@ -191,7 +191,7 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, c
     ourBasicFileChecks(textName, YAMLText, givenLocation, checkingOptions);
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        // console.log(`checkYAMLText: calling removeDisabledNotices(${cytResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        // debugLog(`checkYAMLText: calling removeDisabledNotices(${cytResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
         cytResult.noticeList = removeDisabledNotices(cytResult.noticeList);
     }
 
@@ -200,8 +200,8 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, c
         addSuccessMessage(`checkYAMLText v${YAML_VALIDATOR_VERSION_STRING} finished with ${cytResult.noticeList.length ? cytResult.noticeList.length.toLocaleString() : "zero"} notice${cytResult.noticeList.length === 1 ? '' : 's'}`);
     else
         addSuccessMessage(`No errors or warnings found by checkYAMLText v${YAML_VALIDATOR_VERSION_STRING}`)
-    // console.log(`  checkYAMLText returning with ${cytResult.successList.length.toLocaleString()} success(es), ${cytResult.noticeList.length.toLocaleString()} notice(s).`);
-    // console.log("checkYAMLText result is", JSON.stringify(result));
+    // debugLog(`  checkYAMLText returning with ${cytResult.successList.length.toLocaleString()} success(es), ${cytResult.noticeList.length.toLocaleString()} notice(s).`);
+    // debugLog("checkYAMLText result is", JSON.stringify(result));
     return cytResult;
 }
 // end of checkYAMLText function

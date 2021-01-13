@@ -10,7 +10,7 @@ import { parameterAssert } from './utilities';
 export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLocation, checkingOptions) {
     // Runs the BCS USFM Grammar checker
     //  which can be quite time-consuming on large, complex USFM files
-    // console.log(`Running ${strictnessString} BCS USFM grammar check${givenLocation} (can take quite a while for a large book)…`);
+    // debugLog(`Running ${strictnessString} BCS USFM grammar check${givenLocation} (can take quite a while for a large book)…`);
     parameterAssert(strictnessString === 'strict' || strictnessString === 'relaxed', `Unexpected strictnessString='${strictnessString}'`);
 
     let extractLength;
@@ -19,13 +19,13 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
     } catch (usfmELerror) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
-        // console.log(`Using default extractLength=${extractLength}`);
+        // debugLog(`Using default extractLength=${extractLength}`);
     }
     // else
-    // console.log(`Using supplied extractLength=${extractLength} cf. default=${DEFAULT_EXTRACT_LENGTH}`);
+    // debugLog(`Using supplied extractLength=${extractLength} cf. default=${DEFAULT_EXTRACT_LENGTH}`);
     const halfLength = Math.floor(extractLength / 2); // rounded down
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
-    // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     // Now create the parser and run the check
     const ourUsfmParser = new grammar.USFMParser(fileText,
@@ -36,10 +36,10 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
     const parserResult = ourUsfmParser.toJSON()
     let parserMessages;
     parserMessages = parserResult._messages; // Throw away the JSON (if any)
-    // console.log(`  Finished BCS USFM grammar check with messages: ${JSON.stringify(parserResult)}\n and warnings: ${JSON.stringify(ourUsfmParser.warnings)}.`);
+    // debugLog(`  Finished BCS USFM grammar check with messages: ${JSON.stringify(parserResult)}\n and warnings: ${JSON.stringify(ourUsfmParser.warnings)}.`);
     let parseError;
     parseError = parserMessages._error;
-    // console.log(`  parseError: ${parseError}`);
+    // debugLog(`  parseError: ${parseError}`);
     let ourErrorMessage, lineNumberString, characterIndex, extract;
     // NOTE: The following code is quite fragile
     //  as it depends on the precise format of the error message return from USFMParser
@@ -47,10 +47,10 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
     if (parseError) {
         const contextRE = /(\d+?)\s\|\s(.+)/g;
         for (const errorLine of parseError.split('\n')) {
-            // console.log(`BCS errorLine=${errorLine}`);
+            // debugLog(`BCS errorLine=${errorLine}`);
             if (errorLine.startsWith('>')) {
                 const regexResult = contextRE.exec(errorLine.substring(1).trim());
-                // console.log(`  regexResult: ${JSON.stringify(regexResult)}`);
+                // debugLog(`  regexResult: ${JSON.stringify(regexResult)}`);
                 if (regexResult) {
                     lineNumberString = regexResult[1];
                     extract = regexResult[2];
@@ -64,7 +64,7 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
             }
             else ourErrorMessage = errorLine; // We only want the last one
         }
-        // console.log(`  ourErrorMessage: '${ourErrorMessage}' lineNumberString=${lineNumberString} characterIndex=${characterIndex} extract='${extract}'`);
+        // debugLog(`  ourErrorMessage: '${ourErrorMessage}' lineNumberString=${lineNumberString} characterIndex=${characterIndex} extract='${extract}'`);
 
         // Some of these "errors" need to be degraded in priority
 
@@ -93,7 +93,7 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
                 if (!lines[n - 1]) {
                     lineNumber += 1; // Increment error line number for each blank line
                     if (!notified) {
-                        console.log("Temporarily adjusting BCS grammar error line number to account for blank lines");
+                        userLog("Temporarily adjusting BCS grammar error line number to account for blank lines");
                         notified = true;
                     }
                 }
@@ -105,10 +105,10 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
     }
 
     const parseWarnings = parserResult._warnings ? parserResult._warnings : ourUsfmParser.warnings;
-    // console.log(`  Warnings: ${JSON.stringify(parseWarnings)}`);
+    // debugLog(`  Warnings: ${JSON.stringify(parseWarnings)}`);
     let ourWarnings = [];
     for (const warningString of parseWarnings) {
-        // console.log(`warningString: '${warningString}'`);
+        // debugLog(`warningString: '${warningString}'`);
         // Clean up their warnings a little: Remove trailing spaces and periods
         let adjustedString = warningString.trim(); // Removes the trailing space
         if (adjustedString.endsWith('.')) adjustedString = adjustedString.substring(0, adjustedString.length - 1);
@@ -130,7 +130,7 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
 
      Returns a result object containing a successList and a noticeList
      */
-    console.log(`checkUSFMGrammar(${givenText.length.toLocaleString()} chars, '${givenLocation}')…`);
+    userLog(`checkUSFMGrammar(${givenText.length.toLocaleString()} chars, '${givenLocation}')…`);
     parameterAssert(strictnessString === 'strict' || strictnessString === 'relaxed', `Unexpected strictnessString='${strictnessString}'`);
 
     let ourLocation = givenLocation;
@@ -140,7 +140,7 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
     const cugResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        // console.log(`checkUSFMGrammar success: ${successString}`);
+        // debugLog(`checkUSFMGrammar success: ${successString}`);
         cugResult.successList.push(successString);
     }
     function addNotice6to7(noticeObject) {
@@ -152,7 +152,7 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
         * @param {String} extract - short extract from the line centred on the problem (if available)
         * @param {String} location - description of where the issue is located
         */
-        // console.log(`checkUSFMGrammar notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // debugLog(`checkUSFMGrammar notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "cUSFMgr addNotice6to7: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `cUSFMgr addNotice6to7: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "cUSFMgr addNotice6to7: 'message' parameter should be defined");
@@ -172,7 +172,7 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
         return cugResult;
 
     const grammarCheckResult = runBCSGrammarCheck(strictnessString, givenText, filename, ourLocation, checkingOptions);
-    // console.log(`grammarCheckResult=${JSON.stringify(grammarCheckResult)}`);
+    // debugLog(`grammarCheckResult=${JSON.stringify(grammarCheckResult)}`);
 
     if (!grammarCheckResult.isValidUSFM)
         addNotice6to7({ priority: 944, message: `USFM3 Grammar Check (${strictnessString} mode) doesn’t pass`, filename, location: ourLocation });
@@ -186,8 +186,8 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
         addNotice6to7({ priority: 101, message: `USFMGrammar: ${warningString}`, filename, location: ourLocation });
 
     addSuccessMessage(`Checked USFM Grammar (${strictnessString} mode) ${grammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN’T validate)"}`);
-    // console.log(`  checkUSFMGrammar returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
-    // console.log(`checkUSFMGrammar result is ${JSON.stringify(result)}`);
+    // debugLog(`  checkUSFMGrammar returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
+    // debugLog(`checkUSFMGrammar result is ${JSON.stringify(result)}`);
     return cugResult;
 }
 // end of checkUSFMGrammar function

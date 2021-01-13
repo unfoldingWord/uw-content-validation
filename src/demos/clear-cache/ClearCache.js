@@ -4,7 +4,7 @@ import { clearCaches } from '../../core/getApi';
 
 
 function ClearCache({areYouSure}) {
-    console.log(`ClearCache(${areYouSure})`);
+    userLog(`ClearCache(${areYouSure})`);
 
     let ccResult;
     if (areYouSure === 'Y')

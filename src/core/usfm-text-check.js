@@ -130,7 +130,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
 
      Returns a result object containing a successList and a noticeList
      */
-    // console.log(`checkUSFMText(${languageCode}, ${bookID}, ${givenText.length.toLocaleString()} chars, '${givenLocation}', ${JSON.stringify(checkingOptions)})…`);
+    // debugLog(`checkUSFMText(${languageCode}, ${bookID}, ${givenText.length.toLocaleString()} chars, '${givenLocation}', ${JSON.stringify(checkingOptions)})…`);
     parameterAssert(languageCode !== undefined, "checkUSFMText: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkUSFMText: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
     parameterAssert(repoCode !== undefined, "checkUSFMText: 'repoCode' parameter should be defined");
@@ -155,13 +155,13 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
     } catch (usfmELerror) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
-        // console.log(`Using default extractLength=${extractLength}`);
+        // debugLog(`Using default extractLength=${extractLength}`);
     }
     // else
-    // console.log(`Using supplied extractLength=${extractLength} cf. default=${DEFAULT_EXTRACT_LENGTH}`);
+    // debugLog(`Using supplied extractLength=${extractLength} cf. default=${DEFAULT_EXTRACT_LENGTH}`);
     const halfLength = Math.floor(extractLength / 2); // rounded down
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
-    // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     const lowercaseBookID = bookID.toLowerCase();
 
@@ -171,12 +171,12 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
     const result = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        // console.log(`checkUSFMText success: ${successString}`);
+        // debugLog(`checkUSFMText success: ${successString}`);
         result.successList.push(successString);
     }
     function addNoticePartial(noticeObject) {
-        // console.log("checkUSFMText addNoticePartial:", JSON.stringify(noticeObject));
-        // console.log(`checkUSFMText addNoticePartial: (priority=${noticeObject.priority}) ${noticeObject.C}:${noticeObject.V} ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
+        // debugLog("checkUSFMText addNoticePartial:", JSON.stringify(noticeObject));
+        // debugLog(`checkUSFMText addNoticePartial: (priority=${noticeObject.priority}) ${noticeObject.C}:${noticeObject.V} ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
         parameterAssert(noticeObject.priority !== undefined, "cUSFM addNoticePartial: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `cUSFM addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "cUSFM addNoticePartial: 'message' parameter should be defined");
@@ -202,11 +202,11 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
     function ourRunBCSGrammarCheck(filename, fileText, fileLocation) {
         // Runs the BCS USFM Grammar checker
         //  which can be quite time-consuming on large, complex USFM files
-        // console.log("Running our BCS USFM grammar check (can take quite a while for a large book)…");
+        // debugLog("Running our BCS USFM grammar check (can take quite a while for a large book)…");
 
         const grammarCheckResult = runBCSGrammarCheck('strict', fileText, filename, fileLocation, checkingOptions);
         // NOTE: We haven’t figured out how to get ERRORS out of this parser yet
-        // console.log(`  Finished our BCS USFM grammar check with ${grammarCheckResult.isValidUSFM} and ${grammarCheckResult.warnings.length} warnings.`);
+        // debugLog(`  Finished our BCS USFM grammar check with ${grammarCheckResult.isValidUSFM} and ${grammarCheckResult.warnings.length} warnings.`);
         addSuccessMessage(`Checked USFM Grammar (strict mode) ${grammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN’T validate)"}`);
 
         // if (!grammarCheckResult.isValidUSFM) // TEMP DEGRADE TO WARNING 994 -> 544 ................XXXXXXXXXXXXXXXXXXXXXX
@@ -224,7 +224,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 ))
                 addNoticePartial(grammarCheckResult.error);
 
-        // console.log("  Warnings:", JSON.stringify(grammarCheckResult.warnings));
+        // debugLog("  Warnings:", JSON.stringify(grammarCheckResult.warnings));
         // Display these warnings but with a lower priority
         for (const warningString of grammarCheckResult.warnings)
             if (!warningString.startsWith("Empty lines present") // we allow empty lines in our USFM
@@ -259,7 +259,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         Note that this code below does NOT check for chapters and verses
             being in the correct order. That’s done elsewhere.
         */
-        // console.log("Running CVCheck() using USFM-JS (can take quite a while for a large book)…");
+        // debugLog("Running CVCheck() using USFM-JS (can take quite a while for a large book)…");
         let chapterNumberString, verseNumberString;
 
 
@@ -268,56 +268,56 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         function hasText(verseObjects) {
             let gotDeep = false;
             for (const someObject of verseObjects) {
-                // console.log("someObject", JSON.stringify(someObject));
+                // debugLog("someObject", JSON.stringify(someObject));
                 if (someObject['type'] === 'text' && someObject['text'].length > MINIMUM_TEXT_WORDS)
                     return true;
                 if (someObject['type'] === 'word' && someObject['text'].length > MINIMUM_WORD_LENGTH)
                     return true;
                 if (someObject['type'] === 'milestone')
                     for (const someSubobject of someObject['children']) {
-                        // console.log("someSubobject", JSON.stringify(someSubobject));
+                        // debugLog("someSubobject", JSON.stringify(someSubobject));
                         if (someSubobject['type'] === 'text' && someSubobject['text'].length > MINIMUM_TEXT_WORDS)
                             return true;
                         if (someSubobject['type'] === 'word' && someSubobject['text'].length > MINIMUM_WORD_LENGTH)
                             return true;
                         if (someSubobject['type'] === 'milestone')
                             for (const someSub2object of someSubobject['children']) {
-                                // console.log("someSub2object", JSON.stringify(someSub2object));
+                                // debugLog("someSub2object", JSON.stringify(someSub2object));
                                 if (someSub2object['type'] === 'text' && someSub2object['text'].length > MINIMUM_TEXT_WORDS)
                                     return true;
                                 if (someSub2object['type'] === 'word' && someSub2object['text'].length > MINIMUM_WORD_LENGTH)
                                     return true;
                                 if (someSub2object['type'] === 'milestone')
                                     for (const someSub3object of someSub2object['children']) {
-                                        // console.log("someSub3object", JSON.stringify(someSub3object));
+                                        // debugLog("someSub3object", JSON.stringify(someSub3object));
                                         if (someSub3object['type'] === 'text' && someSub3object['text'].length > MINIMUM_TEXT_WORDS)
                                             return true;
                                         if (someSub3object['type'] === 'word' && someSub3object['text'].length > MINIMUM_WORD_LENGTH)
                                             return true;
                                         if (someSub3object['type'] === 'milestone')
                                             for (const someSub4object of someSub3object['children']) {
-                                                // console.log("someSub4object", JSON.stringify(someSub4object));
+                                                // debugLog("someSub4object", JSON.stringify(someSub4object));
                                                 if (someSub4object['type'] === 'text' && someSub4object['text'].length > MINIMUM_TEXT_WORDS)
                                                     return true;
                                                 if (someSub4object['type'] === 'word' && someSub4object['text'].length > MINIMUM_WORD_LENGTH)
                                                     return true;
                                                 if (someSub4object['type'] === 'milestone')
                                                     for (const someSub5object of someSub4object['children']) {
-                                                        // console.log("someSub5object", JSON.stringify(someSub5object));
+                                                        // debugLog("someSub5object", JSON.stringify(someSub5object));
                                                         if (someSub5object['type'] === 'text' && someSub5object['text'].length > MINIMUM_TEXT_WORDS)
                                                             return true;
                                                         if (someSub5object['type'] === 'word' && someSub5object['text'].length > MINIMUM_WORD_LENGTH)
                                                             return true;
                                                         if (someSub5object['type'] === 'milestone')
                                                             for (const someSub6object of someSub5object['children']) {
-                                                                // console.log("someSub6object", bookID, CVlocation, JSON.stringify(someSub6object));
+                                                                // debugLog("someSub6object", bookID, CVlocation, JSON.stringify(someSub6object));
                                                                 if (someSub6object['type'] === 'text' && someSub6object['text'].length > MINIMUM_TEXT_WORDS)
                                                                     return true;
                                                                 if (someSub6object['type'] === 'word' && someSub6object['text'].length > MINIMUM_WORD_LENGTH)
                                                                     return true;
                                                                 if (someSub6object['type'] === 'milestone')
                                                                     for (const someSub7object of someSub6object['children']) {
-                                                                        // console.log("someSub7object", bookID, CVlocation, JSON.stringify(someSub7object));
+                                                                        // debugLog("someSub7object", bookID, CVlocation, JSON.stringify(someSub7object));
                                                                         if (someSub7object['type'] === 'text' && someSub7object['text'].length > MINIMUM_TEXT_WORDS)
                                                                             return true;
                                                                         if (someSub7object['type'] === 'word' && someSub7object['text'].length > MINIMUM_WORD_LENGTH)
@@ -325,21 +325,21 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                                                                         if (someSub7object['type'] === 'milestone')
                                                                             // UST Luke 15:3 has eight levels of nesting !!!
                                                                             for (const someSub8object of someSub7object['children']) {
-                                                                                // console.log("someSub8object", bookID, CVlocation, JSON.stringify(someSub8object));
+                                                                                // debugLog("someSub8object", bookID, CVlocation, JSON.stringify(someSub8object));
                                                                                 if (someSub8object['type'] === 'text' && someSub8object['text'].length > MINIMUM_TEXT_WORDS)
                                                                                     return true;
                                                                                 if (someSub8object['type'] === 'word' && someSub8object['text'].length > MINIMUM_WORD_LENGTH)
                                                                                     return true;
                                                                                 if (someSub8object['type'] === 'milestone')
                                                                                     for (const someSub9object of someSub8object['children']) {
-                                                                                        // console.log("someSub9object", bookID, CVlocation, JSON.stringify(someSub9object));
+                                                                                        // debugLog("someSub9object", bookID, CVlocation, JSON.stringify(someSub9object));
                                                                                         if (someSub9object['type'] === 'text' && someSub9object['text'].length > MINIMUM_TEXT_WORDS)
                                                                                             return true;
                                                                                         if (someSub9object['type'] === 'word' && someSub9object['text'].length > MINIMUM_WORD_LENGTH)
                                                                                             return true;
                                                                                         if (someSub9object['type'] === 'milestone')
                                                                                             for (const someSub10object of someSub9object['children']) {
-                                                                                                // console.log("someSub10object", bookID, CVlocation, JSON.stringify(someSub10object));
+                                                                                                // debugLog("someSub10object", bookID, CVlocation, JSON.stringify(someSub10object));
                                                                                                 if (someSub10object['type'] === 'text' && someSub10object['text'].length > MINIMUM_TEXT_WORDS)
                                                                                                     return true;
                                                                                                 if (someSub10object['type'] === 'word' && someSub10object['text'].length > MINIMUM_WORD_LENGTH)
@@ -347,7 +347,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                                                                                                 if (someSub10object['type'] === 'milestone')
                                                                                                     // UST Obadiah 1:8 has eleven levels of nesting !!!
                                                                                                     for (const someSub11object of someSub10object['children']) {
-                                                                                                        // console.log("someSub11object", bookID, CVlocation, JSON.stringify(someSub11object));
+                                                                                                        // debugLog("someSub11object", bookID, CVlocation, JSON.stringify(someSub11object));
                                                                                                         if (someSub11object['type'] === 'text' && someSub11object['text'].length > MINIMUM_TEXT_WORDS)
                                                                                                             return true;
                                                                                                         if (someSub11object['type'] === 'word' && someSub11object['text'].length > MINIMUM_WORD_LENGTH)
@@ -367,7 +367,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                     }
             }
             if (gotDeep) parameterAssert(false, `We need to add more depth levels to hasText() for ${bookID} ${chapterNumberString}:${verseNumberString}`);
-            // console.log(`hasText() for ${chapterNumberString}:${verseNumberString} returning false with ${typeof verseObjects} (${verseObjects.length}): ${JSON.stringify(verseObjects)}`);
+            // debugLog(`hasText() for ${chapterNumberString}:${verseNumberString} returning false with ${typeof verseObjects} (${verseObjects.length}): ${JSON.stringify(verseObjects)}`);
             return false;
         }
         // end of hasText function
@@ -379,39 +379,39 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         try {
             parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in usfm-text-check1");
             expectedVersesPerChapterList = books.chaptersInBook(lowercaseBookID); // A list of integers -- numVerses for each chapter
-            // console.log("Got chapterList", JSON.stringify(expectedVersesPerChapterList));
+            // debugLog("Got chapterList", JSON.stringify(expectedVersesPerChapterList));
         }
         catch { }
 
         // Try doing this using USFM-JS via runUsfmJsCheck()
         const result1 = runUsfmJsCheck(givenText);
-        // console.log("Got a JSON result", JSON.stringify(result1));
-        // console.log("Got a JSON headers result", JSON.stringify(result1.returnedJSON.headers));
-        // console.log("Got a JSON chapters result", JSON.stringify(result1.returnedJSON.chapters));
+        // debugLog("Got a JSON result", JSON.stringify(result1));
+        // debugLog("Got a JSON headers result", JSON.stringify(result1.returnedJSON.headers));
+        // debugLog("Got a JSON chapters result", JSON.stringify(result1.returnedJSON.chapters));
         for (chapterNumberString in result1.returnedJSON.chapters) {
-            // console.log(`chapterNumberString=${chapterNumberString}`);
+            // debugLog(`chapterNumberString=${chapterNumberString}`);
             // if (chapterNumberString === '3')
-            //     console.log(`chapter ${chapterNumberString} ${JSON.stringify(result1.returnedJSON.chapters[chapterNumberString])}`);
+            //     userLog(`chapter ${chapterNumberString} ${JSON.stringify(result1.returnedJSON.chapters[chapterNumberString])}`);
             let chapterInt;
             try {
                 chapterInt = ourParseInt(chapterNumberString);
             } catch (usfmCIerror) {
-                console.log(`CVCheck couldn’t convert ${bookID} chapter '${chapterNumberString}': ${usfmCIerror}`);
+                userLog(`CVCheck couldn’t convert ${bookID} chapter '${chapterNumberString}': ${usfmCIerror}`);
             }
             if (chapterInt < 1 || chapterInt > expectedVersesPerChapterList.length)
                 addNoticePartial({ priority: 869, message: "Chapter number out of range", C: chapterNumberString, extract: `${bookID} ${chapterNumberString}`, location: CVlocation });
             else {
                 let discoveredVerseList = [], discoveredVerseWithTextList = [];
-                // console.log(`Chapter ${chapterNumberString} verses ${Object.keys(result1.returnedJSON.chapters[chapterNumberString])}`);
+                // debugLog(`Chapter ${chapterNumberString} verses ${Object.keys(result1.returnedJSON.chapters[chapterNumberString])}`);
                 for (verseNumberString in result1.returnedJSON.chapters[chapterNumberString]) {
                     if (verseNumberString === 'front') continue; // skip the rest here
                     // if (chapterNumberString === '3')
-                    //     console.log(`verseNumberString=${verseNumberString}`);
+                    //     userLog(`verseNumberString=${verseNumberString}`);
                     // if (chapterNumberString === '3' && verseNumberString === '14')
-                    //     console.log(`verse ${verseNumberString} ${JSON.stringify(result1.returnedJSON.chapters[chapterNumberString][verseNumberString])}`);
+                    //     userLog(`verse ${verseNumberString} ${JSON.stringify(result1.returnedJSON.chapters[chapterNumberString][verseNumberString])}`);
                     const verseObjects = result1.returnedJSON.chapters[chapterNumberString][verseNumberString]['verseObjects'];
                     // if (chapterNumberString === '3' && verseNumberString === '14')
-                    //     console.log(`verseObjects=${verseObjects}`);
+                    //     userLog(`verseObjects=${verseObjects}`);
                     const verseHasText = hasText(verseObjects);
                     if (verseNumberString.indexOf('-') >= 0) { // It’s a verse bridge
                         const bits = verseNumberString.split('-');
@@ -434,7 +434,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                             verseInt = ourParseInt(verseNumberString);
                             discoveredVerseList.push(verseInt);
                         } catch (usfmPIerror) {
-                            console.log(`We couldn’t convert ${bookID} ${chapterNumberString} verse '${verseNumberString}': ${usfmPIerror}`);
+                            userLog(`We couldn’t convert ${bookID} ${chapterNumberString} verse '${verseNumberString}': ${usfmPIerror}`);
                         }
 
                         if (verseInt < 1 || verseInt > expectedVersesPerChapterList[chapterInt - 1])
@@ -446,7 +446,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 }
 
                 // Check that expected verses numbers were actually all there
-                // console.log("Doing missing verse check");
+                // debugLog("Doing missing verse check");
                 for (let v = 1; v <= expectedVersesPerChapterList[chapterInt - 1]; v++) {
                     if (!discoveredVerseList.includes(v))
                         if (books.isOftenMissing(bookID, chapterInt, v))
@@ -456,7 +456,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                     // Check for existing verses but missing text
                     if (!discoveredVerseWithTextList.includes(v)) {
                         // const firstVerseObject = result1.returnedJSON.chapters[chapterNumberString][v]['verseObjects'][0];
-                        // console.log("firstVerseObject", JSON.stringify(firstVerseObject));
+                        // debugLog("firstVerseObject", JSON.stringify(firstVerseObject));
                         addNoticePartial({ priority: 866, C: chapterNumberString, V: `${v}`, message: "Verse seems to have no text", location: CVlocation });
                     }
                 }
@@ -485,7 +485,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global list of notices
-        // console.log(`cUSFM ourCheckTextField(${lineNumber}, ${C}:${V}, ${fieldName}, (${fieldText.length} chars), ${allowedLinks}, ${fieldLocation}, ${JSON.stringify(checkingOptions)})…`);
+        // debugLog(`cUSFM ourCheckTextField(${lineNumber}, ${C}:${V}, ${fieldName}, (${fieldText.length} chars), ${allowedLinks}, ${fieldLocation}, ${JSON.stringify(checkingOptions)})…`);
         parameterAssert(lineNumber !== undefined, "cUSFM ourCheckTextField: 'lineNumber' parameter should be defined");
         parameterAssert(typeof lineNumber === 'number', `cUSFM ourCheckTextField: 'lineNumber' parameter should be a number not a '${typeof lineNumber}'`);
         parameterAssert(C !== undefined, "cUSFM ourCheckTextField: 'C' parameter should be defined");
@@ -509,7 +509,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         // Process noticeList line by line to filter out potential false positives
         //  for this particular kind of text field
         for (const noticeEntry of dbtcResultObject.noticeList) {
-            // console.log("Notice keys", JSON.stringify(Object.keys(noticeEntry)));
+            // debugLog("Notice keys", JSON.stringify(Object.keys(noticeEntry)));
             parameterAssert(Object.keys(noticeEntry).length >= 4, `USFM ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
             addNoticePartial({ ...noticeEntry, lineNumber, C, V });
             // }
@@ -593,8 +593,8 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
 
     function checkUSFMLineText(lineNumber, C, V, marker, rest, lineLocation, checkingOptions) {
         // Removes character formatting within the line contents and checks the remaining text
-        // console.log(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
-        // console.log(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}=${rest.length} chars, ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
+        // debugLog(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
+        // debugLog(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}=${rest.length} chars, ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
 
         const details = `(line marker=\\${marker})`
 
@@ -615,7 +615,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
             adjustedRest = ourDeleteAll(adjustedRest, `\\${charMarker} `);
             adjustedRest = ourDeleteAll(adjustedRest, `\\${charMarker}*`);
         }
-        // if (adjustedRest !== rest) {console.log(`Still Got \n'${adjustedRest}' from \n'${rest}'`); return;}
+        // if (adjustedRest !== rest) {userLog(`Still Got \n'${adjustedRest}' from \n'${rest}'`); return;}
 
 
         let ixEnd;
@@ -650,7 +650,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 // parameterAssert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
                 addNoticePartial({ priority: 312, message: 'Possible unclosed footnote', details, lineNumber, C, V, location: lineLocation });
             }
-            // console.log(`After removing f field: '${adjustedRest}' from '${rest}'`);
+            // debugLog(`After removing f field: '${adjustedRest}' from '${rest}'`);
         }
         else if (marker === 'va')
             adjustedRest = adjustedRest.replace('\\va*', '');
@@ -658,18 +658,18 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
             adjustedRest = adjustedRest.replace('\\ca*', '');
 
         // Remove any other \zaln-s fields in the line
-        // if (adjustedRest.indexOf('\\z') >= 0) console.log(`checkUSFMLineText here first at ${lineNumber} ${C}:${V} with ${marker}='${adjustedRest}'`);
+        // if (adjustedRest.indexOf('\\z') >= 0) userLog(`checkUSFMLineText here first at ${lineNumber} ${C}:${V} with ${marker}='${adjustedRest}'`);
         let nextZIndex;
         while ((nextZIndex = adjustedRest.indexOf('\\zaln-s ')) >= 0) {
-            // console.log(`checkUSFMLineText here with ${marker}='${adjustedRest}'`);
+            // debugLog(`checkUSFMLineText here with ${marker}='${adjustedRest}'`);
             const ixZEnd = adjustedRest.indexOf('\\*');
-            // console.log(`  ${nextZIndex} and ${ixZEnd}`);
+            // debugLog(`  ${nextZIndex} and ${ixZEnd}`);
             if (ixZEnd >= 0) {
                 // parameterAssert(ixZEnd > nextZIndex, `Exected closure at ${ixZEnd} to be AFTER \\zaln-s (${nextZIndex})`);
                 adjustedRest = adjustedRest.substring(0, nextZIndex) + adjustedRest.substring(ixZEnd + 2, adjustedRest.length);
-                // console.log(`  Now '${adjustedRest}'`);
+                // debugLog(`  Now '${adjustedRest}'`);
             } else {
-                console.log(`\\zaln-s seems unclosed: 'adjustedRest' from '${rest}'`);
+                userLog(`\\zaln-s seems unclosed: 'adjustedRest' from '${rest}'`);
                 break;
             }
         }
@@ -689,9 +689,9 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
             if (ixWEnd >= 0) {
                 parameterAssert(ixWEnd > nextWIndex, `Exected closure at ${ixWEnd} to be AFTER \\w (${nextWIndex})`);
                 adjustedRest = adjustedRest.substring(0, nextWIndex) + adjustedRest.substring(nextWIndex + 3, ixWordEnd) + adjustedRest.substring(ixWEnd + 3, adjustedRest.length);
-                // console.log(`After removing w field, got '${adjustedRest}'`);
+                // debugLog(`After removing w field, got '${adjustedRest}'`);
             } else {
-                console.log(`\\w seems unclosed: 'adjustedRest' from '${rest}'`);
+                userLog(`\\w seems unclosed: 'adjustedRest' from '${rest}'`);
                 break;
             }
         }
@@ -702,10 +702,10 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
             if (ixFEnd >= 0) {
                 parameterAssert(ixFEnd > nextWIndex, `Exected closure at ${ixFEnd} to be AFTER \\w (${nextFIndex})`);
                 adjustedRest = adjustedRest.substring(0, nextFIndex) + adjustedRest.substring(nextFIndex + 5, ixFEnd) + adjustedRest.substring(ixFEnd + 3, adjustedRest.length);
-                // console.log(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
-                // console.log(`After removing footnote: '${adjustedRest}'`);
+                // debugLog(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
+                // debugLog(`After removing footnote: '${adjustedRest}'`);
             } else {
-                console.log(`\\f seems unclosed: 'adjustedRest' from '${rest}'`);
+                userLog(`\\f seems unclosed: 'adjustedRest' from '${rest}'`);
                 break;
             }
         }
@@ -715,15 +715,15 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
             if ((characterIndex = adjustedRest.indexOf('"')) >= 0) {
                 const extract = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
                 addNoticePartial({ priority: 776, message: 'Unexpected " straight quote character', details, lineNumber, C, V, extract, location: lineLocation });
-                // console.log(`ERROR 776: in ${marker} '${adjustedRest}' from '${rest}'`);
+                // debugLog(`ERROR 776: in ${marker} '${adjustedRest}' from '${rest}'`);
             }
             if ((characterIndex = adjustedRest.indexOf("'")) >= 0) {
                 const extract = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
                 addNoticePartial({ priority: 775, message: "Unexpected ' straight quote character", details, lineNumber, C, V, extract, location: lineLocation });
-                // console.log(`ERROR 775: in ${marker} '${adjustedRest}' from '${rest}'`);
+                // debugLog(`ERROR 775: in ${marker} '${adjustedRest}' from '${rest}'`);
             }
             if (adjustedRest.indexOf('\\') >= 0 || adjustedRest.indexOf('|') >= 0) {
-                // console.log(`checkUSFMLineText ${languageCode} ${filename} ${lineNumber} ${C}:${V} somehow ended up with ${marker}='${adjustedRest}'`);
+                // debugLog(`checkUSFMLineText ${languageCode} ${filename} ${lineNumber} ${C}:${V} somehow ended up with ${marker}='${adjustedRest}'`);
                 characterIndex = adjustedRest.indexOf('\\');
                 if (characterIndex === -1) characterIndex = adjustedRest.indexOf('|');
                 const extract = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
@@ -743,7 +743,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
 
         function checkUSFMLineInternals(lineNumber, C, V, marker, rest, lineLocation, checkingOptions) {
             // Handles character formatting within the line contents
-            // console.log(`checkUSFMLineInternals(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
+            // debugLog(`checkUSFMLineInternals(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
 
             if (marker === 'c' && isNaN(rest))
                 addNoticePartial({ priority: 822, message: "Expected field to contain an integer", lineNumber, characterIndex: 3, extract: `\\c ${rest}`, C, V, location: lineLocation });
@@ -784,7 +784,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
 
 
     function mainUSFMCheck(bookID, filename, givenText, location) {
-        // console.log("Running mainUSFMCheck() (can take quite a while for a large book)…");
+        // debugLog("Running mainUSFMCheck() (can take quite a while for a large book)…");
 
         let ourLocation = location;
         if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -822,7 +822,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         }
 
         let lines = givenText.split('\n');
-        // console.log(`  '${ourLocation}' has ${lines.length.toLocaleString()} total lines`);
+        // debugLog(`  '${ourLocation}' has ${lines.length.toLocaleString()} total lines`);
 
         // let lastB = '';
         let lastC = '', lastV = '', C = '0', V = '0';
@@ -833,7 +833,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         for (let n = 1; n <= lines.length; n++) {
             let line = lines[n - 1];
             if (C === '0') V = n.toString();
-            // console.log(`line '${line}'${atString}`);
+            // debugLog(`line '${line}'${atString}`);
             if (!line) {
                 // addNoticePartial({priority:103, "Unexpected blank line", 0, '', location:ourLocation});
                 continue;
@@ -849,7 +849,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
             if (line[0] === '\\') {
                 marker = findStartMarker(C, V, n, line);
                 rest = line.substring(marker.length + 2); // Skip backslash, marker, and space after marker
-                // console.log(`Line ${n}: marker='\\${marker}' rest='${rest}'`);
+                // debugLog(`Line ${n}: marker='\\${marker}' rest='${rest}'`);
             } else { // Line didn’t start with a backslash
                 // NOTE: Some unfoldingWord USFM Bibles commonly have this
                 //          so it’s not necessarily either an error or a warning
@@ -860,7 +860,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                     if (line[1] === '\\') { // Let’s drop the leading punctuation and try to check the rest of the line
                         marker = line.substring(2).split(' ', 1)[0];
                         rest = line.substring(marker.length + 2 + 1); // Skip leading character, backslash, marker, and space after marker
-                        // console.log(`USFM after ${line[0]} got '\\${marker}': '${rest}'`);
+                        // debugLog(`USFM after ${line[0]} got '\\${marker}': '${rest}'`);
                     }
                     else
                         marker = 'rem'; // to try to avoid consequential errors, but the rest of the line won’t be checked
@@ -917,10 +917,10 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
             } else if ((vIndex = rest.indexOf('\\v ')) >= 0) {
                 // verse number marker follows another marker on the same line, so it’s inside `rest`
                 const restRest = rest.substring(vIndex + 3);
-                // console.log(`Got restRest=${restRest}`);
+                // debugLog(`Got restRest=${restRest}`);
                 try {
                     intV = parseInt(restRest);
-                    // console.log("Got", intV);
+                    // debugLog("Got", intV);
                 } catch (usfmIIVerror) {
                     addNoticePartial({ priority: 720, C, V, message: "Unable to convert internal verse number to integer", lineNumber: n, characterIndex: 3, extract: `${restRest.substring(0, halfLength)}${restRest.length > halfLength ? '…' : ''}`, location: ourLocation });
                     intV = -999; // Used to prevent consequential errors
@@ -967,7 +967,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
     /* function runSlowTask(which) {
         // Ideally these should be run in parallel using multiprocessing
         //  See https://hackernoon.com/multithreading-multiprocessing-and-the-nodejs-event-loop-5b2929bd450b
-        console.log(`runSlowTask(${which})`)
+        userLog(`runSlowTask(${which})`)
         return (which === 1)
             ? mainUSFMCheck(bookID, filename, givenText, location)
             : runBCSGrammarCheck(filename, givenText, location);
@@ -975,15 +975,15 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
 
 
     // Main code for checkUSFMText()
-    // console.log("Starting USFM checking tasks…");
+    // debugLog("Starting USFM checking tasks…");
     /*
     const tasks = [1,2].map(runSlowTask);
     const allResults = await Promise.all(tasks);
-    console.log(`  Finished all tasks with ${JSON.stringify(allResults)}.`);
-    console.log("  Finished all tasks.");
+    userLog(`  Finished all tasks with ${JSON.stringify(allResults)}.`);
+    userLog("  Finished all tasks.");
     if (!allResults[1].isValidUSFM)
         addNoticePartial({priority: 942, "USFM Grammar check fails", location});
-    console.log("  Warnings:", JSON.stringify(allResults[1].warnings));
+    userLog("  Warnings:", JSON.stringify(allResults[1].warnings));
     // Display these warnings but with a lower priority
     for (const warningString of allResults[1].warnings)
         addNoticePartial({priority:103, `USFMGrammar: ${warningString.trim()}`, location});
@@ -997,21 +997,21 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
     if (!books.isExtraBookID(bookID))
         allResults.push(ourRunBCSGrammarCheck(filename, givenText, ourLocation));
     // parameterAssert(allResults.length === 2);
-    // console.log("allResults", JSON.stringify(allResults));
+    // debugLog("allResults", JSON.stringify(allResults));
     // if (!allResults[1].isValidUSFM)
     //     addNoticePartial({priority: 941, "USFM Grammar check fails", location});
-    // console.log("  Warnings:", JSON.stringify(allResults[1].warnings));
+    // debugLog("  Warnings:", JSON.stringify(allResults[1].warnings));
     // // Display these warnings but with a lower priority
     // for (const warningString of allResults[1].warnings)
     // addNoticePartial({priority:103, `USFMGrammar: ${warningString.trim()}`, location});
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        // console.log(`checkUSFMText: calling removeDisabledNotices(${result.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        // debugLog(`checkUSFMText: calling removeDisabledNotices(${result.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
         result.noticeList = removeDisabledNotices(result.noticeList);
     }
 
-    // console.log(`  checkUSFMText returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
-    // console.log(`checkUSFMText result is ${JSON.stringify(result)}`);
+    // debugLog(`  checkUSFMText returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
+    // debugLog(`checkUSFMText result is ${JSON.stringify(result)}`);
     return result;
 }
 // end of checkUSFMText function

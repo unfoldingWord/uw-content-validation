@@ -29,7 +29,7 @@ let rawResults;
 // Define our callback function
 function acceptUpdatedResult(newLinkResult){
     // Update the results with later results
-    console.log(`acceptUpdatedResult callback function is updating result now with ${newLinkResult.noticeList.length} notices.`);
+    userLog(`acceptUpdatedResult callback function is updating result now with ${newLinkResult.noticeList.length} notices.`);
     rawResults.noticeList = newLinkResult.noticeList;
     // Now how can we tell Styleguidist to refresh???
 }

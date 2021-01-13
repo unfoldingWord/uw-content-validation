@@ -18,22 +18,22 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     // Check a single Bible book across many repositories
     const [result, setResultValue] = useState("Waiting-CheckAllBookPackages");
 
-    // console.log(`I'm here in AllBookPackagesCheckBookPackagesCheck v${ALL_BPS_VALIDATOR_VERSION_STRING}`);
+    // debugLog(`I'm here in AllBookPackagesCheckBookPackagesCheck v${ALL_BPS_VALIDATOR_VERSION_STRING}`);
     // consoleLogObject("props", props);
     // consoleLogObject("props.classes", props.classes);
 
     let username = props.username;
-    // console.log(`username='${username}'`);
+    // debugLog(`username='${username}'`);
     let languageCode = props.languageCode;
-    // console.log(`languageCode='${languageCode}'`);
+    // debugLog(`languageCode='${languageCode}'`);
     let testament = props.testament;
-    // console.log(`testament='${testament}'`);
+    // debugLog(`testament='${testament}'`);
     let includeOBS = props.includeOBS;
-    // console.log(`includeOBS='${includeOBS}'`);
+    // debugLog(`includeOBS='${includeOBS}'`);
     let dataSet = props.dataSet;
-    // console.log(`dataSet='${dataSet}'`);
+    // debugLog(`dataSet='${dataSet}'`);
     let branch = props.branch;
-    // console.log(`branch='${branch}'`);
+    // debugLog(`branch='${branch}'`);
 
     // Clear cached files if we've changed repo
     //  autoClearCache(bookIDs); // This technique avoids the complications of needing a button
@@ -61,7 +61,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         }
         bookIDList.push(bookID);
     }
-    console.log(`AllBookPackagesCheck bookIDList (${bookIDList.length}) = ${bookIDList.join(', ')}`);
+    userLog(`AllBookPackagesCheck bookIDList (${bookIDList.length}) = ${bookIDList.join(', ')}`);
 
     const checkingOptions = { // Uncomment any of these to test them
         // extractLength: 25,
@@ -72,12 +72,12 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     if (props.cutoffPriorityLevel) checkingOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
 
     useEffect(() => {
-        // console.log("BookPackagesCheck.useEffect() called with ", JSON.stringify(props));
+        // debugLog("BookPackagesCheck.useEffect() called with ", JSON.stringify(props));
 
         // Use an IIFE (Immediately Invoked Function Expression)
         //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
         (async () => {
-        // console.log("Started BookPackagesCheck.unnamedFunction()");
+        // debugLog("Started BookPackagesCheck.unnamedFunction()");
 
             // NOTE from RJH: I can’t find the correct React place for this / way to do this
             //                  so it shows a warning for the user, and doesn’t continue to try to process
@@ -87,7 +87,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
           }
 
           if (props.reloadAllFilesFirst && props.reloadAllFilesFirst.slice(0).toUpperCase() === 'Y') {
-              console.log("Clearing cache before running book package check…");
+              userLog("Clearing cache before running book package check…");
               setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running book package check…</p>);
               await clearCaches();
           }
@@ -105,7 +105,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for {username} {languageCode} ready for all book packages check…</p>);
             const successFlag = await preloadReposIfNecessary(username, languageCode, bookIDList, branch, repoPreloadList);
             if (!successFlag)
-                console.log(`AllBookPackagesCheck error: Failed to pre-load all repos`)
+                userLog(`AllBookPackagesCheck error: Failed to pre-load all repos`)
 
           // Display our "waiting" message
           setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookIDList.join(', ')}</b> book packages…</p>);
@@ -122,7 +122,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
           rawCBPsResults.bookIDList = bookIDList;
           rawCBPsResults.checkedOptions = checkingOptions;
 
-          // console.log("Here with CBPs rawCBPsResults", typeof rawCBPsResults);
+          // debugLog("Here with CBPs rawCBPsResults", typeof rawCBPsResults);
           // Now do our final handling of the result -- we have some options available
           let processOptions = { // Uncomment any of these to test them
             // 'maximumSimilarMessages': 4, // default is 3 -- 0 means don’t suppress
@@ -152,10 +152,10 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
 
         if (displayType === 'ErrorsWarnings') {
             const processedResults = processNoticesToErrorsWarnings(rawCBPsResults, processOptions);
-      //       console.log(`AllBookPackagesCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
+      //       userLog(`AllBookPackagesCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
       // numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
-            // console.log("Here now in rendering bit!");
+            // debugLog("Here now in rendering bit!");
 
             if (processedResults.errorList.length || processedResults.warningList.length)
               setResultValue(<>
@@ -169,7 +169,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
               </>);
           } else if (displayType === 'SevereMediumLow') {
             const processedResults = processNoticesToSevereMediumLow(rawCBPsResults, processOptions);
-    //                 console.log(`AllBookPackagesCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
+    //                 userLog(`AllBookPackagesCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
     //   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
             if (processedResults.severeList.length || processedResults.mediumList.length || processedResults.lowList.length)
@@ -184,7 +184,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
               </>);
           } else if (displayType === 'SingleList') {
             const processedResults = processNoticesToSingleList(rawCBPsResults, processOptions);
-      //       console.log(`AllBookPackagesCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s) and ${processedResults.warningList.length.toLocaleString()} notice(s)
+      //       userLog(`AllBookPackagesCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s) and ${processedResults.warningList.length.toLocaleString()} notice(s)
       // numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
             if (processedResults.warningList.length)
@@ -199,7 +199,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
               </>);
           } else setResultValue(<b style={{ color: 'red' }}>Invalid displayType='{displayType}'</b>)
 
-          // console.log("Finished rendering bit.");
+          // debugLog("Finished rendering bit.");
         })(); // end of async part in unnamedFunction
         // Doesn’t work if we add this to next line: bookIDList,bookIDs,username,branch,checkingOptions,languageCode,props
       // eslint-disable-next-line react-hooks/exhaustive-deps

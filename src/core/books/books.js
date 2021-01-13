@@ -164,12 +164,12 @@ export function getEnglishBookName(bookId) {
 }
 
 export function isGoodEnglishBookName(givenBookName) {
-  // console.log(`isGoodEnglishBookName(${givenBookName})…`);
+  // debugLog(`isGoodEnglishBookName(${givenBookName})…`);
   const partialMatches = [];
   const givenBookNameLower = givenBookName.toLowerCase();
   for (const bk in BibleBookData) {
     const thisBookName = BibleBookData[bk].title;
-    // console.log("thisBookName", thisBookName);
+    // debugLog("thisBookName", thisBookName);
     if (thisBookName===givenBookName) return true;
     const thisBookNameLower = thisBookName.toLowerCase();
     if (thisBookNameLower===givenBookNameLower) return 1;

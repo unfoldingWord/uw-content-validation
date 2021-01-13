@@ -25,7 +25,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     //      extract: a short extract of the string containing the error (or empty-string if irrelevant)
     //      location: the detailed location string
     //  (Returned in this way for more intelligent processing at a higher level)
-    // console.log(`checkTextField(${fieldName}, ${fieldText.length.toLocaleString()} chars, ${allowedLinks}, '${optionalFieldLocation}')…`);
+    // debugLog(`checkTextField(${fieldName}, ${fieldText.length.toLocaleString()} chars, ${allowedLinks}, '${optionalFieldLocation}')…`);
     parameterAssert(fieldType !== undefined, "checkTextField: 'fieldType' parameter should be defined");
     parameterAssert(typeof fieldType === 'string', `checkTextField: 'fieldType' parameter should be a string not a '${typeof fieldType}': ${fieldType}`);
     parameterAssert(fieldType !== '', `checkTextField: 'fieldType' ${fieldType} parameter should be not be an empty string`);
@@ -48,7 +48,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
 
     function addNoticePartial(noticeObject) {
         // We add the fieldName here
-        // console.log(`dBTC Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // debugLog(`dBTC Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "dBTCs addNoticePartial: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `dBTCs addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "dBTCs addNoticePartial: 'message' parameter should be defined");
@@ -80,13 +80,13 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     } catch (btcError) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
-        // console.log(`Using default extractLength=${extractLength}`);
+        // debugLog(`Using default extractLength=${extractLength}`);
     }
     // else
-    // console.log(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
+    // debugLog(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
     const halfLength = Math.floor(extractLength / 2); // rounded down
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
-    // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     let suggestion = fieldText.trim();
 
@@ -372,7 +372,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     // }
 
     // if (countOccurrences(fieldText, '(') !== countOccurrences(fieldText, ')')) {
-    //     console.log(`checkTextField(${fieldType}, ${fieldName}, '${fieldText}', ${allowedLinks}, ${ourLocation}) found ${countOccurrences(fieldText, '(')} '(' but ${countOccurrences(fieldText, ')')} ')'`);
+    //     userLog(`checkTextField(${fieldType}, ${fieldName}, '${fieldText}', ${allowedLinks}, ${ourLocation}) found ${countOccurrences(fieldText, '(')} '(' but ${countOccurrences(fieldText, ')')} ')'`);
     //     addNoticePartial({ priority: 1, message: `Mismatched ( ) characters`, details: `left=${countOccurrences(fieldText, '(').toLocaleString()}, right=${countOccurrences(fieldText, ')').toLocaleString()}`, location: ourLocation });
     // }
     // Check matched pairs in the field
@@ -395,13 +395,13 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
             }
             try { // This regex build fails for some of the characters
                 const leftRegex = new RegExp(`(\\w)\\${leftChar}(\\w)`, 'g'), rightRegex = new RegExp(`(\\w)\\${rightChar}(\\w)`, 'g');
-                // console.log(`leftRegex is ${leftRegex}`);
+                // debugLog(`leftRegex is ${leftRegex}`);
                 let regexResultArray;
                 // eslint-disable-next-line no-cond-assign
                 while (regexResultArray = leftRegex.exec(fieldText))
                     if ((fieldType !== 'markdown' || regexResultArray[0][0] !== '_')
                         && (fieldType !== 'YAML' || leftChar !== '{')) {
-                        // console.log(`Got misplaced left ${leftChar} in ${fieldType} ${fieldName} '${fieldText}':`, JSON.stringify(regexResultArray));
+                        // debugLog(`Got misplaced left ${leftChar} in ${fieldType} ${fieldName} '${fieldText}':`, JSON.stringify(regexResultArray));
                         let thisPriority = 717, thisMessage = `Misplaced ${leftChar} character`;
                         if (leftChar === '(' && regexResultArray[0][2] === 's') { thisPriority = 17; thisMessage = `Possible misplaced ${leftChar} character`; } // Lower priority for words like 'thing(s)'
                         if (!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < thisPriority)
@@ -412,7 +412,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
                     while (regexResultArray = rightRegex.exec(fieldText))
                         if ((fieldType !== 'markdown' || regexResultArray[0][2] !== '_')
                             && (fieldType !== 'YAML' || rightChar !== '}')) {
-                            // console.log(`Got misplaced right ${rightChar} in ${fieldType} ${fieldName} '${fieldText}':`, JSON.stringify(regexResultArray));
+                            // debugLog(`Got misplaced right ${rightChar} in ${fieldType} ${fieldName} '${fieldText}':`, JSON.stringify(regexResultArray));
                             if (!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 716)
                                 addNoticePartial({ priority: 716, message: `Misplaced ${rightChar} character`, extract: regexResultArray[0], location: ourLocation });
                         }
@@ -439,8 +439,8 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
 
     // See if we have a suggestion
     if (suggestion !== fieldText) {
-        // console.log(`Had text ${fieldText}`);
-        // console.log(`Sug text ${suggestion}`);
+        // debugLog(`Had text ${fieldText}`);
+        // debugLog(`Sug text ${suggestion}`);
         result.suggestion = suggestion;
     }
 

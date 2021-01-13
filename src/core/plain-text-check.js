@@ -21,7 +21,7 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
 
      Returns a result object containing a successList and a noticeList
      */
-    // console.log(`checkPlainText(${textName}, (${plainText.length} chars), ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
+    // debugLog(`checkPlainText(${textName}, (${plainText.length} chars), ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
     parameterAssert(textType !== undefined, "checkPlainText: 'textType' parameter should be defined");
     parameterAssert(typeof textType === 'string', `checkPlainText: 'textType' parameter should be a string not a '${typeof textType}': ${textType}`);
     parameterAssert(textType === 'markdown' || textType === 'USFM' || textType === 'YAML' || textType === 'text' || textType === 'raw', `checkPlainText: unrecognised 'textType' parameter: '${textType}'`);
@@ -40,23 +40,23 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
     } catch (ptcError) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
-        // console.log(`Using default extractLength=${extractLength}`);
+        // debugLog(`Using default extractLength=${extractLength}`);
     }
     // else
-    // console.log(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
+    // debugLog(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
     const halfLength = Math.floor(extractLength / 2); // rounded down
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
-    // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     const cptResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        // console.log(`checkPlainText success: ${successString}`);
+        // debugLog(`checkPlainText success: ${successString}`);
         cptResult.successList.push(successString);
     }
     function addNotice(noticeObject) {
         // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
-        // console.log(`checkPlainText notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // debugLog(`checkPlainText notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "cPT addNotice: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `cPT addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "cPT addNotice: 'message' parameter should be defined");
@@ -85,7 +85,7 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global list of notices
-        // console.log(`cPT ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${fieldLocation}, …)`);
+        // debugLog(`cPT ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${fieldLocation}, …)`);
         parameterAssert(lineNumber !== undefined, "cPT ourCheckTextField: 'lineNumber' parameter should be defined");
         parameterAssert(typeof lineNumber === 'number', `cPT ourCheckTextField: 'fieldName' parameter should be a number not a '${typeof lineNumber}'`);
         parameterAssert(fieldText !== undefined, "cPT ourCheckTextField: 'fieldText' parameter should be defined");
@@ -108,7 +108,7 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
 
     function checkPlainLineContents(lineNumber, lineText, lineLocation) {
 
-        // console.log(`checkPlainLineContents for '${lineName}', '${lineText}' at${lineLocation}`);
+        // debugLog(`checkPlainLineContents for '${lineName}', '${lineText}' at${lineLocation}`);
         let thisText = lineText.trimStart(); // So we don’t get "leading space" AND "doubled spaces" errors
 
         if (thisText)
@@ -156,7 +156,7 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
     }
 
     const lines = plainText.split('\n');
-    // console.log(`  '${location}' has ${lines.length.toLocaleString()} total lines`);
+    // debugLog(`  '${location}' has ${lines.length.toLocaleString()} total lines`);
     //  checking nested markers (so that we can give the line number in the notice)
     // let headerLevel = 0;
     // let lastNumLeadingSpaces = 0;
@@ -175,17 +175,17 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
                 const char = line[characterIndex];
                 let closeCharacterIndex;
                 if (PAIRED_PUNCTUATION_OPENERS.indexOf(char) >= 0) {
-                    // console.log(`Saving ${openMarkers.length} '${char}' ${n} ${x}`);
+                    // debugLog(`Saving ${openMarkers.length} '${char}' ${n} ${x}`);
                     openMarkers.push({ char, n, x: characterIndex });
                 } else if ((closeCharacterIndex = PAIRED_PUNCTUATION_CLOSERS.indexOf(char)) >= 0) {
-                    // console.log(`Found '${char}' ${n} ${x}`);
-                    // console.log(`Which: ${which} '${openers.charAt(which)}'`)
+                    // debugLog(`Found '${char}' ${n} ${x}`);
+                    // debugLog(`Which: ${which} '${openers.charAt(which)}'`)
                     if (openMarkers.length) {
                         const [lastEntry] = openMarkers.slice(-1);
-                        // console.log(`  Recovered lastEntry=${JSON.stringify(lastEntry)}`);
-                        // console.log(`  Comparing found '${char}' with (${which}) '${openers.charAt(which)}' from '${lastEntry.char}'`);
+                        // debugLog(`  Recovered lastEntry=${JSON.stringify(lastEntry)}`);
+                        // debugLog(`  Comparing found '${char}' with (${which}) '${openers.charAt(which)}' from '${lastEntry.char}'`);
                         if (lastEntry.char === PAIRED_PUNCTUATION_OPENERS.charAt(closeCharacterIndex)) {
-                            // console.log(`  Matched '${char}' with  '${openers.charAt(which)}' ${n} ${x}`);
+                            // debugLog(`  Matched '${char}' with  '${openers.charAt(which)}' ${n} ${x}`);
                             openMarkers.pop();
                         } else // something is still open and this isn’t a match -- might just be consequential error
                             if (char !== '’' // Closing single quote is also used as apostrophe in English
@@ -193,14 +193,14 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
                                 const extract = (characterIndex > halfLength ? '…' : '') + line.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < line.length ? '…' : '')
                                 const details = `'${lastEntry.char}' opened on line ${lastEntry.n} character ${lastEntry.x + 1}`;
                                 addNotice({ priority: 777, message: `Bad punctuation nesting: ${char} closing character doesn’t match`, details, lineNumber: n, characterIndex, extract, location: ourLocation });
-                                // console.log(`  ERROR 777: mismatched characters: ${details}`);
+                                // debugLog(`  ERROR 777: mismatched characters: ${details}`);
                             }
                     } else // Closed something unexpectedly without an opener
                         if (char !== '’' // Closing single quote is also used as apostrophe in English
                             && (textType !== 'markdown' || char !== '>')) { // Markdown uses > for block indents so ignore these
                             const extract = (characterIndex > halfLength ? '…' : '') + line.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < line.length ? '…' : '')
                             addNotice({ priority: 774, message: `Unexpected ${char} closing character (no matching opener)`, lineNumber: n, characterIndex, extract, location: ourLocation });
-                            // console.log(`  ERROR 774: closed with nothing open: ${char}`);
+                            // debugLog(`  ERROR 774: closed with nothing open: ${char}`);
                         }
                 }
 
@@ -236,7 +236,7 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
     }
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        // console.log(`checkPlainText: calling removeDisabledNotices(${cptResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        // debugLog(`checkPlainText: calling removeDisabledNotices(${cptResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
         cptResult.noticeList = removeDisabledNotices(cptResult.noticeList);
     }
 
@@ -245,8 +245,8 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
         addSuccessMessage(`checkPlainText v${PLAIN_TEXT_VALIDATOR_VERSION_STRING} finished with ${cptResult.noticeList.length ? cptResult.noticeList.length.toLocaleString() : "zero"} notice${cptResult.noticeList.length === 1 ? '' : 's'}`);
     else
         addSuccessMessage(`No errors or warnings found by checkPlainText v${PLAIN_TEXT_VALIDATOR_VERSION_STRING}`)
-    // console.log(`  checkPlainText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
-    // console.log("checkPlainText result is", JSON.stringify(result));
+    // debugLog(`  checkPlainText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
+    // debugLog("checkPlainText result is", JSON.stringify(result));
     return cptResult;
 }
 // end of checkPlainText function

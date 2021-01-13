@@ -10,13 +10,13 @@ export async function startLiveLinksCheck(linksList, existingNoticeList, callbac
     // This (IO bound) function checks the targets of the given links
     //  to ensure that they actually exist
     // NOTE: no caching yet
-    console.log(`startLiveLinksCheck v${LINK_VALIDATOR_VERSION_STRING} for ${linksList.length} link(s)…`)
-    // console.log(`startLiveLinksCheck was given ${existingNoticeList.length} warnings.`)
+    userLog(`startLiveLinksCheck v${LINK_VALIDATOR_VERSION_STRING} for ${linksList.length} link(s)…`)
+    // debugLog(`startLiveLinksCheck was given ${existingNoticeList.length} warnings.`)
 
     let result = { noticeList: existingNoticeList };
 
     function addNoticePartial({ priority, message, characterIndex, extract, location }) {
-        console.log(`sLLC Link Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        userLog(`sLLC Link Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         parameterAssert(priority !== undefined, "sLLC addNoticePartial: 'priority' parameter should be defined");
         parameterAssert(typeof priority === 'number', `sLLC addNoticePartial: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         parameterAssert(message !== undefined, "sLLC addNoticePartial: 'message' parameter should be defined");
@@ -32,20 +32,20 @@ export async function startLiveLinksCheck(linksList, existingNoticeList, callbac
 
     // Now try fetching each link in turn
     for (const linkEntry of linksList) {
-        console.log("startLiveLinksCheck linkEntry", JSON.stringify(linkEntry));
+        userLog("startLiveLinksCheck linkEntry", JSON.stringify(linkEntry));
         const fetchLink = linkEntry[1] ? linkEntry[1] : linkEntry[2]; // Why ??? !!!
-        console.log("startLiveLinksCheck attempting to fetch", fetchLink, '…');
+        userLog("startLiveLinksCheck attempting to fetch", fetchLink, '…');
         try {
             const responseData = await cachedGetFileUsingFullURL(fetchLink);
             const responseText = responseData;
-            console.log("startLiveLinksCheck got response: ", responseText.length);
+            userLog("startLiveLinksCheck got response: ", responseText.length);
         } catch (lcError) {
             console.error(`startLiveLinksCheck had an error fetching '${fetchLink}': ${lcError}`);
             addNoticePartial({ priority: 439, message: "Error fetching link", location: ` ${fetchLink}` });
         }
     }
 
-    console.log("startLiveLinksCheck calling callback function…");
+    userLog("startLiveLinksCheck calling callback function…");
     callbackFunction(result);
 }
 
@@ -61,9 +61,9 @@ export function checkFieldLinks(fieldName, fieldText, linkOptions, optionalField
     //      2/ the detailed location string
     //  (Returned in this way for more intelligent processing at a higher level)
 
-    console.log(`checkFieldLinks('${fieldName}', '${fieldText}')…`);
-    // console.log( "linkOptions", JSON.stringify(linkOptions));
-    // console.log( "linkOptionsEC", linkOptions.expectedCount);
+    userLog(`checkFieldLinks('${fieldName}', '${fieldText}')…`);
+    // debugLog( "linkOptions", JSON.stringify(linkOptions));
+    // debugLog( "linkOptionsEC", linkOptions.expectedCount);
     parameterAssert(fieldName !== undefined, "checkFieldLinks: 'fieldName' parameter should be defined");
     parameterAssert(typeof fieldName === 'string', `checkFieldLinks: 'fieldName' parameter should be a string not a '${typeof fieldName}': ${fieldName}`);
     parameterAssert(fieldText !== undefined, "checkFieldLinks: 'fieldText' parameter should be defined");
@@ -78,7 +78,7 @@ export function checkFieldLinks(fieldName, fieldText, linkOptions, optionalField
     let result = { noticeList: [] };
 
     function addNoticePartial({ priority, message, characterIndex, extract, location }) {
-        console.log(`cFLs addNoticePartial: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        userLog(`cFLs addNoticePartial: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         parameterAssert(priority !== undefined, "cFLs addNoticePartial: 'priority' parameter should be defined");
         parameterAssert(typeof priority === 'number', `cFLs addNoticePartial: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         parameterAssert(message !== undefined, "cFLs addNoticePartial: 'message' parameter should be defined");
@@ -121,7 +121,7 @@ export function checkFieldLinks(fieldName, fieldText, linkOptions, optionalField
     if (linkOptions.linkTypesAllowed) {
         linkRegexParts = [];
         for (const linkType of linkOptions.linkTypesAllowed) {
-            // console.log("checkFieldLinks linkType", linkType);
+            // debugLog("checkFieldLinks linkType", linkType);
             if (linkType === 'RC')
                 linkRegexParts.push('(rc://[^ ]+)');
             else if (linkType === 'md') {
@@ -136,13 +136,13 @@ export function checkFieldLinks(fieldName, fieldText, linkOptions, optionalField
     } else { // No link types specified
         linkRegexParts = [];
     }
-    // console.log("checkFieldLinks linkRegexParts", JSON.stringify(linkRegexParts));
+    // debugLog("checkFieldLinks linkRegexParts", JSON.stringify(linkRegexParts));
     const linkRegex = new RegExp(linkRegexParts.join('|'), 'g');
-    // console.log("linkRegex", JSON.stringify(linkRegex));
+    // debugLog("linkRegex", JSON.stringify(linkRegex));
     // const regexResults = fieldText.matchAll(linkRegex);
-    // console.log("regexResults", regexResults.length, JSON.stringify(regexResults));
+    // debugLog("regexResults", regexResults.length, JSON.stringify(regexResults));
     const regexResultsArray = [...fieldText.matchAll(linkRegex)];
-    // console.log("checkFieldLinks regexResultsArray", regexResultsArray.length, JSON.stringify(regexResultsArray));
+    // debugLog("checkFieldLinks regexResultsArray", regexResultsArray.length, JSON.stringify(regexResultsArray));
 
     if (regexResultsArray.length < linkOptions.expectedCount)
         addNoticePartial({ priority: 287, message: `Not enough links (expected ${linkOptions.expectedCount} link${linkOptions.expectedCount === 1 ? "" : "s"})`, location: ` (only found ${regexResultsArray.length})${ourLocation}` });
@@ -150,10 +150,10 @@ export function checkFieldLinks(fieldName, fieldText, linkOptions, optionalField
     if (linkOptions.checkTargets && linkOptions.callbackFunction && regexResultsArray) {
         startLiveLinksCheck(regexResultsArray, result.noticeList.slice(0), linkOptions.callbackFunction);
         addNoticePartial({ priority: 600, message: `${regexResultsArray.length} link target${regexResultsArray.length === 1 ? ' is' : 's are'} still being checked…`, location: ourLocation });
-        console.log("checkFieldLinks now returning initial result…");
+        userLog("checkFieldLinks now returning initial result…");
     }
 
-    console.log(`  checkFieldLinks v${LINK_VALIDATOR_VERSION_STRING} returning with ${result.noticeList.length} notices.`);
+    userLog(`  checkFieldLinks v${LINK_VALIDATOR_VERSION_STRING} returning with ${result.noticeList.length} notices.`);
     return result;
 }
 // end of checkFieldLinks function

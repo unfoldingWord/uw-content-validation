@@ -69,7 +69,7 @@ const disabledNotices = [
  * @returns true if the givenNotice has a match in the disabledNotices list above
  */
 export function isDisabledNotice(givenNotice) {
-  // console.log(`isDisabledNotice(${JSON.stringify(givenNotice)})…`);
+  // debugLog(`isDisabledNotice(${JSON.stringify(givenNotice)})…`);
   for (const disabledNotice of disabledNotices) {
     let matchedAllSpecifiedFields = true;
     for (const propertyName in disabledNotice)
@@ -80,7 +80,7 @@ export function isDisabledNotice(givenNotice) {
         break;
       }
     if (matchedAllSpecifiedFields) {
-      // console.log(`  isDisabledNotice() returning true for ${JSON.stringify(disabledNotice)}`);
+      // debugLog(`  isDisabledNotice() returning true for ${JSON.stringify(disabledNotice)}`);
       return true;
     }
   }
@@ -98,8 +98,8 @@ export function removeDisabledNotices(givenNoticeList) {
   for (const thisNotice of givenNoticeList) {
     if (!isDisabledNotice(thisNotice))
       remainingNoticeList.push(thisNotice);
-    // else console.log(`  Removing disabled ${JSON.stringify(thisNotice)}`);
+    // else userLog(`  Removing disabled ${JSON.stringify(thisNotice)}`);
   }
-  if (remainingNoticeList.length !== givenNoticeList.length) console.log(`removeDisabledNotices() returning ${remainingNoticeList.length} out of ${givenNoticeList.length} notices`);
+  if (remainingNoticeList.length !== givenNoticeList.length) userLog(`removeDisabledNotices() returning ${remainingNoticeList.length} out of ${givenNoticeList.length} notices`);
   return remainingNoticeList;
 }

@@ -21,7 +21,7 @@ export function checkTextfileContents(languageCode, fileType, filename, fileText
     //      characterIndeX: the 0-based index for the position in the string
     //      extract: a short extract of the string containing the error (or empty-string if irrelevant)
     //  (Returned in this way for more intelligent processing at a higher level)
-    // console.log(`checkTextfileContents(${filename}, ${fileText.length.toLocaleString()} chars, '${optionalFileLocation}')…`);
+    // debugLog(`checkTextfileContents(${filename}, ${fileText.length.toLocaleString()} chars, '${optionalFileLocation}')…`);
     parameterAssert(languageCode !== undefined, "checkTextfileContents: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkTextfileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
     parameterAssert(fileType !== undefined, "checkTextfileContents: 'fileType' parameter should be defined");
@@ -37,7 +37,7 @@ export function checkTextfileContents(languageCode, fileType, filename, fileText
     let result = { noticeList: [] };
 
     function addNotice(noticeObject) {
-        // console.log(`dBTC Notice: (priority=${noticeObject.priority}) ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
+        // debugLog(`dBTC Notice: (priority=${noticeObject.priority}) ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
         parameterAssert(noticeObject.priority !== undefined, "dBTCs addNotice: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `dBTCs addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "dBTCs addNotice: 'message' parameter should be defined");
@@ -64,7 +64,7 @@ export function checkTextfileContents(languageCode, fileType, filename, fileText
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global list of notices
-        // console.log(`cPT ourCheckPlainText(${fieldName}, (${fieldText.length}), ${fieldLocation}, …)`);
+        // debugLog(`cPT ourCheckPlainText(${fieldName}, (${fieldText.length}), ${fieldLocation}, …)`);
         // parameterAssert(textName !== undefined, "cPT ourCheckPlainText: 'textName' parameter should be defined");
         // parameterAssert(typeof textName === 'string', `cPT ourCheckPlainText: 'fieldName' parameter should be a string not a '${typeof textName}'`);
         parameterAssert(plainText !== undefined, "cPT ourCheckPlainText: 'plainText' parameter should be defined");
@@ -98,13 +98,13 @@ export function checkTextfileContents(languageCode, fileType, filename, fileText
     } catch (bfcError) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
-        // console.log(`Using default extractLength=${extractLength}`);
+        // debugLog(`Using default extractLength=${extractLength}`);
     }
     // else
-    // console.log(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
+    // debugLog(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
     const halfLength = Math.floor(extractLength / 2); // rounded down
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
-    // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
     */
 
     /*

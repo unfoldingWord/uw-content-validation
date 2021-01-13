@@ -27,7 +27,7 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
 
      Returns a result object containing a successList and a noticeList
      */
-    // console.log(`checkMarkdownText(${textName}, ${markdownText.length}, ${givenLocation})…`);
+    // debugLog(`checkMarkdownText(${textName}, ${markdownText.length}, ${givenLocation})…`);
     parameterAssert(languageCode !== undefined, "checkMarkdownText: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkMarkdownText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
     parameterAssert(textOrFileName !== undefined, "checkMarkdownText: 'textOrFileName' parameter should be defined");
@@ -50,22 +50,22 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
     } catch (mdtcError) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
-        // console.log("Using default extractLength=" + extractLength);
+        // debugLog("Using default extractLength=" + extractLength);
     }
     // else
-    // console.log("Using supplied extractLength=" + extractLength, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
+    // debugLog("Using supplied extractLength=" + extractLength, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
     // const halfLength = Math.floor(extractLength / 2); // rounded down
     // const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
-    // console.log("Using halfLength=" + halfLength, `halfLengthPlus=${halfLengthPlus}`);
+    // debugLog("Using halfLength=" + halfLength, `halfLengthPlus=${halfLengthPlus}`);
 
     const result = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        // console.log("checkMarkdownText success: " + successString);
+        // debugLog("checkMarkdownText success: " + successString);
         result.successList.push(successString);
     }
     function addNotice(noticeObject) {
-        // console.log(`checkMarkdownText addNotice: (priority=${noticeObject.priority}) ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? " " + extract : ""}${noticeObject.location}`);
+        // debugLog(`checkMarkdownText addNotice: (priority=${noticeObject.priority}) ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? " " + extract : ""}${noticeObject.location}`);
         parameterAssert(noticeObject.priority !== undefined, "cMdT addNotice: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `cMdT addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "cMdT addNotice: 'message' parameter should be defined");
@@ -96,7 +96,7 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global list of notices
-        // console.log(`cMdT ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${optionalFieldLocation}, …)`);
+        // debugLog(`cMdT ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${optionalFieldLocation}, …)`);
         parameterAssert(fieldName !== undefined, "cMdT ourCheckTextField: 'fieldName' parameter should be defined");
         parameterAssert(typeof fieldName === 'string', `cMdT ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
         parameterAssert(lineNumber !== undefined, "cMdT ourCheckTextField: 'lineNumber' parameter should be defined");
@@ -127,23 +127,23 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
      */
     async function checkMarkdownLineContents(lineNumber, lineText, lineLocation) {
 
-        // console.log(`checkMarkdownLineContents for ${lineNumber} '${lineText}' at${lineLocation}`);
+        // debugLog(`checkMarkdownLineContents for ${lineNumber} '${lineText}' at${lineLocation}`);
 
         // Check for image links
         let regexResultArray;
         // eslint-disable-next-line no-cond-assign
         while (regexResultArray = IMAGE_REGEX.exec(lineText)) {
-            // console.log(`Got markdown image in line ${lineNumber}:`, JSON.stringify(regexResultArray));
-            if (regexResultArray[1] !== 'OBS Image') console.log("This code was only checked for 'OBS Image' links");
+            // debugLog(`Got markdown image in line ${lineNumber}:`, JSON.stringify(regexResultArray));
+            if (regexResultArray[1] !== 'OBS Image') userLog("This code was only checked for 'OBS Image' links");
             const fetchLink = regexResultArray[2];
             if (!fetchLink.startsWith('https://'))
                 addNotice({ priority: 749, message: "Markdown image link seems faulty", lineNumber, extract: fetchLink, location: lineLocation });
             else if (checkingOptions?.disableAllLinkFetchingFlag !== true) {
-                // console.log(`Need to check existence of ${fetchLink}`);
+                // debugLog(`Need to check existence of ${fetchLink}`);
                 try {
                     const responseData = await cachedGetFileUsingFullURL({ uri: fetchLink });
                     parameterAssert(responseData.length > 10, `Expected ${fetchLink} image file to be longer: ${responseData.length}`);
-                    // console.log("Markdown link fetch got response: ", responseData.length);
+                    // debugLog("Markdown link fetch got response: ", responseData.length);
                 } catch (flError) {
                     console.error(`Markdown image link fetch had an error fetching '${fetchLink}': ${flError}`);
                     addNotice({ priority: 748, message: "Error fetching markdown image link", lineNumber, extract: fetchLink, location: lineLocation });
@@ -155,7 +155,7 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
 
         // Remove leading and trailing hash signs #
         thisText = thisText.replace(/^#+|#+$/g, '');
-        // console.log(`After removing hashes have '${thisText}'`);
+        // debugLog(`After removing hashes have '${thisText}'`);
 
         // Remove leading spaces
         thisText = thisText.replace(/^ +/g, '');
@@ -163,19 +163,19 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
         // Remove leading block text markers >
         while (thisText.startsWith('>'))
             thisText = thisText.replace(/^>+ */g, '');
-        // if (thisText.indexOf('>') >= 0) console.log(`After removing leading block text markers from '${lineText}' still have '${thisText}'`);
+        // if (thisText.indexOf('>') >= 0) userLog(`After removing leading block text markers from '${lineText}' still have '${thisText}'`);
 
         // Remove leading spaces again
         // thisText = thisText.replace(/^ +/g, '');
-        // console.log(`After removing leading spaces have '${thisText}'`);
+        // debugLog(`After removing leading spaces have '${thisText}'`);
 
         // // Remove leading asterisks
         // thisText = thisText.replace(/^\*/g,'')
-        // console.log(`After removing asterisks have '${thisText}'`);
+        // debugLog(`After removing asterisks have '${thisText}'`);
 
         // // Remove leading spaces again now
         // thisText = thisText.replace(/^ +/g,'')
-        // console.log(`After removing more leading spaces have '${thisText}'`);
+        // debugLog(`After removing more leading spaces have '${thisText}'`);
 
         let suggestion;
         if (thisText && lineText[0] !== '|') // Doesn’t really make sense to check table line entries
@@ -189,7 +189,7 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
 
     // Main code for checkMarkdownText function
     const lines = markdownText.split('\n');
-    // console.log(`  '${location}' has ${lines.length.toLocaleString()} total lines`);
+    // debugLog(`  '${location}' has ${lines.length.toLocaleString()} total lines`);
 
     let headerLevel = 0;
     let lastNumLeadingSpaces = 0;
@@ -202,7 +202,7 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
         if (line) {
 
             const thisHeaderLevel = line.match(/^#*/)[0].length;
-            // console.log(`Got thisHeaderLevel=${thisHeaderLevel} for ${line}${atString}`);
+            // debugLog(`Got thisHeaderLevel=${thisHeaderLevel} for ${line}${atString}`);
             if (thisHeaderLevel > headerLevel + 1
                 && !textOrFileName.startsWith('TA ')) // Suppress this notice for translationAcademy subsections
                 addNotice({ priority: 172, message: "Header levels should only increment by one", lineNumber: n, characterIndex: 0, location: ourLocation });
@@ -210,7 +210,7 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
                 headerLevel = thisHeaderLevel;
 
             numLeadingSpaces = line.match(/^ */)[0].length;
-            // console.log(`Got numLeadingSpaces=${numLeadingSpaces} for ${line}${atString}`);
+            // debugLog(`Got numLeadingSpaces=${numLeadingSpaces} for ${line}${atString}`);
             if (numLeadingSpaces && lastNumLeadingSpaces && numLeadingSpaces !== lastNumLeadingSpaces)
                 addNotice({ priority: 472, message: "Nesting of header levels seems confused", lineNumber: n, characterIndex: 0, location: ourLocation });
 
@@ -228,13 +228,13 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
 
     const suggestion = suggestedLines.join('\n');
     if (suggestion !== markdownText) {
-        // console.log(`Had markdown ${markdownText}`);
-        // console.log(`Sug markdown ${suggestion}`);
+        // debugLog(`Had markdown ${markdownText}`);
+        // debugLog(`Sug markdown ${suggestion}`);
         result.suggestion = suggestion;
     }
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        // console.log(`checkMarkdownText: calling removeDisabledNotices(${result.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        // debugLog(`checkMarkdownText: calling removeDisabledNotices(${result.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
         result.noticeList = removeDisabledNotices(result.noticeList);
     }
 
@@ -243,9 +243,9 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
         addSuccessMessage(`checkMarkdownText v${MARKDOWN_TEXT_VALIDATOR_VERSION_STRING} finished with ${result.noticeList.length ? result.noticeList.length.toLocaleString() : "zero"} notice${result.noticeList.length === 1 ? '' : 's'}`);
     else
         addSuccessMessage(`No errors or warnings found by checkMarkdownText v${MARKDOWN_TEXT_VALIDATOR_VERSION_STRING}`)
-    // console.log(`  checkMarkdownText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
+    // debugLog(`  checkMarkdownText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
     if (textOrFileName.endsWith('walk.md'))
-        console.log("checkMarkdownText result is", JSON.stringify(result));
+        userLog("checkMarkdownText result is", JSON.stringify(result));
     return result;
 }
 // end of checkMarkdownText function

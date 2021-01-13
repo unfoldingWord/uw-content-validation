@@ -5,6 +5,30 @@
 
 /**
  *
+ * @param {string} logString
+ * @param {string} optionalParameter2
+ */
+export function userLog(logString, optionalParameter2) {
+    if (optionalParameter2) userLog(`userLog note: we have a 2nd parameter: '${optionalParameter2}' after '${logString}'`);
+    // We can remove them all by disabling the next line
+    console.userLog(logString, optionalParameter2);
+}
+
+
+/**
+ *
+ * @param {string} logString
+ * @param {string} optionalParameter2
+ */
+export function debugLog(logString, optionalParameter2) {
+    if (optionalParameter2) debugLog(`debugLog note: we have a 2nd parameter: '${optionalParameter2}' after '${logString}'`);
+    // We can remove them all by disabling the next line
+    console.debugLog(logString, optionalParameter2);
+}
+
+
+/**
+ *
  * @param {*} truthStatement
  * @param {string} optionalMessage
  */
@@ -46,7 +70,7 @@ export function consoleLogObject(clTitle, clObject) {
     // Note: the following line succeeds even if length and/or size are undefined
     let clOutput = `cLO: ${clTitle} ${typeof clObject} (length=${clObject.length}) (size=${clObject.size}):\n`;
     for (const clPropertyName in clObject) {
-        // console.log("   ", clTitle, clPropertyName); // for debugging only!
+        // debugLog("   ", clTitle, clPropertyName); // for debugging only!
         let thisPropertyContents = "" + clObject[clPropertyName];
         if (thisPropertyContents.length > 50)
             thisPropertyContents = `(${thisPropertyContents.length}) ${thisPropertyContents.substring(0, 50)}…`;
@@ -62,7 +86,7 @@ export function consoleLogObject(clTitle, clObject) {
         if (thisPropertyContents !== undefined) clOutput += `: ${thisPropertyContents}
 `;
     }
-    console.log(clOutput);
+    userLog(clOutput);
 }
 // end of consoleLogObject function
 
@@ -78,7 +102,7 @@ export function displayPropertyNames(givenTitle, givenObject) {
     for (const propertyName in givenObject)
         output += `  ${propertyName} (type=${typeof givenObject[propertyName]})
 `;
-    console.log(output);
+    userLog(output);
 }
 // end of displayPropertyNames function
 
@@ -99,7 +123,7 @@ export function ourParseInt(givenString) {
     /* First attempt
     const int1 = parseInt(givenString, 10); // Don’t let the function guess the base (if the string has a leading zero)
     const int2 = givenString * 1; // This one is less forgiving it seems
-    if (int1!==int2) console.log(`From '${givenString}' we got ${int1} (${typeof int1}) and ${int2} (${typeof int2})`)
+    if (int1!==int2) userLog(`From '${givenString}' we got ${int1} (${typeof int1}) and ${int2} (${typeof int2})`)
     if (isNaN(int2) || isNaN(int1)
     || int2===undefined || int1==undefined
     || int2!==int1)
@@ -122,7 +146,7 @@ export function ourParseInt(givenString) {
  */
 /*
 export function getBookNumber(bookID) {
-    // console.log(`getBookNumber(${bookID})…`)
+    // debugLog(`getBookNumber(${bookID})…`)
     let numberResult = 99; // default 'unknown' value
     if (bookID==='FRT') numberResult = 0;
     else if (bookID==='BAK') numberResult = 68;
@@ -137,7 +161,7 @@ export function getBookNumber(bookID) {
     // } catch {}
     }
     // For everything else
-    // console.log(`getBookNumber(${bookID})) returning ${numberResult}`);
+    // debugLog(`getBookNumber(${bookID})) returning ${numberResult}`);
     return numberResult;
 }
 */

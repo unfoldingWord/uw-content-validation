@@ -18,7 +18,7 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
     //      checkingOptions?.taRepoSectionName
     //      checkingOptions?.expectFullLink (bool)
 
-    // console.log(`checkSupportReferenceInTA v${TA_REFERENCE_VALIDATOR_VERSION_STRING} (${fieldName}, (${fieldText.length}) '${fieldText}', ${givenLocation}, …)`);
+    // debugLog(`checkSupportReferenceInTA v${TA_REFERENCE_VALIDATOR_VERSION_STRING} (${fieldName}, (${fieldText.length}) '${fieldText}', ${givenLocation}, …)`);
     parameterAssert(fieldName !== undefined, "checkSupportReferenceInTA: 'fieldText' parameter should be defined");
     parameterAssert(typeof fieldName === 'string', `checkSupportReferenceInTA: 'fieldText' parameter should be a string not a '${typeof fieldName}'`);
     parameterAssert(fieldText !== undefined, "checkSupportReferenceInTA: 'fieldText' parameter should be defined");
@@ -36,7 +36,7 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
     const ctarResult = { noticeList: [] };
 
     function addNoticePartial(noticeObject) {
-        // console.log(`checkSupportReferenceInTA Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // debugLog(`checkSupportReferenceInTA Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "cTAref addNoticePartial: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `cTAref addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "cTAref addNoticePartial: 'message' parameter should be defined");
@@ -59,13 +59,13 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
     } catch (trcELerror) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
-        // console.log(`Using default extractLength=${extractLength}`);
+        // debugLog(`Using default extractLength=${extractLength}`);
     }
     // else
-        // console.log(`Using supplied extractLength=${extractLength}`, "cf. default="+DEFAULT_EXTRACT_LENGTH);
+        // debugLog(`Using supplied extractLength=${extractLength}`, "cf. default="+DEFAULT_EXTRACT_LENGTH);
     const halfLength = Math.floor(extractLength / 2); // rounded down
     const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
-    // console.log(`Using halfLength=${halfLength}`, "halfLengthPlus="+halfLengthPlus);
+    // debugLog(`Using halfLength=${halfLength}`, "halfLengthPlus="+halfLengthPlus);
     */
 
     let taRepoUsername;
@@ -91,20 +91,20 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
     const taRepoName = `${taRepoLanguageCode}_ta`;
     let filepath;
     if (checkingOptions?.expectFullLink) {
-        // console.log("checkSupportReferenceInTA expect full link")
+        // debugLog("checkSupportReferenceInTA expect full link")
         if (!fieldText.startsWith('rc://*/'))
             addNoticePartial({ priority: 879, message: `Badly formatted Resource Container link`, extract: fieldText, location: `${ourLocation} ${filepath}` });
         filepath = `${fieldText.replace('rc://*/ta/man/', '')}/01.md`; // Other files are title.md, sub-title.md
     }
     else filepath = `${taRepoSectionName}/${fieldText}/01.md`; // Other files are title.md, sub-title.md
-    // console.log("checkSupportReferenceInTA filepath", filepath);
+    // debugLog("checkSupportReferenceInTA filepath", filepath);
 
-    // console.log(`Need to check against ${taRepoName}`);
+    // debugLog(`Need to check against ${taRepoName}`);
     let taFileContent; // Not really used here -- just to show that we got something valid
     try {
         const getFile_ = (checkingOptions && checkingOptions?.getFile) ? checkingOptions?.getFile : cachedGetFile;
         taFileContent = await getFile_({ username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch });
-        // console.log("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
+        // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
         if (!taFileContent)
             addNoticePartial({ priority: 889, message: `Unable to find TA link`, extract: fieldText, location: `${ourLocation} ${filepath}` });
         else if (taFileContent.length < 10)
@@ -114,7 +114,7 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
         addNoticePartial({ priority: 888, message: `Error loading TA link`, extract: fieldText, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
     }
 
-    // console.log(`checkSupportReferenceInTA is returning ${JSON.stringify(ctarResult)}`);
+    // debugLog(`checkSupportReferenceInTA is returning ${JSON.stringify(ctarResult)}`);
     return ctarResult;
 }
 // end of checkSupportReferenceInTA function

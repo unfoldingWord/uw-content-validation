@@ -90,7 +90,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                         checkedRepos -- list of strings
                     depending on the type of check that was made.
     */
-    // console.log(`processNoticesCommon v${NOTICE_PROCESSOR_VERSION_STRING}
+    // debugLog(`processNoticesCommon v${NOTICE_PROCESSOR_VERSION_STRING}
     //     with ${JSON.stringify(givenNoticeObject)}
     //     with options=${JSON.stringify(optionalProcessingOptions)}
     //   Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
@@ -105,9 +105,9 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     // It only really makes sense if the debugChain is enabled
     if (givenNoticeObject.noticeList && givenNoticeObject.noticeList.length)
         if (givenNoticeObject.noticeList.length > 8000)
-            console.log(`processNoticesCommon: ${givenNoticeObject.noticeList.length} notices is too many to search for duplicates!`);
+            userLog(`processNoticesCommon: ${givenNoticeObject.noticeList.length} notices is too many to search for duplicates!`);
         else {
-            console.log(`processNoticesCommon: Checking ${givenNoticeObject.noticeList.length} notices for duplicates…`);
+            userLog(`processNoticesCommon: Checking ${givenNoticeObject.noticeList.length} notices for duplicates…`);
             const uniqueList = [];
             function uniqueListContains(item) { // returns -1 or the index of the first match
                 for (let ix = 0; ix < uniqueList.length; ix++) {
@@ -132,10 +132,10 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 let xx;
                 if ((xx = uniqueListContains(thisGivenNotice)) === -1) // wasn’t found
                     uniqueList.push(thisGivenNotice);
-                else console.log(`Duplicate notices:\n${JSON.stringify(thisGivenNotice)}\nwhen had\n${JSON.stringify(uniqueList[xx])}`);
+                else userLog(`Duplicate notices:\n${JSON.stringify(thisGivenNotice)}\nwhen had\n${JSON.stringify(uniqueList[xx])}`);
             }
             if (uniqueList.length !== givenNoticeObject.noticeList.length)
-                console.log(`Here with ${givenNoticeObject.noticeList.length.toLocaleString()} notices and ${uniqueList.length.toLocaleString()} unique notices`);
+                userLog(`Here with ${givenNoticeObject.noticeList.length.toLocaleString()} notices and ${uniqueList.length.toLocaleString()} unique notices`);
         }
 
 
@@ -236,34 +236,34 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     } catch (npfIPNLerror) { }
     if (ignorePriorityNumberList === undefined) {
         ignorePriorityNumberList = DEFAULT_IGNORE_PRIORITY_NUMBER_LIST;
-        // console.log(`Using default ignorePriorityNumberList=${JSON.stringify(ignorePriorityNumberList)}`);
+        // debugLog(`Using default ignorePriorityNumberList=${JSON.stringify(ignorePriorityNumberList)}`);
     }
-    else console.log(`processNoticesCommon: Using supplied ignorePriorityNumberList=${JSON.stringify(ignorePriorityNumberList)} cf. default=${JSON.stringify(DEFAULT_IGNORE_PRIORITY_NUMBER_LIST)}`);
+    else userLog(`processNoticesCommon: Using supplied ignorePriorityNumberList=${JSON.stringify(ignorePriorityNumberList)} cf. default=${JSON.stringify(DEFAULT_IGNORE_PRIORITY_NUMBER_LIST)}`);
     parameterAssert(Array.isArray(ignorePriorityNumberList), `ignorePriorityNumberList should be an Array, not ${typeof ignorePriorityNumberList}=${ignorePriorityNumberList}`);
     let sortBy;
     try {
         sortBy = optionalProcessingOptions.sortBy;
-        // console.log(`processNoticesCommon: Setting sortBy='${sortBy}' from optionalProcessingOptions`);
+        // debugLog(`processNoticesCommon: Setting sortBy='${sortBy}' from optionalProcessingOptions`);
     } catch (npfSBerror) { }
     if (sortBy === undefined) {
         sortBy = 'ByPriority';
-        // console.log(`processNoticesCommon: Using default sortBy='${sortBy}'`);
+        // debugLog(`processNoticesCommon: Using default sortBy='${sortBy}'`);
     }
-    // else console.log(`processNoticesCommon: Using supplied sortBy='${sortBy}' cf. default='ByPriority'`);
+    // else userLog(`processNoticesCommon: Using supplied sortBy='${sortBy}' cf. default='ByPriority'`);
     let cutoffPriorityLevel;
     try {
         cutoffPriorityLevel = optionalProcessingOptions.cutoffPriorityLevel;
     } catch (npfCPLerror) { }
     if (cutoffPriorityLevel === undefined) {
         cutoffPriorityLevel = DEFAULT_CUTOFF_PRIORITY_LEVEL;
-        // console.log(`Using default cutoffPriorityLevel=${cutoffPriorityLevel}`);
+        // debugLog(`Using default cutoffPriorityLevel=${cutoffPriorityLevel}`);
     }
-    else console.log(`Using supplied cutoffPriorityLevel=${cutoffPriorityLevel} cf. default=${DEFAULT_CUTOFF_PRIORITY_LEVEL}`);
+    else userLog(`Using supplied cutoffPriorityLevel=${cutoffPriorityLevel} cf. default=${DEFAULT_CUTOFF_PRIORITY_LEVEL}`);
     // if (cutoffPriorityLevel > errorPriorityLevel)
     // resultObject.errorList.push({999, "Cutoff level must not be higher than error level", extract:`(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
 
     let showDisabledNoticesFlag = optionalProcessingOptions.showDisabledNoticesFlag === true;
-    if (showDisabledNoticesFlag) console.log(`showDisabledNoticesFlag=${showDisabledNoticesFlag}`);
+    if (showDisabledNoticesFlag) userLog(`showDisabledNoticesFlag=${showDisabledNoticesFlag}`);
 
     // Adjust the list of success notices to combine multiple similar messages, e.g., Checked this book, Checked that book
     //  into one summary message, e.g., Checked this and that books.
@@ -280,7 +280,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             const USFMBookList = [], TSVNotesList = [], manifestsList = [];
             const TNList = [], TQList = [], TWLList = [];
             for (const thisParticularSuccessMsg of givenNoticeObject.successList) {
-                // console.log("thisParticularSuccessMsg", thisParticularSuccessMsg);
+                // debugLog("thisParticularSuccessMsg", thisParticularSuccessMsg);
                 let regexResult;
                 if (thisParticularSuccessMsg.startsWith('Checked UHB file: '))
                     UHBBookList.push(thisParticularSuccessMsg.substring(18, thisParticularSuccessMsg.length))
@@ -376,17 +376,17 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     // Handle the checkedFilenames list
     //  which might have 100s or 1,000s of .md filenames
     if (resultObject.checkedFilenames && resultObject.checkedFilenames.length > 10) {
-        // console.log(`Have ${resultObject.checkedFilenames.length} checkedFilenames`);
+        // debugLog(`Have ${resultObject.checkedFilenames.length} checkedFilenames`);
         resultObject.checkedFilenames = [...new Set(resultObject.checkedFilenames)]; // Only keep unique ones
-        // console.log(`Now have ${resultObject.checkedFilenames.length} checkedFilenames`);
-        // console.log(JSON.stringify(resultObject.checkedFilenames));
+        // debugLog(`Now have ${resultObject.checkedFilenames.length} checkedFilenames`);
+        // debugLog(JSON.stringify(resultObject.checkedFilenames));
     }
 
     // Specialised processing
     // If have s5 marker warnings, add one summary error
     // consoleLogObject('standardisedNoticeList', standardisedNoticeList);
     for (const thisParticularNotice of standardisedNoticeList) {
-        // console.log("thisParticularNotice", JSON.stringify(thisParticularNotice));
+        // debugLog("thisParticularNotice", JSON.stringify(thisParticularNotice));
         if (thisParticularNotice.message.indexOf('\\s5') >= 0) {
             const thisNewNotice = {
                 ...thisParticularNotice, priority: 701, message: "\\s5 fields should be coded as \\ts\\* milestones", location: ` in ${givenNoticeObject.checkType}`,
@@ -420,9 +420,9 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             remainingNoticeList.push(thisNotice);
     }
     if (resultObject.numIgnoredNotices)
-        console.log(`processNoticesCommon: Ignored ${resultObject.numIgnoredNotices.toLocaleString()} generic notice(s) out of ${givenNoticeObject.noticeList.length.toLocaleString()}`);
+        userLog(`processNoticesCommon: Ignored ${resultObject.numIgnoredNotices.toLocaleString()} generic notice(s) out of ${givenNoticeObject.noticeList.length.toLocaleString()}`);
     if (resultObject.numDisabledNotices)
-        console.log(`processNoticesCommon: Disabled ${resultObject.numDisabledNotices.toLocaleString()} specific notice(s) out of ${givenNoticeObject.noticeList.length.toLocaleString()}`);
+        userLog(`processNoticesCommon: Disabled ${resultObject.numDisabledNotices.toLocaleString()} specific notice(s) out of ${givenNoticeObject.noticeList.length.toLocaleString()}`);
 
     // Cut off the lowest priority notices if requested
     if (cutoffPriorityLevel > 0) {
@@ -450,7 +450,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     //  Doing this prevents errors/warnings from different repos or books from being combined
     if (remainingNoticeList.length
         && remainingNoticeList[0].extra && remainingNoticeList[0].extra.length) {
-        // console.log(`We need to add the extra location, e.g. '${remainingNoticeList[0][5]}': will prepend it to the messages`);
+        // debugLog(`We need to add the extra location, e.g. '${remainingNoticeList[0][5]}': will prepend it to the messages`);
         const newNoticeList = [];
         for (const thisNotice of remainingNoticeList) {
             const thisExtra = thisNotice.extra;
@@ -474,7 +474,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         else allTotals[thisCombinedID]++;
     }
 
-    // console.log(`processNoticesCommon is returning resultObject=${JSON.stringify(resultObject)}`);
+    // debugLog(`processNoticesCommon is returning resultObject=${JSON.stringify(resultObject)}`);
     return [remainingNoticeList, allTotals, resultObject];
 }
 // end of processNoticesCommon function
@@ -501,7 +501,7 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
     */
-    //     console.log(`processNoticesToErrorsWarnings v${NOTICE_PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
+    //     userLog(`processNoticesToErrorsWarnings v${NOTICE_PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
     //    Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
 
     const [remainingNoticeList, allTotals, resultObject] = processNoticesCommon(givenNoticeObject, optionalProcessingOptions);
@@ -516,18 +516,18 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
     } catch (npfMSMerror) { }
     if (typeof maximumSimilarMessages !== 'number' || isNaN(maximumSimilarMessages)) {
         maximumSimilarMessages = DEFAULT_MAXIMUM_SIMILAR_MESSAGES;
-        // console.log(`Using default maximumSimilarMessages=${maximumSimilarMessages}`);
+        // debugLog(`Using default maximumSimilarMessages=${maximumSimilarMessages}`);
     }
-    // else console.log(`Using supplied maximumSimilarMessages=${maximumSimilarMessages} cf. default=${DEFAULT_MAXIMUM_SIMILAR_MESSAGES}`);
+    // else userLog(`Using supplied maximumSimilarMessages=${maximumSimilarMessages} cf. default=${DEFAULT_MAXIMUM_SIMILAR_MESSAGES}`);
     let errorPriorityLevel;
     try {
         errorPriorityLevel = optionalProcessingOptions.errorPriorityLevel;
     } catch (npfEPLerror) { }
     if (errorPriorityLevel === undefined) {
         errorPriorityLevel = DEFAULT_ERROR_PRIORITY_LEVEL;
-        // console.log(`Using default errorPriorityLevel=${errorPriorityLevel}`);
+        // debugLog(`Using default errorPriorityLevel=${errorPriorityLevel}`);
     }
-    else console.log(`Using supplied errorPriorityLevel=${errorPriorityLevel} cf. default=${DEFAULT_ERROR_PRIORITY_LEVEL}`);
+    else userLog(`Using supplied errorPriorityLevel=${errorPriorityLevel} cf. default=${DEFAULT_ERROR_PRIORITY_LEVEL}`);
 
     // Check for repeated notices that should be compressed
     //  while simultaneously separating into error and warning lists
@@ -560,7 +560,7 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
             resultObject.warningList.push(thisNotice);
     }
 
-    // console.log(`processNoticesToErrorsWarnings is returning ${resultObject.successList.length} successes, ${resultObject.errorList.length} errors, and ${resultObject.warningList.length} warnings
+    // debugLog(`processNoticesToErrorsWarnings is returning ${resultObject.successList.length} successes, ${resultObject.errorList.length} errors, and ${resultObject.warningList.length} warnings
     //   numIgnoredNotices=${resultObject.numIgnoredNotices} numSuppressedErrors=${resultObject.numSuppressedErrors} numSuppressedWarnings=${resultObject.numSuppressedWarnings}`);
     return resultObject;
 }
@@ -590,7 +590,7 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
     */
-    //     console.log(`processNoticesToSevereMediumLow v${NOTICE_PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
+    //     userLog(`processNoticesToSevereMediumLow v${NOTICE_PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
     //    Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
 
     const [remainingNoticeList, allTotals, resultObject] = processNoticesCommon(givenNoticeObject, optionalProcessingOptions);
@@ -605,27 +605,27 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
     } catch (npfMSMerror) { }
     if (typeof maximumSimilarMessages !== 'number' || isNaN(maximumSimilarMessages)) {
         maximumSimilarMessages = DEFAULT_MAXIMUM_SIMILAR_MESSAGES;
-        // console.log(`Using default maximumSimilarMessages=${maximumSimilarMessages}`);
+        // debugLog(`Using default maximumSimilarMessages=${maximumSimilarMessages}`);
     }
-    // else console.log(`Using supplied maximumSimilarMessages=${maximumSimilarMessages} cf. default=${DEFAULT_MAXIMUM_SIMILAR_MESSAGES}`);
+    // else userLog(`Using supplied maximumSimilarMessages=${maximumSimilarMessages} cf. default=${DEFAULT_MAXIMUM_SIMILAR_MESSAGES}`);
     let severePriorityLevel;
     try {
         severePriorityLevel = optionalProcessingOptions.severePriorityLevel;
     } catch (npfSPLerror) { }
     if (severePriorityLevel === undefined) {
         severePriorityLevel = DEFAULT_SEVERE_PRIORITY_LEVEL;
-        // console.log(`Using default severePriorityLevel=${severePriorityLevel}`);
+        // debugLog(`Using default severePriorityLevel=${severePriorityLevel}`);
     }
-    else console.log(`Using supplied severePriorityLevel=${severePriorityLevel} cf. default=${DEFAULT_SEVERE_PRIORITY_LEVEL}`);
+    else userLog(`Using supplied severePriorityLevel=${severePriorityLevel} cf. default=${DEFAULT_SEVERE_PRIORITY_LEVEL}`);
     let mediumPriorityLevel;
     try {
         mediumPriorityLevel = optionalProcessingOptions.mediumPriorityLevel;
     } catch (nfpMPLerror) { }
     if (mediumPriorityLevel === undefined) {
         mediumPriorityLevel = DEFAULT_MEDIUM_PRIORITY_LEVEL;
-        // console.log(`Using default mediumPriorityLevel=${mediumPriorityLevel}`);
+        // debugLog(`Using default mediumPriorityLevel=${mediumPriorityLevel}`);
     }
-    else console.log(`Using supplied mediumPriorityLevel=${mediumPriorityLevel} cf. default=${DEFAULT_MEDIUM_PRIORITY_LEVEL}`);
+    else userLog(`Using supplied mediumPriorityLevel=${mediumPriorityLevel} cf. default=${DEFAULT_MEDIUM_PRIORITY_LEVEL}`);
 
     // Check for repeated notices that should be compressed
     //  while simultaneously separating into error and warning lists
@@ -667,7 +667,7 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
             resultObject.lowList.push(thisNotice);
     }
 
-    // console.log(`processNoticesToSevereMediumLow is returning ${resultObject.successList.length} successes, ${resultObject.severeList.length} severe, ${resultObject.mediumList.length} medium, and ${resultObject.lowList.length} low
+    // debugLog(`processNoticesToSevereMediumLow is returning ${resultObject.successList.length} successes, ${resultObject.severeList.length} severe, ${resultObject.mediumList.length} medium, and ${resultObject.lowList.length} low
     //   numIgnoredNotices=${resultObject.numIgnoredNotices} numSevereSuppressed=${resultObject.numSevereSuppressed} numMediumSuppressed=${resultObject.numMediumSuppressed} numLowSuppressed=${resultObject.numLowSuppressed}`);
     return resultObject;
 }
@@ -695,7 +695,7 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
     */
-    //     console.log(`processNoticesToSingleList v${NOTICE_PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
+    //     userLog(`processNoticesToSingleList v${NOTICE_PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
     //    Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
 
     const [remainingNoticeList, allTotals, resultObject] = processNoticesCommon(givenNoticeObject, optionalProcessingOptions);
@@ -709,9 +709,9 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
     } catch (npfMSMerror) { }
     if (typeof maximumSimilarMessages !== 'number' || isNaN(maximumSimilarMessages)) {
         maximumSimilarMessages = DEFAULT_MAXIMUM_SIMILAR_MESSAGES;
-        // console.log(`Using default maximumSimilarMessages=${maximumSimilarMessages}`);
+        // debugLog(`Using default maximumSimilarMessages=${maximumSimilarMessages}`);
     }
-    // else console.log(`Using supplied maximumSimilarMessages=${maximumSimilarMessages} cf. default=${DEFAULT_MAXIMUM_SIMILAR_MESSAGES}`);
+    // else userLog(`Using supplied maximumSimilarMessages=${maximumSimilarMessages} cf. default=${DEFAULT_MAXIMUM_SIMILAR_MESSAGES}`);
 
     // Check for repeated notices that should be compressed
     //  while simultaneously creating warning list
@@ -732,7 +732,7 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
             resultObject.warningList.push(thisNotice);
     }
 
-    // console.log(`processNoticesToSingleList is returning ${resultObject.successList.length} successes, ${resultObject.warningList.length} warnings
+    // debugLog(`processNoticesToSingleList is returning ${resultObject.successList.length} successes, ${resultObject.warningList.length} warnings
     //   numIgnoredNotices=${resultObject.numIgnoredNotices} numSuppressedWarnings=${resultObject.numSuppressedWarnings}`);
     return resultObject;
 }
