@@ -207,8 +207,13 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         const filepath = `${regexResultArray[2]}/${regexResultArray[3]}/01.md`; // Other files are title.md, sub-title.md
         // console.log(`Got tA filepath=${filepath}`);
 
+        console.log(`checkTNLinksToOutside: checkingOptions = ${JSON.stringify(checkingOptions)}`);
+        console.log(`checkingOptions = ${checkingOptions ? true : false}`);
+        console.log(`checkingOptions?.disableAllLinkFetchingFlag = ${checkingOptions?.disableAllLinkFetchingFlag}`);
+        console.log(`!checkingOptions?.disableAllLinkFetchingFlag = ${!checkingOptions?.disableAllLinkFetchingFlag}`);
+        console.log(`checkingOptions===undefined || checkingOptions.disableAllLinkFetchingFlag!==true = ${checkingOptions===undefined || checkingOptions.disableAllLinkFetchingFlag !== true}`);
         if (!checkingOptions?.disableAllLinkFetchingFlag) {
-            // console.log(`Need to check against ${taRepoName}`);
+            console.log(`checkTNLinksToOutside: need to check against ${taRepoName}`);
             const taPathParameters = { username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch };
             let taFileContent;
             try {
