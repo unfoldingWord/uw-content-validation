@@ -208,33 +208,36 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         // console.log(`Got tA filepath=${filepath}`);
 
         if (!checkingOptions?.disableAllLinkFetchingFlag) {
-            // console.log(`Need to check against ${taRepoName}`);
+            // console.log(`checkTNLinksToOutside: need to check against ${taRepoName}`);
             const taPathParameters = { username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch };
-            let taFileContent;
+            let taFileContent, alreadyGaveError = false;
             try {
                 taFileContent = await getFile_(taPathParameters);
                 // console.log("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
             } catch (trcGCerror) {
                 // console.error(`checkTNLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
                 addNoticePartial({ priority: 885, message: `Error loading ${fieldName} TA link`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+                alreadyGaveError = true;
             }
-            if (!taFileContent)
-                addNoticePartial({ priority: 886, message: `Unable to find ${fieldName} TA link`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}` });
-            else if (taFileContent.length < 10)
-                addNoticePartial({ priority: 884, message: `Linked ${fieldName} TA article seems empty`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}` });
-            else if (checkingOptions?.checkLinkedTAArticleFlag === true) {
-                // console.log(`checkTNLinksToOutside got ${checkingOptions?.checkLinkedTAArticleFlag} so checking TA article: ${filepath}`);
-                if (await alreadyChecked(taPathParameters) !== true) {
-                    // console.log(`checkTNLinksToOutside needs to check TA article: ${filepath}`);
-                    const checkTAFileResult = await checkMarkdownText(languageCode, `TA ${regexResultArray[3]}.md`, taFileContent, ourLocation, checkingOptions);
-                    for (const noticeObject of checkTAFileResult.noticeList)
-                        ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
-                    ctarResult.checkedFileCount += 1;
-                    ctarResult.checkedFilenames.push(`${regexResultArray[3]}.md`);
-                    ctarResult.checkedFilesizes = taFileContent.length;
-                    ctarResult.checkedFilenameExtensions = ['md'];
-                    ctarResult.checkedRepoNames.push(taRepoName);
-                    markAsChecked(taPathParameters); // don’t bother waiting for the result
+            if (!alreadyGaveError) {
+                if (!taFileContent)
+                    addNoticePartial({ priority: 886, message: `Unable to find ${fieldName} TA link`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}` });
+                else if (taFileContent.length < 10)
+                    addNoticePartial({ priority: 884, message: `Linked ${fieldName} TA article seems empty`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}` });
+                else if (checkingOptions?.checkLinkedTAArticleFlag === true) {
+                    // console.log(`checkTNLinksToOutside got ${checkingOptions?.checkLinkedTAArticleFlag} so checking TA article: ${filepath}`);
+                    if (await alreadyChecked(taPathParameters) !== true) {
+                        // console.log(`checkTNLinksToOutside needs to check TA article: ${filepath}`);
+                        const checkTAFileResult = await checkMarkdownText(languageCode, `TA ${regexResultArray[3]}.md`, taFileContent, ourLocation, checkingOptions);
+                        for (const noticeObject of checkTAFileResult.noticeList)
+                            ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
+                        ctarResult.checkedFileCount += 1;
+                        ctarResult.checkedFilenames.push(`${regexResultArray[3]}.md`);
+                        ctarResult.checkedFilesizes = taFileContent.length;
+                        ctarResult.checkedFilenameExtensions = ['md'];
+                        ctarResult.checkedRepoNames.push(taRepoName);
+                        markAsChecked(taPathParameters); // don’t bother waiting for the result
+                    }
                 }
             }
         }

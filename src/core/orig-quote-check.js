@@ -4,7 +4,7 @@ import { cachedGetFile } from '../core/getApi';
 import { ourParseInt } from './utilities';
 
 
-// const QUOTE_VALIDATOR_VERSION_STRING = '0.7.6';
+// const QUOTE_VALIDATOR_VERSION_STRING = '0.7.7';
 
 
 export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldText, occurrenceString, bookID, C, V, givenLocation, checkingOptions) {
@@ -328,7 +328,8 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
                     addNotice({ priority: 620, message: "Seems original language quote might not start at the beginning of a word", details: `passage ⸢${verseText}⸣`, characterIndex: 0, extract, location: ourLocation });
                 }
                 // Note: There's some Hebrew (RTL) characters at the beginning of the following regex
-                if (fieldText.slice(-1) !== ' ' && remainingBits[1] && remainingBits[1][0].search(/[^׃־A-Za-z\s.,:;?!–)]/) !== -1) {
+                if (fieldText.slice(-1) !== ' ' && remainingBits[1] && remainingBits[1][0].search(/[^׃־A-Za-z\s.,:;?!–)]…/) !== -1) {
+                    // No problems if quote is followed by expected terminator-type punctuation
                     // const badChar = remainingBits[1][0];
                     // const badCharString = ` by '${badChar}' {unicodedata.name(badChar)}={hex(ord(badChar))}`;
                     // console.log(`Seems '${fieldText}' might not finish at the end of a word—it’s followed ${badCharString} in '${verseText}'`);
