@@ -8,7 +8,7 @@
 */
 
 
-// const DISABLED_NOTICES_VERSION_STRING = '0.3.0';
+// const DISABLED_NOTICES_VERSION_STRING = '0.3.1';
 
 
 const disabledNotices = [
@@ -69,7 +69,9 @@ const disabledNotices = [
  * @returns true if the givenNotice has a match in the disabledNotices list above
  */
 export function isDisabledNotice(givenNotice) {
+  // NOTE: The function will fail if repoCode is not set in the notices passed to this function
   // console.log(`isDisabledNotice(${JSON.stringify(givenNotice)})…`);
+  // if (givenNotice.repoCode === undefined) console.log(`isDisabledNotice() cannot work without repoCode for ${JSON.stringify(givenNotice)}`);
   for (const disabledNotice of disabledNotices) {
     let matchedAllSpecifiedFields = true;
     for (const propertyName in disabledNotice)
@@ -94,8 +96,11 @@ export function isDisabledNotice(givenNotice) {
  * @returns a new list of notices with disabled ones removed
  */
 export function removeDisabledNotices(givenNoticeList) {
+  // NOTE: The function will fail if repoCode is not set in the notices passed to this function
   const remainingNoticeList = [];
+  let givenRepoCodeNotice = false;
   for (const thisNotice of givenNoticeList) {
+    if (thisNotice.repoCode === undefined && !givenRepoCodeNotice) { console.log(`removeDisabledNotices() cannot work without repoCode for ${JSON.stringify(thisNotice)} in list of ${givenNoticeList.length} notices.`); givenRepoCodeNotice = true; }
     if (!isDisabledNotice(thisNotice))
       remainingNoticeList.push(thisNotice);
     // else console.log(`  Removing disabled ${JSON.stringify(thisNotice)}`);

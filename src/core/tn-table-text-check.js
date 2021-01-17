@@ -4,7 +4,7 @@ import { checkTN_TSVDataRow } from './tn-table-row-check';
 import { removeDisabledNotices } from './disabled-notices';
 
 
-const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.3.1';
+const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.3.2';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -68,6 +68,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
         if (noticeObject.debugChain) noticeObject.debugChain = `checkTN_TSVText ${noticeObject.debugChain}`;
         // NOTE: We only add the repoCode here because this function is called directly by tC Create
         //          and notice disabling currently depends on knowing the repoCode
+        if (noticeObject.repoCode) console.log(`checkTN_TSVText.addNoticePartial already had repoCode=${noticeObject.repoCode} (will be lost)`);
         ttResult.noticeList.push({ ...noticeObject, bookID, filename, repoCode: 'TN' });
     }
 
