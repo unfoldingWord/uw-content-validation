@@ -4,7 +4,7 @@ import { cachedGetFile } from '../core/getApi';
 import { ourParseInt } from './utilities';
 
 
-// const QUOTE_VALIDATOR_VERSION_STRING = '0.7.8';
+// const QUOTE_VALIDATOR_VERSION_STRING = '0.8.0';
 
 
 export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldText, occurrenceString, bookID, C, V, givenLocation, checkingOptions) {
@@ -287,18 +287,27 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
         }
         const numQuoteBits = quoteBits.length;
         if (numQuoteBits >= 2) {
+            let quoteIndex = -1; // These parts have to be in order, i.e., found in the verse one AFTER the other
             for (let bitIndex = 0; bitIndex < numQuoteBits; bitIndex++) {
-                if (verseText.indexOf(quoteBits[bitIndex]) < 0) { // this is what we really want to catch
+                // console.log(`Checking quote part ${bitIndex} '${quoteBits[bitIndex]}' in '${verseText.substring(quoteIndex)}' from '${verseText}'`)
+                if ((quoteIndex = verseText.indexOf(quoteBits[bitIndex], quoteIndex + 1)) < 0) { // this is what we really want to catch
                     // If the quote has multiple parts, create a description of the current part
                     let partDescription;
                     if (numQuoteBits === 1) partDescription = '';
                     else if (bitIndex === 0) partDescription = 'beginning';
                     else if (bitIndex === numQuoteBits - 1) partDescription = 'end';
                     else partDescription = `middle${numQuoteBits > 3 ? bitIndex : ''}`;
-                    // console.log(`721 Unable to find '${fieldText}' ${numQuoteBits === 1? '': `'${quoteBits[bitIndex]}' `}${partDescription? '('+partDescription+') ':''}in '${verseText}'`);
-                    const extract = `${quoteBits[bitIndex]}' ${partDescription ? '(' + partDescription + ')' : ''}`;
-                    addNotice({ priority: 721, message: "Unable to find original language quote in verse text", extract, location: ourLocation });
+                    const extract = `${partDescription ? '(' + partDescription + ' quote portion)' : ''} '${quoteBits[bitIndex]}'`;
+                    if (verseText.indexOf(quoteBits[bitIndex]) >= 0) {
+                        console.assert(bitIndex > 0, "This shouldn't happen for bitIndex of zero!");
+                        // console.log(`914, Unable to find '${fieldText}' ${numQuoteBits === 1 ? '' : `'${quoteBits[bitIndex]}' `}${partDescription ? '(' + partDescription + ') ' : ''}in '${verseText}'`);
+                        addNotice({ priority: 914, message: "Unable to find original language quote portion in the right place in the verse text", details: `passage ►${verseText}◄`, extract, location: ourLocation });
+                    } else {
+                        // console.log(`915, Unable to find '${fieldText}' ${numQuoteBits === 1 ? '' : `'${quoteBits[bitIndex]}' `}${partDescription ? '(' + partDescription + ') ' : ''}in '${verseText}'`);
+                        addNotice({ priority: 915, message: "Unable to find original language quote portion in verse text", details: `passage ►${verseText}◄`, extract, location: ourLocation });
+                    }
                 }
+                // else console.log(`Found quote ${bitIndex} at ${quoteIndex} (num text chars = ${verseText.length})`);
             }
         } else // < 2
             addNotice({ priority: 375, message: "Ellipsis without surrounding snippet", location: ourLocation });
