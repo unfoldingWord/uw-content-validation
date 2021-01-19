@@ -1,7 +1,7 @@
 import grammar from 'usfm-grammar';
 import * as books from '../core/books/books';
 import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
-import { parameterAssert } from './utilities';
+import { userLog, parameterAssert } from './utilities';
 
 
 // const USFM_GRAMMAR_VALIDATOR_VERSION_STRING = '0.3.2';

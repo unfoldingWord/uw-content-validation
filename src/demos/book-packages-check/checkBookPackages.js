@@ -1,6 +1,6 @@
 import * as books from '../../core/books/books';
 import { checkBookPackage } from '../book-package-check/checkBookPackage';
-import { parameterAssert } from '../../core/utilities';
+import { userLog, parameterAssert } from '../../core/utilities';
 // import { consoleLogObject } from '../../core/utilities';
 
 // const BPs_VALIDATOR_VERSION_STRING = '0.2.4';

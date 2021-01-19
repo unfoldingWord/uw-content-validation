@@ -5,7 +5,7 @@ import { clearCaches, clearCheckedArticleCache, preloadReposIfNecessary, ourPars
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderTotals } from '../RenderProcessedResults';
 import { checkBookPackage } from '../book-package-check/checkBookPackage';
-// import { consoleLogObject } from '../../core/utilities';
+import { userLog } from '../../core/utilities';
 
 
 // const GL_BP_VALIDATOR_VERSION_STRING = '0.1.8';

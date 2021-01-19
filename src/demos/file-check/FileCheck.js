@@ -8,7 +8,7 @@ import { clearCaches, clearCheckedArticleCache, ourParseInt, cachedGetFile } fro
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
 import { checkFileContents } from './checkFileContents';
-// import { consoleLogObject } from '../../core/utilities';
+import { userLog } from '../../core/utilities';
 
 
 // const FILE_CHECK_VERSION_STRING = '0.2.5';

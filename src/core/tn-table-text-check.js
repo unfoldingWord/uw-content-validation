@@ -2,7 +2,7 @@ import * as books from './books/books';
 import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { checkTN_TSVDataRow } from './tn-table-row-check';
 import { removeDisabledNotices } from './disabled-notices';
-import { parameterAssert } from './utilities';
+import { debugLog, parameterAssert } from './utilities';
 
 
 const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.3.2';
@@ -77,6 +77,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
         if (noticeObject.debugChain) noticeObject.debugChain = `checkTN_TSVText ${noticeObject.debugChain}`;
         // NOTE: We only add the repoCode here because this function is called directly by tC Create
         //          and notice disabling currently depends on knowing the repoCode
+        if (noticeObject.repoCode) debugLog(`checkTN_TSVText.addNoticePartial already had repoCode=${noticeObject.repoCode} (will be lost)`);
         ttResult.noticeList.push({ ...noticeObject, bookID, filename, repoCode: 'TN' });
     }
 

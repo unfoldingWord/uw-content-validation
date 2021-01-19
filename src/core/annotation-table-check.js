@@ -58,7 +58,7 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
         parameterAssert(typeof noticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
         if (noticeObject.debugChain) noticeObject.debugChain = `checkAnnotationRows ${noticeObject.debugChain}`;
-        carResult.noticeList.push({ ...noticeObject, bookID, filename });
+        carResult.noticeList.push({ ...noticeObject, bookID, filename, repoCode: annotationType });
     }
 
 

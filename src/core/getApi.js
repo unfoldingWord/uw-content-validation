@@ -5,7 +5,7 @@ import { setup } from 'axios-cache-adapter';
 import JSZip from 'jszip';
 import * as books from './books';
 import { clearCheckedArticleCache } from './tn-links-check';
-import { parameterAssert } from './utilities';
+import { userLog, parameterAssert } from './utilities';
 
 
 // const GETAPI_VERSION_STRING = '0.6.7';

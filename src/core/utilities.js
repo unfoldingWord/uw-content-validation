@@ -11,7 +11,7 @@
 export function userLog(logString, optionalParameter2) {
     if (optionalParameter2) userLog(`userLog note: we have a 2nd parameter: '${optionalParameter2}' after '${logString}'`);
     // We can remove them all by disabling the next line
-    console.userLog(logString, optionalParameter2);
+    console.log(logString);
 }
 
 
@@ -23,7 +23,7 @@ export function userLog(logString, optionalParameter2) {
 export function debugLog(logString, optionalParameter2) {
     if (optionalParameter2) debugLog(`debugLog note: we have a 2nd parameter: '${optionalParameter2}' after '${logString}'`);
     // We can remove them all by disabling the next line
-    console.debugLog(logString, optionalParameter2);
+    console.log(logString);
 }
 
 
@@ -34,7 +34,7 @@ export function debugLog(logString, optionalParameter2) {
  */
 export function parameterAssert(truthStatement, optionalMessage) {
     // We can remove them all by disabling the next line
-    // console.assert(truthStatement, optionalMessage);
+    console.assert(truthStatement, optionalMessage);
 }
 
 

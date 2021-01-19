@@ -1,6 +1,6 @@
 import React from 'react';
 import { forwardRef } from 'react';
-import { parameterAssert } from '../core/utilities';
+import { parameterAssert, userLog } from '../core/utilities';
 
 // NOTE: The following line is currently giving compile warnings -- a problem in a dependency it seems
 import MaterialTable from 'material-table';
@@ -41,7 +41,7 @@ const tableIcons = {
 };
 
 
-// const RENDER_PROCESSED_RESULTS_VERSION = '0.5.8';
+// const RENDER_PROCESSED_RESULTS_VERSION = '0.5.9';
 
 
 export function RenderSuccesses({ username, results }) {
@@ -420,6 +420,7 @@ function RenderWarningsGradient({ results }) {
 function RenderErrors({ results }) {
     // debugLog("In RenderErrors");
     // consoleLogObject('RenderErrors results', results);
+    userLog(`Displaying ${results.errorList.length.toLocaleString()} error(s) with ${results.numSuppressedErrors.toLocaleString()} suppressed`);
     return <>
         <b style={{ color: results.errorList.length ? 'red' : 'green' }}>{results.errorList.length.toLocaleString()} error{results.errorList.length === 1 ? '' : 's'}</b>{results.errorList.length ? ':' : ''}
         <small style={{ color: 'Gray' }}>{results.numSuppressedErrors ? " (" + results.numSuppressedErrors.toLocaleString() + " similar one" + (results.numSuppressedErrors === 1 ? '' : 's') + " suppressed)" : ''}</small>
@@ -429,6 +430,7 @@ function RenderErrors({ results }) {
 function RenderWarnings({ results }) {
     // debugLog("In RenderWarnings");
     // consoleLogObject('RenderWarnings results', results);
+    userLog(`Displaying ${results.warningList.length.toLocaleString()} warnings(s) with ${results.numSuppressedWarnings.toLocaleString()} suppressed`);
     return <>
         <b style={{ color: results.warningList.length ? 'orange' : 'green' }}>{results.warningList.length.toLocaleString()} warning{results.warningList.length === 1 ? '' : 's'}</b>{results.warningList.length ? ':' : ''}
         <small style={{ color: 'Gray' }}>{results.numSuppressedWarnings ? " (" + results.numSuppressedWarnings.toLocaleString() + " similar one" + (results.numSuppressedWarnings === 1 ? '' : 's') + " suppressed)" : ''}</small>
@@ -448,6 +450,7 @@ function RenderErrorsAndWarnings({ results }) {
 function RenderSevere({ results }) {
     // debugLog("In RenderSevere");
     // consoleLogObject('RenderSevere results', results);
+    userLog(`Displaying ${results.severeList.length.toLocaleString()} severe notice(s) with ${results.numSevereSuppressed.toLocaleString()} suppressed`);
     return <>
         <b style={{ color: results.severeList.length ? 'red' : 'green' }}>{results.severeList.length.toLocaleString()} severe error{results.severeList.length === 1 ? '' : 's'}</b>{results.severeList.length ? ':' : ''}
         <small style={{ color: 'Gray' }}>{results.numSevereSuppressed ? " (" + results.numSevereSuppressed.toLocaleString() + " similar one" + (results.numSevereSuppressed === 1 ? '' : 's') + " suppressed)" : ''}</small>
@@ -457,6 +460,7 @@ function RenderSevere({ results }) {
 function RenderMedium({ results }) {
     // debugLog("In RenderSevere");
     // consoleLogObject('RenderSevere results', results);
+    userLog(`Displaying ${results.mediumList.length.toLocaleString()} medium notice(s) with ${results.numMediumSuppressed.toLocaleString()} suppressed`);
     return <>
         <b style={{ color: results.mediumList.length ? 'maroon' : 'green' }}>{results.mediumList.length.toLocaleString()} medium error{results.mediumList.length === 1 ? '' : 's'}</b>{results.mediumList.length ? ':' : ''}
         <small style={{ color: 'Gray' }}>{results.numMediumSuppressed ? " (" + results.numMediumSuppressed.toLocaleString() + " similar one" + (results.numMediumSuppressed === 1 ? '' : 's') + " suppressed)" : ''}</small>
@@ -466,6 +470,7 @@ function RenderMedium({ results }) {
 function RenderLow({ results }) {
     // debugLog("In RenderLow");
     // consoleLogObject('RenderLow results', results);
+    userLog(`Displaying ${results.lowList.length.toLocaleString()} low notice(s) with ${results.numLowSuppressed.toLocaleString()} suppressed`);
     return <>
         <b style={{ color: results.lowList.length ? 'orange' : 'green' }}>{results.lowList.length.toLocaleString()} other warning{results.lowList.length === 1 ? '' : 's'}</b>{results.lowList.length ? ':' : ''}
         <small style={{ color: 'Gray' }}>{results.numLowSuppressed ? " (" + results.numLowSuppressed.toLocaleString() + " similar one" + (results.numLowSuppressed === 1 ? '' : 's') + " suppressed)" : ''}</small>
@@ -541,6 +546,7 @@ export function RenderSuccessesWarningsGradient({ results }) {
     else if (results.successList.length === 5) successCount = 'Five';
     else successCount = results.successList.length.toLocaleString();
 
+    userLog(`Displaying ${results.warningList.length.toLocaleString()} gradient notice(s) with ${results.numSuppressedWarnings.toLocaleString()} suppressed`);
     return <>
         <b style={{ color: results.warningList.length ? 'limegreen' : 'green' }}>{successCount.toLocaleString()} check{results.successList.length === 1 ? '' : 's'} completed</b>{results.successList.length ? ':' : ''}
         <RenderSuccessesColored results={results} />

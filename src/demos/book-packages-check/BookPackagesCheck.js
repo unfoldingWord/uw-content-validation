@@ -5,7 +5,7 @@ import { clearCaches, clearCheckedArticleCache, ourParseInt, preloadReposIfNeces
 import { checkBookPackages } from './checkBookPackages';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderTotals } from '../RenderProcessedResults';
-// import { consoleLogObject } from '../../core/utilities';
+import { userLog } from '../../core/utilities';
 
 
 // const BPS_VALIDATOR_VERSION_STRING = '0.2.0';

@@ -4,7 +4,7 @@ import { checkTextField } from './field-text-check';
 import { checkTextfileContents } from './file-text-check';
 import { runUsfmJsCheck } from './usfm-js-check';
 import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
-import { parameterAssert, ourParseInt } from './utilities';
+import { userLog, parameterAssert, ourParseInt } from './utilities';
 import { removeDisabledNotices } from './disabled-notices';
 
 

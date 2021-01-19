@@ -2,7 +2,7 @@ import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { checkTextField } from './field-text-check';
 import { cachedGetFileUsingFullURL } from '../core/getApi';
 import { removeDisabledNotices } from './disabled-notices';
-import { parameterAssert } from './utilities';
+import { userLog, parameterAssert } from './utilities';
 
 
 const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.4.3';

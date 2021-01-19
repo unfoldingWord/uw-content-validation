@@ -1,6 +1,6 @@
 import { checkTextField } from './field-text-check'
 import { cachedGetFileUsingFullURL } from './getApi';
-import { parameterAssert } from './utilities';
+import { userLog, parameterAssert } from './utilities';
 
 
 const LINK_VALIDATOR_VERSION_STRING = '0.3.4';

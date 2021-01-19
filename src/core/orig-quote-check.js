@@ -4,7 +4,7 @@ import { cachedGetFile } from '../core/getApi';
 import { debugLog, parameterAssert, ourParseInt } from './utilities';
 
 
-// const QUOTE_VALIDATOR_VERSION_STRING = '0.7.8';
+// const QUOTE_VALIDATOR_VERSION_STRING = '0.8.0';
 
 
 /**
@@ -299,18 +299,27 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
         }
         const numQuoteBits = quoteBits.length;
         if (numQuoteBits >= 2) {
+            let quoteIndex = -1; // These parts have to be in order, i.e., found in the verse one AFTER the other
             for (let bitIndex = 0; bitIndex < numQuoteBits; bitIndex++) {
-                if (verseText.indexOf(quoteBits[bitIndex]) < 0) { // this is what we really want to catch
+                // debugLog(`Checking quote part ${bitIndex} '${quoteBits[bitIndex]}' in '${verseText.substring(quoteIndex)}' from '${verseText}'`)
+                if ((quoteIndex = verseText.indexOf(quoteBits[bitIndex], quoteIndex + 1)) < 0) { // this is what we really want to catch
                     // If the quote has multiple parts, create a description of the current part
                     let partDescription;
                     if (numQuoteBits === 1) partDescription = '';
                     else if (bitIndex === 0) partDescription = 'beginning';
                     else if (bitIndex === numQuoteBits - 1) partDescription = 'end';
                     else partDescription = `middle${numQuoteBits > 3 ? bitIndex : ''}`;
-                    // debugLog(`721 Unable to find '${fieldText}' ${numQuoteBits === 1? '': `'${quoteBits[bitIndex]}' `}${partDescription? '('+partDescription+') ':''}in '${verseText}'`);
-                    const extract = `${quoteBits[bitIndex]}' ${partDescription ? '(' + partDescription + ')' : ''}`;
-                    addNotice({ priority: 721, message: "Unable to find original language quote in verse text", extract, location: ourLocation });
+                    const extract = `${partDescription ? '(' + partDescription + ' quote portion)' : ''} '${quoteBits[bitIndex]}'`;
+                    if (verseText.indexOf(quoteBits[bitIndex]) >= 0) {
+                        console.assert(bitIndex > 0, "This shouldn't happen for bitIndex of zero!");
+                        // debugLog(`914, Unable to find '${fieldText}' ${numQuoteBits === 1 ? '' : `'${quoteBits[bitIndex]}' `}${partDescription ? '(' + partDescription + ') ' : ''}in '${verseText}'`);
+                        addNotice({ priority: 914, message: "Unable to find original language quote portion in the right place in the verse text", details: `passage ►${verseText}◄`, extract, location: ourLocation });
+                    } else {
+                        // debugLog(`915, Unable to find '${fieldText}' ${numQuoteBits === 1 ? '' : `'${quoteBits[bitIndex]}' `}${partDescription ? '(' + partDescription + ') ' : ''}in '${verseText}'`);
+                        addNotice({ priority: 915, message: "Unable to find original language quote portion in verse text", details: `passage ►${verseText}◄`, extract, location: ourLocation });
+                    }
                 }
+                // else debugLog(`Found quote ${bitIndex} at ${quoteIndex} (num text chars = ${verseText.length})`);
             }
         } else // < 2
             addNotice({ priority: 375, message: "Ellipsis without surrounding snippet", location: ourLocation });
@@ -337,15 +346,16 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
                     // const badCharString = ` by '{badChar}' {unicodedata.name(badChar)}={hex(ord(badChar))}`;
                     // debugLog(`Seems '${fieldText}' might not start at the beginning of a word—it’s preceded ${badCharString} in '${verseText}'`);
                     const extract = `(${remainingBits[0].slice(-1)}=D${remainingBits[0].slice(-1).charCodeAt()}/H${remainingBits[0].slice(-1).charCodeAt().toString(16)})` + fieldText.substring(0, extractLength - 3) + (fieldText.length > extractLength - 3 ? '…' : '');
-                    addNotice({ priority: 620, message: "Seems original language quote might not start at the beginning of a word", details: `passage ►${verseText}◄`, characterIndex: 0, extract, location: ourLocation });
+                    addNotice({ priority: 909, message: "Seems original language quote might not start at the beginning of a word", details: `passage ►${verseText}◄`, characterIndex: 0, extract, location: ourLocation });
                 }
                 // Note: There's some Hebrew (RTL) characters at the beginning of the following regex
-                if (fieldText.slice(-1) !== ' ' && remainingBits[1] && remainingBits[1][0].search(/[^׃־A-Za-z\s.,:;?!–)]/) !== -1) {
+                if (fieldText.slice(-1) !== ' ' && remainingBits[1] && remainingBits[1][0].search(/[^׃־A-Za-z\s.,:;?!–)]…/) !== -1) {
+                    // No problems if quote is followed by expected terminator-type punctuation
                     // const badChar = remainingBits[1][0];
                     // const badCharString = ` by '${badChar}' {unicodedata.name(badChar)}={hex(ord(badChar))}`;
                     // debugLog(`Seems '${fieldText}' might not finish at the end of a word—it’s followed ${badCharString} in '${verseText}'`);
                     const extract = (fieldText.length > extractLength - 3 ? '…' : '') + fieldText.substring(fieldText.length - extractLength + 3, fieldText.length) + `(${remainingBits[1][0]}=D${remainingBits[1].charCodeAt(0)}/H${remainingBits[1].charCodeAt(0).toString(16)})`;
-                    addNotice({ priority: 621, message: "Seems original language quote might not finish at the end of a word", details: `passage ►${verseText}◄`, characterIndex: fieldText.length, extract, location: ourLocation });
+                    addNotice({ priority: 908, message: "Seems original language quote might not finish at the end of a word", details: `passage ►${verseText}◄`, characterIndex: fieldText.length, extract, location: ourLocation });
                 }
             }
         } else { // can’t find the given text
@@ -354,7 +364,13 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
             if (noBreakSpaceText) fieldText = fieldText.replace(/\u00A0/g, '⍽');
             // debugLog(`722 fieldText='${fieldText}'${extraText}`);
             // debugLog(`722 verseText='${verseText}'`);
-            if (fieldText[0] === '\u2060') { // Word joiner
+            if (fieldText[0] === ' ') {
+                const extract = fieldText.substring(0, extractLength) + fieldText.length > extractLength ? '…' : '';
+                addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which starts with a space" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation });
+            } else if (fieldText.endsWith(' ')) {
+                const extract = fieldText.length > extractLength ? '…' : '' + fieldText.substring(fieldText.length - extractLength, fieldText.length);
+                addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which ends with a space" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation });
+            } else if (fieldText[0] === '\u2060') { // Word joiner
                 const extract = fieldText.substring(0, extractLength) + fieldText.length > extractLength ? '…' : '';
                 addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which starts with 'word joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation });
             } else if (fieldText.endsWith('\u2060')) { // Word joiner

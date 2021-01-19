@@ -1,4 +1,4 @@
-import { parameterAssert } from '../core/utilities';
+import { userLog, parameterAssert } from '../core/utilities';
 import { isDisabledNotice } from '../core/disabled-notices';
 
 
@@ -105,9 +105,9 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     // It only really makes sense if the debugChain is enabled
     if (givenNoticeObject.noticeList && givenNoticeObject.noticeList.length)
         if (givenNoticeObject.noticeList.length > 8000)
-            userLog(`processNoticesCommon: ${givenNoticeObject.noticeList.length} notices is too many to search for duplicates!`);
+            userLog(`processNoticesCommon: ${givenNoticeObject.noticeList.length.toLocaleString()} notices is too many to search for duplicates!`);
         else {
-            userLog(`processNoticesCommon: Checking ${givenNoticeObject.noticeList.length} notices for duplicates…`);
+            userLog(`processNoticesCommon: Checking ${givenNoticeObject.noticeList.length.toLocaleString()} notices for duplicates…`);
             const uniqueList = [];
             function uniqueListContains(item) { // returns -1 or the index of the first match
                 for (let ix = 0; ix < uniqueList.length; ix++) {

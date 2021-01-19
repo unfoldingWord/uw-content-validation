@@ -1,7 +1,7 @@
 import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { checkMarkdownText } from './markdown-text-check';
 import { checkTextfileContents } from './file-text-check';
-import { parameterAssert } from './utilities';
+import { userLog, parameterAssert } from './utilities';
 
 
 const MARKDOWN_FILE_VALIDATOR_VERSION_STRING = '0.4.0';

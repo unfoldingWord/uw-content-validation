@@ -1,3 +1,5 @@
+import { debugLog, userLog } from './utilities';
+
 /* This file handles the suppression of notices where we don’t want to disable or remove the actual check,
     but we just want to disable it for certain resources to handle special cases.
     In some cases, it’s to handle software deficiencies.
@@ -8,7 +10,7 @@
 */
 
 
-// const DISABLED_NOTICES_VERSION_STRING = '0.3.0';
+// const DISABLED_NOTICES_VERSION_STRING = '0.3.1';
 
 
 const disabledNotices = [
@@ -69,7 +71,9 @@ const disabledNotices = [
  * @returns true if the givenNotice has a match in the disabledNotices list above
  */
 export function isDisabledNotice(givenNotice) {
+  // NOTE: The function will fail if repoCode is not set in the notices passed to this function
   // debugLog(`isDisabledNotice(${JSON.stringify(givenNotice)})…`);
+  // if (givenNotice.repoCode === undefined) debugLog(`isDisabledNotice() cannot work without repoCode for ${JSON.stringify(givenNotice)}`);
   for (const disabledNotice of disabledNotices) {
     let matchedAllSpecifiedFields = true;
     for (const propertyName in disabledNotice)
@@ -94,8 +98,11 @@ export function isDisabledNotice(givenNotice) {
  * @returns a new list of notices with disabled ones removed
  */
 export function removeDisabledNotices(givenNoticeList) {
+  // NOTE: The function will fail if repoCode is not set in the notices passed to this function
   const remainingNoticeList = [];
+  let givenRepoCodeNotice = false;
   for (const thisNotice of givenNoticeList) {
+    if (thisNotice.repoCode === undefined && !givenRepoCodeNotice) { debugLog(`removeDisabledNotices() cannot work without repoCode for ${JSON.stringify(thisNotice)} in list of ${givenNoticeList.length} notices.`); givenRepoCodeNotice = true; }
     if (!isDisabledNotice(thisNotice))
       remainingNoticeList.push(thisNotice);
     // else userLog(`  Removing disabled ${JSON.stringify(thisNotice)}`);

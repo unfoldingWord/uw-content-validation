@@ -4,7 +4,7 @@ import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, proces
 import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderTotals } from '../RenderProcessedResults';
 import { clearCaches, clearCheckedArticleCache, preloadReposIfNecessary, ourParseInt } from '../../core';
 import { checkRepo } from './checkRepo';
-// import { consoleLogObject, displayPropertyNames } from '../../core/utilities';
+import { userLog } from '../../core/utilities';
 
 
 // const REPO_VALIDATOR_VERSION_STRING = '0.1.7';

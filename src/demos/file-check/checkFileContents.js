@@ -1,5 +1,9 @@
 import * as books from '../../core/books/books';
-import { parameterAssert, formRepoName, checkUSFMText, checkMarkdownFileContents, checkPlainText, checkYAMLText, checkManifestText, checkTN_TSVText, checkAnnotationRows } from '../../core';
+import {
+  userLog, parameterAssert,
+  formRepoName,
+  checkUSFMText, checkMarkdownFileContents, checkPlainText, checkYAMLText, checkManifestText, checkTN_TSVText, checkAnnotationRows
+} from '../../core';
 
 
 // const CHECK_FILE_CONTENTS_VERSION_STRING = '0.3.1';
