@@ -4,7 +4,7 @@ import { cachedGetFile } from '../core/getApi';
 import { debugLog, parameterAssert, ourParseInt } from './utilities';
 
 
-// const QUOTE_VALIDATOR_VERSION_STRING = '0.8.0';
+// const QUOTE_VALIDATOR_VERSION_STRING = '0.8.1';
 
 
 /**
@@ -341,18 +341,23 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
                 parameterAssert(remainingBits.length === 2, `remaining bits are ${remainingBits.length}`);
                 // Note: There's some Hebrew (RTL) characters at the beginning of the following regex
                 // Note: Straight quotes are included here (even though unwanted) as other code warns about them
-                if (fieldText.slice(0) !== ' ' && remainingBits[0] && remainingBits[0].slice(-1).search(/[^־A-Za-z\s*[("'“‘]/) !== -1) {
-                    // const badChar = remainingBits[0].slice(-1);
-                    // const badCharString = ` by '{badChar}' {unicodedata.name(badChar)}={hex(ord(badChar))}`;
+                let offendingChar;
+                if (fieldText.slice(0) !== ' ' && remainingBits[0] && (offendingChar = remainingBits[0].slice(-1)).search(/[^־A-Za-z\s*[("'“‘]/) !== -1) {
+                    // const offendingChar = remainingBits[0].slice(-1);
+                    // const badCharString = ` by '{offendingChar}' {unicodedata.name(offendingChar)}={hex(ord(offendingChar))}`;
                     // debugLog(`Seems '${fieldText}' might not start at the beginning of a word—it’s preceded ${badCharString} in '${verseText}'`);
-                    const extract = `(${remainingBits[0].slice(-1)}=D${remainingBits[0].slice(-1).charCodeAt()}/H${remainingBits[0].slice(-1).charCodeAt().toString(16)})` + fieldText.substring(0, extractLength - 3) + (fieldText.length > extractLength - 3 ? '…' : '');
+                    let precederDescription;
+                    if (offendingChar  === '\u2060') precederDescription = 'WordJoiner';
+                    else if (offendingChar  === '\u200D') precederDescription = 'ZeroWidth-WordJoiner';
+                    else precederDescription = `${offendingChar}=D${offendingChar.charCodeAt()}/H${offendingChar.charCodeAt().toString(16)}`;
+                    const extract = `(${precederDescription})` + fieldText.substring(0, extractLength - 3) + (fieldText.length > extractLength - 3 ? '…' : '');
                     addNotice({ priority: 909, message: "Seems original language quote might not start at the beginning of a word", details: `passage ►${verseText}◄`, characterIndex: 0, extract, location: ourLocation });
                 }
                 // Note: There's some Hebrew (RTL) characters at the beginning of the following regex
                 if (fieldText.slice(-1) !== ' ' && remainingBits[1] && remainingBits[1][0].search(/[^׃־A-Za-z\s.,:;?!–)]…/) !== -1) {
                     // No problems if quote is followed by expected terminator-type punctuation
-                    // const badChar = remainingBits[1][0];
-                    // const badCharString = ` by '${badChar}' {unicodedata.name(badChar)}={hex(ord(badChar))}`;
+                    // const offendingChar = remainingBits[1][0];
+                    // const badCharString = ` by '${offendingChar}' {unicodedata.name(offendingChar)}={hex(ord(offendingChar))}`;
                     // debugLog(`Seems '${fieldText}' might not finish at the end of a word—it’s followed ${badCharString} in '${verseText}'`);
                     const extract = (fieldText.length > extractLength - 3 ? '…' : '') + fieldText.substring(fieldText.length - extractLength + 3, fieldText.length) + `(${remainingBits[1][0]}=D${remainingBits[1].charCodeAt(0)}/H${remainingBits[1].charCodeAt(0).toString(16)})`;
                     addNotice({ priority: 908, message: "Seems original language quote might not finish at the end of a word", details: `passage ►${verseText}◄`, characterIndex: fieldText.length, extract, location: ourLocation });

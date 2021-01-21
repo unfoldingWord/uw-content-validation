@@ -7,7 +7,7 @@ import { userLog, parameterAssert, ourParseInt } from './utilities';
 // import { consoleLogObject } from '../core/utilities';
 
 
-// const TN_LINKS_VALIDATOR_VERSION_STRING = '0.7.0';
+// const TN_LINKS_VALIDATOR_VERSION_STRING = '0.7.1';
 
 const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -321,13 +321,13 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
             if (ourParseInt(C1) !== chapterInt)
                 addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don’t match", details: `${C1} vs ${chapterInt}`, extract: totalLink, location: ourLocation });
         } catch (ccError) {
-            console.error(`TN Link Check couldn’t compare chapter numbers: ${ccError}`);
+            console.error(`TN Link Check1 couldn’t compare chapter numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C1} from '${fieldText}': ${ccError}`);
         }
         try {
             if (ourParseInt(V1) !== ourParseInt(verseInt))
                 addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don’t match", details: `${V1} vs ${verseInt}`, extract: totalLink, location: ourLocation });
         } catch (vvError) {
-            console.error(`TN Link Check couldn’t compare verse numbers: ${vvError}`);
+            console.error(`TN Link Check1 couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C1}:${V1} from '${fieldText}': ${vvError}`);
         }
 
         if (linkBookCode) { // then we know which Bible book this link is to
@@ -373,13 +373,13 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
             if (ourParseInt(C1) !== chapterInt)
                 addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don’t match", details: `${C1} vs ${chapterInt}`, extract: totalLink, location: ourLocation });
         } catch (ccError) {
-            console.error(`TN Link Check couldn’t compare chapter numbers: ${ccError}`);
+            console.error(`TN Link Check2 couldn’t compare chapter numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C2} from '${fieldText}': ${ccError}`);
         }
         try {
             if (ourParseInt(V1) !== ourParseInt(verseInt))
                 addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don’t match", details: `${V1} vs ${verseInt}`, extract: totalLink, location: ourLocation });
         } catch (vvError) {
-            console.error(`TN Link Check couldn’t compare verse numbers: ${vvError}`);
+            console.error(`TN Link Check2 couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C2}:${V2} from '${fieldText}': ${vvError}`);
         }
 
         if (linkBookCode) { // then we know which Bible book this link is to
@@ -425,13 +425,13 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
             if (ourParseInt(C1) !== chapterInt)
                 addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don’t match", details: `${C1} vs ${chapterInt}`, extract: totalLink, location: ourLocation });
         } catch (ccError) {
-            console.error(`TN Link Check couldn’t compare chapter numbers: ${ccError}`);
+            console.error(`TN Link Check3 couldn’t compare chapter numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C1} from '${fieldText}': ${ccError}`);
         }
         try {
             if (ourParseInt(V1) !== ourParseInt(verseInt))
                 addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don’t match", details: `${V1} vs ${verseInt}`, extract: totalLink, location: ourLocation });
         } catch (vvError) {
-            console.error(`TN Link Check couldn’t compare verse numbers: ${vvError}`);
+            console.error(`TN Link Check3 couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C1}:${V1} from '${fieldText}': ${vvError}`);
         }
 
         if (linkBookCode) { // then we know which Bible book this link is to

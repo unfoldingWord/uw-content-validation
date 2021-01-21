@@ -8,7 +8,7 @@ import { userLog, parameterAssert, ourParseInt } from './utilities';
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.7.6';
+// const USFM_VALIDATOR_VERSION_STRING = '0.7.7';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘`; // '{' gets added for STs
@@ -856,7 +856,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 rest = line;
                 if (validLineStartCharacters.indexOf(line[0]) < 0) { // These are the often expected characters
                     // Drop the priority if it’s a "half-likely" character
-                    addNoticePartial({ priority: `"`.indexOf(line[0]) < 0 ? 880 : 280, C, V, message: "Expected line to start with backslash", lineNumber: n, characterIndex: 0, extract: line[0], location: ourLocation });
+                    addNoticePartial({ priority: `"`.indexOf(line[0]) < 0 ? 880 : 180, C, V, message: "Expected line to start with backslash", lineNumber: n, characterIndex: 0, extract: line[0], location: ourLocation });
                     if (line[1] === '\\') { // Let’s drop the leading punctuation and try to check the rest of the line
                         marker = line.substring(2).split(' ', 1)[0];
                         rest = line.substring(marker.length + 2 + 1); // Skip leading character, backslash, marker, and space after marker
