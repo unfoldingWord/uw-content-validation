@@ -8,7 +8,7 @@ import { checkOriginalLanguageQuote } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.5';
+// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.6';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -521,8 +521,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
                 ONSuggestion = await ourMarkdownTextChecks(rowID, 'OccurrenceNote', occurrenceNote, true, ourRowLocation, checkingOptions);
                 await ourCheckTNLinksToOutside(rowID, 'OccurrenceNote', occurrenceNote, ourRowLocation, linkCheckingOptions);
                 let regexResultArray;
-                // eslint-disable-next-line no-cond-assign
-                while (regexResultArray = TA_REGEX.exec(occurrenceNote)) {
+                while ((regexResultArray = TA_REGEX.exec(occurrenceNote))) {
                     // debugLog("Got TA Regex in OccurrenceNote", JSON.stringify(regexResultArray));
                     if (supportReference !== regexResultArray[1] && V !== 'intro') {
                         const details = supportReference ? `(SR='${supportReference}')` : "(empty SR field)"

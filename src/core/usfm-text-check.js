@@ -4,11 +4,11 @@ import { checkTextField } from './field-text-check';
 import { checkTextfileContents } from './file-text-check';
 import { runUsfmJsCheck } from './usfm-js-check';
 import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
-import { userLog, parameterAssert, ourParseInt } from './utilities';
+import { userLog, parameterAssert, dataAssert, ourParseInt } from './utilities';
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.7.7';
+// const USFM_VALIDATOR_VERSION_STRING = '0.8.0';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘`; // '{' gets added for STs
@@ -119,8 +119,23 @@ const MATCHED_CHARACTER_FORMATTING_PAIRS = [
     ['\\f ', '\\f*'], ['\\x ', '\\x*'],
 ];
 
+const W_REGEX = new RegExp('\\\\w (.+?)\\\\w\\*', 'g');
+const ZALNS_REGEX = new RegExp('\\\\zaln-s (.+?)\\\\\\*', 'g');
+const KS_REGEX = new RegExp('\\\\k-s (.+?)\\\\\\*', 'g');
+const ATTRIBUTE_REGEX = new RegExp('[ |]([^ |]+?)="([^"]*?)"', 'g');
 
 
+
+/**
+ *
+ * @param {string} languageCode
+ * @param {string} repoCode
+ * @param {string} bookID
+ * @param {string} filename
+ * @param {string} givenText
+ * @param {string} givenLocation
+ * @param {Object} checkingOptions
+ */
 export function checkUSFMText(languageCode, repoCode, bookID, filename, givenText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
@@ -130,7 +145,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
 
      Returns a result object containing a successList and a noticeList
      */
-    // debugLog(`checkUSFMText(${languageCode}, ${bookID}, ${givenText.length.toLocaleString()} chars, '${givenLocation}', ${JSON.stringify(checkingOptions)})…`);
+    // functionLog(`checkUSFMText(${languageCode}, ${bookID}, ${givenText.length.toLocaleString()} chars, '${givenLocation}', ${JSON.stringify(checkingOptions)})…`);
     parameterAssert(languageCode !== undefined, "checkUSFMText: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkUSFMText: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
     parameterAssert(repoCode !== undefined, "checkUSFMText: 'repoCode' parameter should be defined");
@@ -555,6 +570,14 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
     // end of checkUSFMCharacterFields function
 
 
+    /**
+     *
+     * @param {string} filename
+     * @param {string} fileText
+     * @param {*} markerSet
+     * @param {string} fileLocation
+     * @param {Object} checkingOptions
+     */
     function checkUSFMFileContents(filename, fileText, markerSet, fileLocation, checkingOptions) {
         // Does global checks on the file
         // Note: These run the risk of duplicating messages that are found within individual lines.
@@ -591,6 +614,16 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
     // end of checkUSFMFileContents function
 
 
+    /**
+     *
+     * @param {number} lineNumber
+     * @param {string} C
+     * @param {string} V
+     * @param {string} marker
+     * @param {string} rest
+     * @param {string} lineLocation
+     * @param {Object} checkingOptions
+     */
     function checkUSFMLineText(lineNumber, C, V, marker, rest, lineLocation, checkingOptions) {
         // Removes character formatting within the line contents and checks the remaining text
         // debugLog(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
@@ -737,6 +770,125 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
     // end of checkUSFMLineText function
 
 
+    /**
+     *
+     * @param {number} lineNumber
+     * @param {string} C
+     * @param {string} V
+     * @param {string} marker
+     * @param {string} rest
+     * @param {string} lineLocation
+     * @param {Object} checkingOptions
+     */
+    function checkUSFMLineAttributes(lineNumber, C, V, marker, rest, lineLocation, checkingOptions) {
+        // Looks for USFM fields with attributes, e.g., \w, \zaln-s, \k-s
+        // functionLog(`checkUSFMLineAttributes(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
+        // functionLog(`checkUSFMLineAttributes(${lineNumber}, ${C}:${V}, ${marker}=${rest.length} chars, ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
+
+        const details = `(line marker=\\${marker})`
+
+        // Put marker inside string so easy to do RegExp searches
+        const adjustedRest = `\\${marker} ${rest}`;
+        if (adjustedRest.indexOf('="') !== -1) console.assert(adjustedRest.indexOf('\\w ') !== -1 || adjustedRest.indexOf('\\zaln-s ') !== -1 || adjustedRest.indexOf('\\k-s ') !== -1);
+        dataAssert(countOccurrences(adjustedRest, '\\w ') === countOccurrences(adjustedRest, '\\w*'), `checkUSFMLineAttributes expected all \\w fields to be closed in ${adjustedRest}`);
+        // dataAssert(countOccurrences(adjustedRest, '\\zaln-s ') === countOccurrences(adjustedRest, '\\zaln-s*'), `checkUSFMLineAttributes expected all \\zaln-s fields to be closed in ${adjustedRest}`);
+        // dataAssert(countOccurrences(adjustedRest, '\\k-s ') === countOccurrences(adjustedRest, '\\k-s*'), `checkUSFMLineAttributes expected all \\k-s fields to be closed in ${adjustedRest}`);
+
+        // TODO: Check for MISSING attributes
+        let regexResultArray1, regexResultArray2;
+        while ((regexResultArray1 = W_REGEX.exec(adjustedRest))) {
+            // debugLog(`Got ${repoCode} \\w Regex in ${C}:${V} line: '${JSON.stringify(regexResultArray1)}`);
+            let attributeCounter = 0;
+            while ((regexResultArray2 = ATTRIBUTE_REGEX.exec(regexResultArray1[1]))) {
+                attributeCounter += 1;
+                // debugLog(`  Got attribute Regex in \\w: ${attributeCounter} '${JSON.stringify(regexResultArray2)}`);
+                const attributeName = regexResultArray2[1]; //, attributeValue = regexResultArray2[2];
+                if (repoCode === 'UHB' || repoCode === 'UGNT') {
+                    if (attributeCounter === 1) {
+                        if (attributeName !== 'lemma')
+                            addNoticePartial({ priority: 857, message: "Unexpected first USFM original \\w attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                    } else if (attributeCounter === 2) {
+                        if (attributeName !== 'strong')
+                            addNoticePartial({ priority: 856, message: "Unexpected second USFM original \\w attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                    } else if (attributeCounter === 3) {
+                        if (attributeName !== 'x-morph')
+                            addNoticePartial({ priority: 855, message: "Unexpected third USFM original \\w attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                    } else if (attributeCounter === 4) {
+                        if (attributeName !== 'x-tw')
+                            addNoticePartial({ priority: 854, message: "Unexpected fourth USFM original \\w attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                    } else // #5 or more
+                        addNoticePartial({ priority: 853, message: "Unexpected extra USFM original \\w attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                } else { // a translation -- not UHB or UGNT
+                    if (attributeCounter === 1) {
+                        if (attributeName !== 'x-occurrence')
+                            addNoticePartial({ priority: 848, message: "Unexpected first USFM translation \\w attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                    } else if (attributeCounter === 2) {
+                        if (attributeName !== 'x-occurrences')
+                            addNoticePartial({ priority: 847, message: "Unexpected second USFM translation \\w attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                    } else // #3 or more
+                        addNoticePartial({ priority: 846, message: "Unexpected extra USFM translation \\w attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                }
+            }
+        }
+        while ((regexResultArray1 = KS_REGEX.exec(adjustedRest))) {
+            // debugLog(`Got ${repoCode} \\k-s Regex in ${C}:${V} line: '${JSON.stringify(regexResultArray1)}`);
+            let attributeCounter = 0;
+            while ((regexResultArray2 = ATTRIBUTE_REGEX.exec(regexResultArray1[1]))) {
+                attributeCounter += 1;
+                // debugLog(`  Got attribute Regex in \\k-s: ${attributeCounter} '${JSON.stringify(regexResultArray2)}`);
+                const attributeName = regexResultArray2[1]; //, attributeValue = regexResultArray2[2];
+                dataAssert(repoCode === 'UHB' || repoCode === 'UGNT')
+                if (attributeCounter === 1) {
+                    if (attributeName !== 'x-tw')
+                        addNoticePartial({ priority: 839, message: "Unexpected first USFM \\k-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                } else // #5 or more
+                    addNoticePartial({ priority: 838, message: "Unexpected extra USFM \\k-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+            }
+        }
+        while ((regexResultArray1 = ZALNS_REGEX.exec(adjustedRest))) {
+            // debugLog(`Got ${repoCode} \\zaln-s Regex in ${C}:${V} line: '${JSON.stringify(regexResultArray1)}`);
+            let attributeCounter = 0;
+            while ((regexResultArray2 = ATTRIBUTE_REGEX.exec(regexResultArray1[1]))) {
+                attributeCounter += 1;
+                // debugLog(`  Got attribute Regex in \\zaln-s: ${attributeCounter} '${JSON.stringify(regexResultArray2)}`);
+                const attributeName = regexResultArray2[1]; //, attributeValue = regexResultArray2[2];
+                dataAssert(repoCode !== 'UHB' && repoCode !== 'UGNT')
+                if (attributeCounter === 1) {
+                    if (attributeName !== 'x-strong')
+                        addNoticePartial({ priority: 830, message: "Unexpected first USFM \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                } else if (attributeCounter === 2) {
+                    if (attributeName !== 'x-lemma')
+                        addNoticePartial({ priority: 829, message: "Unexpected second USFM \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                } else if (attributeCounter === 3) {
+                    if (attributeName !== 'x-morph')
+                        addNoticePartial({ priority: 828, message: "Unexpected third USFM \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                } else if (attributeCounter === 4) {
+                    if (attributeName !== 'x-occurrence')
+                        addNoticePartial({ priority: 827, message: "Unexpected fourth USFM \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                    } else if (attributeCounter === 5) {
+                        if (attributeName !== 'x-occurrences')
+                            addNoticePartial({ priority: 826, message: "Unexpected fifth USFM \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                        } else if (attributeCounter === 6) {
+                            if (attributeName !== 'x-content')
+                                addNoticePartial({ priority: 825, message: "Unexpected sixth USFM \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                            } else // #7 or more
+                    addNoticePartial({ priority: 853, message: "Unexpected extra USFM \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+            }
+        }
+    }
+    // end of checkUSFMLineAttributes function
+
+
+    /**
+     *
+     * @param {number} lineNumber
+     * @param {string} C
+     * @param {string} V
+     * @param {string} marker
+     * @param {string} rest
+     * @param {string} lineLocation
+     * @param {Object} checkingOptions
+     */
     function checkUSFMLineContents(lineNumber, C, V, marker, rest, lineLocation, checkingOptions) {
         // Looks at the marker and determines what content is allowed/expected on the rest of the line
         // 'SPECIAL1' is used internally here when a character other than a backslash starts a line
@@ -756,12 +908,17 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 if (rest.toLowerCase() === rest || rest.toUpperCase() === rest)
                     addNoticePartial({ priority: languageCode === 'en' || languageCode === 'fr' ? 490 : 190, message: "Expected header field to contain a mixed-case string", fieldName: `\\${marker}`, extract: rest, C, V, location: lineLocation });
 
-            if (rest) checkUSFMLineText(lineNumber, C, V, marker, rest, lineLocation, checkingOptions);
+            if (rest) {
+                checkUSFMLineText(lineNumber, C, V, marker, rest, lineLocation, checkingOptions);
 
-            const allowedLinks = (marker === 'w' || marker === 'k-s' || marker === 'f' || marker === 'SPECIAL1')
-                // (because we don’t know what marker SPECIAL1 is, so default to "no false alarms")
-                && rest.indexOf('x-tw') >= 0;
-            if (rest) ourCheckTextField(lineNumber, C, V, 'USFM', `\\${marker}`, rest, allowedLinks, lineLocation, checkingOptions);
+                if (rest.indexOf('=') >= 0 || rest.indexOf('"') >= 0)
+                    checkUSFMLineAttributes(lineNumber, C, V, marker, rest, lineLocation, checkingOptions);
+
+                const allowedLinks = (marker === 'w' || marker === 'k-s' || marker === 'f' || marker === 'SPECIAL1')
+                    // (because we don’t know what marker SPECIAL1 is, so default to "no false alarms")
+                    && rest.indexOf('x-tw') >= 0;
+                ourCheckTextField(lineNumber, C, V, 'USFM', `\\${marker}`, rest, allowedLinks, lineLocation, checkingOptions);
+            }
         }
         // end of checkUSFMLineInternals function
 

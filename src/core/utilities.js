@@ -29,6 +29,18 @@ export function debugLog(logString, optionalParameter2) {
 
 /**
  *
+ * @param {string} logString
+ * @param {string} optionalParameter2
+ */
+export function functionLog(logString, optionalParameter2) {
+    if (optionalParameter2) functionLog(`functionLog note: we have a 2nd parameter: '${optionalParameter2}' after '${logString}'`);
+    // We can remove them all by disabling the next line
+    console.log(logString);
+}
+
+
+/**
+ *
  * @param {*} truthStatement
  * @param {string} optionalMessage
  */

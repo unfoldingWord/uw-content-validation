@@ -8,7 +8,7 @@ import { checkOriginalLanguageQuote } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const ANNOTATION_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.4';
+// const ANNOTATION_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.5';
 
 const NUM_EXPECTED_ANNOTATION_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_ANNOTATION_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tAnnotation';
@@ -499,8 +499,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
                 ASuggestion = await ourMarkdownTextChecks(rowID, 'Annotation', annotation, true, ourRowLocation, checkingOptions);
                 await ourCheckTNLinksToOutside(rowID, 'Annotation', annotation, ourRowLocation, linkCheckingOptions);
                 let regexResultArray;
-                // eslint-disable-next-line no-cond-assign
-                while (regexResultArray = TA_REGEX.exec(annotation)) {
+                while ((regexResultArray = TA_REGEX.exec(annotation))) {
                     // debugLog("Got TA Regex in Annotation", JSON.stringify(regexResultArray));
                     const adjustedLink = regexResultArray[0].substring(2, regexResultArray[0].length - 2)
                     if (supportReference !== adjustedLink && V !== 'intro') {

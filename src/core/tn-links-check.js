@@ -7,7 +7,7 @@ import { userLog, parameterAssert, ourParseInt } from './utilities';
 // import { consoleLogObject } from '../core/utilities';
 
 
-// const TN_LINKS_VALIDATOR_VERSION_STRING = '0.7.1';
+// const TN_LINKS_VALIDATOR_VERSION_STRING = '0.7.2';
 
 const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -186,8 +186,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
 
     // Check TA links like [[rc://en/ta/man/translate/figs-metaphor]]
     // debugLog("checkTNLinksToOutside: Search for TA links")
-    // eslint-disable-next-line no-cond-assign
-    while (regexResultArray = TA_REGEX.exec(fieldText)) {
+    while ((regexResultArray = TA_REGEX.exec(fieldText))) {
         // debugLog(`  checkTNLinksToOutside TA resultArray=${JSON.stringify(resultArray)}`);
         taLinkCount += 1;
         parameterAssert(regexResultArray.length === 4, `Expected 4 fields (not ${regexResultArray.length})`)
@@ -246,8 +245,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
     // Check TW links like [[rc://en/tw/dict/bible/other/death]]
     //  (These are not nearly as many as TA links.)
     // debugLog("checkTNLinksToOutside: Search for TW links")
-    // eslint-disable-next-line no-cond-assign
-    while (regexResultArray = TW_REGEX.exec(fieldText)) {
+    while ((regexResultArray = TW_REGEX.exec(fieldText))) {
         // debugLog(`  checkTNLinksToOutside TW resultArray=${JSON.stringify(resultArray)}`);
         twLinkCount += 1;
         parameterAssert(regexResultArray.length === 4, `Expected 4 fields (not ${regexResultArray.length})`)
@@ -296,8 +294,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
     // debugLog("checkTNLinksToOutside: Search for Bible links")
 
     // Check this chapter Bible links like [Revelation 3:11](./11.md)
-    // eslint-disable-next-line no-cond-assign
-    while (regexResultArray = THIS_CHAPTER_BIBLE_REGEX.exec(fieldText)) {
+    while ((regexResultArray = THIS_CHAPTER_BIBLE_REGEX.exec(fieldText))) {
         // debugLog(`  checkTNLinksToOutside THIS_CHAPTER_BIBLE_REGEX regexResultArray=${JSON.stringify(regexResultArray)}`);
         thisChapterBibleLinkCount += 1;
         parameterAssert(regexResultArray.length === 6, `Expected 6 fields (not ${regexResultArray.length})`);
@@ -348,8 +345,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
     }
 
     // Check this book Bible links like [Revelation 3:11](../03/11.md)
-    // eslint-disable-next-line no-cond-assign
-    while (regexResultArray = THIS_BOOK_BIBLE_REGEX.exec(fieldText)) {
+    while ((regexResultArray = THIS_BOOK_BIBLE_REGEX.exec(fieldText))) {
         // debugLog(`  checkTNLinksToOutside THIS_BOOK_BIBLE_REGEX regexResultArray=${JSON.stringify(regexResultArray)}`);
         thisBookBibleLinkCount += 1;
         parameterAssert(regexResultArray.length === 8, `Expected 8 fields (not ${regexResultArray.length})`);
@@ -400,8 +396,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
     }
 
     // Check other book Bible links like [Revelation 3:11](../03/11.md)
-    // eslint-disable-next-line no-cond-assign
-    while (regexResultArray = OTHER_BOOK_BIBLE_REGEX.exec(fieldText)) {
+    while ((regexResultArray = OTHER_BOOK_BIBLE_REGEX.exec(fieldText))) {
         userLog(`  checkTNLinksToOutside OTHER_BOOK_BIBLE_REGEX regexResultArray=${JSON.stringify(regexResultArray)}`);
         otherBookBibleLinkCount += 1;
         parameterAssert(regexResultArray.length === 8, `Expected 8 fields (not ${regexResultArray.length})`);

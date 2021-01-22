@@ -5,7 +5,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { userLog, parameterAssert } from './utilities';
 
 
-const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.4.3';
+const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.4.4';
 
 const IMAGE_REGEX = new RegExp('!\\[([^\\]]+?)\\]\\(([^ \\]]+?)\\)', 'g');
 
@@ -131,8 +131,7 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
 
         // Check for image links
         let regexResultArray;
-        // eslint-disable-next-line no-cond-assign
-        while (regexResultArray = IMAGE_REGEX.exec(lineText)) {
+        while ((regexResultArray = IMAGE_REGEX.exec(lineText))) {
             // debugLog(`Got markdown image in line ${lineNumber}:`, JSON.stringify(regexResultArray));
             if (regexResultArray[1] !== 'OBS Image') userLog("This code was only checked for 'OBS Image' links");
             const fetchLink = regexResultArray[2];

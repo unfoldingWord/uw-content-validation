@@ -2,7 +2,7 @@ import { DEFAULT_EXTRACT_LENGTH, MATCHED_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBIN
 import { parameterAssert } from './utilities';
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.3';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.4';
 
 
 /**
@@ -397,8 +397,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
                 const leftRegex = new RegExp(`(\\w)\\${leftChar}(\\w)`, 'g'), rightRegex = new RegExp(`(\\w)\\${rightChar}(\\w)`, 'g');
                 // debugLog(`leftRegex is ${leftRegex}`);
                 let regexResultArray;
-                // eslint-disable-next-line no-cond-assign
-                while (regexResultArray = leftRegex.exec(fieldText))
+                while ((regexResultArray = leftRegex.exec(fieldText)))
                     if ((fieldType !== 'markdown' || regexResultArray[0][0] !== '_')
                         && (fieldType !== 'YAML' || leftChar !== '{')) {
                         // debugLog(`Got misplaced left ${leftChar} in ${fieldType} ${fieldName} '${fieldText}':`, JSON.stringify(regexResultArray));
@@ -408,8 +407,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
                             addNoticePartial({ priority: thisPriority, message: thisMessage, extract: regexResultArray[0], location: ourLocation });
                     }
                 if (rightChar !== '’') // Can’t check '‘’' coz they might be used as apostrophe
-                    // eslint-disable-next-line no-cond-assign
-                    while (regexResultArray = rightRegex.exec(fieldText))
+                    while ((regexResultArray = rightRegex.exec(fieldText)))
                         if ((fieldType !== 'markdown' || regexResultArray[0][2] !== '_')
                             && (fieldType !== 'YAML' || rightChar !== '}')) {
                             // debugLog(`Got misplaced right ${rightChar} in ${fieldType} ${fieldName} '${fieldText}':`, JSON.stringify(regexResultArray));
