@@ -8,7 +8,7 @@ import { userLog, parameterAssert, dataAssert, ourParseInt } from './utilities';
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.8.0';
+// const USFM_VALIDATOR_VERSION_STRING = '0.8.1';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘`; // '{' gets added for STs
@@ -34,7 +34,7 @@ const CV_MARKERS = ['c', 'v', 'ca', 'va'];
 const HEADING_TYPE_MARKERS = [ // expected to contain text on the same line
     's', 's1', 's2', 's3', 's4', 'sr',
     'ms', 'ms1', 'mr',
-    'r', 'd', 'rem', 'sp', 'qs', 'cl',
+    'r', 'd', 'rem', 'sp', 'cl',
     'sd', 'sd1', 'sd2',
     'pr', 'qa', 'qc', 'qd', 'qr',
     'cls', 'pmo', 'pmc', 'pmr', 'pc',
@@ -70,7 +70,7 @@ const MARKERS_WITH_COMPULSORY_CONTENT = [].concat(INTRO_LINE_START_MARKERS).conc
 const FOOTNOTE_INTERNAL_MARKERS = ['fr', 'fq', 'fqa', 'fk', 'fl', 'fw', 'fp', 'fv', 'ft', 'fdc', 'fm', 'xt'];
 const XREF_INTERNAL_MARKERS = ['xo', 'xk', 'xq', 'xt', 'xta', 'xop', 'xot', 'xnt', 'xdc', 'rq'];
 const SIMPLE_CHARACTER_MARKERS = ['add', 'bk', 'dc', 'k', 'nd', 'ord', 'pn', 'png', 'addpn',
-    'qt', 'sig', 'sls', 'tl', 'wj',
+    'qs', 'qt', 'sig', 'sls', 'tl', 'wj',
     'ior', 'iqt', // TODO: What/Why was 'rq' in here???
     'em', 'bd', 'it', 'bdit', 'no', 'sc', 'sup',
     'ndx', 'rb', 'pro', 'wg', 'wh', 'wa',
@@ -119,7 +119,7 @@ const MATCHED_CHARACTER_FORMATTING_PAIRS = [
     ['\\f ', '\\f*'], ['\\x ', '\\x*'],
 ];
 
-const W_REGEX = new RegExp('\\\\w (.+?)\\\\w\\*', 'g');
+const W_REGEX = new RegExp('\\\\w ([^\\\\]+?)\\\\w\\*', 'g');
 const ZALNS_REGEX = new RegExp('\\\\zaln-s (.+?)\\\\\\*', 'g');
 const KS_REGEX = new RegExp('\\\\k-s (.+?)\\\\\\*', 'g');
 const ATTRIBUTE_REGEX = new RegExp('[ |]([^ |]+?)="([^"]*?)"', 'g');
@@ -794,7 +794,6 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         // dataAssert(countOccurrences(adjustedRest, '\\zaln-s ') === countOccurrences(adjustedRest, '\\zaln-s*'), `checkUSFMLineAttributes expected all \\zaln-s fields to be closed in ${adjustedRest}`);
         // dataAssert(countOccurrences(adjustedRest, '\\k-s ') === countOccurrences(adjustedRest, '\\k-s*'), `checkUSFMLineAttributes expected all \\k-s fields to be closed in ${adjustedRest}`);
 
-        // TODO: Check for MISSING attributes
         let regexResultArray1, regexResultArray2;
         while ((regexResultArray1 = W_REGEX.exec(adjustedRest))) {
             // debugLog(`Got ${repoCode} \\w Regex in ${C}:${V} line: '${JSON.stringify(regexResultArray1)}`);
@@ -802,78 +801,97 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
             while ((regexResultArray2 = ATTRIBUTE_REGEX.exec(regexResultArray1[1]))) {
                 attributeCounter += 1;
                 // debugLog(`  Got attribute Regex in \\w: ${attributeCounter} '${JSON.stringify(regexResultArray2)}`);
-                const attributeName = regexResultArray2[1]; //, attributeValue = regexResultArray2[2];
+                const attributeName = regexResultArray2[1], attributeValue = regexResultArray2[2];
                 if (repoCode === 'UHB' || repoCode === 'UGNT') {
                     if (attributeCounter === 1) {
                         if (attributeName !== 'lemma')
-                            addNoticePartial({ priority: 857, message: "Unexpected first USFM original \\w attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                            addNoticePartial({ priority: 857, message: "Unexpected first original \\w attribute", details: "Expected 'lemma'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
                     } else if (attributeCounter === 2) {
                         if (attributeName !== 'strong')
-                            addNoticePartial({ priority: 856, message: "Unexpected second USFM original \\w attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                            addNoticePartial({ priority: 856, message: "Unexpected second original \\w attribute", details: "Expected 'strong'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
                     } else if (attributeCounter === 3) {
                         if (attributeName !== 'x-morph')
-                            addNoticePartial({ priority: 855, message: "Unexpected third USFM original \\w attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                            addNoticePartial({ priority: 855, message: "Unexpected third original \\w attribute", details: "Expected 'x-morph'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
                     } else if (attributeCounter === 4) {
+                        if (attributeName !== 'x-tw') // we can have TWO of these -- THREE EVEN in EXO 15:23 and 1KI 21:9!!!
+                            addNoticePartial({ priority: 854, message: "Unexpected fourth original \\w attribute", details: "Expected 'x-tw'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                    } else if (attributeCounter === 5) {
                         if (attributeName !== 'x-tw')
-                            addNoticePartial({ priority: 854, message: "Unexpected fourth USFM original \\w attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
-                    } else // #5 or more
-                        addNoticePartial({ priority: 853, message: "Unexpected extra USFM original \\w attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                            addNoticePartial({ priority: 854, message: "Unexpected fifth original \\w attribute", details: "Expected second 'x-tw'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                    } else if (attributeCounter === 6) {
+                        if (attributeName !== 'x-tw')
+                            addNoticePartial({ priority: 854, message: "Unexpected sixth original \\w attribute", details: "Expected third 'x-tw'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                    } else // #7 or more
+                        addNoticePartial({ priority: 853, message: "Unexpected extra original \\w attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                    if (attributeName === 'x-morph'
+                        && ((repoCode === 'UHB' && !attributeValue.startsWith('He,') && !attributeValue.startsWith('Ar,'))
+                            || (repoCode === 'UGNT' && !attributeValue.startsWith('Gr,'))))
+                        addNoticePartial({ priority: 852, message: "Unexpected original \\w x-morph language prefix", details:"Expected 'He,' 'Ar,' or 'Gr,'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
                 } else { // a translation -- not UHB or UGNT
                     if (attributeCounter === 1) {
                         if (attributeName !== 'x-occurrence')
-                            addNoticePartial({ priority: 848, message: "Unexpected first USFM translation \\w attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                            addNoticePartial({ priority: 848, message: "Unexpected first translation \\w attribute", details: "Expected 'x-occurrence'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
                     } else if (attributeCounter === 2) {
                         if (attributeName !== 'x-occurrences')
-                            addNoticePartial({ priority: 847, message: "Unexpected second USFM translation \\w attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                            addNoticePartial({ priority: 847, message: "Unexpected second translation \\w attribute", details: "Expected 'x-occurrences'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
                     } else // #3 or more
-                        addNoticePartial({ priority: 846, message: "Unexpected extra USFM translation \\w attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                        addNoticePartial({ priority: 846, message: "Unexpected extra translation \\w attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
                 }
             }
+            if (repoCode === 'UHB' || repoCode === 'UGNT') {
+                if (attributeCounter < 3)
+                    addNoticePartial({ priority: 837, message: "Seems too few original \\w attributes", details: `Expected 3-4 attributes but only found ${attributeCounter}`, lineNumber, C, V, extract: regexResultArray1[0], location: lineLocation });
+            } else if (attributeCounter < 2)
+                addNoticePartial({ priority: 836, message: "Seems too few translation \\w attributes", details: `Expected two attributes but only found ${attributeCounter}`, lineNumber, C, V, extract: regexResultArray1[0], location: lineLocation });
         }
         while ((regexResultArray1 = KS_REGEX.exec(adjustedRest))) {
             // debugLog(`Got ${repoCode} \\k-s Regex in ${C}:${V} line: '${JSON.stringify(regexResultArray1)}`);
+            dataAssert(repoCode === 'UHB' || repoCode === 'UGNT')
             let attributeCounter = 0;
             while ((regexResultArray2 = ATTRIBUTE_REGEX.exec(regexResultArray1[1]))) {
                 attributeCounter += 1;
                 // debugLog(`  Got attribute Regex in \\k-s: ${attributeCounter} '${JSON.stringify(regexResultArray2)}`);
                 const attributeName = regexResultArray2[1]; //, attributeValue = regexResultArray2[2];
-                dataAssert(repoCode === 'UHB' || repoCode === 'UGNT')
                 if (attributeCounter === 1) {
                     if (attributeName !== 'x-tw')
-                        addNoticePartial({ priority: 839, message: "Unexpected first USFM \\k-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
-                } else // #5 or more
-                    addNoticePartial({ priority: 838, message: "Unexpected extra USFM \\k-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                        addNoticePartial({ priority: 839, message: "Unexpected first \\k-s attribute", details: "Expected 'x-tw'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                } else // #2 or more
+                    addNoticePartial({ priority: 838, message: "Unexpected extra \\k-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
             }
+            if (attributeCounter < 1)
+                addNoticePartial({ priority: 835, message: "Seems too few original \\k-s attributes", details: `Expected one attribute but only found ${attributeCounter}`, lineNumber, C, V, extract: regexResultArray1[0], location: lineLocation });
         }
         while ((regexResultArray1 = ZALNS_REGEX.exec(adjustedRest))) {
             // debugLog(`Got ${repoCode} \\zaln-s Regex in ${C}:${V} line: '${JSON.stringify(regexResultArray1)}`);
+            dataAssert(repoCode !== 'UHB' && repoCode !== 'UGNT')
             let attributeCounter = 0;
             while ((regexResultArray2 = ATTRIBUTE_REGEX.exec(regexResultArray1[1]))) {
                 attributeCounter += 1;
                 // debugLog(`  Got attribute Regex in \\zaln-s: ${attributeCounter} '${JSON.stringify(regexResultArray2)}`);
                 const attributeName = regexResultArray2[1]; //, attributeValue = regexResultArray2[2];
-                dataAssert(repoCode !== 'UHB' && repoCode !== 'UGNT')
                 if (attributeCounter === 1) {
                     if (attributeName !== 'x-strong')
-                        addNoticePartial({ priority: 830, message: "Unexpected first USFM \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                        addNoticePartial({ priority: 830, message: "Unexpected first \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
                 } else if (attributeCounter === 2) {
                     if (attributeName !== 'x-lemma')
-                        addNoticePartial({ priority: 829, message: "Unexpected second USFM \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                        addNoticePartial({ priority: 829, message: "Unexpected second \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
                 } else if (attributeCounter === 3) {
                     if (attributeName !== 'x-morph')
-                        addNoticePartial({ priority: 828, message: "Unexpected third USFM \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                        addNoticePartial({ priority: 828, message: "Unexpected third \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
                 } else if (attributeCounter === 4) {
                     if (attributeName !== 'x-occurrence')
-                        addNoticePartial({ priority: 827, message: "Unexpected fourth USFM \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
-                    } else if (attributeCounter === 5) {
-                        if (attributeName !== 'x-occurrences')
-                            addNoticePartial({ priority: 826, message: "Unexpected fifth USFM \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
-                        } else if (attributeCounter === 6) {
-                            if (attributeName !== 'x-content')
-                                addNoticePartial({ priority: 825, message: "Unexpected sixth USFM \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
-                            } else // #7 or more
-                    addNoticePartial({ priority: 853, message: "Unexpected extra USFM \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                        addNoticePartial({ priority: 827, message: "Unexpected fourth \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                } else if (attributeCounter === 5) {
+                    if (attributeName !== 'x-occurrences')
+                        addNoticePartial({ priority: 826, message: "Unexpected fifth \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                } else if (attributeCounter === 6) {
+                    if (attributeName !== 'x-content')
+                        addNoticePartial({ priority: 825, message: "Unexpected sixth \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                } else // #7 or more
+                    addNoticePartial({ priority: 833, message: "Unexpected extra \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
             }
+            if (attributeCounter < 6)
+                addNoticePartial({ priority: 834, message: "Seems too few translation \\zaln-s attributes", details: `Expected six attributes but only found ${attributeCounter}`, lineNumber, C, V, extract: regexResultArray1[0], location: lineLocation });
         }
     }
     // end of checkUSFMLineAttributes function
@@ -1104,7 +1122,8 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 && PARAGRAPH_MARKERS.indexOf(lastMarker) >= 0
                 && !lastRest)
                 addNoticePartial({ priority: 399, C, V, message: "Useless paragraph marker", lineNumber: n, characterIndex: 1, details: `'\\${lastMarker}' before '\\${marker}'`, location: ourLocation });
-            else if (['c', 'ca', 'cl'].indexOf(lastMarker) > 0 && marker === 'v')
+            else if (['c', 'ca', 'cl'].indexOf(lastMarker) > 0 && marker === 'v'
+                && (rest === '1' || rest.startsWith('1 ')))
                 addNoticePartial({ priority: C === '1' ? 657 : 457, C, V, message: "Paragraph marker expected before first verse", lineNumber: n, characterIndex: 1, details: `'\\${marker}' after '\\${lastMarker}'`, location: ourLocation });
 
             // Do general checks

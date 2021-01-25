@@ -7,7 +7,7 @@ import { checkRepo } from './checkRepo';
 import { userLog } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.1.7';
+// const REPO_VALIDATOR_VERSION_STRING = '0.2.0';
 
 
 function RepoCheck(/*username, languageCode,*/ props) {
@@ -135,8 +135,9 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 if (props.displayType) displayType = props.displayType;
 
                 function renderSummary(processedResults) {
+                    const repoLink = branch === undefined ? `https://git.door43.org/${username}/${repoName}/` : `https://git.door43.org/${username}/${repoName}/src/branch/${branch}/`;
                     return (<div>
-                        <p>Checked <b>{username} {repoName}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)</p>
+                        <p>Checked <b>{username} {repoName}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> <a rel="noopener noreferrer" target="_blank" href={repoLink}>branch</a>)</p>
                         <RenderSuccesses username={username} results={processedResults} />
                         <RenderTotals rawNoticeListLength={rawCRResults.noticeList.length} results={processedResults} />
                         {/* <RenderRawResults results={rawCRResults} /> */}
