@@ -1,5 +1,6 @@
 import React from 'react';
 import { forwardRef } from 'react';
+import { parameterAssert, userLog } from '../core/utilities';
 
 // NOTE: The following line is currently giving compile warnings -- a problem in a dependency it seems
 import MaterialTable from 'material-table';
@@ -40,7 +41,7 @@ const tableIcons = {
 };
 
 
-// const RENDER_PROCESSED_RESULTS_VERSION = '0.5.8';
+// const RENDER_PROCESSED_RESULTS_VERSION = '0.5.9';
 
 
 export function RenderSuccesses({ username, results }) {
@@ -89,7 +90,7 @@ const MAX_ARRAY_ITEMS_TO_DISPLAY = 8; // Or do we want this as a parameter?
 * @return {String} - rendered HTML for list of thisObject properties
 */
 export function RenderObject({ thisObject, excludeList }) {
-    // console.log("In RenderObject");
+    // debugLog("In RenderObject");
     // consoleLogObject('RenderObject settings', settings);
     return <ul>
         {
@@ -121,7 +122,7 @@ export function RenderRawResults({ results }) {
     //      including repoName, filename, lineNumber or not
     //      including extra or not
 
-    // console.log("In RenderRawResults");
+    // debugLog("In RenderRawResults");
     // consoleLogObject('RenderRawResults results', results);
     // displayPropertyNames('RenderRawResults results', results);
 
@@ -140,17 +141,17 @@ export function RenderRawResults({ results }) {
             <RenderObject thisObject={results} excludeList={['noticeList']} />
         </>;
     // If we get here, we have notices.
-    // console.log(`Got ${results.noticeList.length} notices`);
+    // debugLog(`Got ${results.noticeList.length} notices`);
 
     // Discover what fields we have in our notice objects (in order to set our table headers below)
     const allPropertiesSet = new Set();
     let haveOBS = false, haveBible = false;
-    // console.log( "allPropertiesSet-A", JSON.stringify([...allPropertiesSet]));
+    // debugLog( "allPropertiesSet-A", JSON.stringify([...allPropertiesSet]));
     for (const noticeEntry of results.noticeList)
-        // console.log("noticeEntry", JSON.stringify(noticeEntry));
-        // console.log(`Found (${Object.keys(noticeEntry).length}) ${Object.keys(noticeEntry)}`);
+        // debugLog("noticeEntry", JSON.stringify(noticeEntry));
+        // debugLog(`Found (${Object.keys(noticeEntry).length}) ${Object.keys(noticeEntry)}`);
         for (const [noticePropertyName, noticePropertyValue] of Object.entries(noticeEntry))
-            // console.log("  Found", noticePropertyName, "=", noticeEntry[noticePropertyName]);
+            // debugLog("  Found", noticePropertyName, "=", noticeEntry[noticePropertyName]);
             if (noticePropertyValue !== undefined) {
                 allPropertiesSet.add(noticePropertyName);
                 if (noticePropertyName === 'bookID' && noticePropertyValue) {
@@ -158,7 +159,7 @@ export function RenderRawResults({ results }) {
                     else haveBible = true;
                 }
             }
-    // console.log( "allPropertiesSet-Z", JSON.stringify([...allPropertiesSet]));
+    // debugLog( "allPropertiesSet-Z", JSON.stringify([...allPropertiesSet]));
 
     // Adjust the headers according to the column sets that we actually have in the noticeList
     let headerData = [
@@ -188,7 +189,7 @@ export function RenderRawResults({ results }) {
     if (allPropertiesSet.has('extract')) headerData = headerData.concat([{ title: 'Extract', field: 'extract' }]);
     if (allPropertiesSet.has('location')) headerData = headerData.concat([{ title: 'Location', field: 'location' }]);
     if (allPropertiesSet.has('extra')) headerData = headerData.concat([{ title: 'Extra', field: 'extra' }]);
-    // console.log("headerData", headerData.length, JSON.stringify(headerData));
+    // debugLog("headerData", headerData.length, JSON.stringify(headerData));
 
     // Make the actual table and return it
     return <>
@@ -229,9 +230,9 @@ function RenderMessage({ color, message, details }) {
 */
 function RenderBCV({ bookID, C, V }) {
     // These are all optional parameters - they may be undefined or blank if irrelevant
-    // console.log(`RenderBCV(${bookID}, ${C}, ${V})`);
+    // debugLog(`RenderBCV(${bookID}, ${C}, ${V})`);
     if (!bookID && !C && !V) return null; // They're all undefined or blank!
-    // console.log(`RenderBCV2 ${bookID}, ${C}, ${V}`);
+    // debugLog(`RenderBCV2 ${bookID}, ${C}, ${V}`);
     let result;
     if (bookID && bookID.length) result = bookID;
     if (C && C.length) result = `${result}${result.length ? ' ' : ''}${C}`;
@@ -253,10 +254,10 @@ function RenderBCV({ bookID, C, V }) {
 */
 function RenderFileDetails({ username, repoName, filename, lineNumber, rowID, fieldName }) {
     // These are all optional parameters - they may be undefined or blank if irrelevant
-    // console.log(`RenderFileDetails(${repoName}, ${filename}, ${lineNumber}, ${rowID}, ${fieldName})`);
+    // debugLog(`RenderFileDetails(${repoName}, ${filename}, ${lineNumber}, ${rowID}, ${fieldName})`);
     if (!repoName && !filename && !lineNumber && !rowID && !fieldName)
         return null; // They're all undefined or blank!
-    // console.log(`RenderFileDetails2 ${repoName}, ${filename}, ${lineNumber}`);
+    // debugLog(`RenderFileDetails2 ${repoName}, ${filename}, ${lineNumber}`);
     let resultStart = '', lineResult = '', resultEnd = '', fileLink = '';
     if (repoName && repoName.length) resultStart += ` in ${repoName} repository`;
     if (filename && filename.length) resultStart += ` in file ${filename}`;
@@ -287,7 +288,7 @@ function RenderSuccessesColored({ results }) {
     //
     // Expects results to contain:
     //      1/ successList
-    // console.log("In RenderSuccessesColored with ", successList);
+    // debugLog("In RenderSuccessesColored with ", successList);
     // consoleLogObject('RenderSuccessesColored results', results);
 
     let haveWarnings;
@@ -325,7 +326,7 @@ function RenderProcessedArray({ arrayType, results }) {
     //      bookID, C, V, repoName, filename, lineNumber
     //      characterIindex (integer), extract (string), location (string)
     //
-    // console.log("In RenderProcessedArray with ", arrayType);
+    // debugLog("In RenderProcessedArray with ", arrayType);
     // consoleLogObject('RenderProcessedArray results', results);
 
     if (arrayType === 's')
@@ -359,7 +360,7 @@ function RenderGivenArray({ array, color }) {
     //      repoName, filename, lineNumber,
     //      characterIndex (integer), extract (string), location (descriptive string)
     //
-    // console.log("In RenderGivenArray with ", arrayType);
+    // debugLog("In RenderGivenArray with ", arrayType);
     // consoleLogObject('RenderGivenArray results', results);
 
     return <ul>
@@ -384,7 +385,7 @@ function getGradientcolor(priorityValue) {
     // Returns a color value from red (highest priority) to orange (lower)
     const red = `0${Math.floor(priorityValue * 255 / 999).toString(16)}`.slice(-2);
     // const green = `0${Math.floor((1000-priorityValue) * 55 / 999).toString(16)}`.slice(-2);
-    // console.log(`getGradientcolor(${priorityValue}) -> red='${red}' green='${green}'`)
+    // debugLog(`getGradientcolor(${priorityValue}) -> red='${red}' green='${green}'`)
     return `#${red}0000`; // or `#${red}${green}00`
 }
 
@@ -396,7 +397,7 @@ function RenderWarningsGradient({ results }) {
     //
     // Expects results to contain:
     //      1/ warningList
-    // console.log("In RenderWarningsGradient with ", results.warningList);
+    // debugLog("In RenderWarningsGradient with ", results.warningList);
     // consoleLogObject('RenderWarningsGradient results', results);
 
     return <ul>
@@ -417,8 +418,9 @@ function RenderWarningsGradient({ results }) {
 
 
 function RenderErrors({ results }) {
-    // console.log("In RenderErrors");
+    // debugLog("In RenderErrors");
     // consoleLogObject('RenderErrors results', results);
+    userLog(`Displaying ${results.errorList.length.toLocaleString()} error(s) with ${results.numSuppressedErrors.toLocaleString()} suppressed`);
     return <>
         <b style={{ color: results.errorList.length ? 'red' : 'green' }}>{results.errorList.length.toLocaleString()} error{results.errorList.length === 1 ? '' : 's'}</b>{results.errorList.length ? ':' : ''}
         <small style={{ color: 'Gray' }}>{results.numSuppressedErrors ? " (" + results.numSuppressedErrors.toLocaleString() + " similar one" + (results.numSuppressedErrors === 1 ? '' : 's') + " suppressed)" : ''}</small>
@@ -426,8 +428,9 @@ function RenderErrors({ results }) {
     </>;
 }
 function RenderWarnings({ results }) {
-    // console.log("In RenderWarnings");
+    // debugLog("In RenderWarnings");
     // consoleLogObject('RenderWarnings results', results);
+    userLog(`Displaying ${results.warningList.length.toLocaleString()} warnings(s) with ${results.numSuppressedWarnings.toLocaleString()} suppressed`);
     return <>
         <b style={{ color: results.warningList.length ? 'orange' : 'green' }}>{results.warningList.length.toLocaleString()} warning{results.warningList.length === 1 ? '' : 's'}</b>{results.warningList.length ? ':' : ''}
         <small style={{ color: 'Gray' }}>{results.numSuppressedWarnings ? " (" + results.numSuppressedWarnings.toLocaleString() + " similar one" + (results.numSuppressedWarnings === 1 ? '' : 's') + " suppressed)" : ''}</small>
@@ -435,7 +438,7 @@ function RenderWarnings({ results }) {
     </>;
 }
 function RenderErrorsAndWarnings({ results }) {
-    // console.log("In RenderErrorsAndWarnings");
+    // debugLog("In RenderErrorsAndWarnings");
     // consoleLogObject('RenderErrorsAndWarnings results', results);
     return <>
         <RenderErrors results={results} />
@@ -445,8 +448,9 @@ function RenderErrorsAndWarnings({ results }) {
 
 
 function RenderSevere({ results }) {
-    // console.log("In RenderSevere");
+    // debugLog("In RenderSevere");
     // consoleLogObject('RenderSevere results', results);
+    userLog(`Displaying ${results.severeList.length.toLocaleString()} severe notice(s) with ${results.numSevereSuppressed.toLocaleString()} suppressed`);
     return <>
         <b style={{ color: results.severeList.length ? 'red' : 'green' }}>{results.severeList.length.toLocaleString()} severe error{results.severeList.length === 1 ? '' : 's'}</b>{results.severeList.length ? ':' : ''}
         <small style={{ color: 'Gray' }}>{results.numSevereSuppressed ? " (" + results.numSevereSuppressed.toLocaleString() + " similar one" + (results.numSevereSuppressed === 1 ? '' : 's') + " suppressed)" : ''}</small>
@@ -454,8 +458,9 @@ function RenderSevere({ results }) {
     </>;
 }
 function RenderMedium({ results }) {
-    // console.log("In RenderSevere");
+    // debugLog("In RenderSevere");
     // consoleLogObject('RenderSevere results', results);
+    userLog(`Displaying ${results.mediumList.length.toLocaleString()} medium notice(s) with ${results.numMediumSuppressed.toLocaleString()} suppressed`);
     return <>
         <b style={{ color: results.mediumList.length ? 'maroon' : 'green' }}>{results.mediumList.length.toLocaleString()} medium error{results.mediumList.length === 1 ? '' : 's'}</b>{results.mediumList.length ? ':' : ''}
         <small style={{ color: 'Gray' }}>{results.numMediumSuppressed ? " (" + results.numMediumSuppressed.toLocaleString() + " similar one" + (results.numMediumSuppressed === 1 ? '' : 's') + " suppressed)" : ''}</small>
@@ -463,8 +468,9 @@ function RenderMedium({ results }) {
     </>;
 }
 function RenderLow({ results }) {
-    // console.log("In RenderLow");
+    // debugLog("In RenderLow");
     // consoleLogObject('RenderLow results', results);
+    userLog(`Displaying ${results.lowList.length.toLocaleString()} low notice(s) with ${results.numLowSuppressed.toLocaleString()} suppressed`);
     return <>
         <b style={{ color: results.lowList.length ? 'orange' : 'green' }}>{results.lowList.length.toLocaleString()} other warning{results.lowList.length === 1 ? '' : 's'}</b>{results.lowList.length ? ':' : ''}
         <small style={{ color: 'Gray' }}>{results.numLowSuppressed ? " (" + results.numLowSuppressed.toLocaleString() + " similar one" + (results.numLowSuppressed === 1 ? '' : 's') + " suppressed)" : ''}</small>
@@ -472,7 +478,7 @@ function RenderLow({ results }) {
     </>;
 }
 function RenderSevereMediumLow({ results }) {
-    // console.log("In RenderSevereMediumLow");
+    // debugLog("In RenderSevereMediumLow");
     // consoleLogObject('RenderSevereMediumLow results', results);
     return <>
         <RenderSevere results={results} />
@@ -483,7 +489,7 @@ function RenderSevereMediumLow({ results }) {
 
 
 export function RenderSuccessesErrorsWarnings({ results }) {
-    // console.log("In RenderSuccessesErrorsWarnings");
+    // debugLog("In RenderSuccessesErrorsWarnings");
 
     // consoleLogObject('RenderSuccessesErrorsWarnings results', results);
 
@@ -506,7 +512,7 @@ export function RenderSuccessesErrorsWarnings({ results }) {
 
 
 export function RenderSuccessesSevereMediumLow({ results }) {
-    // console.log("In RenderSuccessesSevereMediumLow");
+    // debugLog("In RenderSuccessesSevereMediumLow");
 
     // consoleLogObject('RenderSuccessesSevereMediumLow results', results);
 
@@ -528,7 +534,7 @@ export function RenderSuccessesSevereMediumLow({ results }) {
 }
 
 export function RenderSuccessesWarningsGradient({ results }) {
-    // console.log("In RenderSuccessesWarningsGradient");
+    // debugLog("In RenderSuccessesWarningsGradient");
 
     // consoleLogObject('RenderSuccessesWarningsGradient results', results);
 
@@ -540,6 +546,7 @@ export function RenderSuccessesWarningsGradient({ results }) {
     else if (results.successList.length === 5) successCount = 'Five';
     else successCount = results.successList.length.toLocaleString();
 
+    userLog(`Displaying ${results.warningList.length.toLocaleString()} gradient notice(s) with ${results.numSuppressedWarnings.toLocaleString()} suppressed`);
     return <>
         <b style={{ color: results.warningList.length ? 'limegreen' : 'green' }}>{successCount.toLocaleString()} check{results.successList.length === 1 ? '' : 's'} completed</b>{results.successList.length ? ':' : ''}
         <RenderSuccessesColored results={results} />
@@ -557,6 +564,6 @@ export function RenderElapsedTime({ elapsedSeconds }) {
     remainingTime = Math.floor(remainingTime / 60);
     const hours = Math.round(remainingTime % 24);
     remainingTime = Math.floor(remainingTime / 24);
-    console.assert(remainingTime === 0, `Elapsed time also contains ${remainingTime} days`);
+    parameterAssert(remainingTime === 0, `Elapsed time also contains ${remainingTime} days`);
     return <>{hours ? `${hours} hour` : ''}{hours && hours !== 1 ? 's' : ''}{hours ? ', ' : ''}{minutes ? `${minutes} minute` : ''}{minutes && minutes !== 1 ? 's' : ''}{minutes ? ', ' : ''}{seconds} second{seconds === 1 ? '' : 's'}</>;
 }

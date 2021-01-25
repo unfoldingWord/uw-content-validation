@@ -5,9 +5,10 @@ import { checkMarkdownText } from './markdown-text-check';
 import { checkSupportReferenceInTA } from './ta-reference-check';
 import { checkTNLinksToOutside } from './tn-links-check';
 import { checkOriginalLanguageQuote } from './orig-quote-check';
+import { parameterAssert } from './utilities';
 
 
-// const ANNOTATION_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.4';
+// const ANNOTATION_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.5';
 
 const NUM_EXPECTED_ANNOTATION_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_ANNOTATION_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tAnnotation';
@@ -47,23 +48,23 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
 
         Returns an object containing the noticeList.
     */
-    // console.log(`checkAnnotationTSVDataRow(${languageCode}, ${annotationType}, ${line}, ${bookID}, ${givenRowLocation}, ${JSON.stringify(checkingOptions)})…`);
-    console.assert(languageCode !== undefined, "checkAnnotationTSVDataRow: 'languageCode' parameter should be defined");
-    console.assert(typeof languageCode === 'string', `checkAnnotationTSVDataRow: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
-    console.assert(line !== undefined, "checkAnnotationTSVDataRow: 'line' parameter should be defined");
-    console.assert(typeof line === 'string', `checkAnnotationTSVDataRow: 'line' parameter should be a string not a '${typeof line}'`);
-    console.assert(bookID !== undefined, "checkAnnotationTSVDataRow: 'bookID' parameter should be defined");
-    console.assert(typeof bookID === 'string', `checkAnnotationTSVDataRow: 'bookID' parameter should be a string not a '${typeof bookID}'`);
-    console.assert(bookID.length === 3, `checkAnnotationTSVDataRow: 'bookID' parameter should be three characters long not ${bookID.length}`);
-    console.assert(bookID.toUpperCase() === bookID, `checkAnnotationTSVDataRow: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-    console.assert(bookID === 'OBS' || books.isValidBookID(bookID), `checkAnnotationTSVDataRow: '${bookID}' is not a valid USFM book identifier`);
-    // console.assert(givenC !== undefined, "checkAnnotationTSVDataRow: 'givenC' parameter should be defined");
-    if (givenC) console.assert(typeof givenC === 'string', `checkAnnotationTSVDataRow: 'givenC' parameter should be a string not a '${typeof givenC}'`);
-    // console.assert(givenV !== undefined, "checkAnnotationTSVDataRow: 'givenV' parameter should be defined");
-    if (givenV) console.assert(typeof givenV === 'string', `checkAnnotationTSVDataRow: 'givenV' parameter should be a string not a '${typeof givenV}'`);
-    console.assert(givenRowLocation !== undefined, "checkAnnotationTSVDataRow: 'givenRowLocation' parameter should be defined");
-    console.assert(typeof givenRowLocation === 'string', `checkAnnotationTSVDataRow: 'givenRowLocation' parameter should be a string not a '${typeof givenRowLocation}'`);
-    console.assert(givenRowLocation.indexOf('true') === -1, "checkAnnotationTSVDataRow: 'givenRowLocation' parameter should not be 'true'");
+    // debugLog(`checkAnnotationTSVDataRow(${languageCode}, ${annotationType}, ${line}, ${bookID}, ${givenRowLocation}, ${JSON.stringify(checkingOptions)})…`);
+    parameterAssert(languageCode !== undefined, "checkAnnotationTSVDataRow: 'languageCode' parameter should be defined");
+    parameterAssert(typeof languageCode === 'string', `checkAnnotationTSVDataRow: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    parameterAssert(line !== undefined, "checkAnnotationTSVDataRow: 'line' parameter should be defined");
+    parameterAssert(typeof line === 'string', `checkAnnotationTSVDataRow: 'line' parameter should be a string not a '${typeof line}'`);
+    parameterAssert(bookID !== undefined, "checkAnnotationTSVDataRow: 'bookID' parameter should be defined");
+    parameterAssert(typeof bookID === 'string', `checkAnnotationTSVDataRow: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+    parameterAssert(bookID.length === 3, `checkAnnotationTSVDataRow: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    parameterAssert(bookID.toUpperCase() === bookID, `checkAnnotationTSVDataRow: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+    parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkAnnotationTSVDataRow: '${bookID}' is not a valid USFM book identifier`);
+    // parameterAssert(givenC !== undefined, "checkAnnotationTSVDataRow: 'givenC' parameter should be defined");
+    if (givenC) parameterAssert(typeof givenC === 'string', `checkAnnotationTSVDataRow: 'givenC' parameter should be a string not a '${typeof givenC}'`);
+    // parameterAssert(givenV !== undefined, "checkAnnotationTSVDataRow: 'givenV' parameter should be defined");
+    if (givenV) parameterAssert(typeof givenV === 'string', `checkAnnotationTSVDataRow: 'givenV' parameter should be a string not a '${typeof givenV}'`);
+    parameterAssert(givenRowLocation !== undefined, "checkAnnotationTSVDataRow: 'givenRowLocation' parameter should be defined");
+    parameterAssert(typeof givenRowLocation === 'string', `checkAnnotationTSVDataRow: 'givenRowLocation' parameter should be a string not a '${typeof givenRowLocation}'`);
+    parameterAssert(givenRowLocation.indexOf('true') === -1, "checkAnnotationTSVDataRow: 'givenRowLocation' parameter should not be 'true'");
 
     let ourRowLocation = givenRowLocation;
     if (ourRowLocation && ourRowLocation[0] !== ' ') ourRowLocation = ` ${ourRowLocation}`;
@@ -84,19 +85,19 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         * @param {String} extract - short extract from the line centred on the problem (if available)
         * @param {String} location - description of where the issue is located
         */
-        // console.log(`checkAnnotationTSVDataRow addNoticePartial(priority=${noticeObject.priority}) ${noticeObject.message}, ${noticeObject.characterIndex}, ${noticeObject.extract}, ${noticeObject.location}`);
-        console.assert(noticeObject.priority !== undefined, "checkAnnotationTSVDataRow addNoticePartial: 'priority' parameter should be defined");
-        console.assert(typeof noticeObject.priority === 'number', `checkAnnotationTSVDataRow addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        console.assert(noticeObject.message !== undefined, "checkAnnotationTSVDataRow addNoticePartial: 'message' parameter should be defined");
-        console.assert(typeof noticeObject.message === 'string', `checkAnnotationTSVDataRow addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // console.assert(lineNumber !== undefined, "checkAnnotationTSVDataRow addNoticePartial: 'lineNumber' parameter should be defined");
-        // console.assert(typeof lineNumber === 'number', `checkAnnotationTSVDataRow addNoticePartial: 'lineNumber' parameter should be a number not a '${typeof lineNumber}': ${lineNumber}`);
-        // console.assert(characterIndex !== undefined, "checkAnnotationTSVDataRow addNoticePartial: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) console.assert(typeof noticeObject.characterIndex === 'number', `checkAnnotationTSVDataRow addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // console.assert(extract !== undefined, "checkAnnotationTSVDataRow addNoticePartial: 'extract' parameter should be defined");
-        if (noticeObject.extract) console.assert(typeof noticeObject.extract === 'string', `checkAnnotationTSVDataRow addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
-        console.assert(noticeObject.location !== undefined, "checkAnnotationTSVDataRow addNoticePartial: 'location' parameter should be defined");
-        console.assert(typeof noticeObject.location === 'string', `checkAnnotationTSVDataRow addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        // debugLog(`checkAnnotationTSVDataRow addNoticePartial(priority=${noticeObject.priority}) ${noticeObject.message}, ${noticeObject.characterIndex}, ${noticeObject.extract}, ${noticeObject.location}`);
+        parameterAssert(noticeObject.priority !== undefined, "checkAnnotationTSVDataRow addNoticePartial: 'priority' parameter should be defined");
+        parameterAssert(typeof noticeObject.priority === 'number', `checkAnnotationTSVDataRow addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        parameterAssert(noticeObject.message !== undefined, "checkAnnotationTSVDataRow addNoticePartial: 'message' parameter should be defined");
+        parameterAssert(typeof noticeObject.message === 'string', `checkAnnotationTSVDataRow addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+        // parameterAssert(lineNumber !== undefined, "checkAnnotationTSVDataRow addNoticePartial: 'lineNumber' parameter should be defined");
+        // parameterAssert(typeof lineNumber === 'number', `checkAnnotationTSVDataRow addNoticePartial: 'lineNumber' parameter should be a number not a '${typeof lineNumber}': ${lineNumber}`);
+        // parameterAssert(characterIndex !== undefined, "checkAnnotationTSVDataRow addNoticePartial: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `checkAnnotationTSVDataRow addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        // parameterAssert(extract !== undefined, "checkAnnotationTSVDataRow addNoticePartial: 'extract' parameter should be defined");
+        if (noticeObject.extract) parameterAssert(typeof noticeObject.extract === 'string', `checkAnnotationTSVDataRow addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        parameterAssert(noticeObject.location !== undefined, "checkAnnotationTSVDataRow addNoticePartial: 'location' parameter should be defined");
+        parameterAssert(typeof noticeObject.location === 'string', `checkAnnotationTSVDataRow addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
         // Also uses the given bookID,C,V, parameters from the main function call
         // noticeObject.debugChain = noticeObject.debugChain ? `checkAnnotationTSVDataRow ${noticeObject.debugChain}` : `checkAnnotationTSVDataRow(${annotationType})`;
@@ -121,18 +122,18 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
 
         // We don’t currently use the allowedLinks parameter
 
-        // console.log(`checkAnnotationTSVDataRow ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
-        console.assert(rowID !== undefined, "checkAnnotationTSVDataRow ourMarkdownTextChecks: 'rowID' parameter should be defined");
-        console.assert(typeof rowID === 'string', `checkAnnotationTSVDataRow ourMarkdownTextChecks: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        // console.assert(fieldName !== undefined, "checkAnnotationTSVDataRow ourMarkdownTextChecks: 'fieldName' parameter should be defined");
-        // console.assert(typeof fieldName === 'string', `checkAnnotationTSVDataRow ourMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        console.assert(fieldName === 'Annotation', "checkAnnotationTSVDataRow ourMarkdownTextChecks: Only run this check on Annotations")
-        console.assert(fieldText !== undefined, "checkAnnotationTSVDataRow ourMarkdownTextChecks: 'fieldText' parameter should be defined");
-        console.assert(typeof fieldText === 'string', `checkAnnotationTSVDataRow ourMarkdownTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-        console.assert(allowedLinks === true || allowedLinks === false, "checkAnnotationTSVDataRow ourMarkdownTextChecks: allowedLinks parameter must be either true or false");
-        console.assert(rowLocation !== undefined, "checkAnnotationTSVDataRow ourMarkdownTextChecks: 'rowLocation' parameter should be defined");
-        console.assert(typeof rowLocation === 'string', `checkAnnotationTSVDataRow ourMarkdownTextChecks: 'rowLocation' parameter should be a string not a '${typeof rowLocation}'`);
-        console.assert(rowLocation.indexOf(fieldName) < 0, `checkAnnotationTSVDataRow ourMarkdownTextChecks: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
+        // debugLog(`checkAnnotationTSVDataRow ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
+        parameterAssert(rowID !== undefined, "checkAnnotationTSVDataRow ourMarkdownTextChecks: 'rowID' parameter should be defined");
+        parameterAssert(typeof rowID === 'string', `checkAnnotationTSVDataRow ourMarkdownTextChecks: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+        // parameterAssert(fieldName !== undefined, "checkAnnotationTSVDataRow ourMarkdownTextChecks: 'fieldName' parameter should be defined");
+        // parameterAssert(typeof fieldName === 'string', `checkAnnotationTSVDataRow ourMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        parameterAssert(fieldName === 'Annotation', "checkAnnotationTSVDataRow ourMarkdownTextChecks: Only run this check on Annotations")
+        parameterAssert(fieldText !== undefined, "checkAnnotationTSVDataRow ourMarkdownTextChecks: 'fieldText' parameter should be defined");
+        parameterAssert(typeof fieldText === 'string', `checkAnnotationTSVDataRow ourMarkdownTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+        parameterAssert(allowedLinks === true || allowedLinks === false, "checkAnnotationTSVDataRow ourMarkdownTextChecks: allowedLinks parameter must be either true or false");
+        parameterAssert(rowLocation !== undefined, "checkAnnotationTSVDataRow ourMarkdownTextChecks: 'rowLocation' parameter should be defined");
+        parameterAssert(typeof rowLocation === 'string', `checkAnnotationTSVDataRow ourMarkdownTextChecks: 'rowLocation' parameter should be a string not a '${typeof rowLocation}'`);
+        parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkAnnotationTSVDataRow ourMarkdownTextChecks: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
         const omtcResultObject = await checkMarkdownText(languageCode, fieldName, fieldText, rowLocation, checkingOptions);
 
@@ -142,7 +143,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of omtcResultObject.noticeList) {
-            // console.assert(Object.keys(noticeEntry).length === 5, `TL ourMarkdownTextChecks notice length=${Object.keys(noticeEntry).length}`);
+            // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourMarkdownTextChecks notice length=${Object.keys(noticeEntry).length}`);
             // NOTE: Ellipses in Annotation have the normal meaning
             //          not like the specialised meaning in the Quote snippet fields
             if (noticeEntry.priority !== 178 && noticeEntry.priority !== 179 // unexpected space after ellipse, ellipse after space
@@ -170,17 +171,17 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
 
         // Updates the global list of notices
 
-        // console.log(`checkAnnotationTSVDataRow ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
-        console.assert(rowID !== undefined, "checkAnnotationTSVDataRow ourCheckTextField: 'rowID' parameter should be defined");
-        console.assert(typeof rowID === 'string', `checkAnnotationTSVDataRow ourCheckTextField: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        console.assert(fieldName !== undefined, "checkAnnotationTSVDataRow ourCheckTextField: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName === 'string', `checkAnnotationTSVDataRow ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        console.assert(fieldText !== undefined, "checkAnnotationTSVDataRow ourCheckTextField: 'fieldText' parameter should be defined");
-        console.assert(typeof fieldText === 'string', `checkAnnotationTSVDataRow ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-        console.assert(allowedLinks === true || allowedLinks === false, "checkAnnotationTSVDataRow ourCheckTextField: allowedLinks parameter must be either true or false");
-        console.assert(rowLocation !== undefined, "checkAnnotationTSVDataRow ourCheckTextField: 'rowLocation' parameter should be defined");
-        console.assert(typeof rowLocation === 'string', `checkAnnotationTSVDataRow ourCheckTextField: 'rowLocation' parameter should be a string not a '${typeof rowLocation}'`);
-        console.assert(rowLocation.indexOf(fieldName) < 0, `checkAnnotationTSVDataRow ourCheckTextField: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
+        // debugLog(`checkAnnotationTSVDataRow ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
+        parameterAssert(rowID !== undefined, "checkAnnotationTSVDataRow ourCheckTextField: 'rowID' parameter should be defined");
+        parameterAssert(typeof rowID === 'string', `checkAnnotationTSVDataRow ourCheckTextField: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+        parameterAssert(fieldName !== undefined, "checkAnnotationTSVDataRow ourCheckTextField: 'fieldName' parameter should be defined");
+        parameterAssert(typeof fieldName === 'string', `checkAnnotationTSVDataRow ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        parameterAssert(fieldText !== undefined, "checkAnnotationTSVDataRow ourCheckTextField: 'fieldText' parameter should be defined");
+        parameterAssert(typeof fieldText === 'string', `checkAnnotationTSVDataRow ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+        parameterAssert(allowedLinks === true || allowedLinks === false, "checkAnnotationTSVDataRow ourCheckTextField: allowedLinks parameter must be either true or false");
+        parameterAssert(rowLocation !== undefined, "checkAnnotationTSVDataRow ourCheckTextField: 'rowLocation' parameter should be defined");
+        parameterAssert(typeof rowLocation === 'string', `checkAnnotationTSVDataRow ourCheckTextField: 'rowLocation' parameter should be a string not a '${typeof rowLocation}'`);
+        parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkAnnotationTSVDataRow ourCheckTextField: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
         const fieldType = fieldName === 'Annotation' ? 'markdown' : 'raw';
         const octfResultObject = checkTextField(fieldType, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions);
@@ -191,7 +192,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of octfResultObject.noticeList) {
-            // console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
+            // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
             addNoticePartial({ ...noticeEntry, rowID, fieldName });
         }
         return octfResultObject.suggestion; // There may or may not be one!
@@ -203,14 +204,14 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
 
         // Updates the global list of notices
 
-        // console.log(`checkAnnotationTSVDataRow ourCheckSupportReferenceInTA(${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
-        console.assert(rowID !== undefined, "checkAnnotationTSVDataRow ourCheckSupportReferenceInTA: 'rowID' parameter should be defined");
-        console.assert(typeof rowID === 'string', `checkAnnotationTSVDataRow ourCheckSupportReferenceInTA: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        console.assert(fieldName !== undefined, "checkAnnotationTSVDataRow ourCheckSupportReferenceInTA: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName === 'string', `checkAnnotationTSVDataRow ourCheckSupportReferenceInTA: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        console.assert(taLinkText !== undefined, "checkAnnotationTSVDataRow ourCheckSupportReferenceInTA: 'taLinkText' parameter should be defined");
-        console.assert(typeof taLinkText === 'string', `checkAnnotationTSVDataRow ourCheckSupportReferenceInTA: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
-        console.assert(rowLocation.indexOf(fieldName) < 0, `checkAnnotationTSVDataRow ourCheckSupportReferenceInTA: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
+        // debugLog(`checkAnnotationTSVDataRow ourCheckSupportReferenceInTA(${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
+        parameterAssert(rowID !== undefined, "checkAnnotationTSVDataRow ourCheckSupportReferenceInTA: 'rowID' parameter should be defined");
+        parameterAssert(typeof rowID === 'string', `checkAnnotationTSVDataRow ourCheckSupportReferenceInTA: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+        parameterAssert(fieldName !== undefined, "checkAnnotationTSVDataRow ourCheckSupportReferenceInTA: 'fieldName' parameter should be defined");
+        parameterAssert(typeof fieldName === 'string', `checkAnnotationTSVDataRow ourCheckSupportReferenceInTA: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        parameterAssert(taLinkText !== undefined, "checkAnnotationTSVDataRow ourCheckSupportReferenceInTA: 'taLinkText' parameter should be defined");
+        parameterAssert(typeof taLinkText === 'string', `checkAnnotationTSVDataRow ourCheckSupportReferenceInTA: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
+        parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkAnnotationTSVDataRow ourCheckSupportReferenceInTA: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
         const coqResultObject = await checkSupportReferenceInTA(fieldName, taLinkText, rowLocation, { ...checkingOptions, taRepoLanguageCode: languageCode, expectFullLink: true });
 
@@ -220,7 +221,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of coqResultObject.noticeList) {
-            // console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckSupportReferenceInTA notice length=${Object.keys(noticeEntry).length}`);
+            // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckSupportReferenceInTA notice length=${Object.keys(noticeEntry).length}`);
             addNoticePartial({ ...noticeEntry, rowID, fieldName });
         }
     }
@@ -234,16 +235,16 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
 
         // Updates the global list of notices
 
-        // console.log(`checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote(${fieldName}, (${fieldText.length}) '${fieldText}', ${rowLocation}, …)`);
-        console.assert(rowID !== undefined, "checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'rowID' parameter should be defined");
-        console.assert(typeof rowID === 'string', `checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        console.assert(fieldName !== undefined, "checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName === 'string', `checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        console.assert(fieldText !== undefined, "checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'fieldText' parameter should be defined");
-        console.assert(typeof fieldText === 'string', `checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-        console.assert(occurrence !== undefined, "checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'occurrence' parameter should be defined");
-        console.assert(typeof occurrence === 'string', `checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'occurrence' parameter should be a string not a '${typeof occurrence}'`);
-        console.assert(rowLocation.indexOf(fieldName) < 0, `checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
+        // debugLog(`checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote(${fieldName}, (${fieldText.length}) '${fieldText}', ${rowLocation}, …)`);
+        parameterAssert(rowID !== undefined, "checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'rowID' parameter should be defined");
+        parameterAssert(typeof rowID === 'string', `checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+        parameterAssert(fieldName !== undefined, "checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'fieldName' parameter should be defined");
+        parameterAssert(typeof fieldName === 'string', `checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        parameterAssert(fieldText !== undefined, "checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'fieldText' parameter should be defined");
+        parameterAssert(typeof fieldText === 'string', `checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+        parameterAssert(occurrence !== undefined, "checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'occurrence' parameter should be defined");
+        parameterAssert(typeof occurrence === 'string', `checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'occurrence' parameter should be a string not a '${typeof occurrence}'`);
+        parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
         const coqResultObject = await checkOriginalLanguageQuote(languageCode, fieldName, fieldText, occurrence, bookID, givenC, givenV, rowLocation, checkingOptions);
 
@@ -253,7 +254,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of coqResultObject.noticeList) {
-            // console.assert(Object.keys(noticeEntry).length === 5, `TL ourCheckTNOriginalLanguageQuote notice length=${Object.keys(noticeEntry).length}`);
+            // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckTNOriginalLanguageQuote notice length=${Object.keys(noticeEntry).length}`);
             addNoticePartial({ ...noticeEntry, rowID, fieldName });
         }
     }
@@ -265,17 +266,17 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
 
         // Updates the global list of notices
 
-        // console.log(`checkAnnotationTSVDataRow ourCheckTNLinksToOutside(${rowID}, ${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
-        console.assert(rowID !== undefined, "checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'rowID' parameter should be defined");
-        console.assert(typeof rowID === 'string', `checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        console.assert(fieldName !== undefined, "checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'fieldName' parameter should be defined");
-        console.assert(typeof fieldName === 'string', `checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        console.assert(fieldName === 'Annotation', `checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'fieldName' parameter should be 'Annotation' not '${fieldName}'`);
-        console.assert(taLinkText !== undefined, "checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'taLinkText' parameter should be defined");
-        console.assert(typeof taLinkText === 'string', `checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
+        // debugLog(`checkAnnotationTSVDataRow ourCheckTNLinksToOutside(${rowID}, ${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
+        parameterAssert(rowID !== undefined, "checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'rowID' parameter should be defined");
+        parameterAssert(typeof rowID === 'string', `checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+        parameterAssert(fieldName !== undefined, "checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'fieldName' parameter should be defined");
+        parameterAssert(typeof fieldName === 'string', `checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        parameterAssert(fieldName === 'Annotation', `checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'fieldName' parameter should be 'Annotation' not '${fieldName}'`);
+        parameterAssert(taLinkText !== undefined, "checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'taLinkText' parameter should be defined");
+        parameterAssert(typeof taLinkText === 'string', `checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
 
         const coqResultObject = await checkTNLinksToOutside(bookID, givenC, givenV, fieldName, taLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: languageCode });
-        // console.log("coqResultObject", JSON.stringify(coqResultObject));
+        // debugLog("coqResultObject", JSON.stringify(coqResultObject));
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -303,7 +304,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
             for (const checkedFilenameExtension of coqResultObject.checkedFilenameExtensions)
                 try { if (drResult.checkedFilenameExtensions.indexOf(checkedFilenameExtension) < 0) drResult.checkedFilenameExtensions.push(checkedFilenameExtension); }
                 catch { drResult.checkedFilenameExtensions = [checkedFilenameExtension]; }
-        // if (drResult.checkedFilenameExtensions) console.log("drResult", JSON.stringify(drResult));
+        // if (drResult.checkedFilenameExtensions) userLog("drResult", JSON.stringify(drResult));
     }
     // end of ourCheckTNLinksToOutside function
 
@@ -318,20 +319,20 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
     } catch (tlcELerror) { }
     if (typeof extractLength !== 'number' || isNaN(extractLength)) {
         extractLength = DEFAULT_EXTRACT_LENGTH;
-        // console.log(`Using default extractLength=${extractLength}`);
+        // debugLog(`Using default extractLength=${extractLength}`);
     }
     // else
-    // console.log(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
+    // debugLog(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
     // const halfLength = Math.floor(extractLength / 2); // rounded down
     // const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
-    // console.log(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     const lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook;
     if (bookID === 'OBS')
         numChaptersThisBook = 50; // There's 50 Open Bible Stories
     else {
-        console.assert(lowercaseBookID !== 'obs', "Shouldn’t happen in annotation-row-check");
+        parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in annotation-row-check");
         try {
             numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
         } catch (tlcNCerror) {
@@ -437,7 +438,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'SupportReference', rowID, location: ourRowLocation });
             else if (annotationType === 'TN2') { // More than just whitespace
                 const supportReferenceArticlePart = supportReference.replace('rc://*/ta/man/translate/', '');
-                // console.log("supportReferenceArticlePart", supportReferenceArticlePart);
+                // debugLog("supportReferenceArticlePart", supportReferenceArticlePart);
                 if (!supportReferenceArticlePart.startsWith('figs-')
                     && !supportReferenceArticlePart.startsWith('grammar-')
                     && !supportReferenceArticlePart.startsWith('translate-')
@@ -498,9 +499,8 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
                 ASuggestion = await ourMarkdownTextChecks(rowID, 'Annotation', annotation, true, ourRowLocation, checkingOptions);
                 await ourCheckTNLinksToOutside(rowID, 'Annotation', annotation, ourRowLocation, linkCheckingOptions);
                 let regexResultArray;
-                // eslint-disable-next-line no-cond-assign
-                while (regexResultArray = TA_REGEX.exec(annotation)) {
-                    // console.log("Got TA Regex in Annotation", JSON.stringify(regexResultArray));
+                while ((regexResultArray = TA_REGEX.exec(annotation))) {
+                    // debugLog("Got TA Regex in Annotation", JSON.stringify(regexResultArray));
                     const adjustedLink = regexResultArray[0].substring(2, regexResultArray[0].length - 2)
                     if (supportReference !== adjustedLink && V !== 'intro') {
                         const details = supportReference ? `(SR='${supportReference}')` : "(empty SR field)"
@@ -516,8 +516,8 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         // 7 [reference, rowID, tags, supportReference, quote, occurrence, annotation]
         const suggestion = `${reference}\t${RIDSuggestion === undefined ? rowID : RIDSuggestion}\t${tags}\t${SRSuggestion === undefined ? supportReference : SRSuggestion}\t${QSuggestion === undefined ? quote : QSuggestion}\t${OSuggestion === undefined ? occurrence : OSuggestion}\t${ASuggestion === undefined ? annotation : ASuggestion}`;
         if (suggestion !== line) {
-            // console.log(`Had annotation ${line}`);
-            // console.log(`Sug annotation ${suggestion}`);
+            // debugLog(`Had annotation ${line}`);
+            // debugLog(`Sug annotation ${suggestion}`);
             drResult.suggestion = suggestion;
         }
 
@@ -528,8 +528,8 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         addNoticePartial({ priority: 984, message: `Found wrong number of TSV fields (expected ${NUM_EXPECTED_ANNOTATION_TSV_FIELDS})`, details: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, rowID, location: ourRowLocation });
     }
 
-    // console.log(`  checkAnnotationTSVDataRow returning with ${drResult.noticeList.length.toLocaleString()} notice(s).`);
-    // console.log("checkAnnotationTSVDataRow result is", JSON.stringify(drResult));
+    // debugLog(`  checkAnnotationTSVDataRow returning with ${drResult.noticeList.length.toLocaleString()} notice(s).`);
+    // debugLog("checkAnnotationTSVDataRow result is", JSON.stringify(drResult));
     return drResult; // object with noticeList and possibly suggestion only
 }
 // end of checkAnnotationTSVDataRow function

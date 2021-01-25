@@ -1,3 +1,5 @@
+import { debugLog, userLog } from './utilities';
+
 /* This file handles the suppression of notices where we don’t want to disable or remove the actual check,
     but we just want to disable it for certain resources to handle special cases.
     In some cases, it’s to handle software deficiencies.
@@ -16,9 +18,9 @@ const disabledNotices = [
   //  i.e., you can be as specific as you need about username and/or lineNumber, etc.
 
   // TODO: Remove this -- it’s only temporary to handle valid TN links like [](../02/20/zu5f) that are checked as issues
-  { repoCode: 'TN', priority: 648, }, // "More [ ]( ) links than valid Bible links" not yet properly handled by this package
+  { repoCode: 'TN', priority: 648, }, // "More [ ]( ) links than valid Bible links" disabled as not yet properly handled by this package
 
-  { repoCode: 'TN', priority: 450, }, // TN "Resource container link should have '*' language code with (not 'en')" as tC can’t handle it yet!
+  { repoCode: 'TN', priority: 450, }, // TN "Resource container link should have '*' language code with (not 'en')" disabled as tC can’t handle it yet!
 
   { repoCode: 'ST', message: "Bad punctuation nesting: } closing character doesn’t match", bookID: 'NEH', }, // 777 - complex { } nesting in direct speech
   { repoCode: 'ST', message: "Bad punctuation nesting: ” closing character doesn’t match", bookID: 'NEH', }, // 777 - complex { } nesting in direct speech
@@ -70,8 +72,8 @@ const disabledNotices = [
  */
 export function isDisabledNotice(givenNotice) {
   // NOTE: The function will fail if repoCode is not set in the notices passed to this function
-  // console.log(`isDisabledNotice(${JSON.stringify(givenNotice)})…`);
-  // if (givenNotice.repoCode === undefined) console.log(`isDisabledNotice() cannot work without repoCode for ${JSON.stringify(givenNotice)}`);
+  // debugLog(`isDisabledNotice(${JSON.stringify(givenNotice)})…`);
+  // if (givenNotice.repoCode === undefined) debugLog(`isDisabledNotice() cannot work without repoCode for ${JSON.stringify(givenNotice)}`);
   for (const disabledNotice of disabledNotices) {
     let matchedAllSpecifiedFields = true;
     for (const propertyName in disabledNotice)
@@ -82,7 +84,7 @@ export function isDisabledNotice(givenNotice) {
         break;
       }
     if (matchedAllSpecifiedFields) {
-      // console.log(`  isDisabledNotice() returning true for ${JSON.stringify(disabledNotice)}`);
+      // debugLog(`  isDisabledNotice() returning true for ${JSON.stringify(disabledNotice)}`);
       return true;
     }
   }
@@ -100,11 +102,11 @@ export function removeDisabledNotices(givenNoticeList) {
   const remainingNoticeList = [];
   let givenRepoCodeNotice = false;
   for (const thisNotice of givenNoticeList) {
-    if (thisNotice.repoCode === undefined && !givenRepoCodeNotice) { console.log(`removeDisabledNotices() cannot work without repoCode for ${JSON.stringify(thisNotice)} in list of ${givenNoticeList.length} notices.`); givenRepoCodeNotice = true; }
+    if (thisNotice.repoCode === undefined && !givenRepoCodeNotice) { debugLog(`removeDisabledNotices() cannot work without repoCode for ${JSON.stringify(thisNotice)} in list of ${givenNoticeList.length} notices.`); givenRepoCodeNotice = true; }
     if (!isDisabledNotice(thisNotice))
       remainingNoticeList.push(thisNotice);
-    // else console.log(`  Removing disabled ${JSON.stringify(thisNotice)}`);
+    // else userLog(`  Removing disabled ${JSON.stringify(thisNotice)}`);
   }
-  if (remainingNoticeList.length !== givenNoticeList.length) console.log(`removeDisabledNotices() returning ${remainingNoticeList.length} out of ${givenNoticeList.length} notices`);
+  if (remainingNoticeList.length !== givenNoticeList.length) userLog(`removeDisabledNotices() returning ${remainingNoticeList.length} out of ${givenNoticeList.length} notices`);
   return remainingNoticeList;
 }

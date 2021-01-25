@@ -1,17 +1,18 @@
 import { toJSON } from 'usfm-js';
 import * as books from '../core/books/books';
+import { parameterAssert } from './utilities';
 
 
 export function runUsfmJsCheck(fileText, convertOptions) {
     // Runs the USFM-JS converter as a check
     //  which can be quite time-consuming on large, complex USFM files
-    // console.log("Running USFM-JS converter check (can take quite a while for a large book)…");
+    // debugLog("Running USFM-JS converter check (can take quite a while for a large book)…");
 
     const jsonResult = toJSON(fileText, convertOptions);
     const jsonKeys = Object.keys(jsonResult); // Expect 'headers', 'chapters'
     const numJSONkeys = jsonKeys.length;
-    // console.log(`  Finished USFM-JS converter check with ${numJSONkeys} json key(s)`);
-    // console.log(`  jsonResult: ${JSON.stringify(jsonResult)}`)
+    // debugLog(`  Finished USFM-JS converter check with ${numJSONkeys} json key(s)`);
+    // debugLog(`  jsonResult: ${JSON.stringify(jsonResult)}`)
     // NOTE: We don’t know how to get the errors out yet
 
     return { isValidUSFM: numJSONkeys >= 2, returnedJSON: jsonResult }; // Expect 'headers', 'chapters'
@@ -29,18 +30,18 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, chec
 
      Returns a result object containing a successList and a noticeList
      */
-    // console.log(`checkUSFMToJSON(${givenText.length.toLocaleString()} chars, '${givenLocation}')…`);
-    console.assert(bookID !== undefined, "checkUSFMToJSON: 'bookID' parameter should be defined");
-    console.assert(typeof bookID === 'string', `checkUSFMToJSON: 'bookID' parameter should be a string not a '${typeof bookID}': ${bookID}`);
-    console.assert(bookID.length === 3, `checkUSFMToJSON: 'bookID' parameter should be three characters long not ${bookID.length}`);
-    console.assert(bookID.toUpperCase() === bookID, `checkUSFMToJSON: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-    console.assert(books.isValidBookID(bookID), `checkUSFMToJSON: '${bookID}' is not a valid USFM book identifier`);
-    console.assert(filename !== undefined, "checkUSFMToJSON: 'filename' parameter should be defined");
-    console.assert(typeof filename === 'string', `checkUSFMToJSON: 'filename' parameter should be a string not a '${typeof filename}': ${filename}`);
-    console.assert(givenText !== undefined, "checkUSFMToJSON: 'givenText' parameter should be defined");
-    console.assert(typeof givenText === 'string', `checkUSFMToJSON: 'givenText' parameter should be a string not a '${typeof givenText}': ${givenText}`);
-    console.assert(givenLocation !== undefined, "checkUSFMToJSON: 'givenRowLocation' parameter should be defined");
-    console.assert(typeof givenLocation === 'string', `checkUSFMToJSON: 'givenRowLocation' parameter should be a string not a '${typeof givenLocation}'`);
+    // debugLog(`checkUSFMToJSON(${givenText.length.toLocaleString()} chars, '${givenLocation}')…`);
+    parameterAssert(bookID !== undefined, "checkUSFMToJSON: 'bookID' parameter should be defined");
+    parameterAssert(typeof bookID === 'string', `checkUSFMToJSON: 'bookID' parameter should be a string not a '${typeof bookID}': ${bookID}`);
+    parameterAssert(bookID.length === 3, `checkUSFMToJSON: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    parameterAssert(bookID.toUpperCase() === bookID, `checkUSFMToJSON: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+    parameterAssert(books.isValidBookID(bookID), `checkUSFMToJSON: '${bookID}' is not a valid USFM book identifier`);
+    parameterAssert(filename !== undefined, "checkUSFMToJSON: 'filename' parameter should be defined");
+    parameterAssert(typeof filename === 'string', `checkUSFMToJSON: 'filename' parameter should be a string not a '${typeof filename}': ${filename}`);
+    parameterAssert(givenText !== undefined, "checkUSFMToJSON: 'givenText' parameter should be defined");
+    parameterAssert(typeof givenText === 'string', `checkUSFMToJSON: 'givenText' parameter should be a string not a '${typeof givenText}': ${givenText}`);
+    parameterAssert(givenLocation !== undefined, "checkUSFMToJSON: 'givenRowLocation' parameter should be defined");
+    parameterAssert(typeof givenLocation === 'string', `checkUSFMToJSON: 'givenRowLocation' parameter should be a string not a '${typeof givenLocation}'`);
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -50,7 +51,7 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, chec
     const result = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        // console.log(`checkUSFMToJSON success: ${successString}`);
+        // debugLog(`checkUSFMToJSON success: ${successString}`);
         result.successList.push(successString);
     }
     function addNotice6to7({ priority, message, lineNumber, characterIndex, extract, location }) {
@@ -62,17 +63,17 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, chec
         * @param {String} extract - short extract from the line centred on the problem (if available)
         * @param {String} location - description of where the issue is located
         */
-        // console.log(`checkUSFMToJSON notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
-        console.assert(priority !== undefined, "cUSFMjs addNotice6to7: 'priority' parameter should be defined");
-        console.assert(typeof priority === 'number', `cUSFMjs addNotice6to7: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        console.assert(message !== undefined, "cUSFMjs addNotice6to7: 'message' parameter should be defined");
-        console.assert(typeof message === 'string', `cUSFMjs addNotice6to7: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        // console.assert(characterIndex !== undefined, "cUSFMjs addNotice6to7: 'characterIndex' parameter should be defined");
-        if (characterIndex) console.assert(typeof characterIndex === 'number', `cUSFMjs addNotice6to7: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
-        // console.assert(extract !== undefined, "cUSFMjs addNotice6to7: 'extract' parameter should be defined");
-        if (extract) console.assert(typeof extract === 'string', `cUSFMjs addNotice6to7: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
-        console.assert(location !== undefined, "cUSFMjs addNotice6to7: 'location' parameter should be defined");
-        console.assert(typeof location === 'string', `cUSFMjs addNotice6to7: 'location' parameter should be a string not a '${typeof location}': ${location}`);
+        // debugLog(`checkUSFMToJSON notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        parameterAssert(priority !== undefined, "cUSFMjs addNotice6to7: 'priority' parameter should be defined");
+        parameterAssert(typeof priority === 'number', `cUSFMjs addNotice6to7: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
+        parameterAssert(message !== undefined, "cUSFMjs addNotice6to7: 'message' parameter should be defined");
+        parameterAssert(typeof message === 'string', `cUSFMjs addNotice6to7: 'message' parameter should be a string not a '${typeof message}': ${message}`);
+        // parameterAssert(characterIndex !== undefined, "cUSFMjs addNotice6to7: 'characterIndex' parameter should be defined");
+        if (characterIndex) parameterAssert(typeof characterIndex === 'number', `cUSFMjs addNotice6to7: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
+        // parameterAssert(extract !== undefined, "cUSFMjs addNotice6to7: 'extract' parameter should be defined");
+        if (extract) parameterAssert(typeof extract === 'string', `cUSFMjs addNotice6to7: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
+        parameterAssert(location !== undefined, "cUSFMjs addNotice6to7: 'location' parameter should be defined");
+        parameterAssert(typeof location === 'string', `cUSFMjs addNotice6to7: 'location' parameter should be a string not a '${typeof location}': ${location}`);
         result.noticeList.push({ priority, message, bookID, lineNumber, characterIndex, extract, location });
     }
 
@@ -90,8 +91,8 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, chec
         addNotice6to7({ priority: 943, message: `USFM3 toJSON Check doesn’t pass`, location: ourLocation });
 
     addSuccessMessage(`Checked USFM-JS`);
-    // console.log(`  checkUSFMToJSON returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
-    // console.log(`checkUSFMToJSON result is ${JSON.stringify(result)}`);
+    // debugLog(`  checkUSFMToJSON returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
+    // debugLog(`checkUSFMToJSON result is ${JSON.stringify(result)}`);
     return result;
 }
 // end of checkUSFMToJSON function

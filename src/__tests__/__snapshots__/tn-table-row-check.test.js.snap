@@ -200,7 +200,7 @@ Object {
       "fieldName": "OrigQuote",
       "location": " that was supplied",
       "message": "Seems original language quote might not start at the beginning of a word",
-      "priority": 620,
+      "priority": 909,
       "rowID": "e7qw",
     },
     Object {

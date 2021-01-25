@@ -1,10 +1,11 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { clearCaches } from '../../core/getApi';
+import { userLog } from '../../core/utilities';
 
 
 function ClearCache({areYouSure}) {
-    console.log(`ClearCache(${areYouSure})`);
+    userLog(`ClearCache(${areYouSure})`);
 
     let ccResult;
     if (areYouSure === 'Y')

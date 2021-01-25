@@ -5,7 +5,7 @@ import { clearCaches, clearCheckedArticleCache, ourParseInt, preloadReposIfNeces
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderTotals } from '../RenderProcessedResults';
 import { checkBookPackage } from './checkBookPackage';
-// import { consoleLogObject } from '../../core/utilities';
+import { userLog, parameterAssert } from '../../core/utilities';
 
 
 // const BP_VALIDATOR_VERSION_STRING = '0.3.6';
@@ -15,20 +15,20 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
     // Check a single Bible book across many repositories
     const [result, setResultValue] = useState("Waiting-CheckBookPackage");
 
-    // console.log(`I'm here in BookPackageCheck v${BP_VALIDATOR_VERSION_STRING}`);
+    // debugLog(`I'm here in BookPackageCheck v${BP_VALIDATOR_VERSION_STRING}`);
     // consoleLogObject("props", props);
     // consoleLogObject("props.classes", props.classes);
 
     let username = props.username;
-    // console.log(`username='${username}'`);
+    // debugLog(`username='${username}'`);
     let languageCode = props.languageCode;
-    // console.log(`languageCode='${languageCode}'`);
+    // debugLog(`languageCode='${languageCode}'`);
     let bookID = props.bookID;
-    // console.log(`bookID='${bookID}'`);
+    // debugLog(`bookID='${bookID}'`);
     let dataSet = props.dataSet;
-    // console.log(`dataSet='${dataSet}'`);
+    // debugLog(`dataSet='${dataSet}'`);
     let branch = props.branch;
-    // console.log(`branch='${branch}'`);
+    // debugLog(`branch='${branch}'`);
 
     // Clear cached files if we've changed repo
     //  autoClearCache(bookID); // This technique avoids the complications of needing a button
@@ -47,17 +47,17 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
     if (props.disableAllLinkFetchingFlag) checkingOptions.disableAllLinkFetchingFlag = props.disableAllLinkFetchingFlag.toLowerCase() === 'true';
     if (props.checkLinkedTAArticleFlag) checkingOptions.checkLinkedTAArticleFlag = props.checkLinkedTAArticleFlag.toLowerCase() === 'true';
     if (props.checkLinkedTWArticleFlag) checkingOptions.checkLinkedTWArticleFlag = props.checkLinkedTWArticleFlag.toLowerCase() === 'true';
-    // console.log(`checkingOptions.checkLinkedTAArticleFlag ${checkingOptions.checkLinkedTAArticleFlag} from '${props.checkLinkedTAArticleFlag}'`);
-    // console.log(`checkingOptions.checkLinkedTWArticleFlag ${checkingOptions.checkLinkedTWArticleFlag} from '${props.checkLinkedTWArticleFlag}'`);
+    // debugLog(`checkingOptions.checkLinkedTAArticleFlag ${checkingOptions.checkLinkedTAArticleFlag} from '${props.checkLinkedTAArticleFlag}'`);
+    // debugLog(`checkingOptions.checkLinkedTWArticleFlag ${checkingOptions.checkLinkedTWArticleFlag} from '${props.checkLinkedTWArticleFlag}'`);
 
     useEffect(() => {
         // const newProps = { bookID, branch, checkingOptions, languageCode, cutoffPriorityLevel: props.cutoffPriorityLevel, displayType: props.displayType, errorPriorityLevel: props.errorPriorityLevel, maximumSimilarMessages: props.maximumSimilarMessages, sortBy: props.sortBy, username};
-        // console.log("BookPackageCheck.useEffect() called with ", JSON.stringify(newProps));
+        // debugLog("BookPackageCheck.useEffect() called with ", JSON.stringify(newProps));
 
         // Use an IIFE (Immediately Invoked Function Expression)
         //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
         (async () => {
-            // console.log("Started BookPackageCheck.unnamedFunction()");
+            // debugLog("Started BookPackageCheck.unnamedFunction()");
 
             // NOTE from RJH: I can’t find the correct React place for this / way to do this
             //                  so it shows a warning for the user, and doesn’t continue to try to process
@@ -69,13 +69,13 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             // NOTE from RJH: I can’t find the correct React place for this / way to do this
             //                  so it shows a warning for the user, and doesn’t continue to try to process
             if (bookID !== 'OBS' && !books.isValidBookID(bookID)) {
-                console.log(`Invalid '${bookID}' bookID given!`)
+                userLog(`Invalid '${bookID}' bookID given!`)
                 setResultValue(<p style={{ color: 'red' }}>Please enter a valid USFM book identifier or 'OBS'. ('<b>{bookID}</b>' is not valid.)</p>);
                 return;
             }
 
             if (props.reloadAllFilesFirst && props.reloadAllFilesFirst.slice(0).toUpperCase() === 'Y') {
-                console.log("Clearing cache before running book package check…");
+                userLog("Clearing cache before running book package check…");
                 setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running book package check…</p>);
                 await clearCaches();
             }
@@ -94,7 +94,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
                 const origLangRepo = whichTestament === 'old' ? 'UHB' : 'UGNT';
                 repoPreloadList.unshift(origLangRepo);
             }
-            // console.log(`BookPackageCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
+            // debugLog(`BookPackageCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
 
             // if (bookID !== 'OBS') { // Preload the reference repos
             setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for {username} {languageCode} ready for <b>{bookID}</b> book package check…</p>);
@@ -115,7 +115,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             rawCBPResults.bookID = bookID;
             rawCBPResults.checkedOptions = checkingOptions;
 
-            // console.log("Here with CBP rawCBPResults", typeof rawCBPResults);
+            // debugLog("Here with CBP rawCBPResults", typeof rawCBPResults);
             // Now do our final handling of the result -- we have some options available
             let processOptions = { // Uncomment any of these to test them
                 // 'maximumSimilarMessages': 4, // default is 3 -- 0 means don’t suppress
@@ -130,13 +130,13 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             // if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
             if (props.sortBy) processOptions.sortBy = props.sortBy;
             if (props.ignorePriorityNumberList) { // We need to convert from string to Array
-                console.assert(props.ignorePriorityNumberList[0] === '[' && props.ignorePriorityNumberList[props.ignorePriorityNumberList.length - 1] === ']', `Format of props.ignorePriorityNumberList '${props.ignorePriorityNumberList}' is wrong should be enclosed in []`)
+                parameterAssert(props.ignorePriorityNumberList[0] === '[' && props.ignorePriorityNumberList[props.ignorePriorityNumberList.length - 1] === ']', `Format of props.ignorePriorityNumberList '${props.ignorePriorityNumberList}' is wrong should be enclosed in []`)
                 processOptions.ignorePriorityNumberList = [];
                 for (const stringBit of props.ignorePriorityNumberList.substring(1, props.ignorePriorityNumberList.length - 1).split(',')) {
                     const intBit = ourParseInt(stringBit.trim()); // trim allows comma,space to also be used as separator
                     processOptions.ignorePriorityNumberList.push(intBit);
                 }
-                // console.log(`Now have processOptions.ignorePriorityNumberList=${JSON.stringify(processOptions.ignorePriorityNumberList)}`);
+                // debugLog(`Now have processOptions.ignorePriorityNumberList=${JSON.stringify(processOptions.ignorePriorityNumberList)}`);
             }
             if (props.showDisabledNoticesFlag) processOptions.showDisabledNoticesFlag = props.showDisabledNoticesFlag.toLowerCase() === 'true';
 
@@ -154,10 +154,10 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
 
             if (displayType === 'ErrorsWarnings') {
                 const processedResults = processNoticesToErrorsWarnings(rawCBPResults, processOptions);
-                //             console.log(`BookPackageCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
+                //             userLog(`BookPackageCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
                 //   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
-                // console.log("Here now in rendering bit!");
+                // debugLog("Here now in rendering bit!");
 
                 if (processedResults.errorList.length || processedResults.warningList.length)
                     setResultValue(<>
@@ -171,7 +171,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
                     </>);
             } else if (displayType === 'SevereMediumLow') {
                 const processedResults = processNoticesToSevereMediumLow(rawCBPResults, processOptions);
-                //             console.log(`BookPackageCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
+                //             userLog(`BookPackageCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
                 //   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
                 if (processedResults.severeList.length || processedResults.mediumList.length || processedResults.lowList.length)
@@ -186,7 +186,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
                     </>);
             } else if (displayType === 'SingleList') {
                 const processedResults = processNoticesToSingleList(rawCBPResults, processOptions);
-                // console.log(`BookPackageCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s) and ${processedResults.warningList.length.toLocaleString()} notice(s)
+                // debugLog(`BookPackageCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s) and ${processedResults.warningList.length.toLocaleString()} notice(s)
                 //   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
                 if (processedResults.warningList.length)
@@ -201,7 +201,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
                     </>);
             } else setResultValue(<b style={{ color: 'red' }}>Invalid displayType='{displayType}'</b>)
 
-            // console.log("Finished rendering bit.");
+            // debugLog("Finished rendering bit.");
         })(); // end of async part in unnamedFunction
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [bookID, branch, JSON.stringify(checkingOptions), languageCode, JSON.stringify(props), username]); // end of useEffect part

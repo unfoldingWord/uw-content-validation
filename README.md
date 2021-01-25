@@ -50,6 +50,8 @@ The top-level checking demonstrations return:
 1. A list of things that were checked (successList)
 1. Typically a list of (higher-priority) errors and a list of (lower-priority) warnings, but other formats for display of messages are also demonstrated.
 
+Note that it's quite possible for the package to give multiple different notices for a single mistake. For example, a punctuation abnormality in a quoted text might advise about the bad punctuation as well as advising about not being able to match the quote. The package errs on the side that having additional warnings is better than missing a warning (and then later being confused about why a data file won't load). These consequential warnings mean that, if possible, it's good to rerun the checks from time to time on your latest files as you're fixing multiple errors.
+
 ### Notice Objects (in noticeList)
 
 However, the lower-level checking functions provide only the list of success message strings and one list of `notices` (i.e., warnings/errors combined) typically consisting of an object with some or all of the following fields (as available/relevant):
@@ -76,7 +78,9 @@ All of the following fields may be missing or undefined, i.e., they’re all opt
 1. `location`: A string indicating the context of the notice, e.g., "in line 17 of 'someBook.usfm'". (Still not completely sure what should be left in this string now that we have added optional `repoName`, `filename`, `rowID`, `lineNumber`, `fieldName` fields.)
 1. `extra`: for a check that looks in multiple repos, this contains extra identifying information (typically the `repoCode`) to help the user determine what resource/repo/file that the notice applies to (which, in the demos, is then often prepended to the `message`).
 
-Keeping our notices in this format, rather than the simplicity of just saving an array of single strings, allows the above *notice components* to be processed at a higher level, e.g., to allow user-controlled filtering, sorting, etc. The default is to funnel them all through the supplied `processNoticesToErrorsWarnings` function (in demos/notice-processing-functions.fs) which does the following:
+Keeping our notices in this format, rather than the simplicity of just saving an array of single strings, allows the above *notice components* to be processed at a higher level, e.g., to allow user-controlled filtering, sorting, etc. For example, in a rush it might be good to display the highest priority messages first, and fix a few of those. On the other hand, if working systematically through, it might be good to sort by filename and line-number so that warnings about the same part of a file can be viewed together irrespective of their different priority numbers.
+
+The default in the demos is to funnel all the raw notices through the supplied `processNoticesToErrorsWarnings` function (in demos/notice-processing-functions.fs) which does the following:
 
 1. Removes excess repeated errors. For example, if there’s a systematic error in a file, say with unneeded leading spaces in every field, rather than returning with hundreds of errors, only the first several errors will be returned, followed by an "errors suppressed" message. (The number of each error displayed is settable as an option—zero means display all errors with no suppression.)
 1. Separates notices into error and warning lists based on the priority number. (The switch-over point is settable as an option.)
@@ -174,7 +178,7 @@ Once you have this codebase forked and cloned to your local machine, you can sta
 1. Ensure that the Styleguide is running by visiting `localhost:6060` on your web browser. (for Chromebooks see note below)
 1. Modify the code and documentation in your code editor and check out the Styleguide.
     - Update the styleguide.config.js to match your new component names.
-1. See debug `console.log()` output in browser console—in chrome, CTRL-SHIFT-J to open.
+1. See debug `userLog()` output in browser console—in chrome, CTRL-SHIFT-J to open.
 
 ### Setting up NPM Publishing
 
