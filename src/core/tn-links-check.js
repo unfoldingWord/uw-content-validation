@@ -3,11 +3,11 @@ import Path from 'path';
 import * as books from '../core/books/books';
 import { DEFAULT_EXTRACT_LENGTH, countOccurrences } from './text-handling-functions'
 import { cachedGetFile, checkMarkdownText } from '../core';
-import { userLog, parameterAssert, ourParseInt } from './utilities';
+import { userLog, debugLog, parameterAssert, logicAssert, ourParseInt } from './utilities';
 // import { consoleLogObject } from '../core/utilities';
 
 
-// const TN_LINKS_VALIDATOR_VERSION_STRING = '0.7.2';
+// const TN_LINKS_VALIDATOR_VERSION_STRING = '0.7.3';
 
 const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -22,8 +22,12 @@ const TW_REGEX = new RegExp('\\[\\[rc://([^ /]+?)/tw/dict/bible/([^ /]+?)/([^ \\
 // TODO: See if "[2:23](../02/03.md)" is found by more than one regex below
 const OTHER_BOOK_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})\\]\\(([123A-Z]{2,3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');
 const THIS_BOOK_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})\\]\\((\\.{2,3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');
+const THIS_BOOK_RANGE_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})–(\\d{1,3})\\]\\((\\.{2,3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [4:11–16](../04/11.md) NOTE en-dash
 const THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(?:(\\d{1,3}):)?(\\d{1,3})\\]\\(\\./(\\d{1,3})\\.md\\)', 'g');
+const THIS_VERSE_BIBLE_REGEX = new RegExp('\\[(\\d{1,3})\\]\\(\\../(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');// [27](../11/27.md)
+const THIS_VERSE_RANGE_BIBLE_REGEX = new RegExp('\\[(\\d{1,3})–(\\d{1,3})\\]\\(\\../(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');// [2–7](../09/2.md) NOTE en-dash
 
+const TN_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})\\]\\((\\.{2,3})/(\\d{1,3})/(\\d{1,3})/([a-z][a-z0-9][a-z0-9][a-z0-9])\\)', 'g');
 
 // Caches the path names of files which have been already checked
 //  Used for storing paths to TA and TW articles that have already been checked
@@ -182,13 +186,15 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
     const linksList2 = fieldText.match(GENERAL_LINK2_REGEX) || [];
     const totalLinks1 = linksList1.length;
     const totalLinks2 = linksList2.length;
-    let taLinkCount = 0, twLinkCount = 0, thisChapterBibleLinkCount = 0, thisBookBibleLinkCount = 0, otherBookBibleLinkCount = 0;
+    let taLinkCount = 0, twLinkCount = 0, thisChapterBibleLinkCount = 0, thisVerseBibleLinkCount = 0, thisBookBibleLinkCount = 0, otherBookBibleLinkCount = 0, TNLinkCount = 0;
+    let processedLinkList = [];
 
-    // Check TA links like [[rc://en/ta/man/translate/figs-metaphor]]
+    // Check for TA links like [[rc://en/ta/man/translate/figs-metaphor]]
     // debugLog("checkTNLinksToOutside: Search for TA links")
     while ((regexResultArray = TA_REGEX.exec(fieldText))) {
-        // debugLog(`  checkTNLinksToOutside TA resultArray=${JSON.stringify(resultArray)}`);
+        // debugLog(`  checkTNLinksToOutside TA resultArray=${JSON.stringify(regexResultArray)}`);
         taLinkCount += 1;
+        processedLinkList.push(regexResultArray[0]); // Save the full link
         parameterAssert(regexResultArray.length === 4, `Expected 4 fields (not ${regexResultArray.length})`)
         let languageCode = regexResultArray[1];
         if (languageCode !== '*') {
@@ -242,12 +248,13 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         }
     }
 
-    // Check TW links like [[rc://en/tw/dict/bible/other/death]]
+    // Check for TW links like [[rc://en/tw/dict/bible/other/death]]
     //  (These are not nearly as many as TA links.)
     // debugLog("checkTNLinksToOutside: Search for TW links")
     while ((regexResultArray = TW_REGEX.exec(fieldText))) {
-        // debugLog(`  checkTNLinksToOutside TW resultArray=${JSON.stringify(resultArray)}`);
+        // debugLog(`  checkTNLinksToOutside TW resultArray=${JSON.stringify(regexResultArray)}`);
         twLinkCount += 1;
+        processedLinkList.push(regexResultArray[0]); // Save the full link
         parameterAssert(regexResultArray.length === 4, `Expected 4 fields (not ${regexResultArray.length})`)
         let languageCode = regexResultArray[1];
         if (!languageCode || languageCode === '*') languageCode = defaultLanguageCode;
@@ -293,10 +300,11 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
 
     // debugLog("checkTNLinksToOutside: Search for Bible links")
 
-    // Check this chapter Bible links like [Revelation 3:11](./11.md)
+    // Check for this-chapter Bible links like [Revelation 3:11](./11.md)
     while ((regexResultArray = THIS_CHAPTER_BIBLE_REGEX.exec(fieldText))) {
         // debugLog(`  checkTNLinksToOutside THIS_CHAPTER_BIBLE_REGEX regexResultArray=${JSON.stringify(regexResultArray)}`);
         thisChapterBibleLinkCount += 1;
+        processedLinkList.push(regexResultArray[0]); // Save the full link
         parameterAssert(regexResultArray.length === 6, `Expected 6 fields (not ${regexResultArray.length})`);
         let [totalLink, optionalN1, optionalB1, C1, V1, V2] = regexResultArray;
 
@@ -330,7 +338,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         if (linkBookCode) { // then we know which Bible book this link is to
             // So we can check for valid C:V numbers
             let numChaptersThisBook, numVersesThisChapter;
-            parameterAssert(linkBookCode.toLowerCase() !== 'obs', "Shouldn’t happen in tn-links-check");
+            logicAssert(linkBookCode.toLowerCase() !== 'obs', "Shouldn’t happen in tn-links-check");
             try {
                 numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
             } catch (tlcNCerror) { }
@@ -344,10 +352,91 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         }
     }
 
-    // Check this book Bible links like [Revelation 3:11](../03/11.md)
+    // Check for this-verse Bible links like [11](../03/11.md)
+    while ((regexResultArray = THIS_VERSE_BIBLE_REGEX.exec(fieldText))) {
+        // debugLog(`  checkTNLinksToOutside THIS_VERSE_BIBLE_REGEX regexResultArray=${JSON.stringify(regexResultArray)}`);
+        thisVerseBibleLinkCount += 1;
+        processedLinkList.push(regexResultArray[0]); // Save the full link
+        parameterAssert(regexResultArray.length === 4, `Expected 4 fields (not ${regexResultArray.length})`);
+        let [totalLink, V1, C2, V2] = regexResultArray;
+
+        let linkBookCode = bookID;
+
+        // const chapterInt = ourParseInt(givenC);
+        let chapterInt2, verseInt2;
+        try {
+            chapterInt2 = ourParseInt(C2);
+            verseInt2 = ourParseInt(V2);
+            if (ourParseInt(V1) !== verseInt2)
+                addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don’t match", details: `${V1} vs ${V2}`, extract: totalLink, location: ourLocation });
+        } catch (vvError) {
+            console.error(`TN Link Check1 couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} ${V1} with ${C2}:${V2} from '${fieldText}': ${vvError}`);
+        }
+
+        if (linkBookCode) { // then we know which Bible book this link is to
+            // So we can check for valid C:V numbers
+            let numChaptersThisBook, numVersesThisChapter;
+            logicAssert(linkBookCode.toLowerCase() !== 'obs', "Shouldn’t happen in tn-links-check");
+            try {
+                numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
+            } catch (tlcNCerror) { }
+            try {
+                numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), chapterInt2);
+            } catch (tlcNVerror) { }
+            if (!chapterInt2 || chapterInt2 < 1 || chapterInt2 > numChaptersThisBook)
+                addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible link", details: `${linkBookCode} ${chapterInt2} vs ${numChaptersThisBook} chapters`, extract: totalLink, location: ourLocation });
+            else if (!verseInt2 || verseInt2 < 0 || verseInt2 > numVersesThisChapter)
+                addNoticePartial({ priority: 653, message: "Bad verse number in markdown Bible link", details: `${linkBookCode} ${chapterInt2}:${verseInt2} vs ${numVersesThisChapter} verses`, extract: totalLink, location: ourLocation });
+        }
+    }
+
+    // Check for this-verse Bible links like [11](../03/11.md)
+    while ((regexResultArray = THIS_VERSE_RANGE_BIBLE_REGEX.exec(fieldText))) {
+        // debugLog(`  checkTNLinksToOutside THIS_VERSE_RANGE_BIBLE_REGEX regexResultArray=${JSON.stringify(regexResultArray)}`);
+        thisVerseBibleLinkCount += 1;
+        processedLinkList.push(regexResultArray[0]); // Save the full link
+        parameterAssert(regexResultArray.length === 5, `Expected 5 fields (not ${regexResultArray.length})`);
+        let [totalLink, V1a, V1b, C2, V2] = regexResultArray;
+
+        let linkBookCode = bookID;
+
+        // const chapterInt = ourParseInt(givenC);
+        let verseInt1a, verseInt1b, chapterInt2, verseInt2;
+        try {
+            verseInt1a = ourParseInt(V1a);
+            verseInt1b = ourParseInt(V1b);
+            chapterInt2 = ourParseInt(C2);
+            verseInt2 = ourParseInt(V2);
+            if (verseInt1a !== verseInt2)
+                addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don’t match", details: `${V1a} vs ${V2}`, extract: totalLink, location: ourLocation });
+        } catch (vvError) {
+            console.error(`TN Link Check1 couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} ${V1a} with ${C2}:${V2} from '${fieldText}': ${vvError}`);
+        }
+        if (verseInt1b <= verseInt1a)
+            addNoticePartial({ priority: 741, message: "Verse numbers of markdown Bible link range out of order", details: `${V1a} to ${V1b}`, extract: totalLink, location: ourLocation });
+
+        if (linkBookCode) { // then we know which Bible book this link is to
+            // So we can check for valid C:V numbers
+            let numChaptersThisBook, numVersesThisChapter;
+            logicAssert(linkBookCode.toLowerCase() !== 'obs', "Shouldn’t happen in tn-links-check");
+            try {
+                numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
+            } catch (tlcNCerror) { }
+            try {
+                numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), chapterInt2);
+            } catch (tlcNVerror) { }
+            if (!chapterInt2 || chapterInt2 < 1 || chapterInt2 > numChaptersThisBook)
+                addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible link", details: `${linkBookCode} ${chapterInt2} vs ${numChaptersThisBook} chapters`, extract: totalLink, location: ourLocation });
+            else if (!verseInt2 || verseInt2 < 0 || verseInt2 > numVersesThisChapter)
+                addNoticePartial({ priority: 653, message: "Bad verse number in markdown Bible link", details: `${linkBookCode} ${chapterInt2}:${verseInt2} vs ${numVersesThisChapter} verses`, extract: totalLink, location: ourLocation });
+        }
+    }
+
+    // Check for this-book Bible links like [Revelation 3:11](../03/11.md)
     while ((regexResultArray = THIS_BOOK_BIBLE_REGEX.exec(fieldText))) {
         // debugLog(`  checkTNLinksToOutside THIS_BOOK_BIBLE_REGEX regexResultArray=${JSON.stringify(regexResultArray)}`);
         thisBookBibleLinkCount += 1;
+        processedLinkList.push(regexResultArray[0]); // Save the full link
         parameterAssert(regexResultArray.length === 8, `Expected 8 fields (not ${regexResultArray.length})`);
         let [totalLink, optionalN1, optionalB1, C1, V1, B2, C2, V2] = regexResultArray;
 
@@ -381,7 +470,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         if (linkBookCode) { // then we know which Bible book this link is to
             // So we can check for valid C:V numbers
             let numChaptersThisBook, numVersesThisChapter;
-            parameterAssert(linkBookCode.toLowerCase() !== 'obs', "Shouldn’t happen in tn-links-check");
+            logicAssert(linkBookCode.toLowerCase() !== 'obs', "Shouldn’t happen in tn-links-check");
             try {
                 numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
             } catch (tlcNCerror) { }
@@ -395,10 +484,69 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         }
     }
 
-    // Check other book Bible links like [Revelation 3:11](../03/11.md)
+    // Check for this-book Bible links like [Revelation 3:11](../03/11.md)
+    while ((regexResultArray = THIS_BOOK_RANGE_BIBLE_REGEX.exec(fieldText))) {
+        // debugLog(`  checkTNLinksToOutside THIS_BOOK_RANGE_BIBLE_REGEX regexResultArray=${JSON.stringify(regexResultArray)}`);
+        thisBookBibleLinkCount += 1;
+        processedLinkList.push(regexResultArray[0]); // Save the full link
+        parameterAssert(regexResultArray.length === 9, `Expected 9 fields (not ${regexResultArray.length})`);
+        let [totalLink, optionalN1, optionalB1, C1, V1a, V1b, B2, C2, V2] = regexResultArray;
+
+        if (optionalN1) parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+        if (optionalB1) {
+            optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
+            if (defaultLanguageCode === 'en') { // should be able to check the book name
+                const checkResult = books.isGoodEnglishBookName(optionalB1);
+                // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
+                if (checkResult === undefined || checkResult === false)
+                    addNoticePartial({ priority: 143, message: "Unknown Bible book name in link", details: totalLink, extract: optionalB1, location: ourLocation });
+            }
+        }
+
+        let linkBookCode = B2 === '..' ? bookID : B2;
+
+        const chapterInt = ourParseInt(C2), verseInt = ourParseInt(V2);
+        try {
+            if (ourParseInt(C1) !== chapterInt)
+                addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don’t match", details: `${C1} vs ${chapterInt}`, extract: totalLink, location: ourLocation });
+        } catch (ccError) {
+            console.error(`TN Link Check2b couldn’t compare chapter numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C2} from '${fieldText}': ${ccError}`);
+        }
+        try {
+            if (ourParseInt(V1a) !== ourParseInt(verseInt))
+                addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don’t match", details: `${V1a} vs ${verseInt}`, extract: totalLink, location: ourLocation });
+        } catch (vvError) {
+            console.error(`TN Link Check2b couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C2}:${V2} from '${fieldText}': ${vvError}`);
+        }
+        try {
+            if (ourParseInt(V1b) <= ourParseInt(V1a))
+                addNoticePartial({ priority: 741, message: "Verse numbers of markdown Bible link range out of order", details: `${V1a} to ${V1b}`, extract: totalLink, location: ourLocation });
+        } catch (vvError) {
+            console.error(`TN Link Check2b couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C2}:${V2} from '${fieldText}': ${vvError}`);
+        }
+
+        if (linkBookCode) { // then we know which Bible book this link is to
+            // So we can check for valid C:V numbers
+            let numChaptersThisBook, numVersesThisChapter;
+            logicAssert(linkBookCode.toLowerCase() !== 'obs', "Shouldn’t happen in tn-links-check");
+            try {
+                numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
+            } catch (tlcNCerror) { }
+            try {
+                numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), chapterInt);
+            } catch (tlcNVerror) { }
+            if (!chapterInt || chapterInt < 1 || chapterInt > numChaptersThisBook)
+                addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible link", details: `${linkBookCode} ${chapterInt} vs ${numChaptersThisBook} chapters`, extract: totalLink, location: ourLocation });
+            else if (!verseInt || verseInt < 0 || verseInt > numVersesThisChapter)
+                addNoticePartial({ priority: 653, message: "Bad verse number in markdown Bible link", details: `${linkBookCode} ${chapterInt}:${verseInt} vs ${numVersesThisChapter} verses`, extract: totalLink, location: ourLocation });
+        }
+    }
+
+    // Check for other book Bible links like [Revelation 3:11](../03/11.md)
     while ((regexResultArray = OTHER_BOOK_BIBLE_REGEX.exec(fieldText))) {
-        userLog(`  checkTNLinksToOutside OTHER_BOOK_BIBLE_REGEX regexResultArray=${JSON.stringify(regexResultArray)}`);
+        // debugLog(`  checkTNLinksToOutside OTHER_BOOK_BIBLE_REGEX regexResultArray=${JSON.stringify(regexResultArray)}`);
         otherBookBibleLinkCount += 1;
+        processedLinkList.push(regexResultArray[0]); // Save the full link
         parameterAssert(regexResultArray.length === 8, `Expected 8 fields (not ${regexResultArray.length})`);
         let [totalLink, optionalN1, optionalB1, C1, V1, B2, C2, V2] = regexResultArray;
 
@@ -432,7 +580,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         if (linkBookCode) { // then we know which Bible book this link is to
             // So we can check for valid C:V numbers
             let numChaptersThisBook, numVersesThisChapter;
-            parameterAssert(linkBookCode.toLowerCase() !== 'obs', "Shouldn’t happen in tn-links-check");
+            logicAssert(linkBookCode.toLowerCase() !== 'obs', "Shouldn’t happen in tn-links-check");
             try {
                 numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
             } catch (tlcNCerror) { }
@@ -446,14 +594,73 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         }
     }
 
+    // Check for TN links like [Titus 3:11](../03/11/zd2d)
+    while ((regexResultArray = TN_REGEX.exec(fieldText))) {
+        // debugLog(`  checkTNLinksToOutside TN_REGEX regexResultArray=${JSON.stringify(regexResultArray)}`);
+        TNLinkCount += 1;
+        processedLinkList.push(regexResultArray[0]); // Save the full link
+        parameterAssert(regexResultArray.length === 9, `Expected 9 fields (not ${regexResultArray.length})`);
+        // eslint-disable-next-line no-unused-vars
+        let [totalLink, optionalN1, optionalB1, C1, V1, B2, C2, V2, _noteID2] = regexResultArray;
+
+        if (optionalN1) parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+        if (optionalB1) {
+            optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
+            if (defaultLanguageCode === 'en') { // should be able to check the book name
+                const checkResult = books.isGoodEnglishBookName(optionalB1);
+                // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
+                if (checkResult === undefined || checkResult === false)
+                    addNoticePartial({ priority: 144, message: "Unknown Bible book name in TN link", details: totalLink, extract: optionalB1, location: ourLocation });
+            }
+        }
+
+        let linkBookCode = B2 === '..' ? bookID : B2;
+
+        const chapterInt = ourParseInt(C2), verseInt = ourParseInt(V2);
+        try {
+            if (ourParseInt(C1) !== chapterInt)
+                addNoticePartial({ priority: 743, message: "Chapter numbers of markdown TN link don’t match", details: `${C1} vs ${chapterInt}`, extract: totalLink, location: ourLocation });
+        } catch (ccError) {
+            console.error(`TN Link Check3 couldn’t compare chapter numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C1} from '${fieldText}': ${ccError}`);
+        }
+        try {
+            if (ourParseInt(V1) !== ourParseInt(verseInt))
+                addNoticePartial({ priority: 752, message: "Verse numbers of markdown TN link don’t match", details: `${V1} vs ${verseInt}`, extract: totalLink, location: ourLocation });
+        } catch (vvError) {
+            console.error(`TN Link Check3 couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C1}:${V1} from '${fieldText}': ${vvError}`);
+        }
+
+        if (linkBookCode) { // then we know which Bible book this link is to
+            // So we can check for valid C:V numbers
+            let numChaptersThisBook, numVersesThisChapter;
+            logicAssert(linkBookCode.toLowerCase() !== 'obs', "Shouldn’t happen in tn-links-check");
+            try {
+                numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
+            } catch (tlcNCerror) { }
+            try {
+                numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), chapterInt);
+            } catch (tlcNVerror) { }
+            if (!chapterInt || chapterInt < 1 || chapterInt > numChaptersThisBook)
+                addNoticePartial({ priority: 656, message: "Bad chapter number in markdown TN link", details: `${linkBookCode} ${chapterInt} vs ${numChaptersThisBook} chapters`, extract: totalLink, location: ourLocation });
+            else if (!verseInt || verseInt < 0 || verseInt > numVersesThisChapter)
+                addNoticePartial({ priority: 654, message: "Bad verse number in markdown TN link", details: `${linkBookCode} ${chapterInt}:${verseInt} vs ${numVersesThisChapter} verses`, extract: totalLink, location: ourLocation });
+        }
+
+        // TODO: We should see if we can find the correct note
+    }
+
     // Check for additional links that we can’t explain
-    const BibleLinkCount = thisChapterBibleLinkCount + thisBookBibleLinkCount + otherBookBibleLinkCount;
+    const BibleLinkCount = thisChapterBibleLinkCount + thisVerseBibleLinkCount + thisBookBibleLinkCount + otherBookBibleLinkCount + TNLinkCount;
     if (totalLinks1 > BibleLinkCount) {
-        addNoticePartial({ priority: 648, message: "More [ ]( ) links than valid Bible links", details: `detected ${totalLinks1} link${totalLinks1 === 1 ? '' : 's'} but ${BibleLinkCount ? `only ${BibleLinkCount}` : 'no'} Bible link${BibleLinkCount === 1 ? '' : 's'} from ${JSON.stringify(linksList1)}`, location: ourLocation });
+        const leftoverLinksList1 = linksList1.filter(x => !processedLinkList.includes(x)); // Delete links that we processed above
+        if (leftoverLinksList1.length > 0) debugLog(`processedLinkList (${processedLinkList.length})=${JSON.stringify(processedLinkList)}\n       linksList1(${linksList1.length})=${JSON.stringify(linksList1)}\nleftoverLinksList1(${leftoverLinksList1.length})=${JSON.stringify(leftoverLinksList1)}`);
+        addNoticePartial({ priority: 648, message: "Unusual [ ]( ) link(s)—not normal Bible or TN links", details: `need to carefully check ${JSON.stringify(leftoverLinksList1)}`, location: ourLocation });
     }
     const twaLinkCount = twLinkCount + taLinkCount;
     if (totalLinks2 > twaLinkCount) {
-        addNoticePartial({ priority: 649, message: "More [[ ]] links than valid TA/TW links", details: `detected ${totalLinks2} link${totalLinks2 === 1 ? '' : 's'} but ${twaLinkCount ? `only ${twaLinkCount}` : 'no'} TA/TW link${twaLinkCount === 1 ? '' : 's'} from ${JSON.stringify(linksList2)}`, location: ourLocation });
+        const leftoverLinksList2 = linksList2.filter(x => !processedLinkList.includes(x)); // Delete links that we processed above
+        if (leftoverLinksList2.length > 0) debugLog(`processedLinkList (${processedLinkList.length})=${JSON.stringify(processedLinkList)}\n       linksList2(${linksList2.length})=${JSON.stringify(linksList2)}\nleftoverLinksList2(${leftoverLinksList2.length})=${JSON.stringify(leftoverLinksList2)}`);
+        addNoticePartial({ priority: 649, message: "Unusual [[ ]] link(s)—not normal TA or TW links", details: `need to carefully check ${JSON.stringify(leftoverLinksList2)}`, location: ourLocation });
     }
 
     // Check for badly formed links (not processed by the above code)
