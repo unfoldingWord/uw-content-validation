@@ -8,7 +8,7 @@ import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMe
 import { userLog } from '../../core/utilities';
 
 
-// const BPS_VALIDATOR_VERSION_STRING = '0.2.0';
+// const BPS_VALIDATOR_VERSION_STRING = '0.2.1';
 
 
 /**
@@ -90,13 +90,13 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         if (haveNT) repoPreloadList.unshift('UGNT');
         if (haveOT) repoPreloadList.unshift('UHB');
 
-        setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for {username} {languageCode} ready for book packages check…</p>);
+        setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for book packages check…</p>);
           const successFlag = await preloadReposIfNecessary(username, languageCode, bookIDList, branch, repoPreloadList);
           if (!successFlag)
               console.error(`BookPackagesCheck error: Failed to pre-load all repos`)
 
         // Display our "waiting" message
-        setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookIDList.join(', ')}</b> book packages…</p>);
+        setResultValue(<p style={{ color: 'magenta' }}>Checking <i>{username}</i> {languageCode} <b>{bookIDList.join(', ')}</b> book packages…</p>);
 
         const rawCBPsResults = await checkBookPackages(username, languageCode, bookIDList, setResultValue, checkingOptions);
 

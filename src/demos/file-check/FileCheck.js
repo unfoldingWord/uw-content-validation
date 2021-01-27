@@ -11,7 +11,7 @@ import { checkFileContents } from './checkFileContents';
 import { userLog } from '../../core/utilities';
 
 
-// const FILE_CHECK_VERSION_STRING = '0.2.5';
+// const FILE_CHECK_VERSION_STRING = '0.2.6';
 
 
 function FileCheck(props) {
@@ -55,11 +55,11 @@ function FileCheck(props) {
       else await clearCheckedArticleCache();
 
       // Display our "waiting" message
-      setResultValue(<p style={{ color: 'magenta' }}>Fetching {username} {repoName} <b>{filename}</b>…</p>);
+      setResultValue(<p style={{ color: 'magenta' }}>Fetching <i>{username}</i> {repoName} <b>{filename}</b>…</p>);
       // debugLog(`FileCheck about to call cachedGetFile(${username}, ${repoName}, ${filename}, ${branch})…`);
       const fileContent = await cachedGetFile({ username: username, repository: repoName, path: filename, branch: branch });
 
-      setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {repoName} <b>{filename}</b>…</p>);
+      setResultValue(<p style={{ color: 'magenta' }}>Checking <i>{username}</i> {repoName} <b>{filename}</b>…</p>);
       let rawCFResults = { noticeList: [{ priority: 990, message: "Unable to load file", details: `username=${username}`, repoName, filename }], elapsedSeconds: 0 };
       if (fileContent) {
         const languageCode = repoName.split('_')[0];
@@ -120,7 +120,7 @@ function FileCheck(props) {
 
       function renderSummary(processedResults) {
         return (<div>
-          <p>Checked <b>{filename}</b> (from {username} {repoName} <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)</p>
+          <p>Checked <b>{filename}</b> (from <i>{username}</i> {repoName} <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)</p>
           <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCFResults.noticeList.length === 0 ? 'no' : rawCFResults.noticeList.length.toLocaleString()} notice{rawCFResults.noticeList.length === 1 ? '' : 's'}
             {processedResults.numIgnoredNotices || processedResults.numDisabledNotices ? ' (but ' : ''}
             {processedResults.numIgnoredNotices ? `${processedResults.numIgnoredNotices.toLocaleString()} ignored notice(s)` : ""}

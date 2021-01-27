@@ -6,7 +6,7 @@ import { checkFileContents } from '../file-check/checkFileContents';
 import { checkRepo } from '../repo-check/checkRepo';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.5.4';
+// const BP_VALIDATOR_VERSION_STRING = '0.5.5';
 
 const MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -316,7 +316,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     userLog(`checkBookPackage: check ${languageCode} ${bookID} in ${repoCode} from ${username} ${repoName}…`);
 
     // Update our "waiting" message
-    setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookID}</b> book package in <b>{repoCode}</b> (checked <b>{numCheckedRepos}</b>/{repoCodeList.length} repos)…</p>);
+    setResultValue(<p style={{ color: 'magenta' }}>Checking <i>{username}</i> {languageCode} <b>{bookID}</b> book package in <b>{repoCode}</b> (checked <b>{numCheckedRepos}</b>/{repoCodeList.length} repos)…</p>);
 
     let filename;
     if (repoCode === 'UHB' || repoCode === 'UGNT' || repoCode === 'LT' || repoCode === 'ST')
