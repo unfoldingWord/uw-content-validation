@@ -1,21 +1,30 @@
 #!/usr/bin/env python3
+#
+# Last modified: 2021-01-28 by RJH
+#
 
 import os
 import datetime
 
+"""
+Scans all the source files to find all notices,
+    sorts them,
+    and then lists them in noticeList.txt.
+"""
 
 noticeList = []
 
 for root, dirs, files in os.walk('.'):
     for name in files:
-        if '/dist/' not in root \
+        if '/src/' in root \
         and name.endswith('.js') or name.endswith('.ts'):
             # print("file", name, os.path.join(root, name))
             with open(os.path.join(root, name), 'rt') as sourceFile:
                 for n, line in enumerate(sourceFile, start=1):
                     if ('addNotice' in line or '{ priority:' in line) \
                     and 'function addNotice' not in line \
-                    and 'console.log' not in line and 'console.assert' not in line \
+                    and 'console.log' not in line and 'userLog' not in line and 'debugLog' not in line \
+                    and 'console.assert' not in line and not 'parameterAssert' in line \
                     and 'oticeEntry' not in line \
                     and 'grammarCheckResult.error' not in line \
                     and 'MORE SIMILAR' not in line \

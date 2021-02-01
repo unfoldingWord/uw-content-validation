@@ -8,7 +8,7 @@ import { userLog, parameterAssert, dataAssert, ourParseInt } from './utilities';
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.8.1';
+// const USFM_VALIDATOR_VERSION_STRING = '0.8.2';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘`; // '{' gets added for STs
@@ -805,22 +805,22 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 if (repoCode === 'UHB' || repoCode === 'UGNT') {
                     if (attributeCounter === 1) {
                         if (attributeName !== 'lemma')
-                            addNoticePartial({ priority: 857, message: "Unexpected first original \\w attribute", details: "Expected 'lemma'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                            addNoticePartial({ priority: 857, message: "Unexpected first original \\w attribute", details: "expected 'lemma'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
                     } else if (attributeCounter === 2) {
                         if (attributeName !== 'strong')
-                            addNoticePartial({ priority: 856, message: "Unexpected second original \\w attribute", details: "Expected 'strong'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                            addNoticePartial({ priority: 856, message: "Unexpected second original \\w attribute", details: "expected 'strong'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
                     } else if (attributeCounter === 3) {
                         if (attributeName !== 'x-morph')
-                            addNoticePartial({ priority: 855, message: "Unexpected third original \\w attribute", details: "Expected 'x-morph'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                            addNoticePartial({ priority: 855, message: "Unexpected third original \\w attribute", details: "expected 'x-morph'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
                     } else if (attributeCounter === 4) {
                         if (attributeName !== 'x-tw') // we can have TWO of these -- THREE EVEN in EXO 15:23 and 1KI 21:9!!!
-                            addNoticePartial({ priority: 854, message: "Unexpected fourth original \\w attribute", details: "Expected 'x-tw'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                            addNoticePartial({ priority: 854, message: "Unexpected fourth original \\w attribute", details: "expected 'x-tw'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
                     } else if (attributeCounter === 5) {
                         if (attributeName !== 'x-tw')
-                            addNoticePartial({ priority: 854, message: "Unexpected fifth original \\w attribute", details: "Expected second 'x-tw'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                            addNoticePartial({ priority: 854, message: "Unexpected fifth original \\w attribute", details: "expected second 'x-tw'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
                     } else if (attributeCounter === 6) {
                         if (attributeName !== 'x-tw')
-                            addNoticePartial({ priority: 854, message: "Unexpected sixth original \\w attribute", details: "Expected third 'x-tw'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                            addNoticePartial({ priority: 854, message: "Unexpected sixth original \\w attribute", details: "expected third 'x-tw'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
                     } else // #7 or more
                         addNoticePartial({ priority: 853, message: "Unexpected extra original \\w attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
                     if (attributeName === 'x-morph'
@@ -830,10 +830,10 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 } else { // a translation -- not UHB or UGNT
                     if (attributeCounter === 1) {
                         if (attributeName !== 'x-occurrence')
-                            addNoticePartial({ priority: 848, message: "Unexpected first translation \\w attribute", details: "Expected 'x-occurrence'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                            addNoticePartial({ priority: 848, message: "Unexpected first translation \\w attribute", details: "expected 'x-occurrence'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
                     } else if (attributeCounter === 2) {
                         if (attributeName !== 'x-occurrences')
-                            addNoticePartial({ priority: 847, message: "Unexpected second translation \\w attribute", details: "Expected 'x-occurrences'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                            addNoticePartial({ priority: 847, message: "Unexpected second translation \\w attribute", details: "expected 'x-occurrences'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
                     } else // #3 or more
                         addNoticePartial({ priority: 846, message: "Unexpected extra translation \\w attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
                 }
@@ -854,7 +854,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 const attributeName = regexResultArray2[1]; //, attributeValue = regexResultArray2[2];
                 if (attributeCounter === 1) {
                     if (attributeName !== 'x-tw')
-                        addNoticePartial({ priority: 839, message: "Unexpected first \\k-s attribute", details: "Expected 'x-tw'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                        addNoticePartial({ priority: 839, message: "Unexpected first \\k-s attribute", details: "expected 'x-tw'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
                 } else // #2 or more
                     addNoticePartial({ priority: 838, message: "Unexpected extra \\k-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
             }

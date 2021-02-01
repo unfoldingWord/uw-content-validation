@@ -8,7 +8,7 @@ import { checkBookPackage } from './checkBookPackage';
 import { userLog, parameterAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.3.6';
+// const BP_VALIDATOR_VERSION_STRING = '0.3.7';
 
 
 function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
@@ -97,14 +97,14 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             // debugLog(`BookPackageCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
 
             // if (bookID !== 'OBS') { // Preload the reference repos
-            setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for {username} {languageCode} ready for <b>{bookID}</b> book package check…</p>);
+            setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for <b>{bookID}</b> book package check…</p>);
             const successFlag = await preloadReposIfNecessary(username, languageCode, [bookID], branch, repoPreloadList);
             if (!successFlag)
                 console.error(`BookPackageCheck error: Failed to pre-load all repos`)
             // }
 
             // Display our "waiting" message
-            setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookID}</b> book package…</p>);
+            setResultValue(<p style={{ color: 'magenta' }}>Checking <i>{username}</i> {languageCode} <b>{bookID}</b> book package…</p>);
 
             const rawCBPResults = await checkBookPackage(username, languageCode, bookID, setResultValue, checkingOptions);
 

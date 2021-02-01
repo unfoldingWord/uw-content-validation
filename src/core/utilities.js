@@ -1,7 +1,5 @@
 // utilities
 
-// import { isUndefined } from 'lodash';
-
 
 /**
  *
@@ -142,10 +140,14 @@ export function ourParseInt(givenString) {
         throw "String is not a simple integer";
     return int1;
     */
+    parameterAssert(typeof givenString === 'string', `ourParseInt: 'givenString' parameter should be a string not a '${typeof givenString}': ${givenString}`);
+    parameterAssert(givenString.length > 0, "ourParseInt: 'givenString' parameter should be not be an empty string!");
+    // eslint-disable-next-line no-throw-literal
+    if (givenString.length === 0) throw `String '${givenString}'is empty`;
 
     // Optimised version
     const int = givenString * 1; // This one is less forgiving it seems
-  // eslint-disable-next-line no-throw-literal
+    // eslint-disable-next-line no-throw-literal
     if (isNaN(int)) throw `String '${givenString}'is not a simple integer`;
     return int;
 }

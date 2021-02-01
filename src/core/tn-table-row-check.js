@@ -8,7 +8,7 @@ import { checkOriginalLanguageQuote } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.6';
+// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.7';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -30,7 +30,7 @@ const TA_REGEX = new RegExp('\\[\\[rc://[^ /]+?/ta/man/[^ /]+?/([^ \\]]+?)\\]\\]
  * @param {String} givenC - chapter number or (for OBS) story number string
  * @param {String} givenV - verse number or (for OBS) frame number string
  * @param {String} givenRowLocation - description of where the line is located
- * @param {Object} checkingOptions - may contain extractLength parameter
+ * @param {Object} checkingOptions - may contain extractLength, twRepoUsername, twRepoBranch (or tag), checkLinkedTWArticleFlag parameters
  * @return {Object} - containing noticeList
  */
 export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, givenV, givenRowLocation, checkingOptions) {
@@ -280,6 +280,11 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
     async function ourCheckTNLinksToOutside(rowID, fieldName, taLinkText, rowLocation, checkingOptions) {
         // Checks that the TA/TW/Bible reference can be found
 
+        // Uses
+        //      checkingOptions.twRepoUsername
+        //      checkingOptions.twRepoBranch (or tag)
+        //      checkingOptions.checkLinkedTWArticleFlag
+
         // Updates the global list of notices
 
         // debugLog(`checkTN_TSVDataRow ourCheckTNLinksToOutside(${rowID}, ${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
@@ -525,7 +530,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
                     // debugLog("Got TA Regex in OccurrenceNote", JSON.stringify(regexResultArray));
                     if (supportReference !== regexResultArray[1] && V !== 'intro') {
                         const details = supportReference ? `(SR='${supportReference}')` : "(empty SR field)"
-                        addNoticePartial({ priority: 786, message: "Link to TA should also be in SupportReference", details, rowID, fieldName: 'OccurrenceNote', extract: regexResultArray[1], location: ourRowLocation });
+                        addNoticePartial({ priority: 786, message: "Should have a SupportReference when OccurrenceNote has a TA link", details, rowID, fieldName: 'OccurrenceNote', extract: regexResultArray[1], location: ourRowLocation });
                     }
                 }
             }

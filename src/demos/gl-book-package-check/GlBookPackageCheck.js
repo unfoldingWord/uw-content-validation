@@ -8,7 +8,7 @@ import { checkBookPackage } from '../book-package-check/checkBookPackage';
 import { userLog } from '../../core/utilities';
 
 
-// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.8';
+// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.9';
 
 
 function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
@@ -84,13 +84,13 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
             else if (dataSet === 'BOTH')
                 repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TN2', 'TWL', 'TA', 'TW', 'TQ', 'TQ2'];
 
-            setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for {username} {languageCode} ready for GL book package check…</p>);
+            setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for GL book package check…</p>);
             const successFlag = await preloadReposIfNecessary(username, languageCode, [bookID], branch, repoPreloadList);
             if (!successFlag)
                 console.error(`AllBookPackagesCheck error: Failed to pre-load all repos`)
 
             // Display our "waiting" message
-            setResultValue(<p style={{ color: 'magenta' }}>Checking {username} {languageCode} <b>{bookID}</b> book packages…</p>);
+            setResultValue(<p style={{ color: 'magenta' }}>Checking <i>{username}</i> {languageCode} <b>{bookID}</b> book packages…</p>);
 
             const rawCBPsResults = await checkBookPackage(username, languageCode, bookID, setResultValue, checkingOptions);
             // debugLog("checkBookPackage() returned", typeof rawCBPsResults); //, JSON.stringify(rawCBPsResults));
