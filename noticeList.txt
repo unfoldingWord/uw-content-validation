@@ -1,5 +1,5 @@
-Last updated 2021-01-28 12:08:18.228216 by makeNoticeList.py
-Got 354 notices:
+Last updated 2021-02-01 22:04:58.532820 by makeNoticeList.py
+Got 355 notices:
   checkRepoResult.noticeList.push( 997, "Repository doesn’t exist", details, username, repoCode, repoName, location: givenLocation, extra: repoCode	from checkRepo.js line 259
   languageCode === 'en' || languageCode === 'fr' ? 490 : 190, "Expected header field to contain a mixed-case string", fieldName: `\\$marker`, extract: rest, C, V, location: lineLocation	from usfm-text-check.js line 927
   marker === 's5' ? 111 : 809, `$marker === 's5' ? 'Deprecated' : 'Unexpected' '\\$marker' marker at start of line`, C, V, lineNumber, characterIndex: 1, location: lineLocation	from usfm-text-check.js line 955
@@ -49,15 +49,15 @@ Got 354 notices:
   987, C, V, "Expected \\id line to start with book identifier", lineNumber: n, characterIndex: 4, extract, location: ourLocation	from usfm-text-check.js line 1,111
   986, "Repository doesn’t seem to exist", details: `username=$username`, location: givenLocation, extra: repoName	from checkRepo.js line 166
   985, `Field does not match schema $errorObject.keyword`, details: errorObject.message, fieldName: errorObject.dataPath, location: ourLocation	from manifest-text-check.js line 676
-  984, `Found wrong number of TSV fields (expected $NUM_EXPECTED_TN_TSV_FIELDS)`, details: `Found $fields.length field$fields.length === 1 ? '' : 's'`, rowID, location: ourRowLocation	from tn-table-row-check.js line 548
+  984, `Found wrong number of TSV fields (expected $NUM_EXPECTED_TN_TSV_FIELDS)`, details: `Found $fields.length field$fields.length === 1 ? '' : 's'`, rowID, location: ourRowLocation	from tn-table-row-check.js line 553
   984, `Found wrong number of TSV fields (expected $NUM_EXPECTED_ANNOTATION_TSV_FIELDS)`, details: `Found $fields.length field$fields.length === 1 ? '' : 's'`, rowID, location: ourRowLocation	from annotation-row-check.js line 528
-  979, "Invalid book identifier passed to checkTN_TSVDataRow", location: ` '$bookID' in first parameter: $tlcNCerror`	from tn-table-row-check.js line 352
+  979, "Invalid book identifier passed to checkTN_TSVDataRow", location: ` '$bookID' in first parameter: $tlcNCerror`	from tn-table-row-check.js line 357
   979, "Invalid book identifier passed to checkAnnotationTSVDataRow", location: ` '$bookID' in first parameter: $tlcNCerror`	from annotation-row-check.js line 339
-  978, "Wrong book identifier", details: `expected '$bookID'`, fieldName: 'Book', rowID, extract: B, location: ourRowLocation	from tn-table-row-check.js line 367
-  977, "Missing book identifier", characterIndex: 0, rowID, location: ourRowLocation	from tn-table-row-check.js line 370
-  976, "Wrong chapter number", details: `expected '$givenC'`, fieldName: 'Chapter', rowID, extract: C, location: ourRowLocation	from tn-table-row-check.js line 375
+  978, "Wrong book identifier", details: `expected '$bookID'`, fieldName: 'Book', rowID, extract: B, location: ourRowLocation	from tn-table-row-check.js line 372
+  977, "Missing book identifier", characterIndex: 0, rowID, location: ourRowLocation	from tn-table-row-check.js line 375
+  976, "Wrong chapter number", details: `expected '$givenC'`, fieldName: 'Chapter', rowID, extract: C, location: ourRowLocation	from tn-table-row-check.js line 380
   976, "Wrong chapter number", details: `expected '$givenC'`, fieldName: 'Reference', rowID, extract: C, location: ourRowLocation	from annotation-row-check.js line 357
-  975, "Wrong verse number", details: `expected '$givenV'`, rowID, fieldName: 'Verse', extract: V, location: ourRowLocation	from tn-table-row-check.js line 407
+  975, "Wrong verse number", details: `expected '$givenV'`, rowID, fieldName: 'Verse', extract: V, location: ourRowLocation	from tn-table-row-check.js line 412
   975, "Wrong verse number", details: `expected '$givenV'`, rowID, fieldName: 'Reference', extract: V, location: ourRowLocation	from annotation-row-check.js line 393
   956, "Got empty manifest file", repoName, filename: MANIFEST_FILENAME, location: manifestLocation, extra: `$repoCode MANIFEST`	from checkBookPackage.js line 199
   956, "Got empty manifest file", repoName, filename: MANIFEST_FILENAME, location: manifestLocation, extra: `$repoCode MANIFEST`	from checkBookPackage.js line 260
@@ -74,7 +74,7 @@ Got 354 notices:
   929, "'projects' key is missing", location: ourLocation	from manifest-text-check.js line 641
   928, "'dublin_core' key is missing", location: ourLocation	from manifest-text-check.js line 639
   920, yamlError.message, location: ourLocation )	from yaml-text-check.js line 163
-  919, "Missing OrigQuote field", fieldName: 'OrigQuote', rowID, location: ourRowLocation	from tn-table-row-check.js line 479
+  919, "Missing OrigQuote field", fieldName: 'OrigQuote', rowID, location: ourRowLocation	from tn-table-row-check.js line 484
   919, "Missing Quote field", fieldName: 'Quote', rowID, location: ourRowLocation	from annotation-row-check.js line 470
   917, "Unable to find duplicate original language quote in verse text", details: `occurrence=$occurrenceString, passage ►$verseText◄`, extract, location: ourLocation	from orig-quote-check.js line 332
   916, "Unable to find original language quote in verse text", details: "quote which starts with a space" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), extract, location: ourLocation	from orig-quote-check.js line 374
@@ -125,9 +125,9 @@ Got 354 notices:
   848, "Unexpected first translation \\w attribute", details: "expected 'x-occurrence'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation	from usfm-text-check.js line 833
   847, "Unexpected second translation \\w attribute", details: "expected 'x-occurrences'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation	from usfm-text-check.js line 836
   846, "Unexpected extra translation \\w attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation	from usfm-text-check.js line 838
-  845, `Mismatched [[ ]] link characters`, details: `left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString()`, location: ourLocation	from tn-links-check.js line 738
-  844, `Mismatched [[rc:// ]] link characters`, details: `left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString()`, location: ourLocation	from tn-links-check.js line 742
-  843, `Mismatched [ ]( ) link characters`, details: `left=$leftCount.toLocaleString(), middle=$middleCount.toLocaleString(), right=$rightCount.toLocaleString()`, location: ourLocation	from tn-links-check.js line 749
+  845, `Mismatched [[ ]] link characters`, details: `left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString()`, location: ourLocation	from tn-links-check.js line 745
+  844, `Mismatched [[rc:// ]] link characters`, details: `left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString()`, location: ourLocation	from tn-links-check.js line 749
+  843, `Mismatched [ ]( ) link characters`, details: `left=$leftCount.toLocaleString(), middle=$middleCount.toLocaleString(), right=$rightCount.toLocaleString()`, location: ourLocation	from tn-links-check.js line 756
   839, "Unexpected first \\k-s attribute", details: "expected 'x-tw'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation	from usfm-text-check.js line 857
   838, "Unexpected extra \\k-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation	from usfm-text-check.js line 859
   837, "Seems too few original \\w attributes", details: `Expected 3-4 attributes but only found $attributeCounter`, lineNumber, C, V, extract: regexResultArray1[0], location: lineLocation	from usfm-text-check.js line 843
@@ -141,44 +141,44 @@ Got 354 notices:
   827, "Unexpected fourth \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation	from usfm-text-check.js line 883
   826, "Unexpected fifth \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation	from usfm-text-check.js line 886
   825, "Unexpected sixth \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation	from usfm-text-check.js line 889
-  824, `Invalid zero chapter number`, extract: C, rowID, fieldName: 'Chapter', location: ourRowLocation	from tn-table-row-check.js line 380
+  824, `Invalid zero chapter number`, extract: C, rowID, fieldName: 'Chapter', location: ourRowLocation	from tn-table-row-check.js line 385
   824, `Invalid zero chapter number`, extract: C, rowID, fieldName: 'Reference', location: ourRowLocation	from annotation-row-check.js line 362
-  823, `Invalid large chapter number`, extract: C, rowID, fieldName: 'Chapter', location: ourRowLocation	from tn-table-row-check.js line 385
+  823, `Invalid large chapter number`, extract: C, rowID, fieldName: 'Chapter', location: ourRowLocation	from tn-table-row-check.js line 390
   823, `Invalid large chapter number`, extract: C, rowID, fieldName: 'Reference', location: ourRowLocation	from annotation-row-check.js line 367
-  822, "Unable to check chapter number", extract: C, rowID, fieldName: 'Chapter', location: ourRowLocation	from tn-table-row-check.js line 395
+  822, "Unable to check chapter number", extract: C, rowID, fieldName: 'Chapter', location: ourRowLocation	from tn-table-row-check.js line 400
   822, "Expected field to contain an integer", lineNumber, characterIndex: 3, extract: `\\c $rest`, C, V, location: lineLocation	from usfm-text-check.js line 919
   822, "Expected field to contain an integer", characterIndex: 3, extract: `\\v $rest`, C, V, location: lineLocation	from usfm-text-check.js line 923
   822, "Unable to check chapter number", extract: C, rowID, fieldName: 'Reference', location: ourRowLocation	from annotation-row-check.js line 380
-  821, "Bad chapter number", extract: C, rowID, fieldName: 'Chapter', location: ourRowLocation	from tn-table-row-check.js line 400
+  821, "Bad chapter number", extract: C, rowID, fieldName: 'Chapter', location: ourRowLocation	from tn-table-row-check.js line 405
   821, "Bad chapter number", extract: C, rowID, fieldName: 'Reference', location: ourRowLocation	from annotation-row-check.js line 386
-  820, "Missing chapter number", rowID, fieldName: 'Chapter', location: ` ?:$V$ourRowLocation`	from tn-table-row-check.js line 403
+  820, "Missing chapter number", rowID, fieldName: 'Chapter', location: ` ?:$V$ourRowLocation`	from tn-table-row-check.js line 408
   820, "Missing chapter number", rowID, fieldName: 'Reference', location: ` ?:$V$ourRowLocation`	from annotation-row-check.js line 389
   819, "Missing compulsory USFM line", extract: `missing \\$compulsoryMarker`, location: fileLocation	from usfm-text-check.js line 597
-  814, "Invalid zero verse number", rowID, fieldName: 'Verse', extract: V, location: ourRowLocation	from tn-table-row-check.js line 412
+  814, "Invalid zero verse number", rowID, fieldName: 'Verse', extract: V, location: ourRowLocation	from tn-table-row-check.js line 417
   814, "Invalid zero verse number", rowID, fieldName: 'Reference', extract: V, location: ourRowLocation	from annotation-row-check.js line 398
-  813, "Invalid large verse number", rowID, fieldName: 'Verse', extract: V, location: ourRowLocation	from tn-table-row-check.js line 416
+  813, "Invalid large verse number", rowID, fieldName: 'Verse', extract: V, location: ourRowLocation	from tn-table-row-check.js line 421
   813, "Invalid large verse number", rowID, fieldName: 'Reference', extract: V, location: ourRowLocation	from annotation-row-check.js line 402
-  812, "Unable to check verse number", rowID, fieldName: 'Verse', location: ourRowLocation	from tn-table-row-check.js line 418
+  812, "Unable to check verse number", rowID, fieldName: 'Verse', location: ourRowLocation	from tn-table-row-check.js line 423
   812, "Unable to check verse number", rowID, fieldName: 'Reference', location: ourRowLocation	from annotation-row-check.js line 404
-  811, "Bad verse number", rowID, fieldName: 'Verse', location: ` '$V'$ourRowLocation`	from tn-table-row-check.js line 422
+  811, "Bad verse number", rowID, fieldName: 'Verse', location: ` '$V'$ourRowLocation`	from tn-table-row-check.js line 427
   811, "Bad verse number", rowID, fieldName: 'Reference', location: ` '$V'$ourRowLocation`	from annotation-row-check.js line 408
-  810, "Missing verse number", rowID, fieldName: 'Verse', location: ` after $C:?$ourRowLocation`	from tn-table-row-check.js line 425
+  810, "Missing verse number", rowID, fieldName: 'Verse', location: ` after $C:?$ourRowLocation`	from tn-table-row-check.js line 430
   810, "Missing verse number", rowID, fieldName: 'Reference', location: ` after $C:?$ourRowLocation`	from annotation-row-check.js line 411
-  792, `Invalid occurrence field`, fieldName: 'Occurrence', rowID, extract: occurrence, location: ourRowLocation	from tn-table-row-check.js line 493
+  792, `Invalid occurrence field`, fieldName: 'Occurrence', rowID, extract: occurrence, location: ourRowLocation	from tn-table-row-check.js line 498
   792, `Invalid occurrence field`, fieldName: 'Occurrence', rowID, extract: occurrence, location: ourRowLocation	from annotation-row-check.js line 484
-  791, `Missing occurrence field`, fieldName: 'Occurrence', rowID, location: ourRowLocation	from tn-table-row-check.js line 498
+  791, `Missing occurrence field`, fieldName: 'Occurrence', rowID, location: ourRowLocation	from tn-table-row-check.js line 503
   791, `Missing occurrence field`, fieldName: 'Occurrence', rowID, location: ourRowLocation	from annotation-row-check.js line 489
   790, C, V, "Missing verse number", rowID, lineNumber: n + 1, location: ` after $C:$lastV$ourLocation`	from tn-table-text-check.js line 227
   790, C, V, "Missing verse number", rowID, lineNumber: n + 1, location: ` after $C:$lastV$ourLocation`	from annotation-table-check.js line 208
-  788, "Only 'Just-In-Time Training' TA articles allowed here", fieldName: 'SupportReference', extract: supportReference, rowID, location: ourRowLocation	from tn-table-row-check.js line 456
+  788, "Only 'Just-In-Time Training' TA articles allowed here", fieldName: 'SupportReference', extract: supportReference, rowID, location: ourRowLocation	from tn-table-row-check.js line 461
   788, "Only 'Just-In-Time Training' TA articles allowed here", fieldName: 'SupportReference', extract: supportReference, rowID, location: ourRowLocation	from annotation-row-check.js line 447
-  787, "Link to TA should also be in OccurrenceNote", fieldName: 'SupportReference', extract: supportReference, rowID, location: ourRowLocation	from tn-table-row-check.js line 461
+  787, "Link to TA should also be in OccurrenceNote", fieldName: 'SupportReference', extract: supportReference, rowID, location: ourRowLocation	from tn-table-row-check.js line 466
   787, "Link to TA should also be in Annotation", fieldName: 'SupportReference', extract: supportReference, rowID, location: ourRowLocation	from annotation-row-check.js line 452
-  786, "Should have a SupportReference when OccurrenceNote has a TA link", details, rowID, fieldName: 'OccurrenceNote', extract: regexResultArray[1], location: ourRowLocation	from tn-table-row-check.js line 528
+  786, "Should have a SupportReference when OccurrenceNote has a TA link", details, rowID, fieldName: 'OccurrenceNote', extract: regexResultArray[1], location: ourRowLocation	from tn-table-row-check.js line 533
   786, "Should have a SupportReference when OccurrenceNote has a TA link", details, rowID, fieldName: 'Annotation', extract: adjustedLink, location: ourRowLocation	from annotation-row-check.js line 507
-  779, "Missing row ID field", fieldName: 'Verse', location: ourRowLocation	from tn-table-row-check.js line 428
+  779, "Missing row ID field", fieldName: 'Verse', location: ourRowLocation	from tn-table-row-check.js line 433
   779, "Missing row ID field", fieldName: 'Reference', location: ourRowLocation	from annotation-row-check.js line 414
-  778, "Row ID should be exactly 4 characters", details: `not $rowID.length`, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation	from tn-table-row-check.js line 431
+  778, "Row ID should be exactly 4 characters", details: `not $rowID.length`, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation	from tn-table-row-check.js line 436
   778, "Row ID should be exactly 4 characters", details: `not $rowID.length`, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation	from annotation-row-check.js line 417
   777, `Bad punctuation nesting: $char closing character doesn’t match`, details, lineNumber: n, characterIndex, extract, location: ourLocation	from plain-text-check.js line 195
   776, 'Unexpected " straight quote character', details, lineNumber, C, V, extract, location: lineLocation	from usfm-text-check.js line 750
@@ -197,10 +197,10 @@ Got 354 notices:
   762, "Unable to convert verse bridge numbers to integers", C: chapterNumberString, V: verseNumberString, characterIndex: 3, extract: verseNumberString, location: `$CVlocation with $usfmVIerror`	from usfm-text-check.js line 444
   762, C, V, "Unable to convert verse bridge numbers to integers", lineNumber: n, characterIndex: 3, extract: `$rest.substring(0, Math.max(9, extractLength))$rest.length > extractLength ? '…' : ''`, location: ourLocation	from usfm-text-check.js line 1,083
   761, C, V, "Verse number didn’t increment correctly", lineNumber: n, characterIndex: 3, extract: `$restRest.substring(0, halfLength)$restRest.length > halfLength ? '…' : '' ($lastV ? lastV : '0' → $V)`, location: ourLocation	from usfm-text-check.js line 1,104
-  752, "Verse numbers of markdown TN link don’t match", details: `$V1 vs $linkVerseInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 695
-  751, "Invalid zero occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, extract: occurrence, location: ourRowLocation	from tn-table-row-check.js line 484
+  752, "Verse numbers of markdown TN link don’t match", details: `$V1 vs $linkVerseInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 702
+  751, "Invalid zero occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, extract: occurrence, location: ourRowLocation	from tn-table-row-check.js line 489
   751, "Invalid zero occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, extract: occurrence, location: ourRowLocation	from annotation-row-check.js line 475
-  750, "Missing occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, location: ourRowLocation	from tn-table-row-check.js line 475
+  750, "Missing occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, location: ourRowLocation	from tn-table-row-check.js line 480
   750, "Missing occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, location: ourRowLocation	from annotation-row-check.js line 466
   749, "Markdown image link seems faulty", lineNumber, extract: fetchLink, location: lineLocation	from markdown-text-check.js line 139
   748, "Error fetching markdown image link", lineNumber, extract: fetchLink, location: lineLocation	from markdown-text-check.js line 148
@@ -210,21 +210,21 @@ Got 354 notices:
   746, "Bad TSV header", lineNumber: n + 1, location: `$ourLocation: '$lines[0]'`	from annotation-table-check.js line 106
   745, C, V, `Wrong '$B' book identifier (expected '$bookID')`, rowID, lineNumber: n + 1, location: ourLocation	from tn-table-text-check.js line 177
   744, C, V, "Missing book identifier", rowID, lineNumber: n + 1, location: ourLocation	from tn-table-text-check.js line 180
-  743, "Chapter numbers of markdown Bible link don’t match", details: `$C1 vs $givenCint`, extract: totalLink, location: ourLocation	from tn-links-check.js line 346
-  743, "Chapter numbers of markdown Bible link don’t match", details: `$C1 vs $linkChapterInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 476
-  743, "Chapter numbers of markdown Bible link don’t match", details: `$C1 vs $linkChapterInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 528
-  743, "Chapter numbers of markdown Bible link don’t match", details: `$C1 vs $linkChapterInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 636
-  743, "Chapter numbers of markdown TN link don’t match", details: `$C1 vs $linkChapterInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 689
-  742, "Verse numbers of markdown Bible link don’t match", details: `$V1 vs $linkVerseInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 352
-  742, "Verse numbers of markdown Bible link don’t match", details: `$V1 vs $V2`, extract: totalLink, location: ourLocation	from tn-links-check.js line 389
-  742, "Verse numbers of markdown Bible link don’t match", details: `$V1a vs $V2`, extract: totalLink, location: ourLocation	from tn-links-check.js line 428
-  742, "Verse numbers of markdown Bible link don’t match", details: `$V1 vs $linkVerseInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 482
-  742, "Verse numbers of markdown Bible link don’t match", details: `$V1a vs $linkVerseInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 534
-  742, "Verse numbers of markdown Bible link don’t match", details: `$V1a vs $linkVerseInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 586
-  742, "Verse numbers of markdown Bible link don’t match", details: `$V1 vs $linkVerseInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 642
-  741, "Verse numbers of markdown Bible link range out of order", details: `$V1a to $V1b`, extract: totalLink, location: ourLocation	from tn-links-check.js line 433
-  741, "Verse numbers of markdown Bible link range out of order", details: `$V1a to $V1b`, extract: totalLink, location: ourLocation	from tn-links-check.js line 540
-  741, "Verse numbers of markdown Bible link range out of order", details: `$V1a to $V1b`, extract: totalLink, location: ourLocation	from tn-links-check.js line 592
+  743, "Chapter numbers of markdown Bible link don’t match", details: `$C1 vs $givenCint`, extract: totalLink, location: ourLocation	from tn-links-check.js line 353
+  743, "Chapter numbers of markdown Bible link don’t match", details: `$C1 vs $linkChapterInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 483
+  743, "Chapter numbers of markdown Bible link don’t match", details: `$C1 vs $linkChapterInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 535
+  743, "Chapter numbers of markdown Bible link don’t match", details: `$C1 vs $linkChapterInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 643
+  743, "Chapter numbers of markdown TN link don’t match", details: `$C1 vs $linkChapterInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 696
+  742, "Verse numbers of markdown Bible link don’t match", details: `$V1 vs $linkVerseInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 359
+  742, "Verse numbers of markdown Bible link don’t match", details: `$V1 vs $V2`, extract: totalLink, location: ourLocation	from tn-links-check.js line 396
+  742, "Verse numbers of markdown Bible link don’t match", details: `$V1a vs $V2`, extract: totalLink, location: ourLocation	from tn-links-check.js line 435
+  742, "Verse numbers of markdown Bible link don’t match", details: `$V1 vs $linkVerseInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 489
+  742, "Verse numbers of markdown Bible link don’t match", details: `$V1a vs $linkVerseInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 541
+  742, "Verse numbers of markdown Bible link don’t match", details: `$V1a vs $linkVerseInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 593
+  742, "Verse numbers of markdown Bible link don’t match", details: `$V1 vs $linkVerseInt`, extract: totalLink, location: ourLocation	from tn-links-check.js line 649
+  741, "Verse numbers of markdown Bible link range out of order", details: `$V1a to $V1b`, extract: totalLink, location: ourLocation	from tn-links-check.js line 440
+  741, "Verse numbers of markdown Bible link range out of order", details: `$V1a to $V1b`, extract: totalLink, location: ourLocation	from tn-links-check.js line 547
+  741, "Verse numbers of markdown Bible link range out of order", details: `$V1a to $V1b`, extract: totalLink, location: ourLocation	from tn-links-check.js line 599
   739, C, V, "Missing chapter number", rowID, lineNumber: n + 1, location: ` after $lastC:$V$ourLocation`	from tn-table-text-check.js line 204
   739, C, V, "Missing chapter number", rowID, lineNumber: n + 1, location: ` after $lastC:$V$ourLocation`	from annotation-table-check.js line 185
   738, C, V, "Bad verse number", rowID, lineNumber: n + 1, location: ourLocation	from tn-table-text-check.js line 223
@@ -251,23 +251,23 @@ Got 354 notices:
   716, `Misplaced $rightChar character`, extract: regexResultArray[0], location: ourLocation	from field-text-check.js line 415
   711, "Expected compulsory content", C, V, lineNumber, characterIndex: marker.length, location: ` after \\$marker marker$lineLocation`	from usfm-text-check.js line 952
   703, C, V, "Unexpected CarriageReturn character", lineNumber: n, characterIndex, extract, location: ourLocation	from usfm-text-check.js line 1,020
-  656, "Bad chapter number in markdown TN link", details: `$linkBookCode $linkChapterInt vs $numChaptersThisBook chapters`, extract: totalLink, location: ourLocation	from tn-links-check.js line 711
-  655, "Bad chapter number in markdown Bible link", details: `$linkBookCode $givenCint vs $numChaptersThisBook chapters`, extract: totalLink, location: ourLocation	from tn-links-check.js line 368
-  655, "Bad chapter number in markdown Bible link", details: `$linkBookCode $linkChapterInt vs $numChaptersThisBook chapters`, extract: totalLink, location: ourLocation	from tn-links-check.js line 405
-  655, "Bad chapter number in markdown Bible link", details: `$linkBookCode $linkChapterInt vs $numChaptersThisBook chapters`, extract: totalLink, location: ourLocation	from tn-links-check.js line 446
-  655, "Bad chapter number in markdown Bible link", details: `$linkBookCode $linkChapterInt vs $numChaptersThisBook chapters`, extract: totalLink, location: ourLocation	from tn-links-check.js line 498
-  655, "Bad chapter number in markdown Bible link", details: `$linkBookCode $linkChapterInt vs $numChaptersThisBook chapters`, extract: totalLink, location: ourLocation	from tn-links-check.js line 556
-  655, "Bad chapter number in markdown Bible link", details: `$linkBookCode $linkChapterInt vs $numChaptersThisBook chapters`, extract: totalLink, location: ourLocation	from tn-links-check.js line 658
-  654, "Bad verse number in markdown TN link", details: `$linkBookCode $linkChapterInt:$linkVerseInt vs $numVersesThisChapter verses`, extract: totalLink, location: ourLocation	from tn-links-check.js line 713
-  653, "Bad verse number in markdown Bible link", details: `$linkBookCode $givenCint:$linkVerseInt vs $numVersesThisChapter verses`, extract: totalLink, location: ourLocation	from tn-links-check.js line 370
-  653, "Bad verse number in markdown Bible link", details: `$linkBookCode $linkChapterInt:$linkVerseInt vs $numVersesThisChapter verses`, extract: totalLink, location: ourLocation	from tn-links-check.js line 407
-  653, "Bad verse number in markdown Bible link", details: `$linkBookCode $linkChapterInt:$linkVerseInt vs $numVersesThisChapter verses`, extract: totalLink, location: ourLocation	from tn-links-check.js line 448
-  653, "Bad verse number in markdown Bible link", details: `$linkBookCode $linkChapterInt:$linkVerseInt vs $numVersesThisChapter verses`, extract: totalLink, location: ourLocation	from tn-links-check.js line 500
-  653, "Bad verse number in markdown Bible link", details: `$linkBookCode $linkChapterInt:$linkVerseInt vs $numVersesThisChapter verses`, extract: totalLink, location: ourLocation	from tn-links-check.js line 558
-  653, "Bad verse number in markdown Bible link", details: `$linkBookCode $givenC:$linkVerseInt vs $numVersesThisChapter verses`, extract: totalLink, location: ourLocation	from tn-links-check.js line 608
-  653, "Bad verse number in markdown Bible link", details: `$linkBookCode $linkChapterInt:$linkVerseInt vs $numVersesThisChapter verses`, extract: totalLink, location: ourLocation	from tn-links-check.js line 660
-  649, "Unusual [[ ]] link(s)—not normal TA or TW links", details: `need to carefully check $JSON.stringify(leftoverLinksList2)`, location: ourLocation	from tn-links-check.js line 730
-  648, "Unusual [ ]( ) link(s)—not normal Bible or TN links", details: `need to carefully check $JSON.stringify(leftoverLinksList1)`, location: ourLocation	from tn-links-check.js line 724
+  656, "Bad chapter number in markdown TN link", details: `$linkBookCode $linkChapterInt vs $numChaptersThisBook chapters`, extract: totalLink, location: ourLocation	from tn-links-check.js line 718
+  655, "Bad chapter number in markdown Bible link", details: `$linkBookCode $givenCint vs $numChaptersThisBook chapters`, extract: totalLink, location: ourLocation	from tn-links-check.js line 375
+  655, "Bad chapter number in markdown Bible link", details: `$linkBookCode $linkChapterInt vs $numChaptersThisBook chapters`, extract: totalLink, location: ourLocation	from tn-links-check.js line 412
+  655, "Bad chapter number in markdown Bible link", details: `$linkBookCode $linkChapterInt vs $numChaptersThisBook chapters`, extract: totalLink, location: ourLocation	from tn-links-check.js line 453
+  655, "Bad chapter number in markdown Bible link", details: `$linkBookCode $linkChapterInt vs $numChaptersThisBook chapters`, extract: totalLink, location: ourLocation	from tn-links-check.js line 505
+  655, "Bad chapter number in markdown Bible link", details: `$linkBookCode $linkChapterInt vs $numChaptersThisBook chapters`, extract: totalLink, location: ourLocation	from tn-links-check.js line 563
+  655, "Bad chapter number in markdown Bible link", details: `$linkBookCode $linkChapterInt vs $numChaptersThisBook chapters`, extract: totalLink, location: ourLocation	from tn-links-check.js line 665
+  654, "Bad verse number in markdown TN link", details: `$linkBookCode $linkChapterInt:$linkVerseInt vs $numVersesThisChapter verses`, extract: totalLink, location: ourLocation	from tn-links-check.js line 720
+  653, "Bad verse number in markdown Bible link", details: `$linkBookCode $givenCint:$linkVerseInt vs $numVersesThisChapter verses`, extract: totalLink, location: ourLocation	from tn-links-check.js line 377
+  653, "Bad verse number in markdown Bible link", details: `$linkBookCode $linkChapterInt:$linkVerseInt vs $numVersesThisChapter verses`, extract: totalLink, location: ourLocation	from tn-links-check.js line 414
+  653, "Bad verse number in markdown Bible link", details: `$linkBookCode $linkChapterInt:$linkVerseInt vs $numVersesThisChapter verses`, extract: totalLink, location: ourLocation	from tn-links-check.js line 455
+  653, "Bad verse number in markdown Bible link", details: `$linkBookCode $linkChapterInt:$linkVerseInt vs $numVersesThisChapter verses`, extract: totalLink, location: ourLocation	from tn-links-check.js line 507
+  653, "Bad verse number in markdown Bible link", details: `$linkBookCode $linkChapterInt:$linkVerseInt vs $numVersesThisChapter verses`, extract: totalLink, location: ourLocation	from tn-links-check.js line 565
+  653, "Bad verse number in markdown Bible link", details: `$linkBookCode $givenC:$linkVerseInt vs $numVersesThisChapter verses`, extract: totalLink, location: ourLocation	from tn-links-check.js line 615
+  653, "Bad verse number in markdown Bible link", details: `$linkBookCode $linkChapterInt:$linkVerseInt vs $numVersesThisChapter verses`, extract: totalLink, location: ourLocation	from tn-links-check.js line 667
+  649, "Unusual [[ ]] link(s)—not normal TA or TW links", details: `need to carefully check $JSON.stringify(leftoverLinksList2)`, location: ourLocation	from tn-links-check.js line 737
+  648, "Unusual [ ]( ) link(s)—not normal Bible or TN links", details: `need to carefully check $JSON.stringify(leftoverLinksList1)`, location: ourLocation	from tn-links-check.js line 731
   644, "USFM3 Grammar Check (relaxed mode) doesn’t pass either", location: fileLocation	from usfm-text-check.js line 254
   638, "Only found whitespace", location: ourLocation	from field-text-check.js line 103
   638, "Only found whitespace", location: ourLocation	from plain-text-check.js line 123
@@ -279,6 +279,7 @@ Got 354 notices:
   583, "Unexpected newLine character", characterIndex, extract, location: ourLocation	from field-text-check.js line 231
   582, "Unexpected carriageReturn character", characterIndex, extract, location: ourLocation	from field-text-check.js line 237
   581, "Unexpected non-break space character", characterIndex, extract, location: ourLocation	from field-text-check.js line 243
+  555, "Possible missing chapter number in markdown Bible link", extract: totalLink, location: ourLocation	from tn-links-check.js line 347
   552, C, V, "Invalid zero verse number", details: `for chapter $C`, rowID, lineNumber: n + 1, extract: V, location: ourLocation	from tn-table-text-check.js line 211
   552, C, V, "Invalid zero verse number", details: `for chapter $C`, rowID, lineNumber: n + 1, extract: V, location: ourLocation	from annotation-table-check.js line 192
   551, C, V, `Invalid zero chapter number`, rowID, lineNumber: n + 1, extract: C, location: ourLocation	from tn-table-text-check.js line 189
@@ -296,32 +297,32 @@ Got 354 notices:
   401, `Unexpected content after \\$marker marker`, C, V, lineNumber, characterIndex: marker.length, extract: rest, location: lineLocation	from usfm-text-check.js line 950
   399, C, V, "Useless paragraph marker", lineNumber: n, characterIndex: 1, details: `'\\$lastMarker' before '\\$marker'`, location: ourLocation	from usfm-text-check.js line 1,124
   375, "Ellipsis without surrounding snippet", location: ourLocation	from orig-quote-check.js line 325
-  374, "Field contains zero-width space(s)", fieldName: 'SupportReference', rowID, location: ourRowLocation	from tn-table-row-check.js line 464
-  374, "Field contains zero-width space(s)", fieldName: 'GLQuote', rowID, location: ourRowLocation	from tn-table-row-check.js line 504
-  374, "Field contains zero-width space(s)", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation	from tn-table-row-check.js line 517
+  374, "Field contains zero-width space(s)", fieldName: 'SupportReference', rowID, location: ourRowLocation	from tn-table-row-check.js line 469
+  374, "Field contains zero-width space(s)", fieldName: 'GLQuote', rowID, location: ourRowLocation	from tn-table-row-check.js line 509
+  374, "Field contains zero-width space(s)", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation	from tn-table-row-check.js line 522
   374, "Field contains zero-width space(s)", fieldName: 'SupportReference', rowID, location: ourRowLocation	from annotation-row-check.js line 455
   374, "Field contains zero-width space(s)", fieldName: 'Annotation', rowID, location: ourRowLocation	from annotation-row-check.js line 495
-  373, "Field is only whitespace", fieldName: 'SupportReference', rowID, location: ourRowLocation	from tn-table-row-check.js line 449
-  373, "Field is only whitespace", fieldName: 'GLQuote', rowID, location: ourRowLocation	from tn-table-row-check.js line 506
-  373, "Field is only whitespace", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation	from tn-table-row-check.js line 519
+  373, "Field is only whitespace", fieldName: 'SupportReference', rowID, location: ourRowLocation	from tn-table-row-check.js line 454
+  373, "Field is only whitespace", fieldName: 'GLQuote', rowID, location: ourRowLocation	from tn-table-row-check.js line 511
+  373, "Field is only whitespace", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation	from tn-table-row-check.js line 524
   373, "Field is only whitespace", fieldName: 'SupportReference', rowID, location: ourRowLocation	from annotation-row-check.js line 438
   373, "Field is only whitespace", fieldName: 'Annotation', rowID, location: ourRowLocation	from annotation-row-check.js line 497
   312, 'Possible unclosed footnote', details, lineNumber, C, V, location: lineLocation	from usfm-text-check.js line 684
   301, `Unexpected whitespace after \\$marker marker`, C, V, lineNumber, characterIndex: marker.length, extract: rest, location: lineLocation	from usfm-text-check.js line 948
   287, `Not enough links (expected $linkOptions.expectedCount link$linkOptions.expectedCount === 1 ? "" : "s")`, location: ` (only found $regexResultsArray.length)$ourLocation`	from field-link-check.js line 148
-  274, "Missing OccurrenceNote field", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation	from tn-table-row-check.js line 534
+  274, "Missing OccurrenceNote field", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation	from tn-table-row-check.js line 539
   274, "Missing Annotation field", fieldName: 'Annotation', rowID, location: ourRowLocation	from annotation-row-check.js line 514
   218, "Using deprecated USFM marker", extract: `\\$deprecatedMarker`, location: fileLocation	from usfm-text-check.js line 612
   195, `Unexpected $punctChar character at start of line`, characterIndex, extract, location: ourLocation	from field-text-check.js line 314
   179, "Unexpected space before ellipse character", characterIndex, extract, location: ourLocation	from field-text-check.js line 259
   178, "Unexpected space after ellipse character", characterIndex, extract, location: ourLocation	from field-text-check.js line 265
-  176, "Row ID should start with a lowercase letter", characterIndex: 0, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation	from tn-table-row-check.js line 438
+  176, "Row ID should start with a lowercase letter", characterIndex: 0, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation	from tn-table-row-check.js line 443
   176, "Row ID should start with a lowercase letter", characterIndex: 0, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation	from annotation-row-check.js line 424
-  175, "Row ID should end with a lowercase letter or digit", characterIndeX: 3, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation	from tn-table-row-check.js line 440
+  175, "Row ID should end with a lowercase letter or digit", characterIndeX: 3, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation	from tn-table-row-check.js line 445
   175, "Row ID should end with a lowercase letter or digit", characterIndeX: 3, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation	from annotation-row-check.js line 426
-  174, "Row ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 1, rowID, extract: rowID, location: ourRowLocation	from tn-table-row-check.js line 442
+  174, "Row ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 1, rowID, extract: rowID, location: ourRowLocation	from tn-table-row-check.js line 447
   174, "Row ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 1, rowID, extract: rowID, location: ourRowLocation	from annotation-row-check.js line 428
-  173, "Row ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 2, rowID, extract: rowID, location: ourRowLocation	from tn-table-row-check.js line 444
+  173, "Row ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 2, rowID, extract: rowID, location: ourRowLocation	from tn-table-row-check.js line 449
   173, "Row ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 2, rowID, extract: rowID, location: ourRowLocation	from annotation-row-check.js line 430
   172, "Header levels should only increment by one", lineNumber: n, characterIndex: 0, location: ourLocation	from markdown-text-check.js line 207
   159, "Should use proper ellipse character (not periods)", characterIndex, extract, location: ourLocation	from orig-quote-check.js line 249
@@ -329,12 +330,12 @@ Got 354 notices:
   157, "Unexpected space(s) beside ↔ divider character", characterIndex, extract, location: ourLocation	from orig-quote-check.js line 265
   156, "Unexpected space(s) beside ellipse characters", characterIndex, extract, location: ourLocation	from orig-quote-check.js line 272
   148, "'checking' key is missing", location: ourLocation	from manifest-text-check.js line 643
-  144, "Unknown Bible book name in TN link", details: totalLink, extract: optionalB1, location: ourLocation	from tn-links-check.js line 680
+  144, "Unknown Bible book name in TN link", details: totalLink, extract: optionalB1, location: ourLocation	from tn-links-check.js line 687
   143, "Unknown Bible book name in link", details: totalLink, extract: optionalB1, location: ourLocation	from tn-links-check.js line 337
-  143, "Unknown Bible book name in link", details: totalLink, extract: optionalB1, location: ourLocation	from tn-links-check.js line 467
-  143, "Unknown Bible book name in link", details: totalLink, extract: optionalB1, location: ourLocation	from tn-links-check.js line 519
-  143, "Unknown Bible book name in link", details: totalLink, extract: optionalB1, location: ourLocation	from tn-links-check.js line 577
-  143, "Unknown Bible book name in link", details: totalLink, extract: optionalB1, location: ourLocation	from tn-links-check.js line 627
+  143, "Unknown Bible book name in link", details: totalLink, extract: optionalB1, location: ourLocation	from tn-links-check.js line 474
+  143, "Unknown Bible book name in link", details: totalLink, extract: optionalB1, location: ourLocation	from tn-links-check.js line 526
+  143, "Unknown Bible book name in link", details: totalLink, extract: optionalB1, location: ourLocation	from tn-links-check.js line 584
+  143, "Unknown Bible book name in link", details: totalLink, extract: optionalB1, location: ourLocation	from tn-links-check.js line 634
   138, "File ends with additional blank line(s)", characterIndex, extract, location: ourLocation	from plain-text-check.js line 155
   111, `Bad options for checkFieldLinks: expectedCount=$linkOptions.expectedCount but allowedCount=$linkOptions.allowedCount`	from field-link-check.js line 116
   110, `Unexpected leading spaces`, characterIndex: 0, extract, location: ourLocation	from field-text-check.js line 132
