@@ -145,6 +145,10 @@ export const chaptersInBook = (bookId) => {
   return chapters;
 };
 
+export const isOneChapterBook = (bookId) => {
+  return chaptersInBook(bookId).length === 1;
+};
+
 export const versesInChapter = (bookId, chapter) => {
   // parameterAssert(bookId.toLowerCase() !== 'obs', `versesInChapter shouldn’t be passed '${bookId}'`);
   const verses = chaptersInBook(bookId)[chapter - 1];

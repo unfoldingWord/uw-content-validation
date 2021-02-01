@@ -30,7 +30,7 @@ const TA_REGEX = new RegExp('\\[\\[rc://[^ /]+?/ta/man/[^ /]+?/([^ \\]]+?)\\]\\]
  * @param {String} givenC - chapter number or (for OBS) story number string
  * @param {String} givenV - verse number or (for OBS) frame number string
  * @param {String} givenRowLocation - description of where the line is located
- * @param {Object} checkingOptions - may contain extractLength parameter
+ * @param {Object} checkingOptions - may contain extractLength, twRepoUsername, twRepoBranch (or tag), checkLinkedTWArticleFlag parameters
  * @return {Object} - containing noticeList
  */
 export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, givenV, givenRowLocation, checkingOptions) {
@@ -279,6 +279,11 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
      */
     async function ourCheckTNLinksToOutside(rowID, fieldName, taLinkText, rowLocation, checkingOptions) {
         // Checks that the TA/TW/Bible reference can be found
+
+        // Uses
+        //      checkingOptions.twRepoUsername
+        //      checkingOptions.twRepoBranch (or tag)
+        //      checkingOptions.checkLinkedTWArticleFlag
 
         // Updates the global list of notices
 
