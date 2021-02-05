@@ -211,7 +211,7 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
             numLeadingSpaces = line.match(/^ */)[0].length;
             // debugLog(`Got numLeadingSpaces=${numLeadingSpaces} for ${line}${atString}`);
             if (numLeadingSpaces && lastNumLeadingSpaces && numLeadingSpaces !== lastNumLeadingSpaces)
-                addNotice({ priority: 472, message: "Nesting of header levels seems confused", lineNumber: n, characterIndex: 0, location: ourLocation });
+                addNotice({ priority: 282, message: "Nesting of header levels seems confused", lineNumber: n, characterIndex: 0, location: ourLocation });
 
             const suggestedLine = await checkMarkdownLineContents(n, line, ourLocation);
             suggestedLines.push(suggestedLine === undefined ? line : suggestedLine);

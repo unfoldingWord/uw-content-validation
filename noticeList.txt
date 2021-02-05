@@ -1,5 +1,5 @@
-Last updated 2021-02-01 22:04:58.532820 by makeNoticeList.py
-Got 355 notices:
+Last updated 2021-02-05 21:17:49.962179 by makeNoticeList.py
+Got 357 notices:
   checkRepoResult.noticeList.push( 997, "Repository doesn’t exist", details, username, repoCode, repoName, location: givenLocation, extra: repoCode	from checkRepo.js line 259
   languageCode === 'en' || languageCode === 'fr' ? 490 : 190, "Expected header field to contain a mixed-case string", fieldName: `\\$marker`, extract: rest, C, V, location: lineLocation	from usfm-text-check.js line 927
   marker === 's5' ? 111 : 809, `$marker === 's5' ? 'Deprecated' : 'Unexpected' '\\$marker' marker at start of line`, C, V, lineNumber, characterIndex: 1, location: lineLocation	from usfm-text-check.js line 955
@@ -25,15 +25,15 @@ Got 355 notices:
   leftChar === '“' ? 162 : 462, `Mismatched $leftChar$rightChar characters`, details: `left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString()`, location: ourLocation	from plain-text-check.js line 235
   999, "checkRepo function FAILED", repoName, extract: checkRepoError, location: repoName	from RepoCheck.js line 106
   997, "Repository doesn’t exist", details, username, repoCode, repoName, location: manifestLocation, extra: repoCode	from checkBookPackage.js line 174
-  997, "Repository doesn’t exist", details, username, repoCode, repoName, location: manifestLocation, extra: repoCode	from checkBookPackage.js line 235
-  997, "Repository doesn’t exist", details, username, repoCode, repoName, location: repoLocation, extra: repoCode	from checkBookPackage.js line 374
-  997, "Repository doesn’t exist", details, username, repoCode, repoName, location: generalLocation, extra: repoCode	from checkBookPackage.js line 537
-  997, "Repository doesn’t exist", details, username, repoCode, repoName, location: generalLocation, extra: repoCode	from checkBookPackage.js line 563
+  997, "Repository doesn’t exist", details, username, repoCode, repoName, location: markdownLocation, extra: repoCode	from checkBookPackage.js line 235
+  997, "Repository doesn’t exist", details, username, repoCode, repoName, location: repoLocation, extra: repoCode	from checkBookPackage.js line 383
+  997, "Repository doesn’t exist", details, username, repoCode, repoName, location: generalLocation, extra: repoCode	from checkBookPackage.js line 581
+  997, "Repository doesn’t exist", details, username, repoCode, repoName, location: generalLocation, extra: repoCode	from checkBookPackage.js line 607
   996, "Unable to load", details: `username=$username error=$cBPgfError`, repoName, filename: MANIFEST_FILENAME, location: manifestLocation, extra: repoCode	from checkBookPackage.js line 178
-  996, "Unable to load", details: `username=$username error=$cBPgfError`, repoName, filename: MANIFEST_FILENAME, location: manifestLocation, extra: repoCode	from checkBookPackage.js line 239
-  996, "Unable to load", details, repoCode, repoName, filename, location: repoLocation, extra: repoCode	from checkBookPackage.js line 378
-  996, "Unable to load", details, bookID, location: generalLocation, extra: repoCode	from checkBookPackage.js line 539
-  996, "Unable to load", details, bookID, C, V, filename: thisPath, location: `$generalLocation $thisPath`, extra: repoCode	from checkBookPackage.js line 567
+  996, "Unable to load", details: `username=$username error=$cBPgfError`, repoName, filename, location: markdownLocation, extra: repoCode	from checkBookPackage.js line 239
+  996, "Unable to load", details, repoCode, repoName, filename, location: repoLocation, extra: repoCode	from checkBookPackage.js line 387
+  996, "Unable to load", details, bookID, location: generalLocation, extra: repoCode	from checkBookPackage.js line 583
+  996, "Unable to load", details, bookID, C, V, filename: thisPath, location: `$generalLocation $thisPath`, extra: repoCode	from checkBookPackage.js line 611
   996, "Unable to load", details: `username=$username error=$cRgfError`, bookID: ourBookID, filename: thisFilename, location: `$givenLocation $thisFilepath`, extra: repoName	from checkRepo.js line 263
   995, "File extension is not recognized, so treated as plain text.", filename, location: filename	from checkFileContents.js line 88
   993, "Unresolved GIT conflict", characterIndex, extract, location: ourLocation	from field-text-check.js line 112
@@ -60,7 +60,7 @@ Got 355 notices:
   975, "Wrong verse number", details: `expected '$givenV'`, rowID, fieldName: 'Verse', extract: V, location: ourRowLocation	from tn-table-row-check.js line 412
   975, "Wrong verse number", details: `expected '$givenV'`, rowID, fieldName: 'Reference', extract: V, location: ourRowLocation	from annotation-row-check.js line 393
   956, "Got empty manifest file", repoName, filename: MANIFEST_FILENAME, location: manifestLocation, extra: `$repoCode MANIFEST`	from checkBookPackage.js line 199
-  956, "Got empty manifest file", repoName, filename: MANIFEST_FILENAME, location: manifestLocation, extra: `$repoCode MANIFEST`	from checkBookPackage.js line 260
+  956, "Got empty markdown file", repoName, filename, location: markdownLocation, extra: repoCode	from checkBookPackage.js line 269
   950, "tC cannot yet process '*' language code", characterIndex, extract, location: ourLocation	from tn-links-check.js line 226
   947, "Missing manifest.yaml", location: ourLocation, extra: `$repoName MANIFEST`	from checkRepo.js line 288
   946, "Missing LICENSE.md", location: ourLocation, extra: `$repoName LICENSE`	from checkRepo.js line 286
@@ -93,7 +93,7 @@ Got 355 notices:
   909, "Seems original language quote might not start at the beginning of a word", details: `passage ►$verseText◄`, characterIndex: 0, extract, location: ourLocation	from orig-quote-check.js line 354
   908, "Seems original language quote might not finish at the end of a word", details: `passage ►$verseText◄`, characterIndex: fieldText.length, extract, location: ourLocation	from orig-quote-check.js line 363
   903, "Bad function call: should be given a valid book abbreviation", extract: bookID, location: ` (not '$bookID')$ourLocation`	from usfm-text-check.js line 976
-  902, "Bad function call: should be given a valid book abbreviation", extract: bookID, location: ` (not '$bookID')$generalLocation` ); return checkBookPackageResult;	from checkBookPackage.js line 284
+  902, "Bad function call: should be given a valid book abbreviation", extract: bookID, location: ` (not '$bookID')$generalLocation` ); return checkBookPackageResult;	from checkBookPackage.js line 293
   900, "Bad parameter: should be given a valid book abbreviation", extract: bookIDList, location: ` (not '$bookIDList')`	from checkBookPackages.js line 66
   895, "Field contains zero-width space(s)", characterIndex, extract, location: ourLocation	from field-text-check.js line 97
   889, `Unable to find TA link`, extract: fieldText, location: `$ourLocation $filepath`	from ta-reference-check.js line 109
@@ -266,8 +266,8 @@ Got 355 notices:
   653, "Bad verse number in markdown Bible link", details: `$linkBookCode $linkChapterInt:$linkVerseInt vs $numVersesThisChapter verses`, extract: totalLink, location: ourLocation	from tn-links-check.js line 565
   653, "Bad verse number in markdown Bible link", details: `$linkBookCode $givenC:$linkVerseInt vs $numVersesThisChapter verses`, extract: totalLink, location: ourLocation	from tn-links-check.js line 615
   653, "Bad verse number in markdown Bible link", details: `$linkBookCode $linkChapterInt:$linkVerseInt vs $numVersesThisChapter verses`, extract: totalLink, location: ourLocation	from tn-links-check.js line 667
-  649, "Unusual [[ ]] link(s)—not normal TA or TW links", details: `need to carefully check $JSON.stringify(leftoverLinksList2)`, location: ourLocation	from tn-links-check.js line 737
-  648, "Unusual [ ]( ) link(s)—not normal Bible or TN links", details: `need to carefully check $JSON.stringify(leftoverLinksList1)`, location: ourLocation	from tn-links-check.js line 731
+  649, "Unusual [[ ]] link(s)—not normal TA or TW links", details: `need to carefully check $leftoverLinksList2.length === 1 ? leftoverLinksList2[0] : JSON.stringify(leftoverLinksList2)`, location: ourLocation	from tn-links-check.js line 737
+  648, "Unusual [ ]( ) link(s)—not normal Bible or TN links", details: `need to carefully check $leftoverLinksList1.length === 1 ? leftoverLinksList1[0] : JSON.stringify(leftoverLinksList1)`, location: ourLocation	from tn-links-check.js line 731
   644, "USFM3 Grammar Check (relaxed mode) doesn’t pass either", location: fileLocation	from usfm-text-check.js line 254
   638, "Only found whitespace", location: ourLocation	from field-text-check.js line 103
   638, "Only found whitespace", location: ourLocation	from plain-text-check.js line 123
@@ -289,13 +289,13 @@ Got 355 notices:
   519, "Missing expected USFM line", extract: `missing \\$expectedMarker`, location: fileLocation	from usfm-text-check.js line 601
   518, "Missing expected USFM line", extract: `missing \\$expectedMarker`, location: fileLocation	from usfm-text-check.js line 609
   517, "Missing expected USFM line", extract: `missing \\$expectedMarker`, location: fileLocation	from usfm-text-check.js line 605
-  472, "Nesting of header levels seems confused", lineNumber: n, characterIndex: 0, location: ourLocation	from markdown-text-check.js line 214
   450, "Resource container link should have '*' language code", details: `not '$languageCode'`, characterIndex, extract, location: ourLocation	from tn-links-check.js line 222
   441, `Unknown linkType parameter`, extract: linkType	from field-link-check.js line 134
   439, "Error fetching link", location: ` $fetchLink`	from field-link-check.js line 44
   438, `Blank field / missing link (expected $linkOptions.expectedCount link$linkOptions.expectedCount === 1 ? "" : "s")`, location: ourLocation	from field-link-check.js line 106
   401, `Unexpected content after \\$marker marker`, C, V, lineNumber, characterIndex: marker.length, extract: rest, location: lineLocation	from usfm-text-check.js line 950
   399, C, V, "Useless paragraph marker", lineNumber: n, characterIndex: 1, details: `'\\$lastMarker' before '\\$marker'`, location: ourLocation	from usfm-text-check.js line 1,124
+  378, `Possible mismatched '$thisField' markdown formatting pairs`, details: `$count.toLocaleString() total occurrence$count === 1 ? '' : 's'`, characterIndex, extract, location: ourLocation	from markdown-text-check.js line 246
   375, "Ellipsis without surrounding snippet", location: ourLocation	from orig-quote-check.js line 325
   374, "Field contains zero-width space(s)", fieldName: 'SupportReference', rowID, location: ourRowLocation	from tn-table-row-check.js line 469
   374, "Field contains zero-width space(s)", fieldName: 'GLQuote', rowID, location: ourRowLocation	from tn-table-row-check.js line 509
@@ -310,8 +310,10 @@ Got 355 notices:
   312, 'Possible unclosed footnote', details, lineNumber, C, V, location: lineLocation	from usfm-text-check.js line 684
   301, `Unexpected whitespace after \\$marker marker`, C, V, lineNumber, characterIndex: marker.length, extract: rest, location: lineLocation	from usfm-text-check.js line 948
   287, `Not enough links (expected $linkOptions.expectedCount link$linkOptions.expectedCount === 1 ? "" : "s")`, location: ` (only found $regexResultsArray.length)$ourLocation`	from field-link-check.js line 148
+  282, "Nesting of header levels seems confused", lineNumber: n, characterIndex: 0, location: ourLocation	from markdown-text-check.js line 214
   274, "Missing OccurrenceNote field", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation	from tn-table-row-check.js line 539
   274, "Missing Annotation field", fieldName: 'Annotation', rowID, location: ourRowLocation	from annotation-row-check.js line 514
+  256, "Possibly missing current copyright year", details: fullYearString, repoName, filename, location: markdownLocation, extra: repoCode	from checkBookPackage.js line 262
   218, "Using deprecated USFM marker", extract: `\\$deprecatedMarker`, location: fileLocation	from usfm-text-check.js line 612
   195, `Unexpected $punctChar character at start of line`, characterIndex, extract, location: ourLocation	from field-text-check.js line 314
   179, "Unexpected space before ellipse character", characterIndex, extract, location: ourLocation	from field-text-check.js line 259

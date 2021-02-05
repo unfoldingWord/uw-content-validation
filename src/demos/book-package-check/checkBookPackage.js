@@ -255,8 +255,8 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       }
 
       if (filename === 'LICENSE.md') {
-        const fullYearString = (new Date()).getFullYear();
-        debugLog(`Year ${fullYearString} is ${typeof fullYearString}`);
+        const fullYearString = `${(new Date()).getFullYear()}`;
+        // debugLog(`Year ${fullYearString} is ${typeof fullYearString}`);
         if (markdownFileContent.indexOf(fullYearString) === -1) // Can't find this year string in file
           // NOTE: We don’t use addNoticePartial, because it adds a misleading BookID
           checkBookPackageResult.noticeList.push({ priority: 256, message: "Possibly missing current copyright year", details: fullYearString, repoName, filename, location: markdownLocation, extra: repoCode });
