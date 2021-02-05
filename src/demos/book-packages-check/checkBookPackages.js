@@ -15,7 +15,7 @@ export async function checkBookPackages(username, languageCode, bookIDList, setR
     const checkBookPackagesResult = { successList: [], noticeList: [] };
 
     // function addSuccessMessage(successString) {
-    //     // debugLog(`checkBookPackages success: ${successString}`);
+    //     // functionLog(`checkBookPackages success: ${successString}`);
     //     checkBookPackagesResult.successList.push(successString);
     // }
 
@@ -52,7 +52,7 @@ export async function checkBookPackages(username, languageCode, bookIDList, setR
     let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0, checkedRepoNames = new Set();
     let checkedBibleBPManifestFlag = false;
     for (const bookID of bookIDList) {
-        // debugLog(`checkBookPackages bookID: ${bookID}`);
+        // functionLog(`checkBookPackages bookID: ${bookID}`);
         if (abortFlag) break;
 
         // const generalLocation = ` ${languageCode} ${bookID} book packages from ${username}`;
@@ -85,7 +85,7 @@ export async function checkBookPackages(username, languageCode, bookIDList, setR
         // We use the generalLocation here (does not include repo name)
         //  so that we can adjust the returned strings ourselves
         const cbpResultObject = await checkBookPackage(username, languageCode, bookID, setResultValue, checkingOptions);
-        // debugLog(`checkBookPackage() returned ${cbpResultObject.successList.length} success message(s) and ${cbpResultObject.noticeList.length} notice(s)`);
+        // functionLog(`checkBookPackage() returned ${cbpResultObject.successList.length} success message(s) and ${cbpResultObject.noticeList.length} notice(s)`);
 
         // Concat is faster if we don’t need to process each success message individually
         checkBookPackagesResult.successList = checkBookPackagesResult.successList.concat(cbpResultObject.successList);

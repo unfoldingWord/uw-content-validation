@@ -20,7 +20,7 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
 
      Returns a result object containing a successList and a noticeList
      */
-    // debugLog(`checkAnnotationRows(${languageCode}, ${annotationType}, ${bookID}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
+    // functionLog(`checkAnnotationRows(${languageCode}, ${annotationType}, ${bookID}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
     parameterAssert(languageCode !== undefined, "checkAnnotationRows: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkAnnotationRows: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
     parameterAssert(bookID !== undefined, "checkAnnotationRows: 'bookID' parameter should be defined");
@@ -37,11 +37,11 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
     const carResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        // debugLog(`checkAnnotationRows success: ${successString}`);
+        // functionLog(`checkAnnotationRows success: ${successString}`);
         carResult.successList.push(successString);
     }
     function addNoticePartial(noticeObject) {
-        // debugLog(`checkAnnotationRows notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // functionLog(`checkAnnotationRows notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "ATSV addNoticePartial: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `TSV addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "ATSV addNoticePartial: 'message' parameter should be defined");
@@ -98,7 +98,7 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
     let rowIDList = [], uniqueRowList = [];
     let numVersesThisChapter = 0;
     for (let n = 0; n < lines.length; n++) {
-        // debugLog(`checkAnnotationRows checking line ${n}: ${JSON.stringify(lines[n])}`);
+        // functionLog(`checkAnnotationRows checking line ${n}: ${JSON.stringify(lines[n])}`);
         if (n === 0) {
             if (lines[0] === EXPECTED_TN_HEADING_LINE)
                 addSuccessMessage(`Checked TSV header ${ourLocation}`);
@@ -232,7 +232,7 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
     }
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        // debugLog(`checkAnnotationRows: calling removeDisabledNotices(${carResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        // functionLog(`checkAnnotationRows: calling removeDisabledNotices(${carResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
         carResult.noticeList = removeDisabledNotices(carResult.noticeList);
     }
 

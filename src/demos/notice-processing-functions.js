@@ -2,7 +2,7 @@ import { userLog, parameterAssert } from '../core/utilities';
 import { isDisabledNotice } from '../core/disabled-notices';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.7';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.8';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -164,13 +164,14 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 && !thisMsg.startsWith('USFMGrammar: ')
                 && !thisMsg.startsWith('Bad punctuation nesting: ')
                 && !thisMsg.startsWith('At end of text with unclosed ')
+                && !thisMsg.startsWith('Possible mismatched ')
                 && !thisMsg.endsWith(' character combination')
                 && !thisMsg.endsWith(' character after space')
                 && !thisMsg.endsWith(' character at start of line')
                 && !thisMsg.endsWith(' character at end of line')
                 && !thisMsg.endsWith(' marker at start of line')
                 && !thisMsg.endsWith(' closing character (no matching opener)')
-                && !thisMsg.endsWith(' closing character doesn\'t match')
+                && !thisMsg.endsWith(' closing character doesn’t match')
             ) {
                 console.error(`POSSIBLE PROGRAMMING ERROR: priority ${thisPriority} has at least two different messages: '${oldMsg}' and '${thisMsg}'`);
                 duplicatePriorityList.push(thisPriority); // so that we only give the error once

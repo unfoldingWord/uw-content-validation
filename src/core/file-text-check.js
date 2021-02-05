@@ -21,7 +21,7 @@ export function checkTextfileContents(languageCode, fileType, filename, fileText
     //      characterIndeX: the 0-based index for the position in the string
     //      extract: a short extract of the string containing the error (or empty-string if irrelevant)
     //  (Returned in this way for more intelligent processing at a higher level)
-    // debugLog(`checkTextfileContents(${filename}, ${fileText.length.toLocaleString()} chars, '${optionalFileLocation}')…`);
+    // functionLog(`checkTextfileContents(${filename}, ${fileText.length.toLocaleString()} chars, '${optionalFileLocation}')…`);
     parameterAssert(languageCode !== undefined, "checkTextfileContents: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkTextfileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
     parameterAssert(fileType !== undefined, "checkTextfileContents: 'fileType' parameter should be defined");

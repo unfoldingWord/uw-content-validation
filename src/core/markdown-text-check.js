@@ -5,7 +5,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { userLog, parameterAssert } from './utilities';
 
 
-const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.4.4';
+const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.4.5';
 
 const IMAGE_REGEX = new RegExp('!\\[([^\\]]+?)\\]\\(([^ \\]]+?)\\)', 'g');
 
@@ -27,7 +27,7 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
 
      Returns a result object containing a successList and a noticeList
      */
-    // debugLog(`checkMarkdownText(${textName}, ${markdownText.length}, ${givenLocation})…`);
+    // functionLog(`checkMarkdownText(${textName}, ${markdownText.length}, ${givenLocation})…`);
     parameterAssert(languageCode !== undefined, "checkMarkdownText: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkMarkdownText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
     parameterAssert(textOrFileName !== undefined, "checkMarkdownText: 'textOrFileName' parameter should be defined");
@@ -54,8 +54,8 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
     }
     // else
     // debugLog("Using supplied extractLength=" + extractLength, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
-    // const halfLength = Math.floor(extractLength / 2); // rounded down
-    // const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
+    const halfLength = Math.floor(extractLength / 2); // rounded down
+    const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
     // debugLog("Using halfLength=" + halfLength, `halfLengthPlus=${halfLengthPlus}`);
 
     const result = { successList: [], noticeList: [] };
@@ -65,7 +65,7 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
         result.successList.push(successString);
     }
     function addNotice(noticeObject) {
-        // debugLog(`checkMarkdownText addNotice: (priority=${noticeObject.priority}) ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? " " + extract : ""}${noticeObject.location}`);
+        // functionLog(`checkMarkdownText addNotice: (priority=${noticeObject.priority}) ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? " " + extract : ""}${noticeObject.location}`);
         parameterAssert(noticeObject.priority !== undefined, "cMdT addNotice: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `cMdT addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "cMdT addNotice: 'message' parameter should be defined");
@@ -127,7 +127,7 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
      */
     async function checkMarkdownLineContents(lineNumber, lineText, lineLocation) {
 
-        // debugLog(`checkMarkdownLineContents for ${lineNumber} '${lineText}' at${lineLocation}`);
+        // functionLog(`checkMarkdownLineContents for ${lineNumber} '${lineText}' at${lineLocation}`);
 
         // Check for image links
         let regexResultArray;
@@ -225,6 +225,29 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
         lastNumLeadingSpaces = numLeadingSpaces;
     }
 
+    // Check for an uneven number of sets of symmetrical (i.e., opener == closer) multicharacter markdown formatting sequences
+    for (const thisSet of [ // Put longest ones first
+        // Seems that the fancy ones (commented out) don't find occurrences at the start (or end?) of the text
+        ['___', /___/g],
+        // ['___', r'[^_]___[^_]'], // three underlines
+        ['***', /\*\*\*/g],
+        // ['***', r'[^\*]\*\*\*[^\*]'], // three asterisks
+        ['__', /__/g],
+        // ['__', r'[^_]__[^_]'], // two underlines
+        ['**', /\*\*/g],
+        // ['**', r'[^\*]\*\*[^\*]'], // two asterisks
+    ]) {
+        const thisField = thisSet[0], thisRegex = thisSet[1];
+        const count = ((markdownText || '').match(thisRegex) || []).length; // Finds only NON-OVERLAPPING matches hopefully
+        if (count && (count % 2) !== 0) {
+            const characterIndex = markdownText.indexOf(thisField);
+            const iy = characterIndex + halfLength; // Want extract to focus more on what follows
+            const extract = (iy > halfLength ? '…' : '') + markdownText.substring(iy - halfLength, iy + halfLengthPlus) + (iy + halfLengthPlus < markdownText.length ? '…' : '')
+            addNotice({ priority: 378, message: `Possible mismatched '${thisField}' pairs`, details: `${count.toLocaleString()} total occurrence${count === 1 ? '' : 's'}`, characterIndex, extract, location: ourLocation });
+            break; // Only want one warning per text
+        }
+    }
+
     const suggestion = suggestedLines.join('\n');
     if (suggestion !== markdownText) {
         // debugLog(`Had markdown ${markdownText}`);
@@ -233,7 +256,7 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
     }
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        // debugLog(`checkMarkdownText: calling removeDisabledNotices(${result.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        // functionLog(`checkMarkdownText: calling removeDisabledNotices(${result.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
         result.noticeList = removeDisabledNotices(result.noticeList);
     }
 

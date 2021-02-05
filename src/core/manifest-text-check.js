@@ -547,7 +547,7 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
 
     Returns a result object containing a successList and a noticeList
     */
-    // debugLog(`checkManifestText(${username}, ${repoName}, ${repoBranch}, ${manifestText.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
+    // functionLog(`checkManifestText(${username}, ${repoName}, ${repoBranch}, ${manifestText.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
     parameterAssert(username !== undefined, "checkManifestText: 'username' parameter should be defined");
     parameterAssert(typeof username === 'string', `checkManifestText: 'username' parameter should be a string not a '${typeof username}': ${username}`);
     parameterAssert(repoName !== undefined, "checkManifestText: 'repoName' parameter should be defined");
@@ -583,11 +583,11 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
     const cmtResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        // debugLog(`checkManifestText success: ${successString}`);
+        // functionLog(`checkManifestText success: ${successString}`);
         cmtResult.successList.push(successString);
     }
     function addNotice(noticeObject) {
-        // debugLog(`checkManifestText Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // functionLog(`checkManifestText Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "cManT addNotice: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `cManT addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "cManT addNotice: 'message' parameter should be defined");
@@ -714,7 +714,7 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
     }
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        // debugLog(`checkManifestText: calling removeDisabledNotices(${cmtResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        // functionLog(`checkManifestText: calling removeDisabledNotices(${cmtResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
         cmtResult.noticeList = removeDisabledNotices(cmtResult.noticeList);
     }
 

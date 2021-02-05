@@ -29,7 +29,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
 
   Note that bookID here can also be the 'OBS' pseudo bookID.
   */
-  // debugLog(`checkBookPackage(${username}, ${languageCode}, ${bookID}, (fn), ${JSON.stringify(checkingOptions)})…`)
+  // functionLog(`checkBookPackage(${username}, ${languageCode}, ${bookID}, (fn), ${JSON.stringify(checkingOptions)})…`)
   parameterAssert(username !== undefined, "checkBookPackage: 'username' parameter should be defined");
   parameterAssert(typeof username === 'string', `checkBookPackage: 'username' parameter should be a string not a '${typeof username}': ${username}`);
   parameterAssert(languageCode !== undefined, "checkBookPackage: 'languageCode' parameter should be defined");
@@ -64,14 +64,14 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
 
 
   function addSuccessMessage(successString) {
-    // debugLog(`checkBookPackage success: ${successString}`);
+    // functionLog(`checkBookPackage success: ${successString}`);
     checkBookPackageResult.successList.push(successString);
   }
 
 
   function addNoticePartial(noticeObject) {
     // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
-    // debugLog(`checkBookPackage addNoticePartial: (priority=${noticeObject.priority}) ${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+    // functionLog(`checkBookPackage addNoticePartial: (priority=${noticeObject.priority}) ${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
     parameterAssert(noticeObject.priority !== undefined, "cBP addNoticePartial: 'priority' parameter should be defined");
     parameterAssert(typeof noticeObject.priority === 'number', `cBP addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
     parameterAssert(noticeObject.message !== undefined, "cBP addNoticePartial: 'message' parameter should be defined");
@@ -100,7 +100,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
 
 
   async function ourCheckBPFileContents(repoCode, repoName, cfFilename, fileContent, fileLocation, checkingOptions) {
-    // debugLog(`checkBookPackage ourCheckBPFileContents(${repoCode}, ${cfFilename}, ${fileContent.length}, ${fileLocation}, ${JSON.stringify(checkingOptions)})…`);
+    // functionLog(`checkBookPackage ourCheckBPFileContents(${repoCode}, ${cfFilename}, ${fileContent.length}, ${fileLocation}, ${JSON.stringify(checkingOptions)})…`);
 
     // Updates the global list of notices
     parameterAssert(repoCode !== undefined, "cBP ourCheckBPFileContents: 'repoCode' parameter should be defined");
@@ -151,7 +151,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
    */
   async function ourCheckManifest(repoCode, repoName, repoBranch, manifestLocation, checkingOptions) {
     // Updates the global list of notices
-    // debugLog(`checkBookPackage ourCheckManifest(${repoCode}, ${repoName}, ${repoBranch}, ${manifestLocation}, ${JSON.stringify(checkingOptions)})…`);
+    // functionLog(`checkBookPackage ourCheckManifest(${repoCode}, ${repoName}, ${repoBranch}, ${manifestLocation}, ${JSON.stringify(checkingOptions)})…`);
     parameterAssert(repoCode !== undefined, "cBP ourCheckManifest: 'repoCode' parameter should be defined");
     parameterAssert(typeof repoCode === 'string', `cBP ourCheckManifest: 'repoCode' parameter should be a string not a '${typeof repoCode}' : ${repoCode}`);
     parameterAssert(repoName !== undefined, "cBP ourCheckManifest: 'repoName' parameter should be defined");
@@ -212,7 +212,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
      */
   async function ourCheckMarkdown(repoCode, repoName, repoBranch, filename, manifestLocation, checkingOptions) {
     // Updates the global list of notices
-    // debugLog(`checkBookPackage ourCheckMarkdown(${repoCode}, ${repoName}, #{repoBranch}, ${manifestLocation}, ${JSON.stringify(checkingOptions)})…`);
+    // functionLog(`checkBookPackage ourCheckMarkdown(${repoCode}, ${repoName}, #{repoBranch}, ${manifestLocation}, ${JSON.stringify(checkingOptions)})…`);
     parameterAssert(repoCode !== undefined, "cBP ourCheckMarkdown: 'repoCode' parameter should be defined");
     parameterAssert(typeof repoCode === 'string', `cBP ourCheckMarkdown: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
     parameterAssert(repoName !== undefined, "cBP ourCheckMarkdown: 'repoName' parameter should be defined");
@@ -284,7 +284,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         addNoticePartial({ priority: 902, message: "Bad function call: should be given a valid book abbreviation", extract: bookID, location: ` (not '${bookID}')${generalLocation}` }); return checkBookPackageResult;
       }
     }
-    // debugLog(`checkBookPackage: bookNumberAndName='${bookNumberAndName}' (${whichTestament} testament)`);
+    // functionLog(`checkBookPackage: bookNumberAndName='${bookNumberAndName}' (${whichTestament} testament)`);
 
     // So now we want to work through checking this one specified Bible book in various repos
     const origLangRepoCode = whichTestament === 'old' ? 'UHB' : 'UGNT';
@@ -341,7 +341,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     if (repoCode === 'OBS') {
       // debugLog("Calling OBS checkRepo()…");
       checkBookPackageResult = await checkRepo(username, `${languageCode}_obs`, originalBranch, generalLocation, setResultValue, newCheckingOptions); // Adds the notices to checkBookPackageResult
-      // debugLog(`checkRepo() returned ${checkBookPackageResult.successList.length} success message(s) and ${checkBookPackageResult.noticeList.length} notice(s)`);
+      // functionLog(`checkRepo() returned ${checkBookPackageResult.successList.length} success message(s) and ${checkBookPackageResult.noticeList.length} notice(s)`);
       // debugLog("crResultObject keys", JSON.stringify(Object.keys(checkBookPackageResult)));
       addSuccessMessage(`Checked ${languageCode} OBS repo from ${username}`);
     } else if (repoCode === 'TQ') {
@@ -438,7 +438,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
 
   checkBookPackageResult.elapsedSeconds = (new Date() - startTime) / 1000; // seconds
   // debugLog("checkBookPackageResult:", JSON.stringify(checkBookPackageResult));
-  // debugLog(`checkBookPackageResult(${bookID}): elapsedSeconds = ${checkBookPackageResult.elapsedSeconds}, notices count = ${checkBookPackageResult.noticeList.length}`);
+  // functionLog(`checkBookPackageResult(${bookID}): elapsedSeconds = ${checkBookPackageResult.elapsedSeconds}, notices count = ${checkBookPackageResult.noticeList.length}`);
   return checkBookPackageResult;
 };
 // end of checkBookPackage()
@@ -458,20 +458,20 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
  * @return {Object} - containing successList and noticeList
  */
 async function checkTQMarkdownBook(username, languageCode, repoName, branch, bookID, checkingOptions) {
-  // debugLog(`checkTQMarkdownBook(${username}, ${repoName}, ${branch}, ${bookID}, ${JSON.stringify(checkingOptions)})…`)
+  // functionLog(`checkTQMarkdownBook(${username}, ${repoName}, ${branch}, ${bookID}, ${JSON.stringify(checkingOptions)})…`)
   const repoCode = 'TQ';
   const generalLocation = ` in ${username} (${branch})`;
 
   const ctqResult = { successList: [], noticeList: [] };
 
   function addSuccessMessage(successString) {
-    // debugLog(`checkBookPackage success: ${successString}`);
+    // functionLog(`checkBookPackage success: ${successString}`);
     ctqResult.successList.push(successString);
   }
 
   function addNoticePartial(noticeObject) {
     // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
-    // debugLog(`checkTQMarkdownBook addNoticePartial: ${noticeObject.priority}:${noticeObject.message} ${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.filename}:${noticeObject.lineNumber} ${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
+    // functionLog(`checkTQMarkdownBook addNoticePartial: ${noticeObject.priority}:${noticeObject.message} ${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.filename}:${noticeObject.lineNumber} ${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
     parameterAssert(noticeObject.priority !== undefined, "cTQ addNoticePartial: 'priority' parameter should be defined");
     parameterAssert(typeof noticeObject.priority === 'number', `cTQ addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}'`);
     parameterAssert(noticeObject.message !== undefined, "cTQ addNoticePartial: 'message' parameter should be defined");
@@ -497,7 +497,7 @@ async function checkTQMarkdownBook(username, languageCode, repoName, branch, boo
 
 
   async function ourCheckTQFileContents(repoCode, bookID, C, V, cfFilename, fileContent, fileLocation, checkingOptions) {
-    // debugLog(`checkBookPackage ourCheckTQFileContents(${cfFilename})`);
+    // functionLog(`checkBookPackage ourCheckTQFileContents(${cfFilename})`);
 
     // Updates the global list of notices
     parameterAssert(repoCode !== undefined, "cTQ ourCheckTQFileContents: 'repoCode' parameter should be defined");

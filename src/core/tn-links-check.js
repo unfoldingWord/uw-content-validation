@@ -108,7 +108,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
     //      checkingOptions.checkLinkedTWArticleFlag
     */
 
-    // debugLog(`checkTNLinksToOutside v${TN_LINKS_VALIDATOR_VERSION_STRING} ${bookID} (${fieldName}, (${fieldText.length}) '${fieldText}', ${givenLocation}, …)…`);
+    // functionLog(`checkTNLinksToOutside v${TN_LINKS_VALIDATOR_VERSION_STRING} ${bookID} (${fieldName}, (${fieldText.length}) '${fieldText}', ${givenLocation}, …)…`);
     parameterAssert(bookID !== undefined, "checkTNLinksToOutside: 'bookID' parameter should be defined");
     parameterAssert(typeof bookID === 'string', `checkTNLinksToOutside: 'bookID' parameter should be a string not a '${typeof bookID}'`);
     parameterAssert(bookID.length === 3, `checkTNLinksToOutside: 'bookID' parameter should be three characters long not ${bookID.length}`);
@@ -131,7 +131,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
     const ctarResult = { noticeList: [], checkedFileCount: 0, checkedFilenames: [], checkedRepoNames: [] };
 
     function addNoticePartial(noticeObject) {
-        // debugLog(`checkTNLinksToOutside Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // functionLog(`checkTNLinksToOutside Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "cTNlnk addNoticePartial: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `cTNlnk addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "cTNlnk addNoticePartial: 'message' parameter should be defined");
@@ -232,7 +232,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         // debugLog(`Got tA filepath=${filepath}`);
 
         if (!checkingOptions?.disableAllLinkFetchingFlag) {
-            // debugLog(`checkTNLinksToOutside: need to check against ${taRepoName}`);
+            // functionLog(`checkTNLinksToOutside: need to check against ${taRepoName}`);
             const taPathParameters = { username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch };
             let taFileContent, alreadyGaveError = false;
             try {
@@ -249,9 +249,9 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
                 else if (taFileContent.length < 10)
                     addNoticePartial({ priority: 884, message: `Linked ${fieldName} TA article seems empty`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}` });
                 else if (checkingOptions?.checkLinkedTAArticleFlag === true) {
-                    // debugLog(`checkTNLinksToOutside got ${checkingOptions?.checkLinkedTAArticleFlag} so checking TA article: ${filepath}`);
+                    // functionLog(`checkTNLinksToOutside got ${checkingOptions?.checkLinkedTAArticleFlag} so checking TA article: ${filepath}`);
                     if (await alreadyChecked(taPathParameters) !== true) {
-                        // debugLog(`checkTNLinksToOutside needs to check TA article: ${filepath}`);
+                        // functionLog(`checkTNLinksToOutside needs to check TA article: ${filepath}`);
                         const checkTAFileResult = await checkMarkdownText(languageCode, `TA ${regexResultArray[3]}.md`, taFileContent, ourLocation, checkingOptions);
                         for (const noticeObject of checkTAFileResult.noticeList)
                             ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
@@ -299,9 +299,9 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
                 if (twFileContent.length < 10)
                     addNoticePartial({ priority: 881, message: `Linked ${fieldName} TW article seems empty`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}` });
                 else if (checkingOptions?.checkLinkedTWArticleFlag === true) {
-                    // debugLog(`checkTNLinksToOutside got ${checkingOptions?.checkLinkedTWArticleFlag} so checking TW article: ${filepath}`);
+                    // functionLog(`checkTNLinksToOutside got ${checkingOptions?.checkLinkedTWArticleFlag} so checking TW article: ${filepath}`);
                     if (await alreadyChecked(twPathParameters) !== true) {
-                        // debugLog(`checkTNLinksToOutside needs to check TW article: ${filepath}`);
+                        // functionLog(`checkTNLinksToOutside needs to check TW article: ${filepath}`);
                         const checkTWFileResult = await checkMarkdownText(languageCode, `TW ${regexResultArray[3]}.md`, twFileContent, ourLocation, checkingOptions);
                         for (const noticeObject of checkTWFileResult.noticeList)
                             ctarResult.noticeList.push({ ...noticeObject, username: twRepoUsername, repoCode: 'TW', repoName: twRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TW' });
@@ -756,7 +756,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         addNoticePartial({ priority: 843, message: `Mismatched [ ]( ) link characters`, details: `left=${leftCount.toLocaleString()}, middle=${middleCount.toLocaleString()}, right=${rightCount.toLocaleString()}`, location: ourLocation });
 
 
-    // debugLog(`checkTNLinksToOutside is returning ${JSON.stringify(ctarResult)}`);
+    // functionLog(`checkTNLinksToOutside is returning ${JSON.stringify(ctarResult)}`);
     return ctarResult;
 }
 // end of checkTNLinksToOutside function

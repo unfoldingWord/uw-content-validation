@@ -22,7 +22,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
       successList: an array of strings to tell the use exactly what has been checked
       noticeList: an array of 9 (i.e., with extra bookOrFileCode parameter at end) notice components
   */
-  // debugLog(`checkRepo(${username}, ${repoName}, ${branch}, ${givenLocation}, (fn), ${JSON.stringify(checkingOptions)})…`);
+  // functionLog(`checkRepo(${username}, ${repoName}, ${branch}, ${givenLocation}, (fn), ${JSON.stringify(checkingOptions)})…`);
   parameterAssert(username !== undefined, "checkRepo: 'username' parameter should be defined");
   parameterAssert(typeof username === 'string', `checkRepo: 'username' parameter should be a string not a '${typeof username}'`);
   parameterAssert(repoName !== undefined, "checkRepo: 'repoName' parameter should be defined");
@@ -51,14 +51,14 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
 
   function addSuccessMessage(successString) {
     // Adds the message to the result that we will later return
-    // debugLog(`checkRepo success: ${successString}`);
+    // functionLog(`checkRepo success: ${successString}`);
     checkRepoResult.successList.push(successString);
   }
   function addNoticePartial(noticeObject) {
     // Adds the notices to the result that we will later return
     // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
     // Note that bookID,C,V might all be empty strings (as some repos don’t have BCV)
-    // debugLog(`checkRepo addNoticePartial: ${noticeObject.priority}:${noticeObject.message} ${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.filename}:${noticeObject.lineNumber} ${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
+    // functionLog(`checkRepo addNoticePartial: ${noticeObject.priority}:${noticeObject.message} ${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.filename}:${noticeObject.lineNumber} ${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
     parameterAssert(noticeObject.priority !== undefined, "cR addNoticePartial: 'priority' parameter should be defined");
     parameterAssert(typeof noticeObject.priority === 'number', `cR addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}'`);
     parameterAssert(noticeObject.message !== undefined, "cR addNoticePartial: 'message' parameter should be defined");
@@ -98,7 +98,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
    */
   async function ourCheckRepoFileContents(bookOrFileCode, cfBookID, filename, fileContent, fileLocation, checkingOptions) {
     // We assume that checking for compulsory fields is done elsewhere
-    // debugLog(`checkRepo ourCheckRepoFileContents(${bookOrFileCode}, ${cfBookID}, ${filename}, ${fileContent.length}, ${fileLocation}, ${JSON.stringify(checkingOptions)})…`);
+    // functionLog(`checkRepo ourCheckRepoFileContents(${bookOrFileCode}, ${cfBookID}, ${filename}, ${fileContent.length}, ${fileLocation}, ${JSON.stringify(checkingOptions)})…`);
 
     // Updates the global list of notices
     parameterAssert(bookOrFileCode !== undefined, "ourCheckRepoFileContents: 'bookOrFileCode' parameter should be defined");
@@ -177,7 +177,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
       setResultValue(<p style={{ color: 'magenta' }}>Fetching zipped files from <b>{username}/{repoName}</b> repository…</p>);
 
       // Let’s fetch the zipped repo since it should be much more efficient than individual fetches
-      // debugLog(`checkRepo: fetch zip file for ${repoName}…`);
+      // functionLog(`checkRepo: fetch zip file for ${repoName}…`);
       const fetchRepositoryZipFile_ = (checkingOptions && checkingOptions.fetchRepositoryZipFile) ? checkingOptions.fetchRepositoryZipFile : cachedGetRepositoryZipFile;
       const zipFetchSucceeded = await fetchRepositoryZipFile_({ username, repository: repoName, branch });
       if (!zipFetchSucceeded) {
@@ -215,9 +215,9 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
         let bookOrFileCode = thisFilename.substring(0, thisFilename.length - thisFilenameExtension.length - 1);
         let ourBookID = '';
         if (repoName === 'en_translation-annotations' && thisFilenameExtension === 'tsv') {
-          // debugLog(`checkRepo have en_translation-annotations bookOrFileCode=${bookOrFileCode}`);
+          // functionLog(`checkRepo have en_translation-annotations bookOrFileCode=${bookOrFileCode}`);
           const bookID = bookOrFileCode.substring(0, 3).toUpperCase();
-          // debugLog(`checkRepo have bookID=${bookID}`);
+          // functionLog(`checkRepo have bookID=${bookID}`);
           parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkRepo: '${bookID}' is not a valid USFM book identifier (for Annotations)`);
           bookOrFileCode = `${bookOrFileCode.substring(4).toUpperCase()} ${bookID}`;
           ourBookID = bookID;
@@ -265,7 +265,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
           return;
         }
         if (repoFileContent) {
-          // debugLog(`checkRepo for ${repoName} checking ${thisFilename}`);
+          // functionLog(`checkRepo for ${repoName} checking ${thisFilename}`);
           await ourCheckRepoFileContents(bookOrFileCode, ourBookID,
             // OBS has many files with the same name, so we have to give some of the path as well
             // repoName.endsWith('_obs') ? thisFilepath.replace('content/', '') : thisFilename,
@@ -275,7 +275,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
           checkedFilenames.push(thisFilename);
           checkedFilenameExtensions.add(thisFilenameExtension);
           totalCheckedSize += repoFileContent.length;
-          // debugLog(`checkRepo checked ${thisFilename}`);
+          // functionLog(`checkRepo checked ${thisFilename}`);
           if (thisFilenameExtension !== 'md') // There's often far, far too many of these
             addSuccessMessage(`Checked ${repoName} ${bookOrFileCode.toUpperCase()} file: ${thisFilename}`);
         }
@@ -297,7 +297,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
       // checkRepoResult.checkedOptions = checkingOptions; // This is done at the caller level
 
       addSuccessMessage(`Checked ${username} repo: ${repoName}`);
-      // debugLog(`checkRepo() is returning ${checkRepoResult.successList.length.toLocaleString()} success message(s) and ${checkRepoResult.noticeList.length.toLocaleString()} notice(s)`);
+      // functionLog(`checkRepo() is returning ${checkRepoResult.successList.length.toLocaleString()} success message(s) and ${checkRepoResult.noticeList.length.toLocaleString()} notice(s)`);
     } catch (cRerror) {
       console.error(`checkRepo main code block got error: ${cRerror.message}`);
       setResultValue(<>
@@ -307,7 +307,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
     }
   }
   checkRepoResult.elapsedSeconds = (new Date() - startTime) / 1000; // seconds
-  // debugLog(`checkRepo() returning ${JSON.stringify(checkRepoResult)}`);
+  // functionLog(`checkRepo() returning ${JSON.stringify(checkRepoResult)}`);
   return checkRepoResult;
 };
 // end of checkRepo()

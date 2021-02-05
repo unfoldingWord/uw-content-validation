@@ -30,7 +30,7 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, chec
 
      Returns a result object containing a successList and a noticeList
      */
-    // debugLog(`checkUSFMToJSON(${givenText.length.toLocaleString()} chars, '${givenLocation}')…`);
+    // functionLog(`checkUSFMToJSON(${givenText.length.toLocaleString()} chars, '${givenLocation}')…`);
     parameterAssert(bookID !== undefined, "checkUSFMToJSON: 'bookID' parameter should be defined");
     parameterAssert(typeof bookID === 'string', `checkUSFMToJSON: 'bookID' parameter should be a string not a '${typeof bookID}': ${bookID}`);
     parameterAssert(bookID.length === 3, `checkUSFMToJSON: 'bookID' parameter should be three characters long not ${bookID.length}`);
@@ -51,7 +51,7 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, chec
     const result = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        // debugLog(`checkUSFMToJSON success: ${successString}`);
+        // functionLog(`checkUSFMToJSON success: ${successString}`);
         result.successList.push(successString);
     }
     function addNotice6to7({ priority, message, lineNumber, characterIndex, extract, location }) {
@@ -63,7 +63,7 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, chec
         * @param {String} extract - short extract from the line centred on the problem (if available)
         * @param {String} location - description of where the issue is located
         */
-        // debugLog(`checkUSFMToJSON notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // functionLog(`checkUSFMToJSON notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         parameterAssert(priority !== undefined, "cUSFMjs addNotice6to7: 'priority' parameter should be defined");
         parameterAssert(typeof priority === 'number', `cUSFMjs addNotice6to7: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         parameterAssert(message !== undefined, "cUSFMjs addNotice6to7: 'message' parameter should be defined");
@@ -92,7 +92,7 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, chec
 
     addSuccessMessage(`Checked USFM-JS`);
     // debugLog(`  checkUSFMToJSON returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
-    // debugLog(`checkUSFMToJSON result is ${JSON.stringify(result)}`);
+    // functionLog(`checkUSFMToJSON result is ${JSON.stringify(result)}`);
     return result;
 }
 // end of checkUSFMToJSON function

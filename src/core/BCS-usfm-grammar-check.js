@@ -140,7 +140,7 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
     const cugResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        // debugLog(`checkUSFMGrammar success: ${successString}`);
+        // functionLog(`checkUSFMGrammar success: ${successString}`);
         cugResult.successList.push(successString);
     }
     function addNotice6to7(noticeObject) {
@@ -152,7 +152,7 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
         * @param {String} extract - short extract from the line centred on the problem (if available)
         * @param {String} location - description of where the issue is located
         */
-        // debugLog(`checkUSFMGrammar notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // functionLog(`checkUSFMGrammar notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "cUSFMgr addNotice6to7: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `cUSFMgr addNotice6to7: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "cUSFMgr addNotice6to7: 'message' parameter should be defined");
@@ -187,7 +187,7 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
 
     addSuccessMessage(`Checked USFM Grammar (${strictnessString} mode) ${grammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN’T validate)"}`);
     // debugLog(`  checkUSFMGrammar returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
-    // debugLog(`checkUSFMGrammar result is ${JSON.stringify(result)}`);
+    // functionLog(`checkUSFMGrammar result is ${JSON.stringify(result)}`);
     return cugResult;
 }
 // end of checkUSFMGrammar function

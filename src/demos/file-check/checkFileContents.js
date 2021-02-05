@@ -23,7 +23,7 @@ import {
 export async function checkFileContents(username, languageCode, repoCode, branch, filename, fileContent, givenLocation, checkingOptions) {
   // Determine the file type from the filename extension
   //  and return the results of checking that kind of file text
-  // debugLog(`checkFileContents(${username}, ${languageCode}, ${filename}, ${fileContent.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
+  // functionLog(`checkFileContents(${username}, ${languageCode}, ${filename}, ${fileContent.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
   parameterAssert(username !== undefined, "checkFileContents: 'username' parameter should be defined");
   parameterAssert(typeof username === 'string', `checkFileContents: 'username' parameter should be a string not a '${typeof username}': ${username}`);
   parameterAssert(languageCode !== undefined, "checkFileContents: 'languageCode' parameter should be defined");
@@ -50,9 +50,9 @@ export async function checkFileContents(username, languageCode, repoCode, branch
   let checkFileResult = { checkedFileCount: 0 };
   if (filenameLower.endsWith('.tsv')) {
     const filenameMain = filename.substring(0, filename.length - 4); // drop .tsv
-    // debugLog(`checkFileContents have TSV filenameMain=${filenameMain}`);
+    // functionLog(`checkFileContents have TSV filenameMain=${filenameMain}`);
     const bookID = filenameMain.startsWith(`${languageCode}_`) || filenameMain.startsWith('en_') ? filenameMain.substring(filenameMain.length - 3) : filenameMain.substring(0, 3).toUpperCase();
-    // debugLog(`checkFileContents have TSV bookID=${bookID}`);
+    // functionLog(`checkFileContents have TSV bookID=${bookID}`);
     parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
     if (filename.startsWith(`${languageCode}_`) || filenameMain.startsWith('en_'))
       checkFileResult = await checkTN_TSVText(languageCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
@@ -87,7 +87,7 @@ export async function checkFileContents(username, languageCode, repoCode, branch
     checkFileResult = checkPlainText('raw', filename, fileContent, ourCFLocation, checkingOptions);
     checkFileResult.noticeList.unshift({ priority: 995, message: "File extension is not recognized, so treated as plain text.", filename, location: filename });
   }
-  // debugLog(`checkFileContents got initial results with ${checkFileResult.successList.length} success message(s) and ${checkFileResult.noticeList.length} notice(s)`);
+  // functionLog(`checkFileContents got initial results with ${checkFileResult.successList.length} success message(s) and ${checkFileResult.noticeList.length} notice(s)`);
 
   // Make sure that we have the filename in all of our notices (in case other files are being checked as well)
   function addFilenameField(noticeObject) {
@@ -105,7 +105,7 @@ export async function checkFileContents(username, languageCode, repoCode, branch
   checkFileResult.checkedOptions = checkingOptions;
 
   checkFileResult.elapsedSeconds = (new Date() - startTime) / 1000; // seconds
-  // debugLog(`checkFileContents() returning ${JSON.stringify(checkFileResult)}`);
+  // functionLog(`checkFileContents() returning ${JSON.stringify(checkFileResult)}`);
   return checkFileResult;
 };
 // end of checkFileContents()

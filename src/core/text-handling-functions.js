@@ -3,16 +3,17 @@ export const DEFAULT_EXTRACT_LENGTH = 15;
 
 // See http://xahlee.info/comp/unicode_matching_brackets.html for a more complete list
 // Also see https://unicode-table.com/en/sets/quotation-marks/
-export const PAIRED_PUNCTUATION_OPENERS = '[({<⟨“‘«‹《〈⸢⸤';
+export const PAIRED_PUNCTUATION_OPENERS = '[({<⟨“‘«‹《〈⸢⸤'; // These are just single/individual characters
 export const PAIRED_PUNCTUATION_CLOSERS = '])}>⟩”’»›》〉⸣⸥';
-export const MATCHED_PUNCTUATION_PAIRS = [
+export const OPEN_CLOSE_PUNCTUATION_PAIRS = [
+    // These can be multiple character sequences (as long as opener and closer are different/distinguishable)
     ['[', ']'], ['(', ')'], ['{', '}'],
     ['“', '”'], ['‘', '’'],
     ['<', '>'], ['⟨', '⟩'],
     ['«', '»'], ['‹', '›'],
     ['《', '》'], ['〈', '〉'],
     ['⸢', '⸣'], ['⸤', '⸥'],
-    ['**_', '_**']
+    ['**_', '_**'] // TODO: Does this markdown belong here???
 ];
 export const BAD_CHARACTER_COMBINATIONS = [
     '\\[\\[', '\\]\\]', // These were introduced by a tC Create bug (NOTE: \[ or \] is quite legal)
