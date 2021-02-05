@@ -55,8 +55,8 @@ export function checkTextfileContents(languageCode, fileType, filename, fileText
     function ourCheckPlainText(textType, textFilename, plainText, givenLocation, checkingOptions) {
         /**
         * @description - checks the given text field and processes the returned results
-        * @param {String} plainText - the actual text of the field being checked
-        * @param {String} givenLocation - description of where the field is located
+        * @param {string} plainText - the actual text of the field being checked
+        * @param {string} givenLocation - description of where the field is located
         * @param {Object} checkingOptions - parameters that might affect the check
         */
         // Does basic checks for small errors like leading/trailing spaces, etc.

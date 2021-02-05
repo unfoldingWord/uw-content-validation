@@ -147,10 +147,10 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
         /**
         * @description - adds a new notice entry, adding bookID,C,V to the given fields
         * @param {Number} priority - notice priority from 1 (lowest) to 999 (highest)
-        * @param {String} message - the text of the notice message
+        * @param {string} message - the text of the notice message
         * @param {Number} characterIndex - where the issue occurs in the line
-        * @param {String} extract - short extract from the line centred on the problem (if available)
-        * @param {String} location - description of where the issue is located
+        * @param {string} extract - short extract from the line centred on the problem (if available)
+        * @param {string} location - description of where the issue is located
         */
         // functionLog(`checkUSFMGrammar notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "cUSFMgr addNotice6to7: 'priority' parameter should be defined");

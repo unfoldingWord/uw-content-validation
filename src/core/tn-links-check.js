@@ -7,7 +7,7 @@ import { userLog, debugLog, parameterAssert, logicAssert, ourParseInt } from './
 // import { consoleLogObject } from '../core/utilities';
 
 
-// const TN_LINKS_VALIDATOR_VERSION_STRING = '0.7.4';
+// const TN_LINKS_VALIDATOR_VERSION_STRING = '0.7.5';
 
 const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -728,13 +728,13 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
     if (totalLinks1 > BibleLinkCount) {
         const leftoverLinksList1 = linksList1.filter(x => !processedLinkList.includes(x)); // Delete links that we processed above
         // if (leftoverLinksList1.length > 0) debugLog(`processedLinkList (${processedLinkList.length})=${JSON.stringify(processedLinkList)}\n        linksList1(${linksList1.length})=${JSON.stringify(linksList1)}\nleftoverLinksList1(${leftoverLinksList1.length})=${JSON.stringify(leftoverLinksList1)}`);
-        addNoticePartial({ priority: 648, message: "Unusual [ ]( ) link(s)—not normal Bible or TN links", details: `need to carefully check ${JSON.stringify(leftoverLinksList1)}`, location: ourLocation });
+        addNoticePartial({ priority: 648, message: "Unusual [ ]( ) link(s)—not normal Bible or TN links", details: `need to carefully check ${leftoverLinksList1.length === 1 ? leftoverLinksList1[0] : JSON.stringify(leftoverLinksList1)}`, location: ourLocation });
     }
     const twaLinkCount = twLinkCount + taLinkCount;
     if (totalLinks2 > twaLinkCount) {
         const leftoverLinksList2 = linksList2.filter(x => !processedLinkList.includes(x)); // Delete links that we processed above
         // if (leftoverLinksList2.length > 0) debugLog(`processedLinkList (${processedLinkList.length})=${JSON.stringify(processedLinkList)}\n        linksList2(${linksList2.length})=${JSON.stringify(linksList2)}\nleftoverLinksList2(${leftoverLinksList2.length})=${JSON.stringify(leftoverLinksList2)}`);
-        addNoticePartial({ priority: 649, message: "Unusual [[ ]] link(s)—not normal TA or TW links", details: `need to carefully check ${JSON.stringify(leftoverLinksList2)}`, location: ourLocation });
+        addNoticePartial({ priority: 649, message: "Unusual [[ ]] link(s)—not normal TA or TW links", details: `need to carefully check ${leftoverLinksList2.length === 1 ? leftoverLinksList2[0] : JSON.stringify(leftoverLinksList2)}`, location: ourLocation });
     }
 
     // Check for badly formed links (not processed by the above code)

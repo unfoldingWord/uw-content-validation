@@ -23,13 +23,13 @@ const TA_REGEX = new RegExp('\\[\\[rc://[^ /]+?/ta/man/[^ /]+?/([^ \\]]+?)\\]\\]
 /**
  *
  * @description - Checks one TSV data row of translation notes (TN2)
- * @param {String} languageCode - the language code, e.g., 'en'
- * @param {String} annotationType - TN2, TQ2, TWL, SN, or SQ -- allows more specific checks
- * @param {String} line - the TSV line to be checked
- * @param {String} bookID - 3-character UPPERCASE USFM book identifier or 'OBS'
- * @param {String} givenC - chapter number or (for OBS) story number string
- * @param {String} givenV - verse number or (for OBS) frame number string
- * @param {String} givenRowLocation - description of where the line is located
+ * @param {string} languageCode - the language code, e.g., 'en'
+ * @param {string} annotationType - TN2, TQ2, TWL, SN, or SQ -- allows more specific checks
+ * @param {string} line - the TSV line to be checked
+ * @param {string} bookID - 3-character UPPERCASE USFM book identifier or 'OBS'
+ * @param {string} givenC - chapter number or (for OBS) story number string
+ * @param {string} givenV - verse number or (for OBS) frame number string
+ * @param {string} givenRowLocation - description of where the line is located
  * @param {Object} checkingOptions - may contain extractLength, twRepoUsername, twRepoBranch (or tag), checkLinkedTWArticleFlag parameters
  * @return {Object} - containing noticeList
  */
@@ -69,12 +69,12 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
     /**
     * @description - adds a new notice entry, adding bookID,C,V to the given fields
     * @param {Number} priority - notice priority from 1 (lowest) to 999 (highest)
-    * @param {String} message - the text of the notice message
-    * @param {String} rowID - 4-character row ID field
+    * @param {string} message - the text of the notice message
+    * @param {string} rowID - 4-character row ID field
     * @param {Number} lineNumber - one-based line number
     * @param {Number} characterIndex - zero-based index of where the issue occurs in the line
-    * @param {String} extract - short extract from the line centred on the problem (if available)
-    * @param {String} location - description of where the issue is located
+    * @param {string} extract - short extract from the line centred on the problem (if available)
+    * @param {string} location - description of where the issue is located
     */
     function addNoticePartial(noticeObject) {
         // functionLog(`checkTN_TSVDataRow addNoticePartial(priority=${noticeObject.priority}) ${noticeObject.message}, ${noticeObject.characterIndex}, ${noticeObject.extract}, ${noticeObject.location}`);
@@ -97,11 +97,11 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
 
     /**
     * @description - checks the given markdown field and processes the returned results
-    * @param {String} rowID - 4-character row ID field
-    * @param {String} fieldName - name of the field being checked
-    * @param {String} fieldText - the actual text of the field being checked
+    * @param {string} rowID - 4-character row ID field
+    * @param {string} fieldName - name of the field being checked
+    * @param {string} fieldText - the actual text of the field being checked
     * @param {} allowedLinks - true if links are allowed in the field, otherwise false
-    * @param {String} rowLocation - description of where the line is located
+    * @param {string} rowLocation - description of where the line is located
     * @param {Object} checkingOptions - parameters that might affect the check
     */
     async function ourMarkdownTextChecks(rowID, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions) {
@@ -148,11 +148,11 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
 
     /**
     * @description - checks the given text field and processes the returned results
-    * @param {String} rowID - 4-character row ID field
-    * @param {String} fieldName - name of the field being checked
-    * @param {String} fieldText - the actual text of the field being checked
+    * @param {string} rowID - 4-character row ID field
+    * @param {string} fieldName - name of the field being checked
+    * @param {string} fieldText - the actual text of the field being checked
     * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
-    * @param {String} rowLocation - description of where the line is located
+    * @param {string} rowLocation - description of where the line is located
     * @param {Object} checkingOptions - parameters that might affect the check
     */
     function ourCheckTextField(rowID, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions) {

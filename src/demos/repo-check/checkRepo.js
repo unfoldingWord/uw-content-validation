@@ -9,10 +9,10 @@ import { checkFileContents } from '../file-check/checkFileContents';
 
 /**
  *
- * @param {String} username
- * @param {String} repoName
- * @param {String} branch
- * @param {String} givenLocation
+ * @param {string} username
+ * @param {string} repoName
+ * @param {string} branch
+ * @param {string} givenLocation
  * @param {*} setResultValue
  * @param {Object} checkingOptions
  */
@@ -89,11 +89,11 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
 
   /**
    *
-   * @param {String} bookOrFileCode
-   * @param {String} cfBookID
-   * @param {String} filename
-   * @param {String} fileContent
-   * @param {String} fileLocation
+   * @param {string} bookOrFileCode
+   * @param {string} cfBookID
+   * @param {string} filename
+   * @param {string} fileContent
+   * @param {string} fileLocation
    * @param {Object} checkingOptions
    */
   async function ourCheckRepoFileContents(bookOrFileCode, cfBookID, filename, fileContent, fileLocation, checkingOptions) {

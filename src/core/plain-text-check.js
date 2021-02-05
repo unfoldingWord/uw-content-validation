@@ -74,10 +74,10 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
     function ourCheckTextField(lineNumber, fieldText, allowedLinks, optionalFieldLocation, checkingOptions) {
         /**
         * @description - checks the given text field and processes the returned results
-        * @param {String} fieldName - name of the field being checked
-        * @param {String} fieldText - the actual text of the field being checked
+        * @param {string} fieldName - name of the field being checked
+        * @param {string} fieldText - the actual text of the field being checked
         * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
-        * @param {String} optionalFieldLocation - description of where the field is located
+        * @param {string} optionalFieldLocation - description of where the field is located
         * @param {Object} checkingOptions - parameters that might affect the check
         */
         // Does basic checks for small errors like leading/trailing spaces, etc.

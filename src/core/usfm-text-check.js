@@ -485,13 +485,13 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
     /**
     * @description - checks the given text field and processes the returned results
     * @param {number} lineNumber -- 1-based integer
-    * @param {String} C - chapter number of the text being checked
-    * @param {String} V - verse number of the text being checked
-    * @param {String} fieldType - If 'USFM', fieldName will be the line marker, and fieldText will be the line text; If 'raw', fieldName will be 'from {marker}' and fieldText will have internal USFM markers removed
-    * @param {String} fieldName - name of the field being checked
-    * @param {String} fieldText - the actual text of the field being checked
+    * @param {string} C - chapter number of the text being checked
+    * @param {string} V - verse number of the text being checked
+    * @param {string} fieldType - If 'USFM', fieldName will be the line marker, and fieldText will be the line text; If 'raw', fieldName will be 'from {marker}' and fieldText will have internal USFM markers removed
+    * @param {string} fieldName - name of the field being checked
+    * @param {string} fieldText - the actual text of the field being checked
     * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
-    * @param {String} fieldLocation - description of where the field is located
+    * @param {string} fieldLocation - description of where the field is located
     * @param {Object} checkingOptions - parameters that might affect the check
     */
     function ourCheckTextField(lineNumber, C, V, fieldType, fieldName, fieldText, allowedLinks, fieldLocation, checkingOptions) {

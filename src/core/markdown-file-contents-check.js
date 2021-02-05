@@ -78,9 +78,9 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
 
   /**
   * @description - checks the given text field and processes the returned results
-  * @param {String} markdownText - the actual text of the file being checked
+  * @param {string} markdownText - the actual text of the file being checked
   * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
-  * @param {String} optionalFieldLocation - description of where the field is located
+  * @param {string} optionalFieldLocation - description of where the field is located
   * @param {Object} checkingOptions - parameters that might affect the check
   */
   async function ourCheckMarkdownText(markdownText, optionalFieldLocation, checkingOptions) {
@@ -107,8 +107,8 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
 
   /**
   * @description - checks the given text field and processes the returned results
-  * @param {String} markdownText - the actual text of the file being checked
-  * @param {String} optionalFieldLocation - description of where the field is located
+  * @param {string} markdownText - the actual text of the file being checked
+  * @param {string} optionalFieldLocation - description of where the field is located
   * @param {Object} checkingOptions - parameters that might affect the check
   */
   function ourFileTextCheck(markdownText, optionalFieldLocation, checkingOptions) {

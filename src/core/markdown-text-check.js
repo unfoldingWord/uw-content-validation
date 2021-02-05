@@ -85,10 +85,10 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
     function ourCheckTextField(fieldName, lineNumber, fieldText, allowedLinks, optionalFieldLocation, checkingOptions) {
         /**
         * @description - checks the given text field and processes the returned results
-        * @param {String} fieldName - name of the field being checked
-        * @param {String} fieldText - the actual text of the field being checked
+        * @param {string} fieldName - name of the field being checked
+        * @param {string} fieldText - the actual text of the field being checked
         * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
-        * @param {String} optionalFieldLocation - description of where the field is located
+        * @param {string} optionalFieldLocation - description of where the field is located
         * @param {Object} checkingOptions - parameters that might affect the check
         */
         // Does basic checks for small errors like leading/trailing spaces, etc.
@@ -242,8 +242,8 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
         if (count && (count % 2) !== 0) {
             const characterIndex = markdownText.indexOf(thisField);
             const iy = characterIndex + halfLength; // Want extract to focus more on what follows
-            const extract = (iy > halfLength ? '…' : '') + markdownText.substring(iy - halfLength, iy + halfLengthPlus) + (iy + halfLengthPlus < markdownText.length ? '…' : '')
-            addNotice({ priority: 378, message: `Possible mismatched '${thisField}' pairs`, details: `${count.toLocaleString()} total occurrence${count === 1 ? '' : 's'}`, characterIndex, extract, location: ourLocation });
+            const extract = /*(iy > halfLength ? '…' : '') +*/ markdownText.substring(iy - halfLength, iy + halfLengthPlus) + (iy + halfLengthPlus < markdownText.length ? '…' : '')
+            addNotice({ priority: 378, message: `Possible mismatched '${thisField}' markdown formatting pairs`, details: `${count.toLocaleString()} total occurrence${count === 1 ? '' : 's'}`, characterIndex, extract, location: ourLocation });
             break; // Only want one warning per text
         }
     }
