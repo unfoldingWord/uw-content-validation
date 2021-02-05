@@ -1,4 +1,4 @@
-import { DEFAULT_EXTRACT_LENGTH, isWhitespace } from './text-handling-functions'
+import { DEFAULT_EXTRACT_LENGTH, isWhitespace, countOccurrences } from './text-handling-functions'
 import * as books from './books/books';
 import { checkTextField } from './field-text-check';
 import { checkMarkdownText } from './markdown-text-check';
@@ -442,7 +442,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
             } else if (LC_ALPHABET.indexOf(rowID[0]) < 0)
                 addNoticePartial({ priority: 176, message: "Row ID should start with a lowercase letter", characterIndex: 0, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation });
             else if (LC_ALPHABET_PLUS_DIGITS.indexOf(rowID[3]) < 0)
-                addNoticePartial({ priority: 175, message: "Row ID should end with a lowercase letter or digit", characterIndeX: 3, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 175, message: "Row ID should end with a lowercase letter or digit", characterIndex: 3, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation });
             else if (LC_ALPHABET_PLUS_DIGITS_PLUS_HYPHEN.indexOf(rowID[1]) < 0)
                 addNoticePartial({ priority: 174, message: "Row ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 1, rowID, extract: rowID, location: ourRowLocation });
             else if (LC_ALPHABET_PLUS_DIGITS_PLUS_HYPHEN.indexOf(rowID[2]) < 0)
@@ -465,9 +465,11 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
                 if (occurrenceNote.indexOf(supportReference) < 0) // The full link is NOT in the note!
                     addNoticePartial({ priority: 787, message: "Link to TA should also be in OccurrenceNote", fieldName: 'SupportReference', extract: supportReference, rowID, location: ourRowLocation });
             }
-            if (supportReference.indexOf('\u200B') >= 0)
-                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", fieldName: 'SupportReference', rowID, location: ourRowLocation });
+            if (supportReference.indexOf('\u200B') >= 0) {
+                const charCount = countOccurrences(supportReference,'\u200B');
+                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1?'':'s'} found`, fieldName: 'SupportReference', rowID, location: ourRowLocation });
         }
+    }
         // // TODO: Check if this is really required????
         // else if (/^\d+$/.test(C) && /^\d+$/.test(V)) // C:V are both digits
         //     addNoticePartial({ priority: 877, message: "Missing SupportReference field", fieldName: 'SupportReference', rowID, location: ourRowLocation });
@@ -505,8 +507,10 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         }
 
         if (GLQuote.length) { // TODO: need to check UTN against ULT
-            if (GLQuote.indexOf('\u200B') >= 0)
-                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", fieldName: 'GLQuote', rowID, location: ourRowLocation });
+            if (GLQuote.indexOf('\u200B') >= 0) {
+                const charCount = countOccurrences(GLQuote,'\u200B');
+                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1?'':'s'} found`, fieldName: 'GLQuote', rowID, location: ourRowLocation });
+            }
             if (isWhitespace(GLQuote))
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'GLQuote', rowID, location: ourRowLocation });
             else // More than just whitespace
@@ -518,8 +522,10 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         //         addNoticePartial({ priority: 275, message: "Missing GLQuote field", rowID, location: ourRowLocation });
 
         if (occurrenceNote.length) {
-            if (occurrenceNote.indexOf('\u200B') >= 0)
-                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation });
+            if (occurrenceNote.indexOf('\u200B') >= 0) {
+                const charCount = countOccurrences(occurrenceNote,'\u200B');
+                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1?'':'s'} found`, fieldName: 'OccurrenceNote', rowID, location: ourRowLocation });
+            }
             if (isWhitespace(occurrenceNote))
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation });
             else { // More than just whitespace

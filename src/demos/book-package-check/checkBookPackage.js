@@ -1,5 +1,5 @@
 import React from 'react';
-import { userLog, parameterAssert, debugLog } from '../../core/utilities';
+import { userLog, parameterAssert } from '../../core/utilities';
 import * as books from '../../core/books/books';
 import { formRepoName, repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetBookFilenameFromManifest, checkManifestText, checkMarkdownText } from '../../core';
 import { checkFileContents } from '../file-check/checkFileContents';

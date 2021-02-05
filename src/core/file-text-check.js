@@ -18,7 +18,7 @@ export function checkTextfileContents(languageCode, fileType, filename, fileText
     //  The list contains objects with the following fields:
     //      priority (compulsory): the priority number 0..999 (usually 800+ are errors, lower are warnings)
     //      message (compulsory): the error description string
-    //      characterIndeX: the 0-based index for the position in the string
+    //      characterIndex: the 0-based index for the position in the string
     //      extract: a short extract of the string containing the error (or empty-string if irrelevant)
     //  (Returned in this way for more intelligent processing at a higher level)
     // functionLog(`checkTextfileContents(${filename}, ${fileText.length.toLocaleString()} chars, '${optionalFileLocation}')…`);
