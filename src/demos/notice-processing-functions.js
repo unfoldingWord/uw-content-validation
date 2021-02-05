@@ -355,6 +355,10 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 resultObject.successList.push(`Checked ${LICENSEsList[0]} LICENSE file`);
             // Put summary messages at the beginning of the list if more than one found
             // Process these messages in the opposite order than we want them to display (since we push to beginning of list each time)
+            if (LICENSEsList.length > 1)
+                resultObject.successList.unshift(`Checked ${LICENSEsList.length} LICENSE files: ${LICENSEsList.join(', ')}`);
+            if (READMEsList.length > 1)
+                resultObject.successList.unshift(`Checked ${READMEsList.length} README files: ${READMEsList.join(', ')}`);
             if (manifestsList.length > 1)
                 resultObject.successList.unshift(`Checked ${manifestsList.length} manifest files: ${manifestsList.join(', ')}`);
             if (TSVNotesList.length > 1)
@@ -381,10 +385,6 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 resultObject.successList.unshift(`Checked ${UGNTBookList.length} UGNT files: ${UGNTBookList.join(', ')}`);
             if (UHBBookList.length > 1)
                 resultObject.successList.unshift(`Checked ${UHBBookList.length} UHB files: ${UHBBookList.join(', ')}`);
-            if (READMEsList.length > 1)
-                resultObject.successList.unshift(`Checked ${READMEsList.length} README files: ${READMEsList.join(', ')}`);
-            if (LICENSEsList.length > 1)
-                resultObject.successList.unshift(`Checked ${LICENSEsList.length} LICENSE files: ${LICENSEsList.join(', ')}`);
         }
     else resultObject.successList = [];
 

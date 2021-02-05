@@ -402,13 +402,11 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       //  because a faulty manifest might also stop a BP from working correctly in various programs
       if (!checkedManifestDetails.includes(repoName)) { // Don’t want to check more than once, esp. for annotations repos
         checkedManifestDetails.push(repoName); // Remember that we checked this one
-        debugLog(`Maybe checking MANIFEST etc. for ${repoName}`);
+        // debugLog(`Maybe checking MANIFEST etc. for ${repoName}`);
 
         if (newCheckingOptions?.checkManifestFlag) {
-          debugLog(`Checking MANIFEST for ${repoName}`);
-          // debugLog("BEFORE", checkBookPackageResult.noticeList.length);
+          // debugLog(`Checking MANIFEST for ${repoName}`);
           const numCheckedCharacters = await ourCheckManifest(repoCode, repoName, adjustedBranch, generalLocation, newCheckingOptions);
-          // debugLog("AFTER", checkBookPackageResult.noticeList.length);
           if (numCheckedCharacters > 0) {
             checkedFileCount += 1;
             checkedFilenames.push('manifest.yaml');
@@ -417,14 +415,13 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
             addSuccessMessage(`Checked ${repoName} manifest file`);
           }
         }
+        // else debugLog(`NOT checking MANIFEST for ${repoName}`);
 
         // We can also check the README file for each repo if requested
         if (newCheckingOptions?.checkReadmeFlag) {
-          debugLog(`Checking README for ${repoName}`);
-          // debugLog("BEFORE", checkBookPackageResult.noticeList.length);
+          // debugLog(`Checking README for ${repoName}`);
           const filename = 'README.md';
           const numCheckedCharacters = await ourCheckMarkdown(repoCode, repoName, adjustedBranch, filename, generalLocation, newCheckingOptions);
-          // debugLog("AFTER", checkBookPackageResult.noticeList.length);
           if (numCheckedCharacters > 0) {
             checkedFileCount += 1;
             checkedFilenames.push(filename);
@@ -433,15 +430,13 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
             addSuccessMessage(`Checked ${repoName} README file`);
           }
         }
-        else debugLog(`NOT checking README for ${repoName}`);
+        // else debugLog(`NOT checking README for ${repoName}`);
 
         // We can also check the LICENSE file for each repo if requested
         if (newCheckingOptions?.checkLicenseFlag) {
-          debugLog(`Checking LICENSE for ${repoName}`);
-          // debugLog("BEFORE", checkBookPackageResult.noticeList.length);
+          // debugLog(`Checking LICENSE for ${repoName}`);
           const filename = 'LICENSE.md';
           const numCheckedCharacters = await ourCheckMarkdown(repoCode, repoName, adjustedBranch, filename, generalLocation, newCheckingOptions);
-          // debugLog("AFTER", checkBookPackageResult.noticeList.length);
           if (numCheckedCharacters > 0) {
             checkedFileCount += 1;
             checkedFilenames.push(filename);
@@ -450,11 +445,11 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
             addSuccessMessage(`Checked ${repoName} LICENSE file`);
           }
         }
-        else debugLog(`NOT checking LICENSE for ${repoName}`);
+        // else debugLog(`NOT checking LICENSE for ${repoName}`);
       }
-      else debugLog(`ALREADY checked MANIFEST, etc. for ${repoName}`);
+      // else debugLog(`ALREADY checked MANIFEST, etc. for ${repoName}`);
     } // end of linkFetching not disabled
-    else debugLog(`NOT fetching MANIFEST, etc. for ${repoName}`);
+    // else debugLog(`NOT fetching MANIFEST, etc. for ${repoName}`);
 
     numCheckedRepos += 1;
   } // end of repo loop
