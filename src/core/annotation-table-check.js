@@ -5,7 +5,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert } from './utilities';
 
 
-const ANNOTATION_TABLE_VALIDATOR_VERSION_STRING = '0.3.0';
+const ANNOTATION_TABLE_VALIDATOR_VERSION_STRING = '0.3.1';
 
 const NUM_EXPECTED_ANNOTATION_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tAnnotation';
@@ -188,7 +188,7 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
                     if (V === 'intro') { }
                     else if (/^\d+$/.test(V)) {
                         let intV = Number(V);
-                        if (intV === 0)
+                        if (intV === 0 && bookID !== 'PSA') // Psalms have \d titles
                             addNoticePartial({ priority: 552, C, V, message: "Invalid zero verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, extract: V, location: ourLocation });
                         if (intV > numVersesThisChapter)
                             addNoticePartial({ priority: 734, C, V, message: "Invalid large verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, extract: V, location: ourLocation });

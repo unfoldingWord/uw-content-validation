@@ -1,10 +1,10 @@
 import React from 'react';
 import * as books from '../../core/books/books';
-import { parameterAssert, repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetRepositoryZipFile } from '../../core';
 import { checkFileContents } from '../file-check/checkFileContents';
+import { logicAssert, parameterAssert, repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetRepositoryZipFile } from '../../core';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.4.4';
+// const REPO_VALIDATOR_VERSION_STRING = '0.4.5';
 
 
 /**
@@ -58,7 +58,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
     // Adds the notices to the result that we will later return
     // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
     // Note that bookID,C,V might all be empty strings (as some repos don’t have BCV)
-    // functionLog(`checkRepo addNoticePartial: ${noticeObject.priority}:${noticeObject.message} ${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.filename}:${noticeObject.lineNumber} ${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
+    // functionLog(`checkRepo addNoticePartial: ${noticeObject.priority}:${noticeObject.message} bookID=${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.filename}:${noticeObject.lineNumber} ${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
     parameterAssert(noticeObject.priority !== undefined, "cR addNoticePartial: 'priority' parameter should be defined");
     parameterAssert(typeof noticeObject.priority === 'number', `cR addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}'`);
     parameterAssert(noticeObject.message !== undefined, "cR addNoticePartial: 'message' parameter should be defined");
@@ -211,7 +211,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
         const thisFilenameExtension = thisFilename.split('.').pop();
         // debugLog(`thisFilenameExtension=${thisFilenameExtension}`);
 
-        // Default to the main filename without the extensions
+        // Default to the main filename without the extension
         let bookOrFileCode = thisFilename.substring(0, thisFilename.length - thisFilenameExtension.length - 1);
         let ourBookID = '';
         if (repoName === 'en_translation-annotations' && thisFilenameExtension === 'tsv') {
@@ -232,12 +232,17 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
           ourBookID = bookID;
         }
         else if (thisFilenameExtension === 'tsv') {
-          // const filenameMain = thisFilename.substring(0, thisFilename.length - 4); // drop .tsv
-          // debugLog(`Have TSV filenameMain=${bookOrFileCode}`);
+          // debugLog(`Have TSV thisFilename(${thisFilename.length})='${thisFilename}'`);
+          // debugLog(`Have TSV bookOrFileCode(${bookOrFileCode.length})='${bookOrFileCode}'`);
           let bookID;
-          bookID = bookOrFileCode.length === 6 ? bookOrFileCode.substring(0, 3) : bookOrFileCode.slice(-3).toUpperCase();
-          // debugLog(`Have TSV bookcode=${bookID}`);
-          parameterAssert(bookID !== 'OBS' && books.isValidBookID(bookID), `checkRepo: '${bookID}' is not a valid USFM book identifier (for TSV)`);
+          // bookOrFileCode could be something like 'en_tn_09-1SA.tsv ' or '2CO_tn' or '1CH_twl'
+          bookID = (bookOrFileCode.length === 6 || bookOrFileCode.length === 7) ? bookOrFileCode.substring(0, 3) : bookOrFileCode.slice(-3).toUpperCase();
+          logicAssert(bookID !== 'twl' && bookID !== 'TWL', `Should get a valid bookID here, not '${bookID}'`)
+          // debugLog(`Have TSV bookcode(${bookID.length})='${bookID}'`);
+          if (repoCode === 'TWL')
+            parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkRepo: '${bookID}' is not a valid USFM book identifier (for TSV)`);
+          else
+            parameterAssert(bookID !== 'OBS' && books.isValidBookID(bookID), `checkRepo: '${bookID}' is not a valid USFM book identifier (for TSV)`);
           bookOrFileCode = bookID;
           ourBookID = bookID;
         }

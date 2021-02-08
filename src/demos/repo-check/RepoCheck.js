@@ -7,7 +7,7 @@ import { checkRepo } from './checkRepo';
 import { userLog } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.2.1';
+// const REPO_VALIDATOR_VERSION_STRING = '0.2.2';
 
 
 function RepoCheck(/*username, languageCode,*/ props) {
@@ -88,6 +88,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
             const repoPreloadList = ['TW'];
             if (repoCode !== 'UHB' && repoCode !== 'UGNT') repoPreloadList.push('TA'); // Original languages only have TW links
             if (repoCode !== 'TA' && repoCode !== 'TW') repoPreloadList.push(repoCode);
+            if (repoCode === 'TWL') { repoPreloadList.unshift('UGNT'); repoPreloadList.unshift('UHB'); repoPreloadList.push('OBS'); }
             setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for {repoName} repo check…</p>);
             const successFlag = await preloadReposIfNecessary(username, languageCode, [], branch, repoPreloadList);
             if (!successFlag)

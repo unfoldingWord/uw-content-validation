@@ -5,7 +5,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { debugLog, parameterAssert } from './utilities';
 
 
-const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.3.2';
+const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.3.3';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -207,7 +207,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
                     if (V === 'intro') { }
                     else if (/^\d+$/.test(V)) {
                         let intV = Number(V);
-                        if (intV === 0)
+                        if (intV === 0 && bookID !== 'PSA') // Psalms have \d titles
                             addNoticePartial({ priority: 552, C, V, message: "Invalid zero verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, extract: V, location: ourLocation });
                         if (intV > numVersesThisChapter)
                             addNoticePartial({ priority: 734, C, V, message: "Invalid large verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, extract: V, location: ourLocation });

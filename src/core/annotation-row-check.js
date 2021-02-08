@@ -391,10 +391,10 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         if (V.length) {
             if (V !== givenV)
                 addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected '${givenV}'`, rowID, fieldName: 'Reference', extract: V, location: ourRowLocation });
-            if (V === 'intro') { }
+            if (bookID === 'OBS' || V === 'intro') { }
             else if (/^\d+$/.test(V)) {
                 let intV = Number(V);
-                if (intV === 0)
+                if (intV === 0 && bookID !== 'PSA') // Psalms have \d as verse zero
                     addNoticePartial({ priority: 814, message: "Invalid zero verse number", rowID, fieldName: 'Reference', extract: V, location: ourRowLocation });
                 else {
                     if (haveGoodChapterNumber) {
@@ -453,8 +453,8 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
             }
             let characterIndex;
             if ((characterIndex = supportReference.indexOf('\u200B') !== -1)) {
-                const charCount = countOccurrences(supportReference,'\u200B');
-                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1?'':'s'} found`, fieldName: 'SupportReference', characterIndex, rowID, location: ourRowLocation });
+                const charCount = countOccurrences(supportReference, '\u200B');
+                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, fieldName: 'SupportReference', characterIndex, rowID, location: ourRowLocation });
             }
         }
         // // TODO: Check if this is really required????
@@ -495,8 +495,8 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
 
         if (annotation.length) {
             if (annotation.indexOf('\u200B') >= 0) {
-                const charCount = countOccurrences(supportReference,'\u200B');
-                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1?'':'s'} found`, fieldName: 'Annotation', rowID, location: ourRowLocation });
+                const charCount = countOccurrences(supportReference, '\u200B');
+                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, fieldName: 'Annotation', rowID, location: ourRowLocation });
             }
             if (isWhitespace(annotation))
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'Annotation', rowID, location: ourRowLocation });

@@ -410,10 +410,10 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         if (V.length) {
             if (V !== givenV)
                 addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected '${givenV}'`, rowID, fieldName: 'Verse', extract: V, location: ourRowLocation });
-            if (V === 'intro') { }
+            if (bookID === 'OBS' || V === 'intro') { }
             else if (/^\d+$/.test(V)) {
                 let intV = Number(V);
-                if (intV === 0)
+                if (intV === 0 && bookID !== 'PSA') // Psalms have \d as verse zero
                     addNoticePartial({ priority: 814, message: "Invalid zero verse number", rowID, fieldName: 'Verse', extract: V, location: ourRowLocation });
                 else {
                     if (haveGoodChapterNumber) {
@@ -466,10 +466,10 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
                     addNoticePartial({ priority: 787, message: "Link to TA should also be in OccurrenceNote", fieldName: 'SupportReference', extract: supportReference, rowID, location: ourRowLocation });
             }
             if (supportReference.indexOf('\u200B') >= 0) {
-                const charCount = countOccurrences(supportReference,'\u200B');
-                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1?'':'s'} found`, fieldName: 'SupportReference', rowID, location: ourRowLocation });
+                const charCount = countOccurrences(supportReference, '\u200B');
+                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, fieldName: 'SupportReference', rowID, location: ourRowLocation });
+            }
         }
-    }
         // // TODO: Check if this is really required????
         // else if (/^\d+$/.test(C) && /^\d+$/.test(V)) // C:V are both digits
         //     addNoticePartial({ priority: 877, message: "Missing SupportReference field", fieldName: 'SupportReference', rowID, location: ourRowLocation });
@@ -508,8 +508,8 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
 
         if (GLQuote.length) { // TODO: need to check UTN against ULT
             if (GLQuote.indexOf('\u200B') >= 0) {
-                const charCount = countOccurrences(GLQuote,'\u200B');
-                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1?'':'s'} found`, fieldName: 'GLQuote', rowID, location: ourRowLocation });
+                const charCount = countOccurrences(GLQuote, '\u200B');
+                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, fieldName: 'GLQuote', rowID, location: ourRowLocation });
             }
             if (isWhitespace(GLQuote))
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'GLQuote', rowID, location: ourRowLocation });
@@ -523,8 +523,8 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
 
         if (occurrenceNote.length) {
             if (occurrenceNote.indexOf('\u200B') >= 0) {
-                const charCount = countOccurrences(occurrenceNote,'\u200B');
-                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1?'':'s'} found`, fieldName: 'OccurrenceNote', rowID, location: ourRowLocation });
+                const charCount = countOccurrences(occurrenceNote, '\u200B');
+                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, fieldName: 'OccurrenceNote', rowID, location: ourRowLocation });
             }
             if (isWhitespace(occurrenceNote))
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation });
