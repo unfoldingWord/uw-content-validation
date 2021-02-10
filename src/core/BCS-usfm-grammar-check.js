@@ -4,7 +4,7 @@ import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { userLog, parameterAssert } from './utilities';
 
 
-// const USFM_GRAMMAR_VALIDATOR_VERSION_STRING = '0.3.2';
+// const USFM_GRAMMAR_VALIDATOR_VERSION_STRING = '0.3.3';
 
 
 export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLocation, checkingOptions) {
@@ -83,7 +83,7 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
 
         // Save our line number
         if (lineNumberString && lineNumberString.length) {
-            /*
+            // ourErrorObject.lineNumber = Number(lineNumberString);
             //  but we need a temporary fix for the BCS bug which doesn’t include blank lines in the count
             let lineNumber = Number(lineNumberString)
             let notified = false;
@@ -99,8 +99,6 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
                 }
             }
             ourErrorObject.lineNumber = lineNumber;
-            */
-            ourErrorObject.lineNumber = Number(lineNumberString);
         }
     }
 
