@@ -22,7 +22,7 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
 
    Returns a result object containing a successList and a noticeList
    */
-  // debugLog(`checkMarkdownFileContents(${languageCode}, ${markdownFilename}, ${markdownText.length}, ${givenLocation})…`);
+  // functionLog(`checkMarkdownFileContents(${languageCode}, ${markdownFilename}, ${markdownText.length}, ${givenLocation})…`);
   parameterAssert(languageCode !== undefined, "checkMarkdownFileContents: 'languageCode' parameter should be defined");
   parameterAssert(typeof languageCode === 'string', `checkMarkdownFileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
   parameterAssert(markdownFilename !== undefined, "checkMarkdownFileContents: 'markdownFilename' parameter should be defined");
@@ -59,7 +59,7 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
     result.successList.push(successString);
   }
   function addNoticePartial(noticeObject) {
-    // debugLog(`checkMarkdownFileContents addNoticePartial: (priority=${noticeObject.priority}) ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? " " + extract : ""}${noticeObject.location}`);
+    // functionLog(`checkMarkdownFileContents addNoticePartial: (priority=${noticeObject.priority}) ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? " " + extract : ""}${noticeObject.location}`);
     parameterAssert(noticeObject.priority !== undefined, "cMdT addNoticePartial: 'priority' parameter should be defined");
     parameterAssert(typeof noticeObject.priority === 'number', `cMdT addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
     parameterAssert(noticeObject.message !== undefined, "cMdT addNoticePartial: 'message' parameter should be defined");
@@ -78,9 +78,9 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
 
   /**
   * @description - checks the given text field and processes the returned results
-  * @param {String} markdownText - the actual text of the file being checked
+  * @param {string} markdownText - the actual text of the file being checked
   * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
-  * @param {String} optionalFieldLocation - description of where the field is located
+  * @param {string} optionalFieldLocation - description of where the field is located
   * @param {Object} checkingOptions - parameters that might affect the check
   */
   async function ourCheckMarkdownText(markdownText, optionalFieldLocation, checkingOptions) {
@@ -107,8 +107,8 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
 
   /**
   * @description - checks the given text field and processes the returned results
-  * @param {String} markdownText - the actual text of the file being checked
-  * @param {String} optionalFieldLocation - description of where the field is located
+  * @param {string} markdownText - the actual text of the file being checked
+  * @param {string} optionalFieldLocation - description of where the field is located
   * @param {Object} checkingOptions - parameters that might affect the check
   */
   function ourFileTextCheck(markdownText, optionalFieldLocation, checkingOptions) {

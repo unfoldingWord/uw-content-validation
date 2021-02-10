@@ -4,7 +4,7 @@ import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
 import { userLog, parameterAssert } from './utilities';
 
 
-// const USFM_GRAMMAR_VALIDATOR_VERSION_STRING = '0.3.2';
+// const USFM_GRAMMAR_VALIDATOR_VERSION_STRING = '0.3.3';
 
 
 export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLocation, checkingOptions) {
@@ -83,7 +83,7 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
 
         // Save our line number
         if (lineNumberString && lineNumberString.length) {
-            /*
+            // ourErrorObject.lineNumber = Number(lineNumberString);
             //  but we need a temporary fix for the BCS bug which doesn’t include blank lines in the count
             let lineNumber = Number(lineNumberString)
             let notified = false;
@@ -99,8 +99,6 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
                 }
             }
             ourErrorObject.lineNumber = lineNumber;
-            */
-            ourErrorObject.lineNumber = Number(lineNumberString);
         }
     }
 
@@ -140,19 +138,19 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
     const cugResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        // debugLog(`checkUSFMGrammar success: ${successString}`);
+        // functionLog(`checkUSFMGrammar success: ${successString}`);
         cugResult.successList.push(successString);
     }
     function addNotice6to7(noticeObject) {
         /**
         * @description - adds a new notice entry, adding bookID,C,V to the given fields
         * @param {Number} priority - notice priority from 1 (lowest) to 999 (highest)
-        * @param {String} message - the text of the notice message
+        * @param {string} message - the text of the notice message
         * @param {Number} characterIndex - where the issue occurs in the line
-        * @param {String} extract - short extract from the line centred on the problem (if available)
-        * @param {String} location - description of where the issue is located
+        * @param {string} extract - short extract from the line centred on the problem (if available)
+        * @param {string} location - description of where the issue is located
         */
-        // debugLog(`checkUSFMGrammar notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // functionLog(`checkUSFMGrammar notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "cUSFMgr addNotice6to7: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `cUSFMgr addNotice6to7: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "cUSFMgr addNotice6to7: 'message' parameter should be defined");
@@ -187,7 +185,7 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
 
     addSuccessMessage(`Checked USFM Grammar (${strictnessString} mode) ${grammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN’T validate)"}`);
     // debugLog(`  checkUSFMGrammar returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
-    // debugLog(`checkUSFMGrammar result is ${JSON.stringify(result)}`);
+    // functionLog(`checkUSFMGrammar result is ${JSON.stringify(result)}`);
     return cugResult;
 }
 // end of checkUSFMGrammar function

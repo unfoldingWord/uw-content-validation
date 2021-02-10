@@ -70,7 +70,7 @@ export function RenderTotals({ rawNoticeListLength, results }) {
 
 /**
 * @description - Displays a given piece of text (which can include newline characters)
-* @param {String} text - text to render as numbered lines
+* @param {string} text - text to render as numbered lines
 * @return {String} - rendered HTML for the numbered list of lines
 */
 export function RenderLines({ text }) {
@@ -208,9 +208,9 @@ export function RenderRawResults({ results }) {
 
 /**
 * @description - Displays the message plus details if specified
-* @param {String} color - color field for the message style
-* @param {String} message - notice text
-* @param {String} details - (optional) extra notice text
+* @param {string} color - color field for the message style
+* @param {string} message - notice text
+* @param {string} details - (optional) extra notice text
 * @return {String} - rendered HTML for the given reference
 */
 function RenderMessage({ color, message, details }) {
@@ -223,9 +223,9 @@ function RenderMessage({ color, message, details }) {
 
 /**
 * @description - Displays the bookcode and chapter/verse details if specified
-* @param {String} bookID - (optional) 3-character UPPERCASE USFM bookcode or 'OBS'.
-* @param {String} C - (optional) chapter info
-* @param {String} V - (optional) verse info
+* @param {string} bookID - (optional) 3-character UPPERCASE USFM bookcode or 'OBS'.
+* @param {string} C - (optional) chapter info
+* @param {string} V - (optional) verse info
 * @return {String} - rendered HTML for the given reference
 */
 function RenderBCV({ bookID, C, V }) {
@@ -244,12 +244,12 @@ function RenderBCV({ bookID, C, V }) {
 
 /**
 * @description - Displays the repoName and filename/lineNumber details if specified
-* @param {String} username - (optional) username/orgName string
-* @param {String} repoName - (optional) repo name string
-* @param {String} filename - (optional) filename string
+* @param {string} username - (optional) username/orgName string
+* @param {string} repoName - (optional) repo name string
+* @param {string} filename - (optional) filename string
 * @param {Number} lineNumber - (optional) line number integer (1-based)
-* @param {String} rowID - (optional) 4-character ID field
-* @param {String} fieldName - (optional) name of field
+* @param {string} rowID - (optional) 4-character ID field
+* @param {string} fieldName - (optional) name of field
 * @return {String} - rendered HTML for the given reference
 */
 function RenderFileDetails({ username, repoName, filename, lineNumber, rowID, fieldName }) {

@@ -1,4 +1,4 @@
-import { DEFAULT_EXTRACT_LENGTH, MATCHED_PUNCTUATION_PAIRS, PAIRED_PUNCTUATION_OPENERS, PAIRED_PUNCTUATION_CLOSERS, isWhitespace, countOccurrences } from './text-handling-functions'
+import { DEFAULT_EXTRACT_LENGTH, OPEN_CLOSE_PUNCTUATION_PAIRS, PAIRED_PUNCTUATION_OPENERS, PAIRED_PUNCTUATION_CLOSERS, isWhitespace, countOccurrences } from './text-handling-functions'
 import { checkTextField } from './field-text-check';
 import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert } from './utilities';
@@ -21,7 +21,7 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
 
      Returns a result object containing a successList and a noticeList
      */
-    // debugLog(`checkPlainText(${textName}, (${plainText.length} chars), ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
+    // functionLog(`checkPlainText(${textName}, (${plainText.length} chars), ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
     parameterAssert(textType !== undefined, "checkPlainText: 'textType' parameter should be defined");
     parameterAssert(typeof textType === 'string', `checkPlainText: 'textType' parameter should be a string not a '${typeof textType}': ${textType}`);
     parameterAssert(textType === 'markdown' || textType === 'USFM' || textType === 'YAML' || textType === 'text' || textType === 'raw', `checkPlainText: unrecognised 'textType' parameter: '${textType}'`);
@@ -51,12 +51,12 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
     const cptResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        // debugLog(`checkPlainText success: ${successString}`);
+        // functionLog(`checkPlainText success: ${successString}`);
         cptResult.successList.push(successString);
     }
     function addNotice(noticeObject) {
         // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
-        // debugLog(`checkPlainText notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // functionLog(`checkPlainText notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "cPT addNotice: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `cPT addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "cPT addNotice: 'message' parameter should be defined");
@@ -74,10 +74,10 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
     function ourCheckTextField(lineNumber, fieldText, allowedLinks, optionalFieldLocation, checkingOptions) {
         /**
         * @description - checks the given text field and processes the returned results
-        * @param {String} fieldName - name of the field being checked
-        * @param {String} fieldText - the actual text of the field being checked
+        * @param {string} fieldName - name of the field being checked
+        * @param {string} fieldText - the actual text of the field being checked
         * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
-        * @param {String} optionalFieldLocation - description of where the field is located
+        * @param {string} optionalFieldLocation - description of where the field is located
         * @param {Object} checkingOptions - parameters that might affect the check
         */
         // Does basic checks for small errors like leading/trailing spaces, etc.
@@ -108,7 +108,7 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
 
     function checkPlainLineContents(lineNumber, lineText, lineLocation) {
 
-        // debugLog(`checkPlainLineContents for '${lineName}', '${lineText}' at${lineLocation}`);
+        // functionLog(`checkPlainLineContents for '${lineName}', '${lineText}' at${lineLocation}`);
         let thisText = lineText.trimStart(); // So we don’t get "leading space" AND "doubled spaces" errors
 
         if (thisText)
@@ -222,7 +222,7 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
 
     // TODO: Is this a duplicate of the above section about nesting?
     // Check matched pairs in the entire file
-    for (const punctSet of MATCHED_PUNCTUATION_PAIRS) {
+    for (const punctSet of OPEN_CLOSE_PUNCTUATION_PAIRS) {
         // Can’t check '‘’' coz they might be used as apostrophe
         const leftChar = punctSet[0], rightChar = punctSet[1];
         const leftCount = countOccurrences(plainText, leftChar),
@@ -236,7 +236,7 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
     }
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        // debugLog(`checkPlainText: calling removeDisabledNotices(${cptResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        // functionLog(`checkPlainText: calling removeDisabledNotices(${cptResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
         cptResult.noticeList = removeDisabledNotices(cptResult.noticeList);
     }
 

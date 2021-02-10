@@ -186,12 +186,12 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
     const result = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        // debugLog(`checkUSFMText success: ${successString}`);
+        // functionLog(`checkUSFMText success: ${successString}`);
         result.successList.push(successString);
     }
     function addNoticePartial(noticeObject) {
         // debugLog("checkUSFMText addNoticePartial:", JSON.stringify(noticeObject));
-        // debugLog(`checkUSFMText addNoticePartial: (priority=${noticeObject.priority}) ${noticeObject.C}:${noticeObject.V} ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
+        // functionLog(`checkUSFMText addNoticePartial: (priority=${noticeObject.priority}) ${noticeObject.C}:${noticeObject.V} ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
         parameterAssert(noticeObject.priority !== undefined, "cUSFM addNoticePartial: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `cUSFM addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "cUSFM addNoticePartial: 'message' parameter should be defined");
@@ -485,13 +485,13 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
     /**
     * @description - checks the given text field and processes the returned results
     * @param {number} lineNumber -- 1-based integer
-    * @param {String} C - chapter number of the text being checked
-    * @param {String} V - verse number of the text being checked
-    * @param {String} fieldType - If 'USFM', fieldName will be the line marker, and fieldText will be the line text; If 'raw', fieldName will be 'from {marker}' and fieldText will have internal USFM markers removed
-    * @param {String} fieldName - name of the field being checked
-    * @param {String} fieldText - the actual text of the field being checked
+    * @param {string} C - chapter number of the text being checked
+    * @param {string} V - verse number of the text being checked
+    * @param {string} fieldType - If 'USFM', fieldName will be the line marker, and fieldText will be the line text; If 'raw', fieldName will be 'from {marker}' and fieldText will have internal USFM markers removed
+    * @param {string} fieldName - name of the field being checked
+    * @param {string} fieldText - the actual text of the field being checked
     * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
-    * @param {String} fieldLocation - description of where the field is located
+    * @param {string} fieldLocation - description of where the field is located
     * @param {Object} checkingOptions - parameters that might affect the check
     */
     function ourCheckTextField(lineNumber, C, V, fieldType, fieldName, fieldText, allowedLinks, fieldLocation, checkingOptions) {
@@ -626,8 +626,8 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
      */
     function checkUSFMLineText(lineNumber, C, V, marker, rest, lineLocation, checkingOptions) {
         // Removes character formatting within the line contents and checks the remaining text
-        // debugLog(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
-        // debugLog(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}=${rest.length} chars, ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
+        // functionLog(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
+        // functionLog(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}=${rest.length} chars, ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
 
         const details = `(line marker=\\${marker})`
 
@@ -694,7 +694,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         // if (adjustedRest.indexOf('\\z') >= 0) userLog(`checkUSFMLineText here first at ${lineNumber} ${C}:${V} with ${marker}='${adjustedRest}'`);
         let nextZIndex;
         while ((nextZIndex = adjustedRest.indexOf('\\zaln-s ')) >= 0) {
-            // debugLog(`checkUSFMLineText here with ${marker}='${adjustedRest}'`);
+            // functionLog(`checkUSFMLineText here with ${marker}='${adjustedRest}'`);
             const ixZEnd = adjustedRest.indexOf('\\*');
             // debugLog(`  ${nextZIndex} and ${ixZEnd}`);
             if (ixZEnd >= 0) {
@@ -735,7 +735,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
             if (ixFEnd >= 0) {
                 parameterAssert(ixFEnd > nextWIndex, `Exected closure at ${ixFEnd} to be AFTER \\w (${nextFIndex})`);
                 adjustedRest = adjustedRest.substring(0, nextFIndex) + adjustedRest.substring(nextFIndex + 5, ixFEnd) + adjustedRest.substring(ixFEnd + 3, adjustedRest.length);
-                // debugLog(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
+                // functionLog(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
                 // debugLog(`After removing footnote: '${adjustedRest}'`);
             } else {
                 userLog(`\\f seems unclosed: 'adjustedRest' from '${rest}'`);
@@ -756,7 +756,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 // debugLog(`ERROR 775: in ${marker} '${adjustedRest}' from '${rest}'`);
             }
             if (adjustedRest.indexOf('\\') >= 0 || adjustedRest.indexOf('|') >= 0) {
-                // debugLog(`checkUSFMLineText ${languageCode} ${filename} ${lineNumber} ${C}:${V} somehow ended up with ${marker}='${adjustedRest}'`);
+                // functionLog(`checkUSFMLineText ${languageCode} ${filename} ${lineNumber} ${C}:${V} somehow ended up with ${marker}='${adjustedRest}'`);
                 characterIndex = adjustedRest.indexOf('\\');
                 if (characterIndex === -1) characterIndex = adjustedRest.indexOf('|');
                 const extract = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
@@ -913,7 +913,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
 
         function checkUSFMLineInternals(lineNumber, C, V, marker, rest, lineLocation, checkingOptions) {
             // Handles character formatting within the line contents
-            // debugLog(`checkUSFMLineInternals(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
+            // functionLog(`checkUSFMLineInternals(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
 
             if (marker === 'c' && isNaN(rest))
                 addNoticePartial({ priority: 822, message: "Expected field to contain an integer", lineNumber, characterIndex: 3, extract: `\\c ${rest}`, C, V, location: lineLocation });
@@ -1182,12 +1182,12 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
     // addNoticePartial({priority:103, `USFMGrammar: ${warningString.trim()}`, location});
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        // debugLog(`checkUSFMText: calling removeDisabledNotices(${result.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        // functionLog(`checkUSFMText: calling removeDisabledNotices(${result.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
         result.noticeList = removeDisabledNotices(result.noticeList);
     }
 
     // debugLog(`  checkUSFMText returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
-    // debugLog(`checkUSFMText result is ${JSON.stringify(result)}`);
+    // functionLog(`checkUSFMText result is ${JSON.stringify(result)}`);
     return result;
 }
 // end of checkUSFMText function

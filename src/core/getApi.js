@@ -78,8 +78,8 @@ export async function clearCaches() {
 
 /**
  * @description - Forms and returns a Door43 repoName string
- * @param {String} languageCode - the language code, e.g., 'en'
- * @param {String} repoCode - the repo code, e.g., 'TQ2'
+ * @param {string} languageCode - the language code, e.g., 'en'
+ * @param {string} repoCode - the repo code, e.g., 'TQ2'
  * @return {String} - the Door43 repoName string
  */
 export function formRepoName(languageCode, repoCode) {
@@ -132,10 +132,10 @@ async function getUnZippedFile(path) {
  * searches for files in this order:
  *   - cache of uncompressed files (unzipStore)
  *   - cache of zipped repos (zipStore)
- *   - and finally calls cachedFetchFileFromServer() which first checks in cacheStore to see if already fetched. * @param {String} username
- * @param {String} repository
- * @param {String} path
- * @param {String} branch
+ *   - and finally calls cachedFetchFileFromServer() which first checks in cacheStore to see if already fetched. * @param {string} username
+ * @param {string} repository
+ * @param {string} path
+ * @param {string} branch
  * @return {Promise<*>}
  */
 // This is the function that we call the most from the outside

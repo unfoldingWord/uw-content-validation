@@ -1,4 +1,4 @@
-import { DEFAULT_EXTRACT_LENGTH, MATCHED_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, isWhitespace, countOccurrences } from './text-handling-functions'
+import { DEFAULT_EXTRACT_LENGTH, OPEN_CLOSE_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, isWhitespace, countOccurrences } from './text-handling-functions'
 import { parameterAssert } from './utilities';
 
 
@@ -21,11 +21,11 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     //  The list contains objects with the following fields:
     //      priority (compulsory): the priority number 0..999 (usually 800+ are errors, lower are warnings)
     //      message (compulsory): the error description string
-    //      characterIndeX: the 0-based index for the position in the string
+    //      characterIndex: the 0-based index for the position in the string
     //      extract: a short extract of the string containing the error (or empty-string if irrelevant)
     //      location: the detailed location string
     //  (Returned in this way for more intelligent processing at a higher level)
-    // debugLog(`checkTextField(${fieldName}, ${fieldText.length.toLocaleString()} chars, ${allowedLinks}, '${optionalFieldLocation}')…`);
+    // functionLog(`checkTextField(${fieldName}, ${fieldText.length.toLocaleString()} chars, ${allowedLinks}, '${optionalFieldLocation}')…`);
     parameterAssert(fieldType !== undefined, "checkTextField: 'fieldType' parameter should be defined");
     parameterAssert(typeof fieldType === 'string', `checkTextField: 'fieldType' parameter should be a string not a '${typeof fieldType}': ${fieldType}`);
     parameterAssert(fieldType !== '', `checkTextField: 'fieldType' ${fieldType} parameter should be not be an empty string`);
@@ -93,8 +93,9 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     let characterIndex;
     if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 895)
         && (characterIndex = fieldText.indexOf('\u200B')) >= 0) {
-        const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/\u200B/g, '‼') + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
-        addNoticePartial({ priority: 895, message: "Field contains zero-width space(s)", characterIndex, extract, location: ourLocation });
+                const charCount = countOccurrences(fieldText,'\u200B');
+                const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/\u200B/g, '‼') + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
+        addNoticePartial({ priority: 895, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1?'':'s'} found`, characterIndex, extract, location: ourLocation });
         suggestion = suggestion.replace(/\u200B/g, ''); // Or should it be space ???
     }
 
@@ -376,7 +377,7 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     //     addNoticePartial({ priority: 1, message: `Mismatched ( ) characters`, details: `left=${countOccurrences(fieldText, '(').toLocaleString()}, right=${countOccurrences(fieldText, ')').toLocaleString()}`, location: ourLocation });
     // }
     // Check matched pairs in the field
-    for (const punctSet of MATCHED_PUNCTUATION_PAIRS) {
+    for (const punctSet of OPEN_CLOSE_PUNCTUATION_PAIRS) {
         // Can’t check '‘’' coz they might be used as apostrophe
         const leftChar = punctSet[0], rightChar = punctSet[1];
         // if (fieldType === 'markdown' && leftChar === '<') continue; // markdown uses this for block quote

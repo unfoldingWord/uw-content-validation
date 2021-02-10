@@ -18,7 +18,7 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
     //      checkingOptions?.taRepoSectionName
     //      checkingOptions?.expectFullLink (bool)
 
-    // debugLog(`checkSupportReferenceInTA v${TA_REFERENCE_VALIDATOR_VERSION_STRING} (${fieldName}, (${fieldText.length}) '${fieldText}', ${givenLocation}, …)`);
+    // functionLog(`checkSupportReferenceInTA v${TA_REFERENCE_VALIDATOR_VERSION_STRING} (${fieldName}, (${fieldText.length}) '${fieldText}', ${givenLocation}, …)`);
     parameterAssert(fieldName !== undefined, "checkSupportReferenceInTA: 'fieldText' parameter should be defined");
     parameterAssert(typeof fieldName === 'string', `checkSupportReferenceInTA: 'fieldText' parameter should be a string not a '${typeof fieldName}'`);
     parameterAssert(fieldText !== undefined, "checkSupportReferenceInTA: 'fieldText' parameter should be defined");
@@ -36,7 +36,7 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
     const ctarResult = { noticeList: [] };
 
     function addNoticePartial(noticeObject) {
-        // debugLog(`checkSupportReferenceInTA Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // functionLog(`checkSupportReferenceInTA Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "cTAref addNoticePartial: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `cTAref addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "cTAref addNoticePartial: 'message' parameter should be defined");
@@ -114,7 +114,7 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
         addNoticePartial({ priority: 888, message: `Error loading TA link`, extract: fieldText, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
     }
 
-    // debugLog(`checkSupportReferenceInTA is returning ${JSON.stringify(ctarResult)}`);
+    // functionLog(`checkSupportReferenceInTA is returning ${JSON.stringify(ctarResult)}`);
     return ctarResult;
 }
 // end of checkSupportReferenceInTA function

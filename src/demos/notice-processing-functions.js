@@ -2,7 +2,7 @@ import { userLog, parameterAssert } from '../core/utilities';
 import { isDisabledNotice } from '../core/disabled-notices';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.7';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.9';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -164,13 +164,14 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 && !thisMsg.startsWith('USFMGrammar: ')
                 && !thisMsg.startsWith('Bad punctuation nesting: ')
                 && !thisMsg.startsWith('At end of text with unclosed ')
+                && !thisMsg.startsWith('Possible mismatched ')
                 && !thisMsg.endsWith(' character combination')
                 && !thisMsg.endsWith(' character after space')
                 && !thisMsg.endsWith(' character at start of line')
                 && !thisMsg.endsWith(' character at end of line')
                 && !thisMsg.endsWith(' marker at start of line')
                 && !thisMsg.endsWith(' closing character (no matching opener)')
-                && !thisMsg.endsWith(' closing character doesn\'t match')
+                && !thisMsg.endsWith(' closing character doesn’t match')
             ) {
                 console.error(`POSSIBLE PROGRAMMING ERROR: priority ${thisPriority} has at least two different messages: '${oldMsg}' and '${thisMsg}'`);
                 duplicatePriorityList.push(thisPriority); // so that we only give the error once
@@ -275,9 +276,11 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             const BibleRegex = /\d\d-(\w\w\w).usfm/; // "Checked JUD file: 66-JUD.usfm"
             const NotesRegex = /\d\d-(\w\w\w).tsv/; // "Checked EN_TN_01-GEN.TSV file: en_tn_01-GEN.tsv"
             const manifestRegex = /Checked ([\w\-_]{2,25}) manifest file/;
+            const READMEregex = /Checked ([\w\-_]{2,25}) README file/;
+            const LICENSEregex = /Checked ([\w\-_]{2,25}) LICENSE file/;
             resultObject.successList = [];
             const UHBBookList = [], UGNTBookList = [], LTBookList = [], STBookList = [], TNBookList = [], TN2BookList = [], TQ2BookList = [];
-            const USFMBookList = [], TSVNotesList = [], manifestsList = [];
+            const USFMBookList = [], TSVNotesList = [], manifestsList = [], READMEsList = [], LICENSEsList = [];
             const TNList = [], TQList = [], TWLList = [];
             for (const thisParticularSuccessMsg of givenNoticeObject.successList) {
                 // debugLog("thisParticularSuccessMsg", thisParticularSuccessMsg);
@@ -312,6 +315,10 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                     TSVNotesList.push(regexResult[1]);
                 else if ((regexResult = manifestRegex.exec(thisParticularSuccessMsg)) !== null)
                     manifestsList.push(regexResult[1]);
+                else if ((regexResult = READMEregex.exec(thisParticularSuccessMsg)) !== null)
+                    READMEsList.push(regexResult[1]);
+                else if ((regexResult = LICENSEregex.exec(thisParticularSuccessMsg)) !== null)
+                    LICENSEsList.push(regexResult[1]);
                 else // Just copy it across
                     resultObject.successList.push(thisParticularSuccessMsg);
             }
@@ -342,8 +349,16 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 resultObject.successList.push(`Checked TWL file: ${TWLList[0]}`);
             if (manifestsList.length === 1)
                 resultObject.successList.push(`Checked ${manifestsList[0]} manifest file`);
+            if (READMEsList.length === 1)
+                resultObject.successList.push(`Checked ${READMEsList[0]} README file`);
+            if (LICENSEsList.length === 1)
+                resultObject.successList.push(`Checked ${LICENSEsList[0]} LICENSE file`);
             // Put summary messages at the beginning of the list if more than one found
             // Process these messages in the opposite order than we want them to display (since we push to beginning of list each time)
+            if (LICENSEsList.length > 1)
+                resultObject.successList.unshift(`Checked ${LICENSEsList.length} LICENSE files: ${LICENSEsList.join(', ')}`);
+            if (READMEsList.length > 1)
+                resultObject.successList.unshift(`Checked ${READMEsList.length} README files: ${READMEsList.join(', ')}`);
             if (manifestsList.length > 1)
                 resultObject.successList.unshift(`Checked ${manifestsList.length} manifest files: ${manifestsList.join(', ')}`);
             if (TSVNotesList.length > 1)

@@ -242,7 +242,7 @@ function CheckManifestText(props) {
       setResults(
         <div>
           <b>Check</b> {chosenTextName}: "{chosenText.substr(0,256)}…"<br/><br/>
-          // <b>Manifest contents</b>: <RenderLines text={chosenText} />
+          <b>Manifest contents</b>: <RenderLines text={chosenText} />
           <RenderRawResults results={rawResults} />
         </div>
       );

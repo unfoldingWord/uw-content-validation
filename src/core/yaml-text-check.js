@@ -16,7 +16,7 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, c
         as well as the parsed YAML for further checking.
 
      */
-    // debugLog(`checkYAMLText(${textName}, ${YAMLText.length}, ${givenLocation})…`);
+    // functionLog(`checkYAMLText(${textName}, ${YAMLText.length}, ${givenLocation})…`);
     parameterAssert(languageCode !== undefined, "checkYAMLText: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkYAMLText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
     parameterAssert(textName !== undefined, "checkYAMLText: 'textName' parameter should be defined");
@@ -51,11 +51,11 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, c
     const cytResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        // debugLog(`checkYAMLText success: ${successString}`);
+        // functionLog(`checkYAMLText success: ${successString}`);
         cytResult.successList.push(successString);
     }
     function addNotice(noticeObject) {
-        // debugLog(`checkYAMLText Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // functionLog(`checkYAMLText Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "cYt addNotice: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `cManT addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "cYt addNotice: 'message' parameter should be defined");
@@ -73,10 +73,10 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, c
     function ourCheckTextField(lineNumber, fieldText, allowedLinks, optionalFieldLocation, checkingOptions) {
         /**
         * @description - checks the given text field and processes the returned results
-        * @param {String} fieldName - name of the field being checked
-        * @param {String} fieldText - the actual text of the field being checked
+        * @param {string} fieldName - name of the field being checked
+        * @param {string} fieldText - the actual text of the field being checked
         * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
-        * @param {String} optionalFieldLocation - description of where the field is located
+        * @param {string} optionalFieldLocation - description of where the field is located
         * @param {Object} checkingOptions - parameters that might affect the check
         */
         // Does basic checks for small errors like leading/trailing spaces, etc.
@@ -104,7 +104,7 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, c
 
     function checkYAMLLineContents(lineNumber, lineText, lineLocation) {
 
-        // debugLog(`checkYAMLLineContents for '${lineNumber} ${lineText}' at${lineLocation}`);
+        // functionLog(`checkYAMLLineContents for '${lineNumber} ${lineText}' at${lineLocation}`);
         let thisText = lineText
 
         // Remove leading spaces
@@ -191,7 +191,7 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, c
     ourBasicFileChecks(textName, YAMLText, givenLocation, checkingOptions);
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        // debugLog(`checkYAMLText: calling removeDisabledNotices(${cytResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        // functionLog(`checkYAMLText: calling removeDisabledNotices(${cytResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
         cytResult.noticeList = removeDisabledNotices(cytResult.noticeList);
     }
 

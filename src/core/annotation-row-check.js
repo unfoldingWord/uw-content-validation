@@ -1,4 +1,4 @@
-import { DEFAULT_EXTRACT_LENGTH, isWhitespace } from './text-handling-functions'
+import { DEFAULT_EXTRACT_LENGTH, isWhitespace, countOccurrences } from './text-handling-functions'
 import * as books from './books/books';
 import { checkTextField } from './field-text-check';
 import { checkMarkdownText } from './markdown-text-check';
@@ -23,13 +23,13 @@ const TA_REGEX = new RegExp('\\[\\[rc://[^ /]+?/ta/man/[^ /]+?/([^ \\]]+?)\\]\\]
 /**
  *
  * @description - Checks one TSV data row of translation notes (TN2)
- * @param {String} languageCode - the language code, e.g., 'en'
- * @param {String} annotationType - TN2, TQ2, TWL, SN, or SQ -- allows more specific checks
- * @param {String} line - the TSV line to be checked
- * @param {String} bookID - 3-character UPPERCASE USFM book identifier or 'OBS'
- * @param {String} givenC - chapter number or (for OBS) story number string
- * @param {String} givenV - verse number or (for OBS) frame number string
- * @param {String} givenRowLocation - description of where the line is located
+ * @param {string} languageCode - the language code, e.g., 'en'
+ * @param {string} annotationType - TN2, TQ2, TWL, SN, or SQ -- allows more specific checks
+ * @param {string} line - the TSV line to be checked
+ * @param {string} bookID - 3-character UPPERCASE USFM book identifier or 'OBS'
+ * @param {string} givenC - chapter number or (for OBS) story number string
+ * @param {string} givenV - verse number or (for OBS) frame number string
+ * @param {string} givenRowLocation - description of where the line is located
  * @param {Object} checkingOptions - may contain extractLength parameter
  * @return {Object} - containing noticeList
  */
@@ -48,7 +48,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
 
         Returns an object containing the noticeList.
     */
-    // debugLog(`checkAnnotationTSVDataRow(${languageCode}, ${annotationType}, ${line}, ${bookID}, ${givenRowLocation}, ${JSON.stringify(checkingOptions)})…`);
+    // functionLog(`checkAnnotationTSVDataRow(${languageCode}, ${annotationType}, ${line}, ${bookID}, ${givenRowLocation}, ${JSON.stringify(checkingOptions)})…`);
     parameterAssert(languageCode !== undefined, "checkAnnotationTSVDataRow: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkAnnotationTSVDataRow: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
     parameterAssert(line !== undefined, "checkAnnotationTSVDataRow: 'line' parameter should be defined");
@@ -78,14 +78,14 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         /**
         * @description - adds a new notice entry, adding bookID,C,V to the given fields
         * @param {Number} priority - notice priority from 1 (lowest) to 999 (highest)
-        * @param {String} message - the text of the notice message
-        * @param {String} rowID - 4-character row ID field
+        * @param {string} message - the text of the notice message
+        * @param {string} rowID - 4-character row ID field
         * @param {Number} lineNumber - one-based line number
         * @param {Number} characterIndex - zero-based index of where the issue occurs in the line
-        * @param {String} extract - short extract from the line centred on the problem (if available)
-        * @param {String} location - description of where the issue is located
+        * @param {string} extract - short extract from the line centred on the problem (if available)
+        * @param {string} location - description of where the issue is located
         */
-        // debugLog(`checkAnnotationTSVDataRow addNoticePartial(priority=${noticeObject.priority}) ${noticeObject.message}, ${noticeObject.characterIndex}, ${noticeObject.extract}, ${noticeObject.location}`);
+        // functionLog(`checkAnnotationTSVDataRow addNoticePartial(priority=${noticeObject.priority}) ${noticeObject.message}, ${noticeObject.characterIndex}, ${noticeObject.extract}, ${noticeObject.location}`);
         parameterAssert(noticeObject.priority !== undefined, "checkAnnotationTSVDataRow addNoticePartial: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `checkAnnotationTSVDataRow addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "checkAnnotationTSVDataRow addNoticePartial: 'message' parameter should be defined");
@@ -107,11 +107,11 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
     async function ourMarkdownTextChecks(rowID, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions) {
         /**
         * @description - checks the given markdown field and processes the returned results
-        * @param {String} rowID - 4-character row ID field
-        * @param {String} fieldName - name of the field being checked
-        * @param {String} fieldText - the actual text of the field being checked
+        * @param {string} rowID - 4-character row ID field
+        * @param {string} fieldName - name of the field being checked
+        * @param {string} fieldText - the actual text of the field being checked
         * @param {} allowedLinks - true if links are allowed in the field, otherwise false
-        * @param {String} rowLocation - description of where the line is located
+        * @param {string} rowLocation - description of where the line is located
         * @param {Object} checkingOptions - parameters that might affect the check
         */
         // Does markdown checks for small errors like leading/trailing spaces, etc.
@@ -122,7 +122,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
 
         // We don’t currently use the allowedLinks parameter
 
-        // debugLog(`checkAnnotationTSVDataRow ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
+        // functionLog(`checkAnnotationTSVDataRow ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
         parameterAssert(rowID !== undefined, "checkAnnotationTSVDataRow ourMarkdownTextChecks: 'rowID' parameter should be defined");
         parameterAssert(typeof rowID === 'string', `checkAnnotationTSVDataRow ourMarkdownTextChecks: 'rowID' parameter should be a string not a '${typeof rowID}'`);
         // parameterAssert(fieldName !== undefined, "checkAnnotationTSVDataRow ourMarkdownTextChecks: 'fieldName' parameter should be defined");
@@ -158,11 +158,11 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
     function ourCheckTextField(rowID, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions) {
         /**
         * @description - checks the given text field and processes the returned results
-        * @param {String} rowID - 4-character row ID field
-        * @param {String} fieldName - name of the field being checked
-        * @param {String} fieldText - the actual text of the field being checked
+        * @param {string} rowID - 4-character row ID field
+        * @param {string} fieldName - name of the field being checked
+        * @param {string} fieldText - the actual text of the field being checked
         * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
-        * @param {String} rowLocation - description of where the line is located
+        * @param {string} rowLocation - description of where the line is located
         * @param {Object} checkingOptions - parameters that might affect the check
         */
         // Does basic checks for small errors like leading/trailing spaces, etc.
@@ -171,7 +171,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
 
         // Updates the global list of notices
 
-        // debugLog(`checkAnnotationTSVDataRow ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
+        // functionLog(`checkAnnotationTSVDataRow ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
         parameterAssert(rowID !== undefined, "checkAnnotationTSVDataRow ourCheckTextField: 'rowID' parameter should be defined");
         parameterAssert(typeof rowID === 'string', `checkAnnotationTSVDataRow ourCheckTextField: 'rowID' parameter should be a string not a '${typeof rowID}'`);
         parameterAssert(fieldName !== undefined, "checkAnnotationTSVDataRow ourCheckTextField: 'fieldName' parameter should be defined");
@@ -204,7 +204,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
 
         // Updates the global list of notices
 
-        // debugLog(`checkAnnotationTSVDataRow ourCheckSupportReferenceInTA(${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
+        // functionLog(`checkAnnotationTSVDataRow ourCheckSupportReferenceInTA(${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
         parameterAssert(rowID !== undefined, "checkAnnotationTSVDataRow ourCheckSupportReferenceInTA: 'rowID' parameter should be defined");
         parameterAssert(typeof rowID === 'string', `checkAnnotationTSVDataRow ourCheckSupportReferenceInTA: 'rowID' parameter should be a string not a '${typeof rowID}'`);
         parameterAssert(fieldName !== undefined, "checkAnnotationTSVDataRow ourCheckSupportReferenceInTA: 'fieldName' parameter should be defined");
@@ -235,7 +235,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
 
         // Updates the global list of notices
 
-        // debugLog(`checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote(${fieldName}, (${fieldText.length}) '${fieldText}', ${rowLocation}, …)`);
+        // functionLog(`checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote(${fieldName}, (${fieldText.length}) '${fieldText}', ${rowLocation}, …)`);
         parameterAssert(rowID !== undefined, "checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'rowID' parameter should be defined");
         parameterAssert(typeof rowID === 'string', `checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'rowID' parameter should be a string not a '${typeof rowID}'`);
         parameterAssert(fieldName !== undefined, "checkAnnotationTSVDataRow ourCheckTNOriginalLanguageQuote: 'fieldName' parameter should be defined");
@@ -266,7 +266,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
 
         // Updates the global list of notices
 
-        // debugLog(`checkAnnotationTSVDataRow ourCheckTNLinksToOutside(${rowID}, ${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
+        // functionLog(`checkAnnotationTSVDataRow ourCheckTNLinksToOutside(${rowID}, ${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
         parameterAssert(rowID !== undefined, "checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'rowID' parameter should be defined");
         parameterAssert(typeof rowID === 'string', `checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'rowID' parameter should be a string not a '${typeof rowID}'`);
         parameterAssert(fieldName !== undefined, "checkAnnotationTSVDataRow ourCheckTNLinksToOutside: 'fieldName' parameter should be defined");
@@ -391,10 +391,10 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         if (V.length) {
             if (V !== givenV)
                 addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected '${givenV}'`, rowID, fieldName: 'Reference', extract: V, location: ourRowLocation });
-            if (V === 'intro') { }
+            if (bookID === 'OBS' || V === 'intro') { }
             else if (/^\d+$/.test(V)) {
                 let intV = Number(V);
-                if (intV === 0)
+                if (intV === 0 && bookID !== 'PSA') // Psalms have \d as verse zero
                     addNoticePartial({ priority: 814, message: "Invalid zero verse number", rowID, fieldName: 'Reference', extract: V, location: ourRowLocation });
                 else {
                     if (haveGoodChapterNumber) {
@@ -423,7 +423,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
             } else if (LC_ALPHABET.indexOf(rowID[0]) < 0)
                 addNoticePartial({ priority: 176, message: "Row ID should start with a lowercase letter", characterIndex: 0, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation });
             else if (LC_ALPHABET_PLUS_DIGITS.indexOf(rowID[3]) < 0)
-                addNoticePartial({ priority: 175, message: "Row ID should end with a lowercase letter or digit", characterIndeX: 3, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 175, message: "Row ID should end with a lowercase letter or digit", characterIndex: 3, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation });
             else if (LC_ALPHABET_PLUS_DIGITS_PLUS_HYPHEN.indexOf(rowID[1]) < 0)
                 addNoticePartial({ priority: 174, message: "Row ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 1, rowID, extract: rowID, location: ourRowLocation });
             else if (LC_ALPHABET_PLUS_DIGITS_PLUS_HYPHEN.indexOf(rowID[2]) < 0)
@@ -451,8 +451,11 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
                 if (annotation.indexOf(supportReference) < 0)
                     addNoticePartial({ priority: 787, message: "Link to TA should also be in Annotation", fieldName: 'SupportReference', extract: supportReference, rowID, location: ourRowLocation });
             }
-            if (supportReference.indexOf('\u200B') >= 0)
-                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", fieldName: 'SupportReference', rowID, location: ourRowLocation });
+            let characterIndex;
+            if ((characterIndex = supportReference.indexOf('\u200B') !== -1)) {
+                const charCount = countOccurrences(supportReference, '\u200B');
+                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, fieldName: 'SupportReference', characterIndex, rowID, location: ourRowLocation });
+            }
         }
         // // TODO: Check if this is really required????
         // else if (/^\d+$/.test(C) && /^\d+$/.test(V)) // C:V are both digits
@@ -491,8 +494,10 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         }
 
         if (annotation.length) {
-            if (annotation.indexOf('\u200B') >= 0)
-                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", fieldName: 'Annotation', rowID, location: ourRowLocation });
+            if (annotation.indexOf('\u200B') >= 0) {
+                const charCount = countOccurrences(supportReference, '\u200B');
+                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, fieldName: 'Annotation', rowID, location: ourRowLocation });
+            }
             if (isWhitespace(annotation))
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'Annotation', rowID, location: ourRowLocation });
             else { // More than just whitespace
