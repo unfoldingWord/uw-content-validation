@@ -3,7 +3,7 @@ import { cachedGetFileUsingFullURL } from './getApi';
 import { userLog, parameterAssert } from './utilities';
 
 
-const LINK_VALIDATOR_VERSION_STRING = '0.3.4';
+const LINK_VALIDATOR_VERSION_STRING = '0.3.5';
 
 
 export async function startLiveLinksCheck(linksList, existingNoticeList, callbackFunction) {
@@ -108,8 +108,9 @@ export function checkFieldLinks(fieldName, fieldText, linkOptions, optionalField
     }
 
     // Ok, we have something in our field
+    const languageCode = '';
     if (linkOptions.otherTextAllowed)
-        result = checkTextField('link', fieldName, fieldText, true, optionalFieldLocation, checkingOptions);
+        result = checkTextField(languageCode, 'link', fieldName, fieldText, true, optionalFieldLocation, checkingOptions);
 
     // Parameter nonsense check
     if (linkOptions.allowedCount > 0 && linkOptions.expectedCount > linkOptions.allowedCount)

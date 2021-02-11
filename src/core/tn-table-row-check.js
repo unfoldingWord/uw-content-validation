@@ -8,7 +8,7 @@ import { checkOriginalLanguageQuote } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.7';
+// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.8';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -113,7 +113,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
 
         // We don’t currently use the allowedLinks parameter
 
-        // functionLog(`checkTN_TSVDataRow ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
+        // functionLog(`checkTN_TSVDataRow ourMarkdownTextChecks(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
         parameterAssert(rowID !== undefined, "checkTN_TSVDataRow ourMarkdownTextChecks: 'rowID' parameter should be defined");
         parameterAssert(typeof rowID === 'string', `checkTN_TSVDataRow ourMarkdownTextChecks: 'rowID' parameter should be a string not a '${typeof rowID}'`);
         // parameterAssert(fieldName !== undefined, "checkTN_TSVDataRow ourMarkdownTextChecks: 'fieldName' parameter should be defined");
@@ -175,7 +175,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkTN_TSVDataRow ourCheckTextField: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
         const fieldType = fieldName === 'OccurrenceNote' ? 'markdown' : 'raw';
-        const octfResultObject = checkTextField(fieldType, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions);
+        const octfResultObject = checkTextField(languageCode, fieldType, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field

@@ -6,7 +6,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert } from './utilities';
 
 
-const YAML_VALIDATOR_VERSION_STRING = '0.4.2';
+const YAML_VALIDATOR_VERSION_STRING = '0.4.3';
 
 
 export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, checkingOptions) {
@@ -91,7 +91,7 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, c
         parameterAssert(optionalFieldLocation !== undefined, "cYt ourCheckTextField: 'optionalFieldLocation' parameter should be defined");
         parameterAssert(typeof optionalFieldLocation === 'string', `cYt ourCheckTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
-        const resultObject = checkTextField('YAML', '', fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
+        const resultObject = checkTextField(languageCode, 'YAML', '', fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
 
         // Concat is faster if we don’t need to process each notice individually
         // cytResult.noticeList = cytResult.noticeList.concat(resultObject.noticeList);

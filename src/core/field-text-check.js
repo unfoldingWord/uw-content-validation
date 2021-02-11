@@ -1,12 +1,13 @@
 import { DEFAULT_EXTRACT_LENGTH, OPEN_CLOSE_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, isWhitespace, countOccurrences } from './text-handling-functions'
-import { parameterAssert } from './utilities';
+import { debugLog, parameterAssert } from './utilities';
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.4';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.5';
 
 
 /**
  * @description -- Does basic checks for small errors like leading/trailing spaces, etc.
+ * @param {string} languageCode -- can be an empty string
  * @param {string} fieldType -- classification, e.g., TSV, USFM, YAML, link, markdown, raw
  * @param {string} fieldName -- used for identification
  * @param {string} fieldText -- the field being checked
@@ -14,7 +15,7 @@ import { parameterAssert } from './utilities';
  * @param {string} optionalFieldLocation -- used to inform where this field is located
  * @param {Object} checkingOptions
  */
-export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, optionalFieldLocation, checkingOptions) {
+export function checkTextField(languageCode, fieldType, fieldName, fieldText, allowedLinks, optionalFieldLocation, checkingOptions) {
     // We assume that checking for compulsory fields is done elsewhere
 
     // Returns a single notice list
@@ -26,6 +27,9 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     //      location: the detailed location string
     //  (Returned in this way for more intelligent processing at a higher level)
     // functionLog(`checkTextField(${fieldName}, ${fieldText.length.toLocaleString()} chars, ${allowedLinks}, '${optionalFieldLocation}')…`);
+    parameterAssert(languageCode !== undefined, "checkTextField: 'languageCode' parameter should be defined");
+    parameterAssert(typeof languageCode === 'string', `checkTextField: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
+    parameterAssert(languageCode !== 'unfoldingWord', `checkTextField: 'languageCode' ${languageCode} parameter should be not be 'unfoldingWord'`);
     parameterAssert(fieldType !== undefined, "checkTextField: 'fieldType' parameter should be defined");
     parameterAssert(typeof fieldType === 'string', `checkTextField: 'fieldType' parameter should be a string not a '${typeof fieldType}': ${fieldType}`);
     parameterAssert(fieldType !== '', `checkTextField: 'fieldType' ${fieldType} parameter should be not be an empty string`);
@@ -93,9 +97,9 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
     let characterIndex;
     if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 895)
         && (characterIndex = fieldText.indexOf('\u200B')) >= 0) {
-                const charCount = countOccurrences(fieldText,'\u200B');
-                const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/\u200B/g, '‼') + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
-        addNoticePartial({ priority: 895, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1?'':'s'} found`, characterIndex, extract, location: ourLocation });
+        const charCount = countOccurrences(fieldText, '\u200B');
+        const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/\u200B/g, '‼') + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
+        addNoticePartial({ priority: 895, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, characterIndex, extract, location: ourLocation });
         suggestion = suggestion.replace(/\u200B/g, ''); // Or should it be space ???
     }
 
@@ -400,8 +404,10 @@ export function checkTextField(fieldType, fieldName, fieldText, allowedLinks, op
                 let regexResultArray;
                 while ((regexResultArray = leftRegex.exec(fieldText)))
                     if ((fieldType !== 'markdown' || regexResultArray[0][0] !== '_')
-                        && (fieldType !== 'YAML' || leftChar !== '{')) {
-                        // debugLog(`Got misplaced left ${leftChar} in ${fieldType} ${fieldName} '${fieldText}':`, JSON.stringify(regexResultArray));
+                        && (fieldType !== 'YAML' || leftChar !== '{')
+                        // TODO: We have to allow for a blank language code until we change checkPlainText()
+                        && (languageCode !== 'en' || regexResultArray[0][2] !== 's' || fieldText.indexOf('(s)') === -1)) {
+                        debugLog(`Got misplaced '${languageCode}' left ${leftChar} in ${fieldType} ${fieldName} '${fieldText}': ${JSON.stringify(regexResultArray)}`);
                         let thisPriority = 717, thisMessage = `Misplaced ${leftChar} character`;
                         if (leftChar === '(' && regexResultArray[0][2] === 's') { thisPriority = 17; thisMessage = `Possible misplaced ${leftChar} character`; } // Lower priority for words like 'thing(s)'
                         if (!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < thisPriority)

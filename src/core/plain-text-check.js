@@ -4,7 +4,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert } from './utilities';
 
 
-const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.3.11';
+const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.3.12';
 
 
 /**
@@ -19,6 +19,8 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
     /* This function is optimised for checking the entire text, i.e., all lines.
         It is used in checkFileContents() in book-package-check.js
 
+    TODO: Should languageCode also be a parameter here? (affects other programs using the API)
+    
      Returns a result object containing a successList and a noticeList
      */
     // functionLog(`checkPlainText(${textName}, (${plainText.length} chars), ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
@@ -71,6 +73,7 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
         cptResult.noticeList.push(noticeObject);
     }
 
+    const languageCode = '';
     function ourCheckTextField(lineNumber, fieldText, allowedLinks, optionalFieldLocation, checkingOptions) {
         /**
         * @description - checks the given text field and processes the returned results
@@ -94,7 +97,7 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
         parameterAssert(optionalFieldLocation !== undefined, "cPT ourCheckTextField: 'optionalFieldLocation' parameter should be defined");
         parameterAssert(typeof optionalFieldLocation === 'string', `cPT ourCheckTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
-        const resultObject = checkTextField(textType, '', fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
+        const resultObject = checkTextField(languageCode, textType, '', fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field

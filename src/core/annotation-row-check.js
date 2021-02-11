@@ -8,7 +8,7 @@ import { checkOriginalLanguageQuote } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const ANNOTATION_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.6';
+// const ANNOTATION_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.7';
 
 const NUM_EXPECTED_ANNOTATION_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_ANNOTATION_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tAnnotation';
@@ -122,7 +122,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
 
         // We don’t currently use the allowedLinks parameter
 
-        // functionLog(`checkAnnotationTSVDataRow ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
+        // functionLog(`checkAnnotationTSVDataRow ourMarkdownTextChecks(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
         parameterAssert(rowID !== undefined, "checkAnnotationTSVDataRow ourMarkdownTextChecks: 'rowID' parameter should be defined");
         parameterAssert(typeof rowID === 'string', `checkAnnotationTSVDataRow ourMarkdownTextChecks: 'rowID' parameter should be a string not a '${typeof rowID}'`);
         // parameterAssert(fieldName !== undefined, "checkAnnotationTSVDataRow ourMarkdownTextChecks: 'fieldName' parameter should be defined");
@@ -184,7 +184,7 @@ export async function checkAnnotationTSVDataRow(languageCode, annotationType, li
         parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkAnnotationTSVDataRow ourCheckTextField: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
         const fieldType = fieldName === 'Annotation' ? 'markdown' : 'raw';
-        const octfResultObject = checkTextField(fieldType, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions);
+        const octfResultObject = checkTextField(languageCode, fieldType, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field

@@ -6,7 +6,7 @@ import { checkFileContents } from '../file-check/checkFileContents';
 import { checkRepo } from '../repo-check/checkRepo';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.5.5';
+// const BP_VALIDATOR_VERSION_STRING = '0.5.6';
 
 const MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -240,7 +240,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       }
     }
     if (markdownFileContent) {
-      const cmtResultObject = await checkMarkdownText(username, repoName, markdownFileContent, markdownLocation, checkingOptions);
+      const cmtResultObject = await checkMarkdownText(languageCode, repoName, markdownFileContent, markdownLocation, checkingOptions);
       // debugLog(`ourCheckMarkdown checkMarkdownText(${repoName}) returned ${cmtResultObject.successList.length} success message(s) and ${cmtResultObject.noticeList.length} notice(s)`);
       // debugLog(`ourCheckMarkdown checkMarkdownText(${repoName}) returned ${JSON.stringify(cmtResultObject)}`);
       // NOTE: We ignore the returned success messages here

@@ -5,7 +5,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { userLog, parameterAssert } from './utilities';
 
 
-const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.4.5';
+const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.4.6';
 
 const IMAGE_REGEX = new RegExp('!\\[([^\\]]+?)\\]\\(([^ \\]]+?)\\)', 'g');
 
@@ -30,6 +30,7 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
     // functionLog(`checkMarkdownText(${textName}, ${markdownText.length}, ${givenLocation})…`);
     parameterAssert(languageCode !== undefined, "checkMarkdownText: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkMarkdownText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
+    parameterAssert(languageCode !== 'unfoldingWord', `checkMarkdownText: 'languageCode' ${languageCode} parameter should be not be 'unfoldingWord'`);
     parameterAssert(textOrFileName !== undefined, "checkMarkdownText: 'textOrFileName' parameter should be defined");
     parameterAssert(typeof textOrFileName === 'string', `checkMarkdownText: 'textOrFileName' parameter should be a string not a '${typeof textOrFileName}': ${textOrFileName}`);
     parameterAssert(markdownText !== undefined, "checkMarkdownText: 'markdownText' parameter should be defined");
@@ -107,7 +108,7 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
         parameterAssert(optionalFieldLocation !== undefined, "cMdT ourCheckTextField: 'optionalFieldLocation' parameter should be defined");
         parameterAssert(typeof optionalFieldLocation === 'string', `cMdT ourCheckTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
-        const dbtcResultObject = checkTextField('markdown', fieldName, fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
+        const dbtcResultObject = checkTextField(languageCode, 'markdown', fieldName, fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
 
         // If we need to put everything through addNotice, e.g., for debugging or filtering
         //  process results line by line

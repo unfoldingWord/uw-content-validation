@@ -8,7 +8,7 @@ import { userLog, parameterAssert, dataAssert, ourParseInt } from './utilities';
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.8.2';
+// const USFM_VALIDATOR_VERSION_STRING = '0.8.3';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘`; // '{' gets added for STs
@@ -519,7 +519,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         parameterAssert(fieldLocation !== undefined, "cUSFM ourCheckTextField: 'fieldLocation' parameter should be defined");
         parameterAssert(typeof fieldLocation === 'string', `cUSFM ourCheckTextField: 'fieldLocation' parameter should be a string not a '${typeof fieldLocation}'`);
 
-        const dbtcResultObject = checkTextField(fieldType, fieldName, fieldText, allowedLinks, fieldLocation, checkingOptions);
+        const dbtcResultObject = checkTextField(languageCode, fieldType, fieldName, fieldText, allowedLinks, fieldLocation, checkingOptions);
 
         // Process noticeList line by line to filter out potential false positives
         //  for this particular kind of text field
