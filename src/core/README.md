@@ -7,7 +7,7 @@ This non-component function can have playgrounds to test them out.
 
 `checkFieldLinks()` checks text fields that might either be a link or contain one or more links.
 
-`checkTN_TSVDataRow()` checks a line of tab-separated fields.
+`checkTN_TSV9DataRow()` checks a line of tab-separated fields.
 
 Each of the above return a list of error messages
 and a list of warning messages.

@@ -1,6 +1,6 @@
 import * as books from './books/books';
 import { DEFAULT_EXCERPT_LENGTH } from './text-handling-functions'
-import { checkTN_TSVDataRow } from './tn-tsv9-row-check';
+import { checkTN_TSV9DataRow } from './tn-tsv9-row-check';
 import { removeDisabledNotices } from './disabled-notices';
 import { debugLog, parameterAssert } from './utilities';
 
@@ -129,7 +129,7 @@ export async function checkTN_TSV9Table(languageCode, bookID, filename, tableTex
                 const [B, C, V, rowID, supportReference, origQuote, occurrence, _GLQuote, _occurrenceNote] = fields;
 
                 // Use the row check to do most basic checks
-                const drResultObject = await checkTN_TSVDataRow(languageCode, lines[n], bookID, C, V, ourLocation, checkingOptions);
+                const drResultObject = await checkTN_TSV9DataRow(languageCode, lines[n], bookID, C, V, ourLocation, checkingOptions);
                 // Choose only ONE of the following
                 // This is the fast way of append the results from this field
                 // result.noticeList = result.noticeList.concat(firstResult.noticeList);

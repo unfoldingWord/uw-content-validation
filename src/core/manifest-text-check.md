@@ -228,7 +228,7 @@ function CheckManifestText(props) {
 
   const [results, setResults] = useState(null);
 
-  // We need the following construction because checkTN_TSVDataRow is an ASYNC function
+  // We need the following construction because checkTN_TSV9DataRow is an ASYNC function
   useEffect(() => {
     // Use an IIFE (Immediately Invoked Function Expression)
     //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
