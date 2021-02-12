@@ -1,4 +1,4 @@
-import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
+import { DEFAULT_EXCERPT_LENGTH } from './text-handling-functions'
 import { checkTextField } from './field-text-check';
 import { cachedGetFileUsingFullURL } from '../core/getApi';
 import { removeDisabledNotices } from './disabled-notices';
@@ -45,18 +45,18 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
-    let extractLength;
+    let excerptLength;
     try {
-        extractLength = checkingOptions?.extractLength;
+        excerptLength = checkingOptions?.excerptLength;
     } catch (mdtcError) { }
-    if (typeof extractLength !== 'number' || isNaN(extractLength)) {
-        extractLength = DEFAULT_EXTRACT_LENGTH;
-        // debugLog("Using default extractLength=" + extractLength);
+    if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
+        excerptLength = DEFAULT_EXCERPT_LENGTH;
+        // debugLog("Using default excerptLength=" + excerptLength);
     }
     // else
-    // debugLog("Using supplied extractLength=" + extractLength, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
-    const halfLength = Math.floor(extractLength / 2); // rounded down
-    const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
+    // debugLog("Using supplied excerptLength=" + excerptLength, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
+    const halfLength = Math.floor(excerptLength / 2); // rounded down
+    const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
     // debugLog("Using halfLength=" + halfLength, `halfLengthPlus=${halfLengthPlus}`);
 
     const result = { successList: [], noticeList: [] };
@@ -66,15 +66,15 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
         result.successList.push(successString);
     }
     function addNotice(noticeObject) {
-        // functionLog(`checkMarkdownText addNotice: (priority=${noticeObject.priority}) ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? " " + extract : ""}${noticeObject.location}`);
+        // functionLog(`checkMarkdownText addNotice: (priority=${noticeObject.priority}) ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.excerpt ? " " + excerpt : ""}${noticeObject.location}`);
         parameterAssert(noticeObject.priority !== undefined, "cMdT addNotice: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `cMdT addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "cMdT addNotice: 'message' parameter should be defined");
         parameterAssert(typeof noticeObject.message === 'string', `cMdT addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
         // parameterAssert(characterIndex !== undefined, "cMdT addNotice: 'characterIndex' parameter should be defined");
         if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cMdT addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // parameterAssert(extract !== undefined, "cMdT addNotice: 'extract' parameter should be defined");
-        if (noticeObject.extract) parameterAssert(typeof noticeObject.extract === 'string', `cMdT addNotice: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        // parameterAssert(excerpt !== undefined, "cMdT addNotice: 'excerpt' parameter should be defined");
+        if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `cMdT addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         parameterAssert(noticeObject.location !== undefined, "cMdT addNotice: 'location' parameter should be defined");
         parameterAssert(typeof noticeObject.location === 'string', `cMdT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
@@ -137,7 +137,7 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
             if (regexResultArray[1] !== 'OBS Image') userLog("This code was only checked for 'OBS Image' links");
             const fetchLink = regexResultArray[2];
             if (!fetchLink.startsWith('https://'))
-                addNotice({ priority: 749, message: "Markdown image link seems faulty", lineNumber, extract: fetchLink, location: lineLocation });
+                addNotice({ priority: 749, message: "Markdown image link seems faulty", lineNumber, excerpt: fetchLink, location: lineLocation });
             else if (checkingOptions?.disableAllLinkFetchingFlag !== true) {
                 // debugLog(`Need to check existence of ${fetchLink}`);
                 try {
@@ -146,7 +146,7 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
                     // debugLog("Markdown link fetch got response: ", responseData.length);
                 } catch (flError) {
                     console.error(`Markdown image link fetch had an error fetching '${fetchLink}': ${flError}`);
-                    addNotice({ priority: 748, message: "Error fetching markdown image link", lineNumber, extract: fetchLink, location: lineLocation });
+                    addNotice({ priority: 748, message: "Error fetching markdown image link", lineNumber, excerpt: fetchLink, location: lineLocation });
                 }
             }
         }
@@ -242,9 +242,9 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
         const count = ((markdownText || '').match(thisRegex) || []).length; // Finds only NON-OVERLAPPING matches hopefully
         if (count && (count % 2) !== 0) {
             const characterIndex = markdownText.indexOf(thisField);
-            const iy = characterIndex + halfLength; // Want extract to focus more on what follows
-            const extract = /*(iy > halfLength ? '…' : '') +*/ markdownText.substring(iy - halfLength, iy + halfLengthPlus) + (iy + halfLengthPlus < markdownText.length ? '…' : '')
-            addNotice({ priority: 378, message: `Possible mismatched '${thisField}' markdown formatting pairs`, details: `${count.toLocaleString()} total occurrence${count === 1 ? '' : 's'}`, characterIndex, extract, location: ourLocation });
+            const iy = characterIndex + halfLength; // Want excerpt to focus more on what follows
+            const excerpt = /*(iy > halfLength ? '…' : '') +*/ markdownText.substring(iy - halfLength, iy + halfLengthPlus) + (iy + halfLengthPlus < markdownText.length ? '…' : '')
+            addNotice({ priority: 378, message: `Possible mismatched '${thisField}' markdown formatting pairs`, details: `${count.toLocaleString()} total occurrence${count === 1 ? '' : 's'}`, characterIndex, excerpt, location: ourLocation });
             break; // Only want one warning per text
         }
     }

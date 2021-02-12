@@ -23,7 +23,7 @@ Each of these options and their caveats are described below.
 
 The first two options require you to clone the repository to your computer first. You may do this on the command line or using a program such as SmartGit. After making changes to the files you will need to commit and push your changes to the server and then create a Pull Request to merge them to the `master` branch.
 
-Alternately, you may [download the master branch as a zip file](https://git.door43.org/unfoldingWord/en_tn/archive/master.zip) and extract that locally. After editing you would need to use the upload file feature in DCS to get your changes ready for a Pull Request.
+Alternately, you may [download the master branch as a zip file](https://git.door43.org/unfoldingWord/en_tn/archive/master.zip) and excerpt that locally. After editing you would need to use the upload file feature in DCS to get your changes ready for a Pull Request.
 
 ### Editing in LibreOffice
 

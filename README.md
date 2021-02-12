@@ -74,7 +74,7 @@ All of the following fields may be missing or undefined, i.e., they’re all opt
 1. `lineNumber`: A one-based line number in the file (if available)
 1. `fieldName`: name of TSV field (if relevant)
 1. `characterIndex`: A **zero-based** integer character index which indicates the position of the error in the given text (line or field) (if available)
-1. `extract`: An excerpt (if available) from the checked text which indicates the area containing the problem. Where helpful, some character substitutions have already been made, for example, if the notice is about spaces, it is generally helpful to display spaces as a visible character in an attempt to best highlight the issue to the user. (The length of the extract defaults to ten characters, but is settable as an option.)
+1. `excerpt`: An excerpt (if available) from the checked text which indicates the area containing the problem. Where helpful, some character substitutions have already been made, for example, if the notice is about spaces, it is generally helpful to display spaces as a visible character in an attempt to best highlight the issue to the user. (The length of the excerpt defaults to ten characters, but is settable as an option.)
 1. `location`: A string indicating the context of the notice, e.g., "in line 17 of 'someBook.usfm'". (Still not completely sure what should be left in this string now that we have added optional `repoName`, `filename`, `rowID`, `lineNumber`, `fieldName` fields.)
 1. `extra`: for a check that looks in multiple repos, this contains extra identifying information (typically the `repoCode`) to help the user determine what resource/repo/file that the notice applies to (which, in the demos, is then often prepended to the `message`).
 
@@ -105,7 +105,7 @@ There is provision for checking to be altered and/or sped-up when the calling ap
 - `taRepoUsername`, `taRepoBranchName`: these two fields can be used to specify the username/organisation and/or the branch/tag name for fetching the TA files for checking
 - `taRepoLanguageCode`, and `taRepoSectionName`: can be used to specify how the `SupportReference` field is checked in TA—defaults are 'en' and 'translate'
 - `twRepoUsername`, `twRepoBranchName`: these two fields can be used to specify the username/organisation and/or the branch/tag name for fetching the TW files for checking
-- `extractLength`: an integer which defines how long excerpts of lines containing errors should be—the default is 15 characters—the package attempts to place the error in the middle of the extract
+- `excerptLength`: an integer which defines how long excerpts of lines containing errors should be—the default is 15 characters—the package attempts to place the error in the middle of the excerpt
 - `cutoffPriorityLevel`: an integer which can define notices to not be detected—defaults to 0 so none are dropped. Note that this will also affect the `suggestion` response. (Only partially implemented at present, so drops some but not all low priority notices.)
 - `suppressNoticeDisablingFlag`: Defaults to `false`, i.e., to removing (thus suppressing) notices for warnings which are expected in certain files and hence we don’t want them displayed. Note that this is always set to `true` for the demos (because they suppress these notices later—see the `showDisabledNoticesFlag` below).
 

@@ -1,5 +1,5 @@
 import * as books from './books/books';
-import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
+import { DEFAULT_EXCERPT_LENGTH } from './text-handling-functions'
 import { checkTN_TSVDataRow } from './tn-tsv9-row-check';
 import { removeDisabledNotices } from './disabled-notices';
 import { debugLog, parameterAssert } from './utilities';
@@ -59,7 +59,7 @@ export async function checkTN_TSV9Table(languageCode, bookID, filename, tableTex
      * @param {Object} noticeObject
      */
     function addNoticePartial(noticeObject) {
-        // functionLog(`checkTN_TSV9Table notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // functionLog(`checkTN_TSV9Table notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "TSV addNoticePartial: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `TSV addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "TSV addNoticePartial: 'message' parameter should be defined");
@@ -70,8 +70,8 @@ export async function checkTN_TSV9Table(languageCode, bookID, filename, tableTex
         if (noticeObject.V) parameterAssert(typeof noticeObject.V === 'string', `TSV addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
         // parameterAssert(characterIndex !== undefined, "TSV addNoticePartial: 'characterIndex' parameter should be defined");
         if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `TSV addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // parameterAssert(extract !== undefined, "TSV addNoticePartial: 'extract' parameter should be defined");
-        if (noticeObject.extract) parameterAssert(typeof noticeObject.extract === 'string', `TSV addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        // parameterAssert(excerpt !== undefined, "TSV addNoticePartial: 'excerpt' parameter should be defined");
+        if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `TSV addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         parameterAssert(noticeObject.location !== undefined, "TSV addNoticePartial: 'location' parameter should be defined");
         parameterAssert(typeof noticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
         if (noticeObject.debugChain) noticeObject.debugChain = `checkTN_TSV9Table ${noticeObject.debugChain}`;
@@ -82,18 +82,18 @@ export async function checkTN_TSV9Table(languageCode, bookID, filename, tableTex
     }
 
 
-    let extractLength;
+    let excerptLength;
     try {
-        extractLength = checkingOptions?.extractLength;
+        excerptLength = checkingOptions?.excerptLength;
     } catch (ttcError) { }
-    if (typeof extractLength !== 'number' || isNaN(extractLength)) {
-        extractLength = DEFAULT_EXTRACT_LENGTH;
-        // debugLog(`Using default extractLength=${extractLength}`);
+    if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
+        excerptLength = DEFAULT_EXCERPT_LENGTH;
+        // debugLog(`Using default excerptLength=${excerptLength}`);
     }
     // else
-    // debugLog(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
-    // const halfLength = Math.floor(extractLength / 2); // rounded down
-    // const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
+    // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
+    // const halfLength = Math.floor(excerptLength / 2); // rounded down
+    // const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
     // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     let lowercaseBookID = bookID.toLowerCase();
@@ -104,7 +104,7 @@ export async function checkTN_TSV9Table(languageCode, bookID, filename, tableTex
     }
     catch {
         if (!books.isValidBookID(bookID)) // must not be in FRT, BAK, etc.
-            addNoticePartial({ priority: 747, message: "Bad function call: should be given a valid book abbreviation", extract: bookID, location: ` (not '${bookID}')${ourLocation}` });
+            addNoticePartial({ priority: 747, message: "Bad function call: should be given a valid book abbreviation", excerpt: bookID, location: ` (not '${bookID}')${ourLocation}` });
     }
 
     let lines = tableText.split('\n');
@@ -186,9 +186,9 @@ export async function checkTN_TSV9Table(languageCode, bookID, filename, tableTex
                         if (C !== lastC)
                             numVersesThisChapter = books.versesInChapter(lowercaseBookID, intC);
                         if (intC === 0)
-                            addNoticePartial({ priority: 551, C, V, message: `Invalid zero chapter number`, rowID, lineNumber: n + 1, extract: C, location: ourLocation });
+                            addNoticePartial({ priority: 551, C, V, message: `Invalid zero chapter number`, rowID, lineNumber: n + 1, excerpt: C, location: ourLocation });
                         if (intC > numChaptersThisBook)
-                            addNoticePartial({ priority: 737, C, V, message: "Invalid large chapter number", rowID, lineNumber: n + 1, extract: C, location: ourLocation });
+                            addNoticePartial({ priority: 737, C, V, message: "Invalid large chapter number", rowID, lineNumber: n + 1, excerpt: C, location: ourLocation });
                         if (/^\d+$/.test(lastC)) {
                             let lastintC = Number(lastC);
                             if (intC < lastintC)
@@ -208,13 +208,13 @@ export async function checkTN_TSV9Table(languageCode, bookID, filename, tableTex
                     else if (/^\d+$/.test(V)) {
                         let intV = Number(V);
                         if (intV === 0 && bookID !== 'PSA') // Psalms have \d titles
-                            addNoticePartial({ priority: 552, C, V, message: "Invalid zero verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, extract: V, location: ourLocation });
+                            addNoticePartial({ priority: 552, C, V, message: "Invalid zero verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
                         if (intV > numVersesThisChapter)
-                            addNoticePartial({ priority: 734, C, V, message: "Invalid large verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, extract: V, location: ourLocation });
+                            addNoticePartial({ priority: 734, C, V, message: "Invalid large verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
                         if (/^\d+$/.test(lastV)) {
                             let lastintV = Number(lastV);
                             if (C === lastC && intV < lastintV)
-                                addNoticePartial({ priority: 733, C, V, message: "Receding verse number", details: `'${V}' after '${lastV} for chapter ${C}`, rowID, lineNumber: n + 1, extract: V, location: ourLocation });
+                                addNoticePartial({ priority: 733, C, V, message: "Receding verse number", details: `'${V}' after '${lastV} for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
                             // else if (intV > lastintV + 1)
                             //   addNoticePartial({priority:556, "Skipped verses with '${V}' verse number after '${lastV}'${withString}`);
                         }
@@ -245,7 +245,7 @@ export async function checkTN_TSV9Table(languageCode, bookID, filename, tableTex
                     try { C = fields[1]; } catch { }
                     try { V = fields[2]; } catch { }
                     try { rowID = fields[3]; } catch { }
-                    addNoticePartial({ priority: 988, message: `Wrong number of tabbed fields (expected ${NUM_EXPECTED_TN_TSV_FIELDS})`, extract: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, C, V, rowID, lineNumber: n + 1, location: ourLocation });
+                    addNoticePartial({ priority: 988, message: `Wrong number of tabbed fields (expected ${NUM_EXPECTED_TN_TSV_FIELDS})`, excerpt: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, C, V, rowID, lineNumber: n + 1, location: ourLocation });
                 }
         }
     }

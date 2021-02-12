@@ -24,8 +24,8 @@ const disabledNotices = [
 
   { repoCode: 'LT', priority: 638, fieldName: '\\p', }, // "Only found whitespace" tC3 outputs trailing spaces here
   { repoCode: 'ST', priority: 638, fieldName: '\\p', }, // "Only found whitespace" tC3 outputs trailing spaces here
-  { repoCode: 'LT', priority: 124, extract: '\\p␣␣', }, // "Unexpected double spaces" tC3 outputs trailing spaces here
-  { repoCode: 'ST', priority: 124, extract: '\\p␣␣', }, // "Unexpected double spaces" tC3 outputs trailing spaces here
+  { repoCode: 'LT', priority: 124, excerpt: '\\p␣␣', }, // "Unexpected double spaces" tC3 outputs trailing spaces here
+  { repoCode: 'ST', priority: 124, excerpt: '\\p␣␣', }, // "Unexpected double spaces" tC3 outputs trailing spaces here
   { repoCode: 'LT', message: "Unexpected space after | character", }, // 192 tC3 outputs an unneeded/unwanted space in \zaln-s
   { repoCode: 'ST', message: "Unexpected space after | character", }, // 192 tC3 outputs an unneeded/unwanted space in \zaln-s
   { repoCode: 'LT', priority: 95, }, // "Unexpected trailing space(s)" tC3 outputs trailing spaces all over the place

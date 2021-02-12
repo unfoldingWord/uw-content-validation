@@ -52,9 +52,9 @@ and then validates the content of one file selected from the repo.
   // The location field appears in check messages to help the user locate the issue
   location="as specified in FileCheck demo"
 
-  // Specifying extractLength and cutoffPriorityLevel is just to show off options
+  // Specifying excerptLength and cutoffPriorityLevel is just to show off options
   // —those fields are not necessary (or normal) here
-  extractLength='12' // Default is 15
+  excerptLength='12' // Default is 15
   // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
 
   // Normally links in files are downloaded to check that they really exist

@@ -36,15 +36,15 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
     const ctarResult = { noticeList: [] };
 
     function addNoticePartial(noticeObject) {
-        // functionLog(`checkSupportReferenceInTA Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // functionLog(`checkSupportReferenceInTA Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "cTAref addNoticePartial: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `cTAref addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "cTAref addNoticePartial: 'message' parameter should be defined");
         parameterAssert(typeof noticeObject.message === 'string', `cTAref addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
         // parameterAssert(characterIndex !== undefined, "cTAref addNoticePartial: 'characterIndex' parameter should be defined");
         if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cTAref addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // parameterAssert(extract !== undefined, "cTAref addNoticePartial: 'extract' parameter should be defined");
-        if (noticeObject.extract) parameterAssert(typeof noticeObject.extract === 'string', `cTAref addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        // parameterAssert(excerpt !== undefined, "cTAref addNoticePartial: 'excerpt' parameter should be defined");
+        if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `cTAref addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         parameterAssert(noticeObject.location !== undefined, "cTAref addNoticePartial: 'location' parameter should be defined");
         parameterAssert(typeof noticeObject.location === 'string', `cTAref addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
         ctarResult.noticeList.push({ ...noticeObject, fieldName });
@@ -53,18 +53,18 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
 
     // Main code for checkSupportReferenceInTA
     /*
-    let extractLength;
+    let excerptLength;
     try {
-        extractLength = checkingOptions?.extractLength;
+        excerptLength = checkingOptions?.excerptLength;
     } catch (trcELerror) { }
-    if (typeof extractLength !== 'number' || isNaN(extractLength)) {
-        extractLength = DEFAULT_EXTRACT_LENGTH;
-        // debugLog(`Using default extractLength=${extractLength}`);
+    if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
+        excerptLength = DEFAULT_EXCERPT_LENGTH;
+        // debugLog(`Using default excerptLength=${excerptLength}`);
     }
     // else
-        // debugLog(`Using supplied extractLength=${extractLength}`, "cf. default="+DEFAULT_EXTRACT_LENGTH);
-    const halfLength = Math.floor(extractLength / 2); // rounded down
-    const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
+        // debugLog(`Using supplied excerptLength=${excerptLength}`, "cf. default="+DEFAULT_EXCERPT_LENGTH);
+    const halfLength = Math.floor(excerptLength / 2); // rounded down
+    const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
     // debugLog(`Using halfLength=${halfLength}`, "halfLengthPlus="+halfLengthPlus);
     */
 
@@ -93,7 +93,7 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
     if (checkingOptions?.expectFullLink) {
         // debugLog("checkSupportReferenceInTA expect full link")
         if (!fieldText.startsWith('rc://*/'))
-            addNoticePartial({ priority: 879, message: `Badly formatted Resource Container link`, extract: fieldText, location: `${ourLocation} ${filepath}` });
+            addNoticePartial({ priority: 879, message: `Badly formatted Resource Container link`, excerpt: fieldText, location: `${ourLocation} ${filepath}` });
         filepath = `${fieldText.replace('rc://*/ta/man/', '')}/01.md`; // Other files are title.md, sub-title.md
     }
     else filepath = `${taRepoSectionName}/${fieldText}/01.md`; // Other files are title.md, sub-title.md
@@ -106,12 +106,12 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
         taFileContent = await getFile_({ username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch });
         // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
         if (!taFileContent)
-            addNoticePartial({ priority: 889, message: `Unable to find TA link`, extract: fieldText, location: `${ourLocation} ${filepath}` });
+            addNoticePartial({ priority: 889, message: `Unable to find TA link`, excerpt: fieldText, location: `${ourLocation} ${filepath}` });
         else if (taFileContent.length < 10)
-            addNoticePartial({ priority: 887, message: `Linked TA article seems empty`, extract: fieldText, location: `${ourLocation} ${filepath}` });
+            addNoticePartial({ priority: 887, message: `Linked TA article seems empty`, excerpt: fieldText, location: `${ourLocation} ${filepath}` });
     } catch (trcGCerror) {
         // console.error("checkSupportReferenceInTA() failed to load", taRepoUsername, taRepoName, filepath, taRepoBranch, trcGCerror.message);
-        addNoticePartial({ priority: 888, message: `Error loading TA link`, extract: fieldText, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+        addNoticePartial({ priority: 888, message: `Error loading TA link`, excerpt: fieldText, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
     }
 
     // functionLog(`checkSupportReferenceInTA is returning ${JSON.stringify(ctarResult)}`);

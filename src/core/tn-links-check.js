@@ -1,7 +1,7 @@
 import localforage from 'localforage';
 import Path from 'path';
 import * as books from '../core/books/books';
-import { DEFAULT_EXTRACT_LENGTH, countOccurrences } from './text-handling-functions'
+import { DEFAULT_EXCERPT_LENGTH, countOccurrences } from './text-handling-functions'
 import { cachedGetFile, checkMarkdownText } from '../core';
 import { userLog, debugLog, parameterAssert, logicAssert, ourParseInt } from './utilities';
 // import { consoleLogObject } from '../core/utilities';
@@ -131,15 +131,15 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
     const ctarResult = { noticeList: [], checkedFileCount: 0, checkedFilenames: [], checkedRepoNames: [] };
 
     function addNoticePartial(noticeObject) {
-        // functionLog(`checkTNLinksToOutside Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // functionLog(`checkTNLinksToOutside Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "cTNlnk addNoticePartial: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `cTNlnk addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "cTNlnk addNoticePartial: 'message' parameter should be defined");
         parameterAssert(typeof noticeObject.message === 'string', `cTNlnk addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
         // parameterAssert(characterIndex !== undefined, "cTNlnk addNoticePartial: 'characterIndex' parameter should be defined");
         if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cTNlnk addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // parameterAssert(extract !== undefined, "cTNlnk addNoticePartial: 'extract' parameter should be defined");
-        if (noticeObject.extract) parameterAssert(typeof noticeObject.extract === 'string', `cTNlnk addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        // parameterAssert(excerpt !== undefined, "cTNlnk addNoticePartial: 'excerpt' parameter should be defined");
+        if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `cTNlnk addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         parameterAssert(noticeObject.location !== undefined, "cTNlnk addNoticePartial: 'location' parameter should be defined");
         parameterAssert(typeof noticeObject.location === 'string', `cTNlnk addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
         // noticeObject.debugChain = noticeObject.debugChain ? `checkTNLinksToOutside ${noticeObject.debugChain}` : `checkTNLinksToOutside(${fieldName})`;
@@ -149,18 +149,18 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
 
     // Main code for checkTNLinksToOutside
     // Get any options that were suppplied, or else set default values
-    let extractLength;
+    let excerptLength;
     try {
-        extractLength = checkingOptions?.extractLength;
+        excerptLength = checkingOptions?.excerptLength;
     } catch (trcELerror) { }
-    if (typeof extractLength !== 'number' || isNaN(extractLength)) {
-        extractLength = DEFAULT_EXTRACT_LENGTH;
-        // debugLog(`Using default extractLength=${extractLength}`);
+    if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
+        excerptLength = DEFAULT_EXCERPT_LENGTH;
+        // debugLog(`Using default excerptLength=${excerptLength}`);
     }
     // else
-    // debugLog(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
-    const halfLength = Math.floor(extractLength / 2); // rounded down
-    const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
+    // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
+    const halfLength = Math.floor(excerptLength / 2); // rounded down
+    const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
     // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     const getFile_ = (checkingOptions && checkingOptions?.getFile) ? checkingOptions?.getFile : cachedGetFile;
@@ -218,12 +218,12 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         let languageCode = regexResultArray[1];
         if (languageCode !== '*') {
             const characterIndex = TA_REGEX.lastIndex - regexResultArray[0].length + 7; // lastIndex points to the end of the field that was found
-            const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
-            addNoticePartial({ priority: 450, message: "Resource container link should have '*' language code", details: `not '${languageCode}'`, characterIndex, extract, location: ourLocation });
+            const excerpt = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
+            addNoticePartial({ priority: 450, message: "Resource container link should have '*' language code", details: `not '${languageCode}'`, characterIndex, excerpt, location: ourLocation });
         } else { // At the moment, tC can’t handle these links with * so we have to ensure that they're not there
             const characterIndex = TA_REGEX.lastIndex - regexResultArray[0].length + 7; // lastIndex points to the end of the field that was found
-            const extract = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
-            addNoticePartial({ priority: 950, message: "tC cannot yet process '*' language code", characterIndex, extract, location: ourLocation });
+            const excerpt = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
+            addNoticePartial({ priority: 950, message: "tC cannot yet process '*' language code", characterIndex, excerpt, location: ourLocation });
         }
         if (!languageCode || languageCode === '*') languageCode = defaultLanguageCode;
         const taRepoName = `${languageCode}_ta`;
@@ -240,14 +240,14 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
                 // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
             } catch (trcGCerror) {
                 // console.error(`checkTNLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
-                addNoticePartial({ priority: 885, message: `Error loading ${fieldName} TA link`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+                addNoticePartial({ priority: 885, message: `Error loading ${fieldName} TA link`, excerpt: regexResultArray[0], location: `${ourLocation} ${filepath}: ${trcGCerror}` });
                 alreadyGaveError = true;
             }
             if (!alreadyGaveError) {
                 if (!taFileContent)
-                    addNoticePartial({ priority: 886, message: `Unable to find ${fieldName} TA link`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}` });
+                    addNoticePartial({ priority: 886, message: `Unable to find ${fieldName} TA link`, excerpt: regexResultArray[0], location: `${ourLocation} ${filepath}` });
                 else if (taFileContent.length < 10)
-                    addNoticePartial({ priority: 884, message: `Linked ${fieldName} TA article seems empty`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}` });
+                    addNoticePartial({ priority: 884, message: `Linked ${fieldName} TA article seems empty`, excerpt: regexResultArray[0], location: `${ourLocation} ${filepath}` });
                 else if (checkingOptions?.checkLinkedTAArticleFlag === true) {
                     // functionLog(`checkTNLinksToOutside got ${checkingOptions?.checkLinkedTAArticleFlag} so checking TA article: ${filepath}`);
                     if (await alreadyChecked(taPathParameters) !== true) {
@@ -291,13 +291,13 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
                 // debugLog("Fetched fileContent for", twRepoName, filepath, typeof fileContent, fileContent.length);
             } catch (trcGCerror) {
                 console.error(`checkTNLinksToOutside(${bookID}, ${fieldName}, …) failed to load TW`, twRepoUsername, twRepoName, filepath, twRepoBranch, trcGCerror.message);
-                addNoticePartial({ priority: 882, message: `Error loading ${fieldName} TW link`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+                addNoticePartial({ priority: 882, message: `Error loading ${fieldName} TW link`, excerpt: regexResultArray[0], location: `${ourLocation} ${filepath}: ${trcGCerror}` });
             }
             if (!twFileContent)
-                addNoticePartial({ priority: 883, message: `Unable to find ${fieldName} TW link`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}` });
+                addNoticePartial({ priority: 883, message: `Unable to find ${fieldName} TW link`, excerpt: regexResultArray[0], location: `${ourLocation} ${filepath}` });
             else { // we got the content of the TW article
                 if (twFileContent.length < 10)
-                    addNoticePartial({ priority: 881, message: `Linked ${fieldName} TW article seems empty`, extract: regexResultArray[0], location: `${ourLocation} ${filepath}` });
+                    addNoticePartial({ priority: 881, message: `Linked ${fieldName} TW article seems empty`, excerpt: regexResultArray[0], location: `${ourLocation} ${filepath}` });
                 else if (checkingOptions?.checkLinkedTWArticleFlag === true) {
                     // functionLog(`checkTNLinksToOutside got ${checkingOptions?.checkLinkedTWArticleFlag} so checking TW article: ${filepath}`);
                     if (await alreadyChecked(twPathParameters) !== true) {
@@ -334,7 +334,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
                 const checkResult = books.isGoodEnglishBookName(optionalB1);
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
-                    addNoticePartial({ priority: 143, message: "Unknown Bible book name in link", details: totalLink, extract: optionalB1, location: ourLocation });
+                    addNoticePartial({ priority: 143, message: "Unknown Bible book name in link", details: totalLink, excerpt: optionalB1, location: ourLocation });
             }
         }
 
@@ -344,19 +344,19 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         if (C1 === undefined) {
             if (!books.isOneChapterBook(linkBookCode)) {
                 // debugLog(`  checkTNLinksToOutside C1 missing in THIS_CHAPTER_BIBLE_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
-                addNoticePartial({ priority: 555, message: "Possible missing chapter number in markdown Bible link", extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 555, message: "Possible missing chapter number in markdown Bible link", excerpt: totalLink, location: ourLocation });
             }
             C1 = '0'; // Try to avoid consequential errors
         }
         try {
             if (ourParseInt(C1) !== givenCint)
-                addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don’t match", details: `${C1} vs ${givenCint}`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don’t match", details: `${C1} vs ${givenCint}`, excerpt: totalLink, location: ourLocation });
         } catch (ccError) {
             console.error(`TN Link Check1 couldn’t compare chapter numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C1} from '${fieldText}': ${ccError}`);
         }
         try {
             if (ourParseInt(V1) !== linkVerseInt)
-                addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don’t match", details: `${V1} vs ${linkVerseInt}`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don’t match", details: `${V1} vs ${linkVerseInt}`, excerpt: totalLink, location: ourLocation });
         } catch (vvError) {
             console.error(`TN Link Check1 couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C1}:${V1} from '${fieldText}': ${vvError}`);
         }
@@ -372,9 +372,9 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
                 numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), givenCint);
             } catch (tlcNVerror) { }
             if (!givenCint || givenCint < 1 || givenCint > numChaptersThisBook)
-                addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible link", details: `${linkBookCode} ${givenCint} vs ${numChaptersThisBook} chapters`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible link", details: `${linkBookCode} ${givenCint} vs ${numChaptersThisBook} chapters`, excerpt: totalLink, location: ourLocation });
             else if (!linkVerseInt || linkVerseInt < 0 || linkVerseInt > numVersesThisChapter)
-                addNoticePartial({ priority: 653, message: "Bad verse number in markdown Bible link", details: `${linkBookCode} ${givenCint}:${linkVerseInt} vs ${numVersesThisChapter} verses`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 653, message: "Bad verse number in markdown Bible link", details: `${linkBookCode} ${givenCint}:${linkVerseInt} vs ${numVersesThisChapter} verses`, excerpt: totalLink, location: ourLocation });
         }
     }
 
@@ -393,7 +393,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
             linkChapterInt = ourParseInt(C2);
             linkVerseInt = ourParseInt(V2);
             if (ourParseInt(V1) !== linkVerseInt)
-                addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don’t match", details: `${V1} vs ${V2}`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don’t match", details: `${V1} vs ${V2}`, excerpt: totalLink, location: ourLocation });
         } catch (vvError) {
             console.error(`TN Link Check1b couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} ${V1} with ${C2}:${V2} from '${fieldText}': ${vvError}`);
         }
@@ -409,9 +409,9 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
                 numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
             } catch (tlcNVerror) { }
             if (!linkChapterInt || linkChapterInt < 1 || linkChapterInt > numChaptersThisBook)
-                addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt} vs ${numChaptersThisBook} chapters`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt} vs ${numChaptersThisBook} chapters`, excerpt: totalLink, location: ourLocation });
             else if (!linkVerseInt || linkVerseInt < 0 || linkVerseInt > numVersesThisChapter)
-                addNoticePartial({ priority: 653, message: "Bad verse number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt}:${linkVerseInt} vs ${numVersesThisChapter} verses`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 653, message: "Bad verse number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt}:${linkVerseInt} vs ${numVersesThisChapter} verses`, excerpt: totalLink, location: ourLocation });
         }
     }
 
@@ -432,12 +432,12 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
             linkChapterInt = ourParseInt(C2);
             linkVerseInt = ourParseInt(V2);
             if (verseInt1a !== linkVerseInt)
-                addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don’t match", details: `${V1a} vs ${V2}`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don’t match", details: `${V1a} vs ${V2}`, excerpt: totalLink, location: ourLocation });
         } catch (vvError) {
             console.error(`TN Link Check1c couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} ${V1a} with ${C2}:${V2} from '${fieldText}': ${vvError}`);
         }
         if (verseInt1b <= verseInt1a)
-            addNoticePartial({ priority: 741, message: "Verse numbers of markdown Bible link range out of order", details: `${V1a} to ${V1b}`, extract: totalLink, location: ourLocation });
+            addNoticePartial({ priority: 741, message: "Verse numbers of markdown Bible link range out of order", details: `${V1a} to ${V1b}`, excerpt: totalLink, location: ourLocation });
 
         if (linkBookCode) { // then we know which Bible book this link is to
             // So we can check for valid C:V numbers
@@ -450,9 +450,9 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
                 numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
             } catch (tlcNVerror) { }
             if (!linkChapterInt || linkChapterInt < 1 || linkChapterInt > numChaptersThisBook)
-                addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt} vs ${numChaptersThisBook} chapters`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt} vs ${numChaptersThisBook} chapters`, excerpt: totalLink, location: ourLocation });
             else if (!linkVerseInt || linkVerseInt < 0 || linkVerseInt > numVersesThisChapter)
-                addNoticePartial({ priority: 653, message: "Bad verse number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt}:${linkVerseInt} vs ${numVersesThisChapter} verses`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 653, message: "Bad verse number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt}:${linkVerseInt} vs ${numVersesThisChapter} verses`, excerpt: totalLink, location: ourLocation });
         }
     }
 
@@ -471,7 +471,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
                 const checkResult = books.isGoodEnglishBookName(optionalB1);
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
-                    addNoticePartial({ priority: 143, message: "Unknown Bible book name in link", details: totalLink, extract: optionalB1, location: ourLocation });
+                    addNoticePartial({ priority: 143, message: "Unknown Bible book name in link", details: totalLink, excerpt: optionalB1, location: ourLocation });
             }
         }
 
@@ -480,13 +480,13 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         const linkChapterInt = ourParseInt(C2), linkVerseInt = ourParseInt(V2);
         try {
             if (ourParseInt(C1) !== linkChapterInt)
-                addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don’t match", details: `${C1} vs ${linkChapterInt}`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don’t match", details: `${C1} vs ${linkChapterInt}`, excerpt: totalLink, location: ourLocation });
         } catch (ccError) {
             console.error(`TN Link Check2 couldn’t compare chapter numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C2} from '${fieldText}': ${ccError}`);
         }
         try {
             if (ourParseInt(V1) !== linkVerseInt)
-                addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don’t match", details: `${V1} vs ${linkVerseInt}`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don’t match", details: `${V1} vs ${linkVerseInt}`, excerpt: totalLink, location: ourLocation });
         } catch (vvError) {
             console.error(`TN Link Check2 couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C2}:${V2} from '${fieldText}': ${vvError}`);
         }
@@ -502,9 +502,9 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
                 numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
             } catch (tlcNVerror) { }
             if (!linkChapterInt || linkChapterInt < 1 || linkChapterInt > numChaptersThisBook)
-                addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt} vs ${numChaptersThisBook} chapters`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt} vs ${numChaptersThisBook} chapters`, excerpt: totalLink, location: ourLocation });
             else if (!linkVerseInt || linkVerseInt < 0 || linkVerseInt > numVersesThisChapter)
-                addNoticePartial({ priority: 653, message: "Bad verse number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt}:${linkVerseInt} vs ${numVersesThisChapter} verses`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 653, message: "Bad verse number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt}:${linkVerseInt} vs ${numVersesThisChapter} verses`, excerpt: totalLink, location: ourLocation });
         }
     }
 
@@ -523,7 +523,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
                 const checkResult = books.isGoodEnglishBookName(optionalB1);
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
-                    addNoticePartial({ priority: 143, message: "Unknown Bible book name in link", details: totalLink, extract: optionalB1, location: ourLocation });
+                    addNoticePartial({ priority: 143, message: "Unknown Bible book name in link", details: totalLink, excerpt: optionalB1, location: ourLocation });
             }
         }
 
@@ -532,19 +532,19 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         const linkChapterInt = ourParseInt(C2), linkVerseInt = ourParseInt(V2);
         try {
             if (ourParseInt(C1) !== linkChapterInt)
-                addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don’t match", details: `${C1} vs ${linkChapterInt}`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don’t match", details: `${C1} vs ${linkChapterInt}`, excerpt: totalLink, location: ourLocation });
         } catch (ccError) {
             console.error(`TN Link Check2b couldn’t compare chapter numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C2} from '${fieldText}': ${ccError}`);
         }
         try {
             if (ourParseInt(V1a) !== linkVerseInt)
-                addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don’t match", details: `${V1a} vs ${linkVerseInt}`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don’t match", details: `${V1a} vs ${linkVerseInt}`, excerpt: totalLink, location: ourLocation });
         } catch (vvError) {
             console.error(`TN Link Check2b couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C2}:${V2} from '${fieldText}': ${vvError}`);
         }
         try {
             if (ourParseInt(V1b) <= ourParseInt(V1a))
-                addNoticePartial({ priority: 741, message: "Verse numbers of markdown Bible link range out of order", details: `${V1a} to ${V1b}`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 741, message: "Verse numbers of markdown Bible link range out of order", details: `${V1a} to ${V1b}`, excerpt: totalLink, location: ourLocation });
         } catch (vvError) {
             console.error(`TN Link Check2c couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C2}:${V2} from '${fieldText}': ${vvError}`);
         }
@@ -560,9 +560,9 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
                 numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
             } catch (tlcNVerror) { }
             if (!linkChapterInt || linkChapterInt < 1 || linkChapterInt > numChaptersThisBook)
-                addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt} vs ${numChaptersThisBook} chapters`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt} vs ${numChaptersThisBook} chapters`, excerpt: totalLink, location: ourLocation });
             else if (!linkVerseInt || linkVerseInt < 0 || linkVerseInt > numVersesThisChapter)
-                addNoticePartial({ priority: 653, message: "Bad verse number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt}:${linkVerseInt} vs ${numVersesThisChapter} verses`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 653, message: "Bad verse number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt}:${linkVerseInt} vs ${numVersesThisChapter} verses`, excerpt: totalLink, location: ourLocation });
         }
     }
 
@@ -581,7 +581,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
                 const checkResult = books.isGoodEnglishBookName(optionalB1);
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
-                    addNoticePartial({ priority: 143, message: "Unknown Bible book name in link", details: totalLink, extract: optionalB1, location: ourLocation });
+                    addNoticePartial({ priority: 143, message: "Unknown Bible book name in link", details: totalLink, excerpt: optionalB1, location: ourLocation });
             }
         }
 
@@ -590,13 +590,13 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         const linkVerseInt = ourParseInt(V2);
         try {
             if (ourParseInt(V1a) !== linkVerseInt)
-                addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don’t match", details: `${V1a} vs ${linkVerseInt}`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don’t match", details: `${V1a} vs ${linkVerseInt}`, excerpt: totalLink, location: ourLocation });
         } catch (vvError) {
             console.error(`TN Link Check2d couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C1}:${V2} from '${fieldText}': ${vvError}`);
         }
         try {
             if (ourParseInt(V1b) <= ourParseInt(V1a))
-                addNoticePartial({ priority: 741, message: "Verse numbers of markdown Bible link range out of order", details: `${V1a} to ${V1b}`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 741, message: "Verse numbers of markdown Bible link range out of order", details: `${V1a} to ${V1b}`, excerpt: totalLink, location: ourLocation });
         } catch (vvError) {
             console.error(`TN Link Check2e couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C1}:${V2} from '${fieldText}': ${vvError}`);
         }
@@ -612,7 +612,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
                 numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), givenC);
             } catch (tlcNVerror) { }
             if (!linkVerseInt || linkVerseInt < 0 || linkVerseInt > numVersesThisChapter)
-                addNoticePartial({ priority: 653, message: "Bad verse number in markdown Bible link", details: `${linkBookCode} ${givenC}:${linkVerseInt} vs ${numVersesThisChapter} verses`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 653, message: "Bad verse number in markdown Bible link", details: `${linkBookCode} ${givenC}:${linkVerseInt} vs ${numVersesThisChapter} verses`, excerpt: totalLink, location: ourLocation });
         }
     }
 
@@ -631,7 +631,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
                 const checkResult = books.isGoodEnglishBookName(optionalB1);
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
-                    addNoticePartial({ priority: 143, message: "Unknown Bible book name in link", details: totalLink, extract: optionalB1, location: ourLocation });
+                    addNoticePartial({ priority: 143, message: "Unknown Bible book name in link", details: totalLink, excerpt: optionalB1, location: ourLocation });
             }
         }
 
@@ -640,13 +640,13 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         const linkChapterInt = ourParseInt(C2), linkVerseInt = ourParseInt(V2);
         try {
             if (ourParseInt(C1) !== linkChapterInt)
-                addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don’t match", details: `${C1} vs ${linkChapterInt}`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don’t match", details: `${C1} vs ${linkChapterInt}`, excerpt: totalLink, location: ourLocation });
         } catch (ccError) {
             console.error(`TN Link Check3 couldn’t compare chapter numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C1} from '${fieldText}': ${ccError}`);
         }
         try {
             if (ourParseInt(V1) !== linkVerseInt)
-                addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don’t match", details: `${V1} vs ${linkVerseInt}`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don’t match", details: `${V1} vs ${linkVerseInt}`, excerpt: totalLink, location: ourLocation });
         } catch (vvError) {
             console.error(`TN Link Check3 couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C1}:${V1} from '${fieldText}': ${vvError}`);
         }
@@ -662,9 +662,9 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
                 numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
             } catch (tlcNVerror) { }
             if (!linkChapterInt || linkChapterInt < 1 || linkChapterInt > numChaptersThisBook)
-                addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt} vs ${numChaptersThisBook} chapters`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt} vs ${numChaptersThisBook} chapters`, excerpt: totalLink, location: ourLocation });
             else if (!linkVerseInt || linkVerseInt < 0 || linkVerseInt > numVersesThisChapter)
-                addNoticePartial({ priority: 653, message: "Bad verse number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt}:${linkVerseInt} vs ${numVersesThisChapter} verses`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 653, message: "Bad verse number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt}:${linkVerseInt} vs ${numVersesThisChapter} verses`, excerpt: totalLink, location: ourLocation });
         }
     }
 
@@ -684,7 +684,7 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
                 const checkResult = books.isGoodEnglishBookName(optionalB1);
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
-                    addNoticePartial({ priority: 144, message: "Unknown Bible book name in TN link", details: totalLink, extract: optionalB1, location: ourLocation });
+                    addNoticePartial({ priority: 144, message: "Unknown Bible book name in TN link", details: totalLink, excerpt: optionalB1, location: ourLocation });
             }
         }
 
@@ -693,13 +693,13 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
         const linkChapterInt = ourParseInt(C2), linkVerseInt = ourParseInt(V2);
         try {
             if (ourParseInt(C1) !== linkChapterInt)
-                addNoticePartial({ priority: 743, message: "Chapter numbers of markdown TN link don’t match", details: `${C1} vs ${linkChapterInt}`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 743, message: "Chapter numbers of markdown TN link don’t match", details: `${C1} vs ${linkChapterInt}`, excerpt: totalLink, location: ourLocation });
         } catch (ccError) {
             console.error(`TN Link Check3b couldn’t compare chapter numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C1} from '${fieldText}': ${ccError}`);
         }
         try {
             if (ourParseInt(V1) !== linkVerseInt)
-                addNoticePartial({ priority: 752, message: "Verse numbers of markdown TN link don’t match", details: `${V1} vs ${linkVerseInt}`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 752, message: "Verse numbers of markdown TN link don’t match", details: `${V1} vs ${linkVerseInt}`, excerpt: totalLink, location: ourLocation });
         } catch (vvError) {
             console.error(`TN Link Check3b couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C1}:${V1} from '${fieldText}': ${vvError}`);
         }
@@ -715,9 +715,9 @@ export async function checkTNLinksToOutside(bookID, givenC, givenV, fieldName, f
                 numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
             } catch (tlcNVerror) { }
             if (!linkChapterInt || linkChapterInt < 1 || linkChapterInt > numChaptersThisBook)
-                addNoticePartial({ priority: 656, message: "Bad chapter number in markdown TN link", details: `${linkBookCode} ${linkChapterInt} vs ${numChaptersThisBook} chapters`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 656, message: "Bad chapter number in markdown TN link", details: `${linkBookCode} ${linkChapterInt} vs ${numChaptersThisBook} chapters`, excerpt: totalLink, location: ourLocation });
             else if (!linkVerseInt || linkVerseInt < 0 || linkVerseInt > numVersesThisChapter)
-                addNoticePartial({ priority: 654, message: "Bad verse number in markdown TN link", details: `${linkBookCode} ${linkChapterInt}:${linkVerseInt} vs ${numVersesThisChapter} verses`, extract: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 654, message: "Bad verse number in markdown TN link", details: `${linkBookCode} ${linkChapterInt}:${linkVerseInt} vs ${numVersesThisChapter} verses`, excerpt: totalLink, location: ourLocation });
         }
 
         // TODO: We should see if we can find the correct note

@@ -1,4 +1,4 @@
-import { DEFAULT_EXTRACT_LENGTH, isWhitespace, countOccurrences, ourDeleteAll } from './text-handling-functions'
+import { DEFAULT_EXCERPT_LENGTH, isWhitespace, countOccurrences, ourDeleteAll } from './text-handling-functions'
 import * as books from '../core/books/books';
 import { checkTextField } from './field-text-check';
 import { checkTextfileContents } from './file-text-check';
@@ -164,18 +164,18 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
-    let extractLength;
+    let excerptLength;
     try {
-        extractLength = checkingOptions?.extractLength;
+        excerptLength = checkingOptions?.excerptLength;
     } catch (usfmELerror) { }
-    if (typeof extractLength !== 'number' || isNaN(extractLength)) {
-        extractLength = DEFAULT_EXTRACT_LENGTH;
-        // debugLog(`Using default extractLength=${extractLength}`);
+    if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
+        excerptLength = DEFAULT_EXCERPT_LENGTH;
+        // debugLog(`Using default excerptLength=${excerptLength}`);
     }
     // else
-    // debugLog(`Using supplied extractLength=${extractLength} cf. default=${DEFAULT_EXTRACT_LENGTH}`);
-    const halfLength = Math.floor(extractLength / 2); // rounded down
-    const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
+    // debugLog(`Using supplied excerptLength=${excerptLength} cf. default=${DEFAULT_EXCERPT_LENGTH}`);
+    const halfLength = Math.floor(excerptLength / 2); // rounded down
+    const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
     // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     const lowercaseBookID = bookID.toLowerCase();
@@ -191,7 +191,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
     }
     function addNoticePartial(noticeObject) {
         // debugLog("checkUSFMText addNoticePartial:", JSON.stringify(noticeObject));
-        // functionLog(`checkUSFMText addNoticePartial: (priority=${noticeObject.priority}) ${noticeObject.C}:${noticeObject.V} ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
+        // functionLog(`checkUSFMText addNoticePartial: (priority=${noticeObject.priority}) ${noticeObject.C}:${noticeObject.V} ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.excerpt ? ` ${noticeObject.excerpt}` : ""}${noticeObject.location}`);
         parameterAssert(noticeObject.priority !== undefined, "cUSFM addNoticePartial: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `cUSFM addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "cUSFM addNoticePartial: 'message' parameter should be defined");
@@ -202,8 +202,8 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         if (noticeObject.V) parameterAssert(typeof noticeObject.V === 'string', `cUSFM addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
         // parameterAssert(characterIndex !== undefined, "cUSFM addNoticePartial: 'characterIndex' parameter should be defined");
         if (noticeObject.characterIndex !== undefined) parameterAssert(typeof noticeObject.characterIndex === 'number', `cUSFM addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // parameterAssert(extract !== undefined, "cUSFM addNoticePartial: 'extract' parameter should be defined");
-        if (noticeObject.extract) parameterAssert(typeof noticeObject.extract === 'string', `cUSFM addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        // parameterAssert(excerpt !== undefined, "cUSFM addNoticePartial: 'excerpt' parameter should be defined");
+        if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `cUSFM addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         parameterAssert(noticeObject.location !== undefined, "cUSFM addNoticePartial: 'location' parameter should be defined");
         parameterAssert(typeof noticeObject.location === 'string', `cUSFM addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
@@ -231,9 +231,9 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         // We only get one error if it fails
         if (grammarCheckResult.error && grammarCheckResult.error.priority)
             // Prevent these false alarms (from Ohm schema issues, esp. empty lemma="" fields)
-            if (!grammarCheckResult.error.extract
-                // Note: checking the extract might not always be reliable if they choose a length < 10
-                || (grammarCheckResult.error.extract.indexOf('mma="" ') < 0 // see https://github.com/Bridgeconn/usfm-grammar/issues/87
+            if (!grammarCheckResult.error.excerpt
+                // Note: checking the excerpt might not always be reliable if they choose a length < 10
+                || (grammarCheckResult.error.excerpt.indexOf('mma="" ') < 0 // see https://github.com/Bridgeconn/usfm-grammar/issues/87
                     && grammarCheckResult.error.message.indexOf('Expected "c", "v", ') < 0 // forgotten what this prevents ???
                     && grammarCheckResult.error.message.indexOf('Expected "f*", "+", ') < 0 // see https://github.com/Bridgeconn/usfm-grammar/issues/86
                 ))
@@ -414,7 +414,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 userLog(`CVCheck couldn’t convert ${bookID} chapter '${chapterNumberString}': ${usfmCIerror}`);
             }
             if (chapterInt < 1 || chapterInt > expectedVersesPerChapterList.length)
-                addNoticePartial({ priority: 869, message: "Chapter number out of range", C: chapterNumberString, extract: `${bookID} ${chapterNumberString}`, location: CVlocation });
+                addNoticePartial({ priority: 869, message: "Chapter number out of range", C: chapterNumberString, excerpt: `${bookID} ${chapterNumberString}`, location: CVlocation });
             else {
                 let discoveredVerseList = [], discoveredVerseWithTextList = [];
                 // debugLog(`Chapter ${chapterNumberString} verses ${Object.keys(result1.returnedJSON.chapters[chapterNumberString])}`);
@@ -441,7 +441,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                                     discoveredVerseWithTextList.push(v);
                             }
                         } catch (usfmVIerror) {
-                            addNoticePartial({ priority: 762, message: "Unable to convert verse bridge numbers to integers", C: chapterNumberString, V: verseNumberString, characterIndex: 3, extract: verseNumberString, location: `${CVlocation} with ${usfmVIerror}` });
+                            addNoticePartial({ priority: 762, message: "Unable to convert verse bridge numbers to integers", C: chapterNumberString, V: verseNumberString, characterIndex: 3, excerpt: verseNumberString, location: `${CVlocation} with ${usfmVIerror}` });
                         }
                     } else { // It’s NOT a verse bridge
                         let verseInt;
@@ -453,7 +453,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                         }
 
                         if (verseInt < 1 || verseInt > expectedVersesPerChapterList[chapterInt - 1])
-                            addNoticePartial({ priority: 868, message: "Verse number out of range", C: chapterNumberString, V: verseNumberString, extract: `${bookID} ${chapterNumberString}:${verseNumberString}`, location: CVlocation });
+                            addNoticePartial({ priority: 868, message: "Verse number out of range", C: chapterNumberString, V: verseNumberString, excerpt: `${bookID} ${chapterNumberString}:${verseNumberString}`, location: CVlocation });
 
                         if (verseHasText)
                             discoveredVerseWithTextList.push(verseInt);
@@ -564,7 +564,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
             const lCount = countOccurrences(fileText, opener);
             const rCount = countOccurrences(fileText, closer);
             if (lCount !== rCount)
-                addNoticePartial({ priority: 873, message: `Mismatched ${opener}${closer} fields`, extract: `(left=${lCount.toLocaleString()}, right=${rCount.toLocaleString()})`, location: fileLocation });
+                addNoticePartial({ priority: 873, message: `Mismatched ${opener}${closer} fields`, excerpt: `(left=${lCount.toLocaleString()}, right=${rCount.toLocaleString()})`, location: fileLocation });
         }
     }
     // end of checkUSFMCharacterFields function
@@ -594,22 +594,22 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
 
         for (const compulsoryMarker of COMPULSORY_MARKERS)
             if (!markerSet.has(compulsoryMarker))
-                addNoticePartial({ priority: 819, message: "Missing compulsory USFM line", extract: `missing \\${compulsoryMarker}`, location: fileLocation });
+                addNoticePartial({ priority: 819, message: "Missing compulsory USFM line", excerpt: `missing \\${compulsoryMarker}`, location: fileLocation });
         for (const expectedMarker of EXPECTED_MARKERS)
             if (!markerSet.has(expectedMarker)
                 && (!expectedMarker.endsWith('1') || !markerSet.has(expectedMarker.substring(0, expectedMarker.length - 1))))
-                addNoticePartial({ priority: 519, message: "Missing expected USFM line", extract: `missing \\${expectedMarker}`, location: fileLocation });
+                addNoticePartial({ priority: 519, message: "Missing expected USFM line", excerpt: `missing \\${expectedMarker}`, location: fileLocation });
         if (books.isExtraBookID(bookID))
             for (const expectedMarker of EXPECTED_PERIPHERAL_BOOK_MARKERS)
                 if (!markerSet.has(expectedMarker))
-                    addNoticePartial({ priority: 517, message: "Missing expected USFM line", extract: `missing \\${expectedMarker}`, location: fileLocation });
+                    addNoticePartial({ priority: 517, message: "Missing expected USFM line", excerpt: `missing \\${expectedMarker}`, location: fileLocation });
                 else
                     for (const expectedMarker of EXPECTED_BIBLE_BOOK_MARKERS)
                         if (!markerSet.has(expectedMarker))
-                            addNoticePartial({ priority: 518, message: "Missing expected USFM line", extract: `missing \\${expectedMarker}`, location: fileLocation });
+                            addNoticePartial({ priority: 518, message: "Missing expected USFM line", excerpt: `missing \\${expectedMarker}`, location: fileLocation });
         for (const deprecatedMarker of DEPRECATED_MARKERS)
             if (markerSet.has(deprecatedMarker))
-                addNoticePartial({ priority: 218, message: "Using deprecated USFM marker", extract: `\\${deprecatedMarker}`, location: fileLocation });
+                addNoticePartial({ priority: 218, message: "Using deprecated USFM marker", excerpt: `\\${deprecatedMarker}`, location: fileLocation });
     }
     // end of checkUSFMFileContents function
 
@@ -656,8 +656,8 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
             const ixWordEnd = adjustedRest.indexOf('|');
             if (ixWordEnd < 0 && adjustedRest.indexOf('lemma="') >= 0) {
                 const characterIndex = 5; // Presumably, a little bit into the word
-                const extract = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
-                addNoticePartial({ priority: 912, message: 'Missing | character in \\w line', lineNumber, C, V, characterIndex, extract, location: lineLocation });
+                const excerpt = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
+                addNoticePartial({ priority: 912, message: 'Missing | character in \\w line', lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
             parameterAssert(ixWordEnd >= 1, `Why1 is w| = ${ixWordEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
             ixEnd = adjustedRest.indexOf('\\w*');
@@ -712,8 +712,8 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
             const ixWordEnd = adjustedRest.indexOf('|');
             if (ixWordEnd < 0 && adjustedRest.indexOf('lemma="') >= 0) {
                 const characterIndex = nextWIndex + 5; // Presumably, a little bit into the word
-                const extract = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
-                addNoticePartial({ priority: 911, message: 'Missing | character in \\w field', details, lineNumber, C, V, characterIndex, extract, location: lineLocation });
+                const excerpt = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
+                addNoticePartial({ priority: 911, message: 'Missing | character in \\w field', details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
                 adjustedRest = ''; // Avoid follow-on errors
                 break;
             }
@@ -746,21 +746,21 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         if (adjustedRest) {
             let characterIndex;
             if ((characterIndex = adjustedRest.indexOf('"')) >= 0) {
-                const extract = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
-                addNoticePartial({ priority: 776, message: 'Unexpected " straight quote character', details, lineNumber, C, V, extract, location: lineLocation });
+                const excerpt = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
+                addNoticePartial({ priority: 776, message: 'Unexpected " straight quote character', details, lineNumber, C, V, excerpt, location: lineLocation });
                 // debugLog(`ERROR 776: in ${marker} '${adjustedRest}' from '${rest}'`);
             }
             if ((characterIndex = adjustedRest.indexOf("'")) >= 0) {
-                const extract = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
-                addNoticePartial({ priority: 775, message: "Unexpected ' straight quote character", details, lineNumber, C, V, extract, location: lineLocation });
+                const excerpt = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
+                addNoticePartial({ priority: 775, message: "Unexpected ' straight quote character", details, lineNumber, C, V, excerpt, location: lineLocation });
                 // debugLog(`ERROR 775: in ${marker} '${adjustedRest}' from '${rest}'`);
             }
             if (adjustedRest.indexOf('\\') >= 0 || adjustedRest.indexOf('|') >= 0) {
                 // functionLog(`checkUSFMLineText ${languageCode} ${filename} ${lineNumber} ${C}:${V} somehow ended up with ${marker}='${adjustedRest}'`);
                 characterIndex = adjustedRest.indexOf('\\');
                 if (characterIndex === -1) characterIndex = adjustedRest.indexOf('|');
-                const extract = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
-                addNoticePartial({ priority: 875, message: "Unexpected USFM field", details, lineNumber, C, V, extract, location: lineLocation });
+                const excerpt = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
+                addNoticePartial({ priority: 875, message: "Unexpected USFM field", details, lineNumber, C, V, excerpt, location: lineLocation });
             }
             if (adjustedRest !== rest) // Only re-check if line has changed (because original is checked in checkUSFMLineInternals())
                 // Note: false (below) is for allowedLinks flag
@@ -805,44 +805,44 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 if (repoCode === 'UHB' || repoCode === 'UGNT') {
                     if (attributeCounter === 1) {
                         if (attributeName !== 'lemma')
-                            addNoticePartial({ priority: 857, message: "Unexpected first original \\w attribute", details: "expected 'lemma'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                            addNoticePartial({ priority: 857, message: "Unexpected first original \\w attribute", details: "expected 'lemma'", lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
                     } else if (attributeCounter === 2) {
                         if (attributeName !== 'strong')
-                            addNoticePartial({ priority: 856, message: "Unexpected second original \\w attribute", details: "expected 'strong'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                            addNoticePartial({ priority: 856, message: "Unexpected second original \\w attribute", details: "expected 'strong'", lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
                     } else if (attributeCounter === 3) {
                         if (attributeName !== 'x-morph')
-                            addNoticePartial({ priority: 855, message: "Unexpected third original \\w attribute", details: "expected 'x-morph'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                            addNoticePartial({ priority: 855, message: "Unexpected third original \\w attribute", details: "expected 'x-morph'", lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
                     } else if (attributeCounter === 4) {
                         if (attributeName !== 'x-tw') // we can have TWO of these -- THREE EVEN in EXO 15:23 and 1KI 21:9!!!
-                            addNoticePartial({ priority: 854, message: "Unexpected fourth original \\w attribute", details: "expected 'x-tw'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                            addNoticePartial({ priority: 854, message: "Unexpected fourth original \\w attribute", details: "expected 'x-tw'", lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
                     } else if (attributeCounter === 5) {
                         if (attributeName !== 'x-tw')
-                            addNoticePartial({ priority: 854, message: "Unexpected fifth original \\w attribute", details: "expected second 'x-tw'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                            addNoticePartial({ priority: 854, message: "Unexpected fifth original \\w attribute", details: "expected second 'x-tw'", lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
                     } else if (attributeCounter === 6) {
                         if (attributeName !== 'x-tw')
-                            addNoticePartial({ priority: 854, message: "Unexpected sixth original \\w attribute", details: "expected third 'x-tw'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                            addNoticePartial({ priority: 854, message: "Unexpected sixth original \\w attribute", details: "expected third 'x-tw'", lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
                     } else // #7 or more
-                        addNoticePartial({ priority: 853, message: "Unexpected extra original \\w attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                        addNoticePartial({ priority: 853, message: "Unexpected extra original \\w attribute", details, lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
                     if (attributeName === 'x-morph'
                         && ((repoCode === 'UHB' && !attributeValue.startsWith('He,') && !attributeValue.startsWith('Ar,'))
                             || (repoCode === 'UGNT' && !attributeValue.startsWith('Gr,'))))
-                        addNoticePartial({ priority: 852, message: "Unexpected original \\w x-morph language prefix", details:"Expected 'He,' 'Ar,' or 'Gr,'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                        addNoticePartial({ priority: 852, message: "Unexpected original \\w x-morph language prefix", details:"Expected 'He,' 'Ar,' or 'Gr,'", lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
                 } else { // a translation -- not UHB or UGNT
                     if (attributeCounter === 1) {
                         if (attributeName !== 'x-occurrence')
-                            addNoticePartial({ priority: 848, message: "Unexpected first translation \\w attribute", details: "expected 'x-occurrence'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                            addNoticePartial({ priority: 848, message: "Unexpected first translation \\w attribute", details: "expected 'x-occurrence'", lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
                     } else if (attributeCounter === 2) {
                         if (attributeName !== 'x-occurrences')
-                            addNoticePartial({ priority: 847, message: "Unexpected second translation \\w attribute", details: "expected 'x-occurrences'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                            addNoticePartial({ priority: 847, message: "Unexpected second translation \\w attribute", details: "expected 'x-occurrences'", lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
                     } else // #3 or more
-                        addNoticePartial({ priority: 846, message: "Unexpected extra translation \\w attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                        addNoticePartial({ priority: 846, message: "Unexpected extra translation \\w attribute", details, lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
                 }
             }
             if (repoCode === 'UHB' || repoCode === 'UGNT') {
                 if (attributeCounter < 3)
-                    addNoticePartial({ priority: 837, message: "Seems too few original \\w attributes", details: `Expected 3-4 attributes but only found ${attributeCounter}`, lineNumber, C, V, extract: regexResultArray1[0], location: lineLocation });
+                    addNoticePartial({ priority: 837, message: "Seems too few original \\w attributes", details: `Expected 3-4 attributes but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation });
             } else if (attributeCounter < 2)
-                addNoticePartial({ priority: 836, message: "Seems too few translation \\w attributes", details: `Expected two attributes but only found ${attributeCounter}`, lineNumber, C, V, extract: regexResultArray1[0], location: lineLocation });
+                addNoticePartial({ priority: 836, message: "Seems too few translation \\w attributes", details: `Expected two attributes but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation });
         }
         while ((regexResultArray1 = KS_REGEX.exec(adjustedRest))) {
             // debugLog(`Got ${repoCode} \\k-s Regex in ${C}:${V} line: '${JSON.stringify(regexResultArray1)}`);
@@ -854,12 +854,12 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 const attributeName = regexResultArray2[1]; //, attributeValue = regexResultArray2[2];
                 if (attributeCounter === 1) {
                     if (attributeName !== 'x-tw')
-                        addNoticePartial({ priority: 839, message: "Unexpected first \\k-s attribute", details: "expected 'x-tw'", lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                        addNoticePartial({ priority: 839, message: "Unexpected first \\k-s attribute", details: "expected 'x-tw'", lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
                 } else // #2 or more
-                    addNoticePartial({ priority: 838, message: "Unexpected extra \\k-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                    addNoticePartial({ priority: 838, message: "Unexpected extra \\k-s attribute", details, lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
             }
             if (attributeCounter < 1)
-                addNoticePartial({ priority: 835, message: "Seems too few original \\k-s attributes", details: `Expected one attribute but only found ${attributeCounter}`, lineNumber, C, V, extract: regexResultArray1[0], location: lineLocation });
+                addNoticePartial({ priority: 835, message: "Seems too few original \\k-s attributes", details: `Expected one attribute but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation });
         }
         while ((regexResultArray1 = ZALNS_REGEX.exec(adjustedRest))) {
             // debugLog(`Got ${repoCode} \\zaln-s Regex in ${C}:${V} line: '${JSON.stringify(regexResultArray1)}`);
@@ -871,27 +871,27 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 const attributeName = regexResultArray2[1]; //, attributeValue = regexResultArray2[2];
                 if (attributeCounter === 1) {
                     if (attributeName !== 'x-strong')
-                        addNoticePartial({ priority: 830, message: "Unexpected first \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                        addNoticePartial({ priority: 830, message: "Unexpected first \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
                 } else if (attributeCounter === 2) {
                     if (attributeName !== 'x-lemma')
-                        addNoticePartial({ priority: 829, message: "Unexpected second \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                        addNoticePartial({ priority: 829, message: "Unexpected second \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
                 } else if (attributeCounter === 3) {
                     if (attributeName !== 'x-morph')
-                        addNoticePartial({ priority: 828, message: "Unexpected third \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                        addNoticePartial({ priority: 828, message: "Unexpected third \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
                 } else if (attributeCounter === 4) {
                     if (attributeName !== 'x-occurrence')
-                        addNoticePartial({ priority: 827, message: "Unexpected fourth \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                        addNoticePartial({ priority: 827, message: "Unexpected fourth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
                 } else if (attributeCounter === 5) {
                     if (attributeName !== 'x-occurrences')
-                        addNoticePartial({ priority: 826, message: "Unexpected fifth \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                        addNoticePartial({ priority: 826, message: "Unexpected fifth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
                 } else if (attributeCounter === 6) {
                     if (attributeName !== 'x-content')
-                        addNoticePartial({ priority: 825, message: "Unexpected sixth \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                        addNoticePartial({ priority: 825, message: "Unexpected sixth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
                 } else // #7 or more
-                    addNoticePartial({ priority: 833, message: "Unexpected extra \\zaln-s attribute", details, lineNumber, C, V, extract: regexResultArray2[0], location: lineLocation });
+                    addNoticePartial({ priority: 833, message: "Unexpected extra \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
             }
             if (attributeCounter < 6)
-                addNoticePartial({ priority: 834, message: "Seems too few translation \\zaln-s attributes", details: `Expected six attributes but only found ${attributeCounter}`, lineNumber, C, V, extract: regexResultArray1[0], location: lineLocation });
+                addNoticePartial({ priority: 834, message: "Seems too few translation \\zaln-s attributes", details: `Expected six attributes but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation });
         }
     }
     // end of checkUSFMLineAttributes function
@@ -916,15 +916,15 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
             // functionLog(`checkUSFMLineInternals(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
 
             if (marker === 'c' && isNaN(rest))
-                addNoticePartial({ priority: 822, message: "Expected field to contain an integer", lineNumber, characterIndex: 3, extract: `\\c ${rest}`, C, V, location: lineLocation });
+                addNoticePartial({ priority: 822, message: "Expected field to contain an integer", lineNumber, characterIndex: 3, excerpt: `\\c ${rest}`, C, V, location: lineLocation });
             if (marker === 'v') {
                 let Vstr = (rest) ? rest.split(' ', 1)[0] : '?';
                 if (isNaN(Vstr) && Vstr.indexOf('-') < 0)
-                    addNoticePartial({ priority: 822, message: "Expected field to contain an integer", characterIndex: 3, extract: `\\v ${rest}`, C, V, location: lineLocation });
+                    addNoticePartial({ priority: 822, message: "Expected field to contain an integer", characterIndex: 3, excerpt: `\\v ${rest}`, C, V, location: lineLocation });
             }
             else if (marker === 'h' || marker === 'toc1' || marker === 'toc2' || marker === 'toc3')
                 if (rest.toLowerCase() === rest || rest.toUpperCase() === rest)
-                    addNoticePartial({ priority: languageCode === 'en' || languageCode === 'fr' ? 490 : 190, message: "Expected header field to contain a mixed-case string", fieldName: `\\${marker}`, extract: rest, C, V, location: lineLocation });
+                    addNoticePartial({ priority: languageCode === 'en' || languageCode === 'fr' ? 490 : 190, message: "Expected header field to contain a mixed-case string", fieldName: `\\${marker}`, excerpt: rest, C, V, location: lineLocation });
 
             if (rest) {
                 checkUSFMLineText(lineNumber, C, V, marker, rest, lineLocation, checkingOptions);
@@ -945,9 +945,9 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         if (ALLOWED_LINE_START_MARKERS.indexOf(marker) >= 0 || marker === 'SPECIAL1') {
             if (rest && MARKERS_WITHOUT_CONTENT.indexOf(marker) >= 0)
                 if (isWhitespace(rest))
-                    addNoticePartial({ priority: 301, message: `Unexpected whitespace after \\${marker} marker`, C, V, lineNumber, characterIndex: marker.length, extract: rest, location: lineLocation });
+                    addNoticePartial({ priority: 301, message: `Unexpected whitespace after \\${marker} marker`, C, V, lineNumber, characterIndex: marker.length, excerpt: rest, location: lineLocation });
                 else if (rest !== 'ס' && rest !== 'פ') // in UHB NEH 3:20 or EZR 3:18
-                    addNoticePartial({ priority: 401, message: `Unexpected content after \\${marker} marker`, C, V, lineNumber, characterIndex: marker.length, extract: rest, location: lineLocation });
+                    addNoticePartial({ priority: 401, message: `Unexpected content after \\${marker} marker`, C, V, lineNumber, characterIndex: marker.length, excerpt: rest, location: lineLocation });
                 else if (MARKERS_WITH_COMPULSORY_CONTENT.indexOf(marker) >= 0 && !rest)
                     addNoticePartial({ priority: 711, message: "Expected compulsory content", C, V, lineNumber, characterIndex: marker.length, location: ` after \\${marker} marker${lineLocation}` });
         } else // it’s not a recognised line marker
@@ -973,7 +973,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         }
         catch {
             if (!books.isValidBookID(bookID)) // must not be in FRT, BAK, etc.
-                addNoticePartial({ priority: 903, message: "Bad function call: should be given a valid book abbreviation", extract: bookID, location: ` (not '${bookID}')${ourLocation}` });
+                addNoticePartial({ priority: 903, message: "Bad function call: should be given a valid book abbreviation", excerpt: bookID, location: ` (not '${bookID}')${ourLocation}` });
         }
 
         function findStartMarker(C, V, lineNumber, USFMline) {
@@ -986,8 +986,8 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 if (char === ' ') break;
                 // Cope with self-closing milestones like \k-s\*
                 if (char === '\\' && (characterIndex === USFMline.length - 1 || USFMline[characterIndex + 1] !== '*')) {
-                    const extract = USFMline.substring(0, extractLength) + (USFMline.length > extractLength ? '…' : '');
-                    addNoticePartial({ priority: 603, message: "USFM marker doesn’t end with space", C, V, lineNumber, characterIndex, extract, location: ourLocation });
+                    const excerpt = USFMline.substring(0, excerptLength) + (USFMline.length > excerptLength ? '…' : '');
+                    addNoticePartial({ priority: 603, message: "USFM marker doesn’t end with space", C, V, lineNumber, characterIndex, excerpt, location: ourLocation });
                     break;
                 }
                 foundMarker += char;
@@ -1015,9 +1015,9 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
             }
             let characterIndex;
             if ((characterIndex = line.indexOf('\r')) >= 0) {
-                const iy = characterIndex + halfLength; // Want extract to focus more on what follows
-                const extract = (iy > halfLength ? '…' : '') + line.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < line.length ? '…' : '')
-                addNoticePartial({ priority: 703, C, V, message: "Unexpected CarriageReturn character", lineNumber: n, characterIndex, extract, location: ourLocation });
+                const iy = characterIndex + halfLength; // Want excerpt to focus more on what follows
+                const excerpt = (iy > halfLength ? '…' : '') + line.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < line.length ? '…' : '')
+                addNoticePartial({ priority: 703, C, V, message: "Unexpected CarriageReturn character", lineNumber: n, characterIndex, excerpt, location: ourLocation });
             }
 
             let marker, rest;
@@ -1031,7 +1031,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 rest = line;
                 if (validLineStartCharacters.indexOf(line[0]) < 0) { // These are the often expected characters
                     // Drop the priority if it’s a "half-likely" character
-                    addNoticePartial({ priority: `"`.indexOf(line[0]) < 0 ? 880 : 180, C, V, message: "Expected line to start with backslash", lineNumber: n, characterIndex: 0, extract: line[0], location: ourLocation });
+                    addNoticePartial({ priority: `"`.indexOf(line[0]) < 0 ? 880 : 180, C, V, message: "Expected line to start with backslash", lineNumber: n, characterIndex: 0, excerpt: line[0], location: ourLocation });
                     if (line[1] === '\\') { // Let’s drop the leading punctuation and try to check the rest of the line
                         marker = line.substring(2).split(' ', 1)[0];
                         rest = line.substring(marker.length + 2 + 1); // Skip leading character, backslash, marker, and space after marker
@@ -1053,11 +1053,11 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 try {
                     intC = ourParseInt(C);
                 } catch (usfmICerror) {
-                    addNoticePartial({ priority: 724, C, V, message: "Unable to convert chapter number to integer", lineNumber: n, characterIndex: 3, extract: `${rest.substring(0, halfLength)}${rest.length > halfLength ? '…' : ''}`, location: ourLocation });
+                    addNoticePartial({ priority: 724, C, V, message: "Unable to convert chapter number to integer", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, halfLength)}${rest.length > halfLength ? '…' : ''}`, location: ourLocation });
                     intC = -999; // Used to prevent consequential errors
                 }
                 if (C === lastC || (intC > 0 && intC !== lastIntC + 1))
-                    addNoticePartial({ priority: 764, C, V, message: "Chapter number didn’t increment correctly", lineNumber: n, characterIndex: 3, extract: `${rest.substring(0, halfLength)}${rest.length > halfLength ? '…' : ''} (${lastC ? lastC : '0'} → ${C})`, location: ourLocation });
+                    addNoticePartial({ priority: 764, C, V, message: "Chapter number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, halfLength)}${rest.length > halfLength ? '…' : ''} (${lastC ? lastC : '0'} → ${C})`, location: ourLocation });
                 lastC = C; lastV = '0';
                 lastIntC = intC; lastIntV = 0;
             } else if (marker === 'v') {
@@ -1066,11 +1066,11 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                     try {
                         intV = ourParseInt(V);
                     } catch (usfmIVerror) {
-                        addNoticePartial({ priority: 723, C, V, message: "Unable to convert verse number to integer", lineNumber: n, characterIndex: 3, extract: `${rest.substring(0, halfLength)}${rest.length > halfLength ? '…' : ''}`, location: ourLocation });
+                        addNoticePartial({ priority: 723, C, V, message: "Unable to convert verse number to integer", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, halfLength)}${rest.length > halfLength ? '…' : ''}`, location: ourLocation });
                         intV = -999; // Used to prevent consequential errors
                     }
                     if (V === lastV || (intV > 0 && intV !== lastIntV + 1))
-                        addNoticePartial({ priority: 763, C, V, message: "Verse number didn’t increment correctly", lineNumber: n, characterIndex: 3, extract: `${rest.substring(0, halfLength)}${rest.length > halfLength ? '…' : ''} (${lastV ? lastV : '0'} → ${V})`, location: ourLocation });
+                        addNoticePartial({ priority: 763, C, V, message: "Verse number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, halfLength)}${rest.length > halfLength ? '…' : ''} (${lastV ? lastV : '0'} → ${V})`, location: ourLocation });
                     lastV = V; lastIntV = intV;
                 } else { // handle verse bridge
                     const bits = V.split('-');
@@ -1080,13 +1080,13 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                         intFirstV = ourParseInt(firstV);
                         intSecondV = ourParseInt(secondV);
                     } catch (usfmV12error) {
-                        addNoticePartial({ priority: 762, C, V, message: "Unable to convert verse bridge numbers to integers", lineNumber: n, characterIndex: 3, extract: `${rest.substring(0, Math.max(9, extractLength))}${rest.length > extractLength ? '…' : ''}`, location: ourLocation });
+                        addNoticePartial({ priority: 762, C, V, message: "Unable to convert verse bridge numbers to integers", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, Math.max(9, excerptLength))}${rest.length > excerptLength ? '…' : ''}`, location: ourLocation });
                         intFirstV = -999; intSecondV = -998; // Used to prevent consequential errors
                     }
                     if (intSecondV <= intFirstV)
-                        addNoticePartial({ priority: 769, C, V, message: "Verse bridge numbers not in ascending order", lineNumber: n, characterIndex: 3, extract: `${rest.substring(0, Math.max(9, extractLength))}${rest.length > extractLength ? '…' : ''} (${firstV} → ${secondV})`, location: ourLocation });
+                        addNoticePartial({ priority: 769, C, V, message: "Verse bridge numbers not in ascending order", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, Math.max(9, excerptLength))}${rest.length > excerptLength ? '…' : ''} (${firstV} → ${secondV})`, location: ourLocation });
                     else if (firstV === lastV || (intFirstV > 0 && intFirstV !== lastIntV + 1))
-                        addNoticePartial({ priority: 766, C, V, message: "Bridged verse numbers didn’t increment correctly", lineNumber: n, characterIndex: 3, extract: `${rest.substring(0, Math.max(9, extractLength))}${rest.length > extractLength ? '…' : ''} (${lastV} → ${firstV})`, location: ourLocation });
+                        addNoticePartial({ priority: 766, C, V, message: "Bridged verse numbers didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, Math.max(9, excerptLength))}${rest.length > excerptLength ? '…' : ''} (${lastV} → ${firstV})`, location: ourLocation });
                     lastV = secondV; lastIntV = intSecondV;
                 }
             } else if ((vIndex = rest.indexOf('\\v ')) >= 0) {
@@ -1097,18 +1097,18 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                     intV = parseInt(restRest);
                     // debugLog("Got", intV);
                 } catch (usfmIIVerror) {
-                    addNoticePartial({ priority: 720, C, V, message: "Unable to convert internal verse number to integer", lineNumber: n, characterIndex: 3, extract: `${restRest.substring(0, halfLength)}${restRest.length > halfLength ? '…' : ''}`, location: ourLocation });
+                    addNoticePartial({ priority: 720, C, V, message: "Unable to convert internal verse number to integer", lineNumber: n, characterIndex: 3, excerpt: `${restRest.substring(0, halfLength)}${restRest.length > halfLength ? '…' : ''}`, location: ourLocation });
                     intV = -999; // Used to prevent consequential errors
                 }
                 if (intV > 0 && intV !== lastIntV + 1)
-                    addNoticePartial({ priority: 761, C, V, message: "Verse number didn’t increment correctly", lineNumber: n, characterIndex: 3, extract: `${restRest.substring(0, halfLength)}${restRest.length > halfLength ? '…' : ''} (${lastV ? lastV : '0'} → ${V})`, location: ourLocation });
+                    addNoticePartial({ priority: 761, C, V, message: "Verse number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${restRest.substring(0, halfLength)}${restRest.length > halfLength ? '…' : ''} (${lastV ? lastV : '0'} → ${V})`, location: ourLocation });
                 lastV = intV.toString(); lastIntV = intV;
             }
 
             if (marker === 'id' && !rest.startsWith(bookID)) {
-                const thisLength = Math.max(4, extractLength);
-                const extract = `${rest.substring(0, thisLength)}${rest.length > thisLength ? '…' : ''}`;
-                addNoticePartial({ priority: 987, C, V, message: "Expected \\id line to start with book identifier", lineNumber: n, characterIndex: 4, extract, location: ourLocation });
+                const thisLength = Math.max(4, excerptLength);
+                const excerpt = `${rest.substring(0, thisLength)}${rest.length > thisLength ? '…' : ''}`;
+                addNoticePartial({ priority: 987, C, V, message: "Expected \\id line to start with book identifier", lineNumber: n, characterIndex: 4, excerpt, location: ourLocation });
             }
 
             // Check the order of markers

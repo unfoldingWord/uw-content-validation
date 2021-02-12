@@ -51,7 +51,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 fieldName: string (if relevant)
                 characterIndex: A zero-based integer index which indicates the position
                     of the error on the line or in the text field as appropriate.
-                extract: An extract of the checked text which indicates the area
+                excerpt: An excerpt of the checked text which indicates the area
                       containing the problem.
                     Where helpful, some character substitutions have already been made,
                       for example, if the notice is about spaces,
@@ -121,7 +121,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                         && (thisUniqueNotice.rowID === item.rowID || thisUniqueNotice.rowID === undefined || item.rowID === undefined)
                         && (thisUniqueNotice.lineNumber === item.lineNumber || thisUniqueNotice.lineNumber === undefined || item.lineNumber === undefined)
                         && (thisUniqueNotice.characterIndex === item.characterIndex || thisUniqueNotice.characterIndex === undefined || item.characterIndex === undefined)
-                        && (thisUniqueNotice.extract === item.extract || thisUniqueNotice.extract === undefined || item.extract === undefined)
+                        && (thisUniqueNotice.excerpt === item.excerpt || thisUniqueNotice.excerpt === undefined || item.excerpt === undefined)
                         && (thisUniqueNotice.extra === item.extra || thisUniqueNotice.extra === undefined || item.extra === undefined)
                     )
                         return ix;
@@ -261,7 +261,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     }
     else userLog(`Using supplied cutoffPriorityLevel=${cutoffPriorityLevel} cf. default=${DEFAULT_CUTOFF_PRIORITY_LEVEL}`);
     // if (cutoffPriorityLevel > errorPriorityLevel)
-    // resultObject.errorList.push({999, "Cutoff level must not be higher than error level", extract:`(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
+    // resultObject.errorList.push({999, "Cutoff level must not be higher than error level", excerpt:`(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
 
     let showDisabledNoticesFlag = optionalProcessingOptions.showDisabledNoticesFlag === true;
     if (showDisabledNoticesFlag) userLog(`showDisabledNoticesFlag=${showDisabledNoticesFlag}`);
@@ -406,7 +406,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             const thisNewNotice = {
                 ...thisParticularNotice, priority: 701, message: "\\s5 fields should be coded as \\ts\\* milestones", location: ` in ${givenNoticeObject.checkType}`,
                 // I think we need to delete these fields below as they were probably set in thisParticularNotice
-                C: undefined, V: undefined, characterIndex: undefined, extract: undefined
+                C: undefined, V: undefined, characterIndex: undefined, excerpt: undefined
             };
             // if (thisParticularNotice.filename && thisParticularNotice.filename.length)
             //     thisNewNotice.filename = thisParticularNotice.filename; // Sometimes we have an additional file identifier
@@ -449,7 +449,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         remainingNoticeList = newNoticeList;
     }
     // if (cutoffPriorityLevel > errorPriorityLevel)
-    // resultObject.errorList.push({999, "Cutoff level must not be higher than error level", extract:`(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
+    // resultObject.errorList.push({999, "Cutoff level must not be higher than error level", excerpt:`(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
 
     // Sort the remainingNoticeList as required
     const SORT_LIST = ['TN', 'TN2', 'LT', 'ST', 'UHB', 'UGNT', 'TWL', 'TW', 'TQ', 'TQ2', 'SN', 'SQ', 'TA', undefined, 'README', 'LICENSE'];

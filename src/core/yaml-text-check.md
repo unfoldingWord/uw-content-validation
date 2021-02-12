@@ -183,7 +183,7 @@ projects:
     path: './67-REV.usfm'
     categories: [ 'bible-nt' ]
 `;
-// This is an extract from a media.yaml file:
+// This is an excerpt from a media.yaml file:
 const textG2 = `resource:
   version: '{latest}'
   media:

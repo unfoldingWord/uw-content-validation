@@ -31,7 +31,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
     if (branch === undefined) branch = 'master';
 
     const checkingOptions = { // Uncomment any of these to test them
-        // extractLength: 25,
+        // excerptLength: 25,
         suppressNoticeDisablingFlag: true, // Leave this one as true (otherwise demo checks are less efficient)
     };
     // NOTE: I removed this again as it didn’t really seem to make sense to enable it here
@@ -42,7 +42,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
     //     checkingOptions.checkLinkedTWArticleFlag = true;
     // }
     // Or this allows the parameters to be specified as a RepoCheck property
-    if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
+    if (props.excerptLength) checkingOptions.excerptLength = ourParseInt(props.excerptLength);
     if (props.cutoffPriorityLevel) checkingOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
 
 
@@ -104,7 +104,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
                     rawCRResults = await checkRepo(username, repoName, branch, "", setResultValue, checkingOptions);
                 } catch (checkRepoError) {
                     rawCRResults = { successList: [], noticeList: [] };
-                    rawCRResults.noticeList.push({ priority: 999, message: "checkRepo function FAILED", repoName, extract: checkRepoError, location: repoName });
+                    rawCRResults.noticeList.push({ priority: 999, message: "checkRepo function FAILED", repoName, excerpt: checkRepoError, location: repoName });
                     // debugLog("RepoCheck trace is", checkRepoError.trace);
                 }
                 // debugLog("checkRepo() returned", typeof rawCRResults); //, JSON.stringify(rawCRResults));

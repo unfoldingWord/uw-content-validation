@@ -35,14 +35,14 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
 
     const checkingOptions = { // Uncomment any of these to test them
         dataSet: dataSet, // Can be 'OLD' (Markdown, etc.), 'NEW' (TSV only), or 'BOTH', or 'DEFAULT'
-        // extractLength: 25, // default is 15
+        // excerptLength: 25, // default is 15
         checkManifestFlag: true,
         checkReadmeFlag: true,
         checkLicenseFlag: true,
         suppressNoticeDisablingFlag: true, // Leave this one as true (otherwise demo checks are less efficient)
     };
     // Or this allows the parameters to be specified as a BookPackageCheck property
-    if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
+    if (props.excerptLength) checkingOptions.excerptLength = ourParseInt(props.excerptLength);
     if (props.cutoffPriorityLevel) checkingOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
     if (props.disableAllLinkFetchingFlag) checkingOptions.disableAllLinkFetchingFlag = props.disableAllLinkFetchingFlag.toLowerCase() === 'true';
     if (props.checkLinkedTAArticleFlag) checkingOptions.checkLinkedTAArticleFlag = props.checkLinkedTAArticleFlag.toLowerCase() === 'true';

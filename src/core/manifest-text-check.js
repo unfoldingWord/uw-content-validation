@@ -1,4 +1,4 @@
-import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
+import { DEFAULT_EXCERPT_LENGTH } from './text-handling-functions'
 import { checkYAMLText } from './yaml-text-check';
 import { cachedGetFile } from './getApi';
 import { BibleBookData } from './books/books'
@@ -566,18 +566,18 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
-    let extractLength;
+    let excerptLength;
     try {
-        extractLength = checkingOptions?.extractLength;
+        excerptLength = checkingOptions?.excerptLength;
     } catch (mfcError) { }
-    if (typeof extractLength !== 'number' || isNaN(extractLength)) {
-        extractLength = DEFAULT_EXTRACT_LENGTH;
-        // debugLog(`Using default extractLength=${extractLength}`);
+    if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
+        excerptLength = DEFAULT_EXCERPT_LENGTH;
+        // debugLog(`Using default excerptLength=${excerptLength}`);
     }
     // else
-    // debugLog(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
-    // const halfLength = Math.floor(extractLength / 2); // rounded down
-    // const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
+    // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
+    // const halfLength = Math.floor(excerptLength / 2); // rounded down
+    // const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
     // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     const cmtResult = { successList: [], noticeList: [] };
@@ -587,15 +587,15 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
         cmtResult.successList.push(successString);
     }
     function addNotice(noticeObject) {
-        // functionLog(`checkManifestText Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // functionLog(`checkManifestText Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "cManT addNotice: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `cManT addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "cManT addNotice: 'message' parameter should be defined");
         parameterAssert(typeof noticeObject.message === 'string', `cManT addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
         // parameterAssert(characterIndex !== undefined, "cManT addNotice: 'characterIndex' parameter should be defined");
         if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cManT addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // parameterAssert(extract !== undefined, "cManT addNotice: 'extract' parameter should be defined");
-        if (noticeObject.extract) parameterAssert(typeof noticeObject.extract === 'string', `cManT addNotice: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        // parameterAssert(excerpt !== undefined, "cManT addNotice: 'excerpt' parameter should be defined");
+        if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `cManT addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         parameterAssert(noticeObject.location !== undefined, "cManT addNotice: 'location' parameter should be defined");
         parameterAssert(typeof noticeObject.location === 'string', `cManT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
@@ -685,7 +685,7 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
             // debugLog("Project keys", JSON.stringify(projectKeys));
             for (const keyName of ['identifier', 'path', 'sort'])
                 if (projectKeys.indexOf(keyName) === -1)
-                    addNotice({ priority: 939, message: "Key is missing for project", details: keyName, extract: JSON.stringify(projectEntry), location: ourLocation });
+                    addNotice({ priority: 939, message: "Key is missing for project", details: keyName, excerpt: JSON.stringify(projectEntry), location: ourLocation });
 
             const projectFilepath = projectEntry['path'];
             if (repoName
@@ -702,11 +702,11 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
                         projectFileContent = await getFile_({ username, repository: repoName, path: projectFilepath, branch: repoBranch });
                         // debugLog("Fetched manifest project fileContent for", repoName, projectFilepath, typeof projectFileContent, projectFileContent.length);
                         if (!projectFileContent)
-                            addNotice({ priority: 938, message: `Unable to find project file mentioned in manifest`, extract: projectFilepath, location: ourLocation });
+                            addNotice({ priority: 938, message: `Unable to find project file mentioned in manifest`, excerpt: projectFilepath, location: ourLocation });
                         else if (projectFileContent.length < 10)
-                            addNotice({ priority: 937, message: `Linked project file seems empty`, extract: projectFilepath, location: ourLocation });
+                            addNotice({ priority: 937, message: `Linked project file seems empty`, excerpt: projectFilepath, location: ourLocation });
                     } catch (trcGCerror) {
-                        addNotice({ priority: 936, message: `Error loading manifest project link`, details: trcGCerror, extract: projectFilepath, location: ourLocation });
+                        addNotice({ priority: 936, message: `Error loading manifest project link`, details: trcGCerror, excerpt: projectFilepath, location: ourLocation });
                     }
                 }
             }

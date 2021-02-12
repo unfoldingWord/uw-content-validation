@@ -1,4 +1,4 @@
-import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
+import { DEFAULT_EXCERPT_LENGTH } from './text-handling-functions'
 import yaml from 'yaml';
 import { checkTextField } from './field-text-check';
 import { checkTextfileContents } from './file-text-check';
@@ -34,18 +34,18 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, c
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     // if (textName) ourLocation = ` in ${textName}${ourLocation}`;
 
-    let extractLength;
+    let excerptLength;
     try {
-        extractLength = checkingOptions?.extractLength;
+        excerptLength = checkingOptions?.excerptLength;
     } catch (ytcError) { }
-    if (typeof extractLength !== 'number' || isNaN(extractLength)) {
-        extractLength = DEFAULT_EXTRACT_LENGTH;
-        // debugLog(`Using default extractLength=${extractLength}`);
+    if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
+        excerptLength = DEFAULT_EXCERPT_LENGTH;
+        // debugLog(`Using default excerptLength=${excerptLength}`);
     }
     // else
-    // debugLog(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
-    // const halfLength = Math.floor(extractLength / 2); // rounded down
-    // const halfLengthPlus = Math.floor((extractLength+1) / 2); // rounded up
+    // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
+    // const halfLength = Math.floor(excerptLength / 2); // rounded down
+    // const halfLengthPlus = Math.floor((excerptLength+1) / 2); // rounded up
     // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     const cytResult = { successList: [], noticeList: [] };
@@ -55,15 +55,15 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, c
         cytResult.successList.push(successString);
     }
     function addNotice(noticeObject) {
-        // functionLog(`checkYAMLText Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // functionLog(`checkYAMLText Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "cYt addNotice: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `cManT addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "cYt addNotice: 'message' parameter should be defined");
         parameterAssert(typeof noticeObject.message === 'string', `cManT addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
         // parameterAssert(characterIndex!==undefined, "cYt addNotice: 'characterIndex' parameter should be defined");
         if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cManT addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // parameterAssert(extract!==undefined, "cYt addNotice: 'extract' parameter should be defined");
-        if (noticeObject.extract) parameterAssert(typeof noticeObject.extract === 'string', `cManT addNotice: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        // parameterAssert(excerpt!==undefined, "cYt addNotice: 'excerpt' parameter should be defined");
+        if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `cManT addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         parameterAssert(noticeObject.location !== undefined, "cYt addNotice: 'location' parameter should be defined");
         parameterAssert(typeof noticeObject.location === 'string', `cYt addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
         if (noticeObject.debugChain) noticeObject.debugChain = `checkYAMLText ${noticeObject.debugChain}`;

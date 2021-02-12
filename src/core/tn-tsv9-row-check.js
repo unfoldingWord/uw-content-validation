@@ -1,4 +1,4 @@
-import { DEFAULT_EXTRACT_LENGTH, isWhitespace, countOccurrences } from './text-handling-functions'
+import { DEFAULT_EXCERPT_LENGTH, isWhitespace, countOccurrences } from './text-handling-functions'
 import * as books from './books/books';
 import { checkTextField } from './field-text-check';
 import { checkMarkdownText } from './markdown-text-check';
@@ -30,7 +30,7 @@ const TA_REGEX = new RegExp('\\[\\[rc://[^ /]+?/ta/man/[^ /]+?/([^ \\]]+?)\\]\\]
  * @param {string} givenC - chapter number or (for OBS) story number string
  * @param {string} givenV - verse number or (for OBS) frame number string
  * @param {string} givenRowLocation - description of where the line is located
- * @param {Object} checkingOptions - may contain extractLength, twRepoUsername, twRepoBranch (or tag), checkLinkedTWArticleFlag parameters
+ * @param {Object} checkingOptions - may contain excerptLength, twRepoUsername, twRepoBranch (or tag), checkLinkedTWArticleFlag parameters
  * @return {Object} - containing noticeList
  */
 export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, givenV, givenRowLocation, checkingOptions) {
@@ -73,11 +73,11 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
     * @param {string} rowID - 4-character row ID field
     * @param {Number} lineNumber - one-based line number
     * @param {Number} characterIndex - zero-based index of where the issue occurs in the line
-    * @param {string} extract - short extract from the line centred on the problem (if available)
+    * @param {string} excerpt - short excerpt from the line centred on the problem (if available)
     * @param {string} location - description of where the issue is located
     */
     function addNoticePartial(noticeObject) {
-        // functionLog(`checkTN_TSVDataRow addNoticePartial(priority=${noticeObject.priority}) ${noticeObject.message}, ${noticeObject.characterIndex}, ${noticeObject.extract}, ${noticeObject.location}`);
+        // functionLog(`checkTN_TSVDataRow addNoticePartial(priority=${noticeObject.priority}) ${noticeObject.message}, ${noticeObject.characterIndex}, ${noticeObject.excerpt}, ${noticeObject.location}`);
         parameterAssert(noticeObject.priority !== undefined, "checkTN_TSVDataRow addNoticePartial: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `checkTN_TSVDataRow addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "checkTN_TSVDataRow addNoticePartial: 'message' parameter should be defined");
@@ -86,8 +86,8 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         // parameterAssert(typeof lineNumber === 'number', `checkTN_TSVDataRow addNoticePartial: 'lineNumber' parameter should be a number not a '${typeof lineNumber}': ${lineNumber}`);
         // parameterAssert(characterIndex !== undefined, "checkTN_TSVDataRow addNoticePartial: 'characterIndex' parameter should be defined");
         if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `checkTN_TSVDataRow addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // parameterAssert(extract !== undefined, "checkTN_TSVDataRow addNoticePartial: 'extract' parameter should be defined");
-        if (noticeObject.extract) parameterAssert(typeof noticeObject.extract === 'string', `checkTN_TSVDataRow addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        // parameterAssert(excerpt !== undefined, "checkTN_TSVDataRow addNoticePartial: 'excerpt' parameter should be defined");
+        if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `checkTN_TSVDataRow addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         parameterAssert(noticeObject.location !== undefined, "checkTN_TSVDataRow addNoticePartial: 'location' parameter should be defined");
         parameterAssert(typeof noticeObject.location === 'string', `checkTN_TSVDataRow addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
         // noticeObject.debugChain = noticeObject.debugChain ? `checkTN_TSVDataRow ${noticeObject.debugChain}` : 'checkTN_TSVDataRow';
@@ -334,18 +334,18 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
     if (line === EXPECTED_TN_HEADING_LINE) // Assume it must be ok
         return drResult; // We can’t detect if it’s in the wrong place
 
-    let extractLength;
+    let excerptLength;
     try {
-        extractLength = checkingOptions?.extractLength;
+        excerptLength = checkingOptions?.excerptLength;
     } catch (tlcELerror) { }
-    if (typeof extractLength !== 'number' || isNaN(extractLength)) {
-        extractLength = DEFAULT_EXTRACT_LENGTH;
-        // debugLog(`Using default extractLength=${extractLength}`);
+    if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
+        excerptLength = DEFAULT_EXCERPT_LENGTH;
+        // debugLog(`Using default excerptLength=${excerptLength}`);
     }
     // else
-    // debugLog(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
-    // const halfLength = Math.floor(extractLength / 2); // rounded down
-    // const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
+    // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
+    // const halfLength = Math.floor(excerptLength / 2); // rounded down
+    // const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
     // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     const lowercaseBookID = bookID.toLowerCase();
@@ -369,7 +369,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         // Check the fields one-by-one
         if (B.length) {
             if (B !== bookID)
-                addNoticePartial({ priority: 978, message: "Wrong book identifier", details: `expected '${bookID}'`, fieldName: 'Book', rowID, extract: B, location: ourRowLocation });
+                addNoticePartial({ priority: 978, message: "Wrong book identifier", details: `expected '${bookID}'`, fieldName: 'Book', rowID, excerpt: B, location: ourRowLocation });
         }
         else
             addNoticePartial({ priority: 977, message: "Missing book identifier", characterIndex: 0, rowID, location: ourRowLocation });
@@ -377,17 +377,17 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         let numVersesThisChapter, haveGoodChapterNumber;
         if (C.length) {
             if (C !== givenC)
-                addNoticePartial({ priority: 976, message: "Wrong chapter number", details: `expected '${givenC}'`, fieldName: 'Chapter', rowID, extract: C, location: ourRowLocation });
+                addNoticePartial({ priority: 976, message: "Wrong chapter number", details: `expected '${givenC}'`, fieldName: 'Chapter', rowID, excerpt: C, location: ourRowLocation });
             if (C === 'front') { }
             else if (/^\d+$/.test(C)) {
                 let intC = Number(C);
                 if (intC === 0) {
-                    addNoticePartial({ priority: 824, message: `Invalid zero chapter number`, extract: C, rowID, fieldName: 'Chapter', location: ourRowLocation });
+                    addNoticePartial({ priority: 824, message: `Invalid zero chapter number`, excerpt: C, rowID, fieldName: 'Chapter', location: ourRowLocation });
                     haveGoodChapterNumber = false;
                 }
                 // TODO: Does this next section need rewriting (see verse check below)???
                 else if (intC > numChaptersThisBook) {
-                    addNoticePartial({ priority: 823, message: `Invalid large chapter number`, extract: C, rowID, fieldName: 'Chapter', location: ourRowLocation });
+                    addNoticePartial({ priority: 823, message: `Invalid large chapter number`, excerpt: C, rowID, fieldName: 'Chapter', location: ourRowLocation });
                     haveGoodChapterNumber = false;
                 }
                 try {
@@ -397,28 +397,28 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
                     if (!haveGoodBookID)
                         // addNoticePartial({priority:500, "Invalid chapter number", rowLocation);
                         // else
-                        addNoticePartial({ priority: 822, message: "Unable to check chapter number", extract: C, rowID, fieldName: 'Chapter', location: ourRowLocation });
+                        addNoticePartial({ priority: 822, message: "Unable to check chapter number", excerpt: C, rowID, fieldName: 'Chapter', location: ourRowLocation });
                     haveGoodChapterNumber = false;
                 }
             }
             else
-                addNoticePartial({ priority: 821, message: "Bad chapter number", extract: C, rowID, fieldName: 'Chapter', location: ourRowLocation });
+                addNoticePartial({ priority: 821, message: "Bad chapter number", excerpt: C, rowID, fieldName: 'Chapter', location: ourRowLocation });
         }
         else
             addNoticePartial({ priority: 820, message: "Missing chapter number", rowID, fieldName: 'Chapter', location: ` ?:${V}${ourRowLocation}` });
 
         if (V.length) {
             if (V !== givenV)
-                addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected '${givenV}'`, rowID, fieldName: 'Verse', extract: V, location: ourRowLocation });
+                addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected '${givenV}'`, rowID, fieldName: 'Verse', excerpt: V, location: ourRowLocation });
             if (bookID === 'OBS' || V === 'intro') { }
             else if (/^\d+$/.test(V)) {
                 let intV = Number(V);
                 if (intV === 0 && bookID !== 'PSA') // Psalms have \d as verse zero
-                    addNoticePartial({ priority: 814, message: "Invalid zero verse number", rowID, fieldName: 'Verse', extract: V, location: ourRowLocation });
+                    addNoticePartial({ priority: 814, message: "Invalid zero verse number", rowID, fieldName: 'Verse', excerpt: V, location: ourRowLocation });
                 else {
                     if (haveGoodChapterNumber) {
                         if (intV > numVersesThisChapter)
-                            addNoticePartial({ priority: 813, message: "Invalid large verse number", rowID, fieldName: 'Verse', extract: V, location: ourRowLocation });
+                            addNoticePartial({ priority: 813, message: "Invalid large verse number", rowID, fieldName: 'Verse', excerpt: V, location: ourRowLocation });
                     } else
                         addNoticePartial({ priority: 812, message: "Unable to check verse number", rowID, fieldName: 'Verse', location: ourRowLocation });
                 }
@@ -433,20 +433,20 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
             addNoticePartial({ priority: 779, message: "Missing row ID field", fieldName: 'Verse', location: ourRowLocation });
         else {
             if (rowID.length !== 4) {
-                addNoticePartial({ priority: 778, message: "Row ID should be exactly 4 characters", details: `not ${rowID.length}`, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 778, message: "Row ID should be exactly 4 characters", details: `not ${rowID.length}`, rowID, fieldName: 'ID', excerpt: rowID, location: ourRowLocation });
                 if (rowID.length > 4) RIDSuggestion = rowID.substring(0, 5);
                 else { // must be < 4
                     RIDSuggestion = rowID;
                     while (RIDSuggestion.length < 4) RIDSuggestion += LC_ALPHABET_PLUS_DIGITS[Math.floor(Math.random() * LC_ALPHABET_PLUS_DIGITS.length)];;
                 }
             } else if (LC_ALPHABET.indexOf(rowID[0]) < 0)
-                addNoticePartial({ priority: 176, message: "Row ID should start with a lowercase letter", characterIndex: 0, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 176, message: "Row ID should start with a lowercase letter", characterIndex: 0, rowID, fieldName: 'ID', excerpt: rowID, location: ourRowLocation });
             else if (LC_ALPHABET_PLUS_DIGITS.indexOf(rowID[3]) < 0)
-                addNoticePartial({ priority: 175, message: "Row ID should end with a lowercase letter or digit", characterIndex: 3, rowID, fieldName: 'ID', extract: rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 175, message: "Row ID should end with a lowercase letter or digit", characterIndex: 3, rowID, fieldName: 'ID', excerpt: rowID, location: ourRowLocation });
             else if (LC_ALPHABET_PLUS_DIGITS_PLUS_HYPHEN.indexOf(rowID[1]) < 0)
-                addNoticePartial({ priority: 174, message: "Row ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 1, rowID, extract: rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 174, message: "Row ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 1, rowID, excerpt: rowID, location: ourRowLocation });
             else if (LC_ALPHABET_PLUS_DIGITS_PLUS_HYPHEN.indexOf(rowID[2]) < 0)
-                addNoticePartial({ priority: 173, message: "Row ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 2, rowID, extract: rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 173, message: "Row ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 2, rowID, excerpt: rowID, location: ourRowLocation });
         }
 
         if (supportReference.length) { // need to check TN2 against TA
@@ -458,12 +458,12 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
                     && !supportReference.startsWith('translate-')
                     && !supportReference.startsWith('writing-')
                     && supportReference !== 'guidelines-sonofgodprinciples')
-                    addNoticePartial({ priority: 788, message: "Only 'Just-In-Time Training' TA articles allowed here", fieldName: 'SupportReference', extract: supportReference, rowID, location: ourRowLocation });
+                    addNoticePartial({ priority: 788, message: "Only 'Just-In-Time Training' TA articles allowed here", fieldName: 'SupportReference', excerpt: supportReference, rowID, location: ourRowLocation });
                 SRSuggestion = ourCheckTextField(rowID, 'SupportReference', supportReference, true, ourRowLocation, checkingOptions);
                 if (!checkingOptions?.disableAllLinkFetchingFlag)
                     await ourCheckSupportReferenceInTA(rowID, 'SupportReference', supportReference, ourRowLocation, checkingOptions);
                 if (occurrenceNote.indexOf(supportReference) < 0) // The full link is NOT in the note!
-                    addNoticePartial({ priority: 787, message: "Link to TA should also be in OccurrenceNote", fieldName: 'SupportReference', extract: supportReference, rowID, location: ourRowLocation });
+                    addNoticePartial({ priority: 787, message: "Link to TA should also be in OccurrenceNote", fieldName: 'SupportReference', excerpt: supportReference, rowID, location: ourRowLocation });
             }
             if (supportReference.indexOf('\u200B') >= 0) {
                 const charCount = countOccurrences(supportReference, '\u200B');
@@ -488,7 +488,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
         if (occurrence.length) { // This should usually be a digit
             if (occurrence === '0') { // zero means that it doesn’t occur
                 if (origQuote.length) {
-                    addNoticePartial({ priority: 751, message: "Invalid zero occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, extract: occurrence, location: ourRowLocation });
+                    addNoticePartial({ priority: 751, message: "Invalid zero occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, excerpt: occurrence, location: ourRowLocation });
                     OSuggestion = '1';
                 }
                 // if (V !== 'intro')
@@ -497,7 +497,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
             else if (occurrence === '-1') // TODO check the special conditions when this can occur???
                 ;
             else if ('1234567'.indexOf(occurrence) < 0) { // it’s not one of these integers
-                addNoticePartial({ priority: 792, message: `Invalid occurrence field`, fieldName: 'Occurrence', rowID, extract: occurrence, location: ourRowLocation });
+                addNoticePartial({ priority: 792, message: `Invalid occurrence field`, fieldName: 'Occurrence', rowID, excerpt: occurrence, location: ourRowLocation });
                 OSuggestion = '1';
             }
         }
@@ -536,7 +536,7 @@ export async function checkTN_TSVDataRow(languageCode, line, bookID, givenC, giv
                     // debugLog("Got TA Regex in OccurrenceNote", JSON.stringify(regexResultArray));
                     if (supportReference !== regexResultArray[1] && V !== 'intro') {
                         const details = supportReference ? `(SR='${supportReference}')` : "(empty SR field)"
-                        addNoticePartial({ priority: 786, message: "Should have a SupportReference when OccurrenceNote has a TA link", details, rowID, fieldName: 'OccurrenceNote', extract: regexResultArray[1], location: ourRowLocation });
+                        addNoticePartial({ priority: 786, message: "Should have a SupportReference when OccurrenceNote has a TA link", details, rowID, fieldName: 'OccurrenceNote', excerpt: regexResultArray[1], location: ourRowLocation });
                     }
                 }
             }

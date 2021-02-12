@@ -64,11 +64,11 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     userLog(`AllBookPackagesCheck bookIDList (${bookIDList.length}) = ${bookIDList.join(', ')}`);
 
     const checkingOptions = { // Uncomment any of these to test them
-        // extractLength: 25,
+        // excerptLength: 25,
         suppressNoticeDisablingFlag: true, // Leave this one as true (otherwise demo checks are less efficient)
     };
     // Or this allows the parameters to be specified as a BookPackagesCheck property
-    if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
+    if (props.excerptLength) checkingOptions.excerptLength = ourParseInt(props.excerptLength);
     if (props.cutoffPriorityLevel) checkingOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
 
     useEffect(() => {

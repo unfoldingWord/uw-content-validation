@@ -71,7 +71,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
 
   function addNoticePartial(noticeObject) {
     // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
-    // functionLog(`checkBookPackage addNoticePartial: (priority=${noticeObject.priority}) ${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+    // functionLog(`checkBookPackage addNoticePartial: (priority=${noticeObject.priority}) ${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
     parameterAssert(noticeObject.priority !== undefined, "cBP addNoticePartial: 'priority' parameter should be defined");
     parameterAssert(typeof noticeObject.priority === 'number', `cBP addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
     parameterAssert(noticeObject.message !== undefined, "cBP addNoticePartial: 'message' parameter should be defined");
@@ -88,8 +88,8 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     if (noticeObject.V) parameterAssert(typeof noticeObject.V === 'string', `cBP addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
     // parameterAssert(characterIndex !== undefined, "cBP addNoticePartial: 'characterIndex' parameter should be defined");
     if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cBP addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-    // parameterAssert(extract !== undefined, "cBP addNoticePartial: 'extract' parameter should be defined");
-    if (noticeObject.extract) parameterAssert(typeof noticeObject.extract === 'string', `cBP addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+    // parameterAssert(excerpt !== undefined, "cBP addNoticePartial: 'excerpt' parameter should be defined");
+    if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `cBP addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
     parameterAssert(noticeObject.location !== undefined, "cBP addNoticePartial: 'location' parameter should be defined");
     parameterAssert(typeof noticeObject.location === 'string', `cBP addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
     parameterAssert(noticeObject.extra !== undefined, "cBP addNoticePartial: 'extra' parameter should be defined");
@@ -290,7 +290,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       if (books.isValidBookID(bookID)) // must be in FRT, BAK, etc.
         whichTestament = 'other'
       else {
-        addNoticePartial({ priority: 902, message: "Bad function call: should be given a valid book abbreviation", extract: bookID, location: ` (not '${bookID}')${generalLocation}` }); return checkBookPackageResult;
+        addNoticePartial({ priority: 902, message: "Bad function call: should be given a valid book abbreviation", excerpt: bookID, location: ` (not '${bookID}')${generalLocation}` }); return checkBookPackageResult;
       }
     }
     // functionLog(`checkBookPackage: bookNumberAndName='${bookNumberAndName}' (${whichTestament} testament)`);
@@ -498,7 +498,7 @@ async function checkTQMarkdownBook(username, languageCode, repoName, branch, boo
 
   function addNoticePartial(noticeObject) {
     // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
-    // functionLog(`checkTQMarkdownBook addNoticePartial: ${noticeObject.priority}:${noticeObject.message} ${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.filename}:${noticeObject.lineNumber} ${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
+    // functionLog(`checkTQMarkdownBook addNoticePartial: ${noticeObject.priority}:${noticeObject.message} ${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.filename}:${noticeObject.lineNumber} ${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.excerpt ? ` ${noticeObject.excerpt}` : ""}${noticeObject.location}`);
     parameterAssert(noticeObject.priority !== undefined, "cTQ addNoticePartial: 'priority' parameter should be defined");
     parameterAssert(typeof noticeObject.priority === 'number', `cTQ addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}'`);
     parameterAssert(noticeObject.message !== undefined, "cTQ addNoticePartial: 'message' parameter should be defined");
@@ -513,8 +513,8 @@ async function checkTQMarkdownBook(username, languageCode, repoName, branch, boo
     if (noticeObject.V) parameterAssert(typeof noticeObject.V === 'string', `cTQ addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}'`);
     // parameterAssert(characterIndex !== undefined, "cTQ addNoticePartial: 'characterIndex' parameter should be defined");
     if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cTQ addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}'`);
-    // parameterAssert(extract !== undefined, "cTQ addNoticePartial: 'extract' parameter should be defined");
-    if (noticeObject.extract) parameterAssert(typeof noticeObject.extract === 'string', `cTQ addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}'`);
+    // parameterAssert(excerpt !== undefined, "cTQ addNoticePartial: 'excerpt' parameter should be defined");
+    if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `cTQ addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}'`);
     parameterAssert(noticeObject.location !== undefined, "cTQ addNoticePartial: 'location' parameter should be defined");
     parameterAssert(typeof noticeObject.location === 'string', `cTQ addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}'`);
     parameterAssert(noticeObject.extra !== undefined, "cTQ addNoticePartial: 'extra' parameter should be defined");
@@ -554,7 +554,7 @@ async function checkTQMarkdownBook(username, languageCode, repoName, branch, boo
 
     // Process noticeList line by line,  appending the repoCode as an extra field as we go
     for (const noticeEntry of cfResultObject.noticeList) {
-      // noticeEntry is an array of eight fields: 1=priority, 2=bookID, 3=C, 4=V, 5=msg, 6=characterIndex, 7=extract, 8=location
+      // noticeEntry is an array of eight fields: 1=priority, 2=bookID, 3=C, 4=V, 5=msg, 6=characterIndex, 7=excerpt, 8=location
       // parameterAssert(Object.keys(noticeEntry).length === 5, `cTQ ourCheckTQFileContents notice length=${Object.keys(noticeEntry).length}`);
       // We add the repoCode as an extra value
       addNoticePartial({ ...noticeEntry, bookID, C, V, extra: repoCode });

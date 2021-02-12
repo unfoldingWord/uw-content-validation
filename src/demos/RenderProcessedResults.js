@@ -186,7 +186,7 @@ export function RenderRawResults({ results }) {
     if (allPropertiesSet.has('fieldName')) headerData = headerData.concat([{ title: 'Field', field: 'fieldName' }]);
     if (allPropertiesSet.has('lineNumber')) headerData = headerData.concat([{ title: 'Line', field: 'lineNumber' }]);
     if (allPropertiesSet.has('characterIndex')) headerData = headerData.concat([{ title: 'CharIndex', field: 'characterIndex' }]);
-    if (allPropertiesSet.has('extract')) headerData = headerData.concat([{ title: 'Extract', field: 'extract' }]);
+    if (allPropertiesSet.has('excerpt')) headerData = headerData.concat([{ title: 'Excerpt', field: 'excerpt' }]);
     if (allPropertiesSet.has('location')) headerData = headerData.concat([{ title: 'Location', field: 'location' }]);
     if (allPropertiesSet.has('extra')) headerData = headerData.concat([{ title: 'Extra', field: 'extra' }]);
     // debugLog("headerData", headerData.length, JSON.stringify(headerData));
@@ -324,7 +324,7 @@ function RenderProcessedArray({ arrayType, results }) {
     //  priority (integer), message (string)
     //  plus optional fields:
     //      bookID, C, V, repoName, filename, lineNumber
-    //      characterIindex (integer), extract (string), location (string)
+    //      characterIindex (integer), excerpt (string), location (string)
     //
     // debugLog("In RenderProcessedArray with ", arrayType);
     // consoleLogObject('RenderProcessedArray results', results);
@@ -342,7 +342,7 @@ function RenderProcessedArray({ arrayType, results }) {
                     <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
                     <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
                     {listEntry.characterIndex > 0 ? " (at character " + (listEntry.characterIndex + 1) + ")" : ""}
-                    <span style={{ color: 'DimGray' }}>{listEntry.extract ? ` around ►${listEntry.extract}◄` : ""}</span>
+                    <span style={{ color: 'DimGray' }}>{listEntry.excerpt ? ` around ►${listEntry.excerpt}◄` : ""}</span>
                     {listEntry.location}
                     <RenderPriority entry={listEntry} />
                 </li>;
@@ -358,7 +358,7 @@ function RenderGivenArray({ array, color }) {
     //  plus possible optional fields:
     //      bookID, C, V,
     //      repoName, filename, lineNumber,
-    //      characterIndex (integer), extract (string), location (descriptive string)
+    //      characterIndex (integer), excerpt (string), location (descriptive string)
     //
     // debugLog("In RenderGivenArray with ", arrayType);
     // consoleLogObject('RenderGivenArray results', results);
@@ -370,7 +370,7 @@ function RenderGivenArray({ array, color }) {
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
                 <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
                 {listEntry.characterIndex !== undefined && listEntry.characterIndex >= 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
-                <span style={{ color: 'DimGray' }}>{listEntry.extract ? ` around ►${listEntry.extract}◄` : ""}</span>
+                <span style={{ color: 'DimGray' }}>{listEntry.excerpt ? ` around ►${listEntry.excerpt}◄` : ""}</span>
                 {listEntry.location}
                 <RenderPriority entry={listEntry} />
             </li>;
@@ -393,7 +393,7 @@ function getGradientcolor(priorityValue) {
 function RenderWarningsGradient({ results }) {
     // Display our array of 8-part lists in a nicer format
     //  1/ priority number, 2/ bookID, 3/ C, 4/ V, 5/ message,
-    //      6/ index (integer), 7/ extract (optional), 8/ location
+    //      6/ index (integer), 7/ excerpt (optional), 8/ location
     //
     // Expects results to contain:
     //      1/ warningList
@@ -408,7 +408,7 @@ function RenderWarningsGradient({ results }) {
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
                 <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
                 {listEntry.characterIndex !== undefined && listEntry.characterIndex >= 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
-                <span style={{ color: 'DimGray' }}>{listEntry.extract ? ` around ►${listEntry.extract}◄` : ""}</span>
+                <span style={{ color: 'DimGray' }}>{listEntry.excerpt ? ` around ►${listEntry.excerpt}◄` : ""}</span>
                 {listEntry.location}
                 <RenderPriority entry={listEntry} />
             </li>;

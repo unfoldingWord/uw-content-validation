@@ -19,7 +19,7 @@ export function checkTextfileContents(languageCode, fileType, filename, fileText
     //      priority (compulsory): the priority number 0..999 (usually 800+ are errors, lower are warnings)
     //      message (compulsory): the error description string
     //      characterIndex: the 0-based index for the position in the string
-    //      extract: a short extract of the string containing the error (or empty-string if irrelevant)
+    //      excerpt: a short excerpt of the string containing the error (or empty-string if irrelevant)
     //  (Returned in this way for more intelligent processing at a higher level)
     // functionLog(`checkTextfileContents(${filename}, ${fileText.length.toLocaleString()} chars, '${optionalFileLocation}')…`);
     parameterAssert(languageCode !== undefined, "checkTextfileContents: 'languageCode' parameter should be defined");
@@ -37,15 +37,15 @@ export function checkTextfileContents(languageCode, fileType, filename, fileText
     let result = { noticeList: [] };
 
     function addNotice(noticeObject) {
-        // debugLog(`dBTC Notice: (priority=${noticeObject.priority}) ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
+        // debugLog(`dBTC Notice: (priority=${noticeObject.priority}) ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.excerpt ? ` ${noticeObject.excerpt}` : ""}${noticeObject.location}`);
         parameterAssert(noticeObject.priority !== undefined, "dBTCs addNotice: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `dBTCs addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "dBTCs addNotice: 'message' parameter should be defined");
         parameterAssert(typeof noticeObject.message === 'string', `dBTCs addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
         // parameterAssert(characterIndex !== undefined, "dBTCs addNotice: 'characterIndex' parameter should be defined");
         if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `dBTCs addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // parameterAssert(extract !== undefined, "dBTCs addNotice: 'extract' parameter should be defined");
-        if (noticeObject.extract) parameterAssert(typeof noticeObject.extract === 'string', `dBTCs addNotice: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        // parameterAssert(excerpt !== undefined, "dBTCs addNotice: 'excerpt' parameter should be defined");
+        if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `dBTCs addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         parameterAssert(noticeObject.location !== undefined, "dBTCs addNotice: 'location' parameter should be defined");
         parameterAssert(typeof noticeObject.location === 'string', `dBTCs addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
         if (noticeObject.debugChain) noticeObject.debugChain = `checkTextfileContents(${languageCode}, ${fileType}, ${filename}) ${noticeObject.debugChain}`;
@@ -92,18 +92,18 @@ export function checkTextfileContents(languageCode, fileType, filename, fileText
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
     /*
-    let extractLength;
+    let excerptLength;
     try {
-        extractLength = checkingOptions?.extractLength;
+        excerptLength = checkingOptions?.excerptLength;
     } catch (bfcError) { }
-    if (typeof extractLength !== 'number' || isNaN(extractLength)) {
-        extractLength = DEFAULT_EXTRACT_LENGTH;
-        // debugLog(`Using default extractLength=${extractLength}`);
+    if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
+        excerptLength = DEFAULT_EXCERPT_LENGTH;
+        // debugLog(`Using default excerptLength=${excerptLength}`);
     }
     // else
-    // debugLog(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
-    const halfLength = Math.floor(extractLength / 2); // rounded down
-    const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
+    // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
+    const halfLength = Math.floor(excerptLength / 2); // rounded down
+    const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
     // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
     */
 
@@ -126,8 +126,8 @@ export function checkTextfileContents(languageCode, fileType, filename, fileText
     //     if (ix === -1) ix = fileText.indexOf('.info');
     //     if (ix === -1) ix = fileText.indexOf('.bible');
     //     if (ix >= 0) {
-    //         let extract = (ix>halfLength ? '…' : '') + fileText.substring(ix-halfLength, ix+halfLengthPlus) + (ix+halfLengthPlus < fileText.length ? '…' : '')
-    //         addNotice({765, "Unexpected link", ix,extract, ourAtString});
+    //         let excerpt = (ix>halfLength ? '…' : '') + fileText.substring(ix-halfLength, ix+halfLengthPlus) + (ix+halfLengthPlus < fileText.length ? '…' : '')
+    //         addNotice({765, "Unexpected link", ix,excerpt, ourAtString});
     //     }
     // }
     return result;

@@ -1,4 +1,4 @@
-import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
+import { DEFAULT_EXCERPT_LENGTH } from './text-handling-functions'
 import { checkMarkdownText } from './markdown-text-check';
 import { checkTextfileContents } from './file-text-check';
 import { userLog, parameterAssert } from './utilities';
@@ -38,18 +38,18 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
   let ourLocation = givenLocation;
   if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
-  let extractLength;
+  let excerptLength;
   try {
-    extractLength = checkingOptions?.extractLength;
+    excerptLength = checkingOptions?.excerptLength;
   } catch (mdtcError) { }
-  if (typeof extractLength !== 'number' || isNaN(extractLength)) {
-    extractLength = DEFAULT_EXTRACT_LENGTH;
-    // debugLog("Using default extractLength=" + extractLength);
+  if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
+    excerptLength = DEFAULT_EXCERPT_LENGTH;
+    // debugLog("Using default excerptLength=" + excerptLength);
   }
   // else
-  // debugLog("Using supplied extractLength=" + extractLength, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
-  // const halfLength = Math.floor(extractLength / 2); // rounded down
-  // const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
+  // debugLog("Using supplied excerptLength=" + excerptLength, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
+  // const halfLength = Math.floor(excerptLength / 2); // rounded down
+  // const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
   // debugLog("Using halfLength=" + halfLength, `halfLengthPlus=${halfLengthPlus}`);
 
   const result = { successList: [], noticeList: [] };
@@ -59,15 +59,15 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
     result.successList.push(successString);
   }
   function addNoticePartial(noticeObject) {
-    // functionLog(`checkMarkdownFileContents addNoticePartial: (priority=${noticeObject.priority}) ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? " " + extract : ""}${noticeObject.location}`);
+    // functionLog(`checkMarkdownFileContents addNoticePartial: (priority=${noticeObject.priority}) ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.excerpt ? " " + excerpt : ""}${noticeObject.location}`);
     parameterAssert(noticeObject.priority !== undefined, "cMdT addNoticePartial: 'priority' parameter should be defined");
     parameterAssert(typeof noticeObject.priority === 'number', `cMdT addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
     parameterAssert(noticeObject.message !== undefined, "cMdT addNoticePartial: 'message' parameter should be defined");
     parameterAssert(typeof noticeObject.message === 'string', `cMdT addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
     // parameterAssert(characterIndex !== undefined, "cMdT addNoticePartial: 'characterIndex' parameter should be defined");
     if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cMdT addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-    // parameterAssert(extract !== undefined, "cMdT addNoticePartial: 'extract' parameter should be defined");
-    if (noticeObject.extract) parameterAssert(typeof noticeObject.extract === 'string', `cMdT addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+    // parameterAssert(excerpt !== undefined, "cMdT addNoticePartial: 'excerpt' parameter should be defined");
+    if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `cMdT addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
     parameterAssert(noticeObject.location !== undefined, "cMdT addNoticePartial: 'location' parameter should be defined");
     parameterAssert(typeof noticeObject.location === 'string', `cMdT addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 

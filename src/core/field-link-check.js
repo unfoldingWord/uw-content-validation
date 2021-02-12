@@ -15,19 +15,19 @@ export async function startLiveLinksCheck(linksList, existingNoticeList, callbac
 
     let result = { noticeList: existingNoticeList };
 
-    function addNoticePartial({ priority, message, characterIndex, extract, location }) {
-        userLog(`sLLC Link Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+    function addNoticePartial({ priority, message, characterIndex, excerpt, location }) {
+        userLog(`sLLC Link Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
         parameterAssert(priority !== undefined, "sLLC addNoticePartial: 'priority' parameter should be defined");
         parameterAssert(typeof priority === 'number', `sLLC addNoticePartial: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         parameterAssert(message !== undefined, "sLLC addNoticePartial: 'message' parameter should be defined");
         parameterAssert(typeof message === 'string', `sLLC addNoticePartial: 'message' parameter should be a string not a '${typeof message}':${message}`);
         // parameterAssert(characterIndex!==undefined, "sLLC addNoticePartial: 'characterIndex' parameter should be defined");
         if (characterIndex) parameterAssert(typeof characterIndex === 'number', `sLLC addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
-        // parameterAssert(extract!==undefined, "sLLC addNoticePartial: 'extract' parameter should be defined");
-        if (extract) parameterAssert(typeof extract === 'string', `sLLC addNoticePartial: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
+        // parameterAssert(excerpt!==undefined, "sLLC addNoticePartial: 'excerpt' parameter should be defined");
+        if (excerpt) parameterAssert(typeof excerpt === 'string', `sLLC addNoticePartial: 'excerpt' parameter should be a string not a '${typeof excerpt}': ${excerpt}`);
         // parameterAssert(location!==undefined, "sLLC addNoticePartial: 'location' parameter should be defined");
         // parameterAssert(typeof location==='string', `sLLC addNoticePartial: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push({ priority, message, characterIndex, extract, location });
+        result.noticeList.push({ priority, message, characterIndex, excerpt, location });
     }
 
     // Now try fetching each link in turn
@@ -77,20 +77,20 @@ export function checkFieldLinks(fieldName, fieldText, linkOptions, optionalField
 
     let result = { noticeList: [] };
 
-    function addNoticePartial({ priority, message, characterIndex, extract, location }) {
-        userLog(`cFLs addNoticePartial: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+    function addNoticePartial({ priority, message, characterIndex, excerpt, location }) {
+        userLog(`cFLs addNoticePartial: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
         parameterAssert(priority !== undefined, "cFLs addNoticePartial: 'priority' parameter should be defined");
         parameterAssert(typeof priority === 'number', `cFLs addNoticePartial: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
         parameterAssert(message !== undefined, "cFLs addNoticePartial: 'message' parameter should be defined");
         parameterAssert(typeof message === 'string', `cFLs addNoticePartial: 'message' parameter should be a string not a '${typeof message}': ${message}`);
         // parameterAssert(characterIndex!==undefined, "cFLs addNoticePartial: 'characterIndex' parameter should be defined");
         if (characterIndex) parameterAssert(typeof characterIndex === 'number', `cFLs addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
-        // parameterAssert(extract!==undefined, "cFLs addNoticePartial: 'extract' parameter should be defined");
-        if (extract) parameterAssert(typeof extract === 'string', `cFLs addNoticePartial: 'extract' parameter should be a string not a '${typeof extract}': ${extract}`);
+        // parameterAssert(excerpt!==undefined, "cFLs addNoticePartial: 'excerpt' parameter should be defined");
+        if (excerpt) parameterAssert(typeof excerpt === 'string', `cFLs addNoticePartial: 'excerpt' parameter should be a string not a '${typeof excerpt}': ${excerpt}`);
         parameterAssert(location !== undefined, "cFLs addNoticePartial: 'location' parameter should be defined");
         parameterAssert(typeof location === 'string', `cFLs addNoticePartial: 'location' parameter should be a string not a '${typeof location}': ${location}`);
 
-        result.noticeList.push({ priority, message, characterIndex, extract, location });
+        result.noticeList.push({ priority, message, characterIndex, excerpt, location });
     }
 
     // // Create our more detailed location string by prepending the fieldName
@@ -132,7 +132,7 @@ export function checkFieldLinks(fieldName, fieldText, linkOptions, optionalField
             else if (linkType === 'naked')
                 linkRegexParts.push('(https*://[^ ]+)');
             else
-                addNoticePartial({ priority: 441, message: `Unknown linkType parameter`, extract: linkType });
+                addNoticePartial({ priority: 441, message: `Unknown linkType parameter`, excerpt: linkType });
         }
     } else { // No link types specified
         linkRegexParts = [];
