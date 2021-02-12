@@ -11,12 +11,12 @@ These raw notice components can then be filtered and/or sorted as required by th
 //        Simply click inside here and add, change, or delete text as required.
 
 import React, { useState, useEffect } from 'react';
-import { checkAnnotationTSVDataRow } from './annotation-row-check';
+import { checkTWL_TSV7DataRow } from './twl-tsv6-row-check';
 import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Empty, Header, Nonsense, Good, Bad, Very bad, and Actual line samples
 const lineE = "";
-const lineH = "Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tAnnotation";
+const lineH = "Reference\tID\tTags\tQuote\tOccurrence\tTWLink";
 const lineN = "Peace on Earth, good will to all men/people!";
 const lineG = "2:3\tw3r5\t\t1\t\tThis is an  optional note";
 const lineB1 = "2:3\tw3r5\t\t1\t\t<br>Boo";
@@ -43,19 +43,19 @@ const data = {
   // You can choose any of the above lines here
   //  (to demonstrate differing results)
   languageCode: 'en',
-  annotationType: 'TN2',
+  repoCode: 'TN2',
   tableLineName : 'lineA9',
   tableLine : lineA9,
   bookID : 'GEN', C:'1', V:'2',
   givenLocation : 'that was supplied',
 }
 
-function CheckAnnotationRow(props) {
-  const { languageCode, annotationType, bookID, C, V, tableLine, tableLineName, givenLocation } = props.data;
+function CheckTWLRow(props) {
+  const { languageCode, repoCode, bookID, C, V, tableLine, tableLineName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
 
-  // We need the following construction because checkAnnotationTSVDataRow is an ASYNC function
+  // We need the following construction because checkTWL_TSV7DataRow is an ASYNC function
   useEffect(() => {
     // Use an IIFE (Immediately Invoked Function Expression)
     //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
@@ -63,7 +63,7 @@ function CheckAnnotationRow(props) {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {tableLineName} <b>{bookID}</b>…</p>);
       const checkingOptions = {};
-      const rawResults = await checkAnnotationTSVDataRow(languageCode, annotationType, tableLine, bookID, C, V, givenLocation, checkingOptions);
+      const rawResults = await checkTWL_TSV7DataRow(languageCode, repoCode, tableLine, bookID, C, V, givenLocation, checkingOptions);
       setResults(
         <div>
           <b>Check</b> {tableLineName}: "{tableLine.substr(0,256)}…"<br/><br/>
@@ -74,7 +74,7 @@ function CheckAnnotationRow(props) {
   }, []); // end of useEffect part
 
   return results;
-} // end of CheckAnnotationRow function
+} // end of CheckTWLRow function
 
-<CheckAnnotationRow data={data}/>
+<CheckTWLRow data={data}/>
 ```

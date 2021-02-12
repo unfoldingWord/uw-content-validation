@@ -11,7 +11,7 @@ These raw notice components can then be filtered and/or sorted as required by th
 //        Simply click inside here and add, change, or delete text as required.
 
 import React, { useState, useEffect } from 'react';
-import { checkTN_TSVText } from './tn-table-text-check';
+import { checkTN_TSV9Table } from './tn-tsv9-table-check';
 import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Text samples
@@ -47,12 +47,12 @@ const data = {
   givenLocation : 'that was supplied',
 }
 
-function CheckTN_TSVText(props) {
+function checkTN_TSV9Table(props) {
   const { languageCode, bookID, filename, tableText, tableTextName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
 
-  // We need the following construction because checkTN_TSVText is an ASYNC function
+  // We need the following construction because checkTN_TSV9Table is an ASYNC function
   useEffect(() => {
     // Use an IIFE (Immediately Invoked Function Expression)
     //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
@@ -60,7 +60,7 @@ function CheckTN_TSVText(props) {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {tableTextName} <b>{bookID}</b>…</p>);
       const checkingOptions = {};
-      const rawResults = await checkTN_TSVText(languageCode, bookID, filename, tableText, givenLocation, checkingOptions);
+      const rawResults = await checkTN_TSV9Table(languageCode, bookID, filename, tableText, givenLocation, checkingOptions);
       setResults(
         <div>
           <b>Check</b> {tableTextName}: "{tableText.substr(0,256)}…"<br/><br/>
@@ -71,7 +71,7 @@ function CheckTN_TSVText(props) {
   }, []); // end of useEffect part
 
   return results;
-} // end of CheckTN_TSVText function
+} // end of checkTN_TSV9Table function
 
-<CheckTN_TSVText data={data}/>
+<checkTN_TSV9Table data={data}/>
 ```

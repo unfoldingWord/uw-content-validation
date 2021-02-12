@@ -109,7 +109,7 @@ There is provision for checking to be altered and/or sped-up when the calling ap
 - `cutoffPriorityLevel`: an integer which can define notices to not be detected—defaults to 0 so none are dropped. Note that this will also affect the `suggestion` response. (Only partially implemented at present, so drops some but not all low priority notices.)
 - `suppressNoticeDisablingFlag`: Defaults to `false`, i.e., to removing (thus suppressing) notices for warnings which are expected in certain files and hence we don’t want them displayed. Note that this is always set to `true` for the demos (because they suppress these notices later—see the `showDisabledNoticesFlag` below).
 
-    Currently this supressing is only done in the (exported) `checkTN_TSVText` and `checkAnnotationRows` functions which we know to be called by [tC Create](https://github.com/unfoldingWord/tc-create-app) as well as `checkManifestText`, `checkMarkdownText`, `checkPlainText`, `checkTN_TSVText`, `checkUSFMText`, and `checkYAMLText` called by the [Content Validation App](https://github.com/unfoldingWord-box3/content-validation-app).
+    Currently this supressing is only done in the (exported) `checkTN_TSV9Table` and `checkNotesTSV7Table` functions which we know to be called by [tC Create](https://github.com/unfoldingWord/tc-create-app) as well as `checkManifestText`, `checkMarkdownText`, `checkPlainText`, `checkTN_TSV9Table`, `checkUSFMText`, and `checkYAMLText` called by the [Content Validation App](https://github.com/unfoldingWord-box3/content-validation-app).
 
 Most of the high-level demonstrations allow a choice of one of three display formats for notices:
 

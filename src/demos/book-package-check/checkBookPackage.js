@@ -368,9 +368,8 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     } else { // For repos other than OBS and TQ, we only have one file to check
       let repoFileContent;
       try {
-        const path = repoName.endsWith('-annotations') ? `${bookID}/${filename}` : filename;
-        // debugLog("checkBookPackage about to fetch fileContent for", username, repoName, adjustedBranch, path);
-        repoFileContent = await getFile_({ username, repository: repoName, path, branch: adjustedBranch });
+        // debugLog("checkBookPackage about to fetch fileContent for", username, repoName, adjustedBranch, filename);
+        repoFileContent = await getFile_({ username, repository: repoName, path: filename, branch: adjustedBranch });
         // debugLog("checkBookPackage fetched fileContent for", username, repoName, adjustedBranch, filename, typeof repoFileContent, repoFileContent.length);
         checkedFilenames.push(filename);
         totalCheckedSize += repoFileContent.length;

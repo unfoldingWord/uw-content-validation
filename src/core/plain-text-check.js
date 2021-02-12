@@ -4,7 +4,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert } from './utilities';
 
 
-const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.3.12';
+const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.4.0';
 
 
 /**
@@ -15,15 +15,18 @@ const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.3.12';
  * @param {string} givenLocation
  * @param {Object} checkingOptions
  */
-export function checkPlainText(textType, textName, plainText, givenLocation, checkingOptions) {
+export function checkPlainText(languageCode, textType, textName, plainText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire text, i.e., all lines.
         It is used in checkFileContents() in book-package-check.js
 
     TODO: Should languageCode also be a parameter here? (affects other programs using the API)
-    
+
      Returns a result object containing a successList and a noticeList
      */
     // functionLog(`checkPlainText(${textName}, (${plainText.length} chars), ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
+    parameterAssert(languageCode !== undefined, "checkPlainText: 'languageCode' parameter should be defined");
+    parameterAssert(typeof languageCode === 'string', `checkPlainText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
+    parameterAssert(languageCode !== 'markdown' && languageCode !== 'USFM' && languageCode !== 'YAML' && languageCode !== 'text' && languageCode !== 'raw' && languageCode !== 'unfoldingWord', `checkPlainText: 'languageCode' ${languageCode} parameter should be not be '${languageCode}'`);
     parameterAssert(textType !== undefined, "checkPlainText: 'textType' parameter should be defined");
     parameterAssert(typeof textType === 'string', `checkPlainText: 'textType' parameter should be a string not a '${typeof textType}': ${textType}`);
     parameterAssert(textType === 'markdown' || textType === 'USFM' || textType === 'YAML' || textType === 'text' || textType === 'raw', `checkPlainText: unrecognised 'textType' parameter: '${textType}'`);
@@ -73,7 +76,6 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
         cptResult.noticeList.push(noticeObject);
     }
 
-    const languageCode = '';
     function ourCheckTextField(lineNumber, fieldText, allowedLinks, optionalFieldLocation, checkingOptions) {
         /**
         * @description - checks the given text field and processes the returned results

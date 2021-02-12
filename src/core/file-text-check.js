@@ -1,7 +1,7 @@
 import { checkPlainText } from './plain-text-check';
 import { parameterAssert } from './utilities';
 
-// const FILE_TEXT_VALIDATOR_VERSION_STRING = '0.3.0';
+// const FILE_TEXT_VALIDATOR_VERSION_STRING = '0.3.1';
 
 
 export function checkTextfileContents(languageCode, fileType, filename, fileText, optionalFileLocation, checkingOptions) {
@@ -71,7 +71,7 @@ export function checkTextfileContents(languageCode, fileType, filename, fileText
         parameterAssert(typeof plainText === 'string', `cPT ourCheckPlainText: 'plainText' parameter should be a string not a '${typeof plainText}'`);
         parameterAssert(checkingOptions !== undefined, "cPT ourCheckPlainText: 'checkingOptions' parameter should be defined");
 
-        const resultObject = checkPlainText(textType, textFilename, plainText, givenLocation, checkingOptions);
+        const resultObject = checkPlainText(languageCode, textType, textFilename, plainText, givenLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field

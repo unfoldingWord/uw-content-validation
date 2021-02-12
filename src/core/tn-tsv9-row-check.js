@@ -8,7 +8,7 @@ import { checkOriginalLanguageQuote } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.8';
+// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.7.0';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -24,7 +24,7 @@ const TA_REGEX = new RegExp('\\[\\[rc://[^ /]+?/ta/man/[^ /]+?/([^ \\]]+?)\\]\\]
  *
  * @description - Checks one TSV data row of translation notes (TN2)
  * @param {string} languageCode - the language code, e.g., 'en'
- * @param {string} annotationType - TN2, TQ2, TWL, SN, or SQ -- allows more specific checks
+ * @param {string} repoCode - TN2, TQ2, TWL, SN, or SQ -- allows more specific checks
  * @param {string} line - the TSV line to be checked
  * @param {string} bookID - 3-character UPPERCASE USFM book identifier or 'OBS'
  * @param {string} givenC - chapter number or (for OBS) story number string

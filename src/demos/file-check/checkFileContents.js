@@ -1,12 +1,13 @@
 import * as books from '../../core/books/books';
 import {
-  userLog, parameterAssert,
+  userLog, functionLog, parameterAssert,
   formRepoName,
-  checkUSFMText, checkMarkdownFileContents, checkPlainText, checkYAMLText, checkManifestText, checkTN_TSVText, checkAnnotationRows
+  checkUSFMText, checkMarkdownFileContents, checkPlainText, checkYAMLText, checkManifestText,
+  checkTN_TSV9Table, checkNotesTSV7Table, checkQuestionsTSV5Table, checkTWL_TSV6Table,
 } from '../../core';
 
 
-// const CHECK_FILE_CONTENTS_VERSION_STRING = '0.3.1';
+// const CHECK_FILE_CONTENTS_VERSION_STRING = '0.4.0';
 
 
 /**
@@ -23,7 +24,7 @@ import {
 export async function checkFileContents(username, languageCode, repoCode, branch, filename, fileContent, givenLocation, checkingOptions) {
   // Determine the file type from the filename extension
   //  and return the results of checking that kind of file text
-  // functionLog(`checkFileContents(${username}, ${languageCode}, ${filename}, ${fileContent.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
+  functionLog(`checkFileContents(${username}, ${languageCode}, ${filename}, ${fileContent.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
   parameterAssert(username !== undefined, "checkFileContents: 'username' parameter should be defined");
   parameterAssert(typeof username === 'string', `checkFileContents: 'username' parameter should be a string not a '${typeof username}': ${username}`);
   parameterAssert(languageCode !== undefined, "checkFileContents: 'languageCode' parameter should be defined");
@@ -55,10 +56,15 @@ export async function checkFileContents(username, languageCode, repoCode, branch
     // functionLog(`checkFileContents have TSV bookID=${bookID}`);
     parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
     if (filename.startsWith(`${languageCode}_`) || filenameMain.startsWith('en_'))
-      checkFileResult = await checkTN_TSVText(languageCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
+      checkFileResult = await checkTN_TSV9Table(languageCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
     else {
-      const annotationType = filenameMain.substring(4).toUpperCase();
-      checkFileResult = await checkAnnotationRows(languageCode, annotationType, bookID, filename, fileContent, ourCFLocation, checkingOptions);
+      const repoCode = filenameMain.substring(4).toUpperCase();
+      let checkFunction = {
+        TN: checkNotesTSV7Table, SN: checkNotesTSV7Table,
+        TQ: checkQuestionsTSV5Table, SQ: checkQuestionsTSV5Table,
+        TWL: checkTWL_TSV6Table,
+      }[repoCode];
+      checkFileResult = await checkFunction(languageCode, repoCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
     }
   }
   else if (filenameLower.endsWith('.usfm')) {
@@ -78,13 +84,13 @@ export async function checkFileContents(username, languageCode, repoCode, branch
   } else if (filenameLower.endsWith('.md'))
     checkFileResult = checkMarkdownFileContents(languageCode, filename, fileContent, ourCFLocation, checkingOptions);
   else if (filenameLower.endsWith('.txt'))
-    checkFileResult = checkPlainText('text', filename, fileContent, ourCFLocation, checkingOptions);
+    checkFileResult = checkPlainText(languageCode, 'text', filename, fileContent, ourCFLocation, checkingOptions);
   else if (filenameLower === 'manifest.yaml')
     checkFileResult = await checkManifestText(username, formRepoName(languageCode, repoCode), branch, fileContent, ourCFLocation, checkingOptions); // don’t know username or branch
   else if (filenameLower.endsWith('.yaml'))
     checkFileResult = checkYAMLText(languageCode, filename, fileContent, ourCFLocation, checkingOptions);
   else {
-    checkFileResult = checkPlainText('raw', filename, fileContent, ourCFLocation, checkingOptions);
+    checkFileResult = checkPlainText(languageCode, 'raw', filename, fileContent, ourCFLocation, checkingOptions);
     checkFileResult.noticeList.unshift({ priority: 995, message: "File extension is not recognized, so treated as plain text.", filename, location: filename });
   }
   // functionLog(`checkFileContents got initial results with ${checkFileResult.successList.length} success message(s) and ${checkFileResult.noticeList.length} notice(s)`);

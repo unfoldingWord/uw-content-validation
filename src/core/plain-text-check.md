@@ -43,7 +43,7 @@ const chosenText = textSB;
 const chosenTextName = 'textSB';
 const checkingOptions = {};
 
-const rawResults = checkPlainText('raw', chosenTextName, chosenText, 'that was supplied', checkingOptions);
+const rawResults = checkPlainText('en', 'raw', chosenTextName, chosenText, 'that was supplied', checkingOptions);
 if (!rawResults.successList || !rawResults.successList.length)
   rawResults.successList = ["Done plain text checks"];
 

@@ -1,17 +1,27 @@
 import * as books from './books/books';
 import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
-import { checkAnnotationTSVDataRow } from './annotation-row-check';
+import { checkQuestionsTSV5DataRow } from './questions-tsv5-row-check';
 import { removeDisabledNotices } from './disabled-notices';
-import { parameterAssert } from './utilities';
+import { functionLog, parameterAssert } from './utilities';
 
 
-const ANNOTATION_TABLE_VALIDATOR_VERSION_STRING = '0.3.1';
+const QUESTIONS_TABLE_VALIDATOR_VERSION_STRING = '0.1.0';
 
-const NUM_EXPECTED_ANNOTATION_TSV_FIELDS = 7; // so expects 6 tabs per line
-const EXPECTED_TN_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tAnnotation';
+const NUM_EXPECTED_QUESTIONS_TSV_FIELDS = 5; // so expects 4 tabs per line
+const EXPECTED_QUESTIONS_HEADING_LINE = 'Reference\tID\tTags\tQuestion\tResponse';
 
 
-export async function checkAnnotationRows(languageCode, annotationType, bookID, filename, tableText, givenLocation, checkingOptions) {
+/**
+ *
+ * @param {string} languageCode
+ * @param {string} repoCode -- 'TQ' or 'SQ'
+ * @param {string} bookID
+ * @param {string} filename
+ * @param {string} tableText
+ * @param {string} givenLocation
+ * @param {Object} checkingOptions
+ */
+export async function checkQuestionsTSV5Table(languageCode, repoCode, bookID, filename, tableText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire file, i.e., all rows.
 
       It also has the advantage of being able to compare one row with the previous one.
@@ -20,16 +30,17 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
 
      Returns a result object containing a successList and a noticeList
      */
-    // functionLog(`checkAnnotationRows(${languageCode}, ${annotationType}, ${bookID}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
-    parameterAssert(languageCode !== undefined, "checkAnnotationRows: 'languageCode' parameter should be defined");
-    parameterAssert(typeof languageCode === 'string', `checkAnnotationRows: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
-    parameterAssert(bookID !== undefined, "checkAnnotationRows: 'bookID' parameter should be defined");
-    parameterAssert(typeof bookID === 'string', `checkAnnotationRows: 'bookID' parameter should be a string not a '${typeof bookID}'`);
-    parameterAssert(bookID.length === 3, `checkAnnotationRows: 'bookID' parameter should be three characters long not ${bookID.length}`);
-    parameterAssert(bookID.toUpperCase() === bookID, `checkAnnotationRows: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-    parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkAnnotationRows: '${bookID}' is not a valid USFM book identifier`);
-    parameterAssert(givenLocation !== undefined, "checkAnnotationRows: 'givenLocation' parameter should be defined");
-    parameterAssert(typeof givenLocation === 'string', `checkAnnotationRows: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
+    functionLog(`checkQuestionsTSV5Table(${languageCode}, ${repoCode}, ${bookID}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
+    parameterAssert(languageCode !== undefined, "checkQuestionsTSV5Table: 'languageCode' parameter should be defined");
+    parameterAssert(typeof languageCode === 'string', `checkQuestionsTSV5Table: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    parameterAssert(repoCode === 'TQ' || repoCode === 'SQ', `checkTWL_TSV6Table: repoCode expected 'TQ' or 'SQ' not '${repoCode}'`);
+    parameterAssert(bookID !== undefined, "checkQuestionsTSV5Table: 'bookID' parameter should be defined");
+    parameterAssert(typeof bookID === 'string', `checkQuestionsTSV5Table: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+    parameterAssert(bookID.length === 3, `checkQuestionsTSV5Table: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    parameterAssert(bookID.toUpperCase() === bookID, `checkQuestionsTSV5Table: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+    parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkQuestionsTSV5Table: '${bookID}' is not a valid USFM book identifier`);
+    parameterAssert(givenLocation !== undefined, "checkQuestionsTSV5Table: 'givenLocation' parameter should be defined");
+    parameterAssert(typeof givenLocation === 'string', `checkQuestionsTSV5Table: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -37,11 +48,11 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
     const carResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        // functionLog(`checkAnnotationRows success: ${successString}`);
+        // functionLog(`checkQuestionsTSV5Table success: ${successString}`);
         carResult.successList.push(successString);
     }
     function addNoticePartial(noticeObject) {
-        // functionLog(`checkAnnotationRows notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // functionLog(`checkQuestionsTSV5Table notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "ATSV addNoticePartial: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `TSV addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "ATSV addNoticePartial: 'message' parameter should be defined");
@@ -57,8 +68,8 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
         parameterAssert(noticeObject.location !== undefined, "ATSV addNoticePartial: 'location' parameter should be defined");
         parameterAssert(typeof noticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
-        if (noticeObject.debugChain) noticeObject.debugChain = `checkAnnotationRows ${noticeObject.debugChain}`;
-        carResult.noticeList.push({ ...noticeObject, bookID, filename, repoCode: annotationType });
+        if (noticeObject.debugChain) noticeObject.debugChain = `checkQuestionsTSV5Table ${noticeObject.debugChain}`;
+        carResult.noticeList.push({ ...noticeObject, bookID, filename, repoCode: repoCode });
     }
 
 
@@ -98,9 +109,9 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
     let rowIDList = [], uniqueRowList = [];
     let numVersesThisChapter = 0;
     for (let n = 0; n < lines.length; n++) {
-        // functionLog(`checkAnnotationRows checking line ${n}: ${JSON.stringify(lines[n])}`);
+        // functionLog(`checkQuestionsTSV5Table checking line ${n}: ${JSON.stringify(lines[n])}`);
         if (n === 0) {
-            if (lines[0] === EXPECTED_TN_HEADING_LINE)
+            if (lines[0] === EXPECTED_QUESTIONS_HEADING_LINE)
                 addSuccessMessage(`Checked TSV header ${ourLocation}`);
             else
                 addNoticePartial({ priority: 746, message: "Bad TSV header", lineNumber: n + 1, location: `${ourLocation}: '${lines[0]}'` });
@@ -108,13 +119,13 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
         else // not the header
         {
             let fields = lines[n].split('\t');
-            if (fields.length === NUM_EXPECTED_ANNOTATION_TSV_FIELDS) {
+            if (fields.length === NUM_EXPECTED_QUESTIONS_TSV_FIELDS) {
                 // eslint-disable-next-line no-unused-vars
-                const [reference, rowID, tags, supportReference, quote, occurrence, annotation] = fields;
+                const [reference, rowID, tags, question, answer] = fields;
                 const [C, V] = reference.split(':')
 
                 // Use the row check to do most basic checks
-                const drResultObject = await checkAnnotationTSVDataRow(languageCode, annotationType, lines[n], bookID, C, V, ourLocation, checkingOptions);
+                const drResultObject = await checkQuestionsTSV5DataRow(languageCode, repoCode, lines[n], bookID, C, V, ourLocation, checkingOptions);
                 // Choose only ONE of the following
                 // This is the fast way of append the results from this field
                 // result.noticeList = result.noticeList.concat(firstResult.noticeList);
@@ -150,7 +161,7 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
 
                 // TODO: Check if we need this at all (even though tC 3.0 can’t display these "duplicate" notes)
                 // Check for duplicate notes
-                const uniqueID = C + V + supportReference + quote + occurrence; // This combination should not be repeated
+                const uniqueID = C + V + question + answer; // This combination should not be repeated
                 // if (uniqueRowList.includes(uniqueID))
                 //     addNoticePartial({ priority: 880, C, V, message: `Duplicate note`, rowID, lineNumber: n + 1, location: ourLocation });
                 // if (uniqueRowList.includes(uniqueID))
@@ -218,7 +229,7 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
 
             } else // wrong number of fields in the row
                 // if (n === lines.length - 1) // it’s the last line
-                //     userLog(`  Line ${n}: Has ${fields.length} field(s) instead of ${NUM_EXPECTED_TN_FIELDS}: ${EXPECTED_TN_HEADING_LINE.replace(/\t/g, ', ')}`);
+                //     userLog(`  Line ${n}: Has ${fields.length} field(s) instead of ${NUM_EXPECTED_TN_FIELDS}: ${EXPECTED_QUESTIONS_HEADING_LINE.replace(/\t/g, ', ')}`);
                 // else
                 if (n !== lines.length - 1) { // it’s not the last line
                     // Have a go at getting some of the first fields out of the line
@@ -226,13 +237,13 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
                     try { reference = fields[0]; } catch { }
                     try { rowID = fields[1]; } catch { }
                     try { [C, V] = reference.split(':'); } catch { }
-                    addNoticePartial({ priority: 988, message: `Wrong number of tabbed fields (expected ${NUM_EXPECTED_ANNOTATION_TSV_FIELDS})`, extract: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, C, V, rowID, lineNumber: n + 1, location: ourLocation });
+                    addNoticePartial({ priority: 988, message: `Wrong number of tabbed fields (expected ${NUM_EXPECTED_QUESTIONS_TSV_FIELDS})`, extract: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, C, V, rowID, lineNumber: n + 1, location: ourLocation });
                 }
         }
     }
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        // functionLog(`checkAnnotationRows: calling removeDisabledNotices(${carResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        // functionLog(`checkQuestionsTSV5Table: calling removeDisabledNotices(${carResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
         carResult.noticeList = removeDisabledNotices(carResult.noticeList);
     }
 
@@ -242,11 +253,11 @@ export async function checkAnnotationRows(languageCode, annotationType, bookID, 
 
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}.`);
     if (carResult.noticeList)
-        addSuccessMessage(`checkAnnotationRows v${ANNOTATION_TABLE_VALIDATOR_VERSION_STRING} finished with ${carResult.noticeList.length ? carResult.noticeList.length.toLocaleString() : "zero"} notice${carResult.noticeList.length === 1 ? '' : 's'}`);
+        addSuccessMessage(`checkQuestionsTSV5Table v${QUESTIONS_TABLE_VALIDATOR_VERSION_STRING} finished with ${carResult.noticeList.length ? carResult.noticeList.length.toLocaleString() : "zero"} notice${carResult.noticeList.length === 1 ? '' : 's'}`);
     else
-        addSuccessMessage(`No errors or warnings found by checkAnnotationRows v${ANNOTATION_TABLE_VALIDATOR_VERSION_STRING}`)
-    // debugLog(`  checkAnnotationRows returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
-    // debugLog("checkAnnotationRows result is", JSON.stringify(carResult));
+        addSuccessMessage(`No errors or warnings found by checkQuestionsTSV5Table v${QUESTIONS_TABLE_VALIDATOR_VERSION_STRING}`)
+    // debugLog(`  checkQuestionsTSV5Table returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
+    // debugLog("checkQuestionsTSV5Table result is", JSON.stringify(carResult));
     return carResult;
 }
-// end of checkAnnotationRows function
+// end of checkQuestionsTSV5Table function
