@@ -1,6 +1,6 @@
-## Annotation (TSV) Table Text Check Sandbox
+## Questions (TSV) Table Text Check Sandbox
 
-This function checks the given block of annotation (TSV) table lines for typical formatting errors.
+This function checks the given block of question/response (TSV) table lines for typical formatting errors.
 
 It returns a list of success messages and a list of notice components. (There is always a priority number in the range 0..999 and the main message string, as well as other details to help locate the error as available.)
 
@@ -11,7 +11,7 @@ These raw notice components can then be filtered and/or sorted as required by th
 //        Simply click inside here and add, change, or delete text as required.
 
 import React, { useState, useEffect } from 'react';
-import { checkNotesTSV7Table } from './questions-tsv5-table-check';
+import { checkQuestionsTSV5Table } from './questions-tsv5-table-check';
 import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Text samples
@@ -48,12 +48,12 @@ const data = {
   givenLocation : 'that was supplied',
 }
 
-function checkNotesTSV7Table(props) {
+function CheckQuestionsTSV5Table(props) {
   const { languageCode, repoCode, bookID, filename, tableText, tableTextName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
 
-  // We need the following construction because checkNotesTSV7Table is an ASYNC function
+  // We need the following construction because checkQuestionsTSV5Table is an ASYNC function
   useEffect(() => {
     // Use an IIFE (Immediately Invoked Function Expression)
     //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
@@ -61,7 +61,7 @@ function checkNotesTSV7Table(props) {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {languageCode} {repoCode} for {tableTextName} <b>{bookID}</b>…</p>);
       const checkingOptions = {};
-      const rawResults = await checkNotesTSV7Table(languageCode, repoCode, bookID, filename, tableText, givenLocation, checkingOptions);
+      const rawResults = await checkQuestionsTSV5Table(languageCode, repoCode, bookID, filename, tableText, givenLocation, checkingOptions);
       setResults(
         <div>
           <b>Check</b> {tableTextName}: "{tableText.substr(0,256)}…"<br/><br/>
@@ -72,7 +72,7 @@ function checkNotesTSV7Table(props) {
   }, []); // end of useEffect part
 
   return results;
-} // end of checkNotesTSV7Table function
+} // end of CheckQuestionsTSV5Table function
 
-<checkNotesTSV7Table data={data}/>
+<CheckQuestionsTSV5Table data={data}/>
 ```

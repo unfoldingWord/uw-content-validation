@@ -5,10 +5,10 @@ import { clearCaches, clearCheckedArticleCache, ourParseInt, preloadReposIfNeces
 import { checkBookPackages } from './checkBookPackages';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderTotals } from '../RenderProcessedResults';
-import { userLog } from '../../core/utilities';
+import { userLog, debugLog } from '../../core/utilities';
 
 
-// const BPS_VALIDATOR_VERSION_STRING = '0.2.1';
+// const BPS_VALIDATOR_VERSION_STRING = '0.2.2';
 
 
 /**
@@ -50,7 +50,8 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     // debugLog(`bookIDList (${bookIDList.length}) = ${bookIDList.join(', ')}`);
 
     const checkingOptions = { // Uncomment any of these to test them
-        // excerptLength: 25,
+      dataSet: dataSet, // Can be 'OLD' (Markdown, etc.), 'NEW' (TSV only), or 'BOTH', or 'DEFAULT'
+      // excerptLength: 25,
         suppressNoticeDisablingFlag: true, // Leave this one as true (otherwise demo checks are less efficient)
     };
     // Or this allows the parameters to be specified as a BookPackagesCheck property
@@ -89,6 +90,7 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
             repoPreloadList = ['LT', 'ST', 'TN', 'TN2', 'TWL', 'TA', 'TW', 'TQ', 'TQ2'];
         if (haveNT) repoPreloadList.unshift('UGNT');
         if (haveOT) repoPreloadList.unshift('UHB');
+        debugLog(`BookPackagesCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
 
         setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for book packages check…</p>);
           const successFlag = await preloadReposIfNecessary(username, languageCode, bookIDList, branch, repoPreloadList);

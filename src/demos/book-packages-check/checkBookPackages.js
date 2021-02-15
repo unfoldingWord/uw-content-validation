@@ -3,11 +3,21 @@ import { checkBookPackage } from '../book-package-check/checkBookPackage';
 import { userLog, parameterAssert } from '../../core/utilities';
 // import { consoleLogObject } from '../../core/utilities';
 
-// const BPs_VALIDATOR_VERSION_STRING = '0.2.4';
+// const BPs_VALIDATOR_VERSION_STRING = '0.2.5';
 
 
+/**
+ *
+ * @param {string} username -- Door43 username/orgname
+ * @param {string} languageCode
+ * @param {*} bookIDList
+ * @param {Function} setResultValue
+ * @param {Object} checkingOptions
+ */
 export async function checkBookPackages(username, languageCode, bookIDList, setResultValue, checkingOptions) {
-    //     userLog(`I'm here in checkBookPackages v${VALIDATOR_VERSION_STRING}
+    // NOTE: dataSet is simply passed through here to checkBookPackage in checkingOptions
+    //
+    // userLog(`I'm here in checkBookPackages v${VALIDATOR_VERSION_STRING}
     //   with ${username}, ${languageCode}, ${bookIDList}, ${JSON.stringify(checkingOptions)}`);
     let abortFlag = false;
     const startTime = new Date();

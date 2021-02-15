@@ -2,13 +2,13 @@ import * as books from './books/books';
 import { DEFAULT_EXCERPT_LENGTH } from './text-handling-functions'
 import { checkTWL_TSV6DataRow } from './twl-tsv6-row-check';
 import { removeDisabledNotices } from './disabled-notices';
-import { functionLog, parameterAssert } from './utilities';
+import { parameterAssert } from './utilities';
 
 
 const TWL_TABLE_VALIDATOR_VERSION_STRING = '0.1.0';
 
 const NUM_EXPECTED_TWL_TSV_FIELDS = 6; // so expects 5 tabs per line
-const EXPECTED_TWL_HEADING_LINE = 'Reference\tID\tTags\tQuote\tOccurrence\tTWLink';
+const EXPECTED_TWL_HEADING_LINE = 'Reference\tID\tTags\tOrigWords\tOccurrence\tTWLink';
 
 
 /**
@@ -30,7 +30,7 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
 
      Returns a result object containing a successList and a noticeList
      */
-    functionLog(`checkTWL_TSV6Table(${languageCode}, ${repoCode}, ${bookID}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
+    // functionLog(`checkTWL_TSV6Table(${languageCode}, ${repoCode}, ${bookID}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
     parameterAssert(languageCode !== undefined, "checkTWL_TSV6Table: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkTWL_TSV6Table: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
     parameterAssert(repoCode === 'TWL', `checkTWL_TSV6Table: repoCode expected 'TWL' not '${repoCode}'`);
@@ -69,7 +69,7 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
         parameterAssert(typeof noticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
         if (noticeObject.debugChain) noticeObject.debugChain = `checkTWL_TSV6Table ${noticeObject.debugChain}`;
-        carResult.noticeList.push({ ...noticeObject, bookID, filename, repoCode: repoCode });
+        carResult.noticeList.push({ ...noticeObject, bookID, filename, repoCode });
     }
 
 
@@ -92,7 +92,7 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
     if (bookID === 'OBS')
         numChaptersThisBook = 50; // There's 50 Open Bible Stories
     else {
-        parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in annotation-table-check");
+        parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in checkTWL_TSV6Table");
         try {
             numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
         }
@@ -123,6 +123,7 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
                 // eslint-disable-next-line no-unused-vars
                 const [reference, rowID, tags, quote, occurrence, TWLLink] = fields;
                 const [C, V] = reference.split(':')
+                if (V === '3') break;
 
                 // Use the row check to do most basic checks
                 const drResultObject = await checkTWL_TSV6DataRow(languageCode, repoCode, lines[n], bookID, C, V, ourLocation, checkingOptions);

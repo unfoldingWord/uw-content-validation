@@ -4,7 +4,7 @@ import { checkFileContents } from '../file-check/checkFileContents';
 import { logicAssert, parameterAssert, repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetRepositoryZipFile } from '../../core';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.4.5';
+// const REPO_VALIDATOR_VERSION_STRING = '0.4.6';
 
 
 /**
@@ -13,7 +13,7 @@ import { logicAssert, parameterAssert, repositoryExistsOnDoor43, getFileListFrom
  * @param {string} repoName
  * @param {string} branch
  * @param {string} givenLocation
- * @param {*} setResultValue
+ * @param {Function} setResultValue
  * @param {Object} checkingOptions
  */
 export async function checkRepo(username, repoName, branch, givenLocation, setResultValue, checkingOptions) {
@@ -214,15 +214,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
         // Default to the main filename without the extension
         let bookOrFileCode = thisFilename.substring(0, thisFilename.length - thisFilenameExtension.length - 1);
         let ourBookID = '';
-        if (repoName === 'en_translation-annotations' && thisFilenameExtension === 'tsv') {
-          // functionLog(`checkRepo have en_translation-annotations bookOrFileCode=${bookOrFileCode}`);
-          const bookID = bookOrFileCode.substring(0, 3).toUpperCase();
-          // functionLog(`checkRepo have bookID=${bookID}`);
-          parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkRepo: '${bookID}' is not a valid USFM book identifier (for Annotations)`);
-          bookOrFileCode = `${bookOrFileCode.substring(4).toUpperCase()} ${bookID}`;
-          ourBookID = bookID;
-        }
-        else if (thisFilenameExtension === 'usfm') {
+        if (thisFilenameExtension === 'usfm') {
           // const filenameMain = thisFilename.substring(0, thisFilename.length - 5); // drop .usfm
           // debugLog(`Have USFM filenameMain=${bookOrFileCode}`);
           const bookID = bookOrFileCode.substring(bookOrFileCode.length - 3).toUpperCase();

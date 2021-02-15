@@ -5,7 +5,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { functionLog, parameterAssert } from './utilities';
 
 
-const QUESTIONS_TABLE_VALIDATOR_VERSION_STRING = '0.1.0';
+const QUESTIONS_TABLE_VALIDATOR_VERSION_STRING = '0.1.1';
 
 const NUM_EXPECTED_QUESTIONS_TSV_FIELDS = 5; // so expects 4 tabs per line
 const EXPECTED_QUESTIONS_HEADING_LINE = 'Reference\tID\tTags\tQuestion\tResponse';
@@ -30,7 +30,7 @@ export async function checkQuestionsTSV5Table(languageCode, repoCode, bookID, fi
 
      Returns a result object containing a successList and a noticeList
      */
-    functionLog(`checkQuestionsTSV5Table(${languageCode}, ${repoCode}, ${bookID}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
+    functionLog(`checkQuestionsTSV5Table(${languageCode}, ${repoCode}, ${bookID}, ${filename}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
     parameterAssert(languageCode !== undefined, "checkQuestionsTSV5Table: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkQuestionsTSV5Table: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
     parameterAssert(repoCode === 'TQ' || repoCode === 'SQ', `checkTWL_TSV6Table: repoCode expected 'TQ' or 'SQ' not '${repoCode}'`);
@@ -69,7 +69,7 @@ export async function checkQuestionsTSV5Table(languageCode, repoCode, bookID, fi
         parameterAssert(typeof noticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
         if (noticeObject.debugChain) noticeObject.debugChain = `checkQuestionsTSV5Table ${noticeObject.debugChain}`;
-        carResult.noticeList.push({ ...noticeObject, bookID, filename, repoCode: repoCode });
+        carResult.noticeList.push({ ...noticeObject, bookID, filename, repoCode });
     }
 
 
@@ -92,7 +92,7 @@ export async function checkQuestionsTSV5Table(languageCode, repoCode, bookID, fi
     if (bookID === 'OBS')
         numChaptersThisBook = 50; // There's 50 Open Bible Stories
     else {
-        parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in annotation-table-check");
+        parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in checkQuestionsTSV5Table");
         try {
             numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
         }

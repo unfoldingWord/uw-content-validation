@@ -2,7 +2,7 @@ import { userLog, parameterAssert } from '../core/utilities';
 import { isDisabledNotice } from '../core/disabled-notices';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.9';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.10';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -144,8 +144,10 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     if (givenNoticeObject.noticeList && givenNoticeObject.noticeList.length) {
         const ALL_TSV_FIELDNAMES = ['Book', 'Chapter', 'Verse', 'Reference',
             'ID', 'Tags', 'SupportReference',
+            'OrigWords', 'TWLink',
             'OrigQuote', 'Quote', 'Occurrence', 'GLQuote',
-            'OccurrenceNote', 'Annotation'];
+            'Question', 'Response',
+            'OccurrenceNote', 'Note'];
         const numberStore = {}, duplicatePriorityList = [];
         for (const thisGivenNotice of standardisedNoticeList) {
             const thisPriority = thisGivenNotice.priority, thisMsg = thisGivenNotice.message;
@@ -178,8 +180,11 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             }
 
             // Check fields for bad values, and also across fields for unexpected combinations
-            const thisRepoName = thisGivenNotice.repoName, thisFilename = thisGivenNotice.filename, thisLineNumber = thisGivenNotice.lineNumber,
-                thisRowID = thisGivenNotice.rowID, thisFieldName = thisGivenNotice.fieldName, thisLocation = thisGivenNotice.location, thisExtra = thisGivenNotice.extra;
+            const thisRepoName = thisGivenNotice.repoName,
+                thisFilename = thisGivenNotice.filename, thisLineNumber = thisGivenNotice.lineNumber,
+                thisC = thisGivenNotice.C, thisV = thisGivenNotice.V,
+                thisRowID = thisGivenNotice.rowID, thisFieldName = thisGivenNotice.fieldName,
+                thisLocation = thisGivenNotice.location, thisExtra = thisGivenNotice.extra;
             if (thisRepoName) {
                 parameterAssert(thisRepoName.indexOf(' ') < 0 && thisRepoName.indexOf('/') < 0 && thisRepoName.indexOf('\\') < 0, `repoName '${thisRepoName}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 if (thisLocation)
@@ -194,6 +199,10 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 if (thisLocation)
                     parameterAssert(thisLocation.indexOf(thisFilename) < 0, `filename is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
             }
+            if (thisC)
+                parameterAssert(thisC === 'front' || !isNaN(thisC * 1), `C '${thisC}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+            if (thisV) // TODO: We'll need to remove this check once we start getting verse ranges, etc.
+                parameterAssert(thisV === 'intro' || !isNaN(thisV * 1), `V '${thisV}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
             if (thisRowID) {
                 parameterAssert(thisRowID.indexOf(' ') < 0 && thisRowID.indexOf('/') < 0 && thisRowID.indexOf('\\') < 0, `rowID '${thisRowID}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 if (thisLocation)

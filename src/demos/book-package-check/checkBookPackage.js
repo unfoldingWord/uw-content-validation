@@ -6,7 +6,7 @@ import { checkFileContents } from '../file-check/checkFileContents';
 import { checkRepo } from '../repo-check/checkRepo';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.5.6';
+// const BP_VALIDATOR_VERSION_STRING = '0.5.7';
 
 const MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -259,7 +259,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         // debugLog(`Year ${fullYearString} is ${typeof fullYearString}`);
         if (markdownFileContent.indexOf(fullYearString) === -1) // Can't find this year string in file
           // NOTE: We don’t use addNoticePartial, because it adds a misleading BookID
-          checkBookPackageResult.noticeList.push({ priority: 256, message: "Possibly missing current copyright year", details: fullYearString, repoName, filename, location: markdownLocation, extra: repoCode });
+          checkBookPackageResult.noticeList.push({ priority: 256, message: "Possibly missing current copyright year", details: `possibly expecting '${fullYearString}'`, repoName, filename, location: markdownLocation, extra: repoCode });
       }
 
       return markdownFileContent.length;
@@ -274,7 +274,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
 
   // Main code for checkBookPackage()
   // NOTE: TN and TQ are used here for the old resource formats, e.g., 9-column TSV TN2 and markdown TQ2
-  //        The TN2, TQ2, SN, and SQ repoCodes refer to the new 7-column annotation TSV format.
+  //        The TN2, TQ2, SN, and SQ repoCodes refer to the new 7-column notes TSV format.
   // debugLog("checkBookPackage() main code…");
   let repoCodeList;
   let bookNumberAndName, whichTestament;
@@ -298,7 +298,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     // So now we want to work through checking this one specified Bible book in various repos
     const origLangRepoCode = whichTestament === 'old' ? 'UHB' : 'UGNT';
     if (dataSet === 'DEFAULT')
-      repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'] : [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'];
+      repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ', 'SN', 'SQ'] : [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'];
     else if (dataSet === 'OLD')
       repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'] : [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'];
     else if (dataSet === 'NEW')
@@ -399,7 +399,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     if (!newCheckingOptions?.disableAllLinkFetchingFlag) {
       // We also check the manifest file for each repo if requested
       //  because a faulty manifest might also stop a BP from working correctly in various programs
-      if (!checkedManifestDetails.includes(repoName)) { // Don’t want to check more than once, esp. for annotations repos
+      if (!checkedManifestDetails.includes(repoName)) { // Don’t want to check more than once
         checkedManifestDetails.push(repoName); // Remember that we checked this one
         // debugLog(`Maybe checking MANIFEST etc. for ${repoName}`);
 

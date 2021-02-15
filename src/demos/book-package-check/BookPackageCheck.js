@@ -5,10 +5,10 @@ import { clearCaches, clearCheckedArticleCache, ourParseInt, preloadReposIfNeces
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderTotals } from '../RenderProcessedResults';
 import { checkBookPackage } from './checkBookPackage';
-import { userLog, parameterAssert } from '../../core/utilities';
+import { userLog, debugLog, parameterAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.3.7';
+// const BP_VALIDATOR_VERSION_STRING = '0.3.8';
 
 
 function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
@@ -94,7 +94,12 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
                 const origLangRepo = whichTestament === 'old' ? 'UHB' : 'UGNT';
                 repoPreloadList.unshift(origLangRepo);
             }
-            // debugLog(`BookPackageCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
+            // TODO: Eventually we'll have all books here, so the repos can be included above
+            if (bookID === 'OBS' || bookID === 'TIT') {
+                repoPreloadList.push('SN');
+                repoPreloadList.push('SQ');
+            }
+            debugLog(`BookPackageCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
 
             // if (bookID !== 'OBS') { // Preload the reference repos
             setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for <b>{bookID}</b> book package check…</p>);

@@ -4,12 +4,13 @@ import { cachedGetFile } from '../core/getApi';
 import { debugLog, parameterAssert, ourParseInt } from './utilities';
 
 
-// const QUOTE_VALIDATOR_VERSION_STRING = '0.8.1';
+// const QUOTE_VALIDATOR_VERSION_STRING = '0.9.0';
 
 
 /**
  *
  * @param {string} languageCode
+ * @param {string} repoCode
  * @param {string} fieldName
  * @param {string} fieldText
  * @param {string} occurrenceString
@@ -19,7 +20,7 @@ import { debugLog, parameterAssert, ourParseInt } from './utilities';
  * @param {string} givenLocation
  * @param {Object} checkingOptions
  */
-export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldText, occurrenceString, bookID, C, V, givenLocation, checkingOptions) {
+export async function checkOriginalLanguageQuote(languageCode, repoCode, fieldName, fieldText, occurrenceString, bookID, C, V, givenLocation, checkingOptions) {
     // Checks that the Hebrew/Greek quote can be found in the original texts
 
     // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
@@ -31,9 +32,11 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
     //      (UHB or UGNT will be used for the repo name)
     //      checkingOptions?.originalLanguageRepoBranch (or tag)
 
-    // functionLog(`checkOriginalLanguageQuote v${QUOTE_VALIDATOR_VERSION_STRING} (${fieldName}, (${fieldText.length}) '${fieldText}', ${occurrenceString}, ${bookID} ${C}:${V} ${givenLocation}, …)…`);
+    // functionLog(`checkOriginalLanguageQuote v${QUOTE_VALIDATOR_VERSION_STRING} ${languageCode}, ${repoCode}, ${fieldName}, (${fieldText.length}) '${fieldText}', ${occurrenceString}, ${bookID} ${C}:${V} ${givenLocation}, …)…`);
     parameterAssert(languageCode !== undefined, "checkOriginalLanguageQuote: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkOriginalLanguageQuote: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    parameterAssert(repoCode !== undefined, "checkOriginalLanguageQuote: 'repoCode' parameter should be defined");
+    parameterAssert(typeof repoCode === 'string', `checkOriginalLanguageQuote: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
     parameterAssert(fieldName !== undefined, "checkOriginalLanguageQuote: 'fieldName' parameter should be defined");
     parameterAssert(typeof fieldName === 'string', `checkOriginalLanguageQuote: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
     parameterAssert(fieldText !== undefined, "checkOriginalLanguageQuote: 'fieldText' parameter should be defined");
@@ -52,6 +55,9 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
     parameterAssert(typeof V === 'string', `checkOriginalLanguageQuote: 'V' parameter should be a string not a '${typeof V}'`);
     parameterAssert(givenLocation !== undefined, "checkOriginalLanguageQuote: 'givenLocation' parameter should be defined");
     parameterAssert(typeof givenLocation === 'string', `checkOriginalLanguageQuote: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
+
+    const discontiguousDivider = (repoCode === 'TN') ? '…' : ' & ';
+    // debugLog(`Got discontiguousDivider='${discontiguousDivider}' for ${repoCode}`);
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -243,28 +249,28 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
     // fieldText = fieldText.strip() # so we don’t get consequential errors
 
     let characterIndex;
-    if ((characterIndex = fieldText.indexOf('...')) >= 0) {
+    if (discontiguousDivider==='…' && (characterIndex = fieldText.indexOf('...')) >= 0) {
         // debugLog(`Bad ellipse characters in '${fieldText}'`);
         const excerpt = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '');
         addNotice({ priority: 159, message: "Should use proper ellipse character (not periods)", characterIndex, excerpt, location: ourLocation });
     }
 
     let quoteBits;
-    if (fieldText.indexOf('…') >= 0) {
-        quoteBits = fieldText.split('…');
-        if ((characterIndex = fieldText.indexOf(' …')) >= 0 || (characterIndex = fieldText.indexOf('… ')) >= 0) {
+    if (fieldText.indexOf(discontiguousDivider) >= 0) {
+        quoteBits = fieldText.split(discontiguousDivider);
+        if ((characterIndex = fieldText.indexOf(` ${discontiguousDivider}`)) >= 0 || (characterIndex = fieldText.indexOf(`${discontiguousDivider} `)) >= 0) {
             // debugLog(`Unexpected space(s) beside ellipse in '${fieldText}'`);
-            const excerpt = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '');
-            addNotice({ priority: 158, message: "Unexpected space(s) beside ellipse character", characterIndex, excerpt, location: ourLocation });
+            const excerpt = (characterIndex > halfLength ? discontiguousDivider : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? discontiguousDivider : '');
+            addNotice({ priority: 158, message: `Unexpected space(s) beside divider ${discontiguousDivider}`, characterIndex, excerpt, location: ourLocation });
         }
-    } else if (fieldText.indexOf('↔') >= 0) {
-        quoteBits = fieldText.split('↔');
-        if ((characterIndex = fieldText.indexOf(' ↔')) >= 0 || (characterIndex = fieldText.indexOf('↔ ')) >= 0) {
-            // debugLog(`Unexpected space(s) beside ellipse in '${fieldText}'`);
-            const excerpt = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '');
-            addNotice({ priority: 157, message: "Unexpected space(s) beside ↔ divider character", characterIndex, excerpt, location: ourLocation });
-        }
-    } else if (fieldText.indexOf('...') >= 0) { // Yes, we still actually allow this
+    // } else if (fieldText.indexOf('↔') >= 0) {
+    //     quoteBits = fieldText.split('↔');
+    //     if ((characterIndex = fieldText.indexOf(' ↔')) >= 0 || (characterIndex = fieldText.indexOf('↔ ')) >= 0) {
+    //         // debugLog(`Unexpected space(s) beside ellipse in '${fieldText}'`);
+    //         const excerpt = (characterIndex > halfLength ? discontiguousDivider : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '');
+    //         addNotice({ priority: 157, message: `Unexpected space(s) beside divider ${discontiguousDivider}`, characterIndex, excerpt, location: ourLocation });
+    //     }
+    } else if (discontiguousDivider==='…' && fieldText.indexOf('...') >= 0) { // Yes, we still actually allow this
         quoteBits = fieldText.split('...');
         if ((characterIndex = fieldText.indexOf(' ...')) >= 0 || (characterIndex = fieldText.indexOf('... ')) >= 0) {
             // debugLog(`Unexpected space(s) beside ellipse characters in '${fieldText}'`);
@@ -322,13 +328,13 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
                 // else debugLog(`Found quote ${bitIndex} at ${quoteIndex} (num text chars = ${verseText.length})`);
             }
         } else // < 2
-            addNotice({ priority: 375, message: "Ellipsis without surrounding snippet", location: ourLocation });
-    } else { // Only a single quote (no ellipsis)
+            addNotice({ priority: 375, message: "Divider without surrounding snippet", location: ourLocation });
+    } else { // Only a single quote (no discontiguousDivider)
         if (verseText.indexOf(fieldText) >= 0) {
             if (occurrence > 1) {
                 // functionLog(`checkOriginalLanguageQuote is checking for ${occurrence} occurrences of ${fieldText}`);
                 if (verseText.split(fieldText).length <= occurrence) { // There's not enough of them
-                    const excerpt = fieldText.substring(0, halfLength) + (fieldText.length > 2 * halfLength ? '…' : '') + fieldText.substring(fieldText.length - halfLength, fieldText.length);
+                    const excerpt = fieldText.substring(0, halfLength) + (fieldText.length > 2 * halfLength ? discontiguousDivider : '') + fieldText.substring(fieldText.length - halfLength, fieldText.length);
                     addNotice({ priority: 917, message: "Unable to find duplicate original language quote in verse text", details: `occurrence=${occurrenceString}, passage ►${verseText}◄`, excerpt, location: ourLocation });
                 }
             } else { // We only need to check for one occurrence
@@ -337,7 +343,7 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
                 let remainingBits = verseText.split(fieldText);
                 // debugLog(`remaingBits=${JSON.stringify(remainingBits)}`);
                 if (remainingBits.length > 2) // Join the extra bits back up
-                    remainingBits = [remainingBits[0], remainingBits.slice(1).join('…')];
+                    remainingBits = [remainingBits[0], remainingBits.slice(1).join(discontiguousDivider)];
                 parameterAssert(remainingBits.length === 2, `remaining bits are ${remainingBits.length}`);
                 // Note: There's some Hebrew (RTL) characters at the beginning of the following regex
                 // Note: Straight quotes are included here (even though unwanted) as other code warns about them
@@ -347,10 +353,10 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
                     // const badCharString = ` by '{offendingChar}' {unicodedata.name(offendingChar)}={hex(ord(offendingChar))}`;
                     // debugLog(`Seems '${fieldText}' might not start at the beginning of a word—it’s preceded ${badCharString} in '${verseText}'`);
                     let precederDescription;
-                    if (offendingChar  === '\u2060') precederDescription = 'WordJoiner';
-                    else if (offendingChar  === '\u200D') precederDescription = 'ZeroWidth-WordJoiner';
+                    if (offendingChar === '\u2060') precederDescription = 'WordJoiner';
+                    else if (offendingChar === '\u200D') precederDescription = 'ZeroWidth-WordJoiner';
                     else precederDescription = `${offendingChar}=D${offendingChar.charCodeAt()}/H${offendingChar.charCodeAt().toString(16)}`;
-                    const excerpt = `(${precederDescription})` + fieldText.substring(0, excerptLength - 3) + (fieldText.length > excerptLength - 3 ? '…' : '');
+                    const excerpt = `(${precederDescription})` + fieldText.substring(0, excerptLength - 3) + (fieldText.length > excerptLength - 3 ? discontiguousDivider : '');
                     addNotice({ priority: 909, message: "Seems original language quote might not start at the beginning of a word", details: `passage ►${verseText}◄`, characterIndex: 0, excerpt, location: ourLocation });
                 }
                 // Note: There's some Hebrew (RTL) characters at the beginning of the following regex
@@ -359,7 +365,7 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
                     // const offendingChar = remainingBits[1][0];
                     // const badCharString = ` by '${offendingChar}' {unicodedata.name(offendingChar)}={hex(ord(offendingChar))}`;
                     // debugLog(`Seems '${fieldText}' might not finish at the end of a word—it’s followed ${badCharString} in '${verseText}'`);
-                    const excerpt = (fieldText.length > excerptLength - 3 ? '…' : '') + fieldText.substring(fieldText.length - excerptLength + 3, fieldText.length) + `(${remainingBits[1][0]}=D${remainingBits[1].charCodeAt(0)}/H${remainingBits[1].charCodeAt(0).toString(16)})`;
+                    const excerpt = (fieldText.length > excerptLength - 3 ? discontiguousDivider : '') + fieldText.substring(fieldText.length - excerptLength + 3, fieldText.length) + `(${remainingBits[1][0]}=D${remainingBits[1].charCodeAt(0)}/H${remainingBits[1].charCodeAt(0).toString(16)})`;
                     addNotice({ priority: 908, message: "Seems original language quote might not finish at the end of a word", details: `passage ►${verseText}◄`, characterIndex: fieldText.length, excerpt, location: ourLocation });
                 }
             }
@@ -370,31 +376,31 @@ export async function checkOriginalLanguageQuote(languageCode, fieldName, fieldT
             // debugLog(`722 fieldText='${fieldText}'${extraText}`);
             // debugLog(`722 verseText='${verseText}'`);
             if (fieldText[0] === ' ') {
-                const excerpt = fieldText.substring(0, excerptLength) + fieldText.length > excerptLength ? '…' : '';
+                const excerpt = fieldText.substring(0, excerptLength) + fieldText.length > excerptLength ? discontiguousDivider : '';
                 addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which starts with a space" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: ourLocation });
             } else if (fieldText.endsWith(' ')) {
-                const excerpt = fieldText.length > excerptLength ? '…' : '' + fieldText.substring(fieldText.length - excerptLength, fieldText.length);
+                const excerpt = fieldText.length > excerptLength ? discontiguousDivider : '' + fieldText.substring(fieldText.length - excerptLength, fieldText.length);
                 addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which ends with a space" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: ourLocation });
             } else if (fieldText[0] === '\u2060') { // Word joiner
-                const excerpt = fieldText.substring(0, excerptLength) + fieldText.length > excerptLength ? '…' : '';
+                const excerpt = fieldText.substring(0, excerptLength) + fieldText.length > excerptLength ? discontiguousDivider : '';
                 addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which starts with 'word joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: ourLocation });
             } else if (fieldText.endsWith('\u2060')) { // Word joiner
-                const excerpt = fieldText.length > excerptLength ? '…' : '' + fieldText.substring(fieldText.length - excerptLength, fieldText.length);
+                const excerpt = fieldText.length > excerptLength ? discontiguousDivider : '' + fieldText.substring(fieldText.length - excerptLength, fieldText.length);
                 addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which ends with 'word joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: ourLocation });
             } else if (fieldText[0] === '\u200B') { // Zero-width space
-                const excerpt = fieldText.substring(0, excerptLength) + fieldText.length > excerptLength ? '…' : '';
+                const excerpt = fieldText.substring(0, excerptLength) + fieldText.length > excerptLength ? discontiguousDivider : '';
                 addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which starts with 'zero-width space'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: ourLocation });
             } else if (fieldText.endsWith('\u200B')) { // Zero-width space
-                const excerpt = fieldText.length > excerptLength ? '…' : '' + fieldText.substring(fieldText.length - excerptLength, fieldText.length);
+                const excerpt = fieldText.length > excerptLength ? discontiguousDivider : '' + fieldText.substring(fieldText.length - excerptLength, fieldText.length);
                 addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which ends with 'zero-width space'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: ourLocation });
             } else if (fieldText[0] === '\u200D') { // Zero-width joiner
-                const excerpt = fieldText.substring(0, excerptLength) + fieldText.length > excerptLength ? '…' : '';
+                const excerpt = fieldText.substring(0, excerptLength) + fieldText.length > excerptLength ? discontiguousDivider : '';
                 addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which starts with 'zero-width joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: ourLocation });
             } else if (fieldText.endsWith('\u200D')) { // Zero-width joiner
-                const excerpt = fieldText.length > excerptLength ? '…' : '' + fieldText.substring(fieldText.length - excerptLength, fieldText.length);
+                const excerpt = fieldText.length > excerptLength ? discontiguousDivider : '' + fieldText.substring(fieldText.length - excerptLength, fieldText.length);
                 addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which ends with 'zero-width joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: ourLocation });
             } else {
-                const excerpt = fieldText.substring(0, halfLength) + (fieldText.length > 2 * halfLength ? '…' : '') + fieldText.substring(fieldText.length - halfLength, fieldText.length);
+                const excerpt = fieldText.substring(0, halfLength) + (fieldText.length > 2 * halfLength ? discontiguousDivider : '') + fieldText.substring(fieldText.length - halfLength, fieldText.length);
                 addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: noBreakSpaceText ? noBreakSpaceText : `passage ►${verseText}◄`, excerpt, location: ourLocation });
             }
         }

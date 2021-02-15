@@ -13,7 +13,7 @@ export * from './notes-tsv7-table-check';
 export * from './plain-text-check';
 export * from './questions-tsv5-row-check';
 export * from './questions-tsv5-table-check';
-export * from './tn-links-check';
+export * from './notes-links-check';
 export * from './tn-tsv9-row-check';
 export * from './tn-tsv9-table-check';
 export * from './twl-tsv6-row-check';

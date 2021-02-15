@@ -1,4 +1,4 @@
-## Annotation (TSV) Row Check Sandbox
+## TW Links (TSV) Row Check Sandbox
 
 This function checks one tab-separated line for typical formatting errors.
 
@@ -16,7 +16,7 @@ import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Empty, Header, Nonsense, Good, Bad, Very bad, and Actual line samples
 const lineE = "";
-const lineH = "Reference\tID\tTags\tQuote\tOccurrence\tTWLink";
+const lineH = "Reference\tID\tTags\tOrigWords\tOccurrence\tTWLink";
 const lineN = "Peace on Earth, good will to all men/people!";
 const lineG = "2:3\tw3r5\t\t1\t\tThis is an  optional note";
 const lineB1 = "2:3\tw3r5\t\t1\t\t<br>Boo";

@@ -21,7 +21,10 @@ const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOr
  * @param {Object} checkingOptions
  */
 export async function checkTN_TSV9Table(languageCode, bookID, filename, tableText, givenLocation, checkingOptions) {
-    /* This function is optimised for checking the entire file, i.e., all rows.
+    /*
+    repoCode is not passed through here, as can only be 'TN'
+
+    This function is optimised for checking the entire file, i.e., all rows.
 
       It also has the advantage of being able to compare one row with the previous one.
 
@@ -40,6 +43,8 @@ export async function checkTN_TSV9Table(languageCode, bookID, filename, tableTex
     parameterAssert(givenLocation !== undefined, "checkTN_TSV9Table: 'givenLocation' parameter should be defined");
     parameterAssert(typeof givenLocation === 'string', `checkTN_TSV9Table: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
     parameterAssert(checkingOptions !== undefined, "checkTN_TSV9Table: 'checkingOptions' parameter should be defined");
+
+    const repoCode = 'TN';
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -129,7 +134,7 @@ export async function checkTN_TSV9Table(languageCode, bookID, filename, tableTex
                 const [B, C, V, rowID, supportReference, origQuote, occurrence, _GLQuote, _occurrenceNote] = fields;
 
                 // Use the row check to do most basic checks
-                const drResultObject = await checkTN_TSV9DataRow(languageCode, lines[n], bookID, C, V, ourLocation, checkingOptions);
+                const drResultObject = await checkTN_TSV9DataRow(languageCode, repoCode, lines[n], bookID, C, V, ourLocation, checkingOptions);
                 // Choose only ONE of the following
                 // This is the fast way of append the results from this field
                 // result.noticeList = result.noticeList.concat(firstResult.noticeList);

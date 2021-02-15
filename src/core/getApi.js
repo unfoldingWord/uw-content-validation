@@ -4,7 +4,7 @@ import localforage from 'localforage';
 import { setup } from 'axios-cache-adapter';
 import JSZip from 'jszip';
 import * as books from './books';
-import { clearCheckedArticleCache } from './tn-links-check';
+import { clearCheckedArticleCache } from './notes-links-check';
 import { functionLog, userLog, parameterAssert } from './utilities';
 
 

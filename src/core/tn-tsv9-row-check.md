@@ -62,7 +62,7 @@ function CheckTNTSVRow(props) {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {tableLineName} <b>{bookID}</b>…</p>);
       const checkingOptions = {};
-      const rawResults = await checkTN_TSV9DataRow(languageCode, tableLine, bookID, C, V, givenLocation, checkingOptions);
+      const rawResults = await checkTN_TSV9DataRow(languageCode, 'TN', tableLine, bookID, C, V, givenLocation, checkingOptions);
       setResults(
         <div>
           <b>Check</b> {tableLineName}: "{tableLine.substr(0,256)}…"<br/><br/>

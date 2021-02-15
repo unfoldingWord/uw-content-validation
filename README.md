@@ -37,8 +37,8 @@ In addition, there are Styleguidist pages viewable at [[https://unfoldingword.gi
 This code is designed to thoroughly check various types of Bible-related content data files. This includes:
 
 1. [Unified Standard Format Marker](ubsicap.github.io/usfm/) (USFM) Bible content files, including original language Bibles and Bible translations aligned by word/phrase to the original words/phrases
-1. Translation Notes (TN) tables in Tab-Separated Values (9-column TSV) files
-1. General annotation tables in Tab-Separated Values (7-column TSV) files (uses TN2 and TQ2)
+1. Legacy Translation Notes (TN) tables in Tab-Separated Values (9-column TSV) files
+1. New tables in Tab-Separated Values (TSV) files (uses TWL, TN2 and TQ2, SN and SQ)
 1. Markdown files (and markdown fields in TSV files)
 1. Plain-text files
 1. Metadata (manifest) YAML files

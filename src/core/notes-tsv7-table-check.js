@@ -5,7 +5,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { functionLog, parameterAssert } from './utilities';
 
 
-const NOTES_TABLE_VALIDATOR_VERSION_STRING = '0.3.1';
+const NOTES_TABLE_VALIDATOR_VERSION_STRING = '0.3.2';
 
 const NUM_EXPECTED_NOTES_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tNote';
@@ -69,7 +69,7 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
         parameterAssert(typeof noticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
         if (noticeObject.debugChain) noticeObject.debugChain = `checkNotesTSV7Table ${noticeObject.debugChain}`;
-        carResult.noticeList.push({ ...noticeObject, bookID, filename, repoCode: repoCode });
+        carResult.noticeList.push({ ...noticeObject, bookID, filename, repoCode });
     }
 
 
@@ -92,7 +92,7 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
     if (bookID === 'OBS')
         numChaptersThisBook = 50; // There's 50 Open Bible Stories
     else {
-        parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in annotation-table-check");
+        parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in checkNotesTSV7Table");
         try {
             numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
         }

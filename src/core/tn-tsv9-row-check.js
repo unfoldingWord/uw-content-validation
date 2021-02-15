@@ -3,7 +3,7 @@ import * as books from './books/books';
 import { checkTextField } from './field-text-check';
 import { checkMarkdownText } from './markdown-text-check';
 import { checkSupportReferenceInTA } from './ta-reference-check';
-import { checkTNLinksToOutside } from './tn-links-check';
+import { checkNotesLinksToOutside } from './notes-links-check';
 import { checkOriginalLanguageQuote } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
@@ -33,7 +33,7 @@ const TA_REGEX = new RegExp('\\[\\[rc://[^ /]+?/ta/man/[^ /]+?/([^ \\]]+?)\\]\\]
  * @param {Object} checkingOptions - may contain excerptLength, twRepoUsername, twRepoBranch (or tag), checkLinkedTWArticleFlag parameters
  * @return {Object} - containing noticeList
  */
-export async function checkTN_TSV9DataRow(languageCode, line, bookID, givenC, givenV, givenRowLocation, checkingOptions) {
+export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, givenC, givenV, givenRowLocation, checkingOptions) {
     /* This function is only for checking one data row
           and the function doesn’t assume that it has any previous context.
 
@@ -41,9 +41,11 @@ export async function checkTN_TSV9DataRow(languageCode, line, bookID, givenC, gi
 
         Returns an object containing the noticeList.
     */
-    // functionLog(`checkTN_TSV9DataRow(${languageCode}, ${line}, ${bookID}, ${givenRowLocation}, ${JSON.stringify(checkingOptions)})…`);
+    // functionLog(`checkTN_TSV9DataRow(${languageCode}, ${repoCode}, ${line}, ${bookID}, ${givenRowLocation}, ${JSON.stringify(checkingOptions)})…`);
     parameterAssert(languageCode !== undefined, "checkTN_TSV9DataRow: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkTN_TSV9DataRow: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    parameterAssert(repoCode !== undefined, "checkTN_TSV9DataRow: 'repoCode' parameter should be defined");
+    parameterAssert(typeof repoCode === 'string', `checkTN_TSV9DataRow: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
     parameterAssert(line !== undefined, "checkTN_TSV9DataRow: 'line' parameter should be defined");
     parameterAssert(typeof line === 'string', `checkTN_TSV9DataRow: 'line' parameter should be a string not a '${typeof line}'`);
     parameterAssert(bookID !== undefined, "checkTN_TSV9DataRow: 'bookID' parameter should be defined");
@@ -118,7 +120,7 @@ export async function checkTN_TSV9DataRow(languageCode, line, bookID, givenC, gi
         parameterAssert(typeof rowID === 'string', `checkTN_TSV9DataRow ourMarkdownTextChecks: 'rowID' parameter should be a string not a '${typeof rowID}'`);
         // parameterAssert(fieldName !== undefined, "checkTN_TSV9DataRow ourMarkdownTextChecks: 'fieldName' parameter should be defined");
         // parameterAssert(typeof fieldName === 'string', `checkTN_TSV9DataRow ourMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        parameterAssert(fieldName === 'OccurrenceNote', "checkTN_TSV9DataRow ourMarkdownTextChecks: Only run this check on OccurrenceNotes")
+        parameterAssert(fieldName === 'OccurrenceNote', `checkTN_TSV9DataRow ourMarkdownTextChecks: Only run this check on OccurrenceNotes not '${fieldName}'`);
         parameterAssert(fieldText !== undefined, "checkTN_TSV9DataRow ourMarkdownTextChecks: 'fieldText' parameter should be defined");
         parameterAssert(typeof fieldText === 'string', `checkTN_TSV9DataRow ourMarkdownTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         parameterAssert(allowedLinks === true || allowedLinks === false, "checkTN_TSV9DataRow ourMarkdownTextChecks: allowedLinks parameter must be either true or false");
@@ -254,7 +256,7 @@ export async function checkTN_TSV9DataRow(languageCode, line, bookID, givenC, gi
         parameterAssert(typeof occurrence === 'string', `checkTN_TSV9DataRow ourCheckTNOriginalLanguageQuote: 'occurrence' parameter should be a string not a '${typeof occurrence}'`);
         parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkTN_TSV9DataRow ourCheckTNOriginalLanguageQuote: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const coqResultObject = await checkOriginalLanguageQuote(languageCode, fieldName, fieldText, occurrence, bookID, givenC, givenV, rowLocation, checkingOptions);
+        const coqResultObject = await checkOriginalLanguageQuote(languageCode, repoCode, fieldName, fieldText, occurrence, bookID, givenC, givenV, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -277,7 +279,7 @@ export async function checkTN_TSV9DataRow(languageCode, line, bookID, givenC, gi
      * @param {string} rowLocation
      * @param {Object} checkingOptions
      */
-    async function ourCheckTNLinksToOutside(rowID, fieldName, taLinkText, rowLocation, checkingOptions) {
+    async function ourcheckNotesLinksToOutside(rowID, fieldName, taLinkText, rowLocation, checkingOptions) {
         // Checks that the TA/TW/Bible reference can be found
 
         // Uses
@@ -287,16 +289,16 @@ export async function checkTN_TSV9DataRow(languageCode, line, bookID, givenC, gi
 
         // Updates the global list of notices
 
-        // functionLog(`checkTN_TSV9DataRow ourCheckTNLinksToOutside(${rowID}, ${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
-        parameterAssert(rowID !== undefined, "checkTN_TSV9DataRow ourCheckTNLinksToOutside: 'rowID' parameter should be defined");
-        parameterAssert(typeof rowID === 'string', `checkTN_TSV9DataRow ourCheckTNLinksToOutside: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        parameterAssert(fieldName !== undefined, "checkTN_TSV9DataRow ourCheckTNLinksToOutside: 'fieldName' parameter should be defined");
-        parameterAssert(typeof fieldName === 'string', `checkTN_TSV9DataRow ourCheckTNLinksToOutside: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        parameterAssert(fieldName === 'OccurrenceNote', `checkTN_TSV9DataRow ourCheckTNLinksToOutside: 'fieldName' parameter should be 'OccurrenceNote' not '${fieldName}'`);
-        parameterAssert(taLinkText !== undefined, "checkTN_TSV9DataRow ourCheckTNLinksToOutside: 'taLinkText' parameter should be defined");
-        parameterAssert(typeof taLinkText === 'string', `checkTN_TSV9DataRow ourCheckTNLinksToOutside: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
+        // functionLog(`checkTN_TSV9DataRow ourcheckNotesLinksToOutside(${rowID}, ${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
+        parameterAssert(rowID !== undefined, "checkTN_TSV9DataRow ourcheckNotesLinksToOutside: 'rowID' parameter should be defined");
+        parameterAssert(typeof rowID === 'string', `checkTN_TSV9DataRow ourcheckNotesLinksToOutside: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+        parameterAssert(fieldName !== undefined, "checkTN_TSV9DataRow ourcheckNotesLinksToOutside: 'fieldName' parameter should be defined");
+        parameterAssert(typeof fieldName === 'string', `checkTN_TSV9DataRow ourcheckNotesLinksToOutside: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        parameterAssert(fieldName === 'OccurrenceNote', `checkTN_TSV9DataRow ourcheckNotesLinksToOutside: 'fieldName' parameter should be 'OccurrenceNote' not '${fieldName}'`);
+        parameterAssert(taLinkText !== undefined, "checkTN_TSV9DataRow ourcheckNotesLinksToOutside: 'taLinkText' parameter should be defined");
+        parameterAssert(typeof taLinkText === 'string', `checkTN_TSV9DataRow ourcheckNotesLinksToOutside: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
 
-        const coqResultObject = await checkTNLinksToOutside(bookID, givenC, givenV, fieldName, taLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: languageCode });
+        const coqResultObject = await checkNotesLinksToOutside(repoCode, bookID, givenC, givenV, fieldName, taLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: languageCode });
         // debugLog("coqResultObject", JSON.stringify(coqResultObject));
 
         // Choose only ONE of the following
@@ -327,7 +329,7 @@ export async function checkTN_TSV9DataRow(languageCode, line, bookID, givenC, gi
                 catch { drResult.checkedFilenameExtensions = [checkedFilenameExtension]; }
         // if (drResult.checkedFilenameExtensions) userLog("drResult", JSON.stringify(drResult));
     }
-    // end of ourCheckTNLinksToOutside function
+    // end of ourcheckNotesLinksToOutside function
 
 
     // Main code for checkTN_TSV9DataRow function
@@ -530,7 +532,7 @@ export async function checkTN_TSV9DataRow(languageCode, line, bookID, givenC, gi
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation });
             else { // More than just whitespace
                 ONSuggestion = await ourMarkdownTextChecks(rowID, 'OccurrenceNote', occurrenceNote, true, ourRowLocation, checkingOptions);
-                await ourCheckTNLinksToOutside(rowID, 'OccurrenceNote', occurrenceNote, ourRowLocation, linkCheckingOptions);
+                await ourcheckNotesLinksToOutside(rowID, 'OccurrenceNote', occurrenceNote, ourRowLocation, linkCheckingOptions);
                 let regexResultArray;
                 while ((regexResultArray = TA_REGEX.exec(occurrenceNote))) {
                     // debugLog("Got TA Regex in OccurrenceNote", JSON.stringify(regexResultArray));

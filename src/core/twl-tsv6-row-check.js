@@ -1,17 +1,17 @@
 import { DEFAULT_EXCERPT_LENGTH, isWhitespace, countOccurrences } from './text-handling-functions'
 import * as books from './books/books';
 import { checkTextField } from './field-text-check';
-import { checkMarkdownText } from './markdown-text-check';
+// import { checkMarkdownText } from './markdown-text-check';
 // import { checkSupportReferenceInTA } from './ta-reference-check';
-import { checkTNLinksToOutside } from './tn-links-check';
+import { checkNotesLinksToOutside } from './notes-links-check';
 import { checkOriginalLanguageQuote } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const TWL_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.1.0';
+// const TWL_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.1.1';
 
 const NUM_EXPECTED_TWL_TSV_FIELDS = 6; // so expects 5 tabs per line
-const EXPECTED_TWL_HEADING_LINE = 'Reference\tID\tTags\tQuote\tOccurrence\tTWLink';
+const EXPECTED_TWL_HEADING_LINE = 'Reference\tID\tTags\tOrigWords\tOccurrence\tTWLink';
 
 const LC_ALPHABET = 'abcdefghijklmnopqrstuvwxyz';
 const LC_ALPHABET_PLUS_DIGITS = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -68,7 +68,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
     if (ourRowLocation && ourRowLocation[0] !== ' ') ourRowLocation = ` ${ourRowLocation}`;
 
     const linkCheckingOptions = { ...checkingOptions };
-    linkCheckingOptions.taRepoLanguageCode = languageCode;
+    linkCheckingOptions.twRepoLanguageCode = languageCode;
 
     let drResult = { noticeList: [] };
 
@@ -102,57 +102,6 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         drResult.noticeList.push({ ...noticeObject, bookID, C: givenC, V: givenV });
     }
 
-    async function ourMarkdownTextChecks(rowID, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions) {
-        /**
-        * @description - checks the given markdown field and processes the returned results
-        * @param {string} rowID - 4-character row ID field
-        * @param {string} fieldName - name of the field being checked
-        * @param {string} fieldText - the actual text of the field being checked
-        * @param {} allowedLinks - true if links are allowed in the field, otherwise false
-        * @param {string} rowLocation - description of where the line is located
-        * @param {Object} checkingOptions - parameters that might affect the check
-        */
-        // Does markdown checks for small errors like leading/trailing spaces, etc.
-
-        // We assume that checking for compulsory fields is done elsewhere
-
-        // Updates the global list of notices
-
-        // We don’t currently use the allowedLinks parameter
-
-        // functionLog(`checkTWL_TSV6DataRow ourMarkdownTextChecks(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
-        parameterAssert(rowID !== undefined, "checkTWL_TSV6DataRow ourMarkdownTextChecks: 'rowID' parameter should be defined");
-        parameterAssert(typeof rowID === 'string', `checkTWL_TSV6DataRow ourMarkdownTextChecks: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        // parameterAssert(fieldName !== undefined, "checkTWL_TSV6DataRow ourMarkdownTextChecks: 'fieldName' parameter should be defined");
-        // parameterAssert(typeof fieldName === 'string', `checkTWL_TSV6DataRow ourMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        parameterAssert(fieldName === 'Annotation', "checkTWL_TSV6DataRow ourMarkdownTextChecks: Only run this check on Annotations")
-        parameterAssert(fieldText !== undefined, "checkTWL_TSV6DataRow ourMarkdownTextChecks: 'fieldText' parameter should be defined");
-        parameterAssert(typeof fieldText === 'string', `checkTWL_TSV6DataRow ourMarkdownTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-        parameterAssert(allowedLinks === true || allowedLinks === false, "checkTWL_TSV6DataRow ourMarkdownTextChecks: allowedLinks parameter must be either true or false");
-        parameterAssert(rowLocation !== undefined, "checkTWL_TSV6DataRow ourMarkdownTextChecks: 'rowLocation' parameter should be defined");
-        parameterAssert(typeof rowLocation === 'string', `checkTWL_TSV6DataRow ourMarkdownTextChecks: 'rowLocation' parameter should be a string not a '${typeof rowLocation}'`);
-        parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkTWL_TSV6DataRow ourMarkdownTextChecks: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
-
-        const omtcResultObject = await checkMarkdownText(languageCode, fieldName, fieldText, rowLocation, checkingOptions);
-
-        // Choose only ONE of the following
-        // This is the fast way of append the results from this field
-        // result.noticeList = result.noticeList.concat(cmtResultObject.noticeList);
-        // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
-        //  process results line by line
-        for (const noticeEntry of omtcResultObject.noticeList) {
-            // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourMarkdownTextChecks notice length=${Object.keys(noticeEntry).length}`);
-            // NOTE: Ellipses in Annotation have the normal meaning
-            //          not like the specialised meaning in the Quote snippet fields
-            if (noticeEntry.priority !== 178 && noticeEntry.priority !== 179 // unexpected space after ellipse, ellipse after space
-                && !noticeEntry.message.startsWith("Unexpected … character after space") // 191
-            )
-                addNoticePartial({ ...noticeEntry, rowID, fieldName });
-        }
-        return omtcResultObject.suggestion; // There may or may not be one!
-    }
-    // end of ourMarkdownTextChecks function
-
     function ourCheckTextField(rowID, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions) {
         /**
         * @description - checks the given text field and processes the returned results
@@ -181,7 +130,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         parameterAssert(typeof rowLocation === 'string', `checkTWL_TSV6DataRow ourCheckTextField: 'rowLocation' parameter should be a string not a '${typeof rowLocation}'`);
         parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkTWL_TSV6DataRow ourCheckTextField: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const fieldType = fieldName === 'Annotation' ? 'markdown' : 'raw';
+        const fieldType = 'raw';
         const octfResultObject = checkTextField(languageCode, fieldType, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
@@ -196,36 +145,6 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         return octfResultObject.suggestion; // There may or may not be one!
     }
     // end of ourCheckTextField function
-
-    /*
-    async function ourCheckSupportReferenceInTA(rowID, fieldName, taLinkText, rowLocation, checkingOptions) {
-        // Checks that the TA reference can be found
-
-        // Updates the global list of notices
-
-        // functionLog(`checkTWL_TSV6DataRow ourCheckSupportReferenceInTA(${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
-        parameterAssert(rowID !== undefined, "checkTWL_TSV6DataRow ourCheckSupportReferenceInTA: 'rowID' parameter should be defined");
-        parameterAssert(typeof rowID === 'string', `checkTWL_TSV6DataRow ourCheckSupportReferenceInTA: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        parameterAssert(fieldName !== undefined, "checkTWL_TSV6DataRow ourCheckSupportReferenceInTA: 'fieldName' parameter should be defined");
-        parameterAssert(typeof fieldName === 'string', `checkTWL_TSV6DataRow ourCheckSupportReferenceInTA: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        parameterAssert(taLinkText !== undefined, "checkTWL_TSV6DataRow ourCheckSupportReferenceInTA: 'taLinkText' parameter should be defined");
-        parameterAssert(typeof taLinkText === 'string', `checkTWL_TSV6DataRow ourCheckSupportReferenceInTA: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
-        parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkTWL_TSV6DataRow ourCheckSupportReferenceInTA: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
-
-        const coqResultObject = await checkSupportReferenceInTA(fieldName, taLinkText, rowLocation, { ...checkingOptions, taRepoLanguageCode: languageCode, expectFullLink: true });
-
-        // Choose only ONE of the following
-        // This is the fast way of append the results from this field
-        // result.noticeList = result.noticeList.concat(coqResultObject.noticeList);
-        // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
-        //  process results line by line
-        for (const noticeEntry of coqResultObject.noticeList) {
-            // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckSupportReferenceInTA notice length=${Object.keys(noticeEntry).length}`);
-            addNoticePartial({ ...noticeEntry, rowID, fieldName });
-        }
-    }
-    // end of ourCheckSupportReferenceInTA function
-    */
 
 
     async function ourCheckTNOriginalLanguageQuote(rowID, fieldName, fieldText, occurrence, rowLocation, checkingOptions) {
@@ -246,14 +165,14 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         parameterAssert(typeof occurrence === 'string', `checkTWL_TSV6DataRow ourCheckTNOriginalLanguageQuote: 'occurrence' parameter should be a string not a '${typeof occurrence}'`);
         parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkTWL_TSV6DataRow ourCheckTNOriginalLanguageQuote: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const coqResultObject = await checkOriginalLanguageQuote(languageCode, fieldName, fieldText, occurrence, bookID, givenC, givenV, rowLocation, checkingOptions);
+        const colqResultObject = await checkOriginalLanguageQuote(languageCode, repoCode, fieldName, fieldText, occurrence, bookID, givenC, givenV, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
-        // result.noticeList = result.noticeList.concat(coqResultObject.noticeList);
+        // result.noticeList = result.noticeList.concat(colqResultObject.noticeList);
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
-        for (const noticeEntry of coqResultObject.noticeList) {
+        for (const noticeEntry of colqResultObject.noticeList) {
             // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckTNOriginalLanguageQuote notice length=${Object.keys(noticeEntry).length}`);
             addNoticePartial({ ...noticeEntry, rowID, fieldName });
         }
@@ -261,52 +180,52 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
     // end of ourCheckTNOriginalLanguageQuote function
 
 
-    async function ourCheckTNLinksToOutside(rowID, fieldName, taLinkText, rowLocation, checkingOptions) {
+    async function ourcheckNotesLinksToOutside(rowID, fieldName, taLinkText, rowLocation, checkingOptions) {
         // Checks that the TA/TW/Bible reference can be found
 
         // Updates the global list of notices
 
-        // functionLog(`checkTWL_TSV6DataRow ourCheckTNLinksToOutside(${rowID}, ${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
-        parameterAssert(rowID !== undefined, "checkTWL_TSV6DataRow ourCheckTNLinksToOutside: 'rowID' parameter should be defined");
-        parameterAssert(typeof rowID === 'string', `checkTWL_TSV6DataRow ourCheckTNLinksToOutside: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        parameterAssert(fieldName !== undefined, "checkTWL_TSV6DataRow ourCheckTNLinksToOutside: 'fieldName' parameter should be defined");
-        parameterAssert(typeof fieldName === 'string', `checkTWL_TSV6DataRow ourCheckTNLinksToOutside: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        parameterAssert(fieldName === 'Annotation', `checkTWL_TSV6DataRow ourCheckTNLinksToOutside: 'fieldName' parameter should be 'Annotation' not '${fieldName}'`);
-        parameterAssert(taLinkText !== undefined, "checkTWL_TSV6DataRow ourCheckTNLinksToOutside: 'taLinkText' parameter should be defined");
-        parameterAssert(typeof taLinkText === 'string', `checkTWL_TSV6DataRow ourCheckTNLinksToOutside: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
+        // functionLog(`checkTWL_TSV6DataRow ourcheckNotesLinksToOutside(${rowID}, ${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
+        parameterAssert(rowID !== undefined, "checkTWL_TSV6DataRow ourcheckNotesLinksToOutside: 'rowID' parameter should be defined");
+        parameterAssert(typeof rowID === 'string', `checkTWL_TSV6DataRow ourcheckNotesLinksToOutside: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+        parameterAssert(fieldName !== undefined, "checkTWL_TSV6DataRow ourcheckNotesLinksToOutside: 'fieldName' parameter should be defined");
+        parameterAssert(typeof fieldName === 'string', `checkTWL_TSV6DataRow ourcheckNotesLinksToOutside: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        parameterAssert(fieldName === 'TWLink', `checkTWL_TSV6DataRow ourcheckNotesLinksToOutside: 'fieldName' parameter should be 'TWLink' not '${fieldName}'`);
+        parameterAssert(taLinkText !== undefined, "checkTWL_TSV6DataRow ourcheckNotesLinksToOutside: 'taLinkText' parameter should be defined");
+        parameterAssert(typeof taLinkText === 'string', `checkTWL_TSV6DataRow ourcheckNotesLinksToOutside: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
 
-        const coqResultObject = await checkTNLinksToOutside(bookID, givenC, givenV, fieldName, taLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: languageCode });
-        // debugLog("coqResultObject", JSON.stringify(coqResultObject));
+        const coTNlResultObject = await checkNotesLinksToOutside(repoCode, bookID, givenC, givenV, fieldName, taLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: languageCode });
+        // debugLog(`coTNlResultObject=${JSON.stringify(coTNlResultObject)}`);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
-        // result.noticeList = result.noticeList.concat(coqResultObject.noticeList);
+        // result.noticeList = result.noticeList.concat(coTNlResultObject.noticeList);
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
-        for (const coqNoticeEntry of coqResultObject.noticeList) {
+        for (const coqNoticeEntry of coTNlResultObject.noticeList) {
             if (coqNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN2 check
                 drResult.noticeList.push(coqNoticeEntry); // Just copy the complete notice as is
             else // For our direct checks, we add the repoCode as an extra value
                 addNoticePartial({ ...coqNoticeEntry, rowID, fieldName });
         }
         // The following is needed coz we might be checking the linked TA and/or TW articles
-        if (coqResultObject.checkedFileCount && coqResultObject.checkedFileCount > 0)
-            if (typeof drResult.checkedFileCount === 'number') drResult.checkedFileCount += coqResultObject.checkedFileCount;
-            else drResult.checkedFileCount = coqResultObject.checkedFileCount;
-        if (coqResultObject.checkedFilesizes && coqResultObject.checkedFilesizes > 0)
-            if (typeof drResult.checkedFilesizes === 'number') drResult.checkedFilesizes += coqResultObject.checkedFilesizes;
-            else drResult.checkedFilesizes = coqResultObject.checkedFilesizes;
-        if (coqResultObject.checkedRepoNames && coqResultObject.checkedRepoNames.length > 0)
-            for (const checkedRepoName of coqResultObject.checkedRepoNames)
+        if (coTNlResultObject.checkedFileCount && coTNlResultObject.checkedFileCount > 0)
+            if (typeof drResult.checkedFileCount === 'number') drResult.checkedFileCount += coTNlResultObject.checkedFileCount;
+            else drResult.checkedFileCount = coTNlResultObject.checkedFileCount;
+        if (coTNlResultObject.checkedFilesizes && coTNlResultObject.checkedFilesizes > 0)
+            if (typeof drResult.checkedFilesizes === 'number') drResult.checkedFilesizes += coTNlResultObject.checkedFilesizes;
+            else drResult.checkedFilesizes = coTNlResultObject.checkedFilesizes;
+        if (coTNlResultObject.checkedRepoNames && coTNlResultObject.checkedRepoNames.length > 0)
+            for (const checkedRepoName of coTNlResultObject.checkedRepoNames)
                 try { if (drResult.checkedRepoNames.indexOf(checkedRepoName) < 0) drResult.checkedRepoNames.push(checkedRepoName); }
                 catch { drResult.checkedRepoNames = [checkedRepoName]; }
-        if (coqResultObject.checkedFilenameExtensions && coqResultObject.checkedFilenameExtensions.length > 0)
-            for (const checkedFilenameExtension of coqResultObject.checkedFilenameExtensions)
+        if (coTNlResultObject.checkedFilenameExtensions && coTNlResultObject.checkedFilenameExtensions.length > 0)
+            for (const checkedFilenameExtension of coTNlResultObject.checkedFilenameExtensions)
                 try { if (drResult.checkedFilenameExtensions.indexOf(checkedFilenameExtension) < 0) drResult.checkedFilenameExtensions.push(checkedFilenameExtension); }
                 catch { drResult.checkedFilenameExtensions = [checkedFilenameExtension]; }
         // if (drResult.checkedFilenameExtensions) userLog("drResult", JSON.stringify(drResult));
     }
-    // end of ourCheckTNLinksToOutside function
+    // end of ourcheckNotesLinksToOutside function
 
 
     // Main code for checkTWL_TSV6DataRow function
@@ -323,8 +242,8 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
     }
     // else
     // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
-    // const halfLength = Math.floor(excerptLength / 2); // rounded down
-    // const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+    const halfLength = Math.floor(excerptLength / 2); // rounded down
+    const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
     // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
 
     const lowercaseBookID = bookID.toLowerCase();
@@ -332,7 +251,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
     if (bookID === 'OBS')
         numChaptersThisBook = 50; // There's 50 Open Bible Stories
     else {
-        parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in annotation-row-check");
+        parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in checkTWL_TSV6DataRow");
         try {
             numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
         } catch (tlcNCerror) {
@@ -468,33 +387,33 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         if (TWLink.length) {
             if (TWLink.indexOf('\u200B') >= 0) {
                 const charCount = countOccurrences(TWLink, '\u200B');
-                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, fieldName: 'Annotation', rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, fieldName: 'TWLink', rowID, location: ourRowLocation });
             }
             if (isWhitespace(TWLink))
-                addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'Annotation', rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 796, message: "Field is only whitespace", fieldName: 'TWLink', rowID, location: ourRowLocation });
             else { // More than just whitespace
-                LSuggestion = await ourMarkdownTextChecks(rowID, 'Annotation', TWLink, true, ourRowLocation, checkingOptions);
-                await ourCheckTNLinksToOutside(rowID, 'Annotation', TWLink, ourRowLocation, linkCheckingOptions);
-                // let regexResultArray;
-                // while ((regexResultArray = TA_REGEX.exec(TWLink))) {
-                //     debugLog("Got TA Regex in Annotation", JSON.stringify(regexResultArray));
-                //     // const adjustedLink = regexResultArray[0].substring(2, regexResultArray[0].length - 2)
-                //     // if (supportReference !== adjustedLink && V !== 'intro') {
-                //     //     const details = supportReference ? `(SR='${supportReference}')` : "(empty SR field)"
-                //     //     addNoticePartial({ priority: 786, message: "Should have a SupportReference when OccurrenceNote has a TA link", details, rowID, fieldName: 'Annotation', excerpt: adjustedLink, location: ourRowLocation });
-                //     // }
-                // }
+                if (!TWLink.startsWith('rc://*/tw/dict/bible/'))
+                    addNoticePartial({ priority: 798, message: "Field doesn't contain expected TW link", details: `should start with 'rc://*/tw/dict/bible/'`, fieldName: 'TWLink', rowID, location: ourRowLocation });
+                else { // it starts correctly
+                    const bits = TWLink.substring('rc://*/tw/dict/bible/'.length).split('/');
+                    // debugLog(`checkTWL_TSV6DataRow checking ${rowID} TWLink='${TWLink}' got bits=${JSON.stringify(bits)}`);
+                    if (bits[0] !== 'kt' && bits[0] !== 'name' && bits[0] !== 'other') {
+                        const characterIndex = 'rc://*/tw/dict/bible/'.length;
+                        const excerpt = (characterIndex > halfLength ? '…' : '') + TWLink.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < TWLink.length ? '…' : '')
+                        addNoticePartial({ priority: 797, message: "Field doesn't contain proper TW link", details: `should start with 'rc://*/tw/dict/bible/'`, fieldName: 'TWLink', rowID, characterIndex, excerpt, location: ourRowLocation });
+                    } else { // all good so far
+                        // debugLog(`checkTWL_TSV6DataRow looking up ${rowID} TWLink='${TWLink}' got bits=${JSON.stringify(bits)}`);
+                        await ourcheckNotesLinksToOutside(rowID, 'TWLink', TWLink, ourRowLocation, linkCheckingOptions);
+                    }
+                }
             }
         }
-        else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
-            if (repoCode === 'TN2')
-                addNoticePartial({ priority: 274, message: "Missing Annotation field", fieldName: 'Annotation', rowID, location: ourRowLocation });
+        else // TWLink is empty/missing
+            addNoticePartial({ priority: 799, message: "Missing TWLink field", fieldName: 'TWLink', rowID, location: ourRowLocation });
 
         // 7 [reference, rowID, tags, quote, occurrence, TWLink]
         const suggestion = `${reference}\t${RIDSuggestion === undefined ? rowID : RIDSuggestion}\t${tags}\t${QSuggestion === undefined ? quote : QSuggestion}\t${OSuggestion === undefined ? occurrence : OSuggestion}\t${LSuggestion === undefined ? TWLink : LSuggestion}`;
         if (suggestion !== line) {
-            // debugLog(`Had annotation ${line}`);
-            // debugLog(`Sug annotation ${suggestion}`);
             drResult.suggestion = suggestion;
         }
 

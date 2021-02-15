@@ -3,12 +3,12 @@ import * as books from './books/books';
 import { checkTextField } from './field-text-check';
 import { checkMarkdownText } from './markdown-text-check';
 import { checkSupportReferenceInTA } from './ta-reference-check';
-import { checkTNLinksToOutside } from './tn-links-check';
+import { checkNotesLinksToOutside } from './notes-links-check';
 import { checkOriginalLanguageQuote } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const NOTES_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.7';
+// const NOTES_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.8';
 
 const NUM_EXPECTED_NOTES_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_NOTES_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tNote';
@@ -127,7 +127,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
         parameterAssert(typeof rowID === 'string', `checkNotesTSV7DataRow ourMarkdownTextChecks: 'rowID' parameter should be a string not a '${typeof rowID}'`);
         // parameterAssert(fieldName !== undefined, "checkNotesTSV7DataRow ourMarkdownTextChecks: 'fieldName' parameter should be defined");
         // parameterAssert(typeof fieldName === 'string', `checkNotesTSV7DataRow ourMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        parameterAssert(fieldName === 'Note', "checkNotesTSV7DataRow ourMarkdownTextChecks: Only run this check on Notes")
+        parameterAssert(fieldName === 'Note', `checkNotesTSV7DataRow ourMarkdownTextChecks: Only run this check on Notes not '${fieldName}'`);
         parameterAssert(fieldText !== undefined, "checkNotesTSV7DataRow ourMarkdownTextChecks: 'fieldText' parameter should be defined");
         parameterAssert(typeof fieldText === 'string', `checkNotesTSV7DataRow ourMarkdownTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         parameterAssert(allowedLinks === true || allowedLinks === false, "checkNotesTSV7DataRow ourMarkdownTextChecks: allowedLinks parameter must be either true or false");
@@ -144,7 +144,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
         //  process results line by line
         for (const noticeEntry of omtcResultObject.noticeList) {
             // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourMarkdownTextChecks notice length=${Object.keys(noticeEntry).length}`);
-            // NOTE: Ellipses in Annotation have the normal meaning
+            // NOTE: Ellipses in Note have the normal meaning
             //          not like the specialised meaning in the Quote snippet fields
             if (noticeEntry.priority !== 178 && noticeEntry.priority !== 179 // unexpected space after ellipse, ellipse after space
                 && !noticeEntry.message.startsWith("Unexpected … character after space") // 191
@@ -246,7 +246,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
         parameterAssert(typeof occurrence === 'string', `checkNotesTSV7DataRow ourCheckTNOriginalLanguageQuote: 'occurrence' parameter should be a string not a '${typeof occurrence}'`);
         parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkNotesTSV7DataRow ourCheckTNOriginalLanguageQuote: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const coqResultObject = await checkOriginalLanguageQuote(languageCode, fieldName, fieldText, occurrence, bookID, givenC, givenV, rowLocation, checkingOptions);
+        const coqResultObject = await checkOriginalLanguageQuote(languageCode, repoCode, fieldName, fieldText, occurrence, bookID, givenC, givenV, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -261,21 +261,21 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
     // end of ourCheckTNOriginalLanguageQuote function
 
 
-    async function ourCheckTNLinksToOutside(rowID, fieldName, taLinkText, rowLocation, checkingOptions) {
+    async function ourcheckNotesLinksToOutside(rowID, fieldName, taLinkText, rowLocation, checkingOptions) {
         // Checks that the TA/TW/Bible reference can be found
 
         // Updates the global list of notices
 
-        // functionLog(`checkNotesTSV7DataRow ourCheckTNLinksToOutside(${rowID}, ${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
-        parameterAssert(rowID !== undefined, "checkNotesTSV7DataRow ourCheckTNLinksToOutside: 'rowID' parameter should be defined");
-        parameterAssert(typeof rowID === 'string', `checkNotesTSV7DataRow ourCheckTNLinksToOutside: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        parameterAssert(fieldName !== undefined, "checkNotesTSV7DataRow ourCheckTNLinksToOutside: 'fieldName' parameter should be defined");
-        parameterAssert(typeof fieldName === 'string', `checkNotesTSV7DataRow ourCheckTNLinksToOutside: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        parameterAssert(fieldName === 'Note', `checkNotesTSV7DataRow ourCheckTNLinksToOutside: 'fieldName' parameter should be 'Note' not '${fieldName}'`);
-        parameterAssert(taLinkText !== undefined, "checkNotesTSV7DataRow ourCheckTNLinksToOutside: 'taLinkText' parameter should be defined");
-        parameterAssert(typeof taLinkText === 'string', `checkNotesTSV7DataRow ourCheckTNLinksToOutside: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
+        // functionLog(`checkNotesTSV7DataRow ourcheckNotesLinksToOutside(${rowID}, ${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
+        parameterAssert(rowID !== undefined, "checkNotesTSV7DataRow ourcheckNotesLinksToOutside: 'rowID' parameter should be defined");
+        parameterAssert(typeof rowID === 'string', `checkNotesTSV7DataRow ourcheckNotesLinksToOutside: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+        parameterAssert(fieldName !== undefined, "checkNotesTSV7DataRow ourcheckNotesLinksToOutside: 'fieldName' parameter should be defined");
+        parameterAssert(typeof fieldName === 'string', `checkNotesTSV7DataRow ourcheckNotesLinksToOutside: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        parameterAssert(fieldName === 'Note', `checkNotesTSV7DataRow ourcheckNotesLinksToOutside: 'fieldName' parameter should be 'Note' not '${fieldName}'`);
+        parameterAssert(taLinkText !== undefined, "checkNotesTSV7DataRow ourcheckNotesLinksToOutside: 'taLinkText' parameter should be defined");
+        parameterAssert(typeof taLinkText === 'string', `checkNotesTSV7DataRow ourcheckNotesLinksToOutside: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
 
-        const coqResultObject = await checkTNLinksToOutside(bookID, givenC, givenV, fieldName, taLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: languageCode });
+        const coqResultObject = await checkNotesLinksToOutside(repoCode, bookID, givenC, givenV, fieldName, taLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: languageCode });
         // debugLog("coqResultObject", JSON.stringify(coqResultObject));
 
         // Choose only ONE of the following
@@ -306,7 +306,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
                 catch { drResult.checkedFilenameExtensions = [checkedFilenameExtension]; }
         // if (drResult.checkedFilenameExtensions) userLog("drResult", JSON.stringify(drResult));
     }
-    // end of ourCheckTNLinksToOutside function
+    // end of ourcheckNotesLinksToOutside function
 
 
     // Main code for checkNotesTSV7DataRow function
@@ -332,7 +332,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
     if (bookID === 'OBS')
         numChaptersThisBook = 50; // There's 50 Open Bible Stories
     else {
-        parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in annotation-row-check");
+        parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in checkNotesTSV7DataRow");
         try {
             numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
         } catch (tlcNCerror) {
@@ -449,7 +449,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
                 if (checkingOptions?.disableAllLinkFetchingFlag !== true)
                     await ourCheckSupportReferenceInTA(rowID, 'SupportReference', supportReference, ourRowLocation, checkingOptions);
                 if (note.indexOf(supportReference) < 0)
-                    addNoticePartial({ priority: 787, message: "Link to TA should also be in Annotation", fieldName: 'SupportReference', excerpt: supportReference, rowID, location: ourRowLocation });
+                    addNoticePartial({ priority: 787, message: "Link to TA should also be in Note", fieldName: 'SupportReference', excerpt: supportReference, rowID, location: ourRowLocation });
             }
             let characterIndex;
             if ((characterIndex = supportReference.indexOf('\u200B') !== -1)) {
@@ -502,10 +502,10 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'Note', rowID, location: ourRowLocation });
             else { // More than just whitespace
                 ASuggestion = await ourMarkdownTextChecks(rowID, 'Note', note, true, ourRowLocation, checkingOptions);
-                await ourCheckTNLinksToOutside(rowID, 'Note', note, ourRowLocation, linkCheckingOptions);
+                await ourcheckNotesLinksToOutside(rowID, 'Note', note, ourRowLocation, linkCheckingOptions);
                 let regexResultArray;
                 while ((regexResultArray = TA_REGEX.exec(note))) {
-                    // debugLog("Got TA Regex in Annotation", JSON.stringify(regexResultArray));
+                    // debugLog("Got TA Regex in Note", JSON.stringify(regexResultArray));
                     const adjustedLink = regexResultArray[0].substring(2, regexResultArray[0].length - 2)
                     if (supportReference !== adjustedLink && V !== 'intro') {
                         const details = supportReference ? `(SR='${supportReference}')` : "(empty SR field)"
@@ -516,13 +516,13 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
         }
         else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             if (repoCode === 'TN2')
-                addNoticePartial({ priority: 274, message: "Missing Annotation field", fieldName: 'Note', rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 274, message: "Missing Note field", fieldName: 'Note', rowID, location: ourRowLocation });
 
         // 7 [reference, rowID, tags, supportReference, quote, occurrence, note]
         const suggestion = `${reference}\t${RIDSuggestion === undefined ? rowID : RIDSuggestion}\t${tags}\t${SRSuggestion === undefined ? supportReference : SRSuggestion}\t${QSuggestion === undefined ? quote : QSuggestion}\t${OSuggestion === undefined ? occurrence : OSuggestion}\t${ASuggestion === undefined ? note : ASuggestion}`;
         if (suggestion !== line) {
-            // debugLog(`Had annotation ${line}`);
-            // debugLog(`Sug annotation ${suggestion}`);
+            // debugLog(`Had note ${line}`);
+            // debugLog(`Sug note ${suggestion}`);
             drResult.suggestion = suggestion;
         }
 

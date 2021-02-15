@@ -5,7 +5,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { userLog, parameterAssert } from './utilities';
 
 
-const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.4.6';
+const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.5.0';
 
 const IMAGE_REGEX = new RegExp('!\\[([^\\]]+?)\\]\\(([^ \\]]+?)\\)', 'g');
 
@@ -97,7 +97,7 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global list of notices
-        // debugLog(`cMdT ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${optionalFieldLocation}, …)`);
+        // functionLog(`cMdT ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${optionalFieldLocation}, …)`);
         parameterAssert(fieldName !== undefined, "cMdT ourCheckTextField: 'fieldName' parameter should be defined");
         parameterAssert(typeof fieldName === 'string', `cMdT ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
         parameterAssert(lineNumber !== undefined, "cMdT ourCheckTextField: 'lineNumber' parameter should be defined");
@@ -192,8 +192,9 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
     // debugLog(`  '${location}' has ${lines.length.toLocaleString()} total lines`);
 
     let headerLevel = 0;
-    let lastNumLeadingSpaces = 0;
+    // let lastNumLeadingSpaces = 0;
     // let lastLineContents;
+    let indentLevels = [];
     const suggestedLines = [];
     for (let n = 1; n <= lines.length; n++) {
 
@@ -206,13 +207,35 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
             if (thisHeaderLevel > headerLevel + 1
                 && !textOrFileName.startsWith('TA ')) // Suppress this notice for translationAcademy subsections
                 addNotice({ priority: 172, message: "Header levels should only increment by one", lineNumber: n, characterIndex: 0, location: ourLocation });
-            if (thisHeaderLevel > 0)
+            if (thisHeaderLevel > 0) {
                 headerLevel = thisHeaderLevel;
+                indentLevels = []; // reset
+            }
 
             numLeadingSpaces = line.match(/^ */)[0].length;
-            // debugLog(`Got numLeadingSpaces=${numLeadingSpaces} for ${line}${atString}`);
-            if (numLeadingSpaces && lastNumLeadingSpaces && numLeadingSpaces !== lastNumLeadingSpaces)
-                addNotice({ priority: 282, message: "Nesting of header levels seems confused", lineNumber: n, characterIndex: 0, location: ourLocation });
+            // debugLog(`Got numLeadingSpaces=${numLeadingSpaces} with indentLevels=${JSON.stringify(indentLevels)} for ${line}${ourLocation}`);
+            const previousIndentLevel = (indentLevels.length > 0) ? indentLevels[indentLevels.length - 1] : 0;
+            if ((numLeadingSpaces > previousIndentLevel) // We have an indent level increase
+            || (numLeadingSpaces===0 && line.length > 0 && indentLevels.length===0)) // we have our first zero-level indent
+                indentLevels.push(numLeadingSpaces);
+            else if (numLeadingSpaces < previousIndentLevel) { // We have an indent level decrease
+                if (indentLevels.length > 1 && indentLevels[indentLevels.length - 2] === numLeadingSpaces)
+                    // We went back to the previous level
+                    indentLevels.pop();
+                else { // seems we didn't go back to the previous level ???
+                    let foundPreviousLevel = false;
+                    for (let z = indentLevels.length-1; z>= 0; z--) {
+                        if (indentLevels[z] === numLeadingSpaces) {
+                            // debugLog(`After finding ${numLeadingSpaces} spaces, reducing length of ${JSON.stringify(indentLevels)} to ${z+1}`);
+                            indentLevels.length = z+1;
+                            foundPreviousLevel = true;
+                            break;
+                        }
+                    }
+                    if (!foundPreviousLevel)
+                        addNotice({ priority: 282, message: "Nesting of header levels seems confused", details: `recent indent levels=${JSON.stringify(indentLevels)} but now ${numLeadingSpaces}`, lineNumber: n, characterIndex: 0, location: ourLocation });
+            }
+            }
 
             const suggestedLine = await checkMarkdownLineContents(n, line, ourLocation);
             suggestedLines.push(suggestedLine === undefined ? line : suggestedLine);
@@ -223,7 +246,7 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
         }
 
         // lastLineContents = line;
-        lastNumLeadingSpaces = numLeadingSpaces;
+        // lastNumLeadingSpaces = numLeadingSpaces;
     }
 
     // Check for an uneven number of sets of symmetrical (i.e., opener == closer) multicharacter markdown formatting sequences

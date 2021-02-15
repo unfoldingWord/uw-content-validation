@@ -3,12 +3,12 @@ import * as books from './books/books';
 // import { checkTextField } from './field-text-check';
 import { checkMarkdownText } from './markdown-text-check';
 // import { checkSupportReferenceInTA } from './ta-reference-check';
-import { checkTNLinksToOutside } from './tn-links-check';
+// import { checkNotesLinksToOutside } from './notes-links-check';
 // import { checkOriginalLanguageQuote } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const QUESTIONS_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.1.0';
+// const QUESTIONS_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.1.1';
 
 const NUM_EXPECTED_QUESTIONS_TSV_FIELDS = 5; // so expects 4 tabs per line
 const EXPECTED_QUESTIONS_HEADING_LINE = 'Reference\tID\tTags\tQuestion\tResponse';
@@ -127,7 +127,7 @@ export async function checkQuestionsTSV5DataRow(languageCode, repoCode, line, bo
         parameterAssert(typeof rowID === 'string', `checkQuestionsTSV5DataRow ourMarkdownTextChecks: 'rowID' parameter should be a string not a '${typeof rowID}'`);
         // parameterAssert(fieldName !== undefined, "checkQuestionsTSV5DataRow ourMarkdownTextChecks: 'fieldName' parameter should be defined");
         // parameterAssert(typeof fieldName === 'string', `checkQuestionsTSV5DataRow ourMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        parameterAssert(fieldName === 'Annotation', "checkQuestionsTSV5DataRow ourMarkdownTextChecks: Only run this check on Annotations")
+        parameterAssert(fieldName === 'Question' || fieldName === 'Response', `checkQuestionsTSV5DataRow ourMarkdownTextChecks: Only run this check on Questions and Responses not '${fieldName}'`);
         parameterAssert(fieldText !== undefined, "checkQuestionsTSV5DataRow ourMarkdownTextChecks: 'fieldText' parameter should be defined");
         parameterAssert(typeof fieldText === 'string', `checkQuestionsTSV5DataRow ourMarkdownTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
         parameterAssert(allowedLinks === true || allowedLinks === false, "checkQuestionsTSV5DataRow ourMarkdownTextChecks: allowedLinks parameter must be either true or false");
@@ -144,7 +144,7 @@ export async function checkQuestionsTSV5DataRow(languageCode, repoCode, line, bo
         //  process results line by line
         for (const noticeEntry of omtcResultObject.noticeList) {
             // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourMarkdownTextChecks notice length=${Object.keys(noticeEntry).length}`);
-            // NOTE: Ellipses in Annotation have the normal meaning
+            // NOTE: Ellipses in Question and Answer have the normal meaning
             //          not like the specialised meaning in the Quote snippet fields
             if (noticeEntry.priority !== 178 && noticeEntry.priority !== 179 // unexpected space after ellipse, ellipse after space
                 && !noticeEntry.message.startsWith("Unexpected … character after space") // 191
@@ -183,7 +183,7 @@ export async function checkQuestionsTSV5DataRow(languageCode, repoCode, line, bo
     //     parameterAssert(typeof rowLocation === 'string', `checkQuestionsTSV5DataRow ourCheckTextField: 'rowLocation' parameter should be a string not a '${typeof rowLocation}'`);
     //     parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkQuestionsTSV5DataRow ourCheckTextField: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-    //     const fieldType = fieldName === 'Annotation' ? 'markdown' : 'raw';
+    //     const fieldType = fieldName === 'Question' ? 'markdown' : 'raw';
     //     const octfResultObject = checkTextField(languageCode, fieldType, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions);
 
     //     // Choose only ONE of the following
@@ -246,7 +246,7 @@ export async function checkQuestionsTSV5DataRow(languageCode, repoCode, line, bo
     //     parameterAssert(typeof occurrence === 'string', `checkQuestionsTSV5DataRow ourCheckTNOriginalLanguageQuote: 'occurrence' parameter should be a string not a '${typeof occurrence}'`);
     //     parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkQuestionsTSV5DataRow ourCheckTNOriginalLanguageQuote: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-    //     const coqResultObject = await checkOriginalLanguageQuote(languageCode, fieldName, fieldText, occurrence, bookID, givenC, givenV, rowLocation, checkingOptions);
+    //     const coqResultObject = await checkOriginalLanguageQuote(languageCode, repoCode, fieldName, fieldText, occurrence, bookID, givenC, givenV, rowLocation, checkingOptions);
 
     //     // Choose only ONE of the following
     //     // This is the fast way of append the results from this field
@@ -261,52 +261,52 @@ export async function checkQuestionsTSV5DataRow(languageCode, repoCode, line, bo
     // // end of ourCheckTNOriginalLanguageQuote function
 
 
-    async function ourCheckTNLinksToOutside(rowID, fieldName, taLinkText, rowLocation, checkingOptions) {
-        // Checks that the TA/TW/Bible reference can be found
+    // async function ourcheckNotesLinksToOutside(rowID, fieldName, taLinkText, rowLocation, checkingOptions) {
+    //     // Checks that the TA/TW/Bible reference can be found
 
-        // Updates the global list of notices
+    //     // Updates the global list of notices
 
-        // functionLog(`checkQuestionsTSV5DataRow ourCheckTNLinksToOutside(${rowID}, ${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
-        parameterAssert(rowID !== undefined, "checkQuestionsTSV5DataRow ourCheckTNLinksToOutside: 'rowID' parameter should be defined");
-        parameterAssert(typeof rowID === 'string', `checkQuestionsTSV5DataRow ourCheckTNLinksToOutside: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        parameterAssert(fieldName !== undefined, "checkQuestionsTSV5DataRow ourCheckTNLinksToOutside: 'fieldName' parameter should be defined");
-        parameterAssert(typeof fieldName === 'string', `checkQuestionsTSV5DataRow ourCheckTNLinksToOutside: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        parameterAssert(fieldName === 'Annotation', `checkQuestionsTSV5DataRow ourCheckTNLinksToOutside: 'fieldName' parameter should be 'Annotation' not '${fieldName}'`);
-        parameterAssert(taLinkText !== undefined, "checkQuestionsTSV5DataRow ourCheckTNLinksToOutside: 'taLinkText' parameter should be defined");
-        parameterAssert(typeof taLinkText === 'string', `checkQuestionsTSV5DataRow ourCheckTNLinksToOutside: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
+    //     // functionLog(`checkQuestionsTSV5DataRow ourcheckNotesLinksToOutside(${rowID}, ${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
+    //     parameterAssert(rowID !== undefined, "checkQuestionsTSV5DataRow ourcheckNotesLinksToOutside: 'rowID' parameter should be defined");
+    //     parameterAssert(typeof rowID === 'string', `checkQuestionsTSV5DataRow ourcheckNotesLinksToOutside: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+    //     parameterAssert(fieldName !== undefined, "checkQuestionsTSV5DataRow ourcheckNotesLinksToOutside: 'fieldName' parameter should be defined");
+    //     parameterAssert(typeof fieldName === 'string', `checkQuestionsTSV5DataRow ourcheckNotesLinksToOutside: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+    //     parameterAssert(fieldName === 'Question', `checkQuestionsTSV5DataRow ourcheckNotesLinksToOutside: 'fieldName' parameter should be 'Question' not '${fieldName}'`);
+    //     parameterAssert(taLinkText !== undefined, "checkQuestionsTSV5DataRow ourcheckNotesLinksToOutside: 'taLinkText' parameter should be defined");
+    //     parameterAssert(typeof taLinkText === 'string', `checkQuestionsTSV5DataRow ourcheckNotesLinksToOutside: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
 
-        const coqResultObject = await checkTNLinksToOutside(bookID, givenC, givenV, fieldName, taLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: languageCode });
-        // debugLog("coqResultObject", JSON.stringify(coqResultObject));
+    //     const coqResultObject = await checkNotesLinksToOutside(repoCode, bookID, givenC, givenV, fieldName, taLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: languageCode });
+    //     // debugLog("coqResultObject", JSON.stringify(coqResultObject));
 
-        // Choose only ONE of the following
-        // This is the fast way of append the results from this field
-        // result.noticeList = result.noticeList.concat(coqResultObject.noticeList);
-        // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
-        //  process results line by line
-        for (const coqNoticeEntry of coqResultObject.noticeList) {
-            if (coqNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN2 check
-                drResult.noticeList.push(coqNoticeEntry); // Just copy the complete notice as is
-            else // For our direct checks, we add the repoCode as an extra value
-                addNoticePartial({ ...coqNoticeEntry, rowID, fieldName });
-        }
-        // The following is needed coz we might be checking the linked TA and/or TW articles
-        if (coqResultObject.checkedFileCount && coqResultObject.checkedFileCount > 0)
-            if (typeof drResult.checkedFileCount === 'number') drResult.checkedFileCount += coqResultObject.checkedFileCount;
-            else drResult.checkedFileCount = coqResultObject.checkedFileCount;
-        if (coqResultObject.checkedFilesizes && coqResultObject.checkedFilesizes > 0)
-            if (typeof drResult.checkedFilesizes === 'number') drResult.checkedFilesizes += coqResultObject.checkedFilesizes;
-            else drResult.checkedFilesizes = coqResultObject.checkedFilesizes;
-        if (coqResultObject.checkedRepoNames && coqResultObject.checkedRepoNames.length > 0)
-            for (const checkedRepoName of coqResultObject.checkedRepoNames)
-                try { if (drResult.checkedRepoNames.indexOf(checkedRepoName) < 0) drResult.checkedRepoNames.push(checkedRepoName); }
-                catch { drResult.checkedRepoNames = [checkedRepoName]; }
-        if (coqResultObject.checkedFilenameExtensions && coqResultObject.checkedFilenameExtensions.length > 0)
-            for (const checkedFilenameExtension of coqResultObject.checkedFilenameExtensions)
-                try { if (drResult.checkedFilenameExtensions.indexOf(checkedFilenameExtension) < 0) drResult.checkedFilenameExtensions.push(checkedFilenameExtension); }
-                catch { drResult.checkedFilenameExtensions = [checkedFilenameExtension]; }
-        // if (drResult.checkedFilenameExtensions) userLog("drResult", JSON.stringify(drResult));
-    }
-    // end of ourCheckTNLinksToOutside function
+    //     // Choose only ONE of the following
+    //     // This is the fast way of append the results from this field
+    //     // result.noticeList = result.noticeList.concat(coqResultObject.noticeList);
+    //     // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
+    //     //  process results line by line
+    //     for (const coqNoticeEntry of coqResultObject.noticeList) {
+    //         if (coqNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN2 check
+    //             drResult.noticeList.push(coqNoticeEntry); // Just copy the complete notice as is
+    //         else // For our direct checks, we add the repoCode as an extra value
+    //             addNoticePartial({ ...coqNoticeEntry, rowID, fieldName });
+    //     }
+    //     // The following is needed coz we might be checking the linked TA and/or TW articles
+    //     if (coqResultObject.checkedFileCount && coqResultObject.checkedFileCount > 0)
+    //         if (typeof drResult.checkedFileCount === 'number') drResult.checkedFileCount += coqResultObject.checkedFileCount;
+    //         else drResult.checkedFileCount = coqResultObject.checkedFileCount;
+    //     if (coqResultObject.checkedFilesizes && coqResultObject.checkedFilesizes > 0)
+    //         if (typeof drResult.checkedFilesizes === 'number') drResult.checkedFilesizes += coqResultObject.checkedFilesizes;
+    //         else drResult.checkedFilesizes = coqResultObject.checkedFilesizes;
+    //     if (coqResultObject.checkedRepoNames && coqResultObject.checkedRepoNames.length > 0)
+    //         for (const checkedRepoName of coqResultObject.checkedRepoNames)
+    //             try { if (drResult.checkedRepoNames.indexOf(checkedRepoName) < 0) drResult.checkedRepoNames.push(checkedRepoName); }
+    //             catch { drResult.checkedRepoNames = [checkedRepoName]; }
+    //     if (coqResultObject.checkedFilenameExtensions && coqResultObject.checkedFilenameExtensions.length > 0)
+    //         for (const checkedFilenameExtension of coqResultObject.checkedFilenameExtensions)
+    //             try { if (drResult.checkedFilenameExtensions.indexOf(checkedFilenameExtension) < 0) drResult.checkedFilenameExtensions.push(checkedFilenameExtension); }
+    //             catch { drResult.checkedFilenameExtensions = [checkedFilenameExtension]; }
+    //     // if (drResult.checkedFilenameExtensions) userLog("drResult", JSON.stringify(drResult));
+    // }
+    // // end of ourcheckNotesLinksToOutside function
 
 
     // Main code for checkQuestionsTSV5DataRow function
@@ -342,9 +342,9 @@ export async function checkQuestionsTSV5DataRow(languageCode, repoCode, line, bo
     const haveGoodBookID = numChaptersThisBook !== undefined;
 
     let fields = line.split('\t');
-    let RIDSuggestion, QSuggestion, ASuggestion;
+    let RIDSuggestion, QSuggestion, RSuggestion;
     if (fields.length === NUM_EXPECTED_QUESTIONS_TSV_FIELDS) {
-        const [reference, rowID, tags, question, answer] = fields;
+        const [reference, rowID, tags, question, response] = fields;
         // let withString = ` with '${rowID}'${inString}`;
         // let CV_withString = ` ${C}:${V}${withString}`;
         // let atString = ` at ${B} ${C}:${V} (${rowID})${inString}`;
@@ -436,55 +436,55 @@ export async function checkQuestionsTSV5DataRow(languageCode, repoCode, line, bo
         if (question.length) {
             if (question.indexOf('\u200B') >= 0) {
                 const charCount = countOccurrences(question, '\u200B');
-                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, fieldName: 'Annotation', rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, fieldName: 'Question', rowID, location: ourRowLocation });
             }
             if (isWhitespace(question))
-                addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'Annotation', rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'Question', rowID, location: ourRowLocation });
             else { // More than just whitespace
-                ASuggestion = await ourMarkdownTextChecks(rowID, 'Annotation', question, true, ourRowLocation, checkingOptions);
-                await ourCheckTNLinksToOutside(rowID, 'Annotation', question, ourRowLocation, linkCheckingOptions);
+                RSuggestion = await ourMarkdownTextChecks(rowID, 'Question', question, true, ourRowLocation, checkingOptions);
+                // await ourcheckNotesLinksToOutside(rowID, 'Question', question, ourRowLocation, linkCheckingOptions);
                 // let regexResultArray;
                 // while ((regexResultArray = TA_REGEX.exec(question))) {
-                //     // debugLog("Got TA Regex in Annotation", JSON.stringify(regexResultArray));
+                //     // debugLog("Got TA Regex in Question", JSON.stringify(regexResultArray));
                 //     const adjustedLink = regexResultArray[0].substring(2, regexResultArray[0].length - 2)
                 //     if (supportReference !== adjustedLink && V !== 'intro') {
                 //         const details = supportReference ? `(SR='${supportReference}')` : "(empty SR field)"
-                //         addNoticePartial({ priority: 786, message: "Should have a SupportReference when OccurrenceNote has a TA link", details, rowID, fieldName: 'Annotation', excerpt: adjustedLink, location: ourRowLocation });
+                //         addNoticePartial({ priority: 786, message: "Should have a SupportReference when OccurrenceNote has a TA link", details, rowID, fieldName: 'Question', excerpt: adjustedLink, location: ourRowLocation });
                 //     }
                 // }
             }
         }
         else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             if (repoCode === 'TN2')
-                addNoticePartial({ priority: 274, message: "Missing Annotation field", fieldName: 'Annotation', rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 274, message: "Missing Question field", fieldName: 'Question', rowID, location: ourRowLocation });
 
-        if (answer.length) {
-            if (answer.indexOf('\u200B') >= 0) {
-                const charCount = countOccurrences(answer, '\u200B');
-                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, fieldName: 'Annotation', rowID, location: ourRowLocation });
+        if (response.length) {
+            if (response.indexOf('\u200B') >= 0) {
+                const charCount = countOccurrences(response, '\u200B');
+                addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, fieldName: 'Response', rowID, location: ourRowLocation });
             }
-            if (isWhitespace(answer))
-                addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'Annotation', rowID, location: ourRowLocation });
+            if (isWhitespace(response))
+                addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'Response', rowID, location: ourRowLocation });
             else { // More than just whitespace
-                ASuggestion = await ourMarkdownTextChecks(rowID, 'Annotation', answer, true, ourRowLocation, checkingOptions);
-                await ourCheckTNLinksToOutside(rowID, 'Annotation', answer, ourRowLocation, linkCheckingOptions);
+                RSuggestion = await ourMarkdownTextChecks(rowID, 'Response', response, true, ourRowLocation, checkingOptions);
+                // await ourcheckNotesLinksToOutside(rowID, 'Response', response, ourRowLocation, linkCheckingOptions);
                 // let regexResultArray;
                 // while ((regexResultArray = TA_REGEX.exec(answer))) {
-                //     // debugLog("Got TA Regex in Annotation", JSON.stringify(regexResultArray));
+                //     // debugLog("Got TA Regex in Response", JSON.stringify(regexResultArray));
                 //     const adjustedLink = regexResultArray[0].substring(2, regexResultArray[0].length - 2)
                 //     if (supportReference !== adjustedLink && V !== 'intro') {
                 //         const details = supportReference ? `(SR='${supportReference}')` : "(empty SR field)"
-                //         addNoticePartial({ priority: 786, message: "Should have a SupportReference when OccurrenceNote has a TA link", details, rowID, fieldName: 'Annotation', excerpt: adjustedLink, location: ourRowLocation });
+                //         addNoticePartial({ priority: 786, message: "Should have a SupportReference when OccurrenceNote has a TA link", details, rowID, fieldName: 'Response', excerpt: adjustedLink, location: ourRowLocation });
                 //     }
                 // }
             }
         }
         else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             if (repoCode === 'TN2')
-                addNoticePartial({ priority: 274, message: "Missing Annotation field", fieldName: 'Annotation', rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 274, message: "Missing Response field", fieldName: 'Response', rowID, location: ourRowLocation });
 
         // 7 [reference, rowID, tags, question, answer]
-        const suggestion = `${reference}\t${RIDSuggestion === undefined ? rowID : RIDSuggestion}\t${tags}\t${QSuggestion === undefined ? question : QSuggestion}\t${ASuggestion === undefined ? answer : ASuggestion}`;
+        const suggestion = `${reference}\t${RIDSuggestion === undefined ? rowID : RIDSuggestion}\t${tags}\t${QSuggestion === undefined ? question : QSuggestion}\t${RSuggestion === undefined ? response : RSuggestion}`;
         if (suggestion !== line) {
             // debugLog(`Had question ${line}`);
             // debugLog(`Sug question ${suggestion}`);

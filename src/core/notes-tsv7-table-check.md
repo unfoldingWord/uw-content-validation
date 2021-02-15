@@ -1,6 +1,6 @@
-## Annotation (TSV) Table Text Check Sandbox
+## Notes (TSV) Table Text Check Sandbox
 
-This function checks the given block of annotation (TSV) table lines for typical formatting errors.
+This function checks the given block of note (TSV) table lines for typical formatting errors.
 
 It returns a list of success messages and a list of notice components. (There is always a priority number in the range 0..999 and the main message string, as well as other details to help locate the error as available.)
 
@@ -48,7 +48,7 @@ const data = {
   givenLocation : 'that was supplied',
 }
 
-function checkNotesTSV7Table(props) {
+function CheckNotesTSV7Table(props) {
   const { languageCode, repoCode, bookID, filename, tableText, tableTextName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
@@ -72,7 +72,7 @@ function checkNotesTSV7Table(props) {
   }, []); // end of useEffect part
 
   return results;
-} // end of checkNotesTSV7Table function
+} // end of CheckNotesTSV7Table function
 
-<checkNotesTSV7Table data={data}/>
+<CheckNotesTSV7Table data={data}/>
 ```

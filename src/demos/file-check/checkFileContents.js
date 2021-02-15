@@ -1,20 +1,20 @@
 import * as books from '../../core/books/books';
 import {
-  userLog, functionLog, parameterAssert,
+  userLog, parameterAssert, logicAssert,
   formRepoName,
   checkUSFMText, checkMarkdownFileContents, checkPlainText, checkYAMLText, checkManifestText,
   checkTN_TSV9Table, checkNotesTSV7Table, checkQuestionsTSV5Table, checkTWL_TSV6Table,
 } from '../../core';
 
 
-// const CHECK_FILE_CONTENTS_VERSION_STRING = '0.4.0';
+// const CHECK_FILE_CONTENTS_VERSION_STRING = '0.4.1';
 
 
 /**
  *
  * @param {string} username for Door43.org
  * @param {string} languageCode, e.g., 'en'
- * @param {string} repoCode, e.g., 'TN'
+ * @param {string} repoCode, e.g., 'LT', 'TN', 'TN2', 'TQ', 'TWL', etc.
  * @param {string} branch, e.g., 'master'
  * @param {string} filename
  * @param {string} fileContent
@@ -24,7 +24,7 @@ import {
 export async function checkFileContents(username, languageCode, repoCode, branch, filename, fileContent, givenLocation, checkingOptions) {
   // Determine the file type from the filename extension
   //  and return the results of checking that kind of file text
-  functionLog(`checkFileContents(${username}, ${languageCode}, ${filename}, ${fileContent.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
+  // functionLog(`checkFileContents(${username}, ${languageCode}, ${repoCode}, ${branch}, ${filename}, ${fileContent.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
   parameterAssert(username !== undefined, "checkFileContents: 'username' parameter should be defined");
   parameterAssert(typeof username === 'string', `checkFileContents: 'username' parameter should be a string not a '${typeof username}': ${username}`);
   parameterAssert(languageCode !== undefined, "checkFileContents: 'languageCode' parameter should be defined");
@@ -55,13 +55,14 @@ export async function checkFileContents(username, languageCode, repoCode, branch
     const bookID = filenameMain.startsWith(`${languageCode}_`) || filenameMain.startsWith('en_') ? filenameMain.substring(filenameMain.length - 3) : filenameMain.substring(0, 3).toUpperCase();
     // functionLog(`checkFileContents have TSV bookID=${bookID}`);
     parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
-    if (filename.startsWith(`${languageCode}_`) || filenameMain.startsWith('en_'))
+    if (filename.startsWith(`${languageCode}_`) || filenameMain.startsWith('en_')) {
+      logicAssert(repoCode==='TN', `These filenames ${filenameMain} are only for TN ${repoCode}`);
       checkFileResult = await checkTN_TSV9Table(languageCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
-    else {
-      const repoCode = filenameMain.substring(4).toUpperCase();
+    } else {
+      logicAssert(repoCode!=='TN', `This code with ${filenameMain} is not for TN`);
       let checkFunction = {
-        TN: checkNotesTSV7Table, SN: checkNotesTSV7Table,
-        TQ: checkQuestionsTSV5Table, SQ: checkQuestionsTSV5Table,
+        TN2: checkNotesTSV7Table, SN: checkNotesTSV7Table,
+        TQ2: checkQuestionsTSV5Table, SQ: checkQuestionsTSV5Table,
         TWL: checkTWL_TSV6Table,
       }[repoCode];
       checkFileResult = await checkFunction(languageCode, repoCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
