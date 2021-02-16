@@ -1,14 +1,14 @@
 import * as books from './books/books';
 import { DEFAULT_EXCERPT_LENGTH } from './text-handling-functions'
-import { checkQuestionsTSV5DataRow } from './questions-tsv5-row-check';
+import { checkQuestionsTSV7DataRow } from './questions-tsv7-row-check';
 import { removeDisabledNotices } from './disabled-notices';
-import { functionLog, parameterAssert } from './utilities';
+import { parameterAssert } from './utilities';
 
 
-const QUESTIONS_TABLE_VALIDATOR_VERSION_STRING = '0.1.1';
+const QUESTIONS_TABLE_VALIDATOR_VERSION_STRING = '0.2.0';
 
-const NUM_EXPECTED_QUESTIONS_TSV_FIELDS = 5; // so expects 4 tabs per line
-const EXPECTED_QUESTIONS_HEADING_LINE = 'Reference\tID\tTags\tQuestion\tResponse';
+const NUM_EXPECTED_QUESTIONS_TSV_FIELDS = 7; // so expects 6 tabs per line
+const EXPECTED_QUESTIONS_HEADING_LINE = 'Reference\tID\tTags\tQuote\tOccurrence\tQuestion\tResponse';
 
 
 /**
@@ -21,7 +21,7 @@ const EXPECTED_QUESTIONS_HEADING_LINE = 'Reference\tID\tTags\tQuestion\tResponse
  * @param {string} givenLocation
  * @param {Object} checkingOptions
  */
-export async function checkQuestionsTSV5Table(languageCode, repoCode, bookID, filename, tableText, givenLocation, checkingOptions) {
+export async function checkQuestionsTSV7Table(languageCode, repoCode, bookID, filename, tableText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire file, i.e., all rows.
 
       It also has the advantage of being able to compare one row with the previous one.
@@ -30,17 +30,17 @@ export async function checkQuestionsTSV5Table(languageCode, repoCode, bookID, fi
 
      Returns a result object containing a successList and a noticeList
      */
-    functionLog(`checkQuestionsTSV5Table(${languageCode}, ${repoCode}, ${bookID}, ${filename}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
-    parameterAssert(languageCode !== undefined, "checkQuestionsTSV5Table: 'languageCode' parameter should be defined");
-    parameterAssert(typeof languageCode === 'string', `checkQuestionsTSV5Table: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
-    parameterAssert(repoCode === 'TQ' || repoCode === 'SQ', `checkTWL_TSV6Table: repoCode expected 'TQ' or 'SQ' not '${repoCode}'`);
-    parameterAssert(bookID !== undefined, "checkQuestionsTSV5Table: 'bookID' parameter should be defined");
-    parameterAssert(typeof bookID === 'string', `checkQuestionsTSV5Table: 'bookID' parameter should be a string not a '${typeof bookID}'`);
-    parameterAssert(bookID.length === 3, `checkQuestionsTSV5Table: 'bookID' parameter should be three characters long not ${bookID.length}`);
-    parameterAssert(bookID.toUpperCase() === bookID, `checkQuestionsTSV5Table: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-    parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkQuestionsTSV5Table: '${bookID}' is not a valid USFM book identifier`);
-    parameterAssert(givenLocation !== undefined, "checkQuestionsTSV5Table: 'givenLocation' parameter should be defined");
-    parameterAssert(typeof givenLocation === 'string', `checkQuestionsTSV5Table: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
+    // functionLog(`checkQuestionsTSV7Table(${languageCode}, ${repoCode}, ${bookID}, ${filename}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
+    parameterAssert(languageCode !== undefined, "checkQuestionsTSV7Table: 'languageCode' parameter should be defined");
+    parameterAssert(typeof languageCode === 'string', `checkQuestionsTSV7Table: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    parameterAssert(repoCode === 'TQ'||repoCode === 'TQ2' || repoCode === 'SQ', `checkTWL_TSV6Table: repoCode expected 'TQ', 'TQ2', or 'SQ' not '${repoCode}'`);
+    parameterAssert(bookID !== undefined, "checkQuestionsTSV7Table: 'bookID' parameter should be defined");
+    parameterAssert(typeof bookID === 'string', `checkQuestionsTSV7Table: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+    parameterAssert(bookID.length === 3, `checkQuestionsTSV7Table: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    parameterAssert(bookID.toUpperCase() === bookID, `checkQuestionsTSV7Table: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+    parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkQuestionsTSV7Table: '${bookID}' is not a valid USFM book identifier`);
+    parameterAssert(givenLocation !== undefined, "checkQuestionsTSV7Table: 'givenLocation' parameter should be defined");
+    parameterAssert(typeof givenLocation === 'string', `checkQuestionsTSV7Table: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -48,11 +48,11 @@ export async function checkQuestionsTSV5Table(languageCode, repoCode, bookID, fi
     const carResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        // functionLog(`checkQuestionsTSV5Table success: ${successString}`);
+        // functionLog(`checkQuestionsTSV7Table success: ${successString}`);
         carResult.successList.push(successString);
     }
     function addNoticePartial(noticeObject) {
-        // functionLog(`checkQuestionsTSV5Table notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
+        // functionLog(`checkQuestionsTSV7Table notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "ATSV addNoticePartial: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `TSV addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "ATSV addNoticePartial: 'message' parameter should be defined");
@@ -68,7 +68,7 @@ export async function checkQuestionsTSV5Table(languageCode, repoCode, bookID, fi
         parameterAssert(noticeObject.location !== undefined, "ATSV addNoticePartial: 'location' parameter should be defined");
         parameterAssert(typeof noticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
-        if (noticeObject.debugChain) noticeObject.debugChain = `checkQuestionsTSV5Table ${noticeObject.debugChain}`;
+        if (noticeObject.debugChain) noticeObject.debugChain = `checkQuestionsTSV7Table ${noticeObject.debugChain}`;
         carResult.noticeList.push({ ...noticeObject, bookID, filename, repoCode });
     }
 
@@ -83,16 +83,16 @@ export async function checkQuestionsTSV5Table(languageCode, repoCode, bookID, fi
     }
     // else
     // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
-    // const halfLength = Math.floor(excerptLength / 2); // rounded down
-    // const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
-    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    // const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    // const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+    // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
     let lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook = 0;
     if (bookID === 'OBS')
         numChaptersThisBook = 50; // There's 50 Open Bible Stories
     else {
-        parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in checkQuestionsTSV5Table");
+        parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in checkQuestionsTSV7Table");
         try {
             numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
         }
@@ -109,23 +109,23 @@ export async function checkQuestionsTSV5Table(languageCode, repoCode, bookID, fi
     let rowIDList = [], uniqueRowList = [];
     let numVersesThisChapter = 0;
     for (let n = 0; n < lines.length; n++) {
-        // functionLog(`checkQuestionsTSV5Table checking line ${n}: ${JSON.stringify(lines[n])}`);
+        // functionLog(`checkQuestionsTSV7Table checking line ${n}: ${JSON.stringify(lines[n])}`);
         if (n === 0) {
             if (lines[0] === EXPECTED_QUESTIONS_HEADING_LINE)
                 addSuccessMessage(`Checked TSV header ${ourLocation}`);
             else
-                addNoticePartial({ priority: 746, message: "Bad TSV header", lineNumber: n + 1, location: `${ourLocation}: '${lines[0]}'` });
+                addNoticePartial({ priority: 988, message: "Bad TSV header", details: `expected '${EXPECTED_QUESTIONS_HEADING_LINE}'`, excerpt: lines[0], lineNumber: 1, location: ourLocation });
         }
         else // not the header
         {
             let fields = lines[n].split('\t');
             if (fields.length === NUM_EXPECTED_QUESTIONS_TSV_FIELDS) {
                 // eslint-disable-next-line no-unused-vars
-                const [reference, rowID, tags, question, answer] = fields;
+                const [reference, rowID, tags, quote, occurrence, question, answer] = fields;
                 const [C, V] = reference.split(':')
 
                 // Use the row check to do most basic checks
-                const drResultObject = await checkQuestionsTSV5DataRow(languageCode, repoCode, lines[n], bookID, C, V, ourLocation, checkingOptions);
+                const drResultObject = await checkQuestionsTSV7DataRow(languageCode, repoCode, lines[n], bookID, C, V, ourLocation, checkingOptions);
                 // Choose only ONE of the following
                 // This is the fast way of append the results from this field
                 // result.noticeList = result.noticeList.concat(firstResult.noticeList);
@@ -237,13 +237,13 @@ export async function checkQuestionsTSV5Table(languageCode, repoCode, bookID, fi
                     try { reference = fields[0]; } catch { }
                     try { rowID = fields[1]; } catch { }
                     try { [C, V] = reference.split(':'); } catch { }
-                    addNoticePartial({ priority: 988, message: `Wrong number of tabbed fields (expected ${NUM_EXPECTED_QUESTIONS_TSV_FIELDS})`, excerpt: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, C, V, rowID, lineNumber: n + 1, location: ourLocation });
+                    addNoticePartial({ priority: 983, message: `Wrong number of tabbed fields (expected ${NUM_EXPECTED_QUESTIONS_TSV_FIELDS})`, excerpt: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, C, V, rowID, lineNumber: n + 1, location: ourLocation });
                 }
         }
     }
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        // functionLog(`checkQuestionsTSV5Table: calling removeDisabledNotices(${carResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        // functionLog(`checkQuestionsTSV7Table: calling removeDisabledNotices(${carResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
         carResult.noticeList = removeDisabledNotices(carResult.noticeList);
     }
 
@@ -253,11 +253,11 @@ export async function checkQuestionsTSV5Table(languageCode, repoCode, bookID, fi
 
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}.`);
     if (carResult.noticeList)
-        addSuccessMessage(`checkQuestionsTSV5Table v${QUESTIONS_TABLE_VALIDATOR_VERSION_STRING} finished with ${carResult.noticeList.length ? carResult.noticeList.length.toLocaleString() : "zero"} notice${carResult.noticeList.length === 1 ? '' : 's'}`);
+        addSuccessMessage(`checkQuestionsTSV7Table v${QUESTIONS_TABLE_VALIDATOR_VERSION_STRING} finished with ${carResult.noticeList.length ? carResult.noticeList.length.toLocaleString() : "zero"} notice${carResult.noticeList.length === 1 ? '' : 's'}`);
     else
-        addSuccessMessage(`No errors or warnings found by checkQuestionsTSV5Table v${QUESTIONS_TABLE_VALIDATOR_VERSION_STRING}`)
-    // debugLog(`  checkQuestionsTSV5Table returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
-    // debugLog("checkQuestionsTSV5Table result is", JSON.stringify(carResult));
+        addSuccessMessage(`No errors or warnings found by checkQuestionsTSV7Table v${QUESTIONS_TABLE_VALIDATOR_VERSION_STRING}`)
+    // debugLog(`  checkQuestionsTSV7Table returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
+    // debugLog("checkQuestionsTSV7Table result is", JSON.stringify(carResult));
     return carResult;
 }
-// end of checkQuestionsTSV5Table function
+// end of checkQuestionsTSV7Table function

@@ -75,6 +75,7 @@ async function alreadyChecked({ username, repository, path, branch }) {
 
 /**
  *
+ * @param {string} languageCode, e.g., 'en'
  * @param {string} repoCode, e.g., 'TN', 'SN', 'TN2', or even 'TWL'
  * @param {string} bookID
  * @param {string} fieldName, e.g., 'OccurrenceNote' or 'Note' or 'TWLink'
@@ -82,7 +83,7 @@ async function alreadyChecked({ username, repository, path, branch }) {
  * @param {string} givenLocation
  * @param {Object} checkingOptions
  */
-export async function checkNotesLinksToOutside(repoCode, bookID, givenC, givenV, fieldName, fieldText, givenLocation, checkingOptions) {
+export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, givenC, givenV, fieldName, fieldText, givenLocation, checkingOptions) {
     /* This is for the case of the OccurrenceNote or Note field containing markdown links
 
     bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
@@ -111,6 +112,8 @@ export async function checkNotesLinksToOutside(repoCode, bookID, givenC, givenV,
     */
 
     // functionLog(`checkNotesLinksToOutside v${NOTES_LINKS_VALIDATOR_VERSION_STRING} ${repoCode} ${bookID} ${givenC}:${givenV} ${fieldName}, (${fieldText.length})'${fieldText}', ${givenLocation}, …)…`);
+    parameterAssert(languageCode !== undefined, "checkNotesLinksToOutside: 'languageCode' parameter should be defined");
+    parameterAssert(typeof languageCode === 'string', `checkNotesLinksToOutside: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
     parameterAssert(repoCode !== undefined, "checkNotesLinksToOutside: 'repoCode' parameter should be defined");
     parameterAssert(typeof repoCode === 'string', `checkNotesLinksToOutside: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
     parameterAssert(bookID !== undefined, "checkNotesLinksToOutside: 'bookID' parameter should be defined");
@@ -162,9 +165,9 @@ export async function checkNotesLinksToOutside(repoCode, bookID, givenC, givenV,
     }
     // else
     // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
-    const halfLength = Math.floor(excerptLength / 2); // rounded down
-    const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
-    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+    // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
     const getFile_ = (checkingOptions && checkingOptions?.getFile) ? checkingOptions?.getFile : cachedGetFile;
     let defaultLanguageCode;
@@ -221,12 +224,12 @@ export async function checkNotesLinksToOutside(repoCode, bookID, givenC, givenV,
         let languageCode = regexResultArray[1];
         if (languageCode !== '*') {
             const characterIndex = TA_REGEX.lastIndex - regexResultArray[0].length + 7; // lastIndex points to the end of the field that was found
-            const excerpt = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
+            const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
             addNoticePartial({ priority: 450, message: "Resource container link should have '*' language code", details: `not '${languageCode}'`, characterIndex, excerpt, location: ourLocation });
         } else if (repoCode === 'TN') { // but not TN2
             // At the moment, tC can’t handle these links with * so we have to ensure that they're not there
             const characterIndex = TA_REGEX.lastIndex - regexResultArray[0].length + 7; // lastIndex points to the end of the field that was found
-            const excerpt = (characterIndex > halfLength ? '…' : '') + fieldText.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < fieldText.length ? '…' : '')
+            const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
             addNoticePartial({ priority: 950, message: "tC cannot yet process '*' language code", characterIndex, excerpt, location: ourLocation });
         }
         if (!languageCode || languageCode === '*') languageCode = defaultLanguageCode;
@@ -256,7 +259,7 @@ export async function checkNotesLinksToOutside(repoCode, bookID, givenC, givenV,
                     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.checkLinkedTAArticleFlag} so checking TA article: ${filepath}`);
                     if (await alreadyChecked(taPathParameters) !== true) {
                         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
-                        const checkTAFileResult = await checkMarkdownText(languageCode, `TA ${regexResultArray[3]}.md`, taFileContent, ourLocation, checkingOptions);
+                        const checkTAFileResult = await checkMarkdownText(languageCode, repoCode, `TA ${regexResultArray[3]}.md`, taFileContent, ourLocation, checkingOptions);
                         for (const noticeObject of checkTAFileResult.noticeList)
                             ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
                         ctarResult.checkedFileCount += 1;
@@ -307,7 +310,7 @@ export async function checkNotesLinksToOutside(repoCode, bookID, givenC, givenV,
                     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.checkLinkedTWArticleFlag} so checking TW article: ${filepath}`);
                     if (await alreadyChecked(twPathParameters) !== true) {
                         // functionLog(`checkNotesLinksToOutside needs to check TW article: ${filepath}`);
-                        const checkTWFileResult = await checkMarkdownText(languageCode, `TW ${regexResultArray[3]}.md`, twFileContent, ourLocation, checkingOptions);
+                        const checkTWFileResult = await checkMarkdownText(languageCode, repoCode, `TW ${regexResultArray[3]}.md`, twFileContent, ourLocation, checkingOptions);
                         for (const noticeObject of checkTWFileResult.noticeList)
                             ctarResult.noticeList.push({ ...noticeObject, username: twRepoUsername, repoCode: 'TW', repoName: twRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TW' });
                         ctarResult.checkedFileCount += 1;

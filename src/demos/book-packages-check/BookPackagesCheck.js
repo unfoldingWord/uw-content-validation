@@ -43,9 +43,11 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
             bookIDInvalid = bookID;
         }
         bookIDList.push(bookID);
-        const whichTestament = books.testament(bookID);
-        if (whichTestament==='old') haveOT = true;
-        if (whichTestament==='new') haveNT = true;
+        if (books.isValidBookID(bookID)) {
+          const whichTestament = books.testament(bookID);
+          if (whichTestament==='old') haveOT = true;
+          if (whichTestament==='new') haveNT = true;
+        }
     }
     // debugLog(`bookIDList (${bookIDList.length}) = ${bookIDList.join(', ')}`);
 

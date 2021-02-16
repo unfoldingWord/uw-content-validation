@@ -24,7 +24,7 @@ const TA_REGEX = new RegExp('\\[\\[rc://[^ /]+?/ta/man/[^ /]+?/([^ \\]]+?)\\]\\]
  *
  * @description - Checks one TSV data row of translation notes (TN2)
  * @param {string} languageCode - the language code, e.g., 'en'
- * @param {string} repoCode - TN2, TQ2, TWL, SN, or SQ -- allows more specific checks
+ * @param {string} repoCode - 'TN'
  * @param {string} line - the TSV line to be checked
  * @param {string} bookID - 3-character UPPERCASE USFM book identifier or 'OBS'
  * @param {string} givenC - chapter number or (for OBS) story number string
@@ -44,8 +44,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
     // functionLog(`checkTN_TSV9DataRow(${languageCode}, ${repoCode}, ${line}, ${bookID}, ${givenRowLocation}, ${JSON.stringify(checkingOptions)})…`);
     parameterAssert(languageCode !== undefined, "checkTN_TSV9DataRow: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkTN_TSV9DataRow: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
-    parameterAssert(repoCode !== undefined, "checkTN_TSV9DataRow: 'repoCode' parameter should be defined");
-    parameterAssert(typeof repoCode === 'string', `checkTN_TSV9DataRow: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
+    parameterAssert(repoCode === 'TN', `checkTN_TSV9DataRow: repoCode expected 'TN' not '${repoCode}'`);
     parameterAssert(line !== undefined, "checkTN_TSV9DataRow: 'line' parameter should be defined");
     parameterAssert(typeof line === 'string', `checkTN_TSV9DataRow: 'line' parameter should be a string not a '${typeof line}'`);
     parameterAssert(bookID !== undefined, "checkTN_TSV9DataRow: 'bookID' parameter should be defined");
@@ -128,7 +127,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
         parameterAssert(typeof rowLocation === 'string', `checkTN_TSV9DataRow ourMarkdownTextChecks: 'rowLocation' parameter should be a string not a '${typeof rowLocation}'`);
         parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkTN_TSV9DataRow ourMarkdownTextChecks: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const omtcResultObject = await checkMarkdownText(languageCode, fieldName, fieldText, rowLocation, checkingOptions);
+        const omtcResultObject = await checkMarkdownText(languageCode, repoCode, fieldName, fieldText, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -138,7 +137,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
         for (const noticeEntry of omtcResultObject.noticeList) {
             // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourMarkdownTextChecks notice length=${Object.keys(noticeEntry).length}`);
             // NOTE: Ellipses in OccurrenceNote have the normal meaning
-            //          not like the specialised meaning in the snippet fields OrigQuote and GLQuote
+            //          not like the specialised meaning in the snippet fields Quote and GLQuote
             if (noticeEntry.priority !== 178 && noticeEntry.priority !== 179 // unexpected space after ellipse, ellipse after space
                 && !noticeEntry.message.startsWith("Unexpected … character after space") // 191
             )
@@ -177,7 +176,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
         parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkTN_TSV9DataRow ourCheckTextField: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
         const fieldType = fieldName === 'OccurrenceNote' ? 'markdown' : 'raw';
-        const octfResultObject = checkTextField(languageCode, fieldType, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions);
+        const octfResultObject = checkTextField(languageCode, repoCode, fieldType, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -298,7 +297,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
         parameterAssert(taLinkText !== undefined, "checkTN_TSV9DataRow ourcheckNotesLinksToOutside: 'taLinkText' parameter should be defined");
         parameterAssert(typeof taLinkText === 'string', `checkTN_TSV9DataRow ourcheckNotesLinksToOutside: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
 
-        const coqResultObject = await checkNotesLinksToOutside(repoCode, bookID, givenC, givenV, fieldName, taLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: languageCode });
+        const coqResultObject = await checkNotesLinksToOutside(languageCode, repoCode, bookID, givenC, givenV, fieldName, taLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: languageCode });
         // debugLog("coqResultObject", JSON.stringify(coqResultObject));
 
         // Choose only ONE of the following
@@ -346,9 +345,9 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
     }
     // else
     // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
-    // const halfLength = Math.floor(excerptLength / 2); // rounded down
-    // const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
-    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    // const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    // const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+    // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
     const lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook;
@@ -363,7 +362,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
     let fields = line.split('\t');
     let RIDSuggestion, SRSuggestion, GLQSuggestion, OQSuggestion, OSuggestion, ONSuggestion;
     if (fields.length === NUM_EXPECTED_TN_TSV_FIELDS) {
-        const [B, C, V, rowID, supportReference, origQuote, occurrence, GLQuote, occurrenceNote] = fields;
+        const [B, C, V, rowID, supportReference, quote, occurrence, GLQuote, occurrenceNote] = fields;
         // let withString = ` with '${rowID}'${inString}`;
         // let CV_withString = ` ${C}:${V}${withString}`;
         // let atString = ` at ${B} ${C}:${V} (${rowID})${inString}`;
@@ -476,20 +475,20 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
         // else if (/^\d+$/.test(C) && /^\d+$/.test(V)) // C:V are both digits
         //     addNoticePartial({ priority: 877, message: "Missing SupportReference field", fieldName: 'SupportReference', rowID, location: ourRowLocation });
 
-        if (origQuote.length) { // need to check UTN against UHB and UGNT
-            OQSuggestion = ourCheckTextField(rowID, 'OrigQuote', origQuote, false, ourRowLocation, checkingOptions);
+        if (quote.length) { // need to check UTN against UHB and UGNT
+            OQSuggestion = ourCheckTextField(rowID, 'Quote', quote, false, ourRowLocation, checkingOptions);
             if (occurrence.length)
-                await ourCheckTNOriginalLanguageQuote(rowID, 'OrigQuote', origQuote, occurrence, ourRowLocation, checkingOptions);
+                await ourCheckTNOriginalLanguageQuote(rowID, 'Quote', quote, occurrence, ourRowLocation, checkingOptions);
             else
                 addNoticePartial({ priority: 750, message: "Missing occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, location: ourRowLocation });
         }
         else // TODO: Find more details about when these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             if (V !== 'intro' && occurrence !== '0')
-                addNoticePartial({ priority: 919, message: "Missing OrigQuote field", fieldName: 'OrigQuote', rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 919, message: "Missing Quote field", fieldName: 'Quote', rowID, location: ourRowLocation });
 
         if (occurrence.length) { // This should usually be a digit
             if (occurrence === '0') { // zero means that it doesn’t occur
-                if (origQuote.length) {
+                if (quote.length) {
                     addNoticePartial({ priority: 751, message: "Invalid zero occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, excerpt: occurrence, location: ourRowLocation });
                     OSuggestion = '1';
                 }
@@ -503,7 +502,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
                 OSuggestion = '1';
             }
         }
-        else if (origQuote.length) {
+        else if (quote.length) {
             addNoticePartial({ priority: 791, message: `Missing occurrence field`, fieldName: 'Occurrence', rowID, location: ourRowLocation });
             OSuggestion = '1';
         }
@@ -546,8 +545,8 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
         else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             addNoticePartial({ priority: 274, message: "Missing OccurrenceNote field", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation });
 
-        // 9 [B, C, V, rowID, supportReference, origQuote, occurrence, GLQuote, occurrenceNote]
-        const suggestion = `${B}\t${C}\t${V}\t${RIDSuggestion === undefined ? rowID : RIDSuggestion}\t${SRSuggestion === undefined ? supportReference : SRSuggestion}\t${OQSuggestion === undefined ? origQuote : OQSuggestion}\t${OSuggestion === undefined ? occurrence : OSuggestion}\t${GLQSuggestion === undefined ? GLQuote : GLQSuggestion}\t${ONSuggestion === undefined ? occurrenceNote : ONSuggestion}`;
+        // 9 [B, C, V, rowID, supportReference, quote, occurrence, GLQuote, occurrenceNote]
+        const suggestion = `${B}\t${C}\t${V}\t${RIDSuggestion === undefined ? rowID : RIDSuggestion}\t${SRSuggestion === undefined ? supportReference : SRSuggestion}\t${OQSuggestion === undefined ? quote : OQSuggestion}\t${OSuggestion === undefined ? occurrence : OSuggestion}\t${GLQSuggestion === undefined ? GLQuote : GLQSuggestion}\t${ONSuggestion === undefined ? occurrenceNote : ONSuggestion}`;
         if (suggestion !== line) {
             // debugLog(`Had TN2 ${line}`);
             // debugLog(`Sug TN2 ${suggestion}`);

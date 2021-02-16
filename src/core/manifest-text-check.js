@@ -540,7 +540,18 @@ const ajv = new Ajv();
 const validate = ajv.compile(MANIFEST_SCHEMA);
 
 
-export async function checkManifestText(username, repoName, repoBranch, manifestText, givenLocation, checkingOptions) {
+/**
+ *
+ * @param {string} languageCode
+ * @param {string} repoCode
+ * @param {string} username
+ * @param {string} repoName
+ * @param {string} repoBranch
+ * @param {string} manifestText
+ * @param {string} givenLocation
+ * @param {Object} checkingOptions
+ */
+export async function checkManifestText(languageCode, repoCode, username, repoName, repoBranch, manifestText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
     See the specification at https://resource-container.readthedocs.io/en/latest/manifest.html.
@@ -548,6 +559,10 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
     Returns a result object containing a successList and a noticeList
     */
     // functionLog(`checkManifestText(${username}, ${repoName}, ${repoBranch}, ${manifestText.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
+    parameterAssert(languageCode !== undefined, "checkManifestText: 'languageCode' parameter should be defined");
+    parameterAssert(typeof languageCode === 'string', `checkManifestText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
+    parameterAssert(repoCode !== undefined, "checkManifestText: 'repoCode' parameter should be defined");
+    parameterAssert(typeof repoCode === 'string', `checkManifestText: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
     parameterAssert(username !== undefined, "checkManifestText: 'username' parameter should be defined");
     parameterAssert(typeof username === 'string', `checkManifestText: 'username' parameter should be a string not a '${typeof username}': ${username}`);
     parameterAssert(repoName !== undefined, "checkManifestText: 'repoName' parameter should be defined");
@@ -576,9 +591,9 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
     }
     // else
     // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
-    // const halfLength = Math.floor(excerptLength / 2); // rounded down
-    // const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
-    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    // const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    // const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+    // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
     const cmtResult = { successList: [], noticeList: [] };
 
@@ -618,7 +633,7 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
         parameterAssert(typeof manifestText === 'string', `cManT ourYAMLTextChecks: 'manifestText' parameter should be a string not a '${typeof manifestText}'`);
         // parameterAssert( allowedLinks===true || allowedLinks===false, "cManT ourYAMLTextChecks: allowedLinks parameter must be either true or false");
 
-        const cYtResultObject = checkYAMLText('en', textName, manifestText, givenLocation, checkingOptions);
+        const cYtResultObject = checkYAMLText('en', repoCode, textName, manifestText, givenLocation, checkingOptions);
 
         // Concat is faster if we don’t need to process each notice individually
         cmtResult.successList = cmtResult.successList.concat(cYtResultObject.successList);

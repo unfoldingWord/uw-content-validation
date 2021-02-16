@@ -14,16 +14,15 @@ const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOr
 /**
  *
  * @param {string} languageCode
+ * @param {string} repoCode - 'TN' -- keeps parameter set consistent with other similar functions
  * @param {string} bookID
  * @param {string} filename
  * @param {string} tableText
  * @param {string} givenLocation
  * @param {Object} checkingOptions
  */
-export async function checkTN_TSV9Table(languageCode, bookID, filename, tableText, givenLocation, checkingOptions) {
+export async function checkTN_TSV9Table(languageCode, repoCode, bookID, filename, tableText, givenLocation, checkingOptions) {
     /*
-    repoCode is not passed through here, as can only be 'TN'
-
     This function is optimised for checking the entire file, i.e., all rows.
 
       It also has the advantage of being able to compare one row with the previous one.
@@ -35,6 +34,7 @@ export async function checkTN_TSV9Table(languageCode, bookID, filename, tableTex
     // functionLog(`checkTN_TSV9Table(${languageCode}, ${bookID}, ${filename}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
     parameterAssert(languageCode !== undefined, "checkTN_TSV9Table: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkTN_TSV9Table: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    parameterAssert(repoCode === 'TN', `checkTN_TSV9Table: repoCode expected 'TN' not '${repoCode}'`);
     parameterAssert(bookID !== undefined, "checkTN_TSV9Table: 'bookID' parameter should be defined");
     parameterAssert(typeof bookID === 'string', `checkTN_TSV9Table: 'bookID' parameter should be a string not a '${typeof bookID}'`);
     parameterAssert(bookID.length === 3, `checkTN_TSV9Table: 'bookID' parameter should be three characters long not ${bookID.length}`);
@@ -43,8 +43,6 @@ export async function checkTN_TSV9Table(languageCode, bookID, filename, tableTex
     parameterAssert(givenLocation !== undefined, "checkTN_TSV9Table: 'givenLocation' parameter should be defined");
     parameterAssert(typeof givenLocation === 'string', `checkTN_TSV9Table: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
     parameterAssert(checkingOptions !== undefined, "checkTN_TSV9Table: 'checkingOptions' parameter should be defined");
-
-    const repoCode = 'TN';
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -97,9 +95,9 @@ export async function checkTN_TSV9Table(languageCode, bookID, filename, tableTex
     }
     // else
     // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
-    // const halfLength = Math.floor(excerptLength / 2); // rounded down
-    // const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
-    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    // const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    // const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+    // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
     let lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook = 0;
@@ -124,14 +122,14 @@ export async function checkTN_TSV9Table(languageCode, bookID, filename, tableTex
             if (lines[0] === EXPECTED_TN_HEADING_LINE)
                 addSuccessMessage(`Checked TSV header ${ourLocation}`);
             else
-                addNoticePartial({ priority: 746, message: "Bad TSV header", lineNumber: n + 1, location: `${ourLocation}: '${lines[0]}'` });
+                addNoticePartial({ priority: 988, message: "Bad TSV header", details: `expected '${EXPECTED_TN_HEADING_LINE}'`, excerpt: lines[0], lineNumber: 1, location: ourLocation });
         }
         else // not the header
         {
             let fields = lines[n].split('\t');
             if (fields.length === NUM_EXPECTED_TN_TSV_FIELDS) {
                 // eslint-disable-next-line no-unused-vars
-                const [B, C, V, rowID, supportReference, origQuote, occurrence, _GLQuote, _occurrenceNote] = fields;
+                const [B, C, V, rowID, supportReference, quote, occurrence, _GLQuote, _occurrenceNote] = fields;
 
                 // Use the row check to do most basic checks
                 const drResultObject = await checkTN_TSV9DataRow(languageCode, repoCode, lines[n], bookID, C, V, ourLocation, checkingOptions);
@@ -170,7 +168,7 @@ export async function checkTN_TSV9Table(languageCode, bookID, filename, tableTex
 
                 // TODO: Check if we need this at all (even though tC 3.0 can’t display these "duplicate" notes)
                 // Check for duplicate notes
-                const uniqueID = C + V + supportReference + origQuote + occurrence; // This combination should not be repeated
+                const uniqueID = C + V + supportReference + quote + occurrence; // This combination should not be repeated
                 // if (uniqueRowList.includes(uniqueID))
                 //     addNoticePartial({ priority: 880, C, V, message: `Duplicate note`, rowID, lineNumber: n + 1, location: ourLocation });
                 // if (uniqueRowList.includes(uniqueID))
@@ -250,7 +248,7 @@ export async function checkTN_TSV9Table(languageCode, bookID, filename, tableTex
                     try { C = fields[1]; } catch { }
                     try { V = fields[2]; } catch { }
                     try { rowID = fields[3]; } catch { }
-                    addNoticePartial({ priority: 988, message: `Wrong number of tabbed fields (expected ${NUM_EXPECTED_TN_TSV_FIELDS})`, excerpt: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, C, V, rowID, lineNumber: n + 1, location: ourLocation });
+                    addNoticePartial({ priority: 983, message: `Wrong number of tabbed fields (expected ${NUM_EXPECTED_TN_TSV_FIELDS})`, excerpt: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, C, V, rowID, lineNumber: n + 1, location: ourLocation });
                 }
         }
     }

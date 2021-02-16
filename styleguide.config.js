@@ -123,13 +123,13 @@ let sections = [
 		// content: 'src/core/README.md',
 		sections: [
 			{
-				name: 'TQ/SQ TSV5 table check',
-				content: 'src/core/questions-tsv5-table-check.md',
+				name: 'TWLLinks TSV6 table check',
+				content: 'src/core/twl-tsv6-table-check.md',
 				// description: ''
 			},
 			{
-				name: 'TWLLinks TSV6 table check',
-				content: 'src/core/twl-tsv6-table-check.md',
+				name: 'TQ/SQ TSV7 table check',
+				content: 'src/core/questions-tsv7-table-check.md',
 				// description: ''
 			},
 			{
@@ -207,13 +207,13 @@ let sections = [
 		// content: 'src/core/README.md',
 		sections: [
 			{
-				name: 'TQ/SQ TSV5 row check',
-				content: 'src/core/questions-tsv5-row-check.md',
+				name: 'TWLinks TSV6 row check',
+				content: 'src/core/twl-tsv6-row-check.md',
 				// description: ''
 			},
 			{
-				name: 'TWLinks TSV6 row check',
-				content: 'src/core/twl-tsv6-row-check.md',
+				name: 'TQ/SQ TSV7 row check',
+				content: 'src/core/questions-tsv7-row-check.md',
 				// description: ''
 			},
 			{

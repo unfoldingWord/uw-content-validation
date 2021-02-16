@@ -11,12 +11,12 @@ These raw notice components can then be filtered and/or sorted as required by th
 //        Simply click inside here and add, change, or delete text as required.
 
 import React, { useState, useEffect } from 'react';
-import { checkQuestionsTSV7DataRow } from './questions-tsv5-row-check';
+import { checkQuestionsTSV7DataRow } from './questions-tsv7-row-check';
 import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Empty, Header, Nonsense, Good, Bad, Very bad, and Actual line samples
 const lineE = "";
-const lineH = "Reference\tID\tTags\tQuestion\tResponse";
+const lineH = "Reference\tID\tTags\tQuote\tOccurrence\tQuestion\tResponse";
 const lineN = "Peace on Earth, good will to all men/people!";
 const lineG = "2:3\tw3r5\t\t1\t\tThis is an  optional note";
 const lineB1 = "2:3\tw3r5\t\t1\t\t<br>Boo";

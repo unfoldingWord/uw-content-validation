@@ -1,4 +1,4 @@
-import { checkTextField } from './field-text-check'
+// import { checkTextField } from './field-text-check'
 import { cachedGetFileUsingFullURL } from './getApi';
 import { userLog, parameterAssert } from './utilities';
 
@@ -50,7 +50,18 @@ export async function startLiveLinksCheck(linksList, existingNoticeList, callbac
 }
 
 
-export function checkFieldLinks(fieldName, fieldText, linkOptions, optionalFieldLocation, checkingOptions) {
+/**
+ *
+ * @param {string} languageCode
+ * @param {string} repoCode
+ * @param {string} fieldName
+ * @param {string} fieldText
+ * @param {Object} linkOptions
+ * @param {string} optionalFieldLocation
+ * @param {Object} checkingOptions
+ */
+/*
+export function checkFieldLinks(languageCode, repoCode, fieldName, fieldText, linkOptions, optionalFieldLocation, checkingOptions) {
     // Does basic checks for fields that are links or that contain links
 
     // We assume that checking for compulsory fields is done elsewhere
@@ -64,6 +75,10 @@ export function checkFieldLinks(fieldName, fieldText, linkOptions, optionalField
     userLog(`checkFieldLinks('${fieldName}', '${fieldText}')…`);
     // debugLog( "linkOptions", JSON.stringify(linkOptions));
     // debugLog( "linkOptionsEC", linkOptions.expectedCount);
+    parameterAssert(languageCode !== undefined, "checkFieldLinks: 'languageCode' parameter should be defined");
+    parameterAssert(typeof languageCode === 'string', `checkFieldLinks: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
+    parameterAssert(repoCode !== undefined, "checkFieldLinks: 'repoCode' parameter should be defined");
+    parameterAssert(typeof repoCode === 'string', `checkFieldLinks: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
     parameterAssert(fieldName !== undefined, "checkFieldLinks: 'fieldName' parameter should be defined");
     parameterAssert(typeof fieldName === 'string', `checkFieldLinks: 'fieldName' parameter should be a string not a '${typeof fieldName}': ${fieldName}`);
     parameterAssert(fieldText !== undefined, "checkFieldLinks: 'fieldText' parameter should be defined");
@@ -108,9 +123,8 @@ export function checkFieldLinks(fieldName, fieldText, linkOptions, optionalField
     }
 
     // Ok, we have something in our field
-    const languageCode = '';
     if (linkOptions.otherTextAllowed)
-        result = checkTextField(languageCode, 'link', fieldName, fieldText, true, optionalFieldLocation, checkingOptions);
+        result = checkTextField(languageCode, repoCode, 'link', fieldName, fieldText, true, optionalFieldLocation, checkingOptions);
 
     // Parameter nonsense check
     if (linkOptions.allowedCount > 0 && linkOptions.expectedCount > linkOptions.allowedCount)
@@ -158,3 +172,4 @@ export function checkFieldLinks(fieldName, fieldText, linkOptions, optionalField
     return result;
 }
 // end of checkFieldLinks function
+*/

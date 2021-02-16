@@ -16,7 +16,7 @@ import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Empty, Header, Nonsense, Good, Bad, Very bad, and Actual line samples
 const lineE = "";
-const lineH = "Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote";
+const lineH = "Book\tChapter\tVerse\tID\tSupportReference\tQuote\tOccurrence\tGLQuote\tOccurrenceNote";
 const lineN = "Peace on Earth, good will to all men/people!";
 const lineG = "GEN\t2\t3\tw3r5\t\t1\t\tThis is an  optional note";
 const lineB1 = "EXO\t2\t3\tw3r5\t\t1\t\t<br>Boo";

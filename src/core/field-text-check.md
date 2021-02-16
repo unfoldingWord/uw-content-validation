@@ -27,7 +27,7 @@ const chosenTextName = "textB";
 const chosenText = textB;
 
 // The third parameter is "linksAllowed"
-const rawResults = checkTextField('en', 'raw', 'Sample', chosenText, false, 'in '+chosenTextName+' that was supplied');
+const rawResults = checkTextField('en', 'TN', 'raw', 'Sample', chosenText, false, 'in '+chosenTextName+' that was supplied');
 if (!rawResults.successList || !rawResults.successList.length)
     rawResults.successList = ["Done basic text checks"];
 

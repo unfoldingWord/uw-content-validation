@@ -2,13 +2,13 @@ import * as books from './books/books';
 import { DEFAULT_EXCERPT_LENGTH } from './text-handling-functions'
 import { checkNotesTSV7DataRow } from './notes-tsv7-row-check';
 import { removeDisabledNotices } from './disabled-notices';
-import { functionLog, parameterAssert } from './utilities';
+import { parameterAssert } from './utilities';
 
 
 const NOTES_TABLE_VALIDATOR_VERSION_STRING = '0.3.2';
 
 const NUM_EXPECTED_NOTES_TSV_FIELDS = 7; // so expects 6 tabs per line
-const EXPECTED_TN_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tNote';
+const EXPECTED_NOTES_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tNote';
 
 
 /**
@@ -30,10 +30,10 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
 
      Returns a result object containing a successList and a noticeList
      */
-    functionLog(`checkNotesTSV7Table(${languageCode}, ${repoCode}, ${bookID}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
+    // functionLog(`checkNotesTSV7Table(${languageCode}, ${repoCode}, ${bookID}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
     parameterAssert(languageCode !== undefined, "checkNotesTSV7Table: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkNotesTSV7Table: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
-    parameterAssert(repoCode === 'TN' || repoCode === 'SN', `checkTWL_TSV6Table: repoCode expected 'TN' or 'SN' not '${repoCode}'`);
+    parameterAssert(repoCode === 'TN' || repoCode === 'TN2' || repoCode === 'SN', `checkTWL_TSV6Table: repoCode expected 'TN', 'TN2', or 'SN' not '${repoCode}'`);
     parameterAssert(bookID !== undefined, "checkNotesTSV7Table: 'bookID' parameter should be defined");
     parameterAssert(typeof bookID === 'string', `checkNotesTSV7Table: 'bookID' parameter should be a string not a '${typeof bookID}'`);
     parameterAssert(bookID.length === 3, `checkNotesTSV7Table: 'bookID' parameter should be three characters long not ${bookID.length}`);
@@ -83,9 +83,9 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
     }
     // else
     // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
-    // const halfLength = Math.floor(excerptLength / 2); // rounded down
-    // const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
-    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    // const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    // const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+    // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
     let lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook = 0;
@@ -111,10 +111,10 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
     for (let n = 0; n < lines.length; n++) {
         // functionLog(`checkNotesTSV7Table checking line ${n}: ${JSON.stringify(lines[n])}`);
         if (n === 0) {
-            if (lines[0] === EXPECTED_TN_HEADING_LINE)
+            if (lines[0] === EXPECTED_NOTES_HEADING_LINE)
                 addSuccessMessage(`Checked TSV header ${ourLocation}`);
             else
-                addNoticePartial({ priority: 746, message: "Bad TSV header", lineNumber: n + 1, location: `${ourLocation}: '${lines[0]}'` });
+                addNoticePartial({ priority: 988, message: "Bad TSV header", details: `expected '${EXPECTED_NOTES_HEADING_LINE}'`, excerpt: lines[0], lineNumber: 1, location: ourLocation });
         }
         else // not the header
         {
@@ -237,7 +237,7 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
                     try { reference = fields[0]; } catch { }
                     try { rowID = fields[1]; } catch { }
                     try { [C, V] = reference.split(':'); } catch { }
-                    addNoticePartial({ priority: 988, message: `Wrong number of tabbed fields (expected ${NUM_EXPECTED_NOTES_TSV_FIELDS})`, excerpt: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, C, V, rowID, lineNumber: n + 1, location: ourLocation });
+                    addNoticePartial({ priority: 983, message: `Wrong number of tabbed fields (expected ${NUM_EXPECTED_NOTES_TSV_FIELDS})`, excerpt: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, C, V, rowID, lineNumber: n + 1, location: ourLocation });
                 }
         }
     }

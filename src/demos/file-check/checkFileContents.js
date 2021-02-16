@@ -3,7 +3,7 @@ import {
   userLog, parameterAssert, logicAssert,
   formRepoName,
   checkUSFMText, checkMarkdownFileContents, checkPlainText, checkYAMLText, checkManifestText,
-  checkTN_TSV9Table, checkNotesTSV7Table, checkQuestionsTSV5Table, checkTWL_TSV6Table,
+  checkTN_TSV9Table, checkNotesTSV7Table, checkQuestionsTSV7Table, checkTWL_TSV6Table,
 } from '../../core';
 
 
@@ -47,6 +47,7 @@ export async function checkFileContents(username, languageCode, repoCode, branch
   if (ourCFLocation[0] !== ' ') ourCFLocation = ' ' + ourCFLocation;
 
   const filenameLower = filename.toLowerCase();
+  const repoName = formRepoName(languageCode, repoCode);
 
   let checkFileResult = { checkedFileCount: 0 };
   if (filenameLower.endsWith('.tsv')) {
@@ -57,12 +58,12 @@ export async function checkFileContents(username, languageCode, repoCode, branch
     parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
     if (filename.startsWith(`${languageCode}_`) || filenameMain.startsWith('en_')) {
       logicAssert(repoCode==='TN', `These filenames ${filenameMain} are only for TN ${repoCode}`);
-      checkFileResult = await checkTN_TSV9Table(languageCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
+      checkFileResult = await checkTN_TSV9Table(languageCode, repoCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
     } else {
       logicAssert(repoCode!=='TN', `This code with ${filenameMain} is not for TN`);
       let checkFunction = {
         TN2: checkNotesTSV7Table, SN: checkNotesTSV7Table,
-        TQ2: checkQuestionsTSV5Table, SQ: checkQuestionsTSV5Table,
+        TQ2: checkQuestionsTSV7Table, SQ: checkQuestionsTSV7Table,
         TWL: checkTWL_TSV6Table,
       }[repoCode];
       checkFileResult = await checkFunction(languageCode, repoCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
@@ -83,15 +84,15 @@ export async function checkFileContents(username, languageCode, repoCode, branch
     parameterAssert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
     checkFileResult = checkUSFMText(languageCode, repoCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
   } else if (filenameLower.endsWith('.md'))
-    checkFileResult = checkMarkdownFileContents(languageCode, filename, fileContent, ourCFLocation, checkingOptions);
+    checkFileResult = checkMarkdownFileContents(languageCode, repoCode, filename, fileContent, ourCFLocation, checkingOptions);
   else if (filenameLower.endsWith('.txt'))
-    checkFileResult = checkPlainText(languageCode, 'text', filename, fileContent, ourCFLocation, checkingOptions);
+    checkFileResult = checkPlainText(languageCode, repoCode, 'text', filename, fileContent, ourCFLocation, checkingOptions);
   else if (filenameLower === 'manifest.yaml')
-    checkFileResult = await checkManifestText(username, formRepoName(languageCode, repoCode), branch, fileContent, ourCFLocation, checkingOptions); // don’t know username or branch
+    checkFileResult = await checkManifestText(languageCode, repoCode, username, repoName, branch, fileContent, ourCFLocation, checkingOptions); // don’t know username or branch
   else if (filenameLower.endsWith('.yaml'))
-    checkFileResult = checkYAMLText(languageCode, filename, fileContent, ourCFLocation, checkingOptions);
+    checkFileResult = checkYAMLText(languageCode, repoCode, filename, fileContent, ourCFLocation, checkingOptions);
   else {
-    checkFileResult = checkPlainText(languageCode, 'raw', filename, fileContent, ourCFLocation, checkingOptions);
+    checkFileResult = checkPlainText(languageCode, repoCode, 'raw', filename, fileContent, ourCFLocation, checkingOptions);
     checkFileResult.noticeList.unshift({ priority: 995, message: "File extension is not recognized, so treated as plain text.", filename, location: filename });
   }
   // functionLog(`checkFileContents got initial results with ${checkFileResult.successList.length} success message(s) and ${checkFileResult.noticeList.length} notice(s)`);
@@ -100,7 +101,8 @@ export async function checkFileContents(username, languageCode, repoCode, branch
   function addFilenameField(noticeObject) {
     if (noticeObject.debugChain) noticeObject.debugChain = `checkFileContents ${noticeObject.debugChain}`;
     if (noticeObject.fieldName === filename) delete noticeObject.fieldName;
-    return noticeObject.extra ? noticeObject : { ...noticeObject, filename }; // Might be an indirect check on a TA or TW article
+    // TODO: Might we need to add username, repoName, or branch here ???
+    return noticeObject.extra ? noticeObject : { ...noticeObject, filename }; // NOTE: might be an indirect check on a TA or TW article
   }
   checkFileResult.noticeList = checkFileResult.noticeList.map(addFilenameField);
 

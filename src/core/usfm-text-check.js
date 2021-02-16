@@ -129,7 +129,7 @@ const ATTRIBUTE_REGEX = new RegExp('[ |]([^ |]+?)="([^"]*?)"', 'g');
 /**
  *
  * @param {string} languageCode
- * @param {string} repoCode
+ * @param {string} repoCode -- e.g., 'UHB', 'UGNT', 'LT' or 'ST'
  * @param {string} bookID
  * @param {string} filename
  * @param {string} givenText
@@ -174,9 +174,9 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
     }
     // else
     // debugLog(`Using supplied excerptLength=${excerptLength} cf. default=${DEFAULT_EXCERPT_LENGTH}`);
-    const halfLength = Math.floor(excerptLength / 2); // rounded down
-    const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
-    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+    // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
     const lowercaseBookID = bookID.toLowerCase();
 
@@ -519,7 +519,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         parameterAssert(fieldLocation !== undefined, "cUSFM ourCheckTextField: 'fieldLocation' parameter should be defined");
         parameterAssert(typeof fieldLocation === 'string', `cUSFM ourCheckTextField: 'fieldLocation' parameter should be a string not a '${typeof fieldLocation}'`);
 
-        const dbtcResultObject = checkTextField(languageCode, fieldType, fieldName, fieldText, allowedLinks, fieldLocation, checkingOptions);
+        const dbtcResultObject = checkTextField(languageCode, repoCode, fieldType, fieldName, fieldText, allowedLinks, fieldLocation, checkingOptions);
 
         // Process noticeList line by line to filter out potential false positives
         //  for this particular kind of text field
@@ -545,7 +545,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         parameterAssert(typeof fileText === 'string', `cUSFM ourBasicFileChecks: 'fileText' parameter should be a string not a '${typeof fileText}'`);
         parameterAssert(checkingOptions !== undefined, "cUSFM ourBasicFileChecks: 'checkingOptions' parameter should be defined");
 
-        const resultObject = checkTextfileContents(languageCode, 'USFM', filename, fileText, fileLocation, checkingOptions);
+        const resultObject = checkTextfileContents(languageCode, repoCode, 'USFM', filename, fileText, fileLocation, checkingOptions);
 
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
@@ -656,7 +656,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
             const ixWordEnd = adjustedRest.indexOf('|');
             if (ixWordEnd < 0 && adjustedRest.indexOf('lemma="') >= 0) {
                 const characterIndex = 5; // Presumably, a little bit into the word
-                const excerpt = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + adjustedRest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < adjustedRest.length ? '…' : '')
                 addNoticePartial({ priority: 912, message: 'Missing | character in \\w line', lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
             parameterAssert(ixWordEnd >= 1, `Why1 is w| = ${ixWordEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
@@ -712,7 +712,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
             const ixWordEnd = adjustedRest.indexOf('|');
             if (ixWordEnd < 0 && adjustedRest.indexOf('lemma="') >= 0) {
                 const characterIndex = nextWIndex + 5; // Presumably, a little bit into the word
-                const excerpt = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + adjustedRest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < adjustedRest.length ? '…' : '')
                 addNoticePartial({ priority: 911, message: 'Missing | character in \\w field', details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
                 adjustedRest = ''; // Avoid follow-on errors
                 break;
@@ -746,12 +746,12 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         if (adjustedRest) {
             let characterIndex;
             if ((characterIndex = adjustedRest.indexOf('"')) >= 0) {
-                const excerpt = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + adjustedRest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < adjustedRest.length ? '…' : '')
                 addNoticePartial({ priority: 776, message: 'Unexpected " straight quote character', details, lineNumber, C, V, excerpt, location: lineLocation });
                 // debugLog(`ERROR 776: in ${marker} '${adjustedRest}' from '${rest}'`);
             }
             if ((characterIndex = adjustedRest.indexOf("'")) >= 0) {
-                const excerpt = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + adjustedRest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < adjustedRest.length ? '…' : '')
                 addNoticePartial({ priority: 775, message: "Unexpected ' straight quote character", details, lineNumber, C, V, excerpt, location: lineLocation });
                 // debugLog(`ERROR 775: in ${marker} '${adjustedRest}' from '${rest}'`);
             }
@@ -759,7 +759,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 // functionLog(`checkUSFMLineText ${languageCode} ${filename} ${lineNumber} ${C}:${V} somehow ended up with ${marker}='${adjustedRest}'`);
                 characterIndex = adjustedRest.indexOf('\\');
                 if (characterIndex === -1) characterIndex = adjustedRest.indexOf('|');
-                const excerpt = (characterIndex > halfLength ? '…' : '') + adjustedRest.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < adjustedRest.length ? '…' : '')
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + adjustedRest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < adjustedRest.length ? '…' : '')
                 addNoticePartial({ priority: 875, message: "Unexpected USFM field", details, lineNumber, C, V, excerpt, location: lineLocation });
             }
             if (adjustedRest !== rest) // Only re-check if line has changed (because original is checked in checkUSFMLineInternals())
@@ -1015,8 +1015,8 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
             }
             let characterIndex;
             if ((characterIndex = line.indexOf('\r')) >= 0) {
-                const iy = characterIndex + halfLength; // Want excerpt to focus more on what follows
-                const excerpt = (iy > halfLength ? '…' : '') + line.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < line.length ? '…' : '')
+                const iy = characterIndex + excerptHalfLength; // Want excerpt to focus more on what follows
+                const excerpt = (iy > excerptHalfLength ? '…' : '') + line.substring(iy - excerptHalfLength, iy + excerptHalfLengthPlus).replace(/ /g, '␣') + (iy + excerptHalfLengthPlus < line.length ? '…' : '')
                 addNoticePartial({ priority: 703, C, V, message: "Unexpected CarriageReturn character", lineNumber: n, characterIndex, excerpt, location: ourLocation });
             }
 
@@ -1053,11 +1053,11 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 try {
                     intC = ourParseInt(C);
                 } catch (usfmICerror) {
-                    addNoticePartial({ priority: 724, C, V, message: "Unable to convert chapter number to integer", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, halfLength)}${rest.length > halfLength ? '…' : ''}`, location: ourLocation });
+                    addNoticePartial({ priority: 724, C, V, message: "Unable to convert chapter number to integer", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, excerptHalfLength)}${rest.length > excerptHalfLength ? '…' : ''}`, location: ourLocation });
                     intC = -999; // Used to prevent consequential errors
                 }
                 if (C === lastC || (intC > 0 && intC !== lastIntC + 1))
-                    addNoticePartial({ priority: 764, C, V, message: "Chapter number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, halfLength)}${rest.length > halfLength ? '…' : ''} (${lastC ? lastC : '0'} → ${C})`, location: ourLocation });
+                    addNoticePartial({ priority: 764, C, V, message: "Chapter number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, excerptHalfLength)}${rest.length > excerptHalfLength ? '…' : ''} (${lastC ? lastC : '0'} → ${C})`, location: ourLocation });
                 lastC = C; lastV = '0';
                 lastIntC = intC; lastIntV = 0;
             } else if (marker === 'v') {
@@ -1066,11 +1066,11 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                     try {
                         intV = ourParseInt(V);
                     } catch (usfmIVerror) {
-                        addNoticePartial({ priority: 723, C, V, message: "Unable to convert verse number to integer", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, halfLength)}${rest.length > halfLength ? '…' : ''}`, location: ourLocation });
+                        addNoticePartial({ priority: 723, C, V, message: "Unable to convert verse number to integer", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, excerptHalfLength)}${rest.length > excerptHalfLength ? '…' : ''}`, location: ourLocation });
                         intV = -999; // Used to prevent consequential errors
                     }
                     if (V === lastV || (intV > 0 && intV !== lastIntV + 1))
-                        addNoticePartial({ priority: 763, C, V, message: "Verse number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, halfLength)}${rest.length > halfLength ? '…' : ''} (${lastV ? lastV : '0'} → ${V})`, location: ourLocation });
+                        addNoticePartial({ priority: 763, C, V, message: "Verse number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, excerptHalfLength)}${rest.length > excerptHalfLength ? '…' : ''} (${lastV ? lastV : '0'} → ${V})`, location: ourLocation });
                     lastV = V; lastIntV = intV;
                 } else { // handle verse bridge
                     const bits = V.split('-');
@@ -1097,11 +1097,11 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                     intV = parseInt(restRest);
                     // debugLog("Got", intV);
                 } catch (usfmIIVerror) {
-                    addNoticePartial({ priority: 720, C, V, message: "Unable to convert internal verse number to integer", lineNumber: n, characterIndex: 3, excerpt: `${restRest.substring(0, halfLength)}${restRest.length > halfLength ? '…' : ''}`, location: ourLocation });
+                    addNoticePartial({ priority: 720, C, V, message: "Unable to convert internal verse number to integer", lineNumber: n, characterIndex: 3, excerpt: `${restRest.substring(0, excerptHalfLength)}${restRest.length > excerptHalfLength ? '…' : ''}`, location: ourLocation });
                     intV = -999; // Used to prevent consequential errors
                 }
                 if (intV > 0 && intV !== lastIntV + 1)
-                    addNoticePartial({ priority: 761, C, V, message: "Verse number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${restRest.substring(0, halfLength)}${restRest.length > halfLength ? '…' : ''} (${lastV ? lastV : '0'} → ${V})`, location: ourLocation });
+                    addNoticePartial({ priority: 761, C, V, message: "Verse number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${restRest.substring(0, excerptHalfLength)}${restRest.length > excerptHalfLength ? '…' : ''} (${lastV ? lastV : '0'} → ${V})`, location: ourLocation });
                 lastV = intV.toString(); lastIntV = intV;
             }
 

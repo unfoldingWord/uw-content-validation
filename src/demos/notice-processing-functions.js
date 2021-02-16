@@ -2,7 +2,7 @@ import { userLog, parameterAssert } from '../core/utilities';
 import { isDisabledNotice } from '../core/disabled-notices';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.10';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.11';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -145,7 +145,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         const ALL_TSV_FIELDNAMES = ['Book', 'Chapter', 'Verse', 'Reference',
             'ID', 'Tags', 'SupportReference',
             'OrigWords', 'TWLink',
-            'OrigQuote', 'Quote', 'Occurrence', 'GLQuote',
+            'Quote', 'Quote', 'Occurrence', 'GLQuote',
             'Question', 'Response',
             'OccurrenceNote', 'Note'];
         const numberStore = {}, duplicatePriorityList = [];
@@ -202,7 +202,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             if (thisC)
                 parameterAssert(thisC === 'front' || !isNaN(thisC * 1), `C '${thisC}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
             if (thisV) // TODO: We'll need to remove this check once we start getting verse ranges, etc.
-                parameterAssert(thisV === 'intro' || !isNaN(thisV * 1), `V '${thisV}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+                // NOTE: Question mark below is in "bad verse number" notices
+                parameterAssert(thisV === 'intro' || thisV === '?' || !isNaN(thisV * 1), `V '${thisV}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
             if (thisRowID) {
                 parameterAssert(thisRowID.indexOf(' ') < 0 && thisRowID.indexOf('/') < 0 && thisRowID.indexOf('\\') < 0, `rowID '${thisRowID}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 if (thisLocation)

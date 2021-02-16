@@ -63,9 +63,9 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
     }
     // else
         // debugLog(`Using supplied excerptLength=${excerptLength}`, "cf. default="+DEFAULT_EXCERPT_LENGTH);
-    const halfLength = Math.floor(excerptLength / 2); // rounded down
-    const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
-    // debugLog(`Using halfLength=${halfLength}`, "halfLengthPlus="+halfLengthPlus);
+    const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+    // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, "excerptHalfLengthPlus="+excerptHalfLengthPlus);
     */
 
     let taRepoUsername;

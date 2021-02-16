@@ -13,12 +13,13 @@ const IMAGE_REGEX = new RegExp('!\\[([^\\]]+?)\\]\\(([^ \\]]+?)\\)', 'g');
 /**
  *
  * @param {string} languageCode
+ * @param {string} repoCode -- e.g., 'TN' or 'TQ2', etc.
  * @param {string} textOrFileName -- used for identification
  * @param {string} markdownText -- the actual text to be checked
  * @param {string} givenLocation
  * @param {Object} checkingOptions
  */
-export async function checkMarkdownText(languageCode, textOrFileName, markdownText, givenLocation, checkingOptions) {
+export async function checkMarkdownText(languageCode, repoCode, textOrFileName, markdownText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire markdown text, i.e., all lines.
 
     This text may not necessarily be from a file -- it may be from a (multiline) field within a file
@@ -31,6 +32,8 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
     parameterAssert(languageCode !== undefined, "checkMarkdownText: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkMarkdownText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
     parameterAssert(languageCode !== 'unfoldingWord', `checkMarkdownText: 'languageCode' ${languageCode} parameter should be not be 'unfoldingWord'`);
+    parameterAssert(repoCode !== undefined, "checkMarkdownText: 'repoCode' parameter should be defined");
+    parameterAssert(typeof repoCode === 'string', `checkMarkdownText: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
     parameterAssert(textOrFileName !== undefined, "checkMarkdownText: 'textOrFileName' parameter should be defined");
     parameterAssert(typeof textOrFileName === 'string', `checkMarkdownText: 'textOrFileName' parameter should be a string not a '${typeof textOrFileName}': ${textOrFileName}`);
     parameterAssert(markdownText !== undefined, "checkMarkdownText: 'markdownText' parameter should be defined");
@@ -55,9 +58,9 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
     }
     // else
     // debugLog("Using supplied excerptLength=" + excerptLength, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
-    const halfLength = Math.floor(excerptLength / 2); // rounded down
-    const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
-    // debugLog("Using halfLength=" + halfLength, `halfLengthPlus=${halfLengthPlus}`);
+    const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+    // debugLog("Using excerptHalfLength=" + excerptHalfLength, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
     const result = { successList: [], noticeList: [] };
 
@@ -108,7 +111,7 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
         parameterAssert(optionalFieldLocation !== undefined, "cMdT ourCheckTextField: 'optionalFieldLocation' parameter should be defined");
         parameterAssert(typeof optionalFieldLocation === 'string', `cMdT ourCheckTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
-        const dbtcResultObject = checkTextField(languageCode, 'markdown', fieldName, fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
+        const dbtcResultObject = checkTextField(languageCode, repoCode, 'markdown', fieldName, fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
 
         // If we need to put everything through addNotice, e.g., for debugging or filtering
         //  process results line by line
@@ -265,8 +268,8 @@ export async function checkMarkdownText(languageCode, textOrFileName, markdownTe
         const count = ((markdownText || '').match(thisRegex) || []).length; // Finds only NON-OVERLAPPING matches hopefully
         if (count && (count % 2) !== 0) {
             const characterIndex = markdownText.indexOf(thisField);
-            const iy = characterIndex + halfLength; // Want excerpt to focus more on what follows
-            const excerpt = /*(iy > halfLength ? '…' : '') +*/ markdownText.substring(iy - halfLength, iy + halfLengthPlus) + (iy + halfLengthPlus < markdownText.length ? '…' : '')
+            const iy = characterIndex + excerptHalfLength; // Want excerpt to focus more on what follows
+            const excerpt = /*(iy > excerptHalfLength ? '…' : '') +*/ markdownText.substring(iy - excerptHalfLength, iy + excerptHalfLengthPlus) + (iy + excerptHalfLengthPlus < markdownText.length ? '…' : '')
             addNotice({ priority: 378, message: `Possible mismatched '${thisField}' markdown formatting pairs`, details: `${count.toLocaleString()} total occurrence${count === 1 ? '' : 's'}`, characterIndex, excerpt, location: ourLocation });
             break; // Only want one warning per text
         }

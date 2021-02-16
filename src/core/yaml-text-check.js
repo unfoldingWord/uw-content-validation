@@ -9,7 +9,16 @@ import { parameterAssert } from './utilities';
 const YAML_VALIDATOR_VERSION_STRING = '0.4.3';
 
 
-export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, checkingOptions) {
+/**
+ *
+ * @param {string} languageCode
+ * @param {string} repoCode -- e.g., 'TN' or 'TQ2', etc.
+ * @param {string} textName
+ * @param {string} YAMLText
+ * @param {string} givenLocation
+ * @param {Object} checkingOptions
+ */
+export function checkYAMLText(languageCode, repoCode, textName, YAMLText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
      Returns a result object containing a successList and a noticeList,
@@ -19,6 +28,8 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, c
     // functionLog(`checkYAMLText(${textName}, ${YAMLText.length}, ${givenLocation})…`);
     parameterAssert(languageCode !== undefined, "checkYAMLText: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkYAMLText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
+    parameterAssert(repoCode !== undefined, "checkYAMLText: 'repoCode' parameter should be defined");
+    parameterAssert(typeof repoCode === 'string', `checkYAMLText: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
     parameterAssert(textName !== undefined, "checkYAMLText: 'textName' parameter should be defined");
     parameterAssert(typeof textName === 'string', `checkYAMLText: 'textName' parameter should be a string not a '${typeof textName}': ${textName}`);
     parameterAssert(YAMLText !== undefined, "checkYAMLText: 'YAMLText' parameter should be defined");
@@ -44,9 +55,9 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, c
     }
     // else
     // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
-    // const halfLength = Math.floor(excerptLength / 2); // rounded down
-    // const halfLengthPlus = Math.floor((excerptLength+1) / 2); // rounded up
-    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    // const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    // const excerptHalfLengthPlus = Math.floor((excerptLength+1) / 2); // rounded up
+    // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
     const cytResult = { successList: [], noticeList: [] };
 
@@ -91,7 +102,7 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, c
         parameterAssert(optionalFieldLocation !== undefined, "cYt ourCheckTextField: 'optionalFieldLocation' parameter should be defined");
         parameterAssert(typeof optionalFieldLocation === 'string', `cYt ourCheckTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
-        const resultObject = checkTextField(languageCode, 'YAML', '', fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
+        const resultObject = checkTextField(languageCode, repoCode, 'YAML', '', fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
 
         // Concat is faster if we don’t need to process each notice individually
         // cytResult.noticeList = cytResult.noticeList.concat(resultObject.noticeList);
@@ -138,7 +149,7 @@ export function checkYAMLText(languageCode, textName, YAMLText, givenLocation, c
         parameterAssert(typeof fileText === 'string', `cYT ourBasicFileChecks: 'fileText' parameter should be a string not a '${typeof fileText}'`);
         parameterAssert(checkingOptions !== undefined, "cYT ourBasicFileChecks: 'checkingOptions' parameter should be defined");
 
-        const resultObject = checkTextfileContents(languageCode, 'YAML', filename, fileText, fileLocation, checkingOptions);
+        const resultObject = checkTextfileContents(languageCode, repoCode, 'YAML', filename, fileText, fileLocation, checkingOptions);
 
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line

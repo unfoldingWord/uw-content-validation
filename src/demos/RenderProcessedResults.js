@@ -1,6 +1,6 @@
 import React from 'react';
 import { forwardRef } from 'react';
-import { parameterAssert, userLog } from '../core/utilities';
+import { parameterAssert, userLog, debugLog } from '../core/utilities';
 
 // NOTE: The following line is currently giving compile warnings -- a problem in a dependency it seems
 import MaterialTable from 'material-table';
@@ -21,23 +21,23 @@ import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 
 const tableIcons = {
-  Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
-  Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
-  Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-  Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
-  DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-  Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
-  Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
-  Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
-  FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
-  LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
-  NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-  PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
-  ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-  Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
-  SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
-  ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
-  ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
+    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
+    Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
+    Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+    Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
+    DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+    Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
+    Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
+    Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
+    FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
+    LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
+    NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+    PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
+    ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+    Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
+    SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
+    ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
+    ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 
 
@@ -252,34 +252,39 @@ function RenderBCV({ bookID, C, V }) {
 * @param {string} fieldName - (optional) name of field
 * @return {String} - rendered HTML for the given reference
 */
-function RenderFileDetails({ username, repoName, filename, lineNumber, rowID, fieldName }) {
+function RenderFileDetails({ username, repoName, branch, filename, lineNumber, rowID, fieldName }) {
     // These are all optional parameters - they may be undefined or blank if irrelevant
-    // debugLog(`RenderFileDetails(${repoName}, ${filename}, ${lineNumber}, ${rowID}, ${fieldName})`);
+    debugLog(`RenderFileDetails(${repoName}, ${branch}, ${filename}, ${lineNumber}, ${rowID}, ${fieldName})`);
     if (!repoName && !filename && !lineNumber && !rowID && !fieldName)
         return null; // They're all undefined or blank!
+    if (!branch) branch = repoName.endsWith('2')? 'newFormat':'master'; // default but with TEMP code for newFormat
     // debugLog(`RenderFileDetails2 ${repoName}, ${filename}, ${lineNumber}`);
-    let resultStart = '', lineResult = '', resultEnd = '', fileLink = '';
+    let resultStart = '', lineResult = '', resultEnd = '', fileLineLink = '', fileLink = '';
     if (repoName && repoName.length) resultStart += ` in ${repoName} repository`;
-    if (filename && filename.length) resultStart += ` in file ${filename}`;
-    if (lineNumber) {
-        resultStart += ' on ';
-        if (username && repoName && filename && lineNumber) {
-            try {
-                if (filename.endsWith('.tsv') || filename.endsWith('.md')) { // use blame so we can see the line!
-                    const folder = repoName.endsWith('_obs') && filename !== 'README.md' && filename !== 'LICENSE.md' ? 'content/' : '';
-                    fileLink = `https://git.door43.org/${username}/${repoName}/blame/branch/master/${folder}${filename}#L${lineNumber}`;
-                } else fileLink = `https://git.door43.org/${username}/${repoName}/src/branch/master/${filename}#L${lineNumber}`;
-            } catch { }
+    if (username && repoName && filename) {
+        if (filename && filename.length) resultStart += ` in file ${filename}`;
+        try {
+            if (filename.endsWith('.tsv') || filename.endsWith('.md')) { // use blame so we can see the actual line!
+                const folder = repoName.endsWith('_obs') && filename !== 'README.md' && filename !== 'LICENSE.md' ? 'content/' : '';
+                fileLink = `https://git.door43.org/${username}/${repoName}/blame/branch/${branch}/${folder}${filename}`;
+            } else fileLink = `https://git.door43.org/${username}/${repoName}/src/branch/${branch}/${filename}`;
+        } catch { }
+        if (lineNumber) {
+            resultStart += ' on ';
+            if (fileLink && lineNumber)
+                fileLineLink = `${fileLink}#L${lineNumber}`;
+            lineResult = `line ${lineNumber.toLocaleString()}`;
         }
-        // else if (!username) resultEnd += " no username";
-        // else if (!repoName) resultEnd += " no repoName";
-        // else if (!filename) resultEnd += " no filename";
-        lineResult = `line ${lineNumber.toLocaleString()}`;
+        // else resultEnd += " no lineNumber";
     }
-    // else resultEnd += " no lineNumber";
+    // else if (!username) resultEnd += " no username";
+    // else if (!repoName) resultEnd += " no repoName";
+    // else if (!filename) resultEnd += " no filename";
     if (rowID && rowID.length) resultEnd += ` with row ID ${rowID}`;
     if (fieldName && fieldName.length) resultEnd += ` in ${fieldName} field`;
-    if (fileLink) return <>{resultStart}<a rel="noopener noreferrer" target="_blank" href={fileLink}>{lineResult}</a>{resultEnd}</>;
+
+    if (fileLineLink) return <>{resultStart}<a rel="noopener noreferrer" target="_blank" href={fileLineLink}>{lineResult}</a>{resultEnd}</>;
+    else if (fileLink) return <>{resultStart} in file <a rel="noopener noreferrer" target="_blank" href={fileLink}>{filename}</a>{resultEnd}</>;
     else return <>{resultStart}<b>{lineResult}</b>{resultEnd}</>;
 }
 
@@ -340,7 +345,7 @@ function RenderProcessedArray({ arrayType, results }) {
                 return <li key={index}>
                     <RenderMessage color={arrayType === 'e' ? 'red' : 'orange'} message={listEntry.message} details={listEntry.details} />
                     <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
-                    <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
+                    <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} branch={listEntry.branch} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
                     {listEntry.characterIndex > 0 ? " (at character " + (listEntry.characterIndex + 1) + ")" : ""}
                     <span style={{ color: 'DimGray' }}>{listEntry.excerpt ? ` around ►${listEntry.excerpt}◄` : ""}</span>
                     {listEntry.location}
@@ -368,7 +373,7 @@ function RenderGivenArray({ array, color }) {
             return <li key={index}>
                 <RenderMessage color={color} message={listEntry.message} details={listEntry.details} />
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
-                <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
+                <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} branch={listEntry.branch} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
                 {listEntry.characterIndex !== undefined && listEntry.characterIndex >= 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
                 <span style={{ color: 'DimGray' }}>{listEntry.excerpt ? ` around ►${listEntry.excerpt}◄` : ""}</span>
                 {listEntry.location}
@@ -406,7 +411,7 @@ function RenderWarningsGradient({ results }) {
             return <li key={index}>
                 <RenderMessage color={thiscolor} message={listEntry.message} details={listEntry.details} />
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
-                <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
+                <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} branch={listEntry.branch} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
                 {listEntry.characterIndex !== undefined && listEntry.characterIndex >= 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
                 <span style={{ color: 'DimGray' }}>{listEntry.excerpt ? ` around ►${listEntry.excerpt}◄` : ""}</span>
                 {listEntry.location}

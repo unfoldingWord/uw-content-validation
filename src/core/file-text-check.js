@@ -4,7 +4,17 @@ import { parameterAssert } from './utilities';
 // const FILE_TEXT_VALIDATOR_VERSION_STRING = '0.3.1';
 
 
-export function checkTextfileContents(languageCode, fileType, filename, fileText, optionalFileLocation, checkingOptions) {
+/**
+ *
+ * @param {string} languageCode
+ * @param {string} repoCode -- e.g., 'TN' or 'TQ2', etc.
+ * @param {string} fileType
+ * @param {string} filename
+ * @param {string} fileText
+ * @param {string} optionalFileLocation
+ * @param {Object} checkingOptions
+ */
+export function checkTextfileContents(languageCode, repoCode, fileType, filename, fileText, optionalFileLocation, checkingOptions) {
     // Does basic checks for small errors like mismatched punctuation pairs, etc.
     //  (Used by ourBasicFileChecks() in checkUSFMText() in usfm-text-check.js)
 
@@ -24,6 +34,8 @@ export function checkTextfileContents(languageCode, fileType, filename, fileText
     // functionLog(`checkTextfileContents(${filename}, ${fileText.length.toLocaleString()} chars, '${optionalFileLocation}')…`);
     parameterAssert(languageCode !== undefined, "checkTextfileContents: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkTextfileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
+    parameterAssert(repoCode !== undefined, "checkTextfileContents: 'repoCode' parameter should be defined");
+    parameterAssert(typeof repoCode === 'string', `checkTextfileContents: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
     parameterAssert(fileType !== undefined, "checkTextfileContents: 'fileType' parameter should be defined");
     parameterAssert(typeof fileType === 'string', `checkTextfileContents: 'fileType' parameter should be a string not a '${typeof fileType}': ${fileType}`);
     parameterAssert(fileType !== '', `checkTextfileContents: 'fileType' ${fileType} parameter should be not be an empty string`);
@@ -71,7 +83,7 @@ export function checkTextfileContents(languageCode, fileType, filename, fileText
         parameterAssert(typeof plainText === 'string', `cPT ourCheckPlainText: 'plainText' parameter should be a string not a '${typeof plainText}'`);
         parameterAssert(checkingOptions !== undefined, "cPT ourCheckPlainText: 'checkingOptions' parameter should be defined");
 
-        const resultObject = checkPlainText(languageCode, textType, textFilename, plainText, givenLocation, checkingOptions);
+        const resultObject = checkPlainText(languageCode, repoCode, textType, textFilename, plainText, givenLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -102,9 +114,9 @@ export function checkTextfileContents(languageCode, fileType, filename, fileText
     }
     // else
     // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
-    const halfLength = Math.floor(excerptLength / 2); // rounded down
-    const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
-    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+    // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
     */
 
     /*
@@ -126,7 +138,7 @@ export function checkTextfileContents(languageCode, fileType, filename, fileText
     //     if (ix === -1) ix = fileText.indexOf('.info');
     //     if (ix === -1) ix = fileText.indexOf('.bible');
     //     if (ix >= 0) {
-    //         let excerpt = (ix>halfLength ? '…' : '') + fileText.substring(ix-halfLength, ix+halfLengthPlus) + (ix+halfLengthPlus < fileText.length ? '…' : '')
+    //         let excerpt = (ix>excerptHalfLength ? '…' : '') + fileText.substring(ix-excerptHalfLength, ix+excerptHalfLengthPlus) + (ix+excerptHalfLengthPlus < fileText.length ? '…' : '')
     //         addNotice({765, "Unexpected link", ix,excerpt, ourAtString});
     //     }
     // }

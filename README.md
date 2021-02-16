@@ -100,7 +100,7 @@ There is provision for checking to be altered and/or sped-up when the calling ap
 - `getFile`: a function which takes the four parameters ({username, repository, path, branch}) and returns the full text of the relevant Door43 file—default is to use our own function and associated caching
 - `fetchRepositoryZipFile`: a function which takes the three parameters ({username, repository, branch}) and returns the contents of the zip file containing all the Door43 files—default is to use our own function and associated caching
 - `getFileListFromZip`: takes the same three parameters and returns a list/array containing the filepaths of all the files in the zip file from Door43—default is to use our own function and associated caching
-- `originalLanguageVerseText`: the Hebrew/Aramaic or Greek original language text for the book/chapter/verse of the TSV line being checked—this enables `OrigQuote` fields to be checked without needing to load and parse the actual USFM file
+- `originalLanguageVerseText`: the Hebrew/Aramaic or Greek original language text for the book/chapter/verse of the TSV line being checked—this enables `Quote` fields to be checked without needing to load and parse the actual USFM file
 - `originalLanguageRepoUsername` and `originalLanguageRepoBranch`: these two fields can be used to specify the username/organisation and/or the branch/tag name for fetching the UHB and UGNT files for checking
 - `taRepoUsername`, `taRepoBranchName`: these two fields can be used to specify the username/organisation and/or the branch/tag name for fetching the TA files for checking
 - `taRepoLanguageCode`, and `taRepoSectionName`: can be used to specify how the `SupportReference` field is checked in TA—defaults are 'en' and 'translate'

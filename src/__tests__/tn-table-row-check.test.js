@@ -277,7 +277,7 @@ describe('checkTN_TSV9DataRow() - ', () => {
     });
 
     it('header should succeed', async () => {
-      const chosenLine = "Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote";
+      const chosenLine = "Book\tChapter\tVerse\tID\tSupportReference\tQuote\tOccurrence\tGLQuote\tOccurrenceNote";
       const rawResults = await checkTN_TSV9DataRow(languageCode, repoCode, chosenLine, 'GEN', '1', '2', 'that was supplied', optionalCheckingOptions);
       expect(rawResults.noticeList.length).toEqual(0);
     });

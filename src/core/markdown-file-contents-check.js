@@ -10,12 +10,13 @@ const MARKDOWN_FILE_VALIDATOR_VERSION_STRING = '0.4.0';
 /**
  *
  * @param {string} languageCode
+ * @param {string} repoCode -- e.g., 'TN' or 'TQ2', etc.
  * @param {string} markdownFilename -- used for identification
  * @param {string} markdownText -- the actual text to be checked
  * @param {string} givenLocation
  * @param {Object} checkingOptions
  */
-export function checkMarkdownFileContents(languageCode, markdownFilename, markdownText, givenLocation, checkingOptions) {
+export function checkMarkdownFileContents(languageCode, repoCode, markdownFilename, markdownText, givenLocation, checkingOptions) {
   /* This function is optimised for checking the entire markdown file, i.e., all lines.
 
   Note: This function does not check that any link targets in the markdown are valid links.
@@ -25,7 +26,9 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
   // functionLog(`checkMarkdownFileContents(${languageCode}, ${markdownFilename}, ${markdownText.length}, ${givenLocation})…`);
   parameterAssert(languageCode !== undefined, "checkMarkdownFileContents: 'languageCode' parameter should be defined");
   parameterAssert(typeof languageCode === 'string', `checkMarkdownFileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
-  parameterAssert(markdownFilename !== undefined, "checkMarkdownFileContents: 'markdownFilename' parameter should be defined");
+  parameterAssert(repoCode !== undefined, "checkMarkdownFileContents: 'repoCode' parameter should be defined");
+  parameterAssert(typeof repoCode === 'string', `checkMarkdownFileContents: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
+parameterAssert(markdownFilename !== undefined, "checkMarkdownFileContents: 'markdownFilename' parameter should be defined");
   parameterAssert(typeof markdownFilename === 'string', `checkMarkdownFileContents: 'markdownFilename' parameter should be a string not a '${typeof markdownFilename}': ${markdownFilename}`);
   parameterAssert(markdownText !== undefined, "checkMarkdownFileContents: 'markdownText' parameter should be defined");
   parameterAssert(typeof markdownText === 'string', `checkMarkdownFileContents: 'markdownText' parameter should be a string not a '${typeof markdownText}': ${markdownText}`);
@@ -48,9 +51,9 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
   }
   // else
   // debugLog("Using supplied excerptLength=" + excerptLength, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
-  // const halfLength = Math.floor(excerptLength / 2); // rounded down
-  // const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
-  // debugLog("Using halfLength=" + halfLength, `halfLengthPlus=${halfLengthPlus}`);
+  // const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+  // const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+  // debugLog("Using excerptHalfLength=" + excerptHalfLength, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
   const result = { successList: [], noticeList: [] };
 
@@ -95,7 +98,7 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
     parameterAssert(optionalFieldLocation !== undefined, "cMdFC ourCheckMarkdownText: 'optionalFieldLocation' parameter should be defined");
     parameterAssert(typeof optionalFieldLocation === 'string', `cMdFC ourCheckMarkdownText: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
-    const dbtcResultObject = await checkMarkdownText(languageCode, markdownFilename, markdownText, optionalFieldLocation, checkingOptions);
+    const dbtcResultObject = await checkMarkdownText(languageCode, repoCode, markdownFilename, markdownText, optionalFieldLocation, checkingOptions);
 
     // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
     //  process results line by line
@@ -122,7 +125,7 @@ export function checkMarkdownFileContents(languageCode, markdownFilename, markdo
     parameterAssert(typeof markdownText === 'string', `cMdFC ourFileTextCheck: 'markdownText' parameter should be a string not a '${typeof markdownText}'`);
     parameterAssert(checkingOptions !== undefined, "cMdFC ourFileTextCheck: 'checkingOptions' parameter should be defined");
 
-    const dbtcResultObject = checkTextfileContents(languageCode, 'markdown', markdownFilename, markdownText, optionalFieldLocation, checkingOptions);
+    const dbtcResultObject = checkTextfileContents(languageCode, repoCode, 'markdown', markdownFilename, markdownText, optionalFieldLocation, checkingOptions);
 
     // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
     //  process results line by line

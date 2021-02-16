@@ -63,7 +63,7 @@ The UTN are structured as TSV files to simplify importing and exporting into var
 
 A Tab Separated Value (TSV) file is like a Comma Separated Value file except that the tab character is what divides the values instead of a comma. This makes it easier to include prose text in the files because many languages require the use of commas, single quotes, and double quotes in their sentences and paragraphs.
 
-The UTN are structured as one file per book of the bible and encoded in TSV format, for example, `01-GEN.tsv`. The columns are `Book`, `Chapter`, `Verse`, `ID`, `SupportReference`, `OrigQuote`, `Occurrence`, `GLQuote`, and `OccurrenceNote`.
+The UTN are structured as one file per book of the bible and encoded in TSV format, for example, `01-GEN.tsv`. The columns are `Book`, `Chapter`, `Verse`, `ID`, `SupportReference`, `Quote`, `Occurrence`, `GLQuote`, and `OccurrenceNote`.
 
 ### UTN TSV Column Description
 
@@ -80,14 +80,14 @@ The following lists each column with a brief description and example.
 * `SupportReference`
   * Normally a link to a supporting reference text or blank
   * This will usually be a link to translationAcademy, like `rc://*/ta/man/translate/figs-metaphor`
-* `OrigQuote` - Original language quote (e.g. `ἐφανέρωσεν ... τὸν λόγον αὐτοῦ`)
+* `Quote` - Original language quote (e.g. `ἐφανέρωσεν ... τὸν λόγον αὐτοῦ`)
   * Software (such as tC) should use this for determining what is highlighted rather than using the `GLQuote` field
   * Three periods (...), forming an ellipsis, indicates that the quote is discontinuous, software should interpret this in a non-greedy manner
 * `Occurrence` - Specifies which occurrence in the original language text the entry applies to.
-  * `-1`: entry applies to every occurrence of OrigQuote in the verse
+  * `-1`: entry applies to every occurrence of Quote in the verse
   * `0`: entry does not occur in original language (for example, “Connecting Statement:”)
-  * `1`: entry applies to first occurrence of OrigQuote only
-  * `2`: entry applies to second occurrence of OrigQuote only
+  * `1`: entry applies to first occurrence of Quote only
+  * `2`: entry applies to second occurrence of Quote only
   * etc.
 * `GLQuote` (OPTIONAL) - Gateway language quote (e.g. `he revealed his word`)
   * Software (such as tC) should disregard this field.

@@ -51,6 +51,8 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
     // functionLog(`checkNotesTSV7DataRow(${languageCode}, ${repoCode}, ${line}, ${bookID}, ${givenRowLocation}, ${JSON.stringify(checkingOptions)})…`);
     parameterAssert(languageCode !== undefined, "checkNotesTSV7DataRow: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkNotesTSV7DataRow: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    parameterAssert(repoCode !== undefined, "checkNotesTSV7DataRow: 'repoCode' parameter should be defined");
+    parameterAssert(typeof repoCode === 'string', `checkNotesTSV7DataRow: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
     parameterAssert(line !== undefined, "checkNotesTSV7DataRow: 'line' parameter should be defined");
     parameterAssert(typeof line === 'string', `checkNotesTSV7DataRow: 'line' parameter should be a string not a '${typeof line}'`);
     parameterAssert(bookID !== undefined, "checkNotesTSV7DataRow: 'bookID' parameter should be defined");
@@ -135,7 +137,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
         parameterAssert(typeof rowLocation === 'string', `checkNotesTSV7DataRow ourMarkdownTextChecks: 'rowLocation' parameter should be a string not a '${typeof rowLocation}'`);
         parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkNotesTSV7DataRow ourMarkdownTextChecks: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const omtcResultObject = await checkMarkdownText(languageCode, fieldName, fieldText, rowLocation, checkingOptions);
+        const omtcResultObject = await checkMarkdownText(languageCode, repoCode, fieldName, fieldText, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -184,7 +186,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
         parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkNotesTSV7DataRow ourCheckTextField: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
         const fieldType = fieldName === 'Note' ? 'markdown' : 'raw';
-        const octfResultObject = checkTextField(languageCode, fieldType, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions);
+        const octfResultObject = checkTextField(languageCode, repoCode, fieldType, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -275,7 +277,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
         parameterAssert(taLinkText !== undefined, "checkNotesTSV7DataRow ourcheckNotesLinksToOutside: 'taLinkText' parameter should be defined");
         parameterAssert(typeof taLinkText === 'string', `checkNotesTSV7DataRow ourcheckNotesLinksToOutside: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
 
-        const coqResultObject = await checkNotesLinksToOutside(repoCode, bookID, givenC, givenV, fieldName, taLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: languageCode });
+        const coqResultObject = await checkNotesLinksToOutside(languageCode, repoCode, bookID, givenC, givenV, fieldName, taLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: languageCode });
         // debugLog("coqResultObject", JSON.stringify(coqResultObject));
 
         // Choose only ONE of the following
@@ -323,9 +325,9 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
     }
     // else
     // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
-    // const halfLength = Math.floor(excerptLength / 2); // rounded down
-    // const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
-    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    // const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    // const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+    // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
     const lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook;

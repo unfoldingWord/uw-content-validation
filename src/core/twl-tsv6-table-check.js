@@ -83,9 +83,9 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
     }
     // else
     // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
-    // const halfLength = Math.floor(excerptLength / 2); // rounded down
-    // const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
-    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    // const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    // const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+    // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
     let lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook = 0;
@@ -114,7 +114,7 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
             if (lines[0] === EXPECTED_TWL_HEADING_LINE)
                 addSuccessMessage(`Checked TSV header ${ourLocation}`);
             else
-                addNoticePartial({ priority: 746, message: "Bad TSV header", lineNumber: n + 1, location: `${ourLocation}: '${lines[0]}'` });
+                addNoticePartial({ priority: 988, message: "Bad TSV header", details: `expected '${EXPECTED_TWL_HEADING_LINE}'`, excerpt: lines[0], lineNumber: 1, location: ourLocation });
         }
         else // not the header
         {
@@ -238,7 +238,7 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
                     try { reference = fields[0]; } catch { }
                     try { rowID = fields[1]; } catch { }
                     try { [C, V] = reference.split(':'); } catch { }
-                    addNoticePartial({ priority: 988, message: `Wrong number of tabbed fields (expected ${NUM_EXPECTED_TWL_TSV_FIELDS})`, excerpt: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, C, V, rowID, lineNumber: n + 1, location: ourLocation });
+                    addNoticePartial({ priority: 983, message: `Wrong number of tabbed fields (expected ${NUM_EXPECTED_TWL_TSV_FIELDS})`, excerpt: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, C, V, rowID, lineNumber: n + 1, location: ourLocation });
                 }
         }
     }

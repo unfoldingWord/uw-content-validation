@@ -1,17 +1,15 @@
 import { DEFAULT_EXCERPT_LENGTH, isWhitespace, countOccurrences } from './text-handling-functions'
 import * as books from './books/books';
-// import { checkTextField } from './field-text-check';
+import { checkTextField } from './field-text-check';
 import { checkMarkdownText } from './markdown-text-check';
-// import { checkSupportReferenceInTA } from './ta-reference-check';
-// import { checkNotesLinksToOutside } from './notes-links-check';
-// import { checkOriginalLanguageQuote } from './orig-quote-check';
+import { checkOriginalLanguageQuote } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const QUESTIONS_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.1.1';
+// const QUESTIONS_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.2.0';
 
-const NUM_EXPECTED_QUESTIONS_TSV_FIELDS = 5; // so expects 4 tabs per line
-const EXPECTED_QUESTIONS_HEADING_LINE = 'Reference\tID\tTags\tQuestion\tResponse';
+const NUM_EXPECTED_QUESTIONS_TSV_FIELDS = 7; // so expects 6 tabs per line
+const EXPECTED_QUESTIONS_HEADING_LINE = 'Reference\tID\tTags\tQuote\tOccurrence\tQuestion\tResponse';
 
 const LC_ALPHABET = 'abcdefghijklmnopqrstuvwxyz';
 const LC_ALPHABET_PLUS_DIGITS = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -33,7 +31,7 @@ const LC_ALPHABET_PLUS_DIGITS_PLUS_HYPHEN = 'abcdefghijklmnopqrstuvwxyz012345678
  * @param {Object} checkingOptions - may contain excerptLength parameter
  * @return {Object} - containing noticeList
  */
-export async function checkQuestionsTSV5DataRow(languageCode, repoCode, line, bookID, givenC, givenV, givenRowLocation, checkingOptions) {
+export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bookID, givenC, givenV, givenRowLocation, checkingOptions) {
     /* This function is only for checking one data row
           and the function doesn’t assume that it has any previous context.
 
@@ -48,23 +46,25 @@ export async function checkQuestionsTSV5DataRow(languageCode, repoCode, line, bo
 
         Returns an object containing the noticeList.
     */
-    // functionLog(`checkQuestionsTSV5DataRow(${languageCode}, ${repoCode}, ${line}, ${bookID}, ${givenRowLocation}, ${JSON.stringify(checkingOptions)})…`);
-    parameterAssert(languageCode !== undefined, "checkQuestionsTSV5DataRow: 'languageCode' parameter should be defined");
-    parameterAssert(typeof languageCode === 'string', `checkQuestionsTSV5DataRow: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
-    parameterAssert(line !== undefined, "checkQuestionsTSV5DataRow: 'line' parameter should be defined");
-    parameterAssert(typeof line === 'string', `checkQuestionsTSV5DataRow: 'line' parameter should be a string not a '${typeof line}'`);
-    parameterAssert(bookID !== undefined, "checkQuestionsTSV5DataRow: 'bookID' parameter should be defined");
-    parameterAssert(typeof bookID === 'string', `checkQuestionsTSV5DataRow: 'bookID' parameter should be a string not a '${typeof bookID}'`);
-    parameterAssert(bookID.length === 3, `checkQuestionsTSV5DataRow: 'bookID' parameter should be three characters long not ${bookID.length}`);
-    parameterAssert(bookID.toUpperCase() === bookID, `checkQuestionsTSV5DataRow: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-    parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkQuestionsTSV5DataRow: '${bookID}' is not a valid USFM book identifier`);
-    // parameterAssert(givenC !== undefined, "checkQuestionsTSV5DataRow: 'givenC' parameter should be defined");
-    if (givenC) parameterAssert(typeof givenC === 'string', `checkQuestionsTSV5DataRow: 'givenC' parameter should be a string not a '${typeof givenC}'`);
-    // parameterAssert(givenV !== undefined, "checkQuestionsTSV5DataRow: 'givenV' parameter should be defined");
-    if (givenV) parameterAssert(typeof givenV === 'string', `checkQuestionsTSV5DataRow: 'givenV' parameter should be a string not a '${typeof givenV}'`);
-    parameterAssert(givenRowLocation !== undefined, "checkQuestionsTSV5DataRow: 'givenRowLocation' parameter should be defined");
-    parameterAssert(typeof givenRowLocation === 'string', `checkQuestionsTSV5DataRow: 'givenRowLocation' parameter should be a string not a '${typeof givenRowLocation}'`);
-    parameterAssert(givenRowLocation.indexOf('true') === -1, "checkQuestionsTSV5DataRow: 'givenRowLocation' parameter should not be 'true'");
+    // functionLog(`checkQuestionsTSV7DataRow(${languageCode}, ${repoCode}, ${line}, ${bookID}, ${givenRowLocation}, ${JSON.stringify(checkingOptions)})…`);
+    parameterAssert(languageCode !== undefined, "checkQuestionsTSV7DataRow: 'languageCode' parameter should be defined");
+    parameterAssert(typeof languageCode === 'string', `checkQuestionsTSV7DataRow: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    parameterAssert(repoCode !== undefined, "checkQuestionsTSV7DataRow: 'repoCode' parameter should be defined");
+    parameterAssert(typeof repoCode === 'string', `checkQuestionsTSV7DataRow: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
+    parameterAssert(line !== undefined, "checkQuestionsTSV7DataRow: 'line' parameter should be defined");
+    parameterAssert(typeof line === 'string', `checkQuestionsTSV7DataRow: 'line' parameter should be a string not a '${typeof line}'`);
+    parameterAssert(bookID !== undefined, "checkQuestionsTSV7DataRow: 'bookID' parameter should be defined");
+    parameterAssert(typeof bookID === 'string', `checkQuestionsTSV7DataRow: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+    parameterAssert(bookID.length === 3, `checkQuestionsTSV7DataRow: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    parameterAssert(bookID.toUpperCase() === bookID, `checkQuestionsTSV7DataRow: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+    parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkQuestionsTSV7DataRow: '${bookID}' is not a valid USFM book identifier`);
+    // parameterAssert(givenC !== undefined, "checkQuestionsTSV7DataRow: 'givenC' parameter should be defined");
+    if (givenC) parameterAssert(typeof givenC === 'string', `checkQuestionsTSV7DataRow: 'givenC' parameter should be a string not a '${typeof givenC}'`);
+    // parameterAssert(givenV !== undefined, "checkQuestionsTSV7DataRow: 'givenV' parameter should be defined");
+    if (givenV) parameterAssert(typeof givenV === 'string', `checkQuestionsTSV7DataRow: 'givenV' parameter should be a string not a '${typeof givenV}'`);
+    parameterAssert(givenRowLocation !== undefined, "checkQuestionsTSV7DataRow: 'givenRowLocation' parameter should be defined");
+    parameterAssert(typeof givenRowLocation === 'string', `checkQuestionsTSV7DataRow: 'givenRowLocation' parameter should be a string not a '${typeof givenRowLocation}'`);
+    parameterAssert(givenRowLocation.indexOf('true') === -1, "checkQuestionsTSV7DataRow: 'givenRowLocation' parameter should not be 'true'");
 
     let ourRowLocation = givenRowLocation;
     if (ourRowLocation && ourRowLocation[0] !== ' ') ourRowLocation = ` ${ourRowLocation}`;
@@ -85,22 +85,22 @@ export async function checkQuestionsTSV5DataRow(languageCode, repoCode, line, bo
         * @param {string} excerpt - short excerpt from the line centred on the problem (if available)
         * @param {string} location - description of where the issue is located
         */
-        // functionLog(`checkQuestionsTSV5DataRow addNoticePartial(priority=${noticeObject.priority}) ${noticeObject.message}, ${noticeObject.characterIndex}, ${noticeObject.excerpt}, ${noticeObject.location}`);
-        parameterAssert(noticeObject.priority !== undefined, "checkQuestionsTSV5DataRow addNoticePartial: 'priority' parameter should be defined");
-        parameterAssert(typeof noticeObject.priority === 'number', `checkQuestionsTSV5DataRow addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        parameterAssert(noticeObject.message !== undefined, "checkQuestionsTSV5DataRow addNoticePartial: 'message' parameter should be defined");
-        parameterAssert(typeof noticeObject.message === 'string', `checkQuestionsTSV5DataRow addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // parameterAssert(lineNumber !== undefined, "checkQuestionsTSV5DataRow addNoticePartial: 'lineNumber' parameter should be defined");
-        // parameterAssert(typeof lineNumber === 'number', `checkQuestionsTSV5DataRow addNoticePartial: 'lineNumber' parameter should be a number not a '${typeof lineNumber}': ${lineNumber}`);
-        // parameterAssert(characterIndex !== undefined, "checkQuestionsTSV5DataRow addNoticePartial: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `checkQuestionsTSV5DataRow addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // parameterAssert(excerpt !== undefined, "checkQuestionsTSV5DataRow addNoticePartial: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `checkQuestionsTSV5DataRow addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
-        parameterAssert(noticeObject.location !== undefined, "checkQuestionsTSV5DataRow addNoticePartial: 'location' parameter should be defined");
-        parameterAssert(typeof noticeObject.location === 'string', `checkQuestionsTSV5DataRow addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        // functionLog(`checkQuestionsTSV7DataRow addNoticePartial(priority=${noticeObject.priority}) ${noticeObject.message}, ${noticeObject.characterIndex}, ${noticeObject.excerpt}, ${noticeObject.location}`);
+        parameterAssert(noticeObject.priority !== undefined, "checkQuestionsTSV7DataRow addNoticePartial: 'priority' parameter should be defined");
+        parameterAssert(typeof noticeObject.priority === 'number', `checkQuestionsTSV7DataRow addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        parameterAssert(noticeObject.message !== undefined, "checkQuestionsTSV7DataRow addNoticePartial: 'message' parameter should be defined");
+        parameterAssert(typeof noticeObject.message === 'string', `checkQuestionsTSV7DataRow addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+        // parameterAssert(lineNumber !== undefined, "checkQuestionsTSV7DataRow addNoticePartial: 'lineNumber' parameter should be defined");
+        // parameterAssert(typeof lineNumber === 'number', `checkQuestionsTSV7DataRow addNoticePartial: 'lineNumber' parameter should be a number not a '${typeof lineNumber}': ${lineNumber}`);
+        // parameterAssert(characterIndex !== undefined, "checkQuestionsTSV7DataRow addNoticePartial: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `checkQuestionsTSV7DataRow addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        // parameterAssert(excerpt !== undefined, "checkQuestionsTSV7DataRow addNoticePartial: 'excerpt' parameter should be defined");
+        if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `checkQuestionsTSV7DataRow addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        parameterAssert(noticeObject.location !== undefined, "checkQuestionsTSV7DataRow addNoticePartial: 'location' parameter should be defined");
+        parameterAssert(typeof noticeObject.location === 'string', `checkQuestionsTSV7DataRow addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
         // Also uses the given bookID,C,V, parameters from the main function call
-        // noticeObject.debugChain = noticeObject.debugChain ? `checkQuestionsTSV5DataRow ${noticeObject.debugChain}` : `checkQuestionsTSV5DataRow(${repoCode})`;
+        // noticeObject.debugChain = noticeObject.debugChain ? `checkQuestionsTSV7DataRow ${noticeObject.debugChain}` : `checkQuestionsTSV7DataRow(${repoCode})`;
         drResult.noticeList.push({ ...noticeObject, bookID, C: givenC, V: givenV });
     }
 
@@ -122,20 +122,20 @@ export async function checkQuestionsTSV5DataRow(languageCode, repoCode, line, bo
 
         // We don’t currently use the allowedLinks parameter
 
-        // functionLog(`checkQuestionsTSV5DataRow ourMarkdownTextChecks(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
-        parameterAssert(rowID !== undefined, "checkQuestionsTSV5DataRow ourMarkdownTextChecks: 'rowID' parameter should be defined");
-        parameterAssert(typeof rowID === 'string', `checkQuestionsTSV5DataRow ourMarkdownTextChecks: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        // parameterAssert(fieldName !== undefined, "checkQuestionsTSV5DataRow ourMarkdownTextChecks: 'fieldName' parameter should be defined");
-        // parameterAssert(typeof fieldName === 'string', `checkQuestionsTSV5DataRow ourMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        parameterAssert(fieldName === 'Question' || fieldName === 'Response', `checkQuestionsTSV5DataRow ourMarkdownTextChecks: Only run this check on Questions and Responses not '${fieldName}'`);
-        parameterAssert(fieldText !== undefined, "checkQuestionsTSV5DataRow ourMarkdownTextChecks: 'fieldText' parameter should be defined");
-        parameterAssert(typeof fieldText === 'string', `checkQuestionsTSV5DataRow ourMarkdownTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-        parameterAssert(allowedLinks === true || allowedLinks === false, "checkQuestionsTSV5DataRow ourMarkdownTextChecks: allowedLinks parameter must be either true or false");
-        parameterAssert(rowLocation !== undefined, "checkQuestionsTSV5DataRow ourMarkdownTextChecks: 'rowLocation' parameter should be defined");
-        parameterAssert(typeof rowLocation === 'string', `checkQuestionsTSV5DataRow ourMarkdownTextChecks: 'rowLocation' parameter should be a string not a '${typeof rowLocation}'`);
-        parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkQuestionsTSV5DataRow ourMarkdownTextChecks: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
+        // functionLog(`checkQuestionsTSV7DataRow ourMarkdownTextChecks(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
+        parameterAssert(rowID !== undefined, "checkQuestionsTSV7DataRow ourMarkdownTextChecks: 'rowID' parameter should be defined");
+        parameterAssert(typeof rowID === 'string', `checkQuestionsTSV7DataRow ourMarkdownTextChecks: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+        // parameterAssert(fieldName !== undefined, "checkQuestionsTSV7DataRow ourMarkdownTextChecks: 'fieldName' parameter should be defined");
+        // parameterAssert(typeof fieldName === 'string', `checkQuestionsTSV7DataRow ourMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        parameterAssert(fieldName === 'Question' || fieldName === 'Response', `checkQuestionsTSV7DataRow ourMarkdownTextChecks: Only run this check on Questions and Responses not '${fieldName}'`);
+        parameterAssert(fieldText !== undefined, "checkQuestionsTSV7DataRow ourMarkdownTextChecks: 'fieldText' parameter should be defined");
+        parameterAssert(typeof fieldText === 'string', `checkQuestionsTSV7DataRow ourMarkdownTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+        parameterAssert(allowedLinks === true || allowedLinks === false, "checkQuestionsTSV7DataRow ourMarkdownTextChecks: allowedLinks parameter must be either true or false");
+        parameterAssert(rowLocation !== undefined, "checkQuestionsTSV7DataRow ourMarkdownTextChecks: 'rowLocation' parameter should be defined");
+        parameterAssert(typeof rowLocation === 'string', `checkQuestionsTSV7DataRow ourMarkdownTextChecks: 'rowLocation' parameter should be a string not a '${typeof rowLocation}'`);
+        parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkQuestionsTSV7DataRow ourMarkdownTextChecks: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const omtcResultObject = await checkMarkdownText(languageCode, fieldName, fieldText, rowLocation, checkingOptions);
+        const omtcResultObject = await checkMarkdownText(languageCode, repoCode, fieldName, fieldText, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -155,110 +155,82 @@ export async function checkQuestionsTSV5DataRow(languageCode, repoCode, line, bo
     }
     // end of ourMarkdownTextChecks function
 
-    // function ourCheckTextField(rowID, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions) {
-    //     /**
-    //     * @description - checks the given text field and processes the returned results
-    //     * @param {string} rowID - 4-character row ID field
-    //     * @param {string} fieldName - name of the field being checked
-    //     * @param {string} fieldText - the actual text of the field being checked
-    //     * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
-    //     * @param {string} rowLocation - description of where the line is located
-    //     * @param {Object} checkingOptions - parameters that might affect the check
-    //     */
-    //     // Does basic checks for small errors like leading/trailing spaces, etc.
+    function ourCheckTextField(rowID, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions) {
+        /**
+        * @description - checks the given text field and processes the returned results
+        * @param {string} rowID - 4-character row ID field
+        * @param {string} fieldName - name of the field being checked
+        * @param {string} fieldText - the actual text of the field being checked
+        * @param {boolean} allowedLinks - true if links are allowed in the field, otherwise false
+        * @param {string} rowLocation - description of where the line is located
+        * @param {Object} checkingOptions - parameters that might affect the check
+        */
+        // Does basic checks for small errors like leading/trailing spaces, etc.
 
-    //     // We assume that checking for compulsory fields is done elsewhere
+        // We assume that checking for compulsory fields is done elsewhere
 
-    //     // Updates the global list of notices
+        // Updates the global list of notices
 
-    //     // functionLog(`checkQuestionsTSV5DataRow ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
-    //     parameterAssert(rowID !== undefined, "checkQuestionsTSV5DataRow ourCheckTextField: 'rowID' parameter should be defined");
-    //     parameterAssert(typeof rowID === 'string', `checkQuestionsTSV5DataRow ourCheckTextField: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-    //     parameterAssert(fieldName !== undefined, "checkQuestionsTSV5DataRow ourCheckTextField: 'fieldName' parameter should be defined");
-    //     parameterAssert(typeof fieldName === 'string', `checkQuestionsTSV5DataRow ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-    //     parameterAssert(fieldText !== undefined, "checkQuestionsTSV5DataRow ourCheckTextField: 'fieldText' parameter should be defined");
-    //     parameterAssert(typeof fieldText === 'string', `checkQuestionsTSV5DataRow ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-    //     parameterAssert(allowedLinks === true || allowedLinks === false, "checkQuestionsTSV5DataRow ourCheckTextField: allowedLinks parameter must be either true or false");
-    //     parameterAssert(rowLocation !== undefined, "checkQuestionsTSV5DataRow ourCheckTextField: 'rowLocation' parameter should be defined");
-    //     parameterAssert(typeof rowLocation === 'string', `checkQuestionsTSV5DataRow ourCheckTextField: 'rowLocation' parameter should be a string not a '${typeof rowLocation}'`);
-    //     parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkQuestionsTSV5DataRow ourCheckTextField: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
+        // functionLog(`checkQuestionsTSV7DataRow ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
+        parameterAssert(rowID !== undefined, "checkQuestionsTSV7DataRow ourCheckTextField: 'rowID' parameter should be defined");
+        parameterAssert(typeof rowID === 'string', `checkQuestionsTSV7DataRow ourCheckTextField: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+        parameterAssert(fieldName !== undefined, "checkQuestionsTSV7DataRow ourCheckTextField: 'fieldName' parameter should be defined");
+        parameterAssert(typeof fieldName === 'string', `checkQuestionsTSV7DataRow ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        parameterAssert(fieldText !== undefined, "checkQuestionsTSV7DataRow ourCheckTextField: 'fieldText' parameter should be defined");
+        parameterAssert(typeof fieldText === 'string', `checkQuestionsTSV7DataRow ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+        parameterAssert(allowedLinks === true || allowedLinks === false, "checkQuestionsTSV7DataRow ourCheckTextField: allowedLinks parameter must be either true or false");
+        parameterAssert(rowLocation !== undefined, "checkQuestionsTSV7DataRow ourCheckTextField: 'rowLocation' parameter should be defined");
+        parameterAssert(typeof rowLocation === 'string', `checkQuestionsTSV7DataRow ourCheckTextField: 'rowLocation' parameter should be a string not a '${typeof rowLocation}'`);
+        parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkQuestionsTSV7DataRow ourCheckTextField: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-    //     const fieldType = fieldName === 'Question' ? 'markdown' : 'raw';
-    //     const octfResultObject = checkTextField(languageCode, fieldType, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions);
+        const fieldType = fieldName === 'Question' ? 'markdown' : 'raw';
+        const octfResultObject = checkTextField(languageCode, repoCode, fieldType, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions);
 
-    //     // Choose only ONE of the following
-    //     // This is the fast way of append the results from this field
-    //     // result.noticeList = result.noticeList.concat(dbtcResultObject.noticeList);
-    //     // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
-    //     //  process results line by line
-    //     for (const noticeEntry of octfResultObject.noticeList) {
-    //         // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
-    //         addNoticePartial({ ...noticeEntry, rowID, fieldName });
-    //     }
-    //     return octfResultObject.suggestion; // There may or may not be one!
-    // }
-    // // end of ourCheckTextField function
-
-    // async function ourCheckSupportReferenceInTA(rowID, fieldName, taLinkText, rowLocation, checkingOptions) {
-    //     // Checks that the TA reference can be found
-
-    //     // Updates the global list of notices
-
-    //     // functionLog(`checkQuestionsTSV5DataRow ourCheckSupportReferenceInTA(${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
-    //     parameterAssert(rowID !== undefined, "checkQuestionsTSV5DataRow ourCheckSupportReferenceInTA: 'rowID' parameter should be defined");
-    //     parameterAssert(typeof rowID === 'string', `checkQuestionsTSV5DataRow ourCheckSupportReferenceInTA: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-    //     parameterAssert(fieldName !== undefined, "checkQuestionsTSV5DataRow ourCheckSupportReferenceInTA: 'fieldName' parameter should be defined");
-    //     parameterAssert(typeof fieldName === 'string', `checkQuestionsTSV5DataRow ourCheckSupportReferenceInTA: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-    //     parameterAssert(taLinkText !== undefined, "checkQuestionsTSV5DataRow ourCheckSupportReferenceInTA: 'taLinkText' parameter should be defined");
-    //     parameterAssert(typeof taLinkText === 'string', `checkQuestionsTSV5DataRow ourCheckSupportReferenceInTA: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
-    //     parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkQuestionsTSV5DataRow ourCheckSupportReferenceInTA: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
-
-    //     const coqResultObject = await checkSupportReferenceInTA(fieldName, taLinkText, rowLocation, { ...checkingOptions, taRepoLanguageCode: languageCode, expectFullLink: true });
-
-    //     // Choose only ONE of the following
-    //     // This is the fast way of append the results from this field
-    //     // result.noticeList = result.noticeList.concat(coqResultObject.noticeList);
-    //     // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
-    //     //  process results line by line
-    //     for (const noticeEntry of coqResultObject.noticeList) {
-    //         // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckSupportReferenceInTA notice length=${Object.keys(noticeEntry).length}`);
-    //         addNoticePartial({ ...noticeEntry, rowID, fieldName });
-    //     }
-    // }
-    // // end of ourCheckSupportReferenceInTA function
+        // Choose only ONE of the following
+        // This is the fast way of append the results from this field
+        // result.noticeList = result.noticeList.concat(dbtcResultObject.noticeList);
+        // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
+        //  process results line by line
+        for (const noticeEntry of octfResultObject.noticeList) {
+            // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
+            addNoticePartial({ ...noticeEntry, rowID, fieldName });
+        }
+        return octfResultObject.suggestion; // There may or may not be one!
+    }
+    // end of ourCheckTextField function
 
 
-    // async function ourCheckTNOriginalLanguageQuote(rowID, fieldName, fieldText, occurrence, rowLocation, checkingOptions) {
-    //     // Checks that the Hebrew/Greek quote can be found in the original texts
+    async function ourCheckQOriginalLanguageQuote(rowID, fieldName, fieldText, occurrence, rowLocation, checkingOptions) {
+        // Checks that the Hebrew/Greek quote can be found in the original texts
 
-    //     // Uses the bookID,C,V values from the main function call
+        // Uses the bookID,C,V values from the main function call
 
-    //     // Updates the global list of notices
+        // Updates the global list of notices
 
-    //     // functionLog(`checkQuestionsTSV5DataRow ourCheckTNOriginalLanguageQuote(${fieldName}, (${fieldText.length}) '${fieldText}', ${rowLocation}, …)`);
-    //     parameterAssert(rowID !== undefined, "checkQuestionsTSV5DataRow ourCheckTNOriginalLanguageQuote: 'rowID' parameter should be defined");
-    //     parameterAssert(typeof rowID === 'string', `checkQuestionsTSV5DataRow ourCheckTNOriginalLanguageQuote: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-    //     parameterAssert(fieldName !== undefined, "checkQuestionsTSV5DataRow ourCheckTNOriginalLanguageQuote: 'fieldName' parameter should be defined");
-    //     parameterAssert(typeof fieldName === 'string', `checkQuestionsTSV5DataRow ourCheckTNOriginalLanguageQuote: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-    //     parameterAssert(fieldText !== undefined, "checkQuestionsTSV5DataRow ourCheckTNOriginalLanguageQuote: 'fieldText' parameter should be defined");
-    //     parameterAssert(typeof fieldText === 'string', `checkQuestionsTSV5DataRow ourCheckTNOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-    //     parameterAssert(occurrence !== undefined, "checkQuestionsTSV5DataRow ourCheckTNOriginalLanguageQuote: 'occurrence' parameter should be defined");
-    //     parameterAssert(typeof occurrence === 'string', `checkQuestionsTSV5DataRow ourCheckTNOriginalLanguageQuote: 'occurrence' parameter should be a string not a '${typeof occurrence}'`);
-    //     parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkQuestionsTSV5DataRow ourCheckTNOriginalLanguageQuote: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
+        // functionLog(`checkQuestionsTSV7DataRow ourCheckQOriginalLanguageQuote(${fieldName}, (${fieldText.length}) '${fieldText}', ${rowLocation}, …)`);
+        parameterAssert(rowID !== undefined, "checkQuestionsTSV7DataRow ourCheckQOriginalLanguageQuote: 'rowID' parameter should be defined");
+        parameterAssert(typeof rowID === 'string', `checkQuestionsTSV7DataRow ourCheckQOriginalLanguageQuote: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+        parameterAssert(fieldName !== undefined, "checkQuestionsTSV7DataRow ourCheckQOriginalLanguageQuote: 'fieldName' parameter should be defined");
+        parameterAssert(typeof fieldName === 'string', `checkQuestionsTSV7DataRow ourCheckQOriginalLanguageQuote: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        parameterAssert(fieldText !== undefined, "checkQuestionsTSV7DataRow ourCheckQOriginalLanguageQuote: 'fieldText' parameter should be defined");
+        parameterAssert(typeof fieldText === 'string', `checkQuestionsTSV7DataRow ourCheckQOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+        parameterAssert(occurrence !== undefined, "checkQuestionsTSV7DataRow ourCheckQOriginalLanguageQuote: 'occurrence' parameter should be defined");
+        parameterAssert(typeof occurrence === 'string', `checkQuestionsTSV7DataRow ourCheckQOriginalLanguageQuote: 'occurrence' parameter should be a string not a '${typeof occurrence}'`);
+        parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkQuestionsTSV7DataRow ourCheckQOriginalLanguageQuote: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-    //     const coqResultObject = await checkOriginalLanguageQuote(languageCode, repoCode, fieldName, fieldText, occurrence, bookID, givenC, givenV, rowLocation, checkingOptions);
+        const coqResultObject = await checkOriginalLanguageQuote(languageCode, repoCode, fieldName, fieldText, occurrence, bookID, givenC, givenV, rowLocation, checkingOptions);
 
-    //     // Choose only ONE of the following
-    //     // This is the fast way of append the results from this field
-    //     // result.noticeList = result.noticeList.concat(coqResultObject.noticeList);
-    //     // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
-    //     //  process results line by line
-    //     for (const noticeEntry of coqResultObject.noticeList) {
-    //         // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckTNOriginalLanguageQuote notice length=${Object.keys(noticeEntry).length}`);
-    //         addNoticePartial({ ...noticeEntry, rowID, fieldName });
-    //     }
-    // }
-    // // end of ourCheckTNOriginalLanguageQuote function
+        // Choose only ONE of the following
+        // This is the fast way of append the results from this field
+        // result.noticeList = result.noticeList.concat(coqResultObject.noticeList);
+        // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
+        //  process results line by line
+        for (const noticeEntry of coqResultObject.noticeList) {
+            // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckQOriginalLanguageQuote notice length=${Object.keys(noticeEntry).length}`);
+            addNoticePartial({ ...noticeEntry, rowID, fieldName });
+        }
+    }
+    // end of ourCheckQOriginalLanguageQuote function
 
 
     // async function ourcheckNotesLinksToOutside(rowID, fieldName, taLinkText, rowLocation, checkingOptions) {
@@ -266,16 +238,16 @@ export async function checkQuestionsTSV5DataRow(languageCode, repoCode, line, bo
 
     //     // Updates the global list of notices
 
-    //     // functionLog(`checkQuestionsTSV5DataRow ourcheckNotesLinksToOutside(${rowID}, ${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
-    //     parameterAssert(rowID !== undefined, "checkQuestionsTSV5DataRow ourcheckNotesLinksToOutside: 'rowID' parameter should be defined");
-    //     parameterAssert(typeof rowID === 'string', `checkQuestionsTSV5DataRow ourcheckNotesLinksToOutside: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-    //     parameterAssert(fieldName !== undefined, "checkQuestionsTSV5DataRow ourcheckNotesLinksToOutside: 'fieldName' parameter should be defined");
-    //     parameterAssert(typeof fieldName === 'string', `checkQuestionsTSV5DataRow ourcheckNotesLinksToOutside: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-    //     parameterAssert(fieldName === 'Question', `checkQuestionsTSV5DataRow ourcheckNotesLinksToOutside: 'fieldName' parameter should be 'Question' not '${fieldName}'`);
-    //     parameterAssert(taLinkText !== undefined, "checkQuestionsTSV5DataRow ourcheckNotesLinksToOutside: 'taLinkText' parameter should be defined");
-    //     parameterAssert(typeof taLinkText === 'string', `checkQuestionsTSV5DataRow ourcheckNotesLinksToOutside: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
+    //     // functionLog(`checkQuestionsTSV7DataRow ourcheckNotesLinksToOutside(${rowID}, ${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
+    //     parameterAssert(rowID !== undefined, "checkQuestionsTSV7DataRow ourcheckNotesLinksToOutside: 'rowID' parameter should be defined");
+    //     parameterAssert(typeof rowID === 'string', `checkQuestionsTSV7DataRow ourcheckNotesLinksToOutside: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+    //     parameterAssert(fieldName !== undefined, "checkQuestionsTSV7DataRow ourcheckNotesLinksToOutside: 'fieldName' parameter should be defined");
+    //     parameterAssert(typeof fieldName === 'string', `checkQuestionsTSV7DataRow ourcheckNotesLinksToOutside: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+    //     parameterAssert(fieldName === 'Question', `checkQuestionsTSV7DataRow ourcheckNotesLinksToOutside: 'fieldName' parameter should be 'Question' not '${fieldName}'`);
+    //     parameterAssert(taLinkText !== undefined, "checkQuestionsTSV7DataRow ourcheckNotesLinksToOutside: 'taLinkText' parameter should be defined");
+    //     parameterAssert(typeof taLinkText === 'string', `checkQuestionsTSV7DataRow ourcheckNotesLinksToOutside: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
 
-    //     const coqResultObject = await checkNotesLinksToOutside(repoCode, bookID, givenC, givenV, fieldName, taLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: languageCode });
+    //     const coqResultObject = await checkNotesLinksToOutside(languageCode, repoCode, bookID, givenC, givenV, fieldName, taLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: languageCode });
     //     // debugLog("coqResultObject", JSON.stringify(coqResultObject));
 
     //     // Choose only ONE of the following
@@ -309,7 +281,7 @@ export async function checkQuestionsTSV5DataRow(languageCode, repoCode, line, bo
     // // end of ourcheckNotesLinksToOutside function
 
 
-    // Main code for checkQuestionsTSV5DataRow function
+    // Main code for checkQuestionsTSV7DataRow function
     if (line === EXPECTED_QUESTIONS_HEADING_LINE) // Assume it must be ok
         return drResult; // We can’t detect if it’s in the wrong place
 
@@ -323,9 +295,9 @@ export async function checkQuestionsTSV5DataRow(languageCode, repoCode, line, bo
     }
     // else
     // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
-    // const halfLength = Math.floor(excerptLength / 2); // rounded down
-    // const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
-    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    // const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    // const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+    // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
     const lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook;
@@ -336,15 +308,15 @@ export async function checkQuestionsTSV5DataRow(languageCode, repoCode, line, bo
         try {
             numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
         } catch (tlcNCerror) {
-            addNoticePartial({ priority: 979, message: "Invalid book identifier passed to checkQuestionsTSV5DataRow", location: ` '${bookID}' in first parameter: ${tlcNCerror}` });
+            addNoticePartial({ priority: 979, message: "Invalid book identifier passed to checkQuestionsTSV7DataRow", location: ` '${bookID}' in first parameter: ${tlcNCerror}` });
         }
     }
     const haveGoodBookID = numChaptersThisBook !== undefined;
 
     let fields = line.split('\t');
-    let RIDSuggestion, QSuggestion, RSuggestion;
+    let RIDSuggestion, OQSuggestion, OSuggestion, QuSuggestion, RSuggestion;
     if (fields.length === NUM_EXPECTED_QUESTIONS_TSV_FIELDS) {
-        const [reference, rowID, tags, question, response] = fields;
+        const [reference, rowID, tags, quote, occurrence, question, response] = fields;
         // let withString = ` with '${rowID}'${inString}`;
         // let CV_withString = ` ${C}:${V}${withString}`;
         // let atString = ` at ${B} ${C}:${V} (${rowID})${inString}`;
@@ -433,6 +405,38 @@ export async function checkQuestionsTSV5DataRow(languageCode, repoCode, line, bo
         if (tags.length)
             ;
 
+        if (quote.length) { // need to check UTN against UHB and UGNT
+            OQSuggestion = ourCheckTextField(rowID, 'Quote', quote, false, ourRowLocation, checkingOptions);
+            if (occurrence.length)
+                await ourCheckQOriginalLanguageQuote(rowID, 'Quote', quote, occurrence, ourRowLocation, checkingOptions);
+            else
+                addNoticePartial({ priority: 750, message: "Missing occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, location: ourRowLocation });
+        }
+        else // TODO: Find more details about when these fields are really compulsory (and when they're not, e.g., for 'intro') ???
+            if (repoCode === 'TN2' && V !== 'intro' && occurrence !== '0')
+                addNoticePartial({ priority: 919, message: "Missing Quote field", fieldName: 'Quote', rowID, location: ourRowLocation });
+
+        if (occurrence.length) { // This should usually be a digit
+            if (occurrence === '0') { // zero means that it doesn’t occur
+                if (quote.length) {
+                    addNoticePartial({ priority: 751, message: "Invalid zero occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, excerpt: occurrence, location: ourRowLocation });
+                    OSuggestion = '1';
+                }
+                // if (V !== 'intro')
+                //     addNoticePartial({priority:500, message:"Invalid zero occurrence field", rowID, location:rowLocation);
+            }
+            else if (occurrence === '-1') // TODO check the special conditions when this can occur???
+                ;
+            else if ('1234567'.indexOf(occurrence) < 0) { // it’s not one of these integers
+                addNoticePartial({ priority: 792, message: `Invalid occurrence field`, fieldName: 'Occurrence', rowID, excerpt: occurrence, location: ourRowLocation });
+                OSuggestion = '1';
+            }
+        }
+        else if (quote.length) {
+            addNoticePartial({ priority: 791, message: `Missing occurrence field`, fieldName: 'Occurrence', rowID, location: ourRowLocation });
+            OSuggestion = '1';
+        }
+
         if (question.length) {
             if (question.indexOf('\u200B') >= 0) {
                 const charCount = countOccurrences(question, '\u200B');
@@ -484,7 +488,7 @@ export async function checkQuestionsTSV5DataRow(languageCode, repoCode, line, bo
                 addNoticePartial({ priority: 274, message: "Missing Response field", fieldName: 'Response', rowID, location: ourRowLocation });
 
         // 7 [reference, rowID, tags, question, answer]
-        const suggestion = `${reference}\t${RIDSuggestion === undefined ? rowID : RIDSuggestion}\t${tags}\t${QSuggestion === undefined ? question : QSuggestion}\t${RSuggestion === undefined ? response : RSuggestion}`;
+        const suggestion = `${reference}\t${RIDSuggestion === undefined ? rowID : RIDSuggestion}\t${tags}\t${OQSuggestion === undefined ? quote : OQSuggestion}\t${OSuggestion === undefined ? occurrence : OSuggestion}\t${QuSuggestion === undefined ? question : QuSuggestion}\t${RSuggestion === undefined ? response : RSuggestion}`;
         if (suggestion !== line) {
             // debugLog(`Had question ${line}`);
             // debugLog(`Sug question ${suggestion}`);
@@ -498,8 +502,8 @@ export async function checkQuestionsTSV5DataRow(languageCode, repoCode, line, bo
         addNoticePartial({ priority: 984, message: `Found wrong number of TSV fields (expected ${NUM_EXPECTED_QUESTIONS_TSV_FIELDS})`, details: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, rowID, location: ourRowLocation });
     }
 
-    // debugLog(`  checkQuestionsTSV5DataRow returning with ${drResult.noticeList.length.toLocaleString()} notice(s).`);
-    // debugLog("checkQuestionsTSV5DataRow result is", JSON.stringify(drResult));
+    // debugLog(`  checkQuestionsTSV7DataRow returning with ${drResult.noticeList.length.toLocaleString()} notice(s).`);
+    // debugLog("checkQuestionsTSV7DataRow result is", JSON.stringify(drResult));
     return drResult; // object with noticeList and possibly suggestion only
 }
-// end of checkQuestionsTSV5DataRow function
+// end of checkQuestionsTSV7DataRow function

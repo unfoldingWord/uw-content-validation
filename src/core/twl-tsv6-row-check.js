@@ -131,7 +131,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkTWL_TSV6DataRow ourCheckTextField: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
         const fieldType = 'raw';
-        const octfResultObject = checkTextField(languageCode, fieldType, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions);
+        const octfResultObject = checkTextField(languageCode, repoCode, fieldType, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -194,7 +194,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         parameterAssert(taLinkText !== undefined, "checkTWL_TSV6DataRow ourcheckNotesLinksToOutside: 'taLinkText' parameter should be defined");
         parameterAssert(typeof taLinkText === 'string', `checkTWL_TSV6DataRow ourcheckNotesLinksToOutside: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
 
-        const coTNlResultObject = await checkNotesLinksToOutside(repoCode, bookID, givenC, givenV, fieldName, taLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: languageCode });
+        const coTNlResultObject = await checkNotesLinksToOutside(languageCode, repoCode, bookID, givenC, givenV, fieldName, taLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: languageCode });
         // debugLog(`coTNlResultObject=${JSON.stringify(coTNlResultObject)}`);
 
         // Choose only ONE of the following
@@ -242,9 +242,9 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
     }
     // else
     // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
-    const halfLength = Math.floor(excerptLength / 2); // rounded down
-    const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
-    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+    // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
     const lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook;
@@ -397,10 +397,10 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
                 else { // it starts correctly
                     const bits = TWLink.substring('rc://*/tw/dict/bible/'.length).split('/');
                     // debugLog(`checkTWL_TSV6DataRow checking ${rowID} TWLink='${TWLink}' got bits=${JSON.stringify(bits)}`);
-                    if (bits[0] !== 'kt' && bits[0] !== 'name' && bits[0] !== 'other') {
+                    if (bits[0] !== 'kt' && bits[0] !== 'names' && bits[0] !== 'other') {
                         const characterIndex = 'rc://*/tw/dict/bible/'.length;
-                        const excerpt = (characterIndex > halfLength ? '…' : '') + TWLink.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < TWLink.length ? '…' : '')
-                        addNoticePartial({ priority: 797, message: "Field doesn't contain proper TW link", details: `should start with 'rc://*/tw/dict/bible/'`, fieldName: 'TWLink', rowID, characterIndex, excerpt, location: ourRowLocation });
+                        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + TWLink.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < TWLink.length ? '…' : '')
+                        addNoticePartial({ priority: 797, message: "Field doesn't contain proper TW link", details: `should be 'kt', 'names', or 'other'`, fieldName: 'TWLink', rowID, characterIndex, excerpt, location: ourRowLocation });
                     } else { // all good so far
                         // debugLog(`checkTWL_TSV6DataRow looking up ${rowID} TWLink='${TWLink}' got bits=${JSON.stringify(bits)}`);
                         await ourcheckNotesLinksToOutside(rowID, 'TWLink', TWLink, ourRowLocation, linkCheckingOptions);

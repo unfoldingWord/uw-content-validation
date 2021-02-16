@@ -10,12 +10,13 @@ const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.4.0';
 /**
  *
  * @param {string} textType 'markdown', 'USFM', 'YAML', 'text', or 'raw'
+ * @param {string} repoCode -- e.g., 'TN' or 'TQ2', etc.
  * @param {string} textName
  * @param {string} plainText -- text to be checked
  * @param {string} givenLocation
  * @param {Object} checkingOptions
  */
-export function checkPlainText(languageCode, textType, textName, plainText, givenLocation, checkingOptions) {
+export function checkPlainText(languageCode, repoCode, textType, textName, plainText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire text, i.e., all lines.
         It is used in checkFileContents() in book-package-check.js
 
@@ -27,6 +28,8 @@ export function checkPlainText(languageCode, textType, textName, plainText, give
     parameterAssert(languageCode !== undefined, "checkPlainText: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkPlainText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
     parameterAssert(languageCode !== 'markdown' && languageCode !== 'USFM' && languageCode !== 'YAML' && languageCode !== 'text' && languageCode !== 'raw' && languageCode !== 'unfoldingWord', `checkPlainText: 'languageCode' ${languageCode} parameter should be not be '${languageCode}'`);
+    parameterAssert(repoCode !== undefined, "checkPlainText: 'repoCode' parameter should be defined");
+    parameterAssert(typeof repoCode === 'string', `checkPlainText: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
     parameterAssert(textType !== undefined, "checkPlainText: 'textType' parameter should be defined");
     parameterAssert(typeof textType === 'string', `checkPlainText: 'textType' parameter should be a string not a '${typeof textType}': ${textType}`);
     parameterAssert(textType === 'markdown' || textType === 'USFM' || textType === 'YAML' || textType === 'text' || textType === 'raw', `checkPlainText: unrecognised 'textType' parameter: '${textType}'`);
@@ -49,9 +52,9 @@ export function checkPlainText(languageCode, textType, textName, plainText, give
     }
     // else
     // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
-    const halfLength = Math.floor(excerptLength / 2); // rounded down
-    const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
-    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+    // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
     const cptResult = { successList: [], noticeList: [] };
 
@@ -99,7 +102,7 @@ export function checkPlainText(languageCode, textType, textName, plainText, give
         parameterAssert(optionalFieldLocation !== undefined, "cPT ourCheckTextField: 'optionalFieldLocation' parameter should be defined");
         parameterAssert(typeof optionalFieldLocation === 'string', `cPT ourCheckTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
-        const resultObject = checkTextField(languageCode, textType, '', fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
+        const resultObject = checkTextField(languageCode, repoCode, textType, '', fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -131,16 +134,16 @@ export function checkPlainText(languageCode, textType, textName, plainText, give
 
     let characterIndex;
     if ((characterIndex = plainText.indexOf('<<<<<<<')) >= 0) {
-        const iy = characterIndex + halfLength; // Want excerpt to focus more on what follows
-        const excerpt = (iy > halfLength ? '…' : '') + plainText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < plainText.length ? '…' : '')
+        const iy = characterIndex + excerptHalfLength; // Want excerpt to focus more on what follows
+        const excerpt = (iy > excerptHalfLength ? '…' : '') + plainText.substring(iy - excerptHalfLength, iy + excerptHalfLengthPlus).replace(/ /g, '␣') + (iy + excerptHalfLengthPlus < plainText.length ? '…' : '')
         addNotice({ priority: 993, message: "Unresolved GIT conflict", characterIndex, excerpt, location: ourLocation });
     } else if ((characterIndex = plainText.indexOf('=======')) >= 0) {
-        const iy = characterIndex + halfLength; // Want excerpt to focus more on what follows
-        const excerpt = (iy > halfLength ? '…' : '') + plainText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < plainText.length ? '…' : '')
+        const iy = characterIndex + excerptHalfLength; // Want excerpt to focus more on what follows
+        const excerpt = (iy > excerptHalfLength ? '…' : '') + plainText.substring(iy - excerptHalfLength, iy + excerptHalfLengthPlus).replace(/ /g, '␣') + (iy + excerptHalfLengthPlus < plainText.length ? '…' : '')
         addNotice({ priority: 992, message: "Unresolved GIT conflict", characterIndex, excerpt, location: ourLocation });
     } else if ((characterIndex = plainText.indexOf('>>>>>>>>')) >= 0) {
-        const iy = characterIndex + halfLength; // Want excerpt to focus more on what follows
-        const excerpt = (iy > halfLength ? '…' : '') + plainText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < plainText.length ? '…' : '')
+        const iy = characterIndex + excerptHalfLength; // Want excerpt to focus more on what follows
+        const excerpt = (iy > excerptHalfLength ? '…' : '') + plainText.substring(iy - excerptHalfLength, iy + excerptHalfLengthPlus).replace(/ /g, '␣') + (iy + excerptHalfLengthPlus < plainText.length ? '…' : '')
         addNotice({ priority: 991, message: "Unresolved GIT conflict", characterIndex, excerpt, location: ourLocation });
     }
 
@@ -195,7 +198,7 @@ export function checkPlainText(languageCode, textType, textName, plainText, give
                         } else // something is still open and this isn’t a match -- might just be consequential error
                             if (char !== '’' // Closing single quote is also used as apostrophe in English
                                 && (textType !== 'markdown' || char !== '>' || characterIndex > 4)) { // Markdown uses > or >> or > > or > > > for block indents so ignore these -- might just be consequential error
-                                const excerpt = (characterIndex > halfLength ? '…' : '') + line.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < line.length ? '…' : '')
+                                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + line.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < line.length ? '…' : '')
                                 const details = `'${lastEntry.char}' opened on line ${lastEntry.n} character ${lastEntry.x + 1}`;
                                 addNotice({ priority: 777, message: `Bad punctuation nesting: ${char} closing character doesn’t match`, details, lineNumber: n, characterIndex, excerpt, location: ourLocation });
                                 // debugLog(`  ERROR 777: mismatched characters: ${details}`);
@@ -203,7 +206,7 @@ export function checkPlainText(languageCode, textType, textName, plainText, give
                     } else // Closed something unexpectedly without an opener
                         if (char !== '’' // Closing single quote is also used as apostrophe in English
                             && (textType !== 'markdown' || char !== '>')) { // Markdown uses > for block indents so ignore these
-                            const excerpt = (characterIndex > halfLength ? '…' : '') + line.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < line.length ? '…' : '')
+                            const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + line.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < line.length ? '…' : '')
                             addNotice({ priority: 774, message: `Unexpected ${char} closing character (no matching opener)`, lineNumber: n, characterIndex, excerpt, location: ourLocation });
                             // debugLog(`  ERROR 774: closed with nothing open: ${char}`);
                         }
@@ -220,7 +223,7 @@ export function checkPlainText(languageCode, textType, textName, plainText, give
     if (openMarkers.length) {
         const [{ char, n, x }] = openMarkers.slice(-1);
         const line = lines[n - 1];
-        const excerpt = (x > halfLength ? '…' : '') + line.substring(x - halfLength, x + halfLengthPlus).replace(/ /g, '␣') + (x + halfLengthPlus < line.length ? '…' : '')
+        const excerpt = (x > excerptHalfLength ? '…' : '') + line.substring(x - excerptHalfLength, x + excerptHalfLengthPlus).replace(/ /g, '␣') + (x + excerptHalfLengthPlus < line.length ? '…' : '')
         const details = openMarkers.length > 1 ? `${openMarkers.length} unclosed set${openMarkers.length === 1 ? '' : 's'}` : null;
         addNotice({ priority: 768, message: `At end of text with unclosed ${char} opening character`, details, lineNumber: n, characterIndex: x, excerpt, location: ourLocation });
     }

@@ -23,9 +23,9 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
     }
     // else
     // debugLog(`Using supplied excerptLength=${excerptLength} cf. default=${DEFAULT_EXCERPT_LENGTH}`);
-    const halfLength = Math.floor(excerptLength / 2); // rounded down
-    const halfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
-    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+    // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
     // Now create the parser and run the check
     const ourUsfmParser = new grammar.USFMParser(fileText,
@@ -60,7 +60,7 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
                 characterIndex = errorLine.indexOf('^') - 8;
                 if (characterIndex < 0) characterIndex = 0; // Just in case
                 if (excerpt.length)
-                    excerpt = (characterIndex > halfLength ? '…' : '') + excerpt.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < excerpt.length ? '…' : '')
+                    excerpt = (characterIndex > excerptHalfLength ? '…' : '') + excerpt.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < excerpt.length ? '…' : '')
             }
             else ourErrorMessage = errorLine; // We only want the last one
         }
