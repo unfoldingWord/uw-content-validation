@@ -277,7 +277,7 @@ describe('checkTN_TSV9DataRow() - ', () => {
     });
 
     it('header should succeed', async () => {
-      const chosenLine = "Book\tChapter\tVerse\tID\tSupportReference\tQuote\tOccurrence\tGLQuote\tOccurrenceNote";
+      const chosenLine = "Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote";
       const rawResults = await checkTN_TSV9DataRow(languageCode, repoCode, chosenLine, 'GEN', '1', '2', 'that was supplied', optionalCheckingOptions);
       expect(rawResults.noticeList.length).toEqual(0);
     });
@@ -339,7 +339,7 @@ describe('checkTN_TSV9DataRow() - ', () => {
   it('should find invalid Book ID, chapter number, ID, SupportReference, quotes, OccurrenceNote', async () => {
     const chosenLine = "GIN\t200\t9\tW-3r5\tLaugh\t\t17\tBad ellipse...\t<br>Boo hoo,,<br> lost my shoe !";
     const rawResults = await checkTN_TSV9DataRow(languageCode, repoCode, chosenLine, 'GEN', '1', '2', 'that was supplied', optionalCheckingOptions);
-    expect(rawResults.noticeList.length).toEqual(16);
+    expect(rawResults.noticeList.length).toEqual(14);
     expect(rawResults).toMatchSnapshot();
   });
 

@@ -8,7 +8,7 @@ import { checkOriginalLanguageQuote } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const NOTES_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.8';
+// const NOTES_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.9';
 
 const NUM_EXPECTED_NOTES_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_NOTES_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tNote';
@@ -503,10 +503,11 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
             if (isWhitespace(note))
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'Note', rowID, location: ourRowLocation });
             else { // More than just whitespace
-                ASuggestion = await ourMarkdownTextChecks(rowID, 'Note', note, true, ourRowLocation, checkingOptions);
-                await ourcheckNotesLinksToOutside(rowID, 'Note', note, ourRowLocation, linkCheckingOptions);
+                const adjustedNote = note.replace(/\\n/g, '\n');
+                ASuggestion = await ourMarkdownTextChecks(rowID, 'Note', adjustedNote, true, ourRowLocation, checkingOptions);
+                await ourcheckNotesLinksToOutside(rowID, 'Note', adjustedNote, ourRowLocation, linkCheckingOptions);
                 let regexResultArray;
-                while ((regexResultArray = TA_REGEX.exec(note))) {
+                while ((regexResultArray = TA_REGEX.exec(adjustedNote))) {
                     // debugLog("Got TA Regex in Note", JSON.stringify(regexResultArray));
                     const adjustedLink = regexResultArray[0].substring(2, regexResultArray[0].length - 2)
                     if (supportReference !== adjustedLink && V !== 'intro') {

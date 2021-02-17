@@ -2,17 +2,18 @@ import { DEFAULT_EXCERPT_LENGTH } from './text-handling-functions'
 import { checkTextField } from './field-text-check';
 import { cachedGetFileUsingFullURL } from '../core/getApi';
 import { removeDisabledNotices } from './disabled-notices';
-import { userLog, parameterAssert } from './utilities';
+import { userLog, parameterAssert, dataAssert } from './utilities';
 
 
-const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.5.0';
+const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.6.0';
 
-const IMAGE_REGEX = new RegExp('!\\[([^\\]]+?)\\]\\(([^ \\]]+?)\\)', 'g');
+const SIMPLE_IMAGE_REGEX = new RegExp('!\\[([^\\]]*?)\\]\\(([^ "\\)]+?)\\)', 'g'); // ![alt](y)
+const TITLED_IMAGE_REGEX = new RegExp('!\\[([^\\]]*?)\\]\\(([^ \\)]+?) "([^"\\)]+?)"\\)', 'g'); // ![alt](link "title")
 
 
 /**
  *
- * @param {string} languageCode
+ * @param {string} languageCode, e.g., 'en'
  * @param {string} repoCode -- e.g., 'TN' or 'TQ2', etc.
  * @param {string} textOrFileName -- used for identification
  * @param {string} markdownText -- the actual text to be checked
@@ -28,7 +29,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
 
      Returns a result object containing a successList and a noticeList
      */
-    // functionLog(`checkMarkdownText(${textName}, ${markdownText.length}, ${givenLocation})…`);
+    // functionLog(`checkMarkdownText(${languageCode}, ${repoCode}, ${textOrFileName}, ${markdownText.length}, ${givenLocation}, …)…`);
     parameterAssert(languageCode !== undefined, "checkMarkdownText: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkMarkdownText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
     parameterAssert(languageCode !== 'unfoldingWord', `checkMarkdownText: 'languageCode' ${languageCode} parameter should be not be 'unfoldingWord'`);
@@ -135,17 +136,40 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
 
         // Check for image links
         let regexResultArray;
-        while ((regexResultArray = IMAGE_REGEX.exec(lineText))) {
+        while ((regexResultArray = SIMPLE_IMAGE_REGEX.exec(lineText))) {
             // debugLog(`Got markdown image in line ${lineNumber}:`, JSON.stringify(regexResultArray));
-            if (regexResultArray[1] !== 'OBS Image') userLog("This code was only checked for 'OBS Image' links");
-            const fetchLink = regexResultArray[2];
+            const [totalLink, altText, fetchLink] = regexResultArray;
+            // if (altText !== 'OBS Image') userLog("This code was only checked for 'OBS Image' links");
+            if (!altText)
+                addNotice({ priority: 349, message: "Markdown image link has no alternative text", lineNumber, excerpt: totalLink, location: lineLocation });
             if (!fetchLink.startsWith('https://'))
                 addNotice({ priority: 749, message: "Markdown image link seems faulty", lineNumber, excerpt: fetchLink, location: lineLocation });
             else if (checkingOptions?.disableAllLinkFetchingFlag !== true) {
                 // debugLog(`Need to check existence of ${fetchLink}`);
                 try {
                     const responseData = await cachedGetFileUsingFullURL({ uri: fetchLink });
-                    parameterAssert(responseData.length > 10, `Expected ${fetchLink} image file to be longer: ${responseData.length}`);
+                    dataAssert(responseData.length > 10, `Expected ${fetchLink} image file to be longer: ${responseData.length}`);
+                    // debugLog("Markdown link fetch got response: ", responseData.length);
+                } catch (flError) {
+                    console.error(`Markdown image link fetch had an error fetching '${fetchLink}': ${flError}`);
+                    addNotice({ priority: 748, message: "Error fetching markdown image link", lineNumber, excerpt: fetchLink, location: lineLocation });
+                }
+            }
+        }
+        while ((regexResultArray = TITLED_IMAGE_REGEX.exec(lineText))) {
+            // debugLog(`Got markdown image in line ${lineNumber}:`, JSON.stringify(regexResultArray));
+            const [totalLink, alt, fetchLink, title] = regexResultArray;
+            if (!alt)
+                addNotice({ priority: 349, message: "Markdown image link has no alternative text", lineNumber, excerpt: totalLink, location: lineLocation });
+            if (!title)
+                addNotice({ priority: 348, message: "Markdown image link has no title text", lineNumber, excerpt: totalLink, location: lineLocation });
+            if (!fetchLink.startsWith('https://'))
+                addNotice({ priority: 749, message: "Markdown image link seems faulty", lineNumber, excerpt: fetchLink, location: lineLocation });
+            else if (checkingOptions?.disableAllLinkFetchingFlag !== true) {
+                // debugLog(`Need to check existence of ${fetchLink}`);
+                try {
+                    const responseData = await cachedGetFileUsingFullURL({ uri: fetchLink });
+                    dataAssert(responseData.length > 10, `Expected ${fetchLink} image file to be longer: ${responseData.length}`);
                     // debugLog("Markdown link fetch got response: ", responseData.length);
                 } catch (flError) {
                     console.error(`Markdown image link fetch had an error fetching '${fetchLink}': ${flError}`);
@@ -187,7 +211,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
         if (thisText === lineText) // i.e., we didn’t premodify the field being checked (otherwise suggestion could be wrong)
             return suggestion;
     }
-    // end of checkMarkdownLine function
+    // end of checkMarkdownLineContents function
 
 
     // Main code for checkMarkdownText function
@@ -195,21 +219,42 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
     // debugLog(`  '${location}' has ${lines.length.toLocaleString()} total lines`);
 
     let headerLevel = 0;
-    // let lastNumLeadingSpaces = 0;
-    // let lastLineContents;
+    let lastLine;
     let indentLevels = [];
     const suggestedLines = [];
+    let notifiedBlankLines = false;
     for (let n = 1; n <= lines.length; n++) {
 
         const line = lines[n - 1];
+        const nextLine = (n < lines.length - 1) ? lines[n] : undefined;
+
+        // Markdown headers should be preceded and followed by a blank line
+        if (line.startsWith('#')) {
+            if (n > 1 && lastLine.length !== 0) {
+                const notice = { priority: 252, message: "Markdown headers should be preceded by a blank line", lineNumber: n, location: ourLocation };
+                if (textOrFileName === 'Note' || textOrFileName === 'OccurrenceNote')
+                    notice.details = `markdown line ${n}`;
+                addNotice(notice);
+            }
+            if (nextLine?.length !== 0) {
+                const notice = { priority: 252, message: "Markdown headers should be followed by a blank line", lineNumber: n, location: ourLocation };
+                if (textOrFileName === 'Note' || textOrFileName === 'OccurrenceNote')
+                    notice.details = `markdown line ${n}`;
+                addNotice(notice);
+            }
+        }
+
         let numLeadingSpaces;
         if (line) {
-
             const thisHeaderLevel = line.match(/^#*/)[0].length;
             // debugLog(`Got thisHeaderLevel=${thisHeaderLevel} for ${line}${atString}`);
             if (thisHeaderLevel > headerLevel + 1
-                && !textOrFileName.startsWith('TA ')) // Suppress this notice for translationAcademy subsections
-                addNotice({ priority: 172, message: "Header levels should only increment by one", lineNumber: n, characterIndex: 0, location: ourLocation });
+                && !textOrFileName.startsWith('TA ')) { // Suppress this notice for translationAcademy subsections
+                const notice = { priority: 172, message: "Header levels should only increment by one", lineNumber: n, characterIndex: 0, location: ourLocation };
+                if (textOrFileName === 'Note' || textOrFileName === 'OccurrenceNote')
+                    notice.details = `markdown line ${n}`;
+                addNotice(notice);
+            }
             if (thisHeaderLevel > 0) {
                 headerLevel = thisHeaderLevel;
                 indentLevels = []; // reset
@@ -219,7 +264,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
             // debugLog(`Got numLeadingSpaces=${numLeadingSpaces} with indentLevels=${JSON.stringify(indentLevels)} for ${line}${ourLocation}`);
             const previousIndentLevel = (indentLevels.length > 0) ? indentLevels[indentLevels.length - 1] : 0;
             if ((numLeadingSpaces > previousIndentLevel) // We have an indent level increase
-            || (numLeadingSpaces===0 && line.length > 0 && indentLevels.length===0)) // we have our first zero-level indent
+                || (numLeadingSpaces === 0 && line.length > 0 && indentLevels.length === 0)) // we have our first zero-level indent
                 indentLevels.push(numLeadingSpaces);
             else if (numLeadingSpaces < previousIndentLevel) { // We have an indent level decrease
                 if (indentLevels.length > 1 && indentLevels[indentLevels.length - 2] === numLeadingSpaces)
@@ -227,17 +272,21 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
                     indentLevels.pop();
                 else { // seems we didn't go back to the previous level ???
                     let foundPreviousLevel = false;
-                    for (let z = indentLevels.length-1; z>= 0; z--) {
+                    for (let z = indentLevels.length - 1; z >= 0; z--) {
                         if (indentLevels[z] === numLeadingSpaces) {
                             // debugLog(`After finding ${numLeadingSpaces} spaces, reducing length of ${JSON.stringify(indentLevels)} to ${z+1}`);
-                            indentLevels.length = z+1;
+                            indentLevels.length = z + 1;
                             foundPreviousLevel = true;
                             break;
                         }
                     }
-                    if (!foundPreviousLevel)
-                        addNotice({ priority: 282, message: "Nesting of header levels seems confused", details: `recent indent levels=${JSON.stringify(indentLevels)} but now ${numLeadingSpaces}`, lineNumber: n, characterIndex: 0, location: ourLocation });
-            }
+                    if (!foundPreviousLevel) {
+                        const notice = { priority: 282, message: "Nesting of header levels seems confused", details: `recent indent levels=${JSON.stringify(indentLevels)} but now ${numLeadingSpaces}`, lineNumber: n, characterIndex: 0, location: ourLocation };
+                        if (textOrFileName === 'Note' || textOrFileName === 'OccurrenceNote')
+                            notice.details = `markdown line ${n}`;
+                        addNotice(notice);
+                    }
+                }
             }
 
             const suggestedLine = await checkMarkdownLineContents(n, line, ourLocation);
@@ -246,11 +295,21 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
             // This is a blank line
             numLeadingSpaces = 0;
             suggestedLines.push('');
+
+            // Should only ever have single blank lines in markdown
+            if (n > 1 && lastLine.length === 0 && nextLine?.length === 0 && !notifiedBlankLines) {
+                const notice = { priority: 250, message: "Multiple blank lines are not expected in markdown", lineNumber: n, location: ourLocation };
+                if (textOrFileName === 'Note' || textOrFileName === 'OccurrenceNote')
+                    notice.details = `markdown line ${n}`;
+                addNotice(notice);
+                notifiedBlankLines = true;
+            }
         }
 
-        // lastLineContents = line;
+        lastLine = line;
         // lastNumLeadingSpaces = numLeadingSpaces;
     }
+
 
     // Check for an uneven number of sets of symmetrical (i.e., opener == closer) multicharacter markdown formatting sequences
     for (const thisSet of [ // Put longest ones first

@@ -145,7 +145,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         const ALL_TSV_FIELDNAMES = ['Book', 'Chapter', 'Verse', 'Reference',
             'ID', 'Tags', 'SupportReference',
             'OrigWords', 'TWLink',
-            'Quote', 'Quote', 'Occurrence', 'GLQuote',
+            'OrigQuote', 'Quote', 'Occurrence', 'GLQuote',
             'Question', 'Response',
             'OccurrenceNote', 'Note'];
         const numberStore = {}, duplicatePriorityList = [];

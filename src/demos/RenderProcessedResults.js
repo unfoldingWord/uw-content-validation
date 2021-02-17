@@ -1,6 +1,6 @@
 import React from 'react';
 import { forwardRef } from 'react';
-import { parameterAssert, userLog, debugLog } from '../core/utilities';
+import { parameterAssert, userLog } from '../core/utilities';
 
 // NOTE: The following line is currently giving compile warnings -- a problem in a dependency it seems
 import MaterialTable from 'material-table';
@@ -254,7 +254,7 @@ function RenderBCV({ bookID, C, V }) {
 */
 function RenderFileDetails({ username, repoName, branch, filename, lineNumber, rowID, fieldName }) {
     // These are all optional parameters - they may be undefined or blank if irrelevant
-    debugLog(`RenderFileDetails(${repoName}, ${branch}, ${filename}, ${lineNumber}, ${rowID}, ${fieldName})`);
+    // debugLog(`RenderFileDetails(${repoName}, ${branch}, ${filename}, ${lineNumber}, ${rowID}, ${fieldName})`);
     if (!repoName && !filename && !lineNumber && !rowID && !fieldName)
         return null; // They're all undefined or blank!
     if (!branch) branch = repoName.endsWith('2')? 'newFormat':'master'; // default but with TEMP code for newFormat

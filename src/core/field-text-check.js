@@ -1,5 +1,5 @@
 import { DEFAULT_EXCERPT_LENGTH, OPEN_CLOSE_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, isWhitespace, countOccurrences } from './text-handling-functions'
-import { debugLog, parameterAssert } from './utilities';
+import { parameterAssert } from './utilities';
 
 
 // const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.5';
@@ -260,7 +260,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
         addNoticePartial(notice);
         suggestion = suggestion.replace(/\u202F/g, ' ');
     }
-    if (fieldName === 'Quote' || fieldName === 'Quote') {
+    if (fieldName === 'OrigQuote' || fieldName === 'Quote') {
         if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 179)
             && (characterIndex = fieldText.indexOf(' …')) >= 0) {
             const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
@@ -303,7 +303,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
         if (fieldType !== 'markdown') afterSpaceCheckList += '_*~'; // These are used for markdown formatting
         if (fieldType !== 'USFM' || (fieldText.indexOf('x-lemma') < 0 && fieldText.indexOf('x-tw') < 0)) afterSpaceCheckList += '|';
         if (fieldType !== 'YAML') afterSpaceCheckList += '\'"'; // These are used for YAML strings, e.g., version: '0.15'
-        // if (fieldName === 'Quote' || fieldName === 'Quote') afterSpaceCheckList += '…'; // NOT NEEDED -- this is specifically checked elsewhere
+        // if (fieldName === 'OrigQuote' || fieldName === 'Quote') afterSpaceCheckList += '…'; // NOT NEEDED -- this is specifically checked elsewhere
         for (const punctChar of afterSpaceCheckList) {
             if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 191)
                 && (characterIndex = fieldText.indexOf(' ' + punctChar)) >= 0) {
@@ -410,7 +410,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
                         && (fieldType !== 'YAML' || leftChar !== '{')
                         // TODO: We have to allow for a blank language code until we change checkPlainText()
                         && (languageCode !== 'en' || regexResultArray[0][2] !== 's' || fieldText.indexOf('(s)') === -1)) {
-                        debugLog(`Got misplaced '${languageCode}' left ${leftChar} in ${fieldType} ${fieldName} '${fieldText}': ${JSON.stringify(regexResultArray)}`);
+                        // debugLog(`Got possible misplaced '${languageCode}' left ${leftChar} in ${fieldType} ${fieldName} '${fieldText}': ${JSON.stringify(regexResultArray)}`);
                         let thisPriority = 717, thisMessage = `Misplaced ${leftChar} character`;
                         if (leftChar === '(' && regexResultArray[0][2] === 's') { thisPriority = 17; thisMessage = `Possible misplaced ${leftChar} character`; } // Lower priority for words like 'thing(s)'
                         if (!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < thisPriority)

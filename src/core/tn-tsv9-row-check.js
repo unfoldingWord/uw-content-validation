@@ -476,15 +476,15 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
         //     addNoticePartial({ priority: 877, message: "Missing SupportReference field", fieldName: 'SupportReference', rowID, location: ourRowLocation });
 
         if (quote.length) { // need to check UTN against UHB and UGNT
-            OQSuggestion = ourCheckTextField(rowID, 'Quote', quote, false, ourRowLocation, checkingOptions);
+            OQSuggestion = ourCheckTextField(rowID, 'OrigQuote', quote, false, ourRowLocation, checkingOptions);
             if (occurrence.length)
-                await ourCheckTNOriginalLanguageQuote(rowID, 'Quote', quote, occurrence, ourRowLocation, checkingOptions);
+                await ourCheckTNOriginalLanguageQuote(rowID, 'OrigQuote', quote, occurrence, ourRowLocation, checkingOptions);
             else
                 addNoticePartial({ priority: 750, message: "Missing occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, location: ourRowLocation });
         }
         else // TODO: Find more details about when these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             if (V !== 'intro' && occurrence !== '0')
-                addNoticePartial({ priority: 919, message: "Missing Quote field", fieldName: 'Quote', rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 919, message: "Missing Quote field", fieldName: 'OrigQuote', rowID, location: ourRowLocation });
 
         if (occurrence.length) { // This should usually be a digit
             if (occurrence === '0') { // zero means that it doesn’t occur
@@ -530,10 +530,11 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
             if (isWhitespace(occurrenceNote))
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation });
             else { // More than just whitespace
-                ONSuggestion = await ourMarkdownTextChecks(rowID, 'OccurrenceNote', occurrenceNote, true, ourRowLocation, checkingOptions);
-                await ourcheckNotesLinksToOutside(rowID, 'OccurrenceNote', occurrenceNote, ourRowLocation, linkCheckingOptions);
+                const adjustedOccurrenceNote = occurrenceNote.replace(/<br>/g, '\n');
+                ONSuggestion = await ourMarkdownTextChecks(rowID, 'OccurrenceNote', adjustedOccurrenceNote, true, ourRowLocation, checkingOptions);
+                await ourcheckNotesLinksToOutside(rowID, 'OccurrenceNote', adjustedOccurrenceNote, ourRowLocation, linkCheckingOptions);
                 let regexResultArray;
-                while ((regexResultArray = TA_REGEX.exec(occurrenceNote))) {
+                while ((regexResultArray = TA_REGEX.exec(adjustedOccurrenceNote))) {
                     // debugLog("Got TA Regex in OccurrenceNote", JSON.stringify(regexResultArray));
                     if (supportReference !== regexResultArray[1] && V !== 'intro') {
                         const details = supportReference ? `(SR='${supportReference}')` : "(empty SR field)"
