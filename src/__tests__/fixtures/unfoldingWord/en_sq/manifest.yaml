@@ -1,0 +1,53 @@
+---
+
+dublin_core:
+  conformsto: 'rc0.2'
+  contributor:
+  - 'Door43 World Missions Community'
+  - 'Larry Sallee (Th.M Dallas Theological Seminary, D.Min. Columbia Biblical Seminary)'
+  creator: 'Door43 World Missions Community'
+  description: 'Comprehension and theological questions for each chapter of the Bible.'
+  format: 'text/markdown'
+  identifier: 'tq'
+  issued: '2020-09-25'
+  language:
+    direction: 'ltr'
+    identifier: 'en'
+    title: 'English'
+  modified: '2020-09-25'
+  publisher: 'unfoldingWord'
+  relation:
+    - 'en/ult'
+    - 'en/ust'
+  rights: 'CC BY-SA 4.0'
+  source:
+    -
+      identifier: 'sq'
+      language: 'en'
+      version: '0'
+  subject: 'TSV Study Questions'
+  title: 'unfoldingWord® Study Questions'
+  type: 'help'
+  version: '1'
+
+checking:
+  checking_entity:
+    - 'unfoldingWord'
+  checking_level: '3'
+
+projects:
+  -
+    title: 'unfoldingWord® Open Bible Stories'
+    versification: 'ufw'
+    identifier: 'obs'
+    sort: 0
+    path: './OBS_sq.tsv'
+    categories: [ ]
+
+  -
+    title: 'Titus'
+    versification: 'ufw'
+    identifier: 'tit'
+    sort: 56
+    path: './TIT_sq.tsv'
+    categories: [ 'bible-nt' ]

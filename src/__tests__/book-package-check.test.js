@@ -22,7 +22,7 @@ const optionalCheckingOptions = {
       return fs.readFileSync(filePath).toString();
     }
     // eslint-disable-next-line no-throw-literal
-    throw `Could not find ${filePath}`;
+    throw `Tests could not find ${filePath}`;
   },
   getFileListFromZip: params => {
     const { username, repository, optionalPrefix } = params;
