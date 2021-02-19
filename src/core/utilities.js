@@ -1,4 +1,4 @@
-// utilities
+// utilities.js
 
 
 /**
@@ -7,9 +7,9 @@
  * @param {string} optionalParameter2
  */
 export function userLog(logString, optionalParameter2) {
-    if (optionalParameter2) userLog(`userLog note: we have a 2nd parameter: '${optionalParameter2}' after '${logString}'`);
     // We can remove them all by disabling the next line
     console.log(`uw-content-validation: ${logString}`);
+    if (optionalParameter2) userLog(`userLog note: we have a 2nd parameter: '${optionalParameter2}'`);
 }
 
 
@@ -19,9 +19,9 @@ export function userLog(logString, optionalParameter2) {
  * @param {string} optionalParameter2
  */
 export function debugLog(logString, optionalParameter2) {
-    if (optionalParameter2) debugLog(`debugLog note: we have a 2nd parameter: '${optionalParameter2}' after '${logString}'`);
     // We can remove them all by disabling the next line
     console.log(`uw-content-validation debug: ${logString}`);
+    if (optionalParameter2) debugLog(`debugLog note: we have a 2nd parameter: '${optionalParameter2}'`);
 }
 
 
@@ -31,9 +31,9 @@ export function debugLog(logString, optionalParameter2) {
  * @param {string} optionalParameter2
  */
 export function functionLog(logString, optionalParameter2) {
-    if (optionalParameter2) functionLog(`functionLog note: we have a 2nd parameter: '${optionalParameter2}' after '${logString}'`);
     // We can remove them all by disabling the next line
     console.log(`uw-content-validation function call: ${logString}`);
+    if (optionalParameter2) functionLog(`functionLog note: we have a 2nd parameter: '${optionalParameter2}'`);
 }
 
 

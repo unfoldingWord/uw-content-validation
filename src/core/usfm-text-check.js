@@ -8,7 +8,7 @@ import { userLog, parameterAssert, dataAssert, ourParseInt } from './utilities';
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.8.3';
+// const USFM_VALIDATOR_VERSION_STRING = '0.8.5';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘`; // '{' gets added for STs
@@ -208,7 +208,9 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         parameterAssert(typeof noticeObject.location === 'string', `cUSFM addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
         // Doublecheck -- we don’t want "Mismatched {}" per line, only per file
-        parameterAssert(noticeObject.message.indexOf("Mismatched {}") < 0 || noticeObject.lineNumber === undefined, `checkUSFMText addNoticePartial: got bad notice: ${JSON.stringify(noticeObject)}`);
+        const noticeObjectString = JSON.stringify(noticeObject);
+        parameterAssert(noticeObject.message.indexOf("Mismatched {}") === -1 || noticeObject.lineNumber === undefined, `checkUSFMText addNoticePartial: got bad notice: ${noticeObjectString}`);
+        parameterAssert(noticeObjectString.indexOf('NONE') === -1 && noticeObjectString.indexOf('SPECIAL') === -1, `'NONE' & 'SPECIAL' shouldn't make it thru to end user: ${noticeObjectString}`)
         if (noticeObject.debugChain) noticeObject.debugChain = `checkUSFMText ${noticeObject.debugChain}`;
         result.noticeList.push({ ...noticeObject, bookID, filename });
     }
@@ -629,7 +631,19 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         // functionLog(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
         // functionLog(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}=${rest.length} chars, ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
 
-        const details = `(line marker=\\${marker})`
+        const details = `line marker='\\${marker}'`
+
+        // Check that no \w markers touch, i.e., shouldn't have '\w*\w' in file
+        let characterIndex;
+        if ((characterIndex = rest.indexOf('\\w*\\w')) >= 0) {
+            // NOTE: There's one example of this in ULT 1 Kings 6:1 "480th"
+            //  \w 480|x-occurrence="1" x-occurrences="1"\w*\w th|x-occurrence="1" x-occurrences="1"\w*
+            // Also UST Ezra 6:19 "14th" and Ezra 10:9 "20th"
+            // TODO: Do we want to disable this particular case, or to look for ordinal numbers???
+            const badCount = countOccurrences(rest, '\\w*\\w');
+            const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
+            addNoticePartial({ priority: 444, message: "Shouldn’t have consecutive word fields without a space", details: badCount> 1? details+`${badCount} occurrences found in line`: details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+        }
 
         // Remove any self-closed milestones and internal \v markers
         // NOTE: replaceAll() is not generally available in browsers yet, so need to use RegExps
@@ -785,7 +799,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         // functionLog(`checkUSFMLineAttributes(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
         // functionLog(`checkUSFMLineAttributes(${lineNumber}, ${C}:${V}, ${marker}=${rest.length} chars, ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
 
-        const details = `(line marker=\\${marker})`
+        const details = `line marker='\\${marker}'`
 
         // Put marker inside string so easy to do RegExp searches
         const adjustedRest = `\\${marker} ${rest}`;
@@ -909,7 +923,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
      */
     function checkUSFMLineContents(lineNumber, C, V, marker, rest, lineLocation, checkingOptions) {
         // Looks at the marker and determines what content is allowed/expected on the rest of the line
-        // 'SPECIAL1' is used internally here when a character other than a backslash starts a line
+        // 'SPECIAL' is used internally here when a character other than a backslash starts a line
 
         function checkUSFMLineInternals(lineNumber, C, V, marker, rest, lineLocation, checkingOptions) {
             // Handles character formatting within the line contents
@@ -932,8 +946,8 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 if (rest.indexOf('=') >= 0 || rest.indexOf('"') >= 0)
                     checkUSFMLineAttributes(lineNumber, C, V, marker, rest, lineLocation, checkingOptions);
 
-                const allowedLinks = (marker === 'w' || marker === 'k-s' || marker === 'f' || marker === 'SPECIAL1')
-                    // (because we don’t know what marker SPECIAL1 is, so default to "no false alarms")
+                const allowedLinks = (marker === 'w' || marker === 'k-s' || marker === 'f' || marker === 'SPECIAL')
+                    // (because we don’t know what marker SPECIAL is, so default to "no false alarms")
                     && rest.indexOf('x-tw') >= 0;
                 ourCheckTextField(lineNumber, C, V, 'USFM', `\\${marker}`, rest, allowedLinks, lineLocation, checkingOptions);
             }
@@ -942,7 +956,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
 
 
         // Main code for checkUSFMLineContents()
-        if (ALLOWED_LINE_START_MARKERS.indexOf(marker) >= 0 || marker === 'SPECIAL1') {
+        if (ALLOWED_LINE_START_MARKERS.indexOf(marker) >= 0 || marker === 'SPECIAL' || marker === 'NONE') {
             if (rest && MARKERS_WITHOUT_CONTENT.indexOf(marker) >= 0)
                 if (isWhitespace(rest))
                     addNoticePartial({ priority: 301, message: `Unexpected whitespace after \\${marker} marker`, C, V, lineNumber, characterIndex: marker.length, excerpt: rest, location: lineLocation });
@@ -973,7 +987,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         }
         catch {
             if (!books.isValidBookID(bookID)) // must not be in FRT, BAK, etc.
-                addNoticePartial({ priority: 903, message: "Bad function call: should be given a valid book abbreviation", excerpt: bookID, location: ` (not '${bookID}')${ourLocation}` });
+                addNoticePartial({ priority: 903, message: "Bad function call: should be given a valid book abbreviation", excerpt: bookID, location: ourLocation });
         }
 
         function findStartMarker(C, V, lineNumber, USFMline) {
@@ -1029,7 +1043,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 // NOTE: Some unfoldingWord USFM Bibles commonly have this
                 //          so it’s not necessarily either an error or a warning
                 rest = line;
-                if (validLineStartCharacters.indexOf(line[0]) < 0) { // These are the often expected characters
+                if (validLineStartCharacters.indexOf(line[0]) === -1) { // These are the often expected characters
                     // Drop the priority if it’s a "half-likely" character
                     addNoticePartial({ priority: `"`.indexOf(line[0]) < 0 ? 880 : 180, C, V, message: "Expected line to start with backslash", lineNumber: n, characterIndex: 0, excerpt: line[0], location: ourLocation });
                     if (line[1] === '\\') { // Let’s drop the leading punctuation and try to check the rest of the line
@@ -1038,10 +1052,10 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                         // debugLog(`USFM after ${line[0]} got '\\${marker}': '${rest}'`);
                     }
                     else
-                        marker = 'rem'; // to try to avoid consequential errors, but the rest of the line won’t be checked
+                        marker = 'NONE'; // to try to avoid consequential errors, but the rest of the line won’t be checked
                 } else { // How do we handle an allowed line that doesn’t start with a backslash?
-                    // Can’t use 'rem' because we want the rest of the line checked
-                    marker = 'SPECIAL1'; // Handle as a special case
+                    // Can’t use 'NONE' because we want the rest of the line checked
+                    marker = 'SPECIAL'; // Handle as a special case
                 }
             }
             markerSet.add(marker); // Keep track of all line markers

@@ -2,7 +2,7 @@ import { DEFAULT_EXCERPT_LENGTH } from './text-handling-functions'
 import { checkTextField } from './field-text-check';
 import { cachedGetFileUsingFullURL } from '../core/getApi';
 import { removeDisabledNotices } from './disabled-notices';
-import { userLog, parameterAssert, dataAssert } from './utilities';
+import { parameterAssert, dataAssert } from './utilities';
 
 
 const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.6.0';
@@ -352,8 +352,6 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
     else
         addSuccessMessage(`No errors or warnings found by checkMarkdownText v${MARKDOWN_TEXT_VALIDATOR_VERSION_STRING}`)
     // debugLog(`  checkMarkdownText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
-    if (textOrFileName.endsWith('walk.md'))
-        userLog("checkMarkdownText result is", JSON.stringify(result));
     return result;
 }
 // end of checkMarkdownText function

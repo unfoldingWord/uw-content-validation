@@ -393,14 +393,14 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
                 addNoticePartial({ priority: 796, message: "Field is only whitespace", fieldName: 'TWLink', rowID, location: ourRowLocation });
             else { // More than just whitespace
                 if (!TWLink.startsWith('rc://*/tw/dict/bible/'))
-                    addNoticePartial({ priority: 798, message: "Field doesn't contain expected TW link", details: `should start with 'rc://*/tw/dict/bible/'`, fieldName: 'TWLink', rowID, location: ourRowLocation });
+                    addNoticePartial({ priority: 798, message: "Field doesn’t contain expected TW link", details: `should start with 'rc://*/tw/dict/bible/'`, fieldName: 'TWLink', rowID, location: ourRowLocation });
                 else { // it starts correctly
                     const bits = TWLink.substring('rc://*/tw/dict/bible/'.length).split('/');
                     // debugLog(`checkTWL_TSV6DataRow checking ${rowID} TWLink='${TWLink}' got bits=${JSON.stringify(bits)}`);
                     if (bits[0] !== 'kt' && bits[0] !== 'names' && bits[0] !== 'other') {
                         const characterIndex = 'rc://*/tw/dict/bible/'.length;
                         const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + TWLink.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < TWLink.length ? '…' : '')
-                        addNoticePartial({ priority: 797, message: "Field doesn't contain proper TW link", details: `should be 'kt', 'names', or 'other'`, fieldName: 'TWLink', rowID, characterIndex, excerpt, location: ourRowLocation });
+                        addNoticePartial({ priority: 797, message: "Field doesn’t contain proper TW link", details: `should be 'kt', 'names', or 'other'`, fieldName: 'TWLink', rowID, characterIndex, excerpt, location: ourRowLocation });
                     } else { // all good so far
                         // debugLog(`checkTWL_TSV6DataRow looking up ${rowID} TWLink='${TWLink}' got bits=${JSON.stringify(bits)}`);
                         await ourcheckNotesLinksToOutside(rowID, 'TWLink', TWLink, ourRowLocation, linkCheckingOptions);

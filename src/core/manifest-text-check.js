@@ -7,15 +7,16 @@ import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert } from './utilities';
 
 
-const MANIFEST_VALIDATOR_VERSION_STRING = '0.4.0';
+const MANIFEST_VALIDATOR_VERSION_STRING = '0.4.1';
 
 // Pasted in 2020-10-02 from https://raw.githubusercontent.com/unfoldingWord/dcs/master/options/schema/rc.schema.json
+// Updated 2021-02-19
 const MANIFEST_SCHEMA = {
     "$schema": "http://json-schema.org/draft-07/schema",
     "$id": "https://resource-container.readthedocs.io/schema/rc.schema.json",
     "$$target": [
-        "rc.schema.json#/definitions/languageTag",
-        "rc.schema.json#/definitions/localizedText"
+            "rc.schema.json#/definitions/languageTag",
+            "rc.schema.json#/definitions/localizedText"
     ],
     "title": "Root",
     "type": "object",
@@ -63,7 +64,7 @@ const MANIFEST_SCHEMA = {
                     "title": "Contributor",
                     "type": "array",
                     "default": [],
-                    "items": {
+                    "items":{
                         "$id": "#root/dublin_core/contributor/items",
                         "title": "Items",
                         "type": "string",
@@ -172,7 +173,7 @@ const MANIFEST_SCHEMA = {
                     "title": "Relation",
                     "type": "array",
                     "default": [],
-                    "items": {
+                    "items":{
                         "$id": "#root/dublin_core/relation/items",
                         "$ref": "#/definitions/relationItem",
                         "title": "Items",
@@ -200,7 +201,7 @@ const MANIFEST_SCHEMA = {
                     "title": "Source",
                     "type": "array",
                     "default": [],
-                    "items": {
+                    "items":{
                         "$id": "#root/dublin_core/source/items",
                         "title": "Items",
                         "type": "object",
@@ -257,9 +258,14 @@ const MANIFEST_SCHEMA = {
                         "OBS Translation Notes",
                         "OBS Translation Questions",
                         "Open Bible Stories",
+                        "Study Notes",
+                            "Study Questions",
                         "Translation Academy",
                         "Translation Notes",
                         "Translation Questions",
+                        "TSV Study Notes",
+                        "TSV Study Questions",
+                        "TSV Translation Questions",
                         "Translation Words",
                         "TSV Translation Notes"
                     ]
@@ -308,7 +314,7 @@ const MANIFEST_SCHEMA = {
                     "title": "Checking_entity",
                     "type": "array",
                     "default": [],
-                    "items": {
+                    "items":{
                         "$id": "#root/checking/checking_entity/items",
                         "title": "Items",
                         "type": "string",
@@ -336,7 +342,7 @@ const MANIFEST_SCHEMA = {
             "title": "Projects",
             "type": "array",
             "default": [],
-            "items": {
+            "items":{
                 "$id": "#root/projects/items",
                 "title": "Items",
                 "type": "object",
@@ -390,7 +396,7 @@ const MANIFEST_SCHEMA = {
                         "title": "Categories",
                         "type": ["array", "null"],
                         "default": [],
-                        "items": {
+                        "items":{
                             "$id": "#root/projects/items/categories/items",
                             "title": "Items",
                             "type": "string",
@@ -415,10 +421,10 @@ const MANIFEST_SCHEMA = {
         "localizedText": {
             "type": "object",
             "additionalProperties": {
-                "$ref": "#/definitions/trimmedText"
+                    "$ref": "#/definitions/trimmedText"
             },
             "propertyNames": {
-                "$ref": "#/definitions/languageTag"
+                    "$ref": "#/definitions/languageTag"
             },
             "minProperties": 1,
             "description": "A textual string specified in one or multiple languages, indexed by IETF language tag."
