@@ -55,6 +55,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   newCheckingOptions.getFile = getFile_; // use same getFile_ when we call core functions
   if (!newCheckingOptions.originalLanguageRepoUsername) newCheckingOptions.originalLanguageRepoUsername = username;
   if (!newCheckingOptions.taRepoUsername) newCheckingOptions.taRepoUsername = username;
+  if (!newCheckingOptions.twRepoUsername) newCheckingOptions.twRepoUsername = username;
 
   // No point in passing the branch through as a parameter
   //  coz if it’s not 'master', it’s unlikely to be common for all the repos

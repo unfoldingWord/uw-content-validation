@@ -4,11 +4,12 @@ import { checkTextField } from './field-text-check';
 import { checkTextfileContents } from './file-text-check';
 import { runUsfmJsCheck } from './usfm-js-check';
 import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
-import { userLog, parameterAssert, dataAssert, ourParseInt } from './utilities';
+import { checkNotesLinksToOutside } from './notes-links-check';
+import { userLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.8.5';
+// const USFM_VALIDATOR_VERSION_STRING = '0.8.6';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘`; // '{' gets added for STs
@@ -145,7 +146,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
 
      Returns a result object containing a successList and a noticeList
      */
-    // functionLog(`checkUSFMText(${languageCode}, ${bookID}, ${givenText.length.toLocaleString()} chars, '${givenLocation}', ${JSON.stringify(checkingOptions)})…`);
+    // functionLog(`checkUSFMText(${languageCode}, ${repoCode}, ${bookID}, ${filename}, ${givenText.length.toLocaleString()} chars, '${givenLocation}', ${JSON.stringify(checkingOptions)})…`);
     parameterAssert(languageCode !== undefined, "checkUSFMText: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkUSFMText: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
     parameterAssert(repoCode !== undefined, "checkUSFMText: 'repoCode' parameter should be defined");
@@ -383,7 +384,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                             }
                     }
             }
-            if (gotDeep) parameterAssert(false, `We need to add more depth levels to hasText() for ${bookID} ${chapterNumberString}:${verseNumberString}`);
+            if (gotDeep) logicAssert(false, `We need to add more depth levels to hasText() for ${bookID} ${chapterNumberString}:${verseNumberString}`);
             // debugLog(`hasText() for ${chapterNumberString}:${verseNumberString} returning false with ${typeof verseObjects} (${verseObjects.length}): ${JSON.stringify(verseObjects)}`);
             return false;
         }
@@ -394,7 +395,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         // const lowercaseBookID = bookID.toLowerCase();
         let expectedVersesPerChapterList = [];
         try {
-            parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in usfm-text-check1");
+            logicAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in usfm-text-check1");
             expectedVersesPerChapterList = books.chaptersInBook(lowercaseBookID); // A list of integers -- numVerses for each chapter
             // debugLog("Got chapterList", JSON.stringify(expectedVersesPerChapterList));
         }
@@ -527,7 +528,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         //  for this particular kind of text field
         for (const noticeEntry of dbtcResultObject.noticeList) {
             // debugLog("Notice keys", JSON.stringify(Object.keys(noticeEntry)));
-            parameterAssert(Object.keys(noticeEntry).length >= 4, `USFM ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
+            logicAssert(Object.keys(noticeEntry).length >= 4, `USFM ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
             addNoticePartial({ ...noticeEntry, lineNumber, C, V });
             // }
         }
@@ -552,7 +553,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of resultObject.noticeList) {
-            parameterAssert(Object.keys(noticeEntry).length >= 5, `USFM ourBasicFileChecks notice length=${Object.keys(noticeEntry).length}`);
+            logicAssert(Object.keys(noticeEntry).length >= 5, `USFM ourBasicFileChecks notice length=${Object.keys(noticeEntry).length}`);
             addNoticePartial(noticeEntry);
         }
     }
@@ -635,14 +636,15 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
 
         // Check that no \w markers touch, i.e., shouldn't have '\w*\w' in file
         let characterIndex;
-        if ((characterIndex = rest.indexOf('\\w*\\w')) >= 0) {
+        if ((characterIndex = rest.indexOf('\\w*\\w')) !== -1) {
             // NOTE: There's one example of this in ULT 1 Kings 6:1 "480th"
             //  \w 480|x-occurrence="1" x-occurrences="1"\w*\w th|x-occurrence="1" x-occurrences="1"\w*
             // Also UST Ezra 6:19 "14th" and Ezra 10:9 "20th"
-            // TODO: Do we want to disable this particular case, or to look for ordinal numbers???
             const badCount = countOccurrences(rest, '\\w*\\w');
-            const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-            addNoticePartial({ priority: 444, message: "Shouldn’t have consecutive word fields without a space", details: badCount> 1? details+`${badCount} occurrences found in line`: details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+            if (badCount > 1 || rest.indexOf('\\w*\\w th|') === -1) { // there's multiple cases or it's not an ordinal
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
+                addNoticePartial({ priority: 444, message: "Shouldn’t have consecutive word fields without a space", details: badCount > 1 ? details + `${badCount} occurrences found in line` : details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+            }
         }
 
         // Remove any self-closed milestones and internal \v markers
@@ -673,28 +675,28 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + adjustedRest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < adjustedRest.length ? '…' : '')
                 addNoticePartial({ priority: 912, message: 'Missing | character in \\w line', lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
-            parameterAssert(ixWordEnd >= 1, `Why1 is w| = ${ixWordEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
+            dataAssert(ixWordEnd >= 1, `Why1 is w| = ${ixWordEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
             ixEnd = adjustedRest.indexOf('\\w*');
             if (ixEnd >= 0)
                 adjustedRest = adjustedRest.substring(0, ixWordEnd) + adjustedRest.substring(ixEnd + 3, adjustedRest.length);
-            else parameterAssert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
+            else dataAssert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
         } else if (marker === 'zaln-s') { // Remove first \zaln-s milestone (if marker == zaln-s)
             ixEnd = adjustedRest.indexOf('\\*');
             if (ixEnd >= 0)
                 adjustedRest = adjustedRest.substring(ixEnd + 2, adjustedRest.length);
-            else parameterAssert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
+            else dataAssert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
         } else if (marker === 'k-s') { // Remove first \k-s milestone (if marker == k-s)
             ixEnd = adjustedRest.indexOf('\\*');
             if (ixEnd >= 0)
                 adjustedRest = adjustedRest.substring(ixEnd + 2, adjustedRest.length);
-            else parameterAssert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
+            else dataAssert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
         } else if (marker === 'f') { // Handle first footnote (if marker == f)
             ixEnd = adjustedRest.indexOf('\\f*');
             const startIndex = adjustedRest.startsWith('+ ') ? 2 : 0;
             if (ixEnd >= 0)
                 adjustedRest = adjustedRest.substring(startIndex, ixEnd) + adjustedRest.substring(ixEnd + 3, adjustedRest.length);
             else {
-                // parameterAssert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
+                // dataAssert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
                 addNoticePartial({ priority: 312, message: 'Possible unclosed footnote', details, lineNumber, C, V, location: lineLocation });
             }
             // debugLog(`After removing f field: '${adjustedRest}' from '${rest}'`);
@@ -712,7 +714,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
             const ixZEnd = adjustedRest.indexOf('\\*');
             // debugLog(`  ${nextZIndex} and ${ixZEnd}`);
             if (ixZEnd >= 0) {
-                // parameterAssert(ixZEnd > nextZIndex, `Exected closure at ${ixZEnd} to be AFTER \\zaln-s (${nextZIndex})`);
+                // dataAssert(ixZEnd > nextZIndex, `Exected closure at ${ixZEnd} to be AFTER \\zaln-s (${nextZIndex})`);
                 adjustedRest = adjustedRest.substring(0, nextZIndex) + adjustedRest.substring(ixZEnd + 2, adjustedRest.length);
                 // debugLog(`  Now '${adjustedRest}'`);
             } else {
@@ -731,10 +733,10 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 adjustedRest = ''; // Avoid follow-on errors
                 break;
             }
-            parameterAssert(ixWordEnd > nextWIndex + 3, `Why2 is w| = ${ixWordEnd}? nextWIndex=${nextWIndex} ${languageCode} ${bookID} ${C}:${V} ${lineNumber}`);
+            dataAssert(ixWordEnd > nextWIndex + 3, `Why2 is w| = ${ixWordEnd}? nextWIndex=${nextWIndex} ${languageCode} ${bookID} ${C}:${V} ${lineNumber}`);
             const ixWEnd = adjustedRest.indexOf('\\w*');
             if (ixWEnd >= 0) {
-                parameterAssert(ixWEnd > nextWIndex, `Exected closure at ${ixWEnd} to be AFTER \\w (${nextWIndex})`);
+                dataAssert(ixWEnd > nextWIndex, `Exected closure at ${ixWEnd} to be AFTER \\w (${nextWIndex})`);
                 adjustedRest = adjustedRest.substring(0, nextWIndex) + adjustedRest.substring(nextWIndex + 3, ixWordEnd) + adjustedRest.substring(ixWEnd + 3, adjustedRest.length);
                 // debugLog(`After removing w field, got '${adjustedRest}'`);
             } else {
@@ -747,7 +749,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         while ((nextFIndex = adjustedRest.indexOf('\\f + ')) >= 0) {
             const ixFEnd = adjustedRest.indexOf('\\f*');
             if (ixFEnd >= 0) {
-                parameterAssert(ixFEnd > nextWIndex, `Exected closure at ${ixFEnd} to be AFTER \\w (${nextFIndex})`);
+                dataAssert(ixFEnd > nextWIndex, `Exected closure at ${ixFEnd} to be AFTER \\w (${nextFIndex})`);
                 adjustedRest = adjustedRest.substring(0, nextFIndex) + adjustedRest.substring(nextFIndex + 5, ixFEnd) + adjustedRest.substring(ixFEnd + 3, adjustedRest.length);
                 // functionLog(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
                 // debugLog(`After removing footnote: '${adjustedRest}'`);
@@ -840,7 +842,9 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                     if (attributeName === 'x-morph'
                         && ((repoCode === 'UHB' && !attributeValue.startsWith('He,') && !attributeValue.startsWith('Ar,'))
                             || (repoCode === 'UGNT' && !attributeValue.startsWith('Gr,'))))
-                        addNoticePartial({ priority: 852, message: "Unexpected original \\w x-morph language prefix", details:"Expected 'He,' 'Ar,' or 'Gr,'", lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
+                        addNoticePartial({ priority: 852, message: "Unexpected original \\w x-morph language prefix", details: "Expected 'He,' 'Ar,' or 'Gr,'", lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
+                    else if (attributeName === 'x-tw')
+                        ourcheckNotesLinksToOutside(lineNumber, C, V, marker, attributeValue, lineLocation, checkingOptions);
                 } else { // a translation -- not UHB or UGNT
                     if (attributeCounter === 1) {
                         if (attributeName !== 'x-occurrence')
@@ -972,6 +976,51 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
     // end of checkUSFMLineContents function
 
 
+    async function ourcheckNotesLinksToOutside(lineNumber, C, V, marker, twLinkText, location, checkingOptions) {
+        // Checks that the TA/TW/Bible reference can be found
+
+        // Updates the global list of notices
+
+        // functionLog(`checkUSFMText ourcheckNotesLinksToOutside(${lineNumber}, ${C}:${V}, ${marker}, (${twLinkText.length}) '${twLinkText}', ${location}, ${JSON.stringify(checkingOptions)})`);
+        parameterAssert(marker !== undefined, "checkUSFMText ourcheckNotesLinksToOutside: 'marker' parameter should be defined");
+        parameterAssert(typeof marker === 'string', `checkUSFMText ourcheckNotesLinksToOutside: 'marker' parameter should be a string not a '${typeof marker}': ${marker}`);
+        parameterAssert(twLinkText !== undefined, "checkUSFMText ourcheckNotesLinksToOutside: 'twLinkText' parameter should be defined");
+        parameterAssert(typeof twLinkText === 'string', `checkUSFMText ourcheckNotesLinksToOutside: 'twLinkText' parameter should be a string not a '${typeof twLinkText}': ${twLinkText}`);
+
+        const coTNlResultObject = await checkNotesLinksToOutside(languageCode, repoCode, bookID, C, V, 'TWLink', twLinkText, location, { ...checkingOptions, defaultLanguageCode: languageCode });
+        // debugLog(`coTNlResultObject=${JSON.stringify(coTNlResultObject)}`);
+
+        // Choose only ONE of the following
+        // This is the fast way of append the results from this field
+        // result.noticeList = result.noticeList.concat(coTNlResultObject.noticeList);
+        // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
+        //  process results line by line
+        for (const coqNoticeEntry of coTNlResultObject.noticeList) {
+            if (coqNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN2 check
+                result.noticeList.push(coqNoticeEntry); // Just copy the complete notice as is
+            else // For our direct checks, we add the repoCode as an extra value
+                addNoticePartial({ ...coqNoticeEntry, lineNumber, C, V, fieldName: marker });
+        }
+        // The following is needed coz we might be checking the linked TA and/or TW articles
+        if (coTNlResultObject.checkedFileCount && coTNlResultObject.checkedFileCount > 0)
+            if (typeof result.checkedFileCount === 'number') result.checkedFileCount += coTNlResultObject.checkedFileCount;
+            else result.checkedFileCount = coTNlResultObject.checkedFileCount;
+        if (coTNlResultObject.checkedFilesizes && coTNlResultObject.checkedFilesizes > 0)
+            if (typeof result.checkedFilesizes === 'number') result.checkedFilesizes += coTNlResultObject.checkedFilesizes;
+            else result.checkedFilesizes = coTNlResultObject.checkedFilesizes;
+        if (coTNlResultObject.checkedRepoNames && coTNlResultObject.checkedRepoNames.length > 0)
+            for (const checkedRepoName of coTNlResultObject.checkedRepoNames)
+                try { if (result.checkedRepoNames.indexOf(checkedRepoName) < 0) result.checkedRepoNames.push(checkedRepoName); }
+                catch { result.checkedRepoNames = [checkedRepoName]; }
+        if (coTNlResultObject.checkedFilenameExtensions && coTNlResultObject.checkedFilenameExtensions.length > 0)
+            for (const checkedFilenameExtension of coTNlResultObject.checkedFilenameExtensions)
+                try { if (result.checkedFilenameExtensions.indexOf(checkedFilenameExtension) < 0) result.checkedFilenameExtensions.push(checkedFilenameExtension); }
+                catch { result.checkedFilenameExtensions = [checkedFilenameExtension]; }
+        // if (result.checkedFilenameExtensions) userLog("result", JSON.stringify(result));
+    }
+    // end of ourcheckNotesLinksToOutside function
+
+
     function mainUSFMCheck(bookID, filename, givenText, location) {
         // debugLog("Running mainUSFMCheck() (can take quite a while for a large book)…");
 
@@ -982,7 +1031,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         // eslint-disable-next-line no-unused-vars
         let numChaptersThisBook = 0;
         try {
-            parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in usfm-text-check2");
+            logicAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in usfm-text-check2");
             numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
         }
         catch {
@@ -993,7 +1042,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         function findStartMarker(C, V, lineNumber, USFMline) {
             // Returns the USFM marker at the start of the line
             //  (without the leading backslash but including full self-closing milestones)
-            parameterAssert(USFMline && USFMline[0] === '\\', `Programming error in findStartMarker(${C}:${V}, ${lineNumber}, ${USFMline})`);
+            logicAssert(USFMline && USFMline[0] === '\\', `Programming error in findStartMarker(${C}:${V}, ${lineNumber}, ${USFMline})`);
             let foundMarker = '';
             for (let characterIndex = 1; characterIndex < USFMline.length; characterIndex++) {
                 const char = USFMline[characterIndex];
@@ -1186,7 +1235,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
     allResults.push(CVCheck(bookID, givenText, ourLocation));
     if (!books.isExtraBookID(bookID))
         allResults.push(ourRunBCSGrammarCheck(filename, givenText, ourLocation));
-    // parameterAssert(allResults.length === 2);
+    // logicAssert(allResults.length === 2);
     // debugLog("allResults", JSON.stringify(allResults));
     // if (!allResults[1].isValidUSFM)
     //     addNoticePartial({priority: 941, "USFM Grammar check fails", location});

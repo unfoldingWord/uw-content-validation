@@ -7,8 +7,8 @@ import fs from 'fs-extra';
 const optionalCheckingOptions = {
   originalLanguageRepoUsername: 'unfoldingWord',
   taRepoUsername: 'unfoldingWord',
-  checkLinkedTAArticleFlag: false,
-  checkLinkedTWArticleFlag: false,
+  disableLinkedTAArticlesCheckFlag: true,
+  disableLinkedTWArticlesCheckFlag: true,
   getFile: params => {
     const { username, repository, path } = params;
     // console.log(`tn-table-row-check.test getFile(${username}, ${repository}, ${path})`)

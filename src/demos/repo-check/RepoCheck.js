@@ -38,8 +38,8 @@ function RepoCheck(/*username, languageCode,*/ props) {
     //          Also, I don’t think the results were getting returned correctly yet
     // if (repoName && repoName.endsWith('_tn')) {
     //     // TODO: Should the user be able to turn this off and on ????
-    //     checkingOptions.checkLinkedTAArticleFlag = true;
-    //     checkingOptions.checkLinkedTWArticleFlag = true;
+    //     checkingOptions.disableLinkedTAArticlesCheckFlag = false;
+    //     checkingOptions.disableLinkedTWArticlesCheckFlag = false;
     // }
     // Or this allows the parameters to be specified as a RepoCheck property
     if (props.excerptLength) checkingOptions.excerptLength = ourParseInt(props.excerptLength);

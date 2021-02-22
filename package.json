@@ -1,7 +1,7 @@
 {
   "name": "uw-content-validation",
   "description": "Functions for Checking Door43.org Scriptural Content/Resources.",
-  "version": "2.0.0_alpha5",
+  "version": "2.0.0_alpha6",
   "private": false,
   "homepage": "https://unfoldingword.github.io/uw-content-validation/",
   "repository": {
@@ -53,7 +53,7 @@
     "@babel/preset-react": "^7.12.5",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
-    "@types/jest": "24.0.22",
+    "@types/jest": "^24.0.22",
     "babel-eslint": "^10.1.0",
     "coveralls": "^3.1.0",
     "eslint-config-google": "^0.12.0",
@@ -69,13 +69,13 @@
     "jest": "^26.6.3",
     "material-table": "^1.69.1",
     "react": "^17.0.0",
-    "react-docgen": "4.1.1",
+    "react-docgen": "^4.1.1",
     "react-dom": "^17.0.1",
     "react-markdown": "^4.0.6",
     "react-scripts": "^3.0.1",
     "react-styleguidist": "^9.2.0",
     "react-test-renderer": "^16.12.0",
-    "webpack": "4.44.2"
+    "webpack": "^4.44.2"
   },
   "browserslist": [
     ">0.2%",

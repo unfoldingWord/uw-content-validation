@@ -123,7 +123,6 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
                 // eslint-disable-next-line no-unused-vars
                 const [reference, rowID, tags, quote, occurrence, TWLLink] = fields;
                 const [C, V] = reference.split(':')
-                if (V === '3') break;
 
                 // Use the row check to do most basic checks
                 const drResultObject = await checkTWL_TSV6DataRow(languageCode, repoCode, lines[n], bookID, C, V, ourLocation, checkingOptions);

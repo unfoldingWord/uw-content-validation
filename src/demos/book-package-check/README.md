@@ -41,8 +41,8 @@ import BookPackageCheck from './BookPackageCheck';
   // Normally links in files are downloaded to check that they really exist
   disableAllLinkFetchingFlag='false' // 'true' or 'false'
   // The next two are only relevant if the above is 'false'
-  checkLinkedTAArticleFlag='true' // 'true' or 'false'
-  checkLinkedTWArticleFlag='true' // 'true' or 'false'
+  disableLinkedTAArticlesCheckFlag='false' // 'true' or 'false'
+  disableLinkedTWArticlesCheckFlag='false' // 'true' or 'false'
 
   // Lines starting with // are ignored -- you can add or remove // as desired
   // Specifying excerptLength and maximumSimilarMessages is just to show off options

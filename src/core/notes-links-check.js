@@ -15,9 +15,9 @@ const DEFAULT_BRANCH = 'master';
 const GENERAL_LINK1_REGEX = new RegExp('\\[[^\\]]+?\\]\\([^\\)]+?\\)', 'g'); // [displayLink](URL)
 const GENERAL_LINK2_REGEX = new RegExp('\\[\\[[^\\]]+?\\]\\]', 'g'); // [[combinedDisplayLink]]
 
-const TA_REGEX = new RegExp('\\[\\[rc://([^ /]+?)/ta/man/([^ /]+?)/([^ \\]]+?)\\]\\]', 'g'); // Enclosed in [[  ]]
-const TW_REGEX = new RegExp('\\[\\[rc://([^ /]+?)/tw/dict/bible/([^ /]+?)/([^ \\]]+?)\\]\\]', 'g'); // Enclosed in [[  ]]
-const TWL_REGEX = new RegExp('rc://([^ /]+?)/tw/dict/bible/([^ /]+?)/(.+)', 'g'); // Just a raw link
+const TA_DOUBLE_BRACKETED_LINK_REGEX = new RegExp('\\[\\[rc://([^ /]+?)/ta/man/([^ /]+?)/([^ \\]]+?)\\]\\]', 'g'); // Enclosed in [[  ]]
+const TW_DOUBLE_BRACKETED_LINK_REGEX = new RegExp('\\[\\[rc://([^ /]+?)/tw/dict/bible/([^ /]+?)/([^ \\]]+?)\\]\\]', 'g'); // Enclosed in [[  ]]
+const TWL_RAW_LINK_REGEX = new RegExp('rc://([^ /]+?)/tw/dict/bible/([^ /]+?)/(.+)', 'g'); // Just a raw link
 
 // TODO: Do we need to normalise Bible links, i.e., make sure that the link itself
 //          (we don't care about the displayed text) doesn't specify superfluous levels/information
@@ -25,7 +25,7 @@ const TWL_REGEX = new RegExp('rc://([^ /]+?)/tw/dict/bible/([^ /]+?)/(.+)', 'g')
 // TODO: Test to see if "[2:23](../02/03.md)" is found by more than one regex below
 const BIBLE_REGEX_OTHER_BOOK_ABSOLUTE = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})\\]\\(([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Revelation 3:11](rev/03/11.md)
 const BIBLE_REGEX_OTHER_BOOK_RELATIVE = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})\\]\\(\\.{2}/\\.{2}/([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Revelation 3:11](../../rev/03/11.md)
-const BIBLE_REGEX_THIS_BOOK_RELATIVE =  new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})\\]\\(\\.{2}/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Revelation 3:11](../03/11.md)
+const BIBLE_REGEX_THIS_BOOK_RELATIVE = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})\\]\\(\\.{2}/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Revelation 3:11](../03/11.md)
 const BCV_V_TO_THIS_BOOK_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})[–-](\\d{1,3})\\]\\((\\.{2})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Genesis 26:12-14](../26/12.md) or [4:11–16](../04/11.md) NOTE en-dash
 const BIBLE_REGEX_THIS_CHAPTER_RELATIVE = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(?:(\\d{1,3}):)?(\\d{1,3})\\]\\(\\./(\\d{1,3})\\.md\\)', 'g');
 const THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[(\\d{1,3})\\]\\(\\.{2}/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');// [27](../11/27.md)
@@ -103,16 +103,16 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     //  -- you can control this with:
     //      checkingOptions?.taRepoUsername
     //      checkingOptions?.taRepoBranch (or tag)
-    //      checkingOptions?.checkLinkedTAArticleFlag
+    //      checkingOptions?.disableLinkedTAArticlesCheckFlag
 
     // We attempt to fetch any TW links to test that the destination is really there
     //  -- you can control this with:
     //      checkingOptions.twRepoUsername
     //      checkingOptions.twRepoBranch (or tag)
-    //      checkingOptions.checkLinkedTWArticleFlag
+    //      checkingOptions.disableLinkedTWArticlesCheckFlag
     */
 
-    // functionLog(`checkNotesLinksToOutside v${NOTES_LINKS_VALIDATOR_VERSION_STRING} ${repoCode} ${bookID} ${givenC}:${givenV} ${fieldName}, (${fieldText.length})'${fieldText}', ${givenLocation}, …)…`);
+    // if (fieldText.indexOf('brother') !== -1) functionLog(`checkNotesLinksToOutside v${NOTES_LINKS_VALIDATOR_VERSION_STRING} ${repoCode} ${bookID} ${givenC}:${givenV} ${fieldName}, (${fieldText.length})'${fieldText}', ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
     parameterAssert(languageCode !== undefined, "checkNotesLinksToOutside: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkNotesLinksToOutside: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
     parameterAssert(repoCode !== undefined, "checkNotesLinksToOutside: 'repoCode' parameter should be defined");
@@ -156,10 +156,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
 
     // Main code for checkNotesLinksToOutside
     // Get any options that were suppplied, or else set default values
-    let excerptLength;
-    try {
-        excerptLength = checkingOptions?.excerptLength;
-    } catch (trcELerror) { }
+    let excerptLength = checkingOptions?.excerptLength;
     if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
         excerptLength = DEFAULT_EXCERPT_LENGTH;
         // debugLog(`Using default excerptLength=${excerptLength}`);
@@ -171,22 +168,17 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
     const getFile_ = (checkingOptions && checkingOptions?.getFile) ? checkingOptions?.getFile : cachedGetFile;
-    let defaultLanguageCode;
-    try { defaultLanguageCode = checkingOptions?.defaultLanguageCode; } catch (trcLCerror) { }
+    let defaultLanguageCode = checkingOptions?.defaultLanguageCode;
     if (!defaultLanguageCode) defaultLanguageCode = DEFAULT_LANGUAGE_CODE;
     // debugLog("checkNotesLinksToOutside defaultLanguageCode", defaultLanguageCode);
 
-    let taRepoUsername;
-    try { taRepoUsername = checkingOptions?.taRepoUsername; } catch (trcUNerror) { }
+    let taRepoUsername = checkingOptions?.taRepoUsername;
     if (!taRepoUsername) taRepoUsername = defaultLanguageCode === 'en' ? 'unfoldingWord' : 'Door43-Catalog';
-    let taRepoBranch;
-    try { taRepoBranch = checkingOptions?.taRepoBranch; } catch (trcBRerror) { }
+    let taRepoBranch = checkingOptions?.taRepoBranch;
     if (!taRepoBranch) taRepoBranch = DEFAULT_BRANCH;
-    let twRepoUsername;
-    try { twRepoUsername = checkingOptions?.twRepoUsername; } catch (trcUNerror) { }
+    let twRepoUsername = checkingOptions?.twRepoUsername;
     if (!twRepoUsername) twRepoUsername = defaultLanguageCode === 'en' ? 'unfoldingWord' : 'Door43-Catalog';
-    let twRepoBranch;
-    try { twRepoBranch = checkingOptions?.twRepoBranch; } catch (trcBRerror) { }
+    let twRepoBranch = checkingOptions?.twRepoBranch;
     if (!twRepoBranch) twRepoBranch = DEFAULT_BRANCH;
 
     // Convert our given C:V strings to integers
@@ -216,20 +208,20 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     let processedLinkList = [];
 
     // Check for TA links like [[rc://en/ta/man/translate/figs-metaphor]]
-    // debugLog("checkNotesLinksToOutside: Search for TA links")
-    while ((regexResultArray = TA_REGEX.exec(fieldText))) {
+    // if (fieldText.indexOf('brother') !== -1) debugLog("checkNotesLinksToOutside: Search for TA links")
+    while ((regexResultArray = TA_DOUBLE_BRACKETED_LINK_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside TA resultArray=${JSON.stringify(regexResultArray)}`);
         taLinkCount += 1;
         processedLinkList.push(regexResultArray[0]); // Save the full link
         parameterAssert(regexResultArray.length === 4, `TA_REGEX expected 4 fields (not ${regexResultArray.length})`)
         let languageCode = regexResultArray[1];
         if (languageCode !== '*') {
-            const characterIndex = TA_REGEX.lastIndex - regexResultArray[0].length + 7; // lastIndex points to the end of the field that was found
+            const characterIndex = TA_DOUBLE_BRACKETED_LINK_REGEX.lastIndex - regexResultArray[0].length + 7; // lastIndex points to the end of the field that was found
             const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
             addNoticePartial({ priority: 450, message: "Resource container link should have '*' language code", details: `not '${languageCode}'`, characterIndex, excerpt, location: ourLocation });
         } else if (repoCode === 'TN') { // but not TN2
             // At the moment, tC can’t handle these links with * so we have to ensure that they're not there
-            const characterIndex = TA_REGEX.lastIndex - regexResultArray[0].length + 7; // lastIndex points to the end of the field that was found
+            const characterIndex = TA_DOUBLE_BRACKETED_LINK_REGEX.lastIndex - regexResultArray[0].length + 7; // lastIndex points to the end of the field that was found
             const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
             addNoticePartial({ priority: 950, message: "tC cannot yet process '*' language code", characterIndex, excerpt, location: ourLocation });
         }
@@ -256,8 +248,8 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     addNoticePartial({ priority: 886, message: `Unable to find ${fieldName} TA link`, excerpt: regexResultArray[0], location: `${ourLocation} ${filepath}` });
                 else if (taFileContent.length < 10)
                     addNoticePartial({ priority: 884, message: `Linked ${fieldName} TA article seems empty`, excerpt: regexResultArray[0], location: `${ourLocation} ${filepath}` });
-                else if (checkingOptions?.checkLinkedTAArticleFlag === true) {
-                    // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.checkLinkedTAArticleFlag} so checking TA article: ${filepath}`);
+                else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
+                    // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
                     if (await alreadyChecked(taPathParameters) !== true) {
                         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
                         const checkTAFileResult = await checkMarkdownText(languageCode, repoCode, `TA ${regexResultArray[3]}.md`, taFileContent, ourLocation, checkingOptions);
@@ -277,10 +269,10 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
 
     // Check for TW links like [[rc://en/tw/dict/bible/other/death]] in TN or rc://en/tw/dict/bible/other/death in TWLinks
     //  (These are not nearly as many as TA links.)
-    // debugLog("checkNotesLinksToOutside: Search for TW links")
-    const ourTWRegex = (fieldName === 'TWLink') ? TWL_REGEX : TW_REGEX
+    const ourTWRegex = (fieldName === 'TWLink') ? TWL_RAW_LINK_REGEX : TW_DOUBLE_BRACKETED_LINK_REGEX;
+    // if (fieldText.indexOf('brother') !== -1) debugLog(`checkNotesLinksToOutside: ${bookID} ${givenC}:${givenV} Search for TW links with ${ourTWRegex}`)
     while ((regexResultArray = ourTWRegex.exec(fieldText))) {
-        // debugLog(`  checkNotesLinksToOutside TW resultArray=${JSON.stringify(regexResultArray)}`);
+        // if (fieldText.indexOf('brother') !== -1) debugLog(`  checkNotesLinksToOutside ${givenC}:${givenV} found TW resultArray=${JSON.stringify(regexResultArray)}`);
         twLinkCount += 1;
         processedLinkList.push(regexResultArray[0]); // Save the full link
         parameterAssert(regexResultArray.length === 4, `TW_REGEX expected 4 fields (not ${regexResultArray.length})`)
@@ -292,12 +284,12 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
         // debugLog(`Got tW filepath=${filepath}`);
 
         if (!checkingOptions?.disableAllLinkFetchingFlag) {
-            // debugLog(`Need to check TW link against ${twRepoName}`);
+            // if (regexResultArray[3] === 'brother') debugLog(`Need to check ${fieldName} TW link ${regexResultArray} against ${twRepoName}`);
             const twPathParameters = { username: twRepoUsername, repository: twRepoName, path: filepath, branch: twRepoBranch };
             let twFileContent;
             try {
                 twFileContent = await getFile_(twPathParameters);
-                // debugLog(`Fetched fileContent for ${twRepoName} ${filepath} ${typeof fileContent} ${twFileContent.length}`);
+                // if (regexResultArray[3] === 'brother') debugLog(`Fetched fileContent for ${JSON.stringify(twPathParameters)}: ${typeof twFileContent} ${twFileContent.length}`);
             } catch (trcGCerror) {
                 console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TW`, twRepoUsername, twRepoName, filepath, twRepoBranch, trcGCerror.message);
                 addNoticePartial({ priority: 882, message: `Error loading ${fieldName} TW link`, excerpt: regexResultArray[0], location: `${ourLocation} ${filepath}: ${trcGCerror}` });
@@ -307,8 +299,8 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             else { // we got the content of the TW article
                 if (twFileContent.length < 10)
                     addNoticePartial({ priority: 881, message: `Linked ${fieldName} TW article seems empty`, excerpt: regexResultArray[0], location: `${ourLocation} ${filepath}` });
-                else if (checkingOptions?.checkLinkedTWArticleFlag === true) {
-                    // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.checkLinkedTWArticleFlag} so checking TW article: ${filepath}`);
+                else if (checkingOptions?.disableLinkedTWArticlesCheckFlag !== true) {
+                    // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTWArticlesCheckFlag} so checking TW article: ${filepath}`);
                     if (await alreadyChecked(twPathParameters) !== true) {
                         // functionLog(`checkNotesLinksToOutside needs to check TW article: ${filepath}`);
                         const checkTWFileResult = await checkMarkdownText(languageCode, repoCode, `TW ${regexResultArray[3]}.md`, twFileContent, ourLocation, checkingOptions);
@@ -322,8 +314,10 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                         markAsChecked(twPathParameters); // don’t bother waiting for the result
                     }
                 }
+                else debugLog("disableLinkedTWArticlesCheckFlag is set to TRUE!");
             }
         }
+        else debugLog("disableAllLinkFetchingFlag is set to TRUE!");
     }
 
     // debugLog("checkNotesLinksToOutside: Search for Bible links")

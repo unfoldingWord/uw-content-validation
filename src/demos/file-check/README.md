@@ -60,8 +60,8 @@ and then validates the content of one file selected from the repo.
   // Normally links in files are downloaded to check that they really exist
   disableAllLinkFetchingFlag='true' // 'true' or 'false'
   // The next two are only relevant if the above is 'false'
-  checkLinkedTAArticleFlag='true' // 'true' or 'false'
-  checkLinkedTWArticleFlag='true' // 'true' or 'false'
+  disableLinkedTAArticlesCheckFlag='false' // 'true' or 'false'
+  disableLinkedTWArticlesCheckFlag='false' // 'true' or 'false'
 
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'
