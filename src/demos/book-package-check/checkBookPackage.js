@@ -396,7 +396,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         // debugLog(`cBPgfError=${cBPgfError} or ${JSON.stringify(cBPgfError)} or2 ${cBPgfError === 'TypeError: repoFileContent is null'} or3 ${cBPgfError.message === 'TypeError: repoFileContent is null'} or4 ${cBPgfError.message === 'TypeError: repoFileContent is null'}`);
         let details = `username=${username}`;
         // Next line has special code to handle book-package-check.test.js tests [so we don't call repositoryExistsOnDoor43()]
-        if (cBPgfError.startsWith('Tests could not find') || ! await repositoryExistsOnDoor43({ username, repository: repoName }))
+        if ((cBPgfError+'').startsWith('Tests could not find') || ! await repositoryExistsOnDoor43({ username, repository: repoName }))
           checkBookPackageResult.noticeList.push({ priority: 997, message: "Repository doesn’t exist", details, username, repoCode, repoName, location: repoLocation, extra: repoCode });
         else {
           // eslint-disable-next-line eqeqeq
@@ -469,6 +469,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     // else debugLog(`NOT fetching MANIFEST, etc. for ${repoName}`);
 
     numCheckedRepos += 1;
+    // debugLog(`At end of loop having checked ${numCheckedRepos} repos`);
   } // end of repo loop
 
 

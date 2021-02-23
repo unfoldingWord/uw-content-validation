@@ -252,7 +252,7 @@ export async function checkQuestionsTSV7Table(languageCode, repoCode, bookID, fi
         addNoticePartial({ priority: 20, message: "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked", location: ourLocation });
 
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}.`);
-    if (carResult.noticeList)
+    if (carResult.noticeList.length)
         addSuccessMessage(`checkQuestionsTSV7Table v${QUESTIONS_TABLE_VALIDATOR_VERSION_STRING} finished with ${carResult.noticeList.length ? carResult.noticeList.length.toLocaleString() : "zero"} notice${carResult.noticeList.length === 1 ? '' : 's'}`);
     else
         addSuccessMessage(`No errors or warnings found by checkQuestionsTSV7Table v${QUESTIONS_TABLE_VALIDATOR_VERSION_STRING}`)

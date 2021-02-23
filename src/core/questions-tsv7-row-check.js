@@ -233,19 +233,19 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
     // end of ourCheckQOriginalLanguageQuote function
 
 
-    // async function ourcheckNotesLinksToOutside(rowID, fieldName, taLinkText, rowLocation, checkingOptions) {
+    // async function ourCheckNotesLinksToOutside(rowID, fieldName, taLinkText, rowLocation, checkingOptions) {
     //     // Checks that the TA/TW/Bible reference can be found
 
     //     // Updates the global list of notices
 
-    //     // functionLog(`checkQuestionsTSV7DataRow ourcheckNotesLinksToOutside(${rowID}, ${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
-    //     parameterAssert(rowID !== undefined, "checkQuestionsTSV7DataRow ourcheckNotesLinksToOutside: 'rowID' parameter should be defined");
-    //     parameterAssert(typeof rowID === 'string', `checkQuestionsTSV7DataRow ourcheckNotesLinksToOutside: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-    //     parameterAssert(fieldName !== undefined, "checkQuestionsTSV7DataRow ourcheckNotesLinksToOutside: 'fieldName' parameter should be defined");
-    //     parameterAssert(typeof fieldName === 'string', `checkQuestionsTSV7DataRow ourcheckNotesLinksToOutside: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-    //     parameterAssert(fieldName === 'Question', `checkQuestionsTSV7DataRow ourcheckNotesLinksToOutside: 'fieldName' parameter should be 'Question' not '${fieldName}'`);
-    //     parameterAssert(taLinkText !== undefined, "checkQuestionsTSV7DataRow ourcheckNotesLinksToOutside: 'taLinkText' parameter should be defined");
-    //     parameterAssert(typeof taLinkText === 'string', `checkQuestionsTSV7DataRow ourcheckNotesLinksToOutside: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
+    //     // functionLog(`checkQuestionsTSV7DataRow ourCheckNotesLinksToOutside(${rowID}, ${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
+    //     parameterAssert(rowID !== undefined, "checkQuestionsTSV7DataRow ourCheckNotesLinksToOutside: 'rowID' parameter should be defined");
+    //     parameterAssert(typeof rowID === 'string', `checkQuestionsTSV7DataRow ourCheckNotesLinksToOutside: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+    //     parameterAssert(fieldName !== undefined, "checkQuestionsTSV7DataRow ourCheckNotesLinksToOutside: 'fieldName' parameter should be defined");
+    //     parameterAssert(typeof fieldName === 'string', `checkQuestionsTSV7DataRow ourCheckNotesLinksToOutside: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+    //     parameterAssert(fieldName === 'Question', `checkQuestionsTSV7DataRow ourCheckNotesLinksToOutside: 'fieldName' parameter should be 'Question' not '${fieldName}'`);
+    //     parameterAssert(taLinkText !== undefined, "checkQuestionsTSV7DataRow ourCheckNotesLinksToOutside: 'taLinkText' parameter should be defined");
+    //     parameterAssert(typeof taLinkText === 'string', `checkQuestionsTSV7DataRow ourCheckNotesLinksToOutside: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
 
     //     const coqResultObject = await checkNotesLinksToOutside(languageCode, repoCode, bookID, givenC, givenV, fieldName, taLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: languageCode });
     //     // debugLog("coqResultObject", JSON.stringify(coqResultObject));
@@ -278,7 +278,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
     //             catch { drResult.checkedFilenameExtensions = [checkedFilenameExtension]; }
     //     // if (drResult.checkedFilenameExtensions) userLog("drResult", JSON.stringify(drResult));
     // }
-    // // end of ourcheckNotesLinksToOutside function
+    // // end of ourCheckNotesLinksToOutside function
 
 
     // Main code for checkQuestionsTSV7DataRow function
@@ -446,7 +446,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'Question', rowID, location: ourRowLocation });
             else { // More than just whitespace
                 RSuggestion = await ourMarkdownTextChecks(rowID, 'Question', question, true, ourRowLocation, checkingOptions);
-                // await ourcheckNotesLinksToOutside(rowID, 'Question', question, ourRowLocation, linkCheckingOptions);
+                // await ourCheckNotesLinksToOutside(rowID, 'Question', question, ourRowLocation, linkCheckingOptions);
                 // let regexResultArray;
                 // while ((regexResultArray = TA_REGEX.exec(question))) {
                 //     // debugLog("Got TA Regex in Question", JSON.stringify(regexResultArray));
@@ -471,7 +471,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'Response', rowID, location: ourRowLocation });
             else { // More than just whitespace
                 RSuggestion = await ourMarkdownTextChecks(rowID, 'Response', response, true, ourRowLocation, checkingOptions);
-                // await ourcheckNotesLinksToOutside(rowID, 'Response', response, ourRowLocation, linkCheckingOptions);
+                // await ourCheckNotesLinksToOutside(rowID, 'Response', response, ourRowLocation, linkCheckingOptions);
                 // let regexResultArray;
                 // while ((regexResultArray = TA_REGEX.exec(answer))) {
                 //     // debugLog("Got TA Regex in Response", JSON.stringify(regexResultArray));

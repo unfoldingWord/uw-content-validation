@@ -1,14 +1,13 @@
 import { DEFAULT_EXCERPT_LENGTH } from './text-handling-functions'
 import { checkTextField } from './field-text-check';
-import { cachedGetFileUsingFullURL } from '../core/getApi';
+import { checkNotesLinksToOutside } from './notes-links-check';
+// import { cachedGetFileUsingFullURL } from '../core/getApi';
 import { removeDisabledNotices } from './disabled-notices';
-import { parameterAssert, dataAssert } from './utilities';
+// eslint-disable-next-line no-unused-vars
+import { parameterAssert, dataAssert, debugLog } from './utilities';
 
 
-const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.6.0';
-
-const SIMPLE_IMAGE_REGEX = new RegExp('!\\[([^\\]]*?)\\]\\(([^ "\\)]+?)\\)', 'g'); // ![alt](y)
-const TITLED_IMAGE_REGEX = new RegExp('!\\[([^\\]]*?)\\]\\(([^ \\)]+?) "([^"\\)]+?)"\\)', 'g'); // ![alt](link "title")
+const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.7.0';
 
 
 /**
@@ -24,8 +23,6 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
     /* This function is optimised for checking the entire markdown text, i.e., all lines.
 
     This text may not necessarily be from a file -- it may be from a (multiline) field within a file
-
-    Note: This function does not check that any link targets in the markdown are valid links.
 
      Returns a result object containing a successList and a noticeList
      */
@@ -123,6 +120,53 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
     // end of ourCheckTextField function
 
 
+    async function ourCheckNotesLinksToOutside(lineNumber, lineText, location, checkingOptions) {
+        // Checks that the TA/TW/Bible reference can be found
+
+        // Updates the global list of notices
+
+        // functionLog(`checkUSFMText ourCheckNotesLinksToOutside(${lineNumber}, ${C}:${V}, ${marker}, (${twLinkText.length}) '${twLinkText}', ${location}, ${JSON.stringify(checkingOptions)})`);
+        parameterAssert(lineNumber !== undefined, "checkUSFMText ourCheckNotesLinksToOutside: 'lineNumber' parameter should be defined");
+        parameterAssert(typeof lineNumber === 'number', `checkUSFMText ourCheckNotesLinksToOutside: 'lineNumber' parameter should be a number not a '${typeof lineNumber}': ${lineNumber}`);
+        parameterAssert(lineText !== undefined, "checkUSFMText ourCheckNotesLinksToOutside: 'lineText' parameter should be defined");
+        parameterAssert(typeof lineText === 'string', `checkUSFMText ourCheckNotesLinksToOutside: 'lineText' parameter should be a string not a '${typeof lineText}': ${lineText}`);
+        parameterAssert(location !== undefined, "checkUSFMText ourCheckNotesLinksToOutside: 'location' parameter should be defined");
+        parameterAssert(typeof location === 'string', `checkUSFMText ourCheckNotesLinksToOutside: 'location' parameter should be a string not a '${typeof location}': ${location}`);
+
+        const coTNlResultObject = await checkNotesLinksToOutside(languageCode, repoCode, '', '', '', 'MDFile', lineText, location, { ...checkingOptions, defaultLanguageCode: languageCode });
+        // debugLog(`coTNlResultObject=${JSON.stringify(coTNlResultObject)}`);
+
+        // Choose only ONE of the following
+        // This is the fast way of append the results from this field
+        // result.noticeList = result.noticeList.concat(coTNlResultObject.noticeList);
+        // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
+        //  process results line by line
+        for (const coqNoticeEntry of coTNlResultObject.noticeList) {
+            if (coqNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN2 check
+                result.noticeList.push(coqNoticeEntry); // Just copy the complete notice as is -- would be confusing to have this lineNumber
+            else // For our direct checks, we add the repoCode as an extra value
+                addNotice({ ...coqNoticeEntry, lineNumber });
+        }
+        // The following is needed coz we might be checking the linked TA and/or TW articles
+        if (coTNlResultObject.checkedFileCount && coTNlResultObject.checkedFileCount > 0)
+            if (typeof result.checkedFileCount === 'number') result.checkedFileCount += coTNlResultObject.checkedFileCount;
+            else result.checkedFileCount = coTNlResultObject.checkedFileCount;
+        if (coTNlResultObject.checkedFilesizes && coTNlResultObject.checkedFilesizes > 0)
+            if (typeof result.checkedFilesizes === 'number') result.checkedFilesizes += coTNlResultObject.checkedFilesizes;
+            else result.checkedFilesizes = coTNlResultObject.checkedFilesizes;
+        if (coTNlResultObject.checkedRepoNames && coTNlResultObject.checkedRepoNames.length > 0)
+            for (const checkedRepoName of coTNlResultObject.checkedRepoNames)
+                try { if (result.checkedRepoNames.indexOf(checkedRepoName) < 0) result.checkedRepoNames.push(checkedRepoName); }
+                catch { result.checkedRepoNames = [checkedRepoName]; }
+        if (coTNlResultObject.checkedFilenameExtensions && coTNlResultObject.checkedFilenameExtensions.length > 0)
+            for (const checkedFilenameExtension of coTNlResultObject.checkedFilenameExtensions)
+                try { if (result.checkedFilenameExtensions.indexOf(checkedFilenameExtension) < 0) result.checkedFilenameExtensions.push(checkedFilenameExtension); }
+                catch { result.checkedFilenameExtensions = [checkedFilenameExtension]; }
+        // if (result.checkedFilenameExtensions) userLog("result", JSON.stringify(result));
+    }
+    // end of ourCheckNotesLinksToOutside function
+
+
     /**
      *
      * @param {string} lineNumber
@@ -134,49 +178,52 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
 
         // functionLog(`checkMarkdownLineContents for ${lineNumber} '${lineText}' at${lineLocation}`);
 
-        // Check for image links
-        let regexResultArray;
-        while ((regexResultArray = SIMPLE_IMAGE_REGEX.exec(lineText))) {
-            // debugLog(`Got markdown image in line ${lineNumber}:`, JSON.stringify(regexResultArray));
-            const [totalLink, altText, fetchLink] = regexResultArray;
-            // if (altText !== 'OBS Image') userLog("This code was only checked for 'OBS Image' links");
-            if (!altText)
-                addNotice({ priority: 349, message: "Markdown image link has no alternative text", lineNumber, excerpt: totalLink, location: lineLocation });
-            if (!fetchLink.startsWith('https://'))
-                addNotice({ priority: 749, message: "Markdown image link seems faulty", lineNumber, excerpt: fetchLink, location: lineLocation });
-            else if (checkingOptions?.disableAllLinkFetchingFlag !== true) {
-                // debugLog(`Need to check existence of ${fetchLink}`);
-                try {
-                    const responseData = await cachedGetFileUsingFullURL({ uri: fetchLink });
-                    dataAssert(responseData.length > 10, `Expected ${fetchLink} image file to be longer: ${responseData.length}`);
-                    // debugLog("Markdown link fetch got response: ", responseData.length);
-                } catch (flError) {
-                    console.error(`Markdown image link fetch had an error fetching '${fetchLink}': ${flError}`);
-                    addNotice({ priority: 748, message: "Error fetching markdown image link", lineNumber, excerpt: fetchLink, location: lineLocation });
-                }
-            }
-        }
-        while ((regexResultArray = TITLED_IMAGE_REGEX.exec(lineText))) {
-            // debugLog(`Got markdown image in line ${lineNumber}:`, JSON.stringify(regexResultArray));
-            const [totalLink, alt, fetchLink, title] = regexResultArray;
-            if (!alt)
-                addNotice({ priority: 349, message: "Markdown image link has no alternative text", lineNumber, excerpt: totalLink, location: lineLocation });
-            if (!title)
-                addNotice({ priority: 348, message: "Markdown image link has no title text", lineNumber, excerpt: totalLink, location: lineLocation });
-            if (!fetchLink.startsWith('https://'))
-                addNotice({ priority: 749, message: "Markdown image link seems faulty", lineNumber, excerpt: fetchLink, location: lineLocation });
-            else if (checkingOptions?.disableAllLinkFetchingFlag !== true) {
-                // debugLog(`Need to check existence of ${fetchLink}`);
-                try {
-                    const responseData = await cachedGetFileUsingFullURL({ uri: fetchLink });
-                    dataAssert(responseData.length > 10, `Expected ${fetchLink} image file to be longer: ${responseData.length}`);
-                    // debugLog("Markdown link fetch got response: ", responseData.length);
-                } catch (flError) {
-                    console.error(`Markdown image link fetch had an error fetching '${fetchLink}': ${flError}`);
-                    addNotice({ priority: 748, message: "Error fetching markdown image link", lineNumber, excerpt: fetchLink, location: lineLocation });
-                }
-            }
-        }
+        // // Check for image links
+        // let regexResultArray;
+        // while ((regexResultArray = SIMPLE_IMAGE_REGEX.exec(lineText))) {
+        //     // debugLog(`Got markdown image in line ${lineNumber}:`, JSON.stringify(regexResultArray));
+        //     const [totalLink, altText, fetchLink] = regexResultArray;
+        //     // if (altText !== 'OBS Image') userLog("This code was only checked for 'OBS Image' links");
+        //     if (!altText)
+        //         addNotice({ priority: 349, message: "Markdown image link has no alternative text", lineNumber, excerpt: totalLink, location: lineLocation });
+        //     if (!fetchLink.startsWith('https://'))
+        //         addNotice({ priority: 749, message: "Markdown image link seems faulty", lineNumber, excerpt: fetchLink, location: lineLocation });
+        //     else if (checkingOptions?.disableAllLinkFetchingFlag !== true) {
+        //         // debugLog(`Need to check existence of ${fetchLink}`);
+        //         try {
+        //             const responseData = await cachedGetFileUsingFullURL({ uri: fetchLink });
+        //             dataAssert(responseData.length > 10, `Expected ${fetchLink} image file to be longer: ${responseData.length}`);
+        //             // debugLog("Markdown link fetch got response: ", responseData.length);
+        //         } catch (flError) {
+        //             console.error(`Markdown image link fetch had an error fetching '${fetchLink}': ${flError}`);
+        //             addNotice({ priority: 748, message: "Error fetching markdown image link", lineNumber, excerpt: fetchLink, location: lineLocation });
+        //         }
+        //     }
+        // }
+        // while ((regexResultArray = TITLED_IMAGE_REGEX.exec(lineText))) {
+        //     // debugLog(`Got markdown image in line ${lineNumber}:`, JSON.stringify(regexResultArray));
+        //     const [totalLink, alt, fetchLink, title] = regexResultArray;
+        //     if (!alt)
+        //         addNotice({ priority: 349, message: "Markdown image link has no alternative text", lineNumber, excerpt: totalLink, location: lineLocation });
+        //     if (!title)
+        //         addNotice({ priority: 348, message: "Markdown image link has no title text", lineNumber, excerpt: totalLink, location: lineLocation });
+        //     if (!fetchLink.startsWith('https://'))
+        //         addNotice({ priority: 749, message: "Markdown image link seems faulty", lineNumber, excerpt: fetchLink, location: lineLocation });
+        //     else if (checkingOptions?.disableAllLinkFetchingFlag !== true) {
+        //         // debugLog(`Need to check existence of ${fetchLink}`);
+        //         try {
+        //             const responseData = await cachedGetFileUsingFullURL({ uri: fetchLink });
+        //             dataAssert(responseData.length > 10, `Expected ${fetchLink} image file to be longer: ${responseData.length}`);
+        //             // debugLog("Markdown link fetch got response: ", responseData.length);
+        //         } catch (flError) {
+        //             console.error(`Markdown image link fetch had an error fetching '${fetchLink}': ${flError}`);
+        //             addNotice({ priority: 748, message: "Error fetching markdown image link", lineNumber, excerpt: fetchLink, location: lineLocation });
+        //         }
+        //     }
+        // }
+
+        if (lineText.indexOf('[') >= 0) // Check for markdown links like [[xx]] or [xx](yy) etc.
+            await ourCheckNotesLinksToOutside(lineNumber, lineText, givenLocation, checkingOptions)
 
         let thisText = lineText; // so we can adjust it
 
@@ -347,7 +394,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
     }
 
     addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length === 1 ? '' : 's'}${ourLocation}.`);
-    if (result.noticeList)
+    if (result.noticeList.length)
         addSuccessMessage(`checkMarkdownText v${MARKDOWN_TEXT_VALIDATOR_VERSION_STRING} finished with ${result.noticeList.length ? result.noticeList.length.toLocaleString() : "zero"} notice${result.noticeList.length === 1 ? '' : 's'}`);
     else
         addSuccessMessage(`No errors or warnings found by checkMarkdownText v${MARKDOWN_TEXT_VALIDATOR_VERSION_STRING}`)

@@ -263,7 +263,7 @@ export async function checkTN_TSV9Table(languageCode, repoCode, bookID, filename
         addNoticePartial({ priority: 20, message: "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked", location: ourLocation });
 
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}.`);
-    if (ttResult.noticeList)
+    if (ttResult.noticeList.length)
         addSuccessMessage(`checkTN_TSV9Table v${TN_TABLE_TEXT_VALIDATOR_VERSION_STRING} finished with ${ttResult.noticeList.length ? ttResult.noticeList.length.toLocaleString() : "zero"} notice${ttResult.noticeList.length === 1 ? '' : 's'}`);
     else
         addSuccessMessage(`No errors or warnings found by checkTN_TSV9Table v${TN_TABLE_TEXT_VALIDATOR_VERSION_STRING}`)

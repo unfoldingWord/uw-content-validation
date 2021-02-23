@@ -180,17 +180,17 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
     // end of ourCheckTNOriginalLanguageQuote function
 
 
-    async function ourcheckNotesLinksToOutside(rowID, fieldName, twLinkText, rowLocation, checkingOptions) {
+    async function ourCheckNotesLinksToOutside(rowID, fieldName, twLinkText, rowLocation, checkingOptions) {
         // Checks that the TA/TW/Bible reference can be found
 
         // Updates the global list of notices
 
-        // functionLog(`checkTWL_TSV6DataRow ourcheckNotesLinksToOutside(${rowID}, ${fieldName}, (${twLinkText.length}) '${twLinkText}', ${rowLocation}, ${JSON.stringify(checkingOptions)})`);
-        parameterAssert(rowID !== undefined, "checkTWL_TSV6DataRow ourcheckNotesLinksToOutside: 'rowID' parameter should be defined");
-        parameterAssert(typeof rowID === 'string', `checkTWL_TSV6DataRow ourcheckNotesLinksToOutside: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        parameterAssert(fieldName === 'TWLink', `checkTWL_TSV6DataRow ourcheckNotesLinksToOutside: 'fieldName' parameter should be 'TWLink' not '${fieldName}'`);
-        parameterAssert(twLinkText !== undefined, "checkTWL_TSV6DataRow ourcheckNotesLinksToOutside: 'twLinkText' parameter should be defined");
-        parameterAssert(typeof twLinkText === 'string', `checkTWL_TSV6DataRow ourcheckNotesLinksToOutside: 'twLinkText' parameter should be a string not a '${typeof twLinkText}'`);
+        // functionLog(`checkTWL_TSV6DataRow ourCheckNotesLinksToOutside(${rowID}, ${fieldName}, (${twLinkText.length}) '${twLinkText}', ${rowLocation}, ${JSON.stringify(checkingOptions)})`);
+        parameterAssert(rowID !== undefined, "checkTWL_TSV6DataRow ourCheckNotesLinksToOutside: 'rowID' parameter should be defined");
+        parameterAssert(typeof rowID === 'string', `checkTWL_TSV6DataRow ourCheckNotesLinksToOutside: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+        parameterAssert(fieldName === 'TWLink', `checkTWL_TSV6DataRow ourCheckNotesLinksToOutside: 'fieldName' parameter should be 'TWLink' not '${fieldName}'`);
+        parameterAssert(twLinkText !== undefined, "checkTWL_TSV6DataRow ourCheckNotesLinksToOutside: 'twLinkText' parameter should be defined");
+        parameterAssert(typeof twLinkText === 'string', `checkTWL_TSV6DataRow ourCheckNotesLinksToOutside: 'twLinkText' parameter should be a string not a '${typeof twLinkText}'`);
 
         const coTNlResultObject = await checkNotesLinksToOutside(languageCode, repoCode, bookID, givenC, givenV, fieldName, twLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: languageCode });
         // debugLog(`coTNlResultObject=${JSON.stringify(coTNlResultObject)}`);
@@ -223,7 +223,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
                 catch { drResult.checkedFilenameExtensions = [checkedFilenameExtension]; }
         // if (drResult.checkedFilenameExtensions) userLog("drResult", JSON.stringify(drResult));
     }
-    // end of ourcheckNotesLinksToOutside function
+    // end of ourCheckNotesLinksToOutside function
 
 
     // Main code for checkTWL_TSV6DataRow function
@@ -402,7 +402,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
                         addNoticePartial({ priority: 797, message: "Field doesn’t contain proper TW link", details: `should be 'kt', 'names', or 'other'`, fieldName: 'TWLink', rowID, characterIndex, excerpt, location: ourRowLocation });
                     } else { // all good so far
                         // debugLog(`checkTWL_TSV6DataRow looking up ${bookID} ${rowID} TWLink='${TWLink}' got bits=${JSON.stringify(bits)}`);
-                        await ourcheckNotesLinksToOutside(rowID, 'TWLink', TWLink, ourRowLocation, linkCheckingOptions);
+                        await ourCheckNotesLinksToOutside(rowID, 'TWLink', TWLink, ourRowLocation, linkCheckingOptions);
                     }
                 }
             }

@@ -252,7 +252,7 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
         addNoticePartial({ priority: 20, message: "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked", location: ourLocation });
 
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}.`);
-    if (carResult.noticeList)
+    if (carResult.noticeList.length)
         addSuccessMessage(`checkTWL_TSV6Table v${TWL_TABLE_VALIDATOR_VERSION_STRING} finished with ${carResult.noticeList.length ? carResult.noticeList.length.toLocaleString() : "zero"} notice${carResult.noticeList.length === 1 ? '' : 's'}`);
     else
         addSuccessMessage(`No errors or warnings found by checkTWL_TSV6Table v${TWL_TABLE_VALIDATOR_VERSION_STRING}`)

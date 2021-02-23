@@ -844,7 +844,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                             || (repoCode === 'UGNT' && !attributeValue.startsWith('Gr,'))))
                         addNoticePartial({ priority: 852, message: "Unexpected original \\w x-morph language prefix", details: "Expected 'He,' 'Ar,' or 'Gr,'", lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
                     else if (attributeName === 'x-tw')
-                        ourcheckNotesLinksToOutside(lineNumber, C, V, marker, attributeValue, lineLocation, checkingOptions);
+                        ourCheckNotesLinksToOutside(lineNumber, C, V, marker, attributeValue, lineLocation, checkingOptions);
                 } else { // a translation -- not UHB or UGNT
                     if (attributeCounter === 1) {
                         if (attributeName !== 'x-occurrence')
@@ -976,16 +976,16 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
     // end of checkUSFMLineContents function
 
 
-    async function ourcheckNotesLinksToOutside(lineNumber, C, V, marker, twLinkText, location, checkingOptions) {
+    async function ourCheckNotesLinksToOutside(lineNumber, C, V, marker, twLinkText, location, checkingOptions) {
         // Checks that the TA/TW/Bible reference can be found
 
         // Updates the global list of notices
 
-        // functionLog(`checkUSFMText ourcheckNotesLinksToOutside(${lineNumber}, ${C}:${V}, ${marker}, (${twLinkText.length}) '${twLinkText}', ${location}, ${JSON.stringify(checkingOptions)})`);
-        parameterAssert(marker !== undefined, "checkUSFMText ourcheckNotesLinksToOutside: 'marker' parameter should be defined");
-        parameterAssert(typeof marker === 'string', `checkUSFMText ourcheckNotesLinksToOutside: 'marker' parameter should be a string not a '${typeof marker}': ${marker}`);
-        parameterAssert(twLinkText !== undefined, "checkUSFMText ourcheckNotesLinksToOutside: 'twLinkText' parameter should be defined");
-        parameterAssert(typeof twLinkText === 'string', `checkUSFMText ourcheckNotesLinksToOutside: 'twLinkText' parameter should be a string not a '${typeof twLinkText}': ${twLinkText}`);
+        // functionLog(`checkUSFMText ourCheckNotesLinksToOutside(${lineNumber}, ${C}:${V}, ${marker}, (${twLinkText.length}) '${twLinkText}', ${location}, ${JSON.stringify(checkingOptions)})`);
+        parameterAssert(marker !== undefined, "checkUSFMText ourCheckNotesLinksToOutside: 'marker' parameter should be defined");
+        parameterAssert(typeof marker === 'string', `checkUSFMText ourCheckNotesLinksToOutside: 'marker' parameter should be a string not a '${typeof marker}': ${marker}`);
+        parameterAssert(twLinkText !== undefined, "checkUSFMText ourCheckNotesLinksToOutside: 'twLinkText' parameter should be defined");
+        parameterAssert(typeof twLinkText === 'string', `checkUSFMText ourCheckNotesLinksToOutside: 'twLinkText' parameter should be a string not a '${typeof twLinkText}': ${twLinkText}`);
 
         const coTNlResultObject = await checkNotesLinksToOutside(languageCode, repoCode, bookID, C, V, 'TWLink', twLinkText, location, { ...checkingOptions, defaultLanguageCode: languageCode });
         // debugLog(`coTNlResultObject=${JSON.stringify(coTNlResultObject)}`);
@@ -1018,7 +1018,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 catch { result.checkedFilenameExtensions = [checkedFilenameExtension]; }
         // if (result.checkedFilenameExtensions) userLog("result", JSON.stringify(result));
     }
-    // end of ourcheckNotesLinksToOutside function
+    // end of ourCheckNotesLinksToOutside function
 
 
     function mainUSFMCheck(bookID, filename, givenText, location) {

@@ -263,19 +263,19 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
     // end of ourCheckTNOriginalLanguageQuote function
 
 
-    async function ourcheckNotesLinksToOutside(rowID, fieldName, taLinkText, rowLocation, checkingOptions) {
+    async function ourCheckNotesLinksToOutside(rowID, fieldName, taLinkText, rowLocation, checkingOptions) {
         // Checks that the TA/TW/Bible reference can be found
 
         // Updates the global list of notices
 
-        // functionLog(`checkNotesTSV7DataRow ourcheckNotesLinksToOutside(${rowID}, ${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
-        parameterAssert(rowID !== undefined, "checkNotesTSV7DataRow ourcheckNotesLinksToOutside: 'rowID' parameter should be defined");
-        parameterAssert(typeof rowID === 'string', `checkNotesTSV7DataRow ourcheckNotesLinksToOutside: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        parameterAssert(fieldName !== undefined, "checkNotesTSV7DataRow ourcheckNotesLinksToOutside: 'fieldName' parameter should be defined");
-        parameterAssert(typeof fieldName === 'string', `checkNotesTSV7DataRow ourcheckNotesLinksToOutside: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        parameterAssert(fieldName === 'Note', `checkNotesTSV7DataRow ourcheckNotesLinksToOutside: 'fieldName' parameter should be 'Note' not '${fieldName}'`);
-        parameterAssert(taLinkText !== undefined, "checkNotesTSV7DataRow ourcheckNotesLinksToOutside: 'taLinkText' parameter should be defined");
-        parameterAssert(typeof taLinkText === 'string', `checkNotesTSV7DataRow ourcheckNotesLinksToOutside: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
+        // functionLog(`checkNotesTSV7DataRow ourCheckNotesLinksToOutside(${rowID}, ${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
+        parameterAssert(rowID !== undefined, "checkNotesTSV7DataRow ourCheckNotesLinksToOutside: 'rowID' parameter should be defined");
+        parameterAssert(typeof rowID === 'string', `checkNotesTSV7DataRow ourCheckNotesLinksToOutside: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+        parameterAssert(fieldName !== undefined, "checkNotesTSV7DataRow ourCheckNotesLinksToOutside: 'fieldName' parameter should be defined");
+        parameterAssert(typeof fieldName === 'string', `checkNotesTSV7DataRow ourCheckNotesLinksToOutside: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        parameterAssert(fieldName === 'Note', `checkNotesTSV7DataRow ourCheckNotesLinksToOutside: 'fieldName' parameter should be 'Note' not '${fieldName}'`);
+        parameterAssert(taLinkText !== undefined, "checkNotesTSV7DataRow ourCheckNotesLinksToOutside: 'taLinkText' parameter should be defined");
+        parameterAssert(typeof taLinkText === 'string', `checkNotesTSV7DataRow ourCheckNotesLinksToOutside: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
 
         const coqResultObject = await checkNotesLinksToOutside(languageCode, repoCode, bookID, givenC, givenV, fieldName, taLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: languageCode });
         // debugLog("coqResultObject", JSON.stringify(coqResultObject));
@@ -308,7 +308,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
                 catch { drResult.checkedFilenameExtensions = [checkedFilenameExtension]; }
         // if (drResult.checkedFilenameExtensions) userLog("drResult", JSON.stringify(drResult));
     }
-    // end of ourcheckNotesLinksToOutside function
+    // end of ourCheckNotesLinksToOutside function
 
 
     // Main code for checkNotesTSV7DataRow function
@@ -505,7 +505,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
             else { // More than just whitespace
                 const adjustedNote = note.replace(/\\n/g, '\n');
                 ASuggestion = await ourMarkdownTextChecks(rowID, 'Note', adjustedNote, true, ourRowLocation, checkingOptions);
-                await ourcheckNotesLinksToOutside(rowID, 'Note', adjustedNote, ourRowLocation, linkCheckingOptions);
+                await ourCheckNotesLinksToOutside(rowID, 'Note', adjustedNote, ourRowLocation, linkCheckingOptions);
                 let regexResultArray;
                 while ((regexResultArray = TA_REGEX.exec(adjustedNote))) {
                     // debugLog("Got TA Regex in Note", JSON.stringify(regexResultArray));
