@@ -3,7 +3,7 @@ import * as books from './books/books';
 import { checkTextField } from './field-text-check';
 import { checkMarkdownText } from './markdown-text-check';
 import { checkSupportReferenceInTA } from './ta-reference-check';
-import { checkNotesLinksToOutside } from './notes-links-check';
+// import { checkNotesLinksToOutside } from './notes-links-check';
 import { checkOriginalLanguageQuote } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
@@ -270,65 +270,65 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
     // end of ourCheckTNOriginalLanguageQuote function
 
 
-    /**
-     *
-     * @param {string} rowID
-     * @param {string} fieldName
-     * @param {string} taLinkText
-     * @param {string} rowLocation
-     * @param {Object} checkingOptions
-     */
-    async function ourCheckNotesLinksToOutside(rowID, fieldName, taLinkText, rowLocation, checkingOptions) {
-        // Checks that the TA/TW/Bible reference can be found
+    // /**
+    //  *
+    //  * @param {string} rowID
+    //  * @param {string} fieldName
+    //  * @param {string} taLinkText
+    //  * @param {string} rowLocation
+    //  * @param {Object} checkingOptions
+    //  */
+    // async function ourCheckNotesLinksToOutside(rowID, fieldName, taLinkText, rowLocation, checkingOptions) {
+    //     // Checks that the TA/TW/Bible reference can be found
 
-        // Uses
-        //      checkingOptions.twRepoUsername
-        //      checkingOptions.twRepoBranch (or tag)
-        //      checkingOptions.disableLinkedTWArticlesCheckFlag
+    //     // Uses
+    //     //      checkingOptions.twRepoUsername
+    //     //      checkingOptions.twRepoBranch (or tag)
+    //     //      checkingOptions.disableLinkedTWArticlesCheckFlag
 
-        // Updates the global list of notices
+    //     // Updates the global list of notices
 
-        // functionLog(`checkTN_TSV9DataRow ourCheckNotesLinksToOutside(${rowID}, ${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
-        parameterAssert(rowID !== undefined, "checkTN_TSV9DataRow ourCheckNotesLinksToOutside: 'rowID' parameter should be defined");
-        parameterAssert(typeof rowID === 'string', `checkTN_TSV9DataRow ourCheckNotesLinksToOutside: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        parameterAssert(fieldName !== undefined, "checkTN_TSV9DataRow ourCheckNotesLinksToOutside: 'fieldName' parameter should be defined");
-        parameterAssert(typeof fieldName === 'string', `checkTN_TSV9DataRow ourCheckNotesLinksToOutside: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        parameterAssert(fieldName === 'OccurrenceNote', `checkTN_TSV9DataRow ourCheckNotesLinksToOutside: 'fieldName' parameter should be 'OccurrenceNote' not '${fieldName}'`);
-        parameterAssert(taLinkText !== undefined, "checkTN_TSV9DataRow ourCheckNotesLinksToOutside: 'taLinkText' parameter should be defined");
-        parameterAssert(typeof taLinkText === 'string', `checkTN_TSV9DataRow ourCheckNotesLinksToOutside: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
+    //     // functionLog(`checkTN_TSV9DataRow ourCheckNotesLinksToOutside(${rowID}, ${fieldName}, (${taLinkText.length}) '${taLinkText}', ${rowLocation}, …)`);
+    //     parameterAssert(rowID !== undefined, "checkTN_TSV9DataRow ourCheckNotesLinksToOutside: 'rowID' parameter should be defined");
+    //     parameterAssert(typeof rowID === 'string', `checkTN_TSV9DataRow ourCheckNotesLinksToOutside: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+    //     parameterAssert(fieldName !== undefined, "checkTN_TSV9DataRow ourCheckNotesLinksToOutside: 'fieldName' parameter should be defined");
+    //     parameterAssert(typeof fieldName === 'string', `checkTN_TSV9DataRow ourCheckNotesLinksToOutside: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+    //     parameterAssert(fieldName === 'OccurrenceNote', `checkTN_TSV9DataRow ourCheckNotesLinksToOutside: 'fieldName' parameter should be 'OccurrenceNote' not '${fieldName}'`);
+    //     parameterAssert(taLinkText !== undefined, "checkTN_TSV9DataRow ourCheckNotesLinksToOutside: 'taLinkText' parameter should be defined");
+    //     parameterAssert(typeof taLinkText === 'string', `checkTN_TSV9DataRow ourCheckNotesLinksToOutside: 'taLinkText' parameter should be a string not a '${typeof taLinkText}'`);
 
-        const coqResultObject = await checkNotesLinksToOutside(languageCode, repoCode, bookID, givenC, givenV, fieldName, taLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: languageCode });
-        // debugLog("coqResultObject", JSON.stringify(coqResultObject));
+    //     const coqResultObject = await checkNotesLinksToOutside(languageCode, repoCode, bookID, givenC, givenV, fieldName, taLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: languageCode });
+    //     // debugLog("coqResultObject", JSON.stringify(coqResultObject));
 
-        // Choose only ONE of the following
-        // This is the fast way of append the results from this field
-        // result.noticeList = result.noticeList.concat(coqResultObject.noticeList);
-        // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
-        //  process results line by line
-        for (const coqNoticeEntry of coqResultObject.noticeList) {
-            if (coqNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN2 check
-                drResult.noticeList.push(coqNoticeEntry); // Just copy the complete notice as is
-            else // For our direct checks, we add the repoCode as an extra value
-                addNoticePartial({ ...coqNoticeEntry, rowID, fieldName });
-        }
-        // The following is needed coz we might be checking the linked TA and/or TW articles
-        if (coqResultObject.checkedFileCount && coqResultObject.checkedFileCount > 0)
-            if (typeof drResult.checkedFileCount === 'number') drResult.checkedFileCount += coqResultObject.checkedFileCount;
-            else drResult.checkedFileCount = coqResultObject.checkedFileCount;
-        if (coqResultObject.checkedFilesizes && coqResultObject.checkedFilesizes > 0)
-            if (typeof drResult.checkedFilesizes === 'number') drResult.checkedFilesizes += coqResultObject.checkedFilesizes;
-            else drResult.checkedFilesizes = coqResultObject.checkedFilesizes;
-        if (coqResultObject.checkedRepoNames && coqResultObject.checkedRepoNames.length > 0)
-            for (const checkedRepoName of coqResultObject.checkedRepoNames)
-                try { if (drResult.checkedRepoNames.indexOf(checkedRepoName) < 0) drResult.checkedRepoNames.push(checkedRepoName); }
-                catch { drResult.checkedRepoNames = [checkedRepoName]; }
-        if (coqResultObject.checkedFilenameExtensions && coqResultObject.checkedFilenameExtensions.length > 0)
-            for (const checkedFilenameExtension of coqResultObject.checkedFilenameExtensions)
-                try { if (drResult.checkedFilenameExtensions.indexOf(checkedFilenameExtension) < 0) drResult.checkedFilenameExtensions.push(checkedFilenameExtension); }
-                catch { drResult.checkedFilenameExtensions = [checkedFilenameExtension]; }
-        // if (drResult.checkedFilenameExtensions) userLog("drResult", JSON.stringify(drResult));
-    }
-    // end of ourCheckNotesLinksToOutside function
+    //     // Choose only ONE of the following
+    //     // This is the fast way of append the results from this field
+    //     // result.noticeList = result.noticeList.concat(coqResultObject.noticeList);
+    //     // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
+    //     //  process results line by line
+    //     for (const coqNoticeEntry of coqResultObject.noticeList) {
+    //         if (coqNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN2 check
+    //             drResult.noticeList.push(coqNoticeEntry); // Just copy the complete notice as is
+    //         else // For our direct checks, we add the repoCode as an extra value
+    //             addNoticePartial({ ...coqNoticeEntry, rowID, fieldName });
+    //     }
+    //     // The following is needed coz we might be checking the linked TA and/or TW articles
+    //     if (coqResultObject.checkedFileCount && coqResultObject.checkedFileCount > 0)
+    //         if (typeof drResult.checkedFileCount === 'number') drResult.checkedFileCount += coqResultObject.checkedFileCount;
+    //         else drResult.checkedFileCount = coqResultObject.checkedFileCount;
+    //     if (coqResultObject.checkedFilesizes && coqResultObject.checkedFilesizes > 0)
+    //         if (typeof drResult.checkedFilesizes === 'number') drResult.checkedFilesizes += coqResultObject.checkedFilesizes;
+    //         else drResult.checkedFilesizes = coqResultObject.checkedFilesizes;
+    //     if (coqResultObject.checkedRepoNames && coqResultObject.checkedRepoNames.length > 0)
+    //         for (const checkedRepoName of coqResultObject.checkedRepoNames)
+    //             try { if (drResult.checkedRepoNames.indexOf(checkedRepoName) < 0) drResult.checkedRepoNames.push(checkedRepoName); }
+    //             catch { drResult.checkedRepoNames = [checkedRepoName]; }
+    //     if (coqResultObject.checkedFilenameExtensions && coqResultObject.checkedFilenameExtensions.length > 0)
+    //         for (const checkedFilenameExtension of coqResultObject.checkedFilenameExtensions)
+    //             try { if (drResult.checkedFilenameExtensions.indexOf(checkedFilenameExtension) < 0) drResult.checkedFilenameExtensions.push(checkedFilenameExtension); }
+    //             catch { drResult.checkedFilenameExtensions = [checkedFilenameExtension]; }
+    //     // if (drResult.checkedFilenameExtensions) userLog("drResult", JSON.stringify(drResult));
+    // }
+    // // end of ourCheckNotesLinksToOutside function
 
 
     // Main code for checkTN_TSV9DataRow function
@@ -532,7 +532,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
             else { // More than just whitespace
                 const adjustedOccurrenceNote = occurrenceNote.replace(/<br>/g, '\n');
                 ONSuggestion = await ourMarkdownTextChecks(rowID, 'OccurrenceNote', adjustedOccurrenceNote, true, ourRowLocation, checkingOptions);
-                await ourCheckNotesLinksToOutside(rowID, 'OccurrenceNote', adjustedOccurrenceNote, ourRowLocation, linkCheckingOptions);
+                // await ourCheckNotesLinksToOutside(rowID, 'OccurrenceNote', adjustedOccurrenceNote, ourRowLocation, linkCheckingOptions);
                 let regexResultArray;
                 while ((regexResultArray = TA_REGEX.exec(adjustedOccurrenceNote))) {
                     // debugLog("Got TA Regex in OccurrenceNote", JSON.stringify(regexResultArray));

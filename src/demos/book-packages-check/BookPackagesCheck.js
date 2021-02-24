@@ -76,8 +76,8 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         }
 
         if (props.reloadAllFilesFirst && props.reloadAllFilesFirst.slice(0).toUpperCase() === 'Y') {
-            userLog("Clearing cache before running book package check…");
-            setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running book package check…</p>);
+            userLog("Clearing cache before running book packages check…");
+            setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running book packages check…</p>);
             await clearCaches();
         }
         else await clearCheckedArticleCache();

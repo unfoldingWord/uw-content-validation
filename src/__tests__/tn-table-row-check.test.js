@@ -50,7 +50,7 @@ describe('checkTN_TSV9DataRow() - ', () => {
     it('should fail double broken link start', async () => {
       const chosenLine = "RUT\t2\t12\tgnn5\tfigs-parallelism\tשְׁלֵמָ֗ה\t1\tmay your full wages come from Yahweh	This is a poetic expression that is very similar to the previous sentence. Alternate translation: “May Yahweh fully give to you everything that you deserve” (See: rc://*/ta/man/translate/figs-parallelism]])";
       const rawResults = await checkTN_TSV9DataRow(languageCode, repoCode, chosenLine, 'RUT', '2', '12', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(2);
+      expect(rawResults.noticeList.length).toEqual(1);
       expect(rawResults).toMatchSnapshot();
     });
 
@@ -117,7 +117,7 @@ describe('checkTN_TSV9DataRow() - ', () => {
     it('should fail invalid verse link start', async () => {
       const chosenLine = "GEN\t1\t9\tha33\t\t\t0\tIt was so\t“It happened like that” or “That is what happened.” What God commanded happened just as he said it should. This phrase appears throughout the chapter and has the same meaning wherever it appears. See how you translated it in Genesis 1:7](../01/07.md).";
       const rawResults = await checkTN_TSV9DataRow(languageCode, repoCode, chosenLine, 'GEN', '1', '9', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(2);
+      expect(rawResults.noticeList.length).toEqual(1);
       expect(rawResults).toMatchSnapshot();
     });
 

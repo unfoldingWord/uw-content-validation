@@ -22,7 +22,7 @@ and then validates the content of one file selected from the repo.
   // repoName='hbo_uhb' // OT books only
   // repoName='el-x-koine_ugnt' // NT books only
   // repoName='en_ult' // Can use ult or ust here
-  repoName='en_tw' // Can use ta, tw, tn, tq, sn, or sq here
+  repoName='en_tn' // Can use ta, tw, tn, tq, sn, or sq here
 
   // If we don’t put the branch here, the default branch is used
   // branch='master'
@@ -40,16 +40,17 @@ and then validates the content of one file selected from the repo.
   // filename= '65-3JN.usfm' // e.g., for UGNT, LT, or ST
   // filename= '67-REV.usfm' // e.g., for UGNT, LT, or ST
   // filename= 'en_tn_01-GEN.tsv' // for TN
+  // filename= 'en_tn_15-EZR.tsv' // for TN
   // filename= 'en_tn_16-NEH.tsv' // for TN
-  filename= 'en_tn_17-EST.tsv' // for TN
+  // filename= 'en_tn_17-EST.tsv' // for TN
   // filename= 'en_tn_31-OBA.tsv' // for TN
   // filename= 'en_tn_50-EPH.tsv' // for TN
   // filename= 'en_tn_57-TIT.tsv' // for TN
   // filename= 'en_tn_58-PHM.tsv' // for TN
   // filename= 'en_tn_61-1PE.tsv' // for TN
-  // filename= 'en_tn_65-3JN.tsv' // for TN
+  filename= 'en_tn_65-3JN.tsv' // for TN
   // It's actually possible to put a filepath in the filename field
-  filename= 'bible/names/zilpah.md' // for TW
+  // filename= 'bible/names/zilpah.md' // for TW
 
   // The location field appears in check messages to help the user locate the issue
   location="as specified in FileCheck demo"

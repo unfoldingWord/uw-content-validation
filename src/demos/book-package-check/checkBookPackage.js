@@ -6,7 +6,7 @@ import { checkFileContents } from '../file-check/checkFileContents';
 import { checkRepo } from '../repo-check/checkRepo';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.6.0';
+// const BP_VALIDATOR_VERSION_STRING = '0.6.1';
 
 const STANDARD_MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -118,7 +118,10 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     parameterAssert(typeof fileLocation === 'string', `cBP ourCheckBPFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
     parameterAssert(checkingOptions !== undefined, "cBP ourCheckBPFileContents: 'checkingOptions' parameter should be defined");
 
-    const cfcResultObject = await checkFileContents(username, languageCode, repoCode, branch, cfFilename, fileContent, fileLocation, checkingOptions);
+    let adjustedLanguageCode = languageCode;
+    // if (repoCode === 'UHB') adjustedLanguageCode = 'hbo'; // NO -- we need the languageCode of the BP being checked (so we can resolve TW links with * for language) !!!
+    // else if (repoCode === 'UGNT') adjustedLanguageCode = 'el-x-koine';
+    const cfcResultObject = await checkFileContents(username, adjustedLanguageCode, repoCode, branch, cfFilename, fileContent, fileLocation, checkingOptions);
     // debugLog("checkFileContents() returned", cfResultObject.successList.length, "success message(s) and", cfResultObject.noticeList.length, "notice(s)");
     // for (const successEntry of cfResultObject.successList) userLog("  ourCheckBPFileContents:", successEntry);
     // debugLog("cfcResultObject", JSON.stringify(cfcResultObject));

@@ -3,7 +3,7 @@ import * as books from './books/books';
 import { checkTextField } from './field-text-check';
 import { checkMarkdownText } from './markdown-text-check';
 import { checkSupportReferenceInTA } from './ta-reference-check';
-import { checkNotesLinksToOutside } from './notes-links-check';
+// import { checkNotesLinksToOutside } from './notes-links-check';
 import { checkOriginalLanguageQuote } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
@@ -263,6 +263,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
     // end of ourCheckTNOriginalLanguageQuote function
 
 
+    /*
     async function ourCheckNotesLinksToOutside(rowID, fieldName, taLinkText, rowLocation, checkingOptions) {
         // Checks that the TA/TW/Bible reference can be found
 
@@ -309,6 +310,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
         // if (drResult.checkedFilenameExtensions) userLog("drResult", JSON.stringify(drResult));
     }
     // end of ourCheckNotesLinksToOutside function
+    */
 
 
     // Main code for checkNotesTSV7DataRow function
@@ -505,7 +507,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
             else { // More than just whitespace
                 const adjustedNote = note.replace(/\\n/g, '\n');
                 ASuggestion = await ourMarkdownTextChecks(rowID, 'Note', adjustedNote, true, ourRowLocation, checkingOptions);
-                await ourCheckNotesLinksToOutside(rowID, 'Note', adjustedNote, ourRowLocation, linkCheckingOptions);
+                // await ourCheckNotesLinksToOutside(rowID, 'Note', adjustedNote, ourRowLocation, linkCheckingOptions);
                 let regexResultArray;
                 while ((regexResultArray = TA_REGEX.exec(adjustedNote))) {
                     // debugLog("Got TA Regex in Note", JSON.stringify(regexResultArray));

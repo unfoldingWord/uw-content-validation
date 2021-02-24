@@ -133,7 +133,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
         parameterAssert(location !== undefined, "checkUSFMText ourCheckNotesLinksToOutside: 'location' parameter should be defined");
         parameterAssert(typeof location === 'string', `checkUSFMText ourCheckNotesLinksToOutside: 'location' parameter should be a string not a '${typeof location}': ${location}`);
 
-        const coTNlResultObject = await checkNotesLinksToOutside(languageCode, repoCode, '', '', '', 'MDFile', lineText, location, { ...checkingOptions, defaultLanguageCode: languageCode });
+        const coTNlResultObject = await checkNotesLinksToOutside(languageCode, repoCode, '', '', '', textOrFileName, lineText, location, { ...checkingOptions, defaultLanguageCode: languageCode });
         // debugLog(`coTNlResultObject=${JSON.stringify(coTNlResultObject)}`);
 
         // Choose only ONE of the following
