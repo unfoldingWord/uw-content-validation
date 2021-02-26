@@ -8,13 +8,13 @@ import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAsser
 // import { consoleLogObject } from '../core/utilities';
 
 
-// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.7.9';
+// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.7.11';
 
 // const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
 
-const GENERAL_LINK1_REGEX = new RegExp('\\[[^\\]]+?\\]\\([^\\)]+?\\)', 'g'); // [displayLink](URL)
-const GENERAL_LINK2_REGEX = new RegExp('\\[\\[[^\\]]+?\\]\\]', 'g'); // [[combinedDisplayLink]]
+const GENERAL_MARKDOWN_LINK1_REGEX = new RegExp('\\[[^\\]]+?\\]\\([^\\)]+?\\)', 'g'); // [displayLink](URL)
+const GENERAL_MARKDOWN_LINK2_REGEX = new RegExp('\\[\\[[^\\]]+?\\]\\]', 'g'); // [[combinedDisplayLink]]
 
 const TA_DOUBLE_BRACKETED_LINK_REGEX = new RegExp('\\[\\[rc://([^ /]+?)/ta/man/([^ /]+?)/([^ \\]]+?)\\]\\]', 'g'); // Enclosed in [[  ]]
 const TA_FULL_DISPLAY_LINK_REGEX = new RegExp('\\[([^\\]]+?)\\]\\(rc://([^ /]+?)/ta/man/([^ /]+?)/([^ \\]]+?)\\)', 'g'); // [How to Translate Names](rc://en/ta/man/translate/translate-names)
@@ -41,7 +41,7 @@ const BIBLE_FULL_HELP_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,
 
 const TN_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})\\]\\((\\.{2})/(\\d{1,3})/(\\d{1,3})/([a-z][a-z0-9][a-z0-9][a-z0-9])\\)', 'g');
 
-const SIMPLE_DISPLAY_LINK_REGEX = new RegExp('\\[([^\\]]+?)\\]\\((https?://[^\\)])\\)', 'g');// [ULT](https://something)
+const SIMPLE_DISPLAY_LINK_REGEX = new RegExp('\\[([^\\]]+?)\\]\\((https?://[^\\)]+?)\\)', 'g');// [ULT](https://something)
 
 const SIMPLE_IMAGE_REGEX = new RegExp('!\\[([^\\]]*?)\\]\\(([^ "\\)]+?)\\)', 'g'); // ![alt](y)
 const TITLED_IMAGE_REGEX = new RegExp('!\\[([^\\]]*?)\\]\\(([^ \\)]+?) "([^"\\)]+?)"\\)', 'g'); // ![alt](link "title")
@@ -260,9 +260,9 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     }
 
     // Find total regular (non-image) links
-    const linksList1 = fieldText.match(GENERAL_LINK1_REGEX) || []; // [[something]]
+    const linksList1 = fieldText.match(GENERAL_MARKDOWN_LINK1_REGEX) || []; // [[something]]
     // if (linksList1.length) debugLog(`linksList1 (${linksList1.length}) = ${JSON.stringify(linksList1)}`);
-    const linksList2 = fieldText.match(GENERAL_LINK2_REGEX) || []; // [display](link)
+    const linksList2 = fieldText.match(GENERAL_MARKDOWN_LINK2_REGEX) || []; // [display](link)
     // if (linksList2.length) debugLog(`linksList2 (${linksList2.length}) = ${JSON.stringify(linksList2)}`);
     const totalLinks1 = linksList1.length;
     const totalLinks2 = linksList2.length;
@@ -297,7 +297,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 addNoticePartial({ priority: 882, message: `Error loading ${fieldName} TW link`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
             }
             if (!twFileContent)
-                addNoticePartial({ priority: 883, message: `Unable to find ${fieldName} TW link`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                addNoticePartial({ priority: 883, message: `Unable to find/load ${fieldName} TW link`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
             else { // we got the content of the TW article
                 if (twFileContent.length < 10)
                     addNoticePartial({ priority: 881, message: `Linked ${fieldName} TW article seems empty`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
@@ -527,7 +527,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 addNoticePartial({ priority: 882, message: `Error loading ${fieldName} TW link`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
             }
             if (!twFileContent)
-                addNoticePartial({ priority: 883, message: `Unable to find ${fieldName} TW link`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                addNoticePartial({ priority: 883, message: `Unable to find/load ${fieldName} TW link`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
             else { // we got the content of the TW article
                 if (twFileContent.length < 10)
                     addNoticePartial({ priority: 881, message: `Linked ${fieldName} TW article seems empty`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
@@ -1071,29 +1071,47 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     }
 
     // Check for simple display links like [ULT](https://something)
+    // if (fieldText.indexOf('http') !== -1) debugLog(`Checking for http links in '${fieldName}' '${fieldText}'`);
     while ((regexResultArray = SIMPLE_DISPLAY_LINK_REGEX.exec(fieldText))) {
-        debugLog(`  checkNotesLinksToOutside SIMPLE_DISPLAY_LINK_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
+        // debugLog(`  checkNotesLinksToOutside SIMPLE_DISPLAY_LINK_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
         generalLinkCount1 += 1;
-        parameterAssert(regexResultArray.length === 2, `SIMPLE_DISPLAY_LINK_REGEX expected 2 fields (not ${regexResultArray.length})`);
+        parameterAssert(regexResultArray.length === 3, `SIMPLE_DISPLAY_LINK_REGEX expected 3 fields (not ${regexResultArray.length})`);
         // eslint-disable-next-line no-unused-vars
         let [totalLink, displayText, uri] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
 
         if (!checkingOptions?.disableAllLinkFetchingFlag) {
-            let generalFileContent;
-            try {
-                generalFileContent = await cachedGetFileUsingFullURL({ uri });
-                debugLog(`${displayText} ${uri} got: (${generalFileContent.length}) ${generalFileContent.substring(0, 10)}...`);
-            } catch (trcGCerror) {
-                console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load general ${uri}`);
-                addNoticePartial({ priority: 882, message: `Error loading ${fieldName} general link`, excerpt: totalLink, location: `${ourLocation} ${uri}: ${trcGCerror}` });
+            const dummyPathParameters = { username: uri, repository: '', path: '', branch: '' };
+            if (await alreadyChecked(dummyPathParameters) !== true) {
+                // debugLog(`checkNotesLinksToOutside general link check needs to check: ${uri}`);
+
+                let generalFileContent, hadError = false;
+                try {
+                    // generalFileContent = await cachedGetFileUsingFullURL({ uri });
+                    // debugLog(`${displayText} ${uri} got: (${generalFileContent.length}) ${generalFileContent.substring(0, 10)}...`);
+                    const response = await fetch(uri);
+                    if (response.ok) {// if HTTP-status is 200-299
+                        generalFileContent = await response.text();
+                        // debugLog(`General link ${displayText} @ ${uri} got: (${generalFileContent.length}) ${generalFileContent.substring(0, 10)}...`);
+                    } else throw new Error(`Our Network error: ${response.statusCode}`);
+                } catch (trcGCerror) {
+                    // debugLog(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load general ${uri}: ${trcGCerror}`);
+                    // TODO: Put back up to 882 if we can solve cross-origin problems
+                    addNoticePartial({ priority: 82, message: `Error loading ${fieldName} general link`, details: "please double-check link—there may be no problem", excerpt: totalLink, location: `${ourLocation} ${uri}: ${trcGCerror}` });
+                    hadError = true;
+                }
+                if (!hadError && !generalFileContent)
+                    addNoticePartial({ priority: 883, message: `Unable to find/load ${fieldName} general link`, excerpt: totalLink, location: `${ourLocation} ${uri}` });
+                else if (generalFileContent) { // we got the content of the general article
+                    if (generalFileContent.length < 10)
+                        addNoticePartial({ priority: 881, message: `Linked ${fieldName} general article seems empty`, excerpt: totalLink, location: `${ourLocation} ${uri}` });
+                }
+                await markAsChecked(dummyPathParameters); // don’t bother waiting for the result
             }
-            if (!generalFileContent)
-                addNoticePartial({ priority: 883, message: `Unable to find ${fieldName} general link`, excerpt: totalLink, location: `${ourLocation} ${uri}` });
-            else { // we got the content of the general article
-                if (generalFileContent.length < 10)
-                    addNoticePartial({ priority: 881, message: `Linked ${fieldName} general article seems empty`, excerpt: totalLink, location: `${ourLocation} ${uri}` });
-            }
+            // else debugLog(`Had already checked '${displayText}' ${uri}`);
+
+            if (uri.startsWith('http:'))
+                addNoticePartial({ priority: 152, message: "Should http link be https", excerpt: totalLink, location: ourLocation });
         }
     }
 
@@ -1102,14 +1120,16 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     const linkCount1 = thisChapterBibleLinkCount1 + thisVerseBibleLinkCount1 + thisBookBibleLinkCount1 + otherBookBibleLinkCount1 + TNLinkCount1 + twLinkCount1 + taLinkCount1 + generalLinkCount1;
     if (totalLinks1 > linkCount1) {
         const leftoverLinksList1 = linksList1.filter(x => !processedLinkList.includes(x)); // Delete links that we processed above
-        if (leftoverLinksList1.length) debugLog(`'${languageCode}', ${repoCode}, '${bookID}', '${fieldName}' processedLinkList (${processedLinkList.length}) = ${JSON.stringify(processedLinkList)}\n        linksList1(${linksList1.length})=${JSON.stringify(linksList1)}\nleftoverLinksList1(${leftoverLinksList1.length})=${JSON.stringify(leftoverLinksList1)}`);
+        // if (leftoverLinksList1.length) debugLog(`'${languageCode}', ${repoCode}, '${bookID}', '${fieldName}' processedLinkList (${processedLinkList.length}) = ${JSON.stringify(processedLinkList)}\n        linksList1(${linksList1.length})=${JSON.stringify(linksList1)}\nleftoverLinksList1(${leftoverLinksList1.length})=${JSON.stringify(leftoverLinksList1)}`);
+        // if (leftoverLinksList1.length) debugLog(`'${languageCode}', ${repoCode}, '${bookID}', '${fieldName}' leftoverLinksList1 (${leftoverLinksList1.length}) = ${JSON.stringify(leftoverLinksList1)}`);
         addNoticePartial({ priority: 648, message: "Unusual [ ]( ) link(s)—not a recognized Bible or TA, TN, or TW link", details: `need to carefully check ${leftoverLinksList1.length === 1 ? '"' + leftoverLinksList1[0] + '"' : JSON.stringify(leftoverLinksList1)}`, location: ourLocation });
     }
     const linkCount2 = twLinkCount2 + taLinkCount2; // These are double-bracketed links, e.g., [[something]]
     // debugLog(`twLinkCount2 ${twLinkCount2} + taLinkCount2 ${taLinkCount2} = linkCount2 ${linkCount2}`);
     if (totalLinks2 > linkCount2) {
         const leftoverLinksList2 = linksList2.filter(x => !processedLinkList.includes(x)); // Delete links that we processed above
-        if (leftoverLinksList2.length) debugLog(`'${languageCode}', ${repoCode}, '${bookID}', '${fieldName}' processedLinkList (${processedLinkList.length}) = ${JSON.stringify(processedLinkList)}\n        linksList2(${linksList2.length})=${JSON.stringify(linksList2)}\nleftoverLinksList2(${leftoverLinksList2.length})=${JSON.stringify(leftoverLinksList2)}`);
+        // if (leftoverLinksList2.length) debugLog(`'${languageCode}', ${repoCode}, '${bookID}', '${fieldName}' processedLinkList (${processedLinkList.length}) = ${JSON.stringify(processedLinkList)}\n        linksList2(${linksList2.length})=${JSON.stringify(linksList2)}\nleftoverLinksList2(${leftoverLinksList2.length})=${JSON.stringify(leftoverLinksList2)}`);
+        // if (leftoverLinksList2.length) debugLog(`'${languageCode}', ${repoCode}, '${bookID}', '${fieldName}' leftoverLinksList2 (${leftoverLinksList2.length}) = ${JSON.stringify(leftoverLinksList2)}`);
         addNoticePartial({ priority: 649, message: "Unusual [[ ]] link(s)—not a recognized TA or TW link", details: `need to carefully check ${leftoverLinksList2.length === 1 ? '"' + leftoverLinksList2[0] + '"' : JSON.stringify(leftoverLinksList2)}`, location: ourLocation });
     }
 
