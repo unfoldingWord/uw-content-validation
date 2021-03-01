@@ -183,10 +183,9 @@ const textB = `\\id GEN Bad USFM test
 //  (to demonstrate differing results)
 const chosenText = textH;
 
-// Second (unused) parameter is repoCode
 // Fourth (unused) parameter is filename
 const checkingOptions = {};
-const rawResults = checkUSFMText('en', '', 'GEN', '', chosenText, 'that was supplied', checkingOptions);
+const rawResults = checkUSFMText('en', 'UHB', 'GEN', '', chosenText, 'that was supplied', checkingOptions);
 if (!rawResults.successList || !rawResults.successList.length)
     rawResults.successList = ["Done USFM text checks"];
 

@@ -40,7 +40,7 @@ const data = {
   // You can choose any of the above lines here
   //  (to demonstrate differing results)
   languageCode: 'en',
-  repoCode: 'TN2',
+  repoCode: 'TQ2',
   tableTextName : 'textG',
   tableText : textG,
   bookID : 'GEN',
@@ -48,7 +48,7 @@ const data = {
   givenLocation : 'that was supplied',
 }
 
-function CheckQuestionsTSV7Table(props) {
+function OurCheckQuestionsTSV7Table(props) {
   const { languageCode, repoCode, bookID, filename, tableText, tableTextName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
@@ -72,7 +72,7 @@ function CheckQuestionsTSV7Table(props) {
   }, []); // end of useEffect part
 
   return results;
-} // end of CheckQuestionsTSV7Table function
+} // end of OurCheckQuestionsTSV7Table function
 
-<CheckQuestionsTSV7Table data={data}/>
+<OurCheckQuestionsTSV7Table data={data}/>
 ```

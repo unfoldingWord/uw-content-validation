@@ -8,7 +8,7 @@ import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAsser
 // import { consoleLogObject } from '../core/utilities';
 
 
-// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.7.11';
+// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.7.12';
 
 // const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -37,7 +37,7 @@ const THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[(\\d{1,3})\\]\\(\\
 const THIS_VERSE_RANGE_TO_THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[(\\d{1,3})[–-](\\d{1,3})\\]\\(\\.{2}/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');// [2–7](../09/2.md) NOTE en-dash
 const BCV_V_TO_THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})[–-](\\d{1,3})\\]\\(\\./(\\d{1,3})\\.md\\)', 'g'); // [Genesis 26:12-14](./12.md) NOTE en-dash
 
-const BIBLE_FULL_HELP_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})\\]\\(rc://([^ /]+?)/tn/help/([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\)', 'g'); // [Genesis 29:23](rc://en/tn/help/gen/29/23)
+const BIBLE_FULL_HELP_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})(?:-\\d{1,3})\\]\\(rc://([^ /]+?)/tn/help/([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\)', 'g'); // [Genesis 29:23-24](rc://en/tn/help/gen/29/23)
 
 const TN_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})\\]\\((\\.{2})/(\\d{1,3})/(\\d{1,3})/([a-z][a-z0-9][a-z0-9][a-z0-9])\\)', 'g');
 
@@ -1085,28 +1085,39 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             if (await alreadyChecked(dummyPathParameters) !== true) {
                 // debugLog(`checkNotesLinksToOutside general link check needs to check: ${uri}`);
 
-                let generalFileContent, hadError = false;
-                try {
-                    // generalFileContent = await cachedGetFileUsingFullURL({ uri });
-                    // debugLog(`${displayText} ${uri} got: (${generalFileContent.length}) ${generalFileContent.substring(0, 10)}...`);
-                    const response = await fetch(uri);
-                    if (response.ok) {// if HTTP-status is 200-299
-                        generalFileContent = await response.text();
-                        // debugLog(`General link ${displayText} @ ${uri} got: (${generalFileContent.length}) ${generalFileContent.substring(0, 10)}...`);
-                    } else throw new Error(`Our Network error: ${response.statusCode}`);
-                } catch (trcGCerror) {
-                    // debugLog(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load general ${uri}: ${trcGCerror}`);
-                    // TODO: Put back up to 882 if we can solve cross-origin problems
-                    addNoticePartial({ priority: 82, message: `Error loading ${fieldName} general link`, details: "please double-check link—there may be no problem", excerpt: totalLink, location: `${ourLocation} ${uri}: ${trcGCerror}` });
-                    hadError = true;
+                // TODO: Uncomment this block and get it working better
+                if (false) // don't try to fetch general links
+                    addNoticePartial({ priority: 32, message: `Untested general link`, details: "please manually double-check link—probably no problem", excerpt: totalLink, location: ourLocation });
+                else { // Try to fetch general links
+                    let generalFileContent, hadError = false;
+                    try {
+                        // generalFileContent = await cachedGetFileUsingFullURL({ uri });
+                        // debugLog(`${displayText} ${uri} got: (${generalFileContent.length}) ${generalFileContent.substring(0, 10)}...`);
+                        // const serverString = uri.replace('://','!!!').split('/')[0].replace('!!!','://'); // Get the bit before any forward slashes
+                        // debugLog(`uri='${uri}', serverString='${serverString}'`);
+                        // NOTE: The following line (with or without the mode) doesn't help -- actually makes things slightly worse
+                        // const response = await fetch(uri, {headers:{'Access-Control-Allow-Origin': serverString}});
+                        // const response = await fetch(uri, {mode: 'cors'});
+                        // const response = await fetch(uri, {mode: 'cors', headers:{'Access-Control-Allow-Origin': serverString}});
+                        const response = await fetch(uri);
+                        if (response.ok) {// if HTTP-status is 200-299
+                            generalFileContent = await response.text();
+                            // debugLog(`General link ${displayText} @ ${uri} got: (${generalFileContent.length}) ${generalFileContent.substring(0, 10)}...`);
+                        } else throw new Error(`Our Network error: ${response.statusCode}`);
+                    } catch (trcGCerror) {
+                        // debugLog(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load general ${uri}: ${trcGCerror}`);
+                        // TODO: Put back up to 882 if we can solve cross-origin problems
+                        addNoticePartial({ priority: 82, message: `Error loading general link`, details: "please double-check link—there may be no problem", excerpt: totalLink, location: `${ourLocation}: ${trcGCerror}` });
+                        hadError = true;
+                    }
+                    if (!hadError && !generalFileContent)
+                        addNoticePartial({ priority: 883, message: `Unable to find/load general link`, excerpt: totalLink, location: ourLocation });
+                    else if (generalFileContent) { // we got the content of the general article
+                        if (generalFileContent.length < 10)
+                            addNoticePartial({ priority: 881, message: `Linked general article seems empty`, excerpt: totalLink, location: ourLocation });
+                    }
                 }
-                if (!hadError && !generalFileContent)
-                    addNoticePartial({ priority: 883, message: `Unable to find/load ${fieldName} general link`, excerpt: totalLink, location: `${ourLocation} ${uri}` });
-                else if (generalFileContent) { // we got the content of the general article
-                    if (generalFileContent.length < 10)
-                        addNoticePartial({ priority: 881, message: `Linked ${fieldName} general article seems empty`, excerpt: totalLink, location: `${ourLocation} ${uri}` });
-                }
-                await markAsChecked(dummyPathParameters); // don’t bother waiting for the result
+                await markAsChecked(dummyPathParameters); // don’t bother waiting for the result of this async call
             }
             // else debugLog(`Had already checked '${displayText}' ${uri}`);
 

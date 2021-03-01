@@ -43,14 +43,14 @@ const data = {
   // You can choose any of the above lines here
   //  (to demonstrate differing results)
   languageCode: 'en',
-  repoCode: 'TN2',
+  repoCode: 'TQ2',
   tableLineName : 'lineA9',
   tableLine : lineA9,
   bookID : 'GEN', C:'1', V:'2',
   givenLocation : 'that was supplied',
 }
 
-function CheckQuestionsRow(props) {
+function OurCheckQuestionsRow(props) {
   const { languageCode, repoCode, bookID, C, V, tableLine, tableLineName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
@@ -74,7 +74,7 @@ function CheckQuestionsRow(props) {
   }, []); // end of useEffect part
 
   return results;
-} // end of CheckQuestionsRow function
+} // end of OurCheckQuestionsRow function
 
-<CheckQuestionsRow data={data}/>
+<OurCheckQuestionsRow data={data}/>
 ```

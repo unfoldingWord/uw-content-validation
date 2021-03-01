@@ -49,7 +49,7 @@ const data = {
   givenLocation : "that was supplied",
 }
 
-function CheckTNTSVRow(props) {
+function OurCheckTNTSVRow(props) {
   const { languageCode, bookID, C, V, tableLine, tableLineName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
@@ -73,7 +73,7 @@ function CheckTNTSVRow(props) {
   }, []); // end of useEffect part
 
   return results;
-} // end of CheckTNTSVRow function
+} // end of OurCheckTNTSVRow function
 
-<CheckTNTSVRow data={data}/>
+<OurCheckTNTSVRow data={data}/>
 ```

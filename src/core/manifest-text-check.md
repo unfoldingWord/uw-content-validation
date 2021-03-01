@@ -223,7 +223,7 @@ const data = {
   givenLocation : "that was supplied",
 }
 
-function CheckManifestText(props) {
+function OurCheckManifestText(props) {
   const { languageCode, chosenText, chosenTextName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
@@ -236,7 +236,7 @@ function CheckManifestText(props) {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {chosenTextName}…</p>);
       const checkingOptions = {};
-      const rawResults = await checkManifestText('', '', '', chosenText, 'in manifest data that was supplied', checkingOptions);
+      const rawResults = await checkManifestText('en', 'LT', 'unfoldingWord', 'en_ult', 'master', chosenText, 'in manifest data that was supplied', checkingOptions);
       if (!rawResults.successList || !rawResults.successList.length)
         rawResults.successList = ["Done manifest text checks"];
       setResults(
@@ -250,7 +250,7 @@ function CheckManifestText(props) {
   }, []); // end of useEffect part
 
   return results;
-} // end of CheckManifestText function
+} // end of OurCheckManifestText function
 
-<CheckManifestText data={data}/>
+<OurCheckManifestText data={data}/>
 ```

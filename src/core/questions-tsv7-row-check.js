@@ -20,9 +20,9 @@ const LC_ALPHABET_PLUS_DIGITS_PLUS_HYPHEN = 'abcdefghijklmnopqrstuvwxyz012345678
 
 /**
  *
- * @description - Checks one TSV data row of translation notes (TN2)
+ * @description - Checks one TSV data row of translation notes (TQ2)
  * @param {string} languageCode - the language code, e.g., 'en'
- * @param {string} repoCode - TN2, TQ2, TWL, SN, or SQ -- allows more specific checks
+ * @param {string} repoCode - 'TQ2' or 'SQ'
  * @param {string} line - the TSV line to be checked
  * @param {string} bookID - 3-character UPPERCASE USFM book identifier or 'OBS'
  * @param {string} givenC - chapter number or (for OBS) story number string
@@ -35,8 +35,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
     /* This function is only for checking one data row
           and the function doesn’t assume that it has any previous context.
 
-        TN2, TQ2, TWL, SN, or SQ
-            being translation or study notes, questions, or word-links.
+        TQ2 being translation or study questions.
 
         bookID is a three-character UPPERCASE USFM book identifier or 'OBS'
             so givenC and givenV are usually chapter number and verse number
@@ -413,7 +412,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
                 addNoticePartial({ priority: 750, message: "Missing occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, location: ourRowLocation });
         }
         else // TODO: Find more details about when these fields are really compulsory (and when they're not, e.g., for 'intro') ???
-            if (repoCode === 'TN2' && V !== 'intro' && occurrence !== '0')
+            if (repoCode === 'TQ2' && V !== 'intro' && occurrence !== '0')
                 addNoticePartial({ priority: 919, message: "Missing Quote field", fieldName: 'Quote', rowID, location: ourRowLocation });
 
         if (occurrence.length) { // This should usually be a digit
@@ -459,7 +458,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
             }
         }
         else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
-            if (repoCode === 'TN2')
+            if (repoCode === 'TQ2')
                 addNoticePartial({ priority: 274, message: "Missing Question field", fieldName: 'Question', rowID, location: ourRowLocation });
 
         if (response.length) {
@@ -484,7 +483,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
             }
         }
         else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
-            if (repoCode === 'TN2')
+            if (repoCode === 'TQ2')
                 addNoticePartial({ priority: 274, message: "Missing Response field", fieldName: 'Response', rowID, location: ourRowLocation });
 
         // 7 [reference, rowID, tags, question, answer]

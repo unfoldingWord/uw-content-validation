@@ -20,7 +20,7 @@ const LC_ALPHABET_PLUS_DIGITS_PLUS_HYPHEN = 'abcdefghijklmnopqrstuvwxyz012345678
 
 /**
  *
- * @description - Checks one TSV data row of translation notes (TN2)
+ * @description - Checks one TSV data row of translation word links (TWL)
  * @param {string} languageCode - the language code, e.g., 'en'
  * @param {string} repoCode - 'TWL' -- keeps parameter set consistent with other similar functions
  * @param {string} line - the TSV line to be checked
@@ -358,7 +358,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
                 addNoticePartial({ priority: 750, message: "Missing occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, location: ourRowLocation });
         }
         else // TODO: Find more details about when these fields are really compulsory (and when they're not, e.g., for 'intro') ???
-            if (repoCode === 'TN2' && V !== 'intro' && occurrence !== '0')
+            if (repoCode === 'TWL' && V !== 'intro' && occurrence !== '0')
                 addNoticePartial({ priority: 919, message: "Missing Quote field", fieldName: 'Quote', rowID, location: ourRowLocation });
 
         if (occurrence.length) { // This should usually be a digit

@@ -50,7 +50,7 @@ const data = {
   givenLocation : 'that was supplied',
 }
 
-function CheckNotesRow(props) {
+function OurCheckNotesRow(props) {
   const { languageCode, repoCode, bookID, C, V, tableLine, tableLineName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
@@ -74,7 +74,7 @@ function CheckNotesRow(props) {
   }, []); // end of useEffect part
 
   return results;
-} // end of CheckNotesRow function
+} // end of OurCheckNotesRow function
 
-<CheckNotesRow data={data}/>
+<OurCheckNotesRow data={data}/>
 ```

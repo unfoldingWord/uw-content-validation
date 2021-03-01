@@ -48,7 +48,7 @@ const data = {
   givenLocation : 'that was supplied',
 }
 
-function CheckNotesTSV7Table(props) {
+function OurCheckNotesTSV7Table(props) {
   const { languageCode, repoCode, bookID, filename, tableText, tableTextName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
@@ -72,7 +72,7 @@ function CheckNotesTSV7Table(props) {
   }, []); // end of useEffect part
 
   return results;
-} // end of CheckNotesTSV7Table function
+} // end of OurCheckNotesTSV7Table function
 
-<CheckNotesTSV7Table data={data}/>
+<OurCheckNotesTSV7Table data={data}/>
 ```

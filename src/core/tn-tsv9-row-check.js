@@ -22,7 +22,7 @@ const TA_REGEX = new RegExp('\\[\\[rc://[^ /]+?/ta/man/[^ /]+?/([^ \\]]+?)\\]\\]
 
 /**
  *
- * @description - Checks one TSV data row of translation notes (TN2)
+ * @description - Checks one TSV data row of translation notes (TN)
  * @param {string} languageCode - the language code, e.g., 'en'
  * @param {string} repoCode - 'TN'
  * @param {string} line - the TSV line to be checked
@@ -306,7 +306,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
     //     // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
     //     //  process results line by line
     //     for (const coqNoticeEntry of coqResultObject.noticeList) {
-    //         if (coqNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN2 check
+    //         if (coqNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN check
     //             drResult.noticeList.push(coqNoticeEntry); // Just copy the complete notice as is
     //         else // For our direct checks, we add the repoCode as an extra value
     //             addNoticePartial({ ...coqNoticeEntry, rowID, fieldName });
@@ -450,7 +450,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
                 addNoticePartial({ priority: 173, message: "Row ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 2, rowID, excerpt: rowID, location: ourRowLocation });
         }
 
-        if (supportReference.length) { // need to check TN2 against TA
+        if (supportReference.length) { // need to check TN against TA
             if (isWhitespace(supportReference))
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'SupportReference', rowID, location: ourRowLocation });
             else { // More than just whitespace
@@ -549,8 +549,8 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
         // 9 [B, C, V, rowID, supportReference, quote, occurrence, GLQuote, occurrenceNote]
         const suggestion = `${B}\t${C}\t${V}\t${RIDSuggestion === undefined ? rowID : RIDSuggestion}\t${SRSuggestion === undefined ? supportReference : SRSuggestion}\t${OQSuggestion === undefined ? quote : OQSuggestion}\t${OSuggestion === undefined ? occurrence : OSuggestion}\t${GLQSuggestion === undefined ? GLQuote : GLQSuggestion}\t${ONSuggestion === undefined ? occurrenceNote : ONSuggestion}`;
         if (suggestion !== line) {
-            // debugLog(`Had TN2 ${line}`);
-            // debugLog(`Sug TN2 ${suggestion}`);
+            // debugLog(`Had TN ${line}`);
+            // debugLog(`Sug TN ${suggestion}`);
             drResult.suggestion = suggestion;
         }
 

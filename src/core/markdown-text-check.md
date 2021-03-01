@@ -48,7 +48,7 @@ const data = {
   givenLocation : "that was supplied",
 }
 
-function CheckMarkdownText(props) {
+function OurCheckMarkdownText(props) {
   const { languageCode, repoCode, chosenText, chosenTextName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
@@ -74,7 +74,7 @@ function CheckMarkdownText(props) {
   }, []); // end of useEffect part
 
   return results;
-} // end of CheckMarkdownText function
+} // end of OurCheckMarkdownText function
 
-<CheckMarkdownText data={data}/>
+<OurCheckMarkdownText data={data}/>
 ```

@@ -41,7 +41,7 @@ const tableIcons = {
 };
 
 
-// const RENDER_PROCESSED_RESULTS_VERSION = '0.5.10';
+// const RENDER_PROCESSED_RESULTS_VERSION = '0.5.11';
 
 
 export function RenderSuccesses({ username, results }) {
@@ -257,7 +257,7 @@ function RenderFileDetails({ username, repoName, branch, filename, lineNumber, r
     // debugLog(`RenderFileDetails(${repoName}, ${branch}, ${filename}, ${lineNumber}, ${rowID}, ${fieldName})`);
     if (!repoName && !filename && !lineNumber && !rowID && !fieldName)
         return null; // They're all undefined or blank!
-    if (!branch) branch = repoName.endsWith('2')? 'newFormat':'master'; // default but with TEMP code for newFormat
+    if (!branch) branch = repoName?.endsWith('2')? 'newFormat':'master'; // default but with TEMP code for newFormat
     // debugLog(`RenderFileDetails2 ${repoName}, ${filename}, ${lineNumber}`);
     let resultStart = '', lineResult = '', resultEnd = '', fileLineLink = '', fileLink = '';
     if (repoName && repoName.length) resultStart += ` in ${repoName} repository`;

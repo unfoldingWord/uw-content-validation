@@ -1,4 +1,4 @@
-// import { checkTextField } from './field-text-check'
+import { checkTextField } from './field-text-check'
 import { cachedGetFileUsingFullURL } from './getApi';
 import { userLog, parameterAssert } from './utilities';
 
@@ -60,9 +60,11 @@ export async function startLiveLinksCheck(linksList, existingNoticeList, callbac
  * @param {string} optionalFieldLocation
  * @param {Object} checkingOptions
  */
-/*
 export function checkFieldLinks(languageCode, repoCode, fieldName, fieldText, linkOptions, optionalFieldLocation, checkingOptions) {
     // Does basic checks for fields that are links or that contain links
+
+    // NOTE: This function is currently only called from field-link-check.md!!!
+    //          TODO: Does it need to be deleted (or finished) ???
 
     // We assume that checking for compulsory fields is done elsewhere
 
@@ -72,7 +74,7 @@ export function checkFieldLinks(languageCode, repoCode, fieldName, fieldText, li
     //      2/ the detailed location string
     //  (Returned in this way for more intelligent processing at a higher level)
 
-    userLog(`checkFieldLinks('${fieldName}', '${fieldText}')…`);
+    userLog(`checkFieldLinks('${languageCode}', '${repoCode}', '${fieldName}', '${fieldText}', ${JSON.stringify(linkOptions)}, '${optionalFieldLocation}', ${JSON.stringify(checkingOptions)})…`);
     // debugLog( "linkOptions", JSON.stringify(linkOptions));
     // debugLog( "linkOptionsEC", linkOptions.expectedCount);
     parameterAssert(languageCode !== undefined, "checkFieldLinks: 'languageCode' parameter should be defined");
@@ -172,4 +174,3 @@ export function checkFieldLinks(languageCode, repoCode, fieldName, fieldText, li
     return result;
 }
 // end of checkFieldLinks function
-*/

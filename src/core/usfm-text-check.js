@@ -864,7 +864,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         }
         while ((regexResultArray1 = KS_REGEX.exec(adjustedRest))) {
             // debugLog(`Got ${repoCode} \\k-s Regex in ${C}:${V} line: '${JSON.stringify(regexResultArray1)}`);
-            dataAssert(repoCode === 'UHB' || repoCode === 'UGNT')
+            dataAssert(repoCode === 'UHB' || repoCode === 'UGNT', `checkUSFMLineAttributes expected an original language repo not '${repoCode}'`);
             let attributeCounter = 0;
             while ((regexResultArray2 = ATTRIBUTE_REGEX.exec(regexResultArray1[1]))) {
                 attributeCounter += 1;
@@ -881,7 +881,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         }
         while ((regexResultArray1 = ZALNS_REGEX.exec(adjustedRest))) {
             // debugLog(`Got ${repoCode} \\zaln-s Regex in ${C}:${V} line: '${JSON.stringify(regexResultArray1)}`);
-            dataAssert(repoCode !== 'UHB' && repoCode !== 'UGNT')
+            dataAssert(repoCode !== 'UHB' && repoCode !== 'UGNT', `checkUSFMLineAttributes eExpected not an original language repo not '${repoCode}'`);
             let attributeCounter = 0;
             while ((regexResultArray2 = ATTRIBUTE_REGEX.exec(regexResultArray1[1]))) {
                 attributeCounter += 1;

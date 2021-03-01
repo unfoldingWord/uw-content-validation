@@ -47,7 +47,7 @@ const data = {
   givenLocation : 'that was supplied',
 }
 
-function checkTN_TSV9Table(props) {
+function OurCheckTN_TSV9Table(props) {
   const { languageCode, bookID, filename, tableText, tableTextName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
@@ -71,7 +71,7 @@ function checkTN_TSV9Table(props) {
   }, []); // end of useEffect part
 
   return results;
-} // end of checkTN_TSV9Table function
+} // end of OurCheckTN_TSV9Table function
 
-<checkTN_TSV9Table data={data}/>
+<OurCheckTN_TSV9Table data={data}/>
 ```
