@@ -123,17 +123,17 @@ let sections = [
 		// content: 'src/core/README.md',
 		sections: [
 			{
-				name: 'TWLLinks TSV6 table check',
+				name: 'TW Links TSV6 table check',
 				content: 'src/core/twl-tsv6-table-check.md',
 				// description: ''
 			},
 			{
-				name: 'TQ/SQ TSV7 table check',
+				name: 'TQ2/SQ TSV7 table check',
 				content: 'src/core/questions-tsv7-table-check.md',
 				// description: ''
 			},
 			{
-				name: 'TN/SN TSV7 table check',
+				name: 'TN2/SN TSV7 table check',
 				content: 'src/core/notes-tsv7-table-check.md',
 				// description: ''
 			},

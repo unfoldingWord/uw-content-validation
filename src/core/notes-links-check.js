@@ -598,7 +598,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 addNoticePartial({ priority: 655, message: "Bad story number in markdown OBS help link", details: `${linkBookCode} ${linkChapterInt} vs ${numStories} chapters`, excerpt: totalLink, location: ourLocation });
             else if (!linkVerseInt || linkVerseInt < 0 || linkVerseInt > numFramesThisStory)
                 addNoticePartial({ priority: 653, message: "Bad frame number in markdown OBS help link", details: `${linkBookCode} ${linkChapterInt}:${linkVerseInt} vs ${numFramesThisStory} verses`, excerpt: totalLink, location: ourLocation });
-        } else { // then we know which Bible book this link is to
+        } else if (linkBookCode) { // then we know which Bible book this link is to
             // So we can check for valid C:V numbers
             let numChaptersThisBook, numVersesThisChapter;
             logicAssert(linkBookCode.toLowerCase() !== 'obs', `BIBLE_FULL_HELP_REGEX linkBookCode shouldn’t be '${linkBookCode}' in notes-links-check`);
@@ -612,7 +612,8 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible help link", details: `${linkBookCode} ${linkChapterInt} vs ${numChaptersThisBook} chapters`, excerpt: totalLink, location: ourLocation });
             else if (!linkVerseInt || linkVerseInt < 0 || linkVerseInt > numVersesThisChapter)
                 addNoticePartial({ priority: 653, message: "Bad verse number in markdown Bible help link", details: `${linkBookCode} ${linkChapterInt}:${linkVerseInt} vs ${numVersesThisChapter} verses`, excerpt: totalLink, location: ourLocation });
-        }
+        } else
+            debugLog(`Seems BIBLE_FULL_HELP_REGEX '${totalLink}' didn't have a link book code!`);
     }
 
     // Check for this-chapter Bible links like [Revelation 3:11](./11.md)
@@ -1084,16 +1085,16 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             const dummyPathParameters = { username: uri, repository: '', path: '', branch: '' };
             if (await alreadyChecked(dummyPathParameters) !== true) {
                 // debugLog(`checkNotesLinksToOutside general link check needs to check: ${uri}`);
+                const serverString = uri.replace('://','!!!').split('/')[0].replace('!!!','://').toLowerCase(); // Get the bit before any forward slashes
 
                 // TODO: Uncomment this block and get it working better
-                if (false) // don't try to fetch general links
+                if (!serverString.endsWith('door43.org') && !serverString.endsWith('unfoldingword.org')) // don't try to fetch general links
                     addNoticePartial({ priority: 32, message: `Untested general link`, details: "please manually double-check link—probably no problem", excerpt: totalLink, location: ourLocation });
                 else { // Try to fetch general links
                     let generalFileContent, hadError = false;
                     try {
                         // generalFileContent = await cachedGetFileUsingFullURL({ uri });
                         // debugLog(`${displayText} ${uri} got: (${generalFileContent.length}) ${generalFileContent.substring(0, 10)}...`);
-                        // const serverString = uri.replace('://','!!!').split('/')[0].replace('!!!','://'); // Get the bit before any forward slashes
                         // debugLog(`uri='${uri}', serverString='${serverString}'`);
                         // NOTE: The following line (with or without the mode) doesn't help -- actually makes things slightly worse
                         // const response = await fetch(uri, {headers:{'Access-Control-Allow-Origin': serverString}});

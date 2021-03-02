@@ -8,7 +8,7 @@ import { checkOriginalLanguageQuote } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const NOTES_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.9';
+// const NOTES_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.10';
 
 const NUM_EXPECTED_NOTES_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_NOTES_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tNote';
@@ -508,14 +508,22 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
                 const adjustedNote = note.replace(/\\n/g, '\n');
                 ASuggestion = await ourMarkdownTextChecks(rowID, 'Note', adjustedNote, true, ourRowLocation, checkingOptions);
                 // await ourCheckNotesLinksToOutside(rowID, 'Note', adjustedNote, ourRowLocation, linkCheckingOptions);
-                let regexResultArray;
+                let regexResultArray, linksList = [], foundSR = false;
                 while ((regexResultArray = TA_REGEX.exec(adjustedNote))) {
                     // debugLog("Got TA Regex in Note", JSON.stringify(regexResultArray));
+                    linksList.push(regexResultArray[1])
                     const adjustedLink = regexResultArray[0].substring(2, regexResultArray[0].length - 2)
-                    if (supportReference !== adjustedLink && V !== 'intro') {
-                        const details = supportReference ? `(SR='${supportReference}')` : "(empty SR field)"
-                        addNoticePartial({ priority: 786, message: "Should have a SupportReference when OccurrenceNote has a TA link", details, rowID, fieldName: 'Note', excerpt: adjustedLink, location: ourRowLocation });
-                    }
+                    if (adjustedLink === supportReference) foundSR = true;
+                }
+                if (linksList.length && V !== 'intro') {
+                    let details = supportReference ? `SR='${supportReference}'` : "empty SR field"
+                    if (linksList.length > 1) details += `—found ${linksList.length} TA links`;
+                    const excerpt = linksList.length > 1? JSON.stringify(linksList): linksList[0];
+                    if (foundSR) {
+                        if (linksList.length > 1)
+                            addNoticePartial({ priority: 786, message: "Shouldn’t have multiple TA links in Note", details, rowID, fieldName: 'OccurrenceNote', excerpt, location: ourRowLocation });
+                    } else // didn't find SR
+                        addNoticePartial({ priority: 789, message: "Should have a SupportReference when Note has a TA link", details, rowID, fieldName: 'OccurrenceNote', excerpt, location: ourRowLocation });
                 }
             }
         }

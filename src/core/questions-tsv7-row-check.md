@@ -1,6 +1,6 @@
 ## Questions (TSV) Row Check Sandbox
 
-This function checks one tab-separated line for typical formatting errors.
+Designed for the new Translation Questions (TQ2) and Study Questions (SQ), this function checks one tab-separated line for typical formatting errors.
 
 It returns a list of success messages and a list of notice components. (There is always a priority number in the range 0..999 and the main message string, as well as other details to help locate the error as available.)
 

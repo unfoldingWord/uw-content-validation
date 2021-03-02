@@ -1,6 +1,6 @@
 ## TN TSV Table Row Check Sandbox
 
-This function checks one TranslationNotes tab-separated line for typical formatting errors.
+This function checks one Translation Notes (TN) tab-separated (9-columns) line for typical formatting errors.
 
 It returns a list of success messages and a list of notice components. (There is always a priority number in the range 0..999 and the main message string, as well as other details to help locate the error as available.)
 

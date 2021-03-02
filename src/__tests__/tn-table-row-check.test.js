@@ -90,7 +90,7 @@ describe('checkTN_TSV9DataRow() - ', () => {
     it('should fail invalid first link', async () => {
       const chosenLine = "GEN\t1\t9\tzu6f\tfigs-activepassive\t\t0\tLet the waters…be gathered\tThis can be translated with an active verb. This is a command. By commanding that the waters gather together, God made them gather together. Alternate translation: “Let the waters…gather” or “Let the waters…come together” (See: [[rc://*/ta/man/translate/figs-activepassivez]] and [[rc://*/ta/man/translate/figs-imperative]])";
       const rawResults = await checkTN_TSV9DataRow(languageCode, repoCode, chosenLine, 'GEN', '1', '9', 'that was supplied', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toEqual(5);
+      expect(rawResults.noticeList.length).toEqual(4);
       expect(rawResults).toMatchSnapshot();
     });
 

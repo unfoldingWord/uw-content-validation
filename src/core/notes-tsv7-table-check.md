@@ -1,6 +1,6 @@
 ## Notes (TSV) Table Text Check Sandbox
 
-This function checks the given block of note (TSV) table lines for typical formatting errors.
+Designed for the new Translation Notes (TN2) and Study Notes (SN), this function checks the given block of note (TSV) table lines for typical formatting errors.
 
 It returns a list of success messages and a list of notice components. (There is always a priority number in the range 0..999 and the main message string, as well as other details to help locate the error as available.)
 

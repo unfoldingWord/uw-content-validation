@@ -8,7 +8,7 @@ import { checkOriginalLanguageQuote } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.7.0';
+// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.7.1';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -533,13 +533,21 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
                 const adjustedOccurrenceNote = occurrenceNote.replace(/<br>/g, '\n');
                 ONSuggestion = await ourMarkdownTextChecks(rowID, 'OccurrenceNote', adjustedOccurrenceNote, true, ourRowLocation, checkingOptions);
                 // await ourCheckNotesLinksToOutside(rowID, 'OccurrenceNote', adjustedOccurrenceNote, ourRowLocation, linkCheckingOptions);
-                let regexResultArray;
+                let regexResultArray, linksList = [], foundSR = false;
                 while ((regexResultArray = TA_REGEX.exec(adjustedOccurrenceNote))) {
                     // debugLog("Got TA Regex in OccurrenceNote", JSON.stringify(regexResultArray));
-                    if (supportReference !== regexResultArray[1] && V !== 'intro') {
-                        const details = supportReference ? `(SR='${supportReference}')` : "(empty SR field)"
-                        addNoticePartial({ priority: 786, message: "Should have a SupportReference when OccurrenceNote has a TA link", details, rowID, fieldName: 'OccurrenceNote', excerpt: regexResultArray[1], location: ourRowLocation });
-                    }
+                    linksList.push(regexResultArray[1])
+                    if (regexResultArray[1] === supportReference) foundSR = true;
+                }
+                if (linksList.length && V !== 'intro') {
+                    let details = supportReference ? `SR='${supportReference}'` : "empty SR field"
+                    if (linksList.length > 1) details += `—found ${linksList.length} TA links`;
+                    const excerpt = linksList.length > 1? JSON.stringify(linksList): linksList[0];
+                    if (foundSR) {
+                        if (linksList.length > 1)
+                            addNoticePartial({ priority: 786, message: "Shouldn’t have multiple TA links in OccurrenceNote", details, rowID, fieldName: 'OccurrenceNote', excerpt, location: ourRowLocation });
+                    } else // didn't find SR
+                        addNoticePartial({ priority: 789, message: "Should have a SupportReference when OccurrenceNote has a TA link", details, rowID, fieldName: 'OccurrenceNote', excerpt, location: ourRowLocation });
                 }
             }
         }
