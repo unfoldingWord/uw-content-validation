@@ -27139,7 +27139,7 @@ Object {
       "lineNumber": 2,
       "location": " in en TIT book package from unfoldingWord master branch",
       "message": "Markdown headers should be followed by a blank line",
-      "priority": 252,
+      "priority": 251,
       "repoCode": "SQ",
       "repoName": "en_sq",
       "rowID": "gtn1",

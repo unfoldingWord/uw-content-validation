@@ -8,7 +8,7 @@ import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAsser
 // import { consoleLogObject } from '../core/utilities';
 
 
-// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.7.12';
+// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.7.14';
 
 // const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -22,7 +22,7 @@ const TA_RELATIVE_DISPLAY_LINK_REGEX = new RegExp('\\[([^\\]]+?)\\]\\(\\.{2}/([^
 
 const TW_DOUBLE_BRACKETED_LINK_REGEX = new RegExp('\\[\\[rc://([^ /]+?)/tw/dict/bible/([^ /]+?)/([^ /\\]]+?)\\]\\]', 'g'); // Enclosed in [[  ]]
 const TWL_RAW_LINK_REGEX = new RegExp('rc://([^ /]+?)/tw/dict/bible/([^ /]+?)/(.+)', 'g'); // Just a raw link
-const TW_INTERNAL_REGEX = new RegExp('\\[([A-za-z]+?)\\]\\(\\.{2}/([a-z]{2,5})/([-A-Za-z]{2,20})\\.md\\)', 'g');// [Asher](../names/asher.md)
+const TW_INTERNAL_REGEX = new RegExp('\\[([A-za-z ()]+?)\\]\\(\\.{2}/([a-z]{2,5})/([-A-Za-z\\d]{2,20})\\.md\\)', 'g');// [Asher](../names/asher.md)
 
 // TODO: Do we need to normalise Bible links, i.e., make sure that the link itself
 //          (we don't care about the displayed text) doesn't specify superfluous levels/information
@@ -37,7 +37,7 @@ const THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[(\\d{1,3})\\]\\(\\
 const THIS_VERSE_RANGE_TO_THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[(\\d{1,3})[–-](\\d{1,3})\\]\\(\\.{2}/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');// [2–7](../09/2.md) NOTE en-dash
 const BCV_V_TO_THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})[–-](\\d{1,3})\\]\\(\\./(\\d{1,3})\\.md\\)', 'g'); // [Genesis 26:12-14](./12.md) NOTE en-dash
 
-const BIBLE_FULL_HELP_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})(?:-\\d{1,3})\\]\\(rc://([^ /]+?)/tn/help/([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\)', 'g'); // [Genesis 29:23-24](rc://en/tn/help/gen/29/23)
+const BIBLE_FULL_HELP_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})(?:-\\d{1,3})?\\]\\(rc://([^ /]+?)/tn/help/([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\)', 'g'); // [Genesis 29:23-24](rc://en/tn/help/gen/29/23)
 
 const TN_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})\\]\\((\\.{2})/(\\d{1,3})/(\\d{1,3})/([a-z][a-z0-9][a-z0-9][a-z0-9])\\)', 'g');
 
@@ -1087,9 +1087,9 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 // debugLog(`checkNotesLinksToOutside general link check needs to check: ${uri}`);
                 const serverString = uri.replace('://','!!!').split('/')[0].replace('!!!','://').toLowerCase(); // Get the bit before any forward slashes
 
-                // TODO: Uncomment this block and get it working better
-                if (!serverString.endsWith('door43.org') && !serverString.endsWith('unfoldingword.org')) // don't try to fetch general links
-                    addNoticePartial({ priority: 32, message: `Untested general link`, details: "please manually double-check link—probably no problem", excerpt: totalLink, location: ourLocation });
+                // NOTE: These message strings must match RenderProcessedResults.js
+                if (!serverString.endsWith('door43.org') && !serverString.endsWith('unfoldingword.org') && !serverString.endsWith('ufw.io')) // don't try to fetch general links
+                    addNoticePartial({ priority: 32, message: `Untested general/outside link`, details: "please manually double-check link—probably no problem", excerpt: totalLink, location: ourLocation });
                 else { // Try to fetch general links
                     let generalFileContent, hadError = false;
                     try {

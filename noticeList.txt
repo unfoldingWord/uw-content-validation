@@ -1,4 +1,4 @@
-Last updated 2021-03-03 08:50:12.058433 by makeNoticeList.py
+Last updated 2021-03-03 14:21:40.746190 by makeNoticeList.py
 Got 496 notices:
   checkRepoResult.noticeList.push( 997, "Repository doesn’t exist", details, username, repoCode, repoName, location: givenLocation, extra: repoCode	from checkRepo.js line 256
   languageCode === 'en' || languageCode === 'fr' ? 490 : 190, "Expected header field to contain a mixed-case string", fieldName: `\\$marker`, excerpt: rest, C, V, location: lineLocation	from usfm-text-check.js line 945
@@ -24,7 +24,7 @@ Got 496 notices:
   thisPriority, thisMessage, excerpt: regexResultArray[0], location: ourLocation	from field-text-check.js line 417
   const notice =  252, "Markdown headers should be preceded by a blank line", lineNumber: n, location: ourLocation ;	from markdown-text-check.js line 281
   notice	from markdown-text-check.js line 284
-  const notice =  252, "Markdown headers should be followed by a blank line", lineNumber: n, location: ourLocation ;	from markdown-text-check.js line 287
+  const notice =  251, "Markdown headers should be followed by a blank line", lineNumber: n, location: ourLocation ;	from markdown-text-check.js line 287
   notice	from markdown-text-check.js line 290
   const notice =  172, "Header levels should only increment by one", lineNumber: n, characterIndex: 0, location: ourLocation ;	from markdown-text-check.js line 300
   notice	from markdown-text-check.js line 303
@@ -491,7 +491,7 @@ Got 496 notices:
   64, "Unexpected leading space(s) after break", characterIndex, excerpt, location: ourLocation	from field-text-check.js line 155
   63, "Unexpected leading space(s) after line break", characterIndex, excerpt, location: ourLocation	from field-text-check.js line 160
   50, "Is this quote/occurrence correct???", details: `Occurrence=$occurrence`, excerpt: fieldText, location: ourLocation	from orig-quote-check.js line 305
-  32, `Untested general link`, details: "please manually double-check link—probably no problem", excerpt: totalLink, location: ourLocation	from notes-links-check.js line 1,092
+  32, `Untested general/outside link`, details: "please manually double-check link—probably no problem", excerpt: totalLink, location: ourLocation	from notes-links-check.js line 1,092
   20, "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked", location: ourLocation	from tn-tsv9-table-check.js line 263
   20, "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked", location: ourLocation	from twl-tsv6-table-check.js line 252
   20, "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked", location: ourLocation	from notes-tsv7-table-check.js line 252

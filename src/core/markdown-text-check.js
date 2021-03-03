@@ -7,7 +7,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert, dataAssert, debugLog } from './utilities';
 
 
-const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.7.0';
+const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.7.1';
 
 
 /**
@@ -284,7 +284,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
                 addNotice(notice);
             }
             if (nextLine?.length !== 0) {
-                const notice = { priority: 252, message: "Markdown headers should be followed by a blank line", lineNumber: n, location: ourLocation };
+                const notice = { priority: 251, message: "Markdown headers should be followed by a blank line", lineNumber: n, location: ourLocation };
                 if (textOrFileName === 'Note' || textOrFileName === 'OccurrenceNote')
                     notice.details = `markdown line ${n}`;
                 addNotice(notice);

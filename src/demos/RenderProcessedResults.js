@@ -1,6 +1,7 @@
 import React from 'react';
 import { forwardRef } from 'react';
-import { parameterAssert, userLog } from '../core/utilities';
+// eslint-disable-next-line no-unused-vars
+import { parameterAssert, userLog, debugLog } from '../core/utilities';
 
 // NOTE: The following line is currently giving compile warnings -- a problem in a dependency it seems
 import MaterialTable from 'material-table';
@@ -41,7 +42,7 @@ const tableIcons = {
 };
 
 
-// const RENDER_PROCESSED_RESULTS_VERSION = '0.5.11';
+// const RENDER_PROCESSED_RESULTS_VERSION = '0.6.0';
 
 
 export function RenderSuccesses({ username, results }) {
@@ -257,7 +258,7 @@ function RenderFileDetails({ username, repoName, branch, filename, lineNumber, r
     // debugLog(`RenderFileDetails(${repoName}, ${branch}, ${filename}, ${lineNumber}, ${rowID}, ${fieldName})`);
     if (!repoName && !filename && !lineNumber && !rowID && !fieldName)
         return null; // They're all undefined or blank!
-    if (!branch) branch = repoName?.endsWith('2')? 'newFormat':'master'; // default but with TEMP code for newFormat
+    if (!branch) branch = repoName?.endsWith('2') ? 'newFormat' : 'master'; // default but with TEMP code for newFormat
     // debugLog(`RenderFileDetails2 ${repoName}, ${filename}, ${lineNumber}`);
     let resultStart = '', lineResult = '', resultEnd = '', fileLineLink = '', fileLink = '';
     if (repoName && repoName.length) resultStart += ` in ${repoName} repository`;
@@ -287,6 +288,29 @@ function RenderFileDetails({ username, repoName, branch, filename, lineNumber, r
     else if (fileLink) return <>{resultStart} in file <a rel="noopener noreferrer" target="_blank" href={fileLink}>{filename}</a>{resultEnd}</>;
     else return <>{resultStart}<b>{lineResult}</b>{resultEnd}</>;
 }
+// end of RenderFileDetails
+
+function RenderExcerpt({ excerpt, message }) {
+    // debugLog(`RenderExcerpt(${excerpt}, ${message})`);
+    // NOTE: These message strings must match notes-links-check.js (priority 82, and priority 32,)
+    // Note that messages might start with a repo code, e.g., "TN Actual message start"
+    if (message.endsWith("Untested general/outside link")
+        || message.endsWith("Error loading general link")
+        || message.endsWith("Should http link be https")) {
+        // debugLog(`Here1 RenderExcerpt(${excerpt}, ${message})`);
+        if (excerpt && excerpt[0] === '[' && excerpt.slice(-1) === ')') {
+            // debugLog(`Here2 RenderExcerpt(${excerpt}, ${message})`);
+            const ix = excerpt.indexOf('](');
+            const displayPart = excerpt.substring(1, ix); // Start after the [ unril before the ](
+            const linkPart = excerpt.substring(ix+2, excerpt.length-1); // Step past the ]( but don't include the final )
+            const adjLinkPart = message === "Should http link be https" ? linkPart.replace('http:', 'https:') : linkPart;
+            // debugLog(`RenderExcerpt from '${excerpt}' got ix=${ix}, displayPart='${displayPart}', linkPart='${linkPart}', adjLinkPart='${adjLinkPart}'`);
+            return <><span style={{ color: 'DimGray' }}>` around ►[${displayPart}](<a rel="noopener noreferrer" target="_blank" href={adjLinkPart}>{linkPart}</a>)◄`</span></>
+        }
+    }
+    return <><span style={{ color: 'DimGray' }}>{excerpt ? ` around ►${excerpt}◄` : ""}</span></>
+}
+// end of RenderExcerpt
 
 function RenderSuccessesColored({ results }) {
     // Display our array of success message strings in a nicer format
@@ -347,7 +371,7 @@ function RenderProcessedArray({ arrayType, results }) {
                     <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
                     <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} branch={listEntry.branch} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
                     {listEntry.characterIndex > 0 ? " (at character " + (listEntry.characterIndex + 1) + ")" : ""}
-                    <span style={{ color: 'DimGray' }}>{listEntry.excerpt ? ` around ►${listEntry.excerpt}◄` : ""}</span>
+                    <RenderExcerpt excerpt={listEntry.excerpt} message={listEntry.message} />
                     {listEntry.location}
                     <RenderPriority entry={listEntry} />
                 </li>;
@@ -375,7 +399,7 @@ function RenderGivenArray({ array, color }) {
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
                 <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} branch={listEntry.branch} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
                 {listEntry.characterIndex !== undefined && listEntry.characterIndex >= 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
-                <span style={{ color: 'DimGray' }}>{listEntry.excerpt ? ` around ►${listEntry.excerpt}◄` : ""}</span>
+                <RenderExcerpt excerpt={listEntry.excerpt} message={listEntry.message} />
                 {listEntry.location}
                 <RenderPriority entry={listEntry} />
             </li>;
@@ -413,7 +437,7 @@ function RenderWarningsGradient({ results }) {
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
                 <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} branch={listEntry.branch} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
                 {listEntry.characterIndex !== undefined && listEntry.characterIndex >= 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
-                <span style={{ color: 'DimGray' }}>{listEntry.excerpt ? ` around ►${listEntry.excerpt}◄` : ""}</span>
+                <RenderExcerpt excerpt={listEntry.excerpt} message={listEntry.message} />
                 {listEntry.location}
                 <RenderPriority entry={listEntry} />
             </li>;
