@@ -1,11 +1,11 @@
 import * as books from './books/books';
-import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
-import { checkTN_TSVDataRow } from './tn-table-row-check';
+import { DEFAULT_EXCERPT_LENGTH } from './text-handling-functions'
+import { checkTN_TSV9DataRow } from './tn-tsv9-row-check';
 import { removeDisabledNotices } from './disabled-notices';
 import { debugLog, parameterAssert } from './utilities';
 
 
-const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.3.3';
+const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.4.0';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -14,14 +14,16 @@ const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOr
 /**
  *
  * @param {string} languageCode
+ * @param {string} repoCode - 'TN' -- keeps parameter set consistent with other similar functions
  * @param {string} bookID
  * @param {string} filename
  * @param {string} tableText
  * @param {string} givenLocation
  * @param {Object} checkingOptions
  */
-export async function checkTN_TSVText(languageCode, bookID, filename, tableText, givenLocation, checkingOptions) {
-    /* This function is optimised for checking the entire file, i.e., all rows.
+export async function checkTN_TSV9Table(languageCode, repoCode, bookID, filename, tableText, givenLocation, checkingOptions) {
+    /*
+    This function is optimised for checking the entire file, i.e., all rows.
 
       It also has the advantage of being able to compare one row with the previous one.
 
@@ -29,17 +31,18 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
 
      Returns a result object containing a successList and a noticeList
      */
-    // functionLog(`checkTN_TSVText(${languageCode}, ${bookID}, ${filename}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
-    parameterAssert(languageCode !== undefined, "checkTN_TSVText: 'languageCode' parameter should be defined");
-    parameterAssert(typeof languageCode === 'string', `checkTN_TSVText: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
-    parameterAssert(bookID !== undefined, "checkTN_TSVText: 'bookID' parameter should be defined");
-    parameterAssert(typeof bookID === 'string', `checkTN_TSVText: 'bookID' parameter should be a string not a '${typeof bookID}'`);
-    parameterAssert(bookID.length === 3, `checkTN_TSVText: 'bookID' parameter should be three characters long not ${bookID.length}`);
-    parameterAssert(bookID.toUpperCase() === bookID, `checkTN_TSVText: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-    parameterAssert(books.isValidBookID(bookID), `checkTN_TSVText: '${bookID}' is not a valid USFM book identifier`);
-    parameterAssert(givenLocation !== undefined, "checkTN_TSVText: 'givenLocation' parameter should be defined");
-    parameterAssert(typeof givenLocation === 'string', `checkTN_TSVText: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
-    parameterAssert(checkingOptions !== undefined, "checkTN_TSVText: 'checkingOptions' parameter should be defined");
+    // functionLog(`checkTN_TSV9Table(${languageCode}, ${bookID}, ${filename}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
+    parameterAssert(languageCode !== undefined, "checkTN_TSV9Table: 'languageCode' parameter should be defined");
+    parameterAssert(typeof languageCode === 'string', `checkTN_TSV9Table: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    parameterAssert(repoCode === 'TN', `checkTN_TSV9Table: repoCode expected 'TN' not '${repoCode}'`);
+    parameterAssert(bookID !== undefined, "checkTN_TSV9Table: 'bookID' parameter should be defined");
+    parameterAssert(typeof bookID === 'string', `checkTN_TSV9Table: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+    parameterAssert(bookID.length === 3, `checkTN_TSV9Table: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    parameterAssert(bookID.toUpperCase() === bookID, `checkTN_TSV9Table: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+    parameterAssert(books.isValidBookID(bookID), `checkTN_TSV9Table: '${bookID}' is not a valid USFM book identifier`);
+    parameterAssert(givenLocation !== undefined, "checkTN_TSV9Table: 'givenLocation' parameter should be defined");
+    parameterAssert(typeof givenLocation === 'string', `checkTN_TSV9Table: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
+    parameterAssert(checkingOptions !== undefined, "checkTN_TSV9Table: 'checkingOptions' parameter should be defined");
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -51,7 +54,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
      * @param {string} successString
      */
     function addSuccessMessage(successString) {
-        // functionLog(`checkTN_TSVText success: ${successString}`);
+        // functionLog(`checkTN_TSV9Table success: ${successString}`);
         ttResult.successList.push(successString);
     }
     /**
@@ -59,7 +62,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
      * @param {Object} noticeObject
      */
     function addNoticePartial(noticeObject) {
-        // functionLog(`checkTN_TSVText notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // functionLog(`checkTN_TSV9Table notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "TSV addNoticePartial: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `TSV addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "TSV addNoticePartial: 'message' parameter should be defined");
@@ -70,31 +73,31 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
         if (noticeObject.V) parameterAssert(typeof noticeObject.V === 'string', `TSV addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
         // parameterAssert(characterIndex !== undefined, "TSV addNoticePartial: 'characterIndex' parameter should be defined");
         if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `TSV addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // parameterAssert(extract !== undefined, "TSV addNoticePartial: 'extract' parameter should be defined");
-        if (noticeObject.extract) parameterAssert(typeof noticeObject.extract === 'string', `TSV addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        // parameterAssert(excerpt !== undefined, "TSV addNoticePartial: 'excerpt' parameter should be defined");
+        if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `TSV addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         parameterAssert(noticeObject.location !== undefined, "TSV addNoticePartial: 'location' parameter should be defined");
         parameterAssert(typeof noticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
-        if (noticeObject.debugChain) noticeObject.debugChain = `checkTN_TSVText ${noticeObject.debugChain}`;
+        if (noticeObject.debugChain) noticeObject.debugChain = `checkTN_TSV9Table ${noticeObject.debugChain}`;
         // NOTE: We only add the repoCode here because this function is called directly by tC Create
         //          and notice disabling currently depends on knowing the repoCode
-        if (noticeObject.repoCode) debugLog(`checkTN_TSVText.addNoticePartial already had repoCode=${noticeObject.repoCode} (will be lost)`);
+        if (noticeObject.repoCode) debugLog(`checkTN_TSV9Table.addNoticePartial already had repoCode=${noticeObject.repoCode} (will be lost)`);
         ttResult.noticeList.push({ ...noticeObject, bookID, filename, repoCode: 'TN' });
     }
 
 
-    let extractLength;
+    let excerptLength;
     try {
-        extractLength = checkingOptions?.extractLength;
+        excerptLength = checkingOptions?.excerptLength;
     } catch (ttcError) { }
-    if (typeof extractLength !== 'number' || isNaN(extractLength)) {
-        extractLength = DEFAULT_EXTRACT_LENGTH;
-        // debugLog(`Using default extractLength=${extractLength}`);
+    if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
+        excerptLength = DEFAULT_EXCERPT_LENGTH;
+        // debugLog(`Using default excerptLength=${excerptLength}`);
     }
     // else
-    // debugLog(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
-    // const halfLength = Math.floor(extractLength / 2); // rounded down
-    // const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
-    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
+    // const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    // const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+    // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
     let lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook = 0;
@@ -104,7 +107,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
     }
     catch {
         if (!books.isValidBookID(bookID)) // must not be in FRT, BAK, etc.
-            addNoticePartial({ priority: 747, message: "Bad function call: should be given a valid book abbreviation", extract: bookID, location: ` (not '${bookID}')${ourLocation}` });
+            addNoticePartial({ priority: 747, message: "Bad function call: should be given a valid book abbreviation", excerpt: bookID, location: ` (not '${bookID}')${ourLocation}` });
     }
 
     let lines = tableText.split('\n');
@@ -114,22 +117,22 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
     let rowIDList = [], uniqueRowList = [];
     let numVersesThisChapter = 0;
     for (let n = 0; n < lines.length; n++) {
-        // functionLog(`checkTN_TSVText checking line ${n}: ${JSON.stringify(lines[n])}`);
+        // functionLog(`checkTN_TSV9Table checking line ${n}: ${JSON.stringify(lines[n])}`);
         if (n === 0) {
             if (lines[0] === EXPECTED_TN_HEADING_LINE)
                 addSuccessMessage(`Checked TSV header ${ourLocation}`);
             else
-                addNoticePartial({ priority: 746, message: "Bad TSV header", lineNumber: n + 1, location: `${ourLocation}: '${lines[0]}'` });
+                addNoticePartial({ priority: 988, message: "Bad TSV header", details: `expected '${EXPECTED_TN_HEADING_LINE}'`, excerpt: lines[0], lineNumber: 1, location: ourLocation });
         }
         else // not the header
         {
             let fields = lines[n].split('\t');
             if (fields.length === NUM_EXPECTED_TN_TSV_FIELDS) {
                 // eslint-disable-next-line no-unused-vars
-                const [B, C, V, rowID, supportReference, origQuote, occurrence, _GLQuote, _occurrenceNote] = fields;
+                const [B, C, V, rowID, supportReference, quote, occurrence, _GLQuote, _occurrenceNote] = fields;
 
                 // Use the row check to do most basic checks
-                const drResultObject = await checkTN_TSVDataRow(languageCode, lines[n], bookID, C, V, ourLocation, checkingOptions);
+                const drResultObject = await checkTN_TSV9DataRow(languageCode, repoCode, lines[n], bookID, C, V, ourLocation, checkingOptions);
                 // Choose only ONE of the following
                 // This is the fast way of append the results from this field
                 // result.noticeList = result.noticeList.concat(firstResult.noticeList);
@@ -165,7 +168,7 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
 
                 // TODO: Check if we need this at all (even though tC 3.0 can’t display these "duplicate" notes)
                 // Check for duplicate notes
-                const uniqueID = C + V + supportReference + origQuote + occurrence; // This combination should not be repeated
+                const uniqueID = C + V + supportReference + quote + occurrence; // This combination should not be repeated
                 // if (uniqueRowList.includes(uniqueID))
                 //     addNoticePartial({ priority: 880, C, V, message: `Duplicate note`, rowID, lineNumber: n + 1, location: ourLocation });
                 // if (uniqueRowList.includes(uniqueID))
@@ -186,9 +189,9 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
                         if (C !== lastC)
                             numVersesThisChapter = books.versesInChapter(lowercaseBookID, intC);
                         if (intC === 0)
-                            addNoticePartial({ priority: 551, C, V, message: `Invalid zero chapter number`, rowID, lineNumber: n + 1, extract: C, location: ourLocation });
+                            addNoticePartial({ priority: 551, C, V, message: `Invalid zero chapter number`, rowID, lineNumber: n + 1, excerpt: C, location: ourLocation });
                         if (intC > numChaptersThisBook)
-                            addNoticePartial({ priority: 737, C, V, message: "Invalid large chapter number", rowID, lineNumber: n + 1, extract: C, location: ourLocation });
+                            addNoticePartial({ priority: 737, C, V, message: "Invalid large chapter number", rowID, lineNumber: n + 1, excerpt: C, location: ourLocation });
                         if (/^\d+$/.test(lastC)) {
                             let lastintC = Number(lastC);
                             if (intC < lastintC)
@@ -208,13 +211,13 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
                     else if (/^\d+$/.test(V)) {
                         let intV = Number(V);
                         if (intV === 0 && bookID !== 'PSA') // Psalms have \d titles
-                            addNoticePartial({ priority: 552, C, V, message: "Invalid zero verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, extract: V, location: ourLocation });
+                            addNoticePartial({ priority: 552, C, V, message: "Invalid zero verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
                         if (intV > numVersesThisChapter)
-                            addNoticePartial({ priority: 734, C, V, message: "Invalid large verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, extract: V, location: ourLocation });
+                            addNoticePartial({ priority: 734, C, V, message: "Invalid large verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
                         if (/^\d+$/.test(lastV)) {
                             let lastintV = Number(lastV);
                             if (C === lastC && intV < lastintV)
-                                addNoticePartial({ priority: 733, C, V, message: "Receding verse number", details: `'${V}' after '${lastV} for chapter ${C}`, rowID, lineNumber: n + 1, extract: V, location: ourLocation });
+                                addNoticePartial({ priority: 733, C, V, message: "Receding verse number", details: `'${V}' after '${lastV} for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
                             // else if (intV > lastintV + 1)
                             //   addNoticePartial({priority:556, "Skipped verses with '${V}' verse number after '${lastV}'${withString}`);
                         }
@@ -245,13 +248,13 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
                     try { C = fields[1]; } catch { }
                     try { V = fields[2]; } catch { }
                     try { rowID = fields[3]; } catch { }
-                    addNoticePartial({ priority: 988, message: `Wrong number of tabbed fields (expected ${NUM_EXPECTED_TN_TSV_FIELDS})`, extract: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, C, V, rowID, lineNumber: n + 1, location: ourLocation });
+                    addNoticePartial({ priority: 983, message: `Wrong number of tabbed fields (expected ${NUM_EXPECTED_TN_TSV_FIELDS})`, excerpt: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, C, V, rowID, lineNumber: n + 1, location: ourLocation });
                 }
         }
     }
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        // functionLog(`checkTN_TSVText: calling removeDisabledNotices(${ttResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        // functionLog(`checkTN_TSV9Table: calling removeDisabledNotices(${ttResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
         ttResult.noticeList = removeDisabledNotices(ttResult.noticeList);
     }
 
@@ -260,12 +263,12 @@ export async function checkTN_TSVText(languageCode, bookID, filename, tableText,
         addNoticePartial({ priority: 20, message: "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked", location: ourLocation });
 
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}.`);
-    if (ttResult.noticeList)
-        addSuccessMessage(`checkTN_TSVText v${TN_TABLE_TEXT_VALIDATOR_VERSION_STRING} finished with ${ttResult.noticeList.length ? ttResult.noticeList.length.toLocaleString() : "zero"} notice${ttResult.noticeList.length === 1 ? '' : 's'}`);
+    if (ttResult.noticeList.length)
+        addSuccessMessage(`checkTN_TSV9Table v${TN_TABLE_TEXT_VALIDATOR_VERSION_STRING} finished with ${ttResult.noticeList.length ? ttResult.noticeList.length.toLocaleString() : "zero"} notice${ttResult.noticeList.length === 1 ? '' : 's'}`);
     else
-        addSuccessMessage(`No errors or warnings found by checkTN_TSVText v${TN_TABLE_TEXT_VALIDATOR_VERSION_STRING}`)
-    // debugLog(`  checkTN_TSVText returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
-    // debugLog("checkTN_TSVText result is", JSON.stringify(result));
+        addSuccessMessage(`No errors or warnings found by checkTN_TSV9Table v${TN_TABLE_TEXT_VALIDATOR_VERSION_STRING}`)
+    // debugLog(`  checkTN_TSV9Table returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
+    // debugLog("checkTN_TSV9Table result is", JSON.stringify(result));
     return ttResult;
 }
-// end of checkTN_TSVText function
+// end of checkTN_TSV9Table function

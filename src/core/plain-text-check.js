@@ -1,27 +1,35 @@
-import { DEFAULT_EXTRACT_LENGTH, OPEN_CLOSE_PUNCTUATION_PAIRS, PAIRED_PUNCTUATION_OPENERS, PAIRED_PUNCTUATION_CLOSERS, isWhitespace, countOccurrences } from './text-handling-functions'
+import { DEFAULT_EXCERPT_LENGTH, OPEN_CLOSE_PUNCTUATION_PAIRS, PAIRED_PUNCTUATION_OPENERS, PAIRED_PUNCTUATION_CLOSERS, isWhitespace, countOccurrences } from './text-handling-functions'
 import { checkTextField } from './field-text-check';
 import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert } from './utilities';
 
 
-const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.3.11';
+const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.4.0';
 
 
 /**
  *
  * @param {string} textType 'markdown', 'USFM', 'YAML', 'text', or 'raw'
+ * @param {string} repoCode -- e.g., 'TN' or 'TQ2', etc.
  * @param {string} textName
  * @param {string} plainText -- text to be checked
  * @param {string} givenLocation
  * @param {Object} checkingOptions
  */
-export function checkPlainText(textType, textName, plainText, givenLocation, checkingOptions) {
+export function checkPlainText(languageCode, repoCode, textType, textName, plainText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire text, i.e., all lines.
         It is used in checkFileContents() in book-package-check.js
+
+    TODO: Should languageCode also be a parameter here? (affects other programs using the API)
 
      Returns a result object containing a successList and a noticeList
      */
     // functionLog(`checkPlainText(${textName}, (${plainText.length} chars), ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
+    parameterAssert(languageCode !== undefined, "checkPlainText: 'languageCode' parameter should be defined");
+    parameterAssert(typeof languageCode === 'string', `checkPlainText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
+    parameterAssert(languageCode !== 'markdown' && languageCode !== 'USFM' && languageCode !== 'YAML' && languageCode !== 'text' && languageCode !== 'raw' && languageCode !== 'unfoldingWord', `checkPlainText: 'languageCode' ${languageCode} parameter should be not be '${languageCode}'`);
+    parameterAssert(repoCode !== undefined, "checkPlainText: 'repoCode' parameter should be defined");
+    parameterAssert(typeof repoCode === 'string', `checkPlainText: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
     parameterAssert(textType !== undefined, "checkPlainText: 'textType' parameter should be defined");
     parameterAssert(typeof textType === 'string', `checkPlainText: 'textType' parameter should be a string not a '${typeof textType}': ${textType}`);
     parameterAssert(textType === 'markdown' || textType === 'USFM' || textType === 'YAML' || textType === 'text' || textType === 'raw', `checkPlainText: unrecognised 'textType' parameter: '${textType}'`);
@@ -34,19 +42,19 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
-    let extractLength;
+    let excerptLength;
     try {
-        extractLength = checkingOptions?.extractLength;
+        excerptLength = checkingOptions?.excerptLength;
     } catch (ptcError) { }
-    if (typeof extractLength !== 'number' || isNaN(extractLength)) {
-        extractLength = DEFAULT_EXTRACT_LENGTH;
-        // debugLog(`Using default extractLength=${extractLength}`);
+    if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
+        excerptLength = DEFAULT_EXCERPT_LENGTH;
+        // debugLog(`Using default excerptLength=${excerptLength}`);
     }
     // else
-    // debugLog(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
-    const halfLength = Math.floor(extractLength / 2); // rounded down
-    const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
-    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
+    const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+    // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
     const cptResult = { successList: [], noticeList: [] };
 
@@ -56,14 +64,14 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
     }
     function addNotice(noticeObject) {
         // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
-        // functionLog(`checkPlainText notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // functionLog(`checkPlainText notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "cPT addNotice: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `cPT addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "cPT addNotice: 'message' parameter should be defined");
         parameterAssert(typeof noticeObject.message === 'string', `cPT addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
         if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cPT addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // parameterAssert(extract!==undefined, "cPT addNotice: 'extract' parameter should be defined");
-        if (noticeObject.extract) parameterAssert(typeof noticeObject.extract === 'string', `cPT addNotice: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        // parameterAssert(excerpt!==undefined, "cPT addNotice: 'excerpt' parameter should be defined");
+        if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `cPT addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         parameterAssert(noticeObject.location !== undefined, "cPT addNotice: 'location' parameter should be defined");
         parameterAssert(typeof noticeObject.location === 'string', `cPT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
@@ -94,7 +102,7 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
         parameterAssert(optionalFieldLocation !== undefined, "cPT ourCheckTextField: 'optionalFieldLocation' parameter should be defined");
         parameterAssert(typeof optionalFieldLocation === 'string', `cPT ourCheckTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
-        const resultObject = checkTextField(textType, '', fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
+        const resultObject = checkTextField(languageCode, repoCode, textType, '', fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -126,33 +134,33 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
 
     let characterIndex;
     if ((characterIndex = plainText.indexOf('<<<<<<<')) >= 0) {
-        const iy = characterIndex + halfLength; // Want extract to focus more on what follows
-        const extract = (iy > halfLength ? '…' : '') + plainText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < plainText.length ? '…' : '')
-        addNotice({ priority: 993, message: "Unresolved GIT conflict", characterIndex, extract, location: ourLocation });
+        const iy = characterIndex + excerptHalfLength; // Want excerpt to focus more on what follows
+        const excerpt = (iy > excerptHalfLength ? '…' : '') + plainText.substring(iy - excerptHalfLength, iy + excerptHalfLengthPlus).replace(/ /g, '␣') + (iy + excerptHalfLengthPlus < plainText.length ? '…' : '')
+        addNotice({ priority: 993, message: "Unresolved GIT conflict", characterIndex, excerpt, location: ourLocation });
     } else if ((characterIndex = plainText.indexOf('=======')) >= 0) {
-        const iy = characterIndex + halfLength; // Want extract to focus more on what follows
-        const extract = (iy > halfLength ? '…' : '') + plainText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < plainText.length ? '…' : '')
-        addNotice({ priority: 992, message: "Unresolved GIT conflict", characterIndex, extract, location: ourLocation });
+        const iy = characterIndex + excerptHalfLength; // Want excerpt to focus more on what follows
+        const excerpt = (iy > excerptHalfLength ? '…' : '') + plainText.substring(iy - excerptHalfLength, iy + excerptHalfLengthPlus).replace(/ /g, '␣') + (iy + excerptHalfLengthPlus < plainText.length ? '…' : '')
+        addNotice({ priority: 992, message: "Unresolved GIT conflict", characterIndex, excerpt, location: ourLocation });
     } else if ((characterIndex = plainText.indexOf('>>>>>>>>')) >= 0) {
-        const iy = characterIndex + halfLength; // Want extract to focus more on what follows
-        const extract = (iy > halfLength ? '…' : '') + plainText.substring(iy - halfLength, iy + halfLengthPlus).replace(/ /g, '␣') + (iy + halfLengthPlus < plainText.length ? '…' : '')
-        addNotice({ priority: 991, message: "Unresolved GIT conflict", characterIndex, extract, location: ourLocation });
+        const iy = characterIndex + excerptHalfLength; // Want excerpt to focus more on what follows
+        const excerpt = (iy > excerptHalfLength ? '…' : '') + plainText.substring(iy - excerptHalfLength, iy + excerptHalfLengthPlus).replace(/ /g, '␣') + (iy + excerptHalfLengthPlus < plainText.length ? '…' : '')
+        addNotice({ priority: 991, message: "Unresolved GIT conflict", characterIndex, excerpt, location: ourLocation });
     }
 
     if (plainText[0] === '\n') {
         characterIndex = 0;
-        const extract = (plainText.length > extractLength ? '…' : '') + plainText.slice(-extractLength).replace(/ /g, '␣').replace(/\n/g, '\\n')
-        addNotice({ priority: 539, message: "File starts with empty line", characterIndex, extract, location: ourLocation });
+        const excerpt = (plainText.length > excerptLength ? '…' : '') + plainText.slice(-excerptLength).replace(/ /g, '␣').replace(/\n/g, '\\n')
+        addNotice({ priority: 539, message: "File starts with empty line", characterIndex, excerpt, location: ourLocation });
     }
     if (!plainText.endsWith('\n') && !textName.endsWith('title.md')) {
         characterIndex = plainText.length - 1;
-        const extract = (plainText.length > extractLength ? '…' : '') + plainText.slice(-extractLength).replace(/ /g, '␣').replace(/\n/g, '\\n')
-        addNotice({ priority: 538, message: "File ends without newline character", characterIndex, extract, location: ourLocation });
+        const excerpt = (plainText.length > excerptLength ? '…' : '') + plainText.slice(-excerptLength).replace(/ /g, '␣').replace(/\n/g, '\\n')
+        addNotice({ priority: 538, message: "File ends without newline character", characterIndex, excerpt, location: ourLocation });
     }
     else if (plainText.endsWith('\n\n')) {
         characterIndex = plainText.length - 2;
-        const extract = (plainText.length > extractLength ? '…' : '') + plainText.slice(-extractLength).replace(/ /g, '␣').replace(/\n/g, '\\n')
-        addNotice({ priority: 138, message: "File ends with additional blank line(s)", characterIndex, extract, location: ourLocation });
+        const excerpt = (plainText.length > excerptLength ? '…' : '') + plainText.slice(-excerptLength).replace(/ /g, '␣').replace(/\n/g, '\\n')
+        addNotice({ priority: 138, message: "File ends with additional blank line(s)", characterIndex, excerpt, location: ourLocation });
     }
 
     const lines = plainText.split('\n');
@@ -190,16 +198,16 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
                         } else // something is still open and this isn’t a match -- might just be consequential error
                             if (char !== '’' // Closing single quote is also used as apostrophe in English
                                 && (textType !== 'markdown' || char !== '>' || characterIndex > 4)) { // Markdown uses > or >> or > > or > > > for block indents so ignore these -- might just be consequential error
-                                const extract = (characterIndex > halfLength ? '…' : '') + line.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < line.length ? '…' : '')
+                                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + line.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < line.length ? '…' : '')
                                 const details = `'${lastEntry.char}' opened on line ${lastEntry.n} character ${lastEntry.x + 1}`;
-                                addNotice({ priority: 777, message: `Bad punctuation nesting: ${char} closing character doesn’t match`, details, lineNumber: n, characterIndex, extract, location: ourLocation });
+                                addNotice({ priority: 777, message: `Bad punctuation nesting: ${char} closing character doesn’t match`, details, lineNumber: n, characterIndex, excerpt, location: ourLocation });
                                 // debugLog(`  ERROR 777: mismatched characters: ${details}`);
                             }
                     } else // Closed something unexpectedly without an opener
                         if (char !== '’' // Closing single quote is also used as apostrophe in English
                             && (textType !== 'markdown' || char !== '>')) { // Markdown uses > for block indents so ignore these
-                            const extract = (characterIndex > halfLength ? '…' : '') + line.substring(characterIndex - halfLength, characterIndex + halfLengthPlus).replace(/ /g, '␣') + (characterIndex + halfLengthPlus < line.length ? '…' : '')
-                            addNotice({ priority: 774, message: `Unexpected ${char} closing character (no matching opener)`, lineNumber: n, characterIndex, extract, location: ourLocation });
+                            const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + line.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < line.length ? '…' : '')
+                            addNotice({ priority: 774, message: `Unexpected ${char} closing character (no matching opener)`, lineNumber: n, characterIndex, excerpt, location: ourLocation });
                             // debugLog(`  ERROR 774: closed with nothing open: ${char}`);
                         }
                 }
@@ -215,9 +223,9 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
     if (openMarkers.length) {
         const [{ char, n, x }] = openMarkers.slice(-1);
         const line = lines[n - 1];
-        const extract = (x > halfLength ? '…' : '') + line.substring(x - halfLength, x + halfLengthPlus).replace(/ /g, '␣') + (x + halfLengthPlus < line.length ? '…' : '')
+        const excerpt = (x > excerptHalfLength ? '…' : '') + line.substring(x - excerptHalfLength, x + excerptHalfLengthPlus).replace(/ /g, '␣') + (x + excerptHalfLengthPlus < line.length ? '…' : '')
         const details = openMarkers.length > 1 ? `${openMarkers.length} unclosed set${openMarkers.length === 1 ? '' : 's'}` : null;
-        addNotice({ priority: 768, message: `At end of text with unclosed ${char} opening character`, details, lineNumber: n, characterIndex: x, extract, location: ourLocation });
+        addNotice({ priority: 768, message: `At end of text with unclosed ${char} opening character`, details, lineNumber: n, characterIndex: x, excerpt, location: ourLocation });
     }
 
     // TODO: Is this a duplicate of the above section about nesting?
@@ -241,7 +249,7 @@ export function checkPlainText(textType, textName, plainText, givenLocation, che
     }
 
     addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length === 1 ? '' : 's'}${ourLocation}.`);
-    if (cptResult.noticeList)
+    if (cptResult.noticeList.length)
         addSuccessMessage(`checkPlainText v${PLAIN_TEXT_VALIDATOR_VERSION_STRING} finished with ${cptResult.noticeList.length ? cptResult.noticeList.length.toLocaleString() : "zero"} notice${cptResult.noticeList.length === 1 ? '' : 's'}`);
     else
         addSuccessMessage(`No errors or warnings found by checkPlainText v${PLAIN_TEXT_VALIDATOR_VERSION_STRING}`)

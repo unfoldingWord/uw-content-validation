@@ -183,7 +183,7 @@ projects:
     path: './67-REV.usfm'
     categories: [ 'bible-nt' ]
 `;
-// This is an extract from a media.yaml file:
+// This is an excerpt from a media.yaml file:
 const textG2 = `resource:
   version: '{latest}'
   media:
@@ -221,7 +221,7 @@ const chosenText = textG2;
 const chosenTextName = 'textG2';
 const checkingOptions = {};
 
-const rawResults = checkYAMLText('en', chosenTextName, chosenText, 'in YAML data that was supplied', checkingOptions);
+const rawResults = checkYAMLText('en', '', chosenTextName, chosenText, 'in YAML data that was supplied', checkingOptions);
 
 <>
 <b>YAML contents</b>: <RenderLines text={chosenText} />

@@ -1,6 +1,6 @@
 ## TN TSV Table Row Check Sandbox
 
-This function checks one TranslationNotes tab-separated line for typical formatting errors.
+This function checks one Translation Notes (TN) tab-separated (9-columns) line for typical formatting errors.
 
 It returns a list of success messages and a list of notice components. (There is always a priority number in the range 0..999 and the main message string, as well as other details to help locate the error as available.)
 
@@ -11,12 +11,12 @@ These raw notice components can then be filtered and/or sorted as required by th
 //        Simply click inside here and add, change, or delete text as required.
 
 import React, { useState, useEffect } from 'react';
-import { checkTN_TSVDataRow } from './tn-table-row-check';
+import { checkTN_TSV9DataRow } from './tn-tsv9-row-check';
 import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Empty, Header, Nonsense, Good, Bad, Very bad, and Actual line samples
 const lineE = "";
-const lineH = "Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote";
+const lineH = "Book\tChapter\tVerse\tID\tSupportReference\tQuote\tOccurrence\tGLQuote\tOccurrenceNote";
 const lineN = "Peace on Earth, good will to all men/people!";
 const lineG = "GEN\t2\t3\tw3r5\t\t1\t\tThis is an  optional note";
 const lineB1 = "EXO\t2\t3\tw3r5\t\t1\t\t<br>Boo";
@@ -49,12 +49,12 @@ const data = {
   givenLocation : "that was supplied",
 }
 
-function CheckTNTSVRow(props) {
+function OurCheckTNTSVRow(props) {
   const { languageCode, bookID, C, V, tableLine, tableLineName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
 
-  // We need the following construction because checkTN_TSVDataRow is an ASYNC function
+  // We need the following construction because checkTN_TSV9DataRow is an ASYNC function
   useEffect(() => {
     // Use an IIFE (Immediately Invoked Function Expression)
     //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
@@ -62,7 +62,7 @@ function CheckTNTSVRow(props) {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {tableLineName} <b>{bookID}</b>…</p>);
       const checkingOptions = {};
-      const rawResults = await checkTN_TSVDataRow(languageCode, tableLine, bookID, C, V, givenLocation, checkingOptions);
+      const rawResults = await checkTN_TSV9DataRow(languageCode, 'TN', tableLine, bookID, C, V, givenLocation, checkingOptions);
       setResults(
         <div>
           <b>Check</b> {tableLineName}: "{tableLine.substr(0,256)}…"<br/><br/>
@@ -73,7 +73,7 @@ function CheckTNTSVRow(props) {
   }, []); // end of useEffect part
 
   return results;
-} // end of CheckTNTSVRow function
+} // end of OurCheckTNTSVRow function
 
-<CheckTNTSVRow data={data}/>
+<OurCheckTNTSVRow data={data}/>
 ```

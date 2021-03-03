@@ -5,10 +5,10 @@ import { clearCaches, clearCheckedArticleCache, ourParseInt, preloadReposIfNeces
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderTotals } from '../RenderProcessedResults';
 import { checkBookPackage } from './checkBookPackage';
-import { userLog, parameterAssert } from '../../core/utilities';
+import { userLog, debugLog, parameterAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.3.7';
+// const BP_VALIDATOR_VERSION_STRING = '0.4.0';
 
 
 function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
@@ -35,20 +35,20 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
 
     const checkingOptions = { // Uncomment any of these to test them
         dataSet: dataSet, // Can be 'OLD' (Markdown, etc.), 'NEW' (TSV only), or 'BOTH', or 'DEFAULT'
-        // extractLength: 25, // default is 15
+        // excerptLength: 25, // default is 15
         checkManifestFlag: true,
         checkReadmeFlag: true,
         checkLicenseFlag: true,
         suppressNoticeDisablingFlag: true, // Leave this one as true (otherwise demo checks are less efficient)
     };
     // Or this allows the parameters to be specified as a BookPackageCheck property
-    if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
+    if (props.excerptLength) checkingOptions.excerptLength = ourParseInt(props.excerptLength);
     if (props.cutoffPriorityLevel) checkingOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
     if (props.disableAllLinkFetchingFlag) checkingOptions.disableAllLinkFetchingFlag = props.disableAllLinkFetchingFlag.toLowerCase() === 'true';
-    if (props.checkLinkedTAArticleFlag) checkingOptions.checkLinkedTAArticleFlag = props.checkLinkedTAArticleFlag.toLowerCase() === 'true';
-    if (props.checkLinkedTWArticleFlag) checkingOptions.checkLinkedTWArticleFlag = props.checkLinkedTWArticleFlag.toLowerCase() === 'true';
-    // functionLog(`checkingOptions.checkLinkedTAArticleFlag ${checkingOptions.checkLinkedTAArticleFlag} from '${props.checkLinkedTAArticleFlag}'`);
-    // functionLog(`checkingOptions.checkLinkedTWArticleFlag ${checkingOptions.checkLinkedTWArticleFlag} from '${props.checkLinkedTWArticleFlag}'`);
+    if (props.disableLinkedTAArticlesCheckFlag) checkingOptions.disableLinkedTAArticlesCheckFlag = props.disableLinkedTAArticlesCheckFlag.toLowerCase() === 'true';
+    if (props.disableLinkedTWArticlesCheckFlag) checkingOptions.disableLinkedTWArticlesCheckFlag = props.disableLinkedTWArticlesCheckFlag.toLowerCase() === 'true';
+    // functionLog(`checkingOptions.disableLinkedTAArticlesCheckFlag ${checkingOptions.disableLinkedTAArticlesCheckFlag} from '${props.disableLinkedTAArticlesCheckFlag}'`);
+    // functionLog(`checkingOptions.disableLinkedTWArticlesCheckFlag ${checkingOptions.disableLinkedTWArticlesCheckFlag} from '${props.disableLinkedTWArticlesCheckFlag}'`);
 
     useEffect(() => {
         // const newProps = { bookID, branch, checkingOptions, languageCode, cutoffPriorityLevel: props.cutoffPriorityLevel, displayType: props.displayType, errorPriorityLevel: props.errorPriorityLevel, maximumSimilarMessages: props.maximumSimilarMessages, sortBy: props.sortBy, username};
@@ -82,19 +82,33 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             else await clearCheckedArticleCache();
 
             // Load whole repos, especially if we are going to check files in manifests
-            let repoPreloadList = ['LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
-            if (dataSet === 'OLD')
-                repoPreloadList = ['LT', 'ST', 'TN', 'TA', 'TW', 'TQ'];
-            else if (dataSet === 'NEW')
-                repoPreloadList = ['LT', 'ST', 'TN2', 'TWL', 'TA', 'TW', 'TQ2'];
-            else if (dataSet === 'BOTH')
-                repoPreloadList = ['LT', 'ST', 'TN', 'TN2', 'TWL', 'TA', 'TW', 'TQ', 'TQ2'];
-            if (bookID !== 'OBS') {
+            let repoPreloadList;
+            if (bookID === 'OBS') {
+                repoPreloadList = ['OBS', 'TN', 'TA', 'TW', 'TQ', 'SN', 'SQ']; // for DEFAULT
+                if (dataSet === 'OLD')
+                    repoPreloadList = ['OBS', 'TN', 'TA', 'TW', 'TQ', 'SN', 'SQ'];
+                else if (dataSet === 'NEW')
+                    repoPreloadList = ['OBS', 'TN2', 'TWL', 'TA', 'TW', 'TQ2', 'SN', 'SQ'];
+                else if (dataSet === 'BOTH')
+                    repoPreloadList = ['OBS', 'TN', 'TN2', 'TWL', 'TA', 'TW', 'TQ', 'TQ2', 'SN', 'SQ'];
+            } else { // not OBS
+                repoPreloadList = ['LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
+                if (dataSet === 'OLD')
+                    repoPreloadList = ['LT', 'ST', 'TN', 'TA', 'TW', 'TQ'];
+                else if (dataSet === 'NEW')
+                    repoPreloadList = ['LT', 'ST', 'TN2', 'TWL', 'TA', 'TW', 'TQ2'];
+                else if (dataSet === 'BOTH')
+                    repoPreloadList = ['LT', 'ST', 'TN', 'TN2', 'TWL', 'TA', 'TW', 'TQ', 'TQ2'];
                 const whichTestament = books.testament(bookID); // returns 'old' or 'new'
                 const origLangRepo = whichTestament === 'old' ? 'UHB' : 'UGNT';
                 repoPreloadList.unshift(origLangRepo);
+                // TODO: Eventually we'll have all books here, so the repos can be included above
+                if (bookID === 'TIT') {
+                    repoPreloadList.push('SN');
+                    repoPreloadList.push('SQ');
+                }
             }
-            // debugLog(`BookPackageCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
+            debugLog(`BookPackageCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
 
             // if (bookID !== 'OBS') { // Preload the reference repos
             setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for <b>{bookID}</b> book package check…</p>);

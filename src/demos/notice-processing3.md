@@ -12,7 +12,7 @@ It should be noted that although the success messages are simple strings, the no
 4. The verse number (if relevant, string or empty string, can be a range, e.g., '22-24')
 5. The main error/warning message (string)
 6. The (zero-based) index of where the error was found on the line. -1 indicates that this field is not helpful/relevant.
-7. A text extract (typically 10 characters) centred about the error. An empty string indicates that this field is not helpful/relevant.
+7. A text excerpt (typically 10 characters) centred about the error. An empty string indicates that this field is not helpful/relevant.
 8. The location of the error, e.g., "line 2 in file GEN.usfm in unfoldingWord/en_ult repo".
 
 Note below that the optional `processOptions` object allows the user to adjust things like the division point between error and warning priorities, and allows low priority or certain notices to simply be dropped, etc. The system defaults to suppressing multiple cases of similar errors, but this can also be fine-tuned through these parameters.
@@ -41,7 +41,7 @@ const chosenTextName = "textB";
 const chosenText = textB;
 
 // The third parameter is "linksAllowed"
-const rawResults = checkTextField('raw', 'Sample', chosenText, false, 'in '+chosenTextName+' that was supplied');
+const rawResults = checkTextField('en', 'TN', 'raw', 'Sample', chosenText, false, 'in '+chosenTextName+' that was supplied');
 if (!rawResults.successList || !rawResults.successList.length)
     rawResults.successList = ["Done basic text checks"];
 const processOptions = {

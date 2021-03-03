@@ -1,6 +1,6 @@
 import grammar from 'usfm-grammar';
 import * as books from '../core/books/books';
-import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
+import { DEFAULT_EXCERPT_LENGTH } from './text-handling-functions'
 import { userLog, parameterAssert } from './utilities';
 
 
@@ -13,19 +13,19 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
     // debugLog(`Running ${strictnessString} BCS USFM grammar check${givenLocation} (can take quite a while for a large book)…`);
     parameterAssert(strictnessString === 'strict' || strictnessString === 'relaxed', `Unexpected strictnessString='${strictnessString}'`);
 
-    let extractLength;
+    let excerptLength;
     try {
-        extractLength = checkingOptions?.extractLength;
+        excerptLength = checkingOptions?.excerptLength;
     } catch (usfmELerror) { }
-    if (typeof extractLength !== 'number' || isNaN(extractLength)) {
-        extractLength = DEFAULT_EXTRACT_LENGTH;
-        // debugLog(`Using default extractLength=${extractLength}`);
+    if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
+        excerptLength = DEFAULT_EXCERPT_LENGTH;
+        // debugLog(`Using default excerptLength=${excerptLength}`);
     }
     // else
-    // debugLog(`Using supplied extractLength=${extractLength} cf. default=${DEFAULT_EXTRACT_LENGTH}`);
-    const halfLength = Math.floor(extractLength / 2); // rounded down
-    const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
-    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    // debugLog(`Using supplied excerptLength=${excerptLength} cf. default=${DEFAULT_EXCERPT_LENGTH}`);
+    const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+    // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
     // Now create the parser and run the check
     const ourUsfmParser = new grammar.USFMParser(fileText,
@@ -40,7 +40,7 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
     let parseError;
     parseError = parserMessages._error;
     // debugLog(`  parseError: ${parseError}`);
-    let ourErrorMessage, lineNumberString, characterIndex, extract;
+    let ourErrorMessage, lineNumberString, characterIndex, excerpt;
     // NOTE: The following code is quite fragile
     //  as it depends on the precise format of the error message return from USFMParser
     let ourErrorObject = {};
@@ -53,23 +53,23 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
                 // debugLog(`  regexResult: ${JSON.stringify(regexResult)}`);
                 if (regexResult) {
                     lineNumberString = regexResult[1];
-                    extract = regexResult[2];
+                    excerpt = regexResult[2];
                 }
             }
             else if (errorLine.endsWith('^')) {
                 characterIndex = errorLine.indexOf('^') - 8;
                 if (characterIndex < 0) characterIndex = 0; // Just in case
-                if (extract.length)
-                    extract = (characterIndex > halfLength ? '…' : '') + extract.substring(characterIndex - halfLength, characterIndex + halfLengthPlus) + (characterIndex + halfLengthPlus < extract.length ? '…' : '')
+                if (excerpt.length)
+                    excerpt = (characterIndex > excerptHalfLength ? '…' : '') + excerpt.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < excerpt.length ? '…' : '')
             }
             else ourErrorMessage = errorLine; // We only want the last one
         }
-        // debugLog(`  ourErrorMessage: '${ourErrorMessage}' lineNumberString=${lineNumberString} characterIndex=${characterIndex} extract='${extract}'`);
+        // debugLog(`  ourErrorMessage: '${ourErrorMessage}' lineNumberString=${lineNumberString} characterIndex=${characterIndex} excerpt='${excerpt}'`);
 
         // Some of these "errors" need to be degraded in priority
 
         let adjustedPriority = 594; // We don’t make these extra high coz the messages are hard for users to interpret
-        if (extract === '\\s5' // Temporarily, even though \s5 fields are not valid USFM
+        if (excerpt === '\\s5' // Temporarily, even though \s5 fields are not valid USFM
             || ourErrorMessage.startsWith('Expected "f*", "+"') // Might neeed a OHM schema fix?
         )
             adjustedPriority = 294;
@@ -77,7 +77,7 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
         ourErrorObject = {
             priority: adjustedPriority, message: `USFMGrammar: ${ourErrorMessage}`,
             filename,
-            characterIndex, extract,
+            characterIndex, excerpt,
             location: givenLocation
         };
 
@@ -147,18 +147,18 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
         * @param {Number} priority - notice priority from 1 (lowest) to 999 (highest)
         * @param {string} message - the text of the notice message
         * @param {Number} characterIndex - where the issue occurs in the line
-        * @param {string} extract - short extract from the line centred on the problem (if available)
+        * @param {string} excerpt - short excerpt from the line centred on the problem (if available)
         * @param {string} location - description of where the issue is located
         */
-        // functionLog(`checkUSFMGrammar notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // functionLog(`checkUSFMGrammar notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "cUSFMgr addNotice6to7: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `cUSFMgr addNotice6to7: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "cUSFMgr addNotice6to7: 'message' parameter should be defined");
         parameterAssert(typeof noticeObject.message === 'string', `cUSFMgr addNotice6to7: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
         // parameterAssert(characterIndex !== undefined, "cUSFMgr addNotice6to7: 'characterIndex' parameter should be defined");
         if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cUSFMgr addNotice6to7: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // parameterAssert(extract !== undefined, "cUSFMgr addNotice6to7: 'extract' parameter should be defined");
-        if (noticeObject.extract) parameterAssert(typeof noticeObject.extract === 'string', `cUSFMgr addNotice6to7: 'extract' parameter should be a string not a '${typeof extract}': ${noticeObject.extract}`);
+        // parameterAssert(excerpt !== undefined, "cUSFMgr addNotice6to7: 'excerpt' parameter should be defined");
+        if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `cUSFMgr addNotice6to7: 'excerpt' parameter should be a string not a '${typeof excerpt}': ${noticeObject.excerpt}`);
         parameterAssert(noticeObject.location !== undefined, "cUSFMgr addNotice6to7: 'location' parameter should be defined");
         parameterAssert(typeof noticeObject.location === 'string', `cUSFMgr addNotice6to7: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
         cugResult.noticeList.push({ ...noticeObject, bookID, filename });

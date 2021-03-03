@@ -8,10 +8,11 @@ import { clearCaches, clearCheckedArticleCache, ourParseInt, cachedGetFile } fro
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
 import { checkFileContents } from './checkFileContents';
-import { userLog } from '../../core/utilities';
+// eslint-disable-next-line no-unused-vars
+import { debugLog, userLog } from '../../core/utilities';
 
 
-// const FILE_CHECK_VERSION_STRING = '0.2.6';
+// const FILE_CHECK_VERSION_STRING = '0.2.7';
 
 
 function FileCheck(props) {
@@ -48,8 +49,8 @@ function FileCheck(props) {
       }
 
       if (props.reloadAllFilesFirst && props.reloadAllFilesFirst.slice(0).toUpperCase() === 'Y') {
-        userLog("Clearing cache before running book package check…");
-        setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running book package check…</p>);
+        userLog("Clearing cache before running file check…");
+        setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running file check…</p>);
         await clearCaches();
       }
       else await clearCheckedArticleCache();
@@ -64,18 +65,20 @@ function FileCheck(props) {
       if (fileContent) {
         const languageCode = repoName.split('_')[0];
 
-        let repoCodeGuess;
+        let repoCodeGuess = '';
         if (repoName === 'hbo_uhb') repoCodeGuess = 'UHB'
         else if (repoName === 'el-x-koine_ugnt') repoCodeGuess = 'UGNT'
         else if (repoName.endsWith('_tn')) repoCodeGuess = 'TN'
         else if (repoName.endsWith('_ta')) repoCodeGuess = 'TA'
         else if (repoName.endsWith('_tq')) repoCodeGuess = 'TQ'
+        else if (repoName.endsWith('_tw')) repoCodeGuess = 'TW'
         else if (repoName.endsWith('_sn')) repoCodeGuess = 'SN'
         else if (repoName.endsWith('_sq')) repoCodeGuess = 'SQ'
         else if (repoName.endsWith('lt')) repoCodeGuess = 'LT'
         else if (repoName.endsWith('st')) repoCodeGuess = 'ST'
 
         rawCFResults = await checkFileContents(username, languageCode, repoCodeGuess, branch, filename, fileContent, givenLocation, checkingOptions);
+        // debugLog(`rawCFResults=${JSON.stringify(rawCFResults)}`);
 
         // Because we know here that we're only checking one file, we don’t need the filename field in the notices
         // WRONG: We want the filename so that the lineNumber can be made into a live link
@@ -199,15 +202,15 @@ function FileCheck(props) {
   if (givenLocation && givenLocation[0] !== ' ') givenLocation = ` ${givenLocation}`;
 
   const checkingOptions = { // Uncomment any of these to test them
-    // extractLength: 25,
+    // excerptLength: 25,
     suppressNoticeDisablingFlag: true, // Leave this one as true (otherwise demo checks are less efficient)
   };
   // Or this allows the parameters to be specified as a FileCheck property
-  if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
+  if (props.excerptLength) checkingOptions.excerptLength = ourParseInt(props.excerptLength);
   if (props.cutoffPriorityLevel) checkingOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
   if (props.disableAllLinkFetchingFlag) checkingOptions.disableAllLinkFetchingFlag = props.disableAllLinkFetchingFlag.toLowerCase() === 'true';
-  if (props.checkLinkedTAArticleFlag) checkingOptions.checkLinkedTAArticleFlag = props.checkLinkedTAArticleFlag.toLowerCase() === 'true';
-  if (props.checkLinkedTWArticleFlag) checkingOptions.checkLinkedTWArticleFlag = props.checkLinkedTWArticleFlag.toLowerCase() === 'true';
+  if (props.disableLinkedTAArticlesCheckFlag) checkingOptions.disableLinkedTAArticlesCheckFlag = props.disableLinkedTAArticlesCheckFlag.toLowerCase() === 'true';
+  if (props.disableLinkedTWArticlesCheckFlag) checkingOptions.disableLinkedTWArticlesCheckFlag = props.disableLinkedTWArticlesCheckFlag.toLowerCase() === 'true';
 
   // {/* <div className={classes.root}> */}
   return (

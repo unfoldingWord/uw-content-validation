@@ -1,0 +1,52 @@
+dublin_core:
+  conformsto: 'rc0.2'
+  contributor:
+  - 'Door43 World Missions Community'
+  - 'Larry Sallee (Th.M Dallas Theological Seminary, D.Min. Columbia Biblical Seminary)'
+  - 'Russ Perry'
+  creator: 'Door43 World Missions Community'
+  description: 'Open-licensed exegetical study notes that provide historical, cultural, and linguistic information for studying the Bible.'
+  format: 'text/tsv'
+  identifier: 'sn'
+  issued: '2020-09-24'
+  language:
+    direction: 'ltr'
+    identifier: 'en'
+    title: 'English'
+  modified: '2020-09-24'
+  publisher: 'unfoldingWord'
+  relation:
+  - 'en/ult'
+  - 'el-x-koine/ugnt?v=0.15'
+  - 'hbo/uhb?v=2.1.15'
+  rights: 'CC BY-SA 4.0'
+  source:
+  - identifier: 'sn'
+    language: 'en'
+    version: '0'
+  subject: 'TSV Study Notes'
+  title: 'unfoldingWord® Study Notes'
+  type: 'help'
+  version: '1'
+
+checking:
+  checking_entity:
+  - 'unfoldingWord'
+  checking_level: '3'
+
+projects:
+  -
+    title: 'unfoldingWord® Open Bible Stories'
+    versification: 'ufw'
+    identifier: 'obs'
+    sort: 0
+    path: './OBS_sn.tsv'
+    categories: [ ]
+
+  -
+    title: 'Titus'
+    versification: 'ufw'
+    identifier: 'tit'
+    sort: 56
+    path: './TIT_sn.tsv'
+    categories: [ 'bible-nt' ]

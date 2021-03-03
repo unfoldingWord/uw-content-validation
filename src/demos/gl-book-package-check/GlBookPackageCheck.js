@@ -35,14 +35,14 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
     //  autoClearCache(bookIDs); // This technique avoids the complications of needing a button
 
     const checkingOptions = { // Uncomment any of these to test them
-        // extractLength: 25,
+        // excerptLength: 25,
         checkManifestFlag: true,
         checkReadmeFlag: true,
         checkLicenseFlag: true,
         suppressNoticeDisablingFlag: true, // Leave this one as true (otherwise demo checks are less efficient)
     };
     // Or this allows the parameters to be specified as a GlBookPackageCheck property
-    if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
+    if (props.excerptLength) checkingOptions.excerptLength = ourParseInt(props.excerptLength);
     if (props.cutoffPriorityLevel) checkingOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
 
     useEffect(() => {
@@ -69,8 +69,8 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
             }
 
             if (props.reloadAllFilesFirst && props.reloadAllFilesFirst.slice(0).toUpperCase() === 'Y') {
-                userLog("Clearing cache before running book package check…");
-                setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running book package check…</p>);
+                userLog("Clearing cache before running GL book packages check…");
+                setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running GL book packages check…</p>);
                 await clearCaches();
             }
             else await clearCheckedArticleCache();

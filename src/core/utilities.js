@@ -1,4 +1,4 @@
-// utilities
+// utilities.js
 
 
 /**
@@ -7,9 +7,9 @@
  * @param {string} optionalParameter2
  */
 export function userLog(logString, optionalParameter2) {
-    if (optionalParameter2) userLog(`userLog note: we have a 2nd parameter: '${optionalParameter2}' after '${logString}'`);
     // We can remove them all by disabling the next line
-    console.log(logString);
+    console.log(`uw-content-validation: ${logString}`);
+    if (optionalParameter2) userLog(`userLog note: we have a 2nd parameter: '${optionalParameter2}'`);
 }
 
 
@@ -19,9 +19,9 @@ export function userLog(logString, optionalParameter2) {
  * @param {string} optionalParameter2
  */
 export function debugLog(logString, optionalParameter2) {
-    if (optionalParameter2) debugLog(`debugLog note: we have a 2nd parameter: '${optionalParameter2}' after '${logString}'`);
     // We can remove them all by disabling the next line
-    console.log(logString);
+    console.log(`uw-content-validation debug: ${logString}`);
+    if (optionalParameter2) debugLog(`debugLog note: we have a 2nd parameter: '${optionalParameter2}'`);
 }
 
 
@@ -31,9 +31,9 @@ export function debugLog(logString, optionalParameter2) {
  * @param {string} optionalParameter2
  */
 export function functionLog(logString, optionalParameter2) {
-    if (optionalParameter2) functionLog(`functionLog note: we have a 2nd parameter: '${optionalParameter2}' after '${logString}'`);
     // We can remove them all by disabling the next line
-    console.log(logString);
+    console.log(`uw-content-validation function call: ${logString}`);
+    if (optionalParameter2) functionLog(`functionLog note: we have a 2nd parameter: '${optionalParameter2}'`);
 }
 
 
@@ -44,7 +44,7 @@ export function functionLog(logString, optionalParameter2) {
  */
 export function parameterAssert(truthStatement, optionalMessage) {
     // We can remove them all by disabling the next line
-    console.assert(truthStatement, optionalMessage);
+    console.assert(truthStatement, `uw-content-validation parameterAssert: ${optionalMessage}`);
 }
 
 
@@ -55,7 +55,7 @@ export function parameterAssert(truthStatement, optionalMessage) {
  */
 export function logicAssert(truthStatement, optionalMessage) {
     // We can remove them all by disabling the next line
-    console.assert(truthStatement, optionalMessage);
+    console.assert(truthStatement, `uw-content-validation logicAssert: ${optionalMessage}`);
 }
 
 
@@ -66,7 +66,7 @@ export function logicAssert(truthStatement, optionalMessage) {
  */
 export function dataAssert(truthStatement, optionalMessage) {
     // We can remove them all by disabling the next line
-    console.assert(truthStatement, optionalMessage);
+    console.assert(truthStatement, `uw-content-validation dataAssert: ${optionalMessage}`);
 }
 
 
@@ -148,7 +148,7 @@ export function ourParseInt(givenString) {
     // Optimised version
     const int = givenString * 1; // This one is less forgiving it seems
     // eslint-disable-next-line no-throw-literal
-    if (isNaN(int)) throw `String '${givenString}'is not a simple integer`;
+    if (isNaN(int)) throw `String '${givenString}' is not a simple integer`;
     return int;
 }
 

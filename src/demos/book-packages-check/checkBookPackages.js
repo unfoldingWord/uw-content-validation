@@ -3,11 +3,21 @@ import { checkBookPackage } from '../book-package-check/checkBookPackage';
 import { userLog, parameterAssert } from '../../core/utilities';
 // import { consoleLogObject } from '../../core/utilities';
 
-// const BPs_VALIDATOR_VERSION_STRING = '0.2.4';
+// const BPs_VALIDATOR_VERSION_STRING = '0.2.5';
 
 
+/**
+ *
+ * @param {string} username -- Door43 username/orgname
+ * @param {string} languageCode
+ * @param {*} bookIDList
+ * @param {Function} setResultValue
+ * @param {Object} checkingOptions
+ */
 export async function checkBookPackages(username, languageCode, bookIDList, setResultValue, checkingOptions) {
-    //     userLog(`I'm here in checkBookPackages v${VALIDATOR_VERSION_STRING}
+    // NOTE: dataSet is simply passed through here to checkBookPackage in checkingOptions
+    //
+    // userLog(`I'm here in checkBookPackages v${VALIDATOR_VERSION_STRING}
     //   with ${username}, ${languageCode}, ${bookIDList}, ${JSON.stringify(checkingOptions)}`);
     let abortFlag = false;
     const startTime = new Date();
@@ -21,7 +31,7 @@ export async function checkBookPackages(username, languageCode, bookIDList, setR
 
     function addNotice(noticeObject) {
         // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
-        userLog(`cBPs addNotice: (priority=${noticeObject.priority}) ${noticeObject.extra} ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
+        userLog(`cBPs addNotice: (priority=${noticeObject.priority}) ${noticeObject.extra} ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.excerpt ? ` ${noticeObject.excerpt}` : ""}${noticeObject.location}`);
         parameterAssert(noticeObject.priority !== undefined, "cBPs addNotice: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `cBPs addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}'`);
         parameterAssert(noticeObject.message !== undefined, "cBPs addNotice: 'message' parameter should be defined");
@@ -38,8 +48,8 @@ export async function checkBookPackages(username, languageCode, bookIDList, setR
         if (noticeObject.V) parameterAssert(typeof noticeObject.V === 'string', `cBPs addNotice: 'V' parameter should be a string not a '${typeof noticeObject.V}'`);
         // parameterAssert(characterIndex !== undefined, "cBPs addNotice: 'characterIndex' parameter should be defined");
         if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cBPs addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}'`);
-        // parameterAssert(extract !== undefined, "cBPs addNotice: 'extract' parameter should be defined");
-        if (noticeObject.extract) parameterAssert(typeof noticeObject.extract === 'string', `cBPs addNotice: 'extract' parameter should be a string not a '${typeof noticeObject.extract}'`);
+        // parameterAssert(excerpt !== undefined, "cBPs addNotice: 'excerpt' parameter should be defined");
+        if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `cBPs addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}'`);
         parameterAssert(noticeObject.location !== undefined, "cBPs addNotice: 'location' parameter should be defined");
         parameterAssert(typeof noticeObject.location === 'string', `cBPs addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}'`);
         parameterAssert(noticeObject.extra !== undefined, "cBPs addNotice: 'extra' parameter should be defined");
@@ -63,7 +73,7 @@ export async function checkBookPackages(username, languageCode, bookIDList, setR
                 bookNumberAndName = books.usfmNumberName(bookID);
                 // whichTestament = books.testament(bookID); // returns 'old' or 'new'
             } catch (CBPsError) {
-                addNotice({ priority: 900, message: "Bad parameter: should be given a valid book abbreviation", extract: bookIDList, location: ` (not '${bookIDList}')` });
+                addNotice({ priority: 900, message: "Bad parameter: should be given a valid book abbreviation", excerpt: bookIDList, location: ` (not '${bookIDList}')` });
                 return checkBookPackagesResult;
             }
             // debugLog(`bookNumberAndName='${bookNumberAndName}' (${whichTestament} testament)`);
@@ -98,7 +108,7 @@ export async function checkBookPackages(username, languageCode, bookIDList, setR
         // Concat is faster if we don’t need to process each notice individually
         checkBookPackagesResult.noticeList = checkBookPackagesResult.noticeList.concat(cbpResultObject.noticeList);
         // for (const noticeEntry of cbpResultObject.noticeList)
-        //     // noticeEntry is an array of eight fields: 1=priority, 2=bookID, 3=C, 4=V, 5=msg, 6=characterIndex, 7=extract, 8=location
+        //     // noticeEntry is an array of eight fields: 1=priority, 2=bookID, 3=C, 4=V, 5=msg, 6=characterIndex, 7=excerpt, 8=location
         //     // The extra value from checkBookPackage is the repo name
         //     addNotice({noticeEntry.priority, noticeEntry[1], noticeEntry[2], noticeEntry[3], noticeEntry[4], noticeEntry[5], noticeEntry[6], noticeEntry[7], noticeEntry[5]);
 

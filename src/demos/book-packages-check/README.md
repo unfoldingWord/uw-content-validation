@@ -33,15 +33,18 @@ import BookPackagesCheck from './BookPackagesCheck';
   // bookIDs='LUK,ACT,EPH,1TI,2TI,TIT,2JN,3JN' // NT
   // The above English book packages should all be finished or well along the way
 
+  // We can choose the forthcoming new TSV formats or the existing formats
+  dataSet='OLD' // 'OLD' (Markdown TQ, TSV TN, etc.), 'NEW' (TSV TQ2, TN2, etc.), 'DEFAULT', or 'BOTH'
+
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'
   displayType='SingleList'
 
   // Lines starting with // are ignored -- you can add or remove // as desired
-  // Specifying maximumSimilarMessages and extractLength is just to show off options
+  // Specifying maximumSimilarMessages and excerptLength is just to show off options
   // —those fields are not necessary (or normal) here
   maximumSimilarMessages='4' // Default is 3 (0 means don’t suppress any)
-  // extractLength='20' // Default is 15
+  // excerptLength='20' // Default is 15
   // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
   // sortBy='ByRepo' // Default is 'ByPriority'; also have 'ByRepo' and 'AsFound'
   // showDisabledNoticesFlag='false' // Display known specific non-issues: 'true' or 'false'

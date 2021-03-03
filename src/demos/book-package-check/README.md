@@ -41,13 +41,13 @@ import BookPackageCheck from './BookPackageCheck';
   // Normally links in files are downloaded to check that they really exist
   disableAllLinkFetchingFlag='false' // 'true' or 'false'
   // The next two are only relevant if the above is 'false'
-  checkLinkedTAArticleFlag='true' // 'true' or 'false'
-  checkLinkedTWArticleFlag='true' // 'true' or 'false'
+  disableLinkedTAArticlesCheckFlag='false' // 'true' or 'false'
+  disableLinkedTWArticlesCheckFlag='false' // 'true' or 'false'
 
   // Lines starting with // are ignored -- you can add or remove // as desired
-  // Specifying extractLength and maximumSimilarMessages is just to show off options
+  // Specifying excerptLength and maximumSimilarMessages is just to show off options
   // —those fields are not necessary (or normal) here
-  extractLength='20' // Default is 15
+  excerptLength='20' // Default is 15
   // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
   maximumSimilarMessages='5' // Default is 3 (0 means don’t suppress any)
   // ignorePriorityNumberList='[]'

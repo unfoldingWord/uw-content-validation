@@ -4,7 +4,7 @@ import { checkFileContents } from '../file-check/checkFileContents';
 import { logicAssert, parameterAssert, repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetRepositoryZipFile } from '../../core';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.4.5';
+// const REPO_VALIDATOR_VERSION_STRING = '0.4.7';
 
 
 /**
@@ -13,7 +13,7 @@ import { logicAssert, parameterAssert, repositoryExistsOnDoor43, getFileListFrom
  * @param {string} repoName
  * @param {string} branch
  * @param {string} givenLocation
- * @param {*} setResultValue
+ * @param {Function} setResultValue
  * @param {Object} checkingOptions
  */
 export async function checkRepo(username, repoName, branch, givenLocation, setResultValue, checkingOptions) {
@@ -58,7 +58,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
     // Adds the notices to the result that we will later return
     // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
     // Note that bookID,C,V might all be empty strings (as some repos don’t have BCV)
-    // functionLog(`checkRepo addNoticePartial: ${noticeObject.priority}:${noticeObject.message} bookID=${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.filename}:${noticeObject.lineNumber} ${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.extract ? ` ${noticeObject.extract}` : ""}${noticeObject.location}`);
+    // functionLog(`checkRepo addNoticePartial: ${noticeObject.priority}:${noticeObject.message} bookID=${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.filename}:${noticeObject.lineNumber} ${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.excerpt ? ` ${noticeObject.excerpt}` : ""}${noticeObject.location}`);
     parameterAssert(noticeObject.priority !== undefined, "cR addNoticePartial: 'priority' parameter should be defined");
     parameterAssert(typeof noticeObject.priority === 'number', `cR addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}'`);
     parameterAssert(noticeObject.message !== undefined, "cR addNoticePartial: 'message' parameter should be defined");
@@ -75,8 +75,8 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
     if (noticeObject.V) parameterAssert(typeof noticeObject.V === 'string', `cR addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}'`);
     // parameterAssert(characterIndex !== undefined, "cR addNoticePartial: 'characterIndex' parameter should be defined");
     if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cR addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}'`);
-    // parameterAssert(extract !== undefined, "cR addNoticePartial: 'extract' parameter should be defined");
-    if (noticeObject.extract) parameterAssert(typeof noticeObject.extract === 'string', `cR addNoticePartial: 'extract' parameter should be a string not a '${typeof noticeObject.extract}'`);
+    // parameterAssert(excerpt !== undefined, "cR addNoticePartial: 'excerpt' parameter should be defined");
+    if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `cR addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}'`);
     parameterAssert(noticeObject.location !== undefined, "cR addNoticePartial: 'location' parameter should be defined");
     parameterAssert(typeof noticeObject.location === 'string', `cR addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}'`);
     // parameterAssert(noticeObject.extra !== undefined, "cR addNoticePartial: 'extra' parameter should be defined");
@@ -214,15 +214,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
         // Default to the main filename without the extension
         let bookOrFileCode = thisFilename.substring(0, thisFilename.length - thisFilenameExtension.length - 1);
         let ourBookID = '';
-        if (repoName === 'en_translation-annotations' && thisFilenameExtension === 'tsv') {
-          // functionLog(`checkRepo have en_translation-annotations bookOrFileCode=${bookOrFileCode}`);
-          const bookID = bookOrFileCode.substring(0, 3).toUpperCase();
-          // functionLog(`checkRepo have bookID=${bookID}`);
-          parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkRepo: '${bookID}' is not a valid USFM book identifier (for Annotations)`);
-          bookOrFileCode = `${bookOrFileCode.substring(4).toUpperCase()} ${bookID}`;
-          ourBookID = bookID;
-        }
-        else if (thisFilenameExtension === 'usfm') {
+        if (thisFilenameExtension === 'usfm') {
           // const filenameMain = thisFilename.substring(0, thisFilename.length - 5); // drop .usfm
           // debugLog(`Have USFM filenameMain=${bookOrFileCode}`);
           const bookID = bookOrFileCode.substring(bookOrFileCode.length - 3).toUpperCase();
@@ -239,7 +231,7 @@ export async function checkRepo(username, repoName, branch, givenLocation, setRe
           bookID = (bookOrFileCode.length === 6 || bookOrFileCode.length === 7) ? bookOrFileCode.substring(0, 3) : bookOrFileCode.slice(-3).toUpperCase();
           logicAssert(bookID !== 'twl' && bookID !== 'TWL', `Should get a valid bookID here, not '${bookID}'`)
           // debugLog(`Have TSV bookcode(${bookID.length})='${bookID}'`);
-          if (repoCode === 'TWL')
+          if (repoCode === 'TWL' || repoCode === 'SN' || repoCode === 'SQ' || repoCode === 'TN2' || repoCode === 'TQ2') // new repos allow `OBS`
             parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkRepo: '${bookID}' is not a valid USFM book identifier (for TSV)`);
           else
             parameterAssert(bookID !== 'OBS' && books.isValidBookID(bookID), `checkRepo: '${bookID}' is not a valid USFM book identifier (for TSV)`);

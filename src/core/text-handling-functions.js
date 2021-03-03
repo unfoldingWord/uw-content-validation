@@ -1,4 +1,4 @@
-export const DEFAULT_EXTRACT_LENGTH = 15;
+export const DEFAULT_EXCERPT_LENGTH = 15;
 
 
 // See http://xahlee.info/comp/unicode_matching_brackets.html for a more complete list

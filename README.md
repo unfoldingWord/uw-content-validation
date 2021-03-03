@@ -37,8 +37,8 @@ In addition, there are Styleguidist pages viewable at [[https://unfoldingword.gi
 This code is designed to thoroughly check various types of Bible-related content data files. This includes:
 
 1. [Unified Standard Format Marker](ubsicap.github.io/usfm/) (USFM) Bible content files, including original language Bibles and Bible translations aligned by word/phrase to the original words/phrases
-1. Translation Notes (TN) tables in Tab-Separated Values (9-column TSV) files
-1. General annotation tables in Tab-Separated Values (7-column TSV) files (uses TN2 and TQ2)
+1. Legacy Translation Notes (TN) tables in Tab-Separated Values (9-column TSV) files
+1. New tables in Tab-Separated Values (TSV) files (uses TWL, TN2 and TQ2, SN and SQ)
 1. Markdown files (and markdown fields in TSV files)
 1. Plain-text files
 1. Metadata (manifest) YAML files
@@ -74,7 +74,7 @@ All of the following fields may be missing or undefined, i.e., they’re all opt
 1. `lineNumber`: A one-based line number in the file (if available)
 1. `fieldName`: name of TSV field (if relevant)
 1. `characterIndex`: A **zero-based** integer character index which indicates the position of the error in the given text (line or field) (if available)
-1. `extract`: An excerpt (if available) from the checked text which indicates the area containing the problem. Where helpful, some character substitutions have already been made, for example, if the notice is about spaces, it is generally helpful to display spaces as a visible character in an attempt to best highlight the issue to the user. (The length of the extract defaults to ten characters, but is settable as an option.)
+1. `excerpt`: An excerpt (if available) from the checked text which indicates the area containing the problem. Where helpful, some character substitutions have already been made, for example, if the notice is about spaces, it is generally helpful to display spaces as a visible character in an attempt to best highlight the issue to the user. (The length of the excerpt defaults to ten characters, but is settable as an option.)
 1. `location`: A string indicating the context of the notice, e.g., "in line 17 of 'someBook.usfm'". (Still not completely sure what should be left in this string now that we have added optional `repoName`, `filename`, `rowID`, `lineNumber`, `fieldName` fields.)
 1. `extra`: for a check that looks in multiple repos, this contains extra identifying information (typically the `repoCode`) to help the user determine what resource/repo/file that the notice applies to (which, in the demos, is then often prepended to the `message`).
 
@@ -100,16 +100,16 @@ There is provision for checking to be altered and/or sped-up when the calling ap
 - `getFile`: a function which takes the four parameters ({username, repository, path, branch}) and returns the full text of the relevant Door43 file—default is to use our own function and associated caching
 - `fetchRepositoryZipFile`: a function which takes the three parameters ({username, repository, branch}) and returns the contents of the zip file containing all the Door43 files—default is to use our own function and associated caching
 - `getFileListFromZip`: takes the same three parameters and returns a list/array containing the filepaths of all the files in the zip file from Door43—default is to use our own function and associated caching
-- `originalLanguageVerseText`: the Hebrew/Aramaic or Greek original language text for the book/chapter/verse of the TSV line being checked—this enables `OrigQuote` fields to be checked without needing to load and parse the actual USFM file
+- `originalLanguageVerseText`: the Hebrew/Aramaic or Greek original language text for the book/chapter/verse of the TSV line being checked—this enables `Quote` fields to be checked without needing to load and parse the actual USFM file
 - `originalLanguageRepoUsername` and `originalLanguageRepoBranch`: these two fields can be used to specify the username/organisation and/or the branch/tag name for fetching the UHB and UGNT files for checking
 - `taRepoUsername`, `taRepoBranchName`: these two fields can be used to specify the username/organisation and/or the branch/tag name for fetching the TA files for checking
 - `taRepoLanguageCode`, and `taRepoSectionName`: can be used to specify how the `SupportReference` field is checked in TA—defaults are 'en' and 'translate'
 - `twRepoUsername`, `twRepoBranchName`: these two fields can be used to specify the username/organisation and/or the branch/tag name for fetching the TW files for checking
-- `extractLength`: an integer which defines how long excerpts of lines containing errors should be—the default is 15 characters—the package attempts to place the error in the middle of the extract
+- `excerptLength`: an integer which defines how long excerpts of lines containing errors should be—the default is 15 characters—the package attempts to place the error in the middle of the excerpt
 - `cutoffPriorityLevel`: an integer which can define notices to not be detected—defaults to 0 so none are dropped. Note that this will also affect the `suggestion` response. (Only partially implemented at present, so drops some but not all low priority notices.)
 - `suppressNoticeDisablingFlag`: Defaults to `false`, i.e., to removing (thus suppressing) notices for warnings which are expected in certain files and hence we don’t want them displayed. Note that this is always set to `true` for the demos (because they suppress these notices later—see the `showDisabledNoticesFlag` below).
 
-    Currently this supressing is only done in the (exported) `checkTN_TSVText` and `checkAnnotationRows` functions which we know to be called by [tC Create](https://github.com/unfoldingWord/tc-create-app) as well as `checkManifestText`, `checkMarkdownText`, `checkPlainText`, `checkTN_TSVText`, `checkUSFMText`, and `checkYAMLText` called by the [Content Validation App](https://github.com/unfoldingWord-box3/content-validation-app).
+    Currently this supressing is only done in the (exported) `checkTN_TSV9Table` and `checkNotesTSV7Table` functions which we know to be called by [tC Create](https://github.com/unfoldingWord/tc-create-app) as well as `checkManifestText`, `checkMarkdownText`, `checkPlainText`, `checkTN_TSV9Table`, `checkUSFMText`, and `checkYAMLText` called by the [Content Validation App](https://github.com/unfoldingWord-box3/content-validation-app).
 
 Most of the high-level demonstrations allow a choice of one of three display formats for notices:
 

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`checkTN_TSVDataRow() -  BookID tests -  should find wrong book ID 1`] = `
+exports[`checkTN_TSV9DataRow() -  BookID tests -  should find wrong book ID 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -8,7 +8,7 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "details": "expected 'GEN'",
-      "extract": "RUT",
+      "excerpt": "RUT",
       "fieldName": "Book",
       "location": " that was supplied",
       "message": "Wrong book identifier",
@@ -20,8 +20,9 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "characterIndex": 90,
-      "extract": "…[[rc://*/ta/man…",
+      "excerpt": "…[[rc://*/ta/man…",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
       "message": "tC cannot yet process '*' language code",
       "priority": 950,
@@ -31,7 +32,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  GL Note tests -  should find bad ellipse 1`] = `
+exports[`checkTN_TSV9DataRow() -  GL Note tests -  should find bad ellipse 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -40,7 +41,7 @@ Object {
       "bookID": "GEN",
       "fieldName": "OrigQuote",
       "location": " that was supplied",
-      "message": "Missing OrigQuote field",
+      "message": "Missing Quote field",
       "priority": 919,
       "rowID": "w3r5",
     },
@@ -49,7 +50,7 @@ Object {
       "V": "3",
       "bookID": "GEN",
       "characterIndex": 11,
-      "extract": "…ellipse...",
+      "excerpt": "…ellipse...",
       "fieldName": "GLQuote",
       "location": " that was supplied",
       "message": "Unexpected doubled . characters",
@@ -60,14 +61,14 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  Occurrence Note tests -  should find empty note 1`] = `
+exports[`checkTN_TSV9DataRow() -  Occurrence Note tests -  should find empty note 1`] = `
 Object {
   "noticeList": Array [
     Object {
       "C": "1",
       "V": "2",
       "bookID": "GEN",
-      "extract": "figs-imperative",
+      "excerpt": "figs-imperative",
       "fieldName": "SupportReference",
       "location": " that was supplied",
       "message": "Link to TA should also be in OccurrenceNote",
@@ -88,14 +89,14 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  Occurrence Note tests -  should find white space 1`] = `
+exports[`checkTN_TSV9DataRow() -  Occurrence Note tests -  should find white space 1`] = `
 Object {
   "noticeList": Array [
     Object {
       "C": "1",
       "V": "2",
       "bookID": "GEN",
-      "extract": "figs-imperative",
+      "excerpt": "figs-imperative",
       "fieldName": "SupportReference",
       "location": " that was supplied",
       "message": "Link to TA should also be in OccurrenceNote",
@@ -116,7 +117,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  Original Quote tests -  invalid Original Language 1`] = `
+exports[`checkTN_TSV9DataRow() -  Original Quote tests -  invalid Original Language 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -144,7 +145,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail to find OrigLang Quote 1`] = `
+exports[`checkTN_TSV9DataRow() -  Original Quote tests -  should fail to find OrigLang Quote 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -152,7 +153,7 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "details": "passage ►וְ⁠הָ⁠אָ֗רֶץ הָיְתָ֥ה תֹ֨הוּ֙ וָ⁠בֹ֔הוּ וְ⁠חֹ֖שֶׁךְ עַל־פְּנֵ֣י תְה֑וֹם וְ⁠ר֣וּחַ אֱלֹהִ֔ים מְרַחֶ֖פֶת עַל־פְּנֵ֥י הַ⁠מָּֽיִם׃◄",
-      "extract": "וְ⁠חֹ֖שחֹ֖שֶךְ",
+      "excerpt": "וְ⁠חֹ֖שֶךְ",
       "fieldName": "OrigQuote",
       "location": " that was supplied",
       "message": "Unable to find original language quote in verse text",
@@ -164,8 +165,9 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "characterIndex": 90,
-      "extract": "…[[rc://*/ta/man…",
+      "excerpt": "…[[rc://*/ta/man…",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
       "message": "tC cannot yet process '*' language code",
       "priority": 950,
@@ -175,7 +177,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail with leading space 1`] = `
+exports[`checkTN_TSV9DataRow() -  Original Quote tests -  should fail with leading space 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -183,7 +185,7 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "characterIndex": 0,
-      "extract": "␣וְ⁠חֹ֖שֶׁךְ",
+      "excerpt": "␣וְ⁠חֹ֖שֶׁךְ",
       "fieldName": "OrigQuote",
       "location": " that was supplied",
       "message": "Unexpected leading space",
@@ -196,7 +198,7 @@ Object {
       "bookID": "GEN",
       "characterIndex": 0,
       "details": "passage ►וְ⁠הָ⁠אָ֗רֶץ הָיְתָ֥ה תֹ֨הוּ֙ וָ⁠בֹ֔הוּ וְ⁠חֹ֖שֶׁךְ עַל־פְּנֵ֣י תְה֑וֹם וְ⁠ר֣וּחַ אֱלֹהִ֔ים מְרַחֶ֖פֶת עַל־פְּנֵ֥י הַ⁠מָּֽיִם׃◄",
-      "extract": "(ּ=D1468/H5bc) וְ⁠חֹ֖שֶׁךְ",
+      "excerpt": "(ּ=D1468/H5bc) וְ⁠חֹ֖שֶׁךְ",
       "fieldName": "OrigQuote",
       "location": " that was supplied",
       "message": "Seems original language quote might not start at the beginning of a word",
@@ -208,8 +210,9 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "characterIndex": 90,
-      "extract": "…[[rc://*/ta/man…",
+      "excerpt": "…[[rc://*/ta/man…",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
       "message": "tC cannot yet process '*' language code",
       "priority": 950,
@@ -220,7 +223,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail with leading word joiner 1`] = `
+exports[`checkTN_TSV9DataRow() -  Original Quote tests -  should fail with leading word joiner 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -228,7 +231,7 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "characterIndex": 0,
-      "extract": "‼וְ‼חֹ֖שֶׁךְ",
+      "excerpt": "‼וְ‼חֹ֖שֶׁךְ",
       "fieldName": "OrigQuote",
       "location": " that was supplied",
       "message": "Unexpected leading word-joiner",
@@ -240,7 +243,7 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "details": "quote which starts with 'word joiner'",
-      "extract": "",
+      "excerpt": "⁠וְ⁠חֹ֖שֶׁךְ",
       "fieldName": "OrigQuote",
       "location": " that was supplied",
       "message": "Unable to find original language quote in verse text",
@@ -252,8 +255,9 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "characterIndex": 90,
-      "extract": "…[[rc://*/ta/man…",
+      "excerpt": "…[[rc://*/ta/man…",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
       "message": "tC cannot yet process '*' language code",
       "priority": 950,
@@ -264,7 +268,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail with leading zero width joiner 1`] = `
+exports[`checkTN_TSV9DataRow() -  Original Quote tests -  should fail with leading zero width joiner 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -272,7 +276,7 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "characterIndex": 0,
-      "extract": "‼וְ⁠חֹ֖שֶׁךְ",
+      "excerpt": "‼וְ⁠חֹ֖שֶׁךְ",
       "fieldName": "OrigQuote",
       "location": " that was supplied",
       "message": "Unexpected leading zero-width joiner",
@@ -284,7 +288,7 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "details": "quote which starts with 'zero-width joiner'",
-      "extract": "",
+      "excerpt": "‍וְ⁠חֹ֖שֶׁךְ",
       "fieldName": "OrigQuote",
       "location": " that was supplied",
       "message": "Unable to find original language quote in verse text",
@@ -296,8 +300,9 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "characterIndex": 90,
-      "extract": "…[[rc://*/ta/man…",
+      "excerpt": "…[[rc://*/ta/man…",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
       "message": "tC cannot yet process '*' language code",
       "priority": 950,
@@ -308,7 +313,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail with leading zero width non-joiner 1`] = `
+exports[`checkTN_TSV9DataRow() -  Original Quote tests -  should fail with leading zero width non-joiner 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -316,7 +321,7 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "details": "passage ►וְ⁠הָ⁠אָ֗רֶץ הָיְתָ֥ה תֹ֨הוּ֙ וָ⁠בֹ֔הוּ וְ⁠חֹ֖שֶׁךְ עַל־פְּנֵ֣י תְה֑וֹם וְ⁠ר֣וּחַ אֱלֹהִ֔ים מְרַחֶ֖פֶת עַל־פְּנֵ֥י הַ⁠מָּֽיִם׃◄",
-      "extract": "‌וְ⁠חֹֹ֖֖שֶׁךְ",
+      "excerpt": "‌וְ⁠חֹ֖שֶׁךְ",
       "fieldName": "OrigQuote",
       "location": " that was supplied",
       "message": "Unable to find original language quote in verse text",
@@ -328,8 +333,9 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "characterIndex": 90,
-      "extract": "…[[rc://*/ta/man…",
+      "excerpt": "…[[rc://*/ta/man…",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
       "message": "tC cannot yet process '*' language code",
       "priority": 950,
@@ -339,7 +345,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail with trailing space 1`] = `
+exports[`checkTN_TSV9DataRow() -  Original Quote tests -  should fail with trailing space 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -347,7 +353,7 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "characterIndex": 11,
-      "extract": "⁠חֹ֖שֶׁךְ␣",
+      "excerpt": "⁠חֹ֖שֶׁךְ␣",
       "fieldName": "OrigQuote",
       "location": " that was supplied",
       "message": "Unexpected trailing space(s)",
@@ -359,8 +365,9 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "characterIndex": 90,
-      "extract": "…[[rc://*/ta/man…",
+      "excerpt": "…[[rc://*/ta/man…",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
       "message": "tC cannot yet process '*' language code",
       "priority": 950,
@@ -371,7 +378,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail with trailing word joiner 1`] = `
+exports[`checkTN_TSV9DataRow() -  Original Quote tests -  should fail with trailing word joiner 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -379,7 +386,7 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "characterIndex": 0,
-      "extract": "וְ‼חֹ֖שֶׁךְ‼",
+      "excerpt": "וְ‼חֹ֖שֶׁךְ‼",
       "fieldName": "OrigQuote",
       "location": " that was supplied",
       "message": "Unexpected trailing word-joiner",
@@ -391,7 +398,7 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "details": "quote which ends with 'word joiner'",
-      "extract": "וְ⁠חֹ֖שֶׁךְ⁠",
+      "excerpt": "וְ⁠חֹ֖שֶׁךְ⁠",
       "fieldName": "OrigQuote",
       "location": " that was supplied",
       "message": "Unable to find original language quote in verse text",
@@ -403,8 +410,9 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "characterIndex": 90,
-      "extract": "…[[rc://*/ta/man…",
+      "excerpt": "…[[rc://*/ta/man…",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
       "message": "tC cannot yet process '*' language code",
       "priority": 950,
@@ -415,7 +423,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail with trailing zero width joiner 1`] = `
+exports[`checkTN_TSV9DataRow() -  Original Quote tests -  should fail with trailing zero width joiner 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -423,7 +431,7 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "characterIndex": 0,
-      "extract": "וְ⁠חֹ֖שֶׁךְ‼",
+      "excerpt": "וְ⁠חֹ֖שֶׁךְ‼",
       "fieldName": "OrigQuote",
       "location": " that was supplied",
       "message": "Unexpected trailing zero-width joiner",
@@ -435,7 +443,7 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "details": "quote which ends with 'zero-width joiner'",
-      "extract": "וְ⁠חֹ֖שֶׁךְ‍",
+      "excerpt": "וְ⁠חֹ֖שֶׁךְ‍",
       "fieldName": "OrigQuote",
       "location": " that was supplied",
       "message": "Unable to find original language quote in verse text",
@@ -447,8 +455,9 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "characterIndex": 90,
-      "extract": "…[[rc://*/ta/man…",
+      "excerpt": "…[[rc://*/ta/man…",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
       "message": "tC cannot yet process '*' language code",
       "priority": 950,
@@ -459,7 +468,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  Original Quote tests -  should fail with trailing zero width non-joiner 1`] = `
+exports[`checkTN_TSV9DataRow() -  Original Quote tests -  should fail with trailing zero width non-joiner 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -467,7 +476,7 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "details": "passage ►וְ⁠הָ⁠אָ֗רֶץ הָיְתָ֥ה תֹ֨הוּ֙ וָ⁠בֹ֔הוּ וְ⁠חֹ֖שֶׁךְ עַל־פְּנֵ֣י תְה֑וֹם וְ⁠ר֣וּחַ אֱלֹהִ֔ים מְרַחֶ֖פֶת עַל־פְּנֵ֥י הַ⁠מָּֽיִם׃◄",
-      "extract": "וְ⁠חֹ֖ש֖שֶׁךְ‌",
+      "excerpt": "וְ⁠חֹ֖שֶׁךְ‌",
       "fieldName": "OrigQuote",
       "location": " that was supplied",
       "message": "Unable to find original language quote in verse text",
@@ -479,8 +488,9 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "characterIndex": 90,
-      "extract": "…[[rc://*/ta/man…",
+      "excerpt": "…[[rc://*/ta/man…",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
       "message": "tC cannot yet process '*' language code",
       "priority": 950,
@@ -490,7 +500,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  Original Quote tests -  should find missing Original Quote 1`] = `
+exports[`checkTN_TSV9DataRow() -  Original Quote tests -  should find missing Original Quote 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -499,7 +509,7 @@ Object {
       "bookID": "GEN",
       "fieldName": "OrigQuote",
       "location": " that was supplied",
-      "message": "Missing OrigQuote field",
+      "message": "Missing Quote field",
       "priority": 919,
       "rowID": "a7qw",
     },
@@ -508,8 +518,9 @@ Object {
       "V": "3",
       "bookID": "GEN",
       "characterIndex": 90,
-      "extract": "…[[rc://*/ta/man…",
+      "excerpt": "…[[rc://*/ta/man…",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
       "message": "tC cannot yet process '*' language code",
       "priority": 950,
@@ -519,7 +530,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  SupportReference tests -  should find long SupportReference 1`] = `
+exports[`checkTN_TSV9DataRow() -  SupportReference tests -  should find long SupportReference 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -527,7 +538,7 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "details": "not 5",
-      "extract": "r7q33",
+      "excerpt": "r7q33",
       "fieldName": "ID",
       "location": " that was supplied",
       "message": "Row ID should be exactly 4 characters",
@@ -539,8 +550,9 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "characterIndex": 90,
-      "extract": "…[[rc://*/ta/man…",
+      "excerpt": "…[[rc://*/ta/man…",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
       "message": "tC cannot yet process '*' language code",
       "priority": 950,
@@ -550,7 +562,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  SupportReference tests -  should find missing SupportReference 1`] = `
+exports[`checkTN_TSV9DataRow() -  SupportReference tests -  should find missing SupportReference 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -567,8 +579,9 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "characterIndex": 90,
-      "extract": "…[[rc://*/ta/man…",
+      "excerpt": "…[[rc://*/ta/man…",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
       "message": "tC cannot yet process '*' language code",
       "priority": 950,
@@ -578,7 +591,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  SupportReference tests -  should find short SupportReference 1`] = `
+exports[`checkTN_TSV9DataRow() -  SupportReference tests -  should find short SupportReference 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -586,7 +599,7 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "details": "not 3",
-      "extract": "q7q",
+      "excerpt": "q7q",
       "fieldName": "ID",
       "location": " that was supplied",
       "message": "Row ID should be exactly 4 characters",
@@ -598,8 +611,9 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "characterIndex": 90,
-      "extract": "…[[rc://*/ta/man…",
+      "excerpt": "…[[rc://*/ta/man…",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
       "message": "tC cannot yet process '*' language code",
       "priority": 950,
@@ -610,7 +624,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  TSV format tests -  empty line should fail 1`] = `
+exports[`checkTN_TSV9DataRow() -  TSV format tests -  empty line should fail 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -627,7 +641,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  TSV format tests -  should fail not TSV 1`] = `
+exports[`checkTN_TSV9DataRow() -  TSV format tests -  should fail not TSV 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -644,7 +658,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  TSV format tests -  should find wrong row count 1`] = `
+exports[`checkTN_TSV9DataRow() -  TSV format tests -  should find wrong row count 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -661,9 +675,21 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  link tests -  should fail broken link end 1`] = `
+exports[`checkTN_TSV9DataRow() -  link tests -  should fail broken link end 1`] = `
 Object {
   "noticeList": Array [
+    Object {
+      "C": "2",
+      "V": "12",
+      "bookID": "RUT",
+      "details": "left=1, right=0",
+      "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
+      "location": " that was supplied",
+      "message": "Mismatched [[ ]] link characters",
+      "priority": 845,
+      "rowID": "gnn5",
+    },
     Object {
       "C": "2",
       "V": "12",
@@ -688,24 +714,25 @@ Object {
       "priority": 563,
       "rowID": "gnn5",
     },
+  ],
+}
+`;
+
+exports[`checkTN_TSV9DataRow() -  link tests -  should fail broken link start 1`] = `
+Object {
+  "noticeList": Array [
     Object {
       "C": "2",
       "V": "12",
       "bookID": "RUT",
-      "details": "left=1, right=0",
+      "details": "left=0, right=1",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
       "message": "Mismatched [[ ]] link characters",
       "priority": 845,
       "rowID": "gnn5",
     },
-  ],
-}
-`;
-
-exports[`checkTN_TSVDataRow() -  link tests -  should fail broken link start 1`] = `
-Object {
-  "noticeList": Array [
     Object {
       "C": "2",
       "V": "12",
@@ -730,24 +757,25 @@ Object {
       "priority": 563,
       "rowID": "gnn5",
     },
+  ],
+}
+`;
+
+exports[`checkTN_TSV9DataRow() -  link tests -  should fail double broken link end 1`] = `
+Object {
+  "noticeList": Array [
     Object {
       "C": "2",
       "V": "12",
       "bookID": "RUT",
-      "details": "left=0, right=1",
+      "details": "left=1, right=0",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
       "message": "Mismatched [[ ]] link characters",
       "priority": 845,
       "rowID": "gnn5",
     },
-  ],
-}
-`;
-
-exports[`checkTN_TSVDataRow() -  link tests -  should fail double broken link end 1`] = `
-Object {
-  "noticeList": Array [
     Object {
       "C": "2",
       "V": "12",
@@ -760,22 +788,11 @@ Object {
       "priority": 563,
       "rowID": "gnn5",
     },
-    Object {
-      "C": "2",
-      "V": "12",
-      "bookID": "RUT",
-      "details": "left=1, right=0",
-      "fieldName": "OccurrenceNote",
-      "location": " that was supplied",
-      "message": "Mismatched [[ ]] link characters",
-      "priority": 845,
-      "rowID": "gnn5",
-    },
   ],
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  link tests -  should fail double broken link start 1`] = `
+exports[`checkTN_TSV9DataRow() -  link tests -  should fail double broken link start 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -790,29 +807,18 @@ Object {
       "priority": 563,
       "rowID": "gnn5",
     },
-    Object {
-      "C": "2",
-      "V": "12",
-      "bookID": "RUT",
-      "details": "left=0, right=1",
-      "fieldName": "OccurrenceNote",
-      "location": " that was supplied",
-      "message": "Mismatched [[ ]] link characters",
-      "priority": 845,
-      "rowID": "gnn5",
-    },
   ],
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  link tests -  should fail if SupportReference link differs from link in OccurrenceNote 1`] = `
+exports[`checkTN_TSV9DataRow() -  link tests -  should fail if SupportReference link differs from link in OccurrenceNote 1`] = `
 Object {
   "noticeList": Array [
     Object {
       "C": "1",
       "V": "6",
       "bookID": "GEN",
-      "extract": "figs-imperative",
+      "excerpt": "figs-imperative",
       "fieldName": "SupportReference",
       "location": " that was supplied",
       "message": "Link to TA should also be in OccurrenceNote",
@@ -825,8 +831,9 @@ Object {
       "bookID": "GEN",
       "details": "need to carefully check \\"[[rc://*/ta/man/figs-parallelism]]\\"",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
-      "message": "Unusual [[ ]] link(s)—not normal TA or TW links",
+      "message": "Unusual [[ ]] link(s)—not a recognized TA or TW link",
       "priority": 649,
       "rowID": "urb3",
     },
@@ -834,7 +841,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  link tests -  should fail invalid doublet link 1`] = `
+exports[`checkTN_TSV9DataRow() -  link tests -  should fail invalid doublet link 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -842,8 +849,9 @@ Object {
       "V": "12",
       "bookID": "RUT",
       "characterIndex": 170,
-      "extract": "…[[rc://*/ta/man…",
+      "excerpt": "…[[rc://*/ta/man…",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
       "message": "tC cannot yet process '*' language code",
       "priority": 950,
@@ -855,8 +863,9 @@ Object {
       "bookID": "RUT",
       "details": "need to carefully check \\"[Doublet](../figs-doublet/01.md)\\"",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
-      "message": "Unusual [ ]( ) link(s)—not normal Bible or TN links",
+      "message": "Unusual [ ]( ) link(s)—not a recognized Bible or TA, TN, or TW link",
       "priority": 648,
       "rowID": "gnn5",
     },
@@ -864,7 +873,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  link tests -  should fail invalid first link 1`] = `
+exports[`checkTN_TSV9DataRow() -  link tests -  should fail invalid first link 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -872,8 +881,9 @@ Object {
       "V": "9",
       "bookID": "GEN",
       "characterIndex": 235,
-      "extract": "…[[rc://*/ta/man…",
+      "excerpt": "…[[rc://*/ta/man…",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
       "message": "tC cannot yet process '*' language code",
       "priority": 950,
@@ -883,8 +893,9 @@ Object {
       "C": "1",
       "V": "9",
       "bookID": "GEN",
-      "extract": "[[rc://*/ta/man/translate/figs-activepassivez]]",
+      "excerpt": "[[rc://*/ta/man/translate/figs-activepassivez]]",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied translate/figs-activepassivez/01.md: tn-table-row-check.test getFile(): Could not find src/__tests__/fixtures/unfoldingWord/en_ta/translate/figs-activepassivez/01.md",
       "message": "Error loading OccurrenceNote TA link",
       "priority": 885,
@@ -895,8 +906,9 @@ Object {
       "V": "9",
       "bookID": "GEN",
       "characterIndex": 287,
-      "extract": "…[[rc://*/ta/man…",
+      "excerpt": "…[[rc://*/ta/man…",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
       "message": "tC cannot yet process '*' language code",
       "priority": 950,
@@ -906,31 +918,19 @@ Object {
       "C": "1",
       "V": "9",
       "bookID": "GEN",
-      "details": "(SR='figs-activepassive')",
-      "extract": "figs-activepassivez",
+      "details": "SR='figs-activepassive'—found 2 TA links",
+      "excerpt": "[\\"figs-activepassivez\\",\\"figs-imperative\\"]",
       "fieldName": "OccurrenceNote",
       "location": " that was supplied",
       "message": "Should have a SupportReference when OccurrenceNote has a TA link",
-      "priority": 786,
-      "rowID": "zu6f",
-    },
-    Object {
-      "C": "1",
-      "V": "9",
-      "bookID": "GEN",
-      "details": "(SR='figs-activepassive')",
-      "extract": "figs-imperative",
-      "fieldName": "OccurrenceNote",
-      "location": " that was supplied",
-      "message": "Should have a SupportReference when OccurrenceNote has a TA link",
-      "priority": 786,
+      "priority": 789,
       "rowID": "zu6f",
     },
   ],
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  link tests -  should fail invalid link path 1`] = `
+exports[`checkTN_TSV9DataRow() -  link tests -  should fail invalid link path 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -939,8 +939,9 @@ Object {
       "bookID": "GEN",
       "details": "need to carefully check \\"[[rc://*/ta/woman/figs-imperative]]\\"",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
-      "message": "Unusual [[ ]] link(s)—not normal TA or TW links",
+      "message": "Unusual [[ ]] link(s)—not a recognized TA or TW link",
       "priority": 649,
       "rowID": "urb3",
     },
@@ -948,7 +949,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  link tests -  should fail invalid second link 1`] = `
+exports[`checkTN_TSV9DataRow() -  link tests -  should fail invalid second link 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -956,8 +957,9 @@ Object {
       "V": "9",
       "bookID": "GEN",
       "characterIndex": 235,
-      "extract": "…[[rc://*/ta/man…",
+      "excerpt": "…[[rc://*/ta/man…",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
       "message": "tC cannot yet process '*' language code",
       "priority": 950,
@@ -968,8 +970,9 @@ Object {
       "V": "9",
       "bookID": "GEN",
       "characterIndex": 286,
-      "extract": "…[[rc://*/ta/man…",
+      "excerpt": "…[[rc://*/ta/man…",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
       "message": "tC cannot yet process '*' language code",
       "priority": 950,
@@ -979,8 +982,9 @@ Object {
       "C": "1",
       "V": "9",
       "bookID": "GEN",
-      "extract": "[[rc://*/ta/man/translate/figs-imperativez]]",
+      "excerpt": "[[rc://*/ta/man/translate/figs-imperativez]]",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied translate/figs-imperativez/01.md: tn-table-row-check.test getFile(): Could not find src/__tests__/fixtures/unfoldingWord/en_ta/translate/figs-imperativez/01.md",
       "message": "Error loading OccurrenceNote TA link",
       "priority": 885,
@@ -990,11 +994,11 @@ Object {
       "C": "1",
       "V": "9",
       "bookID": "GEN",
-      "details": "(SR='figs-activepassive')",
-      "extract": "figs-imperativez",
+      "details": "SR='figs-activepassive'—found 2 TA links",
+      "excerpt": "[\\"figs-activepassive\\",\\"figs-imperativez\\"]",
       "fieldName": "OccurrenceNote",
       "location": " that was supplied",
-      "message": "Should have a SupportReference when OccurrenceNote has a TA link",
+      "message": "Shouldn’t have multiple TA links in OccurrenceNote",
       "priority": 786,
       "rowID": "zu6f",
     },
@@ -1002,7 +1006,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  link tests -  should fail invalid verse link 1`] = `
+exports[`checkTN_TSV9DataRow() -  link tests -  should fail invalid verse link 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -1011,8 +1015,9 @@ Object {
       "bookID": "GEN",
       "details": "need to carefully check \\"[Genesis 1:7](../01/zzz.md)\\"",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
-      "message": "Unusual [ ]( ) link(s)—not normal Bible or TN links",
+      "message": "Unusual [ ]( ) link(s)—not a recognized Bible or TA, TN, or TW link",
       "priority": 648,
       "rowID": "ha33",
     },
@@ -1020,9 +1025,21 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  link tests -  should fail invalid verse link end 1`] = `
+exports[`checkTN_TSV9DataRow() -  link tests -  should fail invalid verse link end 1`] = `
 Object {
   "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "9",
+      "bookID": "GEN",
+      "details": "left=1, middle=1, right=0",
+      "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
+      "location": " that was supplied",
+      "message": "Mismatched [ ]( ) link characters",
+      "priority": 843,
+      "rowID": "ha33",
+    },
     Object {
       "C": "1",
       "V": "9",
@@ -1035,22 +1052,11 @@ Object {
       "priority": 563,
       "rowID": "ha33",
     },
-    Object {
-      "C": "1",
-      "V": "9",
-      "bookID": "GEN",
-      "details": "left=1, middle=1, right=0",
-      "fieldName": "OccurrenceNote",
-      "location": " that was supplied",
-      "message": "Mismatched [ ]( ) link characters",
-      "priority": 843,
-      "rowID": "ha33",
-    },
   ],
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  link tests -  should fail invalid verse link start 1`] = `
+exports[`checkTN_TSV9DataRow() -  link tests -  should fail invalid verse link start 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -1065,22 +1071,11 @@ Object {
       "priority": 563,
       "rowID": "ha33",
     },
-    Object {
-      "C": "1",
-      "V": "9",
-      "bookID": "GEN",
-      "details": "left=0, middle=1, right=1",
-      "fieldName": "OccurrenceNote",
-      "location": " that was supplied",
-      "message": "Mismatched [ ]( ) link characters",
-      "priority": 843,
-      "rowID": "ha33",
-    },
   ],
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  should find invalid Book ID, chapter number, ID, SupportReference, quotes, OccurrenceNote 1`] = `
+exports[`checkTN_TSV9DataRow() -  should find invalid Book ID, chapter number, ID, SupportReference, quotes, OccurrenceNote 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -1088,7 +1083,7 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "details": "expected 'GEN'",
-      "extract": "GIN",
+      "excerpt": "GIN",
       "fieldName": "Book",
       "location": " that was supplied",
       "message": "Wrong book identifier",
@@ -1100,7 +1095,7 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "details": "expected '1'",
-      "extract": "200",
+      "excerpt": "200",
       "fieldName": "Chapter",
       "location": " that was supplied",
       "message": "Wrong chapter number",
@@ -1111,7 +1106,7 @@ Object {
       "C": "1",
       "V": "2",
       "bookID": "GEN",
-      "extract": "200",
+      "excerpt": "200",
       "fieldName": "Chapter",
       "location": " that was supplied",
       "message": "Invalid large chapter number",
@@ -1123,7 +1118,7 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "details": "expected '2'",
-      "extract": "9",
+      "excerpt": "9",
       "fieldName": "Verse",
       "location": " that was supplied",
       "message": "Wrong verse number",
@@ -1145,7 +1140,7 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "details": "not 5",
-      "extract": "W-3r5",
+      "excerpt": "W-3r5",
       "fieldName": "ID",
       "location": " that was supplied",
       "message": "Row ID should be exactly 4 characters",
@@ -1156,7 +1151,7 @@ Object {
       "C": "1",
       "V": "2",
       "bookID": "GEN",
-      "extract": "Laugh",
+      "excerpt": "Laugh",
       "fieldName": "SupportReference",
       "location": " that was supplied",
       "message": "Only 'Just-In-Time Training' TA articles allowed here",
@@ -1167,7 +1162,7 @@ Object {
       "C": "1",
       "V": "2",
       "bookID": "GEN",
-      "extract": "Laugh",
+      "excerpt": "Laugh",
       "fieldName": "SupportReference",
       "location": " that was supplied translate/Laugh/01.md: tn-table-row-check.test getFile(): Could not find src/__tests__/fixtures/unfoldingWord/en_ta/translate/Laugh/01.md",
       "message": "Error loading TA link",
@@ -1178,7 +1173,7 @@ Object {
       "C": "1",
       "V": "2",
       "bookID": "GEN",
-      "extract": "Laugh",
+      "excerpt": "Laugh",
       "fieldName": "SupportReference",
       "location": " that was supplied",
       "message": "Link to TA should also be in OccurrenceNote",
@@ -1191,7 +1186,7 @@ Object {
       "bookID": "GEN",
       "fieldName": "OrigQuote",
       "location": " that was supplied",
-      "message": "Missing OrigQuote field",
+      "message": "Missing Quote field",
       "priority": 919,
       "rowID": "W-3r5",
     },
@@ -1199,7 +1194,7 @@ Object {
       "C": "1",
       "V": "2",
       "bookID": "GEN",
-      "extract": "17",
+      "excerpt": "17",
       "fieldName": "Occurrence",
       "location": " that was supplied",
       "message": "Invalid occurrence field",
@@ -1211,7 +1206,7 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "characterIndex": 11,
-      "extract": "…ellipse...",
+      "excerpt": "…ellipse...",
       "fieldName": "GLQuote",
       "location": " that was supplied",
       "message": "Unexpected doubled . characters",
@@ -1222,36 +1217,10 @@ Object {
       "C": "1",
       "V": "2",
       "bookID": "GEN",
-      "characterIndex": 13,
-      "extract": "…o␣hoo,,<br>␣los…",
+      "characterIndex": 7,
+      "excerpt": "Boo hoo,,",
       "fieldName": "OccurrenceNote",
-      "lineNumber": 1,
-      "location": " that was supplied",
-      "message": "Unexpected leading space(s) after break",
-      "priority": 64,
-      "rowID": "W-3r5",
-    },
-    Object {
-      "C": "1",
-      "V": "2",
-      "bookID": "GEN",
-      "characterIndex": 0,
-      "extract": "<br>Boo hoo,,<b…",
-      "fieldName": "OccurrenceNote",
-      "lineNumber": 1,
-      "location": " that was supplied",
-      "message": "Unexpected leading line break",
-      "priority": 107,
-      "rowID": "W-3r5",
-    },
-    Object {
-      "C": "1",
-      "V": "2",
-      "bookID": "GEN",
-      "characterIndex": 11,
-      "extract": "…Boo hoo,,<br> l…",
-      "fieldName": "OccurrenceNote",
-      "lineNumber": 1,
+      "lineNumber": 2,
       "location": " that was supplied",
       "message": "Unexpected doubled , characters",
       "priority": 177,
@@ -1261,28 +1230,28 @@ Object {
       "C": "1",
       "V": "2",
       "bookID": "GEN",
-      "characterIndex": 30,
-      "extract": "…my shoe !",
+      "characterIndex": 12,
+      "excerpt": "…my shoe !",
       "fieldName": "OccurrenceNote",
-      "lineNumber": 1,
+      "lineNumber": 3,
       "location": " that was supplied",
       "message": "Unexpected ! character after space",
       "priority": 191,
       "rowID": "W-3r5",
     },
   ],
-  "suggestion": "GIN	200	9	W-3r5	Laugh		1	Bad ellipse...	Boo hoo,,<br> lost my shoe !",
+  "suggestion": "GIN	200	9	W-3r5	Laugh		1	Bad ellipse...	<br>Boo hoo,,<br> lost my shoe !",
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  should find invalid SupportReference and missing quotes 1`] = `
+exports[`checkTN_TSV9DataRow() -  should find invalid SupportReference and missing quotes 1`] = `
 Object {
   "noticeList": Array [
     Object {
       "C": "2",
       "V": "3",
       "bookID": "GEN",
-      "extract": "Laugh",
+      "excerpt": "Laugh",
       "fieldName": "SupportReference",
       "location": " that was supplied",
       "message": "Only 'Just-In-Time Training' TA articles allowed here",
@@ -1293,7 +1262,7 @@ Object {
       "C": "2",
       "V": "3",
       "bookID": "GEN",
-      "extract": "Laugh",
+      "excerpt": "Laugh",
       "fieldName": "SupportReference",
       "location": " that was supplied translate/Laugh/01.md: tn-table-row-check.test getFile(): Could not find src/__tests__/fixtures/unfoldingWord/en_ta/translate/Laugh/01.md",
       "message": "Error loading TA link",
@@ -1304,7 +1273,7 @@ Object {
       "C": "2",
       "V": "3",
       "bookID": "GEN",
-      "extract": "Laugh",
+      "excerpt": "Laugh",
       "fieldName": "SupportReference",
       "location": " that was supplied",
       "message": "Link to TA should also be in OccurrenceNote",
@@ -1317,7 +1286,7 @@ Object {
       "bookID": "GEN",
       "fieldName": "OrigQuote",
       "location": " that was supplied",
-      "message": "Missing OrigQuote field",
+      "message": "Missing Quote field",
       "priority": 919,
       "rowID": "w3r5",
     },
@@ -1325,7 +1294,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  should find language code instead of asterisk 1`] = `
+exports[`checkTN_TSV9DataRow() -  should find language code instead of asterisk 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -1334,8 +1303,9 @@ Object {
       "bookID": "EXO",
       "characterIndex": 90,
       "details": "not 'en'",
-      "extract": "…[[rc://en/ta/ma…",
+      "excerpt": "…[[rc://en/ta/ma…",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
       "message": "Resource container link should have '*' language code",
       "priority": 450,
@@ -1345,7 +1315,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  should find mismatched bookId 1`] = `
+exports[`checkTN_TSV9DataRow() -  should find mismatched bookId 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -1353,7 +1323,7 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "details": "expected 'GEN'",
-      "extract": "EXO",
+      "excerpt": "EXO",
       "fieldName": "Book",
       "location": " that was supplied",
       "message": "Wrong book identifier",
@@ -1365,8 +1335,9 @@ Object {
       "V": "2",
       "bookID": "GEN",
       "characterIndex": 90,
-      "extract": "…[[rc://*/ta/man…",
+      "excerpt": "…[[rc://*/ta/man…",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
       "message": "tC cannot yet process '*' language code",
       "priority": 950,
@@ -1376,7 +1347,7 @@ Object {
 }
 `;
 
-exports[`checkTN_TSVDataRow() -  should find mismatched chapter verse 1`] = `
+exports[`checkTN_TSV9DataRow() -  should find mismatched chapter verse 1`] = `
 Object {
   "noticeList": Array [
     Object {
@@ -1384,7 +1355,7 @@ Object {
       "V": "33",
       "bookID": "GEN",
       "details": "expected '22'",
-      "extract": "2",
+      "excerpt": "2",
       "fieldName": "Chapter",
       "location": " that was supplied",
       "message": "Wrong chapter number",
@@ -1396,7 +1367,7 @@ Object {
       "V": "33",
       "bookID": "GEN",
       "details": "expected '33'",
-      "extract": "3",
+      "excerpt": "3",
       "fieldName": "Verse",
       "location": " that was supplied",
       "message": "Wrong verse number",
@@ -1408,8 +1379,9 @@ Object {
       "V": "33",
       "bookID": "GEN",
       "characterIndex": 90,
-      "extract": "…[[rc://*/ta/man…",
+      "excerpt": "…[[rc://*/ta/man…",
       "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
       "location": " that was supplied",
       "message": "tC cannot yet process '*' language code",
       "priority": 950,

@@ -5,10 +5,10 @@ import { clearCaches, clearCheckedArticleCache, ourParseInt, preloadReposIfNeces
 import { checkBookPackages } from './checkBookPackages';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderTotals } from '../RenderProcessedResults';
-import { userLog } from '../../core/utilities';
+import { userLog, debugLog } from '../../core/utilities';
 
 
-// const BPS_VALIDATOR_VERSION_STRING = '0.2.1';
+// const BPS_VALIDATOR_VERSION_STRING = '0.2.2';
 
 
 /**
@@ -43,18 +43,21 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
             bookIDInvalid = bookID;
         }
         bookIDList.push(bookID);
-        const whichTestament = books.testament(bookID);
-        if (whichTestament==='old') haveOT = true;
-        if (whichTestament==='new') haveNT = true;
+        if (books.isValidBookID(bookID)) {
+          const whichTestament = books.testament(bookID);
+          if (whichTestament==='old') haveOT = true;
+          if (whichTestament==='new') haveNT = true;
+        }
     }
     // debugLog(`bookIDList (${bookIDList.length}) = ${bookIDList.join(', ')}`);
 
     const checkingOptions = { // Uncomment any of these to test them
-        // extractLength: 25,
+      dataSet: dataSet, // Can be 'OLD' (Markdown, etc.), 'NEW' (TSV only), or 'BOTH', or 'DEFAULT'
+      // excerptLength: 25,
         suppressNoticeDisablingFlag: true, // Leave this one as true (otherwise demo checks are less efficient)
     };
     // Or this allows the parameters to be specified as a BookPackagesCheck property
-    if (props.extractLength) checkingOptions.extractLength = ourParseInt(props.extractLength);
+    if (props.excerptLength) checkingOptions.excerptLength = ourParseInt(props.excerptLength);
     if (props.cutoffPriorityLevel) checkingOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
 
     useEffect(() => {
@@ -73,8 +76,8 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         }
 
         if (props.reloadAllFilesFirst && props.reloadAllFilesFirst.slice(0).toUpperCase() === 'Y') {
-            userLog("Clearing cache before running book package check…");
-            setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running book package check…</p>);
+            userLog("Clearing cache before running book packages check…");
+            setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running book packages check…</p>);
             await clearCaches();
         }
         else await clearCheckedArticleCache();
@@ -89,6 +92,7 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
             repoPreloadList = ['LT', 'ST', 'TN', 'TN2', 'TWL', 'TA', 'TW', 'TQ', 'TQ2'];
         if (haveNT) repoPreloadList.unshift('UGNT');
         if (haveOT) repoPreloadList.unshift('UHB');
+        debugLog(`BookPackagesCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
 
         setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for book packages check…</p>);
           const successFlag = await preloadReposIfNecessary(username, languageCode, bookIDList, branch, repoPreloadList);

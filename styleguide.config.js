@@ -123,13 +123,23 @@ let sections = [
 		// content: 'src/core/README.md',
 		sections: [
 			{
-				name: 'Annotation table check',
-				content: 'src/core/annotation-table-check.md',
+				name: 'TW Links TSV6 table check',
+				content: 'src/core/twl-tsv6-table-check.md',
 				// description: ''
 			},
 			{
-				name: 'TN TSV table check',
-				content: 'src/core/tn-tsv-table-text-check.md',
+				name: 'TQ2/SQ TSV7 table check',
+				content: 'src/core/questions-tsv7-table-check.md',
+				// description: ''
+			},
+			{
+				name: 'TN2/SN TSV7 table check',
+				content: 'src/core/notes-tsv7-table-check.md',
+				// description: ''
+			},
+			{
+				name: 'TN TSV9 table check',
+				content: 'src/core/tn-tsv9-table-check.md',
 				// description: ''
 			},
 			{
@@ -197,13 +207,23 @@ let sections = [
 		// content: 'src/core/README.md',
 		sections: [
 			{
-				name: 'Annotation row check',
-				content: 'src/core/annotation-row-check.md',
+				name: 'TWLinks TSV6 row check',
+				content: 'src/core/twl-tsv6-row-check.md',
 				// description: ''
 			},
 			{
-				name: 'TN TSV table row check',
-				content: 'src/core/tn-tsv-table-row-check.md',
+				name: 'TQ/SQ TSV7 row check',
+				content: 'src/core/questions-tsv7-row-check.md',
+				// description: ''
+			},
+			{
+				name: 'TN/SN TSV7 row check',
+				content: 'src/core/notes-tsv7-row-check.md',
+				// description: ''
+			},
+			{
+				name: 'TN TSV9 table row check',
+				content: 'src/core/tn-tsv9-row-check.md',
 				// description: ''
 			},
 			{

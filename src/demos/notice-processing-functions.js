@@ -2,7 +2,7 @@ import { userLog, parameterAssert } from '../core/utilities';
 import { isDisabledNotice } from '../core/disabled-notices';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.9';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.11';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -51,7 +51,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 fieldName: string (if relevant)
                 characterIndex: A zero-based integer index which indicates the position
                     of the error on the line or in the text field as appropriate.
-                extract: An extract of the checked text which indicates the area
+                excerpt: An excerpt of the checked text which indicates the area
                       containing the problem.
                     Where helpful, some character substitutions have already been made,
                       for example, if the notice is about spaces,
@@ -121,7 +121,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                         && (thisUniqueNotice.rowID === item.rowID || thisUniqueNotice.rowID === undefined || item.rowID === undefined)
                         && (thisUniqueNotice.lineNumber === item.lineNumber || thisUniqueNotice.lineNumber === undefined || item.lineNumber === undefined)
                         && (thisUniqueNotice.characterIndex === item.characterIndex || thisUniqueNotice.characterIndex === undefined || item.characterIndex === undefined)
-                        && (thisUniqueNotice.extract === item.extract || thisUniqueNotice.extract === undefined || item.extract === undefined)
+                        && (thisUniqueNotice.excerpt === item.excerpt || thisUniqueNotice.excerpt === undefined || item.excerpt === undefined)
                         && (thisUniqueNotice.extra === item.extra || thisUniqueNotice.extra === undefined || item.extra === undefined)
                     )
                         return ix;
@@ -144,8 +144,10 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     if (givenNoticeObject.noticeList && givenNoticeObject.noticeList.length) {
         const ALL_TSV_FIELDNAMES = ['Book', 'Chapter', 'Verse', 'Reference',
             'ID', 'Tags', 'SupportReference',
+            'OrigWords', 'TWLink',
             'OrigQuote', 'Quote', 'Occurrence', 'GLQuote',
-            'OccurrenceNote', 'Annotation'];
+            'Question', 'Response',
+            'OccurrenceNote', 'Note'];
         const numberStore = {}, duplicatePriorityList = [];
         for (const thisGivenNotice of standardisedNoticeList) {
             const thisPriority = thisGivenNotice.priority, thisMsg = thisGivenNotice.message;
@@ -178,8 +180,11 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             }
 
             // Check fields for bad values, and also across fields for unexpected combinations
-            const thisRepoName = thisGivenNotice.repoName, thisFilename = thisGivenNotice.filename, thisLineNumber = thisGivenNotice.lineNumber,
-                thisRowID = thisGivenNotice.rowID, thisFieldName = thisGivenNotice.fieldName, thisLocation = thisGivenNotice.location, thisExtra = thisGivenNotice.extra;
+            const thisRepoName = thisGivenNotice.repoName,
+                thisFilename = thisGivenNotice.filename, thisLineNumber = thisGivenNotice.lineNumber,
+                thisC = thisGivenNotice.C, thisV = thisGivenNotice.V,
+                thisRowID = thisGivenNotice.rowID, thisFieldName = thisGivenNotice.fieldName,
+                thisLocation = thisGivenNotice.location, thisExtra = thisGivenNotice.extra;
             if (thisRepoName) {
                 parameterAssert(thisRepoName.indexOf(' ') < 0 && thisRepoName.indexOf('/') < 0 && thisRepoName.indexOf('\\') < 0, `repoName '${thisRepoName}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 if (thisLocation)
@@ -194,6 +199,11 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 if (thisLocation)
                     parameterAssert(thisLocation.indexOf(thisFilename) < 0, `filename is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
             }
+            if (thisC)
+                parameterAssert(thisC === 'front' || !isNaN(thisC * 1), `C '${thisC}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+            if (thisV) // TODO: We'll need to remove this check once we start getting verse ranges, etc.
+                // NOTE: Question mark below is in "bad verse number" notices
+                parameterAssert(thisV === 'intro' || thisV === '?' || !isNaN(thisV * 1), `V '${thisV}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
             if (thisRowID) {
                 parameterAssert(thisRowID.indexOf(' ') < 0 && thisRowID.indexOf('/') < 0 && thisRowID.indexOf('\\') < 0, `rowID '${thisRowID}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 if (thisLocation)
@@ -261,7 +271,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     }
     else userLog(`Using supplied cutoffPriorityLevel=${cutoffPriorityLevel} cf. default=${DEFAULT_CUTOFF_PRIORITY_LEVEL}`);
     // if (cutoffPriorityLevel > errorPriorityLevel)
-    // resultObject.errorList.push({999, "Cutoff level must not be higher than error level", extract:`(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
+    // resultObject.errorList.push({999, "Cutoff level must not be higher than error level", excerpt:`(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
 
     let showDisabledNoticesFlag = optionalProcessingOptions.showDisabledNoticesFlag === true;
     if (showDisabledNoticesFlag) userLog(`showDisabledNoticesFlag=${showDisabledNoticesFlag}`);
@@ -406,7 +416,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             const thisNewNotice = {
                 ...thisParticularNotice, priority: 701, message: "\\s5 fields should be coded as \\ts\\* milestones", location: ` in ${givenNoticeObject.checkType}`,
                 // I think we need to delete these fields below as they were probably set in thisParticularNotice
-                C: undefined, V: undefined, characterIndex: undefined, extract: undefined
+                C: undefined, V: undefined, characterIndex: undefined, excerpt: undefined
             };
             // if (thisParticularNotice.filename && thisParticularNotice.filename.length)
             //     thisNewNotice.filename = thisParticularNotice.filename; // Sometimes we have an additional file identifier
@@ -449,7 +459,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         remainingNoticeList = newNoticeList;
     }
     // if (cutoffPriorityLevel > errorPriorityLevel)
-    // resultObject.errorList.push({999, "Cutoff level must not be higher than error level", extract:`(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
+    // resultObject.errorList.push({999, "Cutoff level must not be higher than error level", excerpt:`(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
 
     // Sort the remainingNoticeList as required
     const SORT_LIST = ['TN', 'TN2', 'LT', 'ST', 'UHB', 'UGNT', 'TWL', 'TW', 'TQ', 'TQ2', 'SN', 'SQ', 'TA', undefined, 'README', 'LICENSE'];

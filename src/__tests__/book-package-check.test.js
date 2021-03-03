@@ -7,6 +7,8 @@ import fs from 'fs-extra';
 let testFiles = {};
 
 const optionalCheckingOptions = {
+  disableLinkedTAArticlesCheckFlag: true,
+  disableLinkedTWArticlesCheckFlag: true,
   getFile: params => {
     const { username, repository, path } = params;
     // console.log(`book-package-check.test getFile(${username}, ${repository}, ${path})`)
@@ -22,7 +24,7 @@ const optionalCheckingOptions = {
       return fs.readFileSync(filePath).toString();
     }
     // eslint-disable-next-line no-throw-literal
-    throw `Could not find ${filePath}`;
+    throw `Tests could not find ${filePath}`;
   },
   getFileListFromZip: params => {
     const { username, repository, optionalPrefix } = params;

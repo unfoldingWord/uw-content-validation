@@ -1,6 +1,7 @@
 import React from 'react';
 import { forwardRef } from 'react';
-import { parameterAssert, userLog } from '../core/utilities';
+// eslint-disable-next-line no-unused-vars
+import { parameterAssert, userLog, debugLog } from '../core/utilities';
 
 // NOTE: The following line is currently giving compile warnings -- a problem in a dependency it seems
 import MaterialTable from 'material-table';
@@ -21,27 +22,27 @@ import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 
 const tableIcons = {
-  Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
-  Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
-  Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-  Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
-  DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-  Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
-  Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
-  Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
-  FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
-  LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
-  NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-  PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
-  ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-  Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
-  SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
-  ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
-  ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
+    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
+    Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
+    Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+    Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
+    DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+    Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
+    Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
+    Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
+    FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
+    LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
+    NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+    PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
+    ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+    Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
+    SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
+    ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
+    ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 
 
-// const RENDER_PROCESSED_RESULTS_VERSION = '0.5.10';
+// const RENDER_PROCESSED_RESULTS_VERSION = '0.6.0';
 
 
 export function RenderSuccesses({ username, results }) {
@@ -186,7 +187,7 @@ export function RenderRawResults({ results }) {
     if (allPropertiesSet.has('fieldName')) headerData = headerData.concat([{ title: 'Field', field: 'fieldName' }]);
     if (allPropertiesSet.has('lineNumber')) headerData = headerData.concat([{ title: 'Line', field: 'lineNumber' }]);
     if (allPropertiesSet.has('characterIndex')) headerData = headerData.concat([{ title: 'CharIndex', field: 'characterIndex' }]);
-    if (allPropertiesSet.has('extract')) headerData = headerData.concat([{ title: 'Extract', field: 'extract' }]);
+    if (allPropertiesSet.has('excerpt')) headerData = headerData.concat([{ title: 'Excerpt', field: 'excerpt' }]);
     if (allPropertiesSet.has('location')) headerData = headerData.concat([{ title: 'Location', field: 'location' }]);
     if (allPropertiesSet.has('extra')) headerData = headerData.concat([{ title: 'Extra', field: 'extra' }]);
     // debugLog("headerData", headerData.length, JSON.stringify(headerData));
@@ -252,36 +253,64 @@ function RenderBCV({ bookID, C, V }) {
 * @param {string} fieldName - (optional) name of field
 * @return {String} - rendered HTML for the given reference
 */
-function RenderFileDetails({ username, repoName, filename, lineNumber, rowID, fieldName }) {
+function RenderFileDetails({ username, repoName, branch, filename, lineNumber, rowID, fieldName }) {
     // These are all optional parameters - they may be undefined or blank if irrelevant
-    // debugLog(`RenderFileDetails(${repoName}, ${filename}, ${lineNumber}, ${rowID}, ${fieldName})`);
+    // debugLog(`RenderFileDetails(${repoName}, ${branch}, ${filename}, ${lineNumber}, ${rowID}, ${fieldName})`);
     if (!repoName && !filename && !lineNumber && !rowID && !fieldName)
         return null; // They're all undefined or blank!
+    if (!branch) branch = repoName?.endsWith('2') ? 'newFormat' : 'master'; // default but with TEMP code for newFormat
     // debugLog(`RenderFileDetails2 ${repoName}, ${filename}, ${lineNumber}`);
-    let resultStart = '', lineResult = '', resultEnd = '', fileLink = '';
+    let resultStart = '', lineResult = '', resultEnd = '', fileLineLink = '', fileLink = '';
     if (repoName && repoName.length) resultStart += ` in ${repoName} repository`;
-    if (filename && filename.length) resultStart += ` in file ${filename}`;
-    if (lineNumber) {
-        resultStart += ' on ';
-        if (username && repoName && filename && lineNumber) {
-            try {
-                if (filename.endsWith('.tsv') || filename.endsWith('.md')) { // use blame so we can see the line!
-                    const folder = repoName.endsWith('_obs') && filename !== 'README.md' && filename !== 'LICENSE.md' ? 'content/' : '';
-                    fileLink = `https://git.door43.org/${username}/${repoName}/blame/branch/master/${folder}${filename}#L${lineNumber}`;
-                } else fileLink = `https://git.door43.org/${username}/${repoName}/src/branch/master/${filename}#L${lineNumber}`;
-            } catch { }
+    if (username && repoName && filename) {
+        if (filename && filename.length) resultStart += ` in file ${filename}`;
+        try {
+            if (filename.endsWith('.tsv') || filename.endsWith('.md')) { // use blame so we can see the actual line!
+                const folder = repoName.endsWith('_obs') && filename !== 'README.md' && filename !== 'LICENSE.md' ? 'content/' : '';
+                fileLink = `https://git.door43.org/${username}/${repoName}/blame/branch/${branch}/${folder}${filename}`;
+            } else fileLink = `https://git.door43.org/${username}/${repoName}/src/branch/${branch}/${filename}`;
+        } catch { }
+        if (lineNumber) {
+            resultStart += ' on ';
+            if (fileLink && lineNumber)
+                fileLineLink = `${fileLink}#L${lineNumber}`;
+            lineResult = `line ${lineNumber.toLocaleString()}`;
         }
-        // else if (!username) resultEnd += " no username";
-        // else if (!repoName) resultEnd += " no repoName";
-        // else if (!filename) resultEnd += " no filename";
-        lineResult = `line ${lineNumber.toLocaleString()}`;
+        // else resultEnd += " no lineNumber";
     }
-    // else resultEnd += " no lineNumber";
+    // else if (!username) resultEnd += " no username";
+    // else if (!repoName) resultEnd += " no repoName";
+    // else if (!filename) resultEnd += " no filename";
     if (rowID && rowID.length) resultEnd += ` with row ID ${rowID}`;
     if (fieldName && fieldName.length) resultEnd += ` in ${fieldName} field`;
-    if (fileLink) return <>{resultStart}<a rel="noopener noreferrer" target="_blank" href={fileLink}>{lineResult}</a>{resultEnd}</>;
+
+    if (fileLineLink) return <>{resultStart}<a rel="noopener noreferrer" target="_blank" href={fileLineLink}>{lineResult}</a>{resultEnd}</>;
+    else if (fileLink) return <>{resultStart} in file <a rel="noopener noreferrer" target="_blank" href={fileLink}>{filename}</a>{resultEnd}</>;
     else return <>{resultStart}<b>{lineResult}</b>{resultEnd}</>;
 }
+// end of RenderFileDetails
+
+function RenderExcerpt({ excerpt, message }) {
+    // debugLog(`RenderExcerpt(${excerpt}, ${message})`);
+    // NOTE: These message strings must match notes-links-check.js (priority 82, and priority 32,)
+    // Note that messages might start with a repo code, e.g., "TN Actual message start"
+    if (message.endsWith("Untested general/outside link")
+        || message.endsWith("Error loading general link")
+        || message.endsWith("Should http link be https")) {
+        // debugLog(`Here1 RenderExcerpt(${excerpt}, ${message})`);
+        if (excerpt && excerpt[0] === '[' && excerpt.slice(-1) === ')') {
+            // debugLog(`Here2 RenderExcerpt(${excerpt}, ${message})`);
+            const ix = excerpt.indexOf('](');
+            const displayPart = excerpt.substring(1, ix); // Start after the [ unril before the ](
+            const linkPart = excerpt.substring(ix+2, excerpt.length-1); // Step past the ]( but don't include the final )
+            const adjLinkPart = message === "Should http link be https" ? linkPart.replace('http:', 'https:') : linkPart;
+            // debugLog(`RenderExcerpt from '${excerpt}' got ix=${ix}, displayPart='${displayPart}', linkPart='${linkPart}', adjLinkPart='${adjLinkPart}'`);
+            return <><span style={{ color: 'DimGray' }}>` around ►[${displayPart}](<a rel="noopener noreferrer" target="_blank" href={adjLinkPart}>{linkPart}</a>)◄`</span></>
+        }
+    }
+    return <><span style={{ color: 'DimGray' }}>{excerpt ? ` around ►${excerpt}◄` : ""}</span></>
+}
+// end of RenderExcerpt
 
 function RenderSuccessesColored({ results }) {
     // Display our array of success message strings in a nicer format
@@ -324,7 +353,7 @@ function RenderProcessedArray({ arrayType, results }) {
     //  priority (integer), message (string)
     //  plus optional fields:
     //      bookID, C, V, repoName, filename, lineNumber
-    //      characterIindex (integer), extract (string), location (string)
+    //      characterIindex (integer), excerpt (string), location (string)
     //
     // debugLog("In RenderProcessedArray with ", arrayType);
     // consoleLogObject('RenderProcessedArray results', results);
@@ -340,9 +369,9 @@ function RenderProcessedArray({ arrayType, results }) {
                 return <li key={index}>
                     <RenderMessage color={arrayType === 'e' ? 'red' : 'orange'} message={listEntry.message} details={listEntry.details} />
                     <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
-                    <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
+                    <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} branch={listEntry.branch} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
                     {listEntry.characterIndex > 0 ? " (at character " + (listEntry.characterIndex + 1) + ")" : ""}
-                    <span style={{ color: 'DimGray' }}>{listEntry.extract ? ` around ►${listEntry.extract}◄` : ""}</span>
+                    <RenderExcerpt excerpt={listEntry.excerpt} message={listEntry.message} />
                     {listEntry.location}
                     <RenderPriority entry={listEntry} />
                 </li>;
@@ -358,7 +387,7 @@ function RenderGivenArray({ array, color }) {
     //  plus possible optional fields:
     //      bookID, C, V,
     //      repoName, filename, lineNumber,
-    //      characterIndex (integer), extract (string), location (descriptive string)
+    //      characterIndex (integer), excerpt (string), location (descriptive string)
     //
     // debugLog("In RenderGivenArray with ", arrayType);
     // consoleLogObject('RenderGivenArray results', results);
@@ -368,9 +397,9 @@ function RenderGivenArray({ array, color }) {
             return <li key={index}>
                 <RenderMessage color={color} message={listEntry.message} details={listEntry.details} />
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
-                <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
+                <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} branch={listEntry.branch} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
                 {listEntry.characterIndex !== undefined && listEntry.characterIndex >= 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
-                <span style={{ color: 'DimGray' }}>{listEntry.extract ? ` around ►${listEntry.extract}◄` : ""}</span>
+                <RenderExcerpt excerpt={listEntry.excerpt} message={listEntry.message} />
                 {listEntry.location}
                 <RenderPriority entry={listEntry} />
             </li>;
@@ -393,7 +422,7 @@ function getGradientcolor(priorityValue) {
 function RenderWarningsGradient({ results }) {
     // Display our array of 8-part lists in a nicer format
     //  1/ priority number, 2/ bookID, 3/ C, 4/ V, 5/ message,
-    //      6/ index (integer), 7/ extract (optional), 8/ location
+    //      6/ index (integer), 7/ excerpt (optional), 8/ location
     //
     // Expects results to contain:
     //      1/ warningList
@@ -406,9 +435,9 @@ function RenderWarningsGradient({ results }) {
             return <li key={index}>
                 <RenderMessage color={thiscolor} message={listEntry.message} details={listEntry.details} />
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
-                <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
+                <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} branch={listEntry.branch} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
                 {listEntry.characterIndex !== undefined && listEntry.characterIndex >= 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
-                <span style={{ color: 'DimGray' }}>{listEntry.extract ? ` around ►${listEntry.extract}◄` : ""}</span>
+                <RenderExcerpt excerpt={listEntry.excerpt} message={listEntry.message} />
                 {listEntry.location}
                 <RenderPriority entry={listEntry} />
             </li>;

@@ -182,7 +182,7 @@ projects:
     path: './67-REV.usfm'
     categories: [ 'bible-nt' ]
 `;
-// This is an extract from a media.yaml file:
+// This is an excerpt from a media.yaml file:
 const textB2 = `resource:
   version: '{latest}'
   media:
@@ -223,12 +223,12 @@ const data = {
   givenLocation : "that was supplied",
 }
 
-function CheckManifestText(props) {
+function OurCheckManifestText(props) {
   const { languageCode, chosenText, chosenTextName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
 
-  // We need the following construction because checkTN_TSVDataRow is an ASYNC function
+  // We need the following construction because checkTN_TSV9DataRow is an ASYNC function
   useEffect(() => {
     // Use an IIFE (Immediately Invoked Function Expression)
     //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
@@ -236,7 +236,7 @@ function CheckManifestText(props) {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {chosenTextName}…</p>);
       const checkingOptions = {};
-      const rawResults = await checkManifestText('', '', '', chosenText, 'in manifest data that was supplied', checkingOptions);
+      const rawResults = await checkManifestText('en', 'LT', 'unfoldingWord', 'en_ult', 'master', chosenText, 'in manifest data that was supplied', checkingOptions);
       if (!rawResults.successList || !rawResults.successList.length)
         rawResults.successList = ["Done manifest text checks"];
       setResults(
@@ -250,7 +250,7 @@ function CheckManifestText(props) {
   }, []); // end of useEffect part
 
   return results;
-} // end of CheckManifestText function
+} // end of OurCheckManifestText function
 
-<CheckManifestText data={data}/>
+<OurCheckManifestText data={data}/>
 ```

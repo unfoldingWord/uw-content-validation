@@ -1,4 +1,4 @@
-import { DEFAULT_EXTRACT_LENGTH } from './text-handling-functions'
+import { DEFAULT_EXCERPT_LENGTH } from './text-handling-functions'
 import { checkYAMLText } from './yaml-text-check';
 import { cachedGetFile } from './getApi';
 import { BibleBookData } from './books/books'
@@ -7,15 +7,16 @@ import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert } from './utilities';
 
 
-const MANIFEST_VALIDATOR_VERSION_STRING = '0.4.0';
+const MANIFEST_VALIDATOR_VERSION_STRING = '0.4.1';
 
 // Pasted in 2020-10-02 from https://raw.githubusercontent.com/unfoldingWord/dcs/master/options/schema/rc.schema.json
+// Updated 2021-02-19
 const MANIFEST_SCHEMA = {
     "$schema": "http://json-schema.org/draft-07/schema",
     "$id": "https://resource-container.readthedocs.io/schema/rc.schema.json",
     "$$target": [
-        "rc.schema.json#/definitions/languageTag",
-        "rc.schema.json#/definitions/localizedText"
+            "rc.schema.json#/definitions/languageTag",
+            "rc.schema.json#/definitions/localizedText"
     ],
     "title": "Root",
     "type": "object",
@@ -63,7 +64,7 @@ const MANIFEST_SCHEMA = {
                     "title": "Contributor",
                     "type": "array",
                     "default": [],
-                    "items": {
+                    "items":{
                         "$id": "#root/dublin_core/contributor/items",
                         "title": "Items",
                         "type": "string",
@@ -172,7 +173,7 @@ const MANIFEST_SCHEMA = {
                     "title": "Relation",
                     "type": "array",
                     "default": [],
-                    "items": {
+                    "items":{
                         "$id": "#root/dublin_core/relation/items",
                         "$ref": "#/definitions/relationItem",
                         "title": "Items",
@@ -200,7 +201,7 @@ const MANIFEST_SCHEMA = {
                     "title": "Source",
                     "type": "array",
                     "default": [],
-                    "items": {
+                    "items":{
                         "$id": "#root/dublin_core/source/items",
                         "title": "Items",
                         "type": "object",
@@ -257,9 +258,14 @@ const MANIFEST_SCHEMA = {
                         "OBS Translation Notes",
                         "OBS Translation Questions",
                         "Open Bible Stories",
+                        "Study Notes",
+                            "Study Questions",
                         "Translation Academy",
                         "Translation Notes",
                         "Translation Questions",
+                        "TSV Study Notes",
+                        "TSV Study Questions",
+                        "TSV Translation Questions",
                         "Translation Words",
                         "TSV Translation Notes"
                     ]
@@ -308,7 +314,7 @@ const MANIFEST_SCHEMA = {
                     "title": "Checking_entity",
                     "type": "array",
                     "default": [],
-                    "items": {
+                    "items":{
                         "$id": "#root/checking/checking_entity/items",
                         "title": "Items",
                         "type": "string",
@@ -336,7 +342,7 @@ const MANIFEST_SCHEMA = {
             "title": "Projects",
             "type": "array",
             "default": [],
-            "items": {
+            "items":{
                 "$id": "#root/projects/items",
                 "title": "Items",
                 "type": "object",
@@ -390,7 +396,7 @@ const MANIFEST_SCHEMA = {
                         "title": "Categories",
                         "type": ["array", "null"],
                         "default": [],
-                        "items": {
+                        "items":{
                             "$id": "#root/projects/items/categories/items",
                             "title": "Items",
                             "type": "string",
@@ -415,10 +421,10 @@ const MANIFEST_SCHEMA = {
         "localizedText": {
             "type": "object",
             "additionalProperties": {
-                "$ref": "#/definitions/trimmedText"
+                    "$ref": "#/definitions/trimmedText"
             },
             "propertyNames": {
-                "$ref": "#/definitions/languageTag"
+                    "$ref": "#/definitions/languageTag"
             },
             "minProperties": 1,
             "description": "A textual string specified in one or multiple languages, indexed by IETF language tag."
@@ -540,7 +546,18 @@ const ajv = new Ajv();
 const validate = ajv.compile(MANIFEST_SCHEMA);
 
 
-export async function checkManifestText(username, repoName, repoBranch, manifestText, givenLocation, checkingOptions) {
+/**
+ *
+ * @param {string} languageCode
+ * @param {string} repoCode
+ * @param {string} username
+ * @param {string} repoName
+ * @param {string} repoBranch
+ * @param {string} manifestText
+ * @param {string} givenLocation
+ * @param {Object} checkingOptions
+ */
+export async function checkManifestText(languageCode, repoCode, username, repoName, repoBranch, manifestText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
     See the specification at https://resource-container.readthedocs.io/en/latest/manifest.html.
@@ -548,6 +565,10 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
     Returns a result object containing a successList and a noticeList
     */
     // functionLog(`checkManifestText(${username}, ${repoName}, ${repoBranch}, ${manifestText.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
+    parameterAssert(languageCode !== undefined, "checkManifestText: 'languageCode' parameter should be defined");
+    parameterAssert(typeof languageCode === 'string', `checkManifestText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
+    parameterAssert(repoCode !== undefined, "checkManifestText: 'repoCode' parameter should be defined");
+    parameterAssert(typeof repoCode === 'string', `checkManifestText: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
     parameterAssert(username !== undefined, "checkManifestText: 'username' parameter should be defined");
     parameterAssert(typeof username === 'string', `checkManifestText: 'username' parameter should be a string not a '${typeof username}': ${username}`);
     parameterAssert(repoName !== undefined, "checkManifestText: 'repoName' parameter should be defined");
@@ -566,19 +587,19 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
-    let extractLength;
+    let excerptLength;
     try {
-        extractLength = checkingOptions?.extractLength;
+        excerptLength = checkingOptions?.excerptLength;
     } catch (mfcError) { }
-    if (typeof extractLength !== 'number' || isNaN(extractLength)) {
-        extractLength = DEFAULT_EXTRACT_LENGTH;
-        // debugLog(`Using default extractLength=${extractLength}`);
+    if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
+        excerptLength = DEFAULT_EXCERPT_LENGTH;
+        // debugLog(`Using default excerptLength=${excerptLength}`);
     }
     // else
-    // debugLog(`Using supplied extractLength=${extractLength}`, `cf. default=${DEFAULT_EXTRACT_LENGTH}`);
-    // const halfLength = Math.floor(extractLength / 2); // rounded down
-    // const halfLengthPlus = Math.floor((extractLength + 1) / 2); // rounded up
-    // debugLog(`Using halfLength=${halfLength}`, `halfLengthPlus=${halfLengthPlus}`);
+    // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
+    // const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    // const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+    // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
     const cmtResult = { successList: [], noticeList: [] };
 
@@ -587,15 +608,15 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
         cmtResult.successList.push(successString);
     }
     function addNotice(noticeObject) {
-        // functionLog(`checkManifestText Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${extract ? ` ${extract}` : ""}${location}`);
+        // functionLog(`checkManifestText Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "cManT addNotice: 'priority' parameter should be defined");
         parameterAssert(typeof noticeObject.priority === 'number', `cManT addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         parameterAssert(noticeObject.message !== undefined, "cManT addNotice: 'message' parameter should be defined");
         parameterAssert(typeof noticeObject.message === 'string', `cManT addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
         // parameterAssert(characterIndex !== undefined, "cManT addNotice: 'characterIndex' parameter should be defined");
         if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cManT addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // parameterAssert(extract !== undefined, "cManT addNotice: 'extract' parameter should be defined");
-        if (noticeObject.extract) parameterAssert(typeof noticeObject.extract === 'string', `cManT addNotice: 'extract' parameter should be a string not a '${typeof noticeObject.extract}': ${noticeObject.extract}`);
+        // parameterAssert(excerpt !== undefined, "cManT addNotice: 'excerpt' parameter should be defined");
+        if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `cManT addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         parameterAssert(noticeObject.location !== undefined, "cManT addNotice: 'location' parameter should be defined");
         parameterAssert(typeof noticeObject.location === 'string', `cManT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
@@ -618,7 +639,7 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
         parameterAssert(typeof manifestText === 'string', `cManT ourYAMLTextChecks: 'manifestText' parameter should be a string not a '${typeof manifestText}'`);
         // parameterAssert( allowedLinks===true || allowedLinks===false, "cManT ourYAMLTextChecks: allowedLinks parameter must be either true or false");
 
-        const cYtResultObject = checkYAMLText('en', textName, manifestText, givenLocation, checkingOptions);
+        const cYtResultObject = checkYAMLText('en', repoCode, textName, manifestText, givenLocation, checkingOptions);
 
         // Concat is faster if we don’t need to process each notice individually
         cmtResult.successList = cmtResult.successList.concat(cYtResultObject.successList);
@@ -685,7 +706,7 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
             // debugLog("Project keys", JSON.stringify(projectKeys));
             for (const keyName of ['identifier', 'path', 'sort'])
                 if (projectKeys.indexOf(keyName) === -1)
-                    addNotice({ priority: 939, message: "Key is missing for project", details: keyName, extract: JSON.stringify(projectEntry), location: ourLocation });
+                    addNotice({ priority: 939, message: "Key is missing for project", details: keyName, excerpt: JSON.stringify(projectEntry), location: ourLocation });
 
             const projectFilepath = projectEntry['path'];
             if (repoName
@@ -702,11 +723,11 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
                         projectFileContent = await getFile_({ username, repository: repoName, path: projectFilepath, branch: repoBranch });
                         // debugLog("Fetched manifest project fileContent for", repoName, projectFilepath, typeof projectFileContent, projectFileContent.length);
                         if (!projectFileContent)
-                            addNotice({ priority: 938, message: `Unable to find project file mentioned in manifest`, extract: projectFilepath, location: ourLocation });
+                            addNotice({ priority: 938, message: `Unable to find project file mentioned in manifest`, excerpt: projectFilepath, location: ourLocation });
                         else if (projectFileContent.length < 10)
-                            addNotice({ priority: 937, message: `Linked project file seems empty`, extract: projectFilepath, location: ourLocation });
+                            addNotice({ priority: 937, message: `Linked project file seems empty`, excerpt: projectFilepath, location: ourLocation });
                     } catch (trcGCerror) {
-                        addNotice({ priority: 936, message: `Error loading manifest project link`, details: trcGCerror, extract: projectFilepath, location: ourLocation });
+                        addNotice({ priority: 936, message: `Error loading manifest project link`, details: trcGCerror, excerpt: projectFilepath, location: ourLocation });
                     }
                 }
             }
@@ -719,7 +740,7 @@ export async function checkManifestText(username, repoName, repoBranch, manifest
     }
 
     // addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'}${ourLocation}.`);
-    if (cmtResult.noticeList)
+    if (cmtResult.noticeList.length)
         addSuccessMessage(`checkManifestText v${MANIFEST_VALIDATOR_VERSION_STRING} finished with ${cmtResult.noticeList.length ? cmtResult.noticeList.length.toLocaleString() : "zero"} notice${cmtResult.noticeList.length === 1 ? '' : 's'}`);
     else
         addSuccessMessage(`No errors or warnings found by checkManifestText v${MANIFEST_VALIDATOR_VERSION_STRING}`)

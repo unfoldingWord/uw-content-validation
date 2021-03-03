@@ -9,6 +9,7 @@ This function is for checking text fields that are links, or that contain links.
 import { checkFieldLinks } from './field-link-check';
 import { processNoticesToErrorsWarnings } from '../demos/notice-processing-functions';
 import { RenderLines, RenderRawResults, RenderSuccessesErrorsWarnings } from '../demos/RenderProcessedResults';
+import { userLog } from './utilities';
 
 // Empty, space, link, RC, good, and bad text samples
 const textE = "";
@@ -48,7 +49,7 @@ const linkOptions = {
 
 // This function returns the results of the fast checks
 //  and if specified in linkOptions, the callback will update result later with results of slower checks
-rawResults = checkFieldLinks(chosenTextName, chosenText, linkOptions, 'that was supplied');
+rawResults = checkFieldLinks('en', '', chosenTextName, chosenText, linkOptions, 'that was supplied');
 if (!rawResults.successList || !rawResults.successList.length)
     rawResults.successList = ["Done basic link checks"];
 

@@ -44,15 +44,16 @@ const data = {
   chosenTextName : 'textSB',
   chosenText : textSB,
   languageCode : 'en',
+  repoCode : 'TN',
   givenLocation : "that was supplied",
 }
 
-function CheckMarkdownText(props) {
-  const { languageCode, chosenText, chosenTextName, givenLocation } = props.data;
+function OurCheckMarkdownText(props) {
+  const { languageCode, repoCode, chosenText, chosenTextName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
 
-  // We need the following construction because checkTN_TSVDataRow is an ASYNC function
+  // We need the following construction because checkTN_TSV9DataRow is an ASYNC function
   useEffect(() => {
     // Use an IIFE (Immediately Invoked Function Expression)
     //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
@@ -60,7 +61,7 @@ function CheckMarkdownText(props) {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {chosenTextName}…</p>);
       const checkingOptions = {};
-      const rawResults = await checkMarkdownText(languageCode, chosenTextName, chosenText, givenLocation, checkingOptions);
+      const rawResults = await checkMarkdownText(languageCode, repoCode, chosenTextName, chosenText, givenLocation, checkingOptions);
       if (!rawResults.successList || !rawResults.successList.length)
         rawResults.successList = ["Done markdown text checks"];
       setResults(
@@ -73,7 +74,7 @@ function CheckMarkdownText(props) {
   }, []); // end of useEffect part
 
   return results;
-} // end of CheckMarkdownText function
+} // end of OurCheckMarkdownText function
 
-<CheckMarkdownText data={data}/>
+<OurCheckMarkdownText data={data}/>
 ```
