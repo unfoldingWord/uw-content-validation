@@ -1,4 +1,5 @@
 export * from './books/';
+export * from './defaults';
 export * from './utilities';
 export * from './getApi';
 export * from './text-handling-functions';

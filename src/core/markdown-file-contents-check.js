@@ -1,4 +1,4 @@
-import { DEFAULT_EXCERPT_LENGTH } from './text-handling-functions'
+import { DEFAULT_EXCERPT_LENGTH } from './defaults'
 import { checkMarkdownText } from './markdown-text-check';
 import { checkTextfileContents } from './file-text-check';
 // eslint-disable-next-line no-unused-vars

@@ -1,5 +1,5 @@
 import * as books from './books/books';
-import { DEFAULT_EXCERPT_LENGTH } from './text-handling-functions'
+import { DEFAULT_EXCERPT_LENGTH } from './defaults'
 import { checkTN_TSV9DataRow } from './tn-tsv9-row-check';
 import { removeDisabledNotices } from './disabled-notices';
 import { debugLog, parameterAssert } from './utilities';

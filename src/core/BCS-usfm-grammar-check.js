@@ -1,6 +1,6 @@
 import grammar from 'usfm-grammar';
 import * as books from '../core/books/books';
-import { DEFAULT_EXCERPT_LENGTH } from './text-handling-functions'
+import { DEFAULT_EXCERPT_LENGTH } from './defaults'
 import { userLog, parameterAssert } from './utilities';
 
 

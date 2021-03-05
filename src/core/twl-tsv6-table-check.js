@@ -1,5 +1,5 @@
 import * as books from './books/books';
-import { DEFAULT_EXCERPT_LENGTH } from './text-handling-functions'
+import { DEFAULT_EXCERPT_LENGTH } from './defaults'
 import { checkTWL_TSV6DataRow } from './twl-tsv6-row-check';
 import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert } from './utilities';

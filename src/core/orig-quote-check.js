@@ -1,5 +1,5 @@
 import * as books from '../core/books/books';
-import { DEFAULT_EXCERPT_LENGTH } from './text-handling-functions'
+import { DEFAULT_EXCERPT_LENGTH, REPO_CODE_LIST } from './defaults'
 import { cachedGetFile } from '../core/getApi';
 import { debugLog, parameterAssert, ourParseInt } from './utilities';
 
@@ -37,6 +37,7 @@ export async function checkOriginalLanguageQuote(languageCode, repoCode, fieldNa
     parameterAssert(typeof languageCode === 'string', `checkOriginalLanguageQuote: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
     parameterAssert(repoCode !== undefined, "checkOriginalLanguageQuote: 'repoCode' parameter should be defined");
     parameterAssert(typeof repoCode === 'string', `checkOriginalLanguageQuote: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
+    parameterAssert(REPO_CODE_LIST.includes(repoCode), `checkOriginalLanguageQuote: 'repoCode' parameter should not be '${repoCode}'`);
     parameterAssert(fieldName !== undefined, "checkOriginalLanguageQuote: 'fieldName' parameter should be defined");
     parameterAssert(typeof fieldName === 'string', `checkOriginalLanguageQuote: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
     parameterAssert(fieldText !== undefined, "checkOriginalLanguageQuote: 'fieldText' parameter should be defined");

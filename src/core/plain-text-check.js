@@ -1,4 +1,5 @@
-import { DEFAULT_EXCERPT_LENGTH, OPEN_CLOSE_PUNCTUATION_PAIRS, PAIRED_PUNCTUATION_OPENERS, PAIRED_PUNCTUATION_CLOSERS, isWhitespace, countOccurrences } from './text-handling-functions'
+import { DEFAULT_EXCERPT_LENGTH, REPO_CODE_LIST } from './defaults'
+import { OPEN_CLOSE_PUNCTUATION_PAIRS, PAIRED_PUNCTUATION_OPENERS, PAIRED_PUNCTUATION_CLOSERS, isWhitespace, countOccurrences } from './text-handling-functions'
 import { checkTextField } from './field-text-check';
 import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert } from './utilities';
@@ -30,6 +31,7 @@ export function checkPlainText(languageCode, repoCode, textType, textName, plain
     parameterAssert(languageCode !== 'markdown' && languageCode !== 'USFM' && languageCode !== 'YAML' && languageCode !== 'text' && languageCode !== 'raw' && languageCode !== 'unfoldingWord', `checkPlainText: 'languageCode' ${languageCode} parameter should be not be '${languageCode}'`);
     parameterAssert(repoCode !== undefined, "checkPlainText: 'repoCode' parameter should be defined");
     parameterAssert(typeof repoCode === 'string', `checkPlainText: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
+    parameterAssert(REPO_CODE_LIST.includes(repoCode), `checkPlainText: 'repoCode' parameter should not be '${repoCode}'`);
     parameterAssert(textType !== undefined, "checkPlainText: 'textType' parameter should be defined");
     parameterAssert(typeof textType === 'string', `checkPlainText: 'textType' parameter should be a string not a '${typeof textType}': ${textType}`);
     parameterAssert(textType === 'markdown' || textType === 'USFM' || textType === 'YAML' || textType === 'text' || textType === 'raw', `checkPlainText: unrecognised 'textType' parameter: '${textType}'`);

@@ -1,6 +1,3 @@
-export const DEFAULT_EXCERPT_LENGTH = 15;
-
-
 // See http://xahlee.info/comp/unicode_matching_brackets.html for a more complete list
 // Also see https://unicode-table.com/en/sets/quotation-marks/
 export const PAIRED_PUNCTUATION_OPENERS = '[({<⟨“‘«‹《〈⸢⸤'; // These are just single/individual characters

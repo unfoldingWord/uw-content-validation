@@ -1,3 +1,4 @@
+import { REPO_CODE_LIST } from './defaults';
 import { checkPlainText } from './plain-text-check';
 import { parameterAssert } from './utilities';
 
@@ -36,6 +37,7 @@ export function checkTextfileContents(languageCode, repoCode, fileType, filename
     parameterAssert(typeof languageCode === 'string', `checkTextfileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
     parameterAssert(repoCode !== undefined, "checkTextfileContents: 'repoCode' parameter should be defined");
     parameterAssert(typeof repoCode === 'string', `checkTextfileContents: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
+    parameterAssert(REPO_CODE_LIST.includes(repoCode), `checkTextfileContents: 'repoCode' parameter should not be '${repoCode}'`);
     parameterAssert(fileType !== undefined, "checkTextfileContents: 'fileType' parameter should be defined");
     parameterAssert(typeof fileType === 'string', `checkTextfileContents: 'fileType' parameter should be a string not a '${typeof fileType}': ${fileType}`);
     parameterAssert(fileType !== '', `checkTextfileContents: 'fileType' ${fileType} parameter should be not be an empty string`);

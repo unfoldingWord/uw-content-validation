@@ -1,12 +1,14 @@
 import React from 'react';
-import { userLog, parameterAssert } from '../../core/utilities';
+import { REPO_CODE_LIST } from '../../core/defaults';
 import * as books from '../../core/books/books';
 import { formRepoName, repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetBookFilenameFromManifest, checkManifestText, checkMarkdownText } from '../../core';
 import { checkFileContents } from '../file-check/checkFileContents';
 import { checkRepo } from '../repo-check/checkRepo';
+// eslint-disable-next-line no-unused-vars
+import { userLog, functionLog, parameterAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.6.1';
+// const BP_VALIDATOR_VERSION_STRING = '0.6.2';
 
 const STANDARD_MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -29,7 +31,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
 
   Note that bookID here can also be the 'OBS' pseudo bookID.
   */
-  // functionLog(`checkBookPackage(${username}, ${languageCode}, ${bookID}, (fn), ${JSON.stringify(checkingOptions)})…`)
+  // functionLog(`checkBookPackage(un='${username}', lC='${languageCode}', bk='${bookID}', (fn), ${JSON.stringify(checkingOptions)})…`)
   parameterAssert(username !== undefined, "checkBookPackage: 'username' parameter should be defined");
   parameterAssert(typeof username === 'string', `checkBookPackage: 'username' parameter should be a string not a '${typeof username}': ${username}`);
   parameterAssert(languageCode !== undefined, "checkBookPackage: 'languageCode' parameter should be defined");
@@ -100,16 +102,17 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   }
 
 
-  async function ourCheckBPFileContents(repoCode, repoName, branch, cfFilename, fileContent, fileLocation, checkingOptions) {
-    // functionLog(`checkBookPackage ourCheckBPFileContents(${repoCode}, ${cfFilename}, ${fileContent.length}, ${fileLocation}, ${JSON.stringify(checkingOptions)})…`);
+  async function ourCheckBPFileContents(repoCode, repoName, repoBranch, cfFilename, fileContent, fileLocation, checkingOptions) {
+    // functionLog(`checkBookPackage ourCheckBPFileContents(rC='${repoCode}', rN='${repoName}', rBr='${repoBranch}', fn='${cfFilename}', ${fileContent.length}, ${fileLocation}, ${JSON.stringify(checkingOptions)})…`);
 
     // Updates the global list of notices
     parameterAssert(repoCode !== undefined, "cBP ourCheckBPFileContents: 'repoCode' parameter should be defined");
     parameterAssert(typeof repoCode === 'string', `cBP ourCheckBPFileContents: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
+    parameterAssert(REPO_CODE_LIST.includes(repoCode), `cBP ourCheckBPFileContents: 'repoCode' parameter should not be '${repoCode}'`);
     parameterAssert(repoName !== undefined, "cBP ourCheckBPFileContents: 'repoName' parameter should be defined");
     parameterAssert(typeof repoName === 'string', `cBP ourCheckBPFileContents: 'repoName' parameter should be a string not a '${typeof repoName}': ${repoName}`);
-    parameterAssert(branch !== undefined, "cBP ourCheckBPFileContents: 'branch' parameter should be defined");
-    parameterAssert(typeof branch === 'string', `cBP ourCheckBPFileContents: 'branch' parameter should be a string not a '${typeof branch}': ${branch}`);
+    parameterAssert(repoBranch !== undefined, "cBP ourCheckBPFileContents: 'repoBranch' parameter should be defined");
+    parameterAssert(typeof repoBranch === 'string', `cBP ourCheckBPFileContents: 'repoBranch' parameter should be a string not a '${typeof repoBranch}': ${repoBranch}`);
     parameterAssert(cfFilename !== undefined, "cBP ourCheckBPFileContents: 'cfFilename' parameter should be defined");
     parameterAssert(typeof cfFilename === 'string', `cBP ourCheckBPFileContents: 'cfFilename' parameter should be a string not a '${typeof cfFilename}'`);
     parameterAssert(fileContent !== undefined, "cBP ourCheckBPFileContents: 'fileContent' parameter should be defined");
@@ -121,7 +124,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     let adjustedLanguageCode = languageCode;
     // if (repoCode === 'UHB') adjustedLanguageCode = 'hbo'; // NO -- we need the languageCode of the BP being checked (so we can resolve TW links with * for language) !!!
     // else if (repoCode === 'UGNT') adjustedLanguageCode = 'el-x-koine';
-    const cfcResultObject = await checkFileContents(username, adjustedLanguageCode, repoCode, branch, cfFilename, fileContent, fileLocation, checkingOptions);
+    const cfcResultObject = await checkFileContents(username, adjustedLanguageCode, repoCode, repoBranch, cfFilename, fileContent, fileLocation, checkingOptions);
     // debugLog("checkFileContents() returned", cfResultObject.successList.length, "success message(s) and", cfResultObject.noticeList.length, "notice(s)");
     // for (const successEntry of cfResultObject.successList) userLog("  ourCheckBPFileContents:", successEntry);
     // debugLog("cfcResultObject", JSON.stringify(cfcResultObject));
@@ -131,7 +134,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       if (cfcNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN2 check
         checkBookPackageResult.noticeList.push(cfcNoticeEntry); // Just copy the complete notice as is
       else // For our direct checks, we add the repoCode as an extra value (unless it’s already there from a TA or TW check)
-        addNoticePartial({ ...cfcNoticeEntry, repoCode, repoName, branch, filename: cfFilename, extra: cfcNoticeEntry.extra ? cfcNoticeEntry.extra : repoCode });
+        addNoticePartial({ ...cfcNoticeEntry, repoCode, repoName, branch: repoBranch, filename: cfFilename, extra: cfcNoticeEntry.extra ? cfcNoticeEntry.extra : repoCode });
     // The following is needed coz we might be checking the linked TA and/or TW articles from TN2 TSV files
     if (cfcResultObject.checkedFileCount && cfcResultObject.checkedFileCount > 0) {
       checkedFileCount += cfcResultObject.checkedFileCount;
@@ -163,6 +166,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     // functionLog(`checkBookPackage ourCheckManifestFile(${repoCode}, ${repoName}, ${repoBranch}, ${manifestLocation}, ${JSON.stringify(checkingOptions)})…`);
     parameterAssert(repoCode !== undefined, "cBP ourCheckManifestFile: 'repoCode' parameter should be defined");
     parameterAssert(typeof repoCode === 'string', `cBP ourCheckManifestFile: 'repoCode' parameter should be a string not a '${typeof repoCode}' : ${repoCode}`);
+    parameterAssert(REPO_CODE_LIST.includes(repoCode), `cBP ourCheckManifestFile: 'repoCode' parameter should not be '${repoCode}'`);
     parameterAssert(repoName !== undefined, "cBP ourCheckManifestFile: 'repoName' parameter should be defined");
     parameterAssert(typeof repoName === 'string', `cBP ourCheckManifestFile: 'repoName' parameter should be a string not a '${typeof repoName}': ${repoName}`);
     parameterAssert(repoBranch !== undefined, "cBP ourCheckManifestFile: 'repoBranch' parameter should be defined");
@@ -225,6 +229,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     // functionLog(`checkBookPackage ourCheckMarkdownFile(${repoCode}, ${repoName}, ${filename}, ${repoBranch}, ${markdownLocation}, ${JSON.stringify(checkingOptions)})…`);
     parameterAssert(repoCode !== undefined, "cBP ourCheckMarkdownFile: 'repoCode' parameter should be defined");
     parameterAssert(typeof repoCode === 'string', `cBP ourCheckMarkdownFile: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
+    parameterAssert(REPO_CODE_LIST.includes(repoCode), `cBP ourCheckMarkdownFile: 'repoCode' parameter should not be '${repoCode}'`);
     parameterAssert(repoName !== undefined, "cBP ourCheckMarkdownFile: 'repoName' parameter should be defined");
     parameterAssert(typeof repoName === 'string', `cBP ourCheckMarkdownFile: 'repoName' parameter should be a string not a '${typeof repoName}'`);
     parameterAssert(repoBranch !== undefined, "cBP ourCheckMarkdownFile: 'repoBranch' parameter should be defined");
@@ -353,9 +358,9 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       // TODO: Do we need to hard-code where to find the UHB and UGNT???
       filename = `${bookNumberAndName}.usfm`;
     else if (repoCode === 'TWL' || repoCode === 'TN2' || repoCode === 'TQ2')
-      filename = `${bookID}_${adjustedRepoCode.toLowerCase()}.tsv`
+      filename = `${adjustedRepoCode.toLowerCase()}_${bookID}.tsv`
     else if (repoCode === 'SN' || repoCode === 'SQ')
-      filename = `${bookID}_${repoCode.toLowerCase()}.tsv`
+      filename = `${repoCode.toLowerCase()}_${bookID}.tsv`
     else if (repoCode === 'TN') {
       try {
         filename = await cachedGetBookFilenameFromManifest({ username, repository: repoName, branch: originalBranch, bookID: bookID.toLowerCase() });
@@ -562,6 +567,7 @@ async function checkTQMarkdownBook(username, languageCode, repoName, branch, boo
     // Updates the global list of notices
     parameterAssert(repoCode !== undefined, "cTQ ourCheckTQFileContents: 'repoCode' parameter should be defined");
     parameterAssert(typeof repoCode === 'string', `cTQ ourCheckTQFileContents: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
+    parameterAssert(REPO_CODE_LIST.includes(repoCode), `cTQ ourCheckTQFileContents: 'repoCode' parameter should not be '${repoCode}'`);
     parameterAssert(cfFilename !== undefined, "cTQ ourCheckTQFileContents: 'cfFilename' parameter should be defined");
     parameterAssert(typeof cfFilename === 'string', `cTQ ourCheckTQFileContents: 'cfFilename' parameter should be a string not a '${typeof cfFilename}'`);
     parameterAssert(fileContent !== undefined, "cTQ ourCheckTQFileContents: 'fileContent' parameter should be defined");
