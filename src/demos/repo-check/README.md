@@ -33,6 +33,11 @@ import RepoCheck from './RepoCheck';
   repoName='en_ta' // Translation Academy (700+ markdown files)
   // repoName='en_tq' // Translation Questions (17,000+ markdown files!)
   // repoName='en_obs' // Open Bible Stories (50+ markdown files)
+  // repoName='en_obs-tn' // Open Bible Stories Translation Notes (markdown files)
+  // repoName='en_obs-twl' // Open Bible Stories Translation Words Links (TSV)
+  // repoName='en_obs-tq' // Open Bible Stories Translation Questions (markdown)
+  // repoName='en_obs-sn' // Open Bible Stories Study Notes (TSV)
+  // repoName='en_obs-sq' // Open Bible Stories Study Questions (TSV)
   // repoName='fr_ulb' // No alignment so smaller files (faster demo)
 
   // If we don’t put the branch here, the default branch is used

@@ -9,7 +9,7 @@ import { checkOriginalLanguageQuote } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const TWL_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.1.1';
+// const TWL_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.1.3';
 
 const NUM_EXPECTED_TWL_TSV_FIELDS = 6; // so expects 5 tabs per line
 const EXPECTED_TWL_HEADING_LINE = 'Reference\tID\tTags\tOrigWords\tOccurrence\tTWLink';
@@ -23,7 +23,7 @@ const LC_ALPHABET_PLUS_DIGITS_PLUS_HYPHEN = 'abcdefghijklmnopqrstuvwxyz012345678
  *
  * @description - Checks one TSV data row of translation word links (TWL)
  * @param {string} languageCode - the language code, e.g., 'en'
- * @param {string} repoCode - 'TWL' -- keeps parameter set consistent with other similar functions
+ * @param {string} repoCode - 'TWL' or 'OBS-TWL'-- keeps parameter set consistent with other similar functions
  * @param {string} line - the TSV line to be checked
  * @param {string} bookID - 3-character UPPERCASE USFM book identifier or 'OBS'
  * @param {string} givenC - chapter number or (for OBS) story number string
@@ -49,7 +49,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
     // functionLog(`checkTWL_TSV6DataRow(${languageCode}, ${repoCode}, ${line}, ${bookID}, ${givenRowLocation}, ${JSON.stringify(checkingOptions)})…`);
     parameterAssert(languageCode !== undefined, "checkTWL_TSV6DataRow: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkTWL_TSV6DataRow: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
-    parameterAssert(repoCode === 'TWL', `checkTWL_TSV6DataRow: repoCode expected 'TWL not '${repoCode}'`);
+    parameterAssert(repoCode === 'TWL' || repoCode === 'OBS-TWL', `checkTWL_TSV6DataRow: repoCode expected 'TWL' or 'OBS-TWL' not '${repoCode}'`);
     parameterAssert(line !== undefined, "checkTWL_TSV6DataRow: 'line' parameter should be defined");
     parameterAssert(typeof line === 'string', `checkTWL_TSV6DataRow: 'line' parameter should be a string not a '${typeof line}'`);
     parameterAssert(bookID !== undefined, "checkTWL_TSV6DataRow: 'bookID' parameter should be defined");
@@ -359,7 +359,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
                 addNoticePartial({ priority: 750, message: "Missing occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, location: ourRowLocation });
         }
         else // TODO: Find more details about when these fields are really compulsory (and when they're not, e.g., for 'intro') ???
-            if (repoCode === 'TWL' && V !== 'intro' && occurrence !== '0')
+            if (V !== 'intro' && occurrence !== '0')
                 addNoticePartial({ priority: 919, message: "Missing Quote field", fieldName: 'Quote', rowID, location: ourRowLocation });
 
         if (occurrence.length) { // This should usually be a digit

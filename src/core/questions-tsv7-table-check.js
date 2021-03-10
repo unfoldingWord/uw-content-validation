@@ -5,7 +5,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert } from './utilities';
 
 
-const QUESTIONS_TABLE_VALIDATOR_VERSION_STRING = '0.2.0';
+const QUESTIONS_TABLE_VALIDATOR_VERSION_STRING = '0.2.1';
 
 const NUM_EXPECTED_QUESTIONS_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_QUESTIONS_HEADING_LINE = 'Reference\tID\tTags\tQuote\tOccurrence\tQuestion\tResponse';
@@ -33,7 +33,7 @@ export async function checkQuestionsTSV7Table(languageCode, repoCode, bookID, fi
     // functionLog(`checkQuestionsTSV7Table(${languageCode}, ${repoCode}, ${bookID}, ${filename}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
     parameterAssert(languageCode !== undefined, "checkQuestionsTSV7Table: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkQuestionsTSV7Table: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
-    parameterAssert(repoCode === 'TQ'||repoCode === 'TQ2' || repoCode === 'SQ', `checkTWL_TSV6Table: repoCode expected 'TQ', 'TQ2', or 'SQ' not '${repoCode}'`);
+    parameterAssert(repoCode.endsWith('TQ') || repoCode.endsWith('TQ2') || repoCode.endsWith('SQ'), `checkQuestionsTSV7Table: repoCode expected to end with 'TQ', 'TQ2', or 'SQ' not '${repoCode}'`);
     parameterAssert(bookID !== undefined, "checkQuestionsTSV7Table: 'bookID' parameter should be defined");
     parameterAssert(typeof bookID === 'string', `checkQuestionsTSV7Table: 'bookID' parameter should be a string not a '${typeof bookID}'`);
     parameterAssert(bookID.length === 3, `checkQuestionsTSV7Table: 'bookID' parameter should be three characters long not ${bookID.length}`);

@@ -5,7 +5,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert } from './utilities';
 
 
-const TWL_TABLE_VALIDATOR_VERSION_STRING = '0.1.0';
+const TWL_TABLE_VALIDATOR_VERSION_STRING = '0.1.1';
 
 const NUM_EXPECTED_TWL_TSV_FIELDS = 6; // so expects 5 tabs per line
 const EXPECTED_TWL_HEADING_LINE = 'Reference\tID\tTags\tOrigWords\tOccurrence\tTWLink';
@@ -14,7 +14,7 @@ const EXPECTED_TWL_HEADING_LINE = 'Reference\tID\tTags\tOrigWords\tOccurrence\tT
 /**
  *
  * @param {string} languageCode
- * @param {string} repoCode - 'TWL'
+ * @param {string} repoCode - 'TWL' or 'OBS-TWL'
  * @param {string} bookID
  * @param {string} filename
  * @param {string} tableText
@@ -33,7 +33,7 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
     // functionLog(`checkTWL_TSV6Table(${languageCode}, ${repoCode}, ${bookID}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
     parameterAssert(languageCode !== undefined, "checkTWL_TSV6Table: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkTWL_TSV6Table: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
-    parameterAssert(repoCode === 'TWL', `checkTWL_TSV6Table: repoCode expected 'TWL' not '${repoCode}'`);
+    parameterAssert(repoCode === 'TWL' || repoCode === 'OBS-TWL', `checkTWL_TSV6Table: repoCode expected 'TWL' or 'OBS-TWL' not '${repoCode}'`);
     parameterAssert(bookID !== undefined, "checkTWL_TSV6Table: 'bookID' parameter should be defined");
     parameterAssert(typeof bookID === 'string', `checkTWL_TSV6Table: 'bookID' parameter should be a string not a '${typeof bookID}'`);
     parameterAssert(bookID.length === 3, `checkTWL_TSV6Table: 'bookID' parameter should be three characters long not ${bookID.length}`);

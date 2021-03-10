@@ -1,15 +1,15 @@
 import * as books from '../../core/books/books';
 import {
-  REPO_CODE_LIST,
+  REPO_CODES_LIST,
   formRepoName,
   checkUSFMText, checkMarkdownFileContents, checkPlainText, checkYAMLText, checkManifestText,
   checkTN_TSV9Table, checkNotesTSV7Table, checkQuestionsTSV7Table, checkTWL_TSV6Table,
 } from '../../core';
 // eslint-disable-next-line no-unused-vars
-import {userLog, debugLog, functionLog, parameterAssert, logicAssert} from '../../core';
+import { userLog, debugLog, functionLog, parameterAssert, logicAssert } from '../../core';
 
 
-// const CHECK_FILE_CONTENTS_VERSION_STRING = '0.4.2';
+// const CHECK_FILE_CONTENTS_VERSION_STRING = '0.4.4';
 
 
 /**
@@ -33,7 +33,7 @@ export async function checkFileContents(username, languageCode, repoCode, branch
   parameterAssert(typeof languageCode === 'string', `checkFileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
   parameterAssert(repoCode !== undefined, "checkFileContents: 'repoCode' parameter should be defined");
   parameterAssert(typeof repoCode === 'string', `checkFileContents: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
-  parameterAssert(REPO_CODE_LIST.includes(repoCode), `checkFileContents: 'repoCode' parameter should not be '${repoCode}'`);
+  parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkFileContents: 'repoCode' parameter should not be '${repoCode}'`);
   parameterAssert(branch !== undefined, "checkFileContents: 'branch' parameter should be defined");
   parameterAssert(typeof branch === 'string', `checkFileContents: 'branch' parameter should be a string not a '${typeof branch}': ${branch}`);
   parameterAssert(filename !== undefined, "checkFileContents: 'filename' parameter should be defined");
@@ -56,19 +56,22 @@ export async function checkFileContents(username, languageCode, repoCode, branch
   if (filenameLower.endsWith('.tsv')) {
     const filenameMain = filename.substring(0, filename.length - 4); // drop .tsv
     // functionLog(`checkFileContents have TSV filenameMain=${filenameMain}`);
-    const bookID = filenameMain.startsWith(`${languageCode}_`) || filenameMain.startsWith('en_') ? filenameMain.substring(filenameMain.length - 3) : filenameMain.substring(filenameMain.length-3, filenameMain.length).toUpperCase();
+    const bookID = filenameMain.startsWith(`${languageCode}_`) || filenameMain.startsWith('en_') ? filenameMain.substring(filenameMain.length - 3) : filenameMain.substring(filenameMain.length - 3, filenameMain.length).toUpperCase();
     // functionLog(`checkFileContents have TSV bookID=${bookID}`);
     parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
     if (filename.startsWith(`${languageCode}_`) || filenameMain.startsWith('en_')) {
-      logicAssert(repoCode==='TN', `These filenames ${filenameMain} are only for TN ${repoCode}`);
+      logicAssert(repoCode === 'TN', `These filenames ${filenameMain} are only for TN ${repoCode}`);
       checkFileResult = await checkTN_TSV9Table(languageCode, repoCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
     } else {
-      logicAssert(repoCode!=='TN', `This code with ${filenameMain} is not for TN`);
+      let adjustedRepoCode = repoCode;
+      if (adjustedRepoCode.startsWith('OBS-'))
+        adjustedRepoCode = adjustedRepoCode.substring(4); // Remove the 'OBS-' from the beginning
+      logicAssert(adjustedRepoCode !== 'TN', `This code with ${filenameMain} is not for TN`);
       let checkFunction = {
         TN2: checkNotesTSV7Table, SN: checkNotesTSV7Table,
         TQ2: checkQuestionsTSV7Table, SQ: checkQuestionsTSV7Table,
         TWL: checkTWL_TSV6Table,
-      }[repoCode];
+      }[adjustedRepoCode];
       checkFileResult = await checkFunction(languageCode, repoCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
     }
   }

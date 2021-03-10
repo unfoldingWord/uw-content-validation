@@ -1,4 +1,4 @@
-import { DEFAULT_EXCERPT_LENGTH, REPO_CODE_LIST } from './defaults'
+import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
 import { isWhitespace, countOccurrences, ourDeleteAll } from './text-handling-functions'
 import * as books from '../core/books/books';
 import { checkTextField } from './field-text-check';
@@ -152,7 +152,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
     parameterAssert(typeof languageCode === 'string', `checkUSFMText: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
     parameterAssert(repoCode !== undefined, "checkUSFMText: 'repoCode' parameter should be defined");
     parameterAssert(typeof repoCode === 'string', `checkUSFMText: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
-    parameterAssert(REPO_CODE_LIST.includes(repoCode), `checkUSFMText: 'repoCode' parameter should not be '${repoCode}'`);
+    parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkUSFMText: 'repoCode' parameter should not be '${repoCode}'`);
     parameterAssert(bookID !== undefined, "checkUSFMText: 'bookID' parameter should be defined");
     parameterAssert(typeof bookID === 'string', `checkUSFMText: 'bookID' parameter should be a string not a '${typeof bookID}'`);
     parameterAssert(bookID.length === 3, `checkUSFMText: 'bookID' parameter should be three characters long not ${bookID.length}`);

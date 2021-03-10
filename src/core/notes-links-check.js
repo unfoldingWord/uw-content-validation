@@ -1,7 +1,7 @@
 import localforage from 'localforage';
 import Path from 'path';
 import * as books from '../core/books/books';
-import { DEFAULT_EXCERPT_LENGTH, REPO_CODE_LIST } from './defaults'
+import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
 import { countOccurrences } from './text-handling-functions'
 import { cachedGetFile, cachedGetFileUsingFullURL, checkMarkdownText } from '../core';
 // eslint-disable-next-line no-unused-vars
@@ -131,7 +131,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     parameterAssert(typeof languageCode === 'string', `checkNotesLinksToOutside: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
     parameterAssert(repoCode !== undefined, "checkNotesLinksToOutside: 'repoCode' parameter should be defined");
     parameterAssert(typeof repoCode === 'string', `checkNotesLinksToOutside: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
-    parameterAssert(REPO_CODE_LIST.includes(repoCode), `checkNotesLinksToOutside: 'repoCode' parameter should not be '${repoCode}'`);
+    parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkNotesLinksToOutside: 'repoCode' parameter should not be '${repoCode}'`);
     parameterAssert(bookID !== undefined, "checkNotesLinksToOutside: 'bookID' parameter should be defined");
     parameterAssert(typeof bookID === 'string', `checkNotesLinksToOutside: 'bookID' parameter should be a string not a '${typeof bookID}'`);
     parameterAssert(typeof givenC === 'string', `checkNotesLinksToOutside: 'givenC' parameter should be a string not a '${typeof givenC}'`);

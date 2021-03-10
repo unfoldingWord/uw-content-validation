@@ -8,7 +8,7 @@ import { clearCheckedArticleCache } from './notes-links-check';
 import { functionLog, userLog, parameterAssert } from './utilities';
 
 
-// const GETAPI_VERSION_STRING = '0.6.8';
+// const GETAPI_VERSION_STRING = '0.6.10';
 
 const MAX_INDIVIDUAL_FILES_TO_DOWNLOAD = 5; // More than this and it downloads the zipfile for the entire repo
 
@@ -287,13 +287,15 @@ export async function preloadReposIfNecessary(username, languageCode, bookIDList
       adjustedLanguageCode = 'en'; // Assume English then
     let adjustedBranch = branch;
     let adjustedRepoCode = repoCode;
-    if (repoCode === 'TQ2') { adjustedRepoCode = 'TQ'; adjustedBranch = 'newFormat'; }
-    else if (repoCode === 'TN2') { adjustedRepoCode = 'TN'; adjustedBranch = 'newFormat'; }
+    if (adjustedRepoCode.endsWith('2')) {
+      adjustedRepoCode = adjustedRepoCode.substring(0, adjustedRepoCode.length - 1); // Remove the '2' from the end
+      adjustedBranch = 'newFormat';
+    }
     const repoName = formRepoName(adjustedLanguageCode, adjustedRepoCode);
     // debugLog(`preloadReposIfNecessary: preloading zip file for ${repoName}…`);
     const zipFetchSucceeded = await cachedGetRepositoryZipFile({ username, repository: repoName, branch: adjustedBranch });
     if (!zipFetchSucceeded) {
-      console.error(`preloadReposIfNecessary() misfetched zip file for ${repoCode} repo with ${zipFetchSucceeded}`);
+      console.error(`preloadReposIfNecessary() misfetched zip file for ${repoCode} (${adjustedRepoCode}) repo with ${zipFetchSucceeded}`);
       success = false;
     }
   }
@@ -397,7 +399,7 @@ export async function repositoryExistsOnDoor43({ username, repository }) {
   }
   // debugLog("retrievedRepoList.length", retrievedRepoList.length);
   if (retrievedRepoList.length < 1) {
-    userLog(`repositoryExistsOnDoor43(${username}, ${repository}) - no repos found`, retrievedRepoList);
+    userLog(`repositoryExistsOnDoor43(${username}, ${repository}) - no repos found`);
     return false;
   }
   // debugLog(`repositoryExistsOnDoor43 retrievedRepoList (${retrievedRepoList.length})=${JSON.stringify(retrievedRepoList)}`);

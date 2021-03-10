@@ -1,4 +1,4 @@
-import { REPO_CODE_LIST } from './defaults';
+import { REPO_CODES_LIST } from './defaults';
 import { checkTextField } from './field-text-check'
 import { cachedGetFileUsingFullURL } from './getApi';
 import { userLog, parameterAssert } from './utilities';
@@ -82,7 +82,7 @@ export function checkFieldLinks(languageCode, repoCode, fieldName, fieldText, li
     parameterAssert(typeof languageCode === 'string', `checkFieldLinks: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
     parameterAssert(repoCode !== undefined, "checkFieldLinks: 'repoCode' parameter should be defined");
     parameterAssert(typeof repoCode === 'string', `checkFieldLinks: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
-    parameterAssert(REPO_CODE_LIST.includes(repoCode), `checkFieldLinks: 'repoCode' parameter should not be '${repoCode}'`);
+    parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkFieldLinks: 'repoCode' parameter should not be '${repoCode}'`);
     parameterAssert(fieldName !== undefined, "checkFieldLinks: 'fieldName' parameter should be defined");
     parameterAssert(typeof fieldName === 'string', `checkFieldLinks: 'fieldName' parameter should be a string not a '${typeof fieldName}': ${fieldName}`);
     parameterAssert(fieldText !== undefined, "checkFieldLinks: 'fieldText' parameter should be defined");

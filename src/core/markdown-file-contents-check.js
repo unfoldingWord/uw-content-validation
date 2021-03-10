@@ -5,13 +5,13 @@ import { checkTextfileContents } from './file-text-check';
 import { userLog, functionLog, debugLog, parameterAssert } from './utilities';
 
 
-const MARKDOWN_FILE_VALIDATOR_VERSION_STRING = '0.4.1';
+const MARKDOWN_FILE_VALIDATOR_VERSION_STRING = '0.4.2';
 
 
 /**
  *
  * @param {string} languageCode
- * @param {string} repoCode -- e.g., 'TW', 'TA', or 'TQ', etc.
+ * @param {string} repoCode -- e.g., 'TW', 'TA', 'TQ', or 'OBS', etc.
  * @param {string} markdownFilename -- used for identification
  * @param {string} markdownText -- the actual text to be checked
  * @param {string} givenLocation
@@ -25,7 +25,7 @@ export async function checkMarkdownFileContents(languageCode, repoCode, markdown
   // functionLog(`checkMarkdownFileContents(${languageCode}, ${repoCode}, ${markdownFilename}, ${markdownText.length}, ${givenLocation})…`);
   parameterAssert(languageCode !== undefined, "checkMarkdownFileContents: 'languageCode' parameter should be defined");
   parameterAssert(typeof languageCode === 'string', `checkMarkdownFileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
-  parameterAssert(repoCode === 'TW' || repoCode === 'TA' || repoCode === 'TQ', `checkMarkdownFileContents: 'repoCode' parameter should be a 'TW', 'TA', or 'TQ' not '${repoCode}'`);
+  parameterAssert(repoCode === 'TW' || repoCode === 'TA' || repoCode === 'TQ' || repoCode === 'OBS', `checkMarkdownFileContents: 'repoCode' parameter should be a 'TW', 'TA', or 'TQ' not '${repoCode}'`);
   parameterAssert(markdownFilename !== undefined, "checkMarkdownFileContents: 'markdownFilename' parameter should be defined");
   parameterAssert(typeof markdownFilename === 'string', `checkMarkdownFileContents: 'markdownFilename' parameter should be a string not a '${typeof markdownFilename}': ${markdownFilename}`);
   parameterAssert(markdownText !== undefined, "checkMarkdownFileContents: 'markdownText' parameter should be defined");

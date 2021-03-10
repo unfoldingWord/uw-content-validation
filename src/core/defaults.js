@@ -1,3 +1,12 @@
-export const DEFAULT_EXCERPT_LENGTH = 15;
+export const DEFAULT_EXCERPT_LENGTH = 20;
 
-export const REPO_CODE_LIST = ['LT','ST', 'TA', 'TN','TN2', 'TQ','TQ2', 'TW','TWL', 'UHB','UGNT', 'SN','SQ'];
+export const REPO_CODES_LIST = [
+  'UHB', 'UGNT',
+  'LT', 'ST',
+  'TA', 'TW', 'TWL',
+  'TN', 'TN2', 'TQ', 'TQ2',
+  'SN', 'SQ',
+  'OBS', 'OBS-TWL',
+  'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2',
+  'OBS-SN', 'OBS-SQ',
+];
