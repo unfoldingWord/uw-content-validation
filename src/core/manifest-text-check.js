@@ -7,10 +7,11 @@ import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert } from './utilities';
 
 
-const MANIFEST_VALIDATOR_VERSION_STRING = '0.4.1';
+const MANIFEST_VALIDATOR_VERSION_STRING = '0.4.2';
 
 // Pasted in 2020-10-02 from https://raw.githubusercontent.com/unfoldingWord/dcs/master/options/schema/rc.schema.json
 // Updated 2021-02-19
+// Now March 2021 it's moved to https://github.com/unfoldingWord/rc-schema/blob/master/rc.schema.json
 const MANIFEST_SCHEMA = {
     "$schema": "http://json-schema.org/draft-07/schema",
     "$id": "https://resource-container.readthedocs.io/schema/rc.schema.json",
@@ -263,11 +264,17 @@ const MANIFEST_SCHEMA = {
                         "Translation Academy",
                         "Translation Notes",
                         "Translation Questions",
+                        "Translation Words",
                         "TSV Study Notes",
                         "TSV Study Questions",
+                        "TSV Translation Notes",
                         "TSV Translation Questions",
-                        "Translation Words",
-                        "TSV Translation Notes"
+                        "TSV Translation Words Links",
+                        "TSV OBS Study Notes",
+                        "TSV OBS Study Questions",
+                        "TSV OBS Translation Notes",
+                        "TSV OBS Translation Questions",
+                        "TSV OBS Translation Words Links",
                     ]
                 },
                 "title": {
@@ -509,6 +516,10 @@ const MANIFEST_SCHEMA = {
                 "jud",
                 "rev",
                 "obs",
+                "obs-sn",
+                "obs-sq",
+                "obs-tn",
+                "obs-tq",
                 "intro",
                 "process",
                 "translate",

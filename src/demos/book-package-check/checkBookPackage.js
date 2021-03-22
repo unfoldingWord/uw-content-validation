@@ -380,7 +380,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       // functionLog(`checkRepo() returned ${checkBookPackageResult.successList.length} success message(s) and ${checkBookPackageResult.noticeList.length} notice(s)`);
       // debugLog("crResultObject keys", JSON.stringify(Object.keys(checkBookPackageResult)));
       addSuccessMessage(`Checked ${languageCode} OBS repo from ${username}`);
-    } else if (adjustedRepoCode === 'TQ' || repoCode === 'OBS-TN') { // OBS-TN is markdown also
+    } else if (adjustedRepoCode === 'TQ' || repoCode === 'OBS-TN') { // OBS-TN is markdown also for now
       // This is the old markdown resource with hundreds/thousands of files
       const tqResultObject = await checkTQMarkdownBook(username, languageCode, repoCode, repoName, originalBranch, bookID, newCheckingOptions);
       checkBookPackageResult.successList = checkBookPackageResult.successList.concat(tqResultObject.successList);

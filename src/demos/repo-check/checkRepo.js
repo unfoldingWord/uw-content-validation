@@ -7,7 +7,7 @@ import { repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetR
 import { functionLog, debugLog, logicAssert, parameterAssert } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.4.7';
+// const REPO_VALIDATOR_VERSION_STRING = '0.4.8';
 
 
 /**
@@ -237,8 +237,9 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
           // debugLog(`Have TSV thisFilename(${thisFilename.length})='${thisFilename}'`);
           // debugLog(`Have TSV bookOrFileCode(${bookOrFileCode.length})='${bookOrFileCode}'`);
           let bookID;
-          // bookOrFileCode could be something like 'en_tn_09-1SA.tsv ' or '2CO_tn' or '1CH_twl'
-          bookID = (bookOrFileCode.length === 6 || bookOrFileCode.length === 7) ? bookOrFileCode.substring(0, 3) : bookOrFileCode.slice(-3).toUpperCase();
+          // bookOrFileCode could be something like 'en_tn_09-1SA.tsv ' or 'tn_2CO' or 'twl_1CH'
+          // bookID = (bookOrFileCode.length === 6 || bookOrFileCode.length === 7) ? bookOrFileCode.substring(0, 3) : bookOrFileCode.slice(-3).toUpperCase();
+          bookID = bookOrFileCode.slice(-3).toUpperCase();
           logicAssert(bookID !== 'twl' && bookID !== 'TWL', `Should get a valid bookID here, not '${bookID}'`)
           // debugLog(`Have TSV bookcode(${bookID.length})='${bookID}'`);
           if (repoCode === 'TWL' || repoCode === 'SN' || repoCode === 'SQ' || repoCode === 'TN2' || repoCode === 'TQ2') // new repos allow `OBS`

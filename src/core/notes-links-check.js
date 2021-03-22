@@ -98,7 +98,7 @@ async function alreadyChecked({ username, repository, path, branch }) {
  * @param {Object} checkingOptions
  */
 export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, givenC, givenV, fieldName, fieldText, givenLocation, checkingOptions) {
-    /* This is for the case of the OccurrenceNote or Note field containing markdown links
+    /* This is for the case of the OccurrenceNote or Note or TWLink fields containing markdown links
 
     bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
 
