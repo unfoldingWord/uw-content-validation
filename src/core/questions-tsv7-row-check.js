@@ -1,4 +1,5 @@
-import { DEFAULT_EXCERPT_LENGTH, isWhitespace, countOccurrences } from './text-handling-functions'
+import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
+import { isWhitespace, countOccurrences } from './text-handling-functions'
 import * as books from './books/books';
 import { checkTextField } from './field-text-check';
 import { checkMarkdownText } from './markdown-text-check';
@@ -6,7 +7,7 @@ import { checkOriginalLanguageQuote } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const QUESTIONS_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.2.0';
+// const QUESTIONS_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.2.1';
 
 const NUM_EXPECTED_QUESTIONS_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_QUESTIONS_HEADING_LINE = 'Reference\tID\tTags\tQuote\tOccurrence\tQuestion\tResponse';
@@ -50,6 +51,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
     parameterAssert(typeof languageCode === 'string', `checkQuestionsTSV7DataRow: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
     parameterAssert(repoCode !== undefined, "checkQuestionsTSV7DataRow: 'repoCode' parameter should be defined");
     parameterAssert(typeof repoCode === 'string', `checkQuestionsTSV7DataRow: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
+    parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkQuestionsTSV7DataRow: 'repoCode' parameter should not be '${repoCode}'`);
     parameterAssert(line !== undefined, "checkQuestionsTSV7DataRow: 'line' parameter should be defined");
     parameterAssert(typeof line === 'string', `checkQuestionsTSV7DataRow: 'line' parameter should be a string not a '${typeof line}'`);
     parameterAssert(bookID !== undefined, "checkQuestionsTSV7DataRow: 'bookID' parameter should be defined");
@@ -412,7 +414,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
                 addNoticePartial({ priority: 750, message: "Missing occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, location: ourRowLocation });
         }
         else // TODO: Find more details about when these fields are really compulsory (and when they're not, e.g., for 'intro') ???
-            if (repoCode === 'TQ2' && V !== 'intro' && occurrence !== '0')
+            if (bookID === 'OBS' && V !== 'intro' && occurrence !== '0')
                 addNoticePartial({ priority: 919, message: "Missing Quote field", fieldName: 'Quote', rowID, location: ourRowLocation });
 
         if (occurrence.length) { // This should usually be a digit

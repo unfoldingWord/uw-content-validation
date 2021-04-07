@@ -1,4 +1,4 @@
-Last updated 2021-03-03 14:21:40.746190 by makeNoticeList.py
+Last updated 2021-03-04 10:13:48.532868 by makeNoticeList.py
 Got 496 notices:
   checkRepoResult.noticeList.push( 997, "Repository doesn’t exist", details, username, repoCode, repoName, location: givenLocation, extra: repoCode	from checkRepo.js line 256
   languageCode === 'en' || languageCode === 'fr' ? 490 : 190, "Expected header field to contain a mixed-case string", fieldName: `\\$marker`, excerpt: rest, C, V, location: lineLocation	from usfm-text-check.js line 945
@@ -123,15 +123,15 @@ Got 496 notices:
   902, "Bad function call: should be given a valid book abbreviation", excerpt: bookID, location: ` (not '$bookID')$generalLocation` ); return checkBookPackageResult;	from checkBookPackage.js line 312
   900, "Bad parameter: should be given a valid book abbreviation", excerpt: bookIDList, location: ` (not '$bookIDList')`	from checkBookPackages.js line 76
   895, "Field contains zero-width space(s)", details: `$charCount occurrence$charCount === 1 ? '' : 's' found`, characterIndex, excerpt, location: ourLocation	from field-text-check.js line 105
-  889, `Unable to find TA link`, excerpt: fieldText, location: `$ourLocation $filepath`	from ta-reference-check.js line 109
-  888, `Error loading TA link`, excerpt: fieldText, location: `$ourLocation $filepath: $trcGCerror`	from ta-reference-check.js line 114
+  889, `Unable to find linked TA article`, excerpt: fieldText, location: `$ourLocation $filepath`	from ta-reference-check.js line 109
+  888, `Error loading linked TA article`, excerpt: fieldText, location: `$ourLocation $filepath: $trcGCerror`	from ta-reference-check.js line 114
   887, `Linked TA article seems empty`, excerpt: fieldText, location: `$ourLocation $filepath`	from ta-reference-check.js line 111
-  886, `Unable to find $fieldName TA link`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 365
-  886, `Unable to find $fieldName TA link`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 416
-  886, `Unable to find $fieldName TA link`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 479
-  885, `Error loading $fieldName TA link`, excerpt: totalLink, location: `$ourLocation $filepath: $trcGCerror`	from notes-links-check.js line 360
-  885, `Error loading $fieldName TA link`, excerpt: totalLink, location: `$ourLocation $filepath: $trcGCerror`	from notes-links-check.js line 411
-  885, `Error loading $fieldName TA link`, excerpt: totalLink, location: `$ourLocation $filepath: $trcGCerror`	from notes-links-check.js line 474
+  886, `Unable to find $fieldName linked TA article`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 365
+  886, `Unable to find $fieldName linked TA article`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 416
+  886, `Unable to find $fieldName linked TA article`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 479
+  885, `Error loading $fieldName linked TA article`, excerpt: totalLink, location: `$ourLocation $filepath: $trcGCerror`	from notes-links-check.js line 360
+  885, `Error loading $fieldName linked TA article`, excerpt: totalLink, location: `$ourLocation $filepath: $trcGCerror`	from notes-links-check.js line 411
+  885, `Error loading $fieldName linked TA article`, excerpt: totalLink, location: `$ourLocation $filepath: $trcGCerror`	from notes-links-check.js line 474
   884, `Linked $fieldName TA article seems empty`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 367
   884, `Linked $fieldName TA article seems empty`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 418
   884, `Linked $fieldName TA article seems empty`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 481

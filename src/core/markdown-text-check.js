@@ -1,4 +1,4 @@
-import { DEFAULT_EXCERPT_LENGTH } from './text-handling-functions'
+import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
 import { checkTextField } from './field-text-check';
 import { checkNotesLinksToOutside } from './notes-links-check';
 // import { cachedGetFileUsingFullURL } from '../core/getApi';
@@ -32,6 +32,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
     parameterAssert(languageCode !== 'unfoldingWord', `checkMarkdownText: 'languageCode' ${languageCode} parameter should be not be 'unfoldingWord'`);
     parameterAssert(repoCode !== undefined, "checkMarkdownText: 'repoCode' parameter should be defined");
     parameterAssert(typeof repoCode === 'string', `checkMarkdownText: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
+    parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkMarkdownText: 'repoCode' parameter should not be '${repoCode}'`);
     parameterAssert(textOrFileName !== undefined, "checkMarkdownText: 'textOrFileName' parameter should be defined");
     parameterAssert(typeof textOrFileName === 'string', `checkMarkdownText: 'textOrFileName' parameter should be a string not a '${typeof textOrFileName}': ${textOrFileName}`);
     parameterAssert(markdownText !== undefined, "checkMarkdownText: 'markdownText' parameter should be defined");

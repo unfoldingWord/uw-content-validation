@@ -1,5 +1,5 @@
-import { DEFAULT_EXCERPT_LENGTH } from './text-handling-functions'
 import yaml from 'yaml';
+import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
 import { checkTextField } from './field-text-check';
 import { checkTextfileContents } from './file-text-check';
 import { removeDisabledNotices } from './disabled-notices';
@@ -30,6 +30,7 @@ export function checkYAMLText(languageCode, repoCode, textName, YAMLText, givenL
     parameterAssert(typeof languageCode === 'string', `checkYAMLText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
     parameterAssert(repoCode !== undefined, "checkYAMLText: 'repoCode' parameter should be defined");
     parameterAssert(typeof repoCode === 'string', `checkYAMLText: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
+    parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkYAMLText: 'repoCode' parameter should not be '${repoCode}'`);
     parameterAssert(textName !== undefined, "checkYAMLText: 'textName' parameter should be defined");
     parameterAssert(typeof textName === 'string', `checkYAMLText: 'textName' parameter should be a string not a '${typeof textName}': ${textName}`);
     parameterAssert(YAMLText !== undefined, "checkYAMLText: 'YAMLText' parameter should be defined");

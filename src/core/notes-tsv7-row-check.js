@@ -1,4 +1,5 @@
-import { DEFAULT_EXCERPT_LENGTH, isWhitespace, countOccurrences } from './text-handling-functions'
+import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
+import { isWhitespace, countOccurrences } from './text-handling-functions'
 import * as books from './books/books';
 import { checkTextField } from './field-text-check';
 import { checkMarkdownText } from './markdown-text-check';
@@ -53,6 +54,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
     parameterAssert(typeof languageCode === 'string', `checkNotesTSV7DataRow: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
     parameterAssert(repoCode !== undefined, "checkNotesTSV7DataRow: 'repoCode' parameter should be defined");
     parameterAssert(typeof repoCode === 'string', `checkNotesTSV7DataRow: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
+    parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkNotesTSV7DataRow: 'repoCode' parameter should not be '${repoCode}'`);
     parameterAssert(line !== undefined, "checkNotesTSV7DataRow: 'line' parameter should be defined");
     parameterAssert(typeof line === 'string', `checkNotesTSV7DataRow: 'line' parameter should be a string not a '${typeof line}'`);
     parameterAssert(bookID !== undefined, "checkNotesTSV7DataRow: 'bookID' parameter should be defined");

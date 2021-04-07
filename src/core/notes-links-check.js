@@ -1,7 +1,8 @@
 import localforage from 'localforage';
 import Path from 'path';
 import * as books from '../core/books/books';
-import { DEFAULT_EXCERPT_LENGTH, countOccurrences } from './text-handling-functions'
+import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
+import { countOccurrences } from './text-handling-functions'
 import { cachedGetFile, cachedGetFileUsingFullURL, checkMarkdownText } from '../core';
 // eslint-disable-next-line no-unused-vars
 import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
@@ -97,7 +98,7 @@ async function alreadyChecked({ username, repository, path, branch }) {
  * @param {Object} checkingOptions
  */
 export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, givenC, givenV, fieldName, fieldText, givenLocation, checkingOptions) {
-    /* This is for the case of the OccurrenceNote or Note field containing markdown links
+    /* This is for the case of the OccurrenceNote or Note or TWLink fields containing markdown links
 
     bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
 
@@ -130,6 +131,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     parameterAssert(typeof languageCode === 'string', `checkNotesLinksToOutside: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
     parameterAssert(repoCode !== undefined, "checkNotesLinksToOutside: 'repoCode' parameter should be defined");
     parameterAssert(typeof repoCode === 'string', `checkNotesLinksToOutside: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
+    parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkNotesLinksToOutside: 'repoCode' parameter should not be '${repoCode}'`);
     parameterAssert(bookID !== undefined, "checkNotesLinksToOutside: 'bookID' parameter should be defined");
     parameterAssert(typeof bookID === 'string', `checkNotesLinksToOutside: 'bookID' parameter should be a string not a '${typeof bookID}'`);
     parameterAssert(typeof givenC === 'string', `checkNotesLinksToOutside: 'givenC' parameter should be a string not a '${typeof givenC}'`);
@@ -357,12 +359,12 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
             } catch (trcGCerror) {
                 // console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
-                addNoticePartial({ priority: 885, message: `Error loading ${fieldName} TA link`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+                addNoticePartial({ priority: 885, message: `Error loading ${fieldName} linked TA article`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
                 alreadyGaveError = true;
             }
             if (!alreadyGaveError) {
                 if (!taFileContent)
-                    addNoticePartial({ priority: 886, message: `Unable to find ${fieldName} TA link`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                    addNoticePartial({ priority: 886, message: `Unable to find ${fieldName} linked TA article`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                 else if (taFileContent.length < 10)
                     addNoticePartial({ priority: 884, message: `Linked ${fieldName} TA article seems empty`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                 else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
@@ -408,12 +410,12 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
                 } catch (trcGCerror) {
                     // console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
-                    addNoticePartial({ priority: 885, message: `Error loading ${fieldName} TA link`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+                    addNoticePartial({ priority: 885, message: `Error loading ${fieldName} linked TA article`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
                     alreadyGaveError = true;
                 }
                 if (!alreadyGaveError) {
                     if (!taFileContent)
-                        addNoticePartial({ priority: 886, message: `Unable to find ${fieldName} TA link`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                        addNoticePartial({ priority: 886, message: `Unable to find ${fieldName} linked TA article`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                     else if (taFileContent.length < 10)
                         addNoticePartial({ priority: 884, message: `Linked ${fieldName} TA article seems empty`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                     // Don't do this or it gets infinite recursion!!!
@@ -471,12 +473,12 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
             } catch (trcGCerror) {
                 // console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
-                addNoticePartial({ priority: 885, message: `Error loading ${fieldName} TA link`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+                addNoticePartial({ priority: 885, message: `Error loading ${fieldName} linked TA article`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
                 alreadyGaveError = true;
             }
             if (!alreadyGaveError) {
                 if (!taFileContent)
-                    addNoticePartial({ priority: 886, message: `Unable to find ${fieldName} TA link`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                    addNoticePartial({ priority: 886, message: `Unable to find ${fieldName} linked TA article`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                 else if (taFileContent.length < 10)
                     addNoticePartial({ priority: 884, message: `Linked ${fieldName} TA article seems empty`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                 else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {

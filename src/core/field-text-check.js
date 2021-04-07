@@ -1,4 +1,5 @@
-import { DEFAULT_EXCERPT_LENGTH, OPEN_CLOSE_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, isWhitespace, countOccurrences } from './text-handling-functions'
+import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
+import { OPEN_CLOSE_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, isWhitespace, countOccurrences } from './text-handling-functions'
 import { parameterAssert } from './utilities';
 
 
@@ -33,6 +34,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     parameterAssert(languageCode !== 'unfoldingWord', `checkTextField: 'languageCode' ${languageCode} parameter should be not be 'unfoldingWord'`);
     parameterAssert(repoCode !== undefined, "checkTextField: 'repoCode' parameter should be defined");
     parameterAssert(typeof repoCode === 'string', `checkTextField: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
+    parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkTextField: 'repoCode' parameter should not be '${repoCode}'`);
     parameterAssert(fieldType !== undefined, "checkTextField: 'fieldType' parameter should be defined");
     parameterAssert(typeof fieldType === 'string', `checkTextField: 'fieldType' parameter should be a string not a '${typeof fieldType}': ${fieldType}`);
     parameterAssert(fieldType !== '', `checkTextField: 'fieldType' ${fieldType} parameter should be not be an empty string`);

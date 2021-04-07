@@ -1,11 +1,11 @@
 import * as books from './books/books';
-import { DEFAULT_EXCERPT_LENGTH } from './text-handling-functions'
+import { DEFAULT_EXCERPT_LENGTH } from './defaults'
 import { checkNotesTSV7DataRow } from './notes-tsv7-row-check';
 import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert } from './utilities';
 
 
-const NOTES_TABLE_VALIDATOR_VERSION_STRING = '0.3.2';
+const NOTES_TABLE_VALIDATOR_VERSION_STRING = '0.3.3';
 
 const NUM_EXPECTED_NOTES_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_NOTES_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tNote';
@@ -33,7 +33,7 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
     // functionLog(`checkNotesTSV7Table(${languageCode}, ${repoCode}, ${bookID}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
     parameterAssert(languageCode !== undefined, "checkNotesTSV7Table: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkNotesTSV7Table: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
-    parameterAssert(repoCode === 'TN' || repoCode === 'TN2' || repoCode === 'SN', `checkTWL_TSV6Table: repoCode expected 'TN', 'TN2', or 'SN' not '${repoCode}'`);
+    parameterAssert(repoCode.endsWith('TN') || repoCode.endsWith('TN2') || repoCode.endsWith('SN'), `checkNotesTSV7Table: repoCode expected to end with 'TN', 'TN2', or 'SN' not '${repoCode}'`);
     parameterAssert(bookID !== undefined, "checkNotesTSV7Table: 'bookID' parameter should be defined");
     parameterAssert(typeof bookID === 'string', `checkNotesTSV7Table: 'bookID' parameter should be a string not a '${typeof bookID}'`);
     parameterAssert(bookID.length === 3, `checkNotesTSV7Table: 'bookID' parameter should be three characters long not ${bookID.length}`);
