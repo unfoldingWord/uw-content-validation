@@ -63,6 +63,7 @@ and then validates the content of one file selected from the repo.
   // Normally links in files are downloaded to check that they really exist
   disableAllLinkFetchingFlag='false' // 'true' or 'false'
   // The next two are only relevant if the above is 'false'
+  // They control whether the linked articles themselves are also checked or not
   disableLinkedTAArticlesCheckFlag='false' // 'true' or 'false'
   disableLinkedTWArticlesCheckFlag='false' // 'true' or 'false'
 

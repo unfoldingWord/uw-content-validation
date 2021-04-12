@@ -8,7 +8,7 @@ import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMe
 import { userLog, debugLog } from '../../core/utilities';
 
 
-// const BPS_VALIDATOR_VERSION_STRING = '0.2.2';
+// const BPS_VALIDATOR_VERSION_STRING = '0.2.3';
 
 
 /**
@@ -83,13 +83,13 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         else await clearCheckedArticleCache();
 
         // Load whole repos, especially if we are going to check files in manifests
-        let repoPreloadList = ['LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
+        let repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
         if (dataSet === 'OLD')
             repoPreloadList = ['LT', 'ST', 'TN', 'TA', 'TW', 'TQ'];
         else if (dataSet === 'NEW')
-            repoPreloadList = ['LT', 'ST', 'TN2', 'TWL', 'TA', 'TW', 'TQ2'];
+            repoPreloadList = ['TWL', 'LT', 'ST', 'TN2', 'TA', 'TW', 'TQ2'];
         else if (dataSet === 'BOTH')
-            repoPreloadList = ['LT', 'ST', 'TN', 'TN2', 'TWL', 'TA', 'TW', 'TQ', 'TQ2'];
+            repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TN2', 'TA', 'TW', 'TQ', 'TQ2'];
         if (haveNT) repoPreloadList.unshift('UGNT');
         if (haveOT) repoPreloadList.unshift('UHB');
         debugLog(`BookPackagesCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)

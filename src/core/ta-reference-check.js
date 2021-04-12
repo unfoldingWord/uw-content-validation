@@ -3,7 +3,7 @@ import { parameterAssert } from './utilities';
 // import { consoleLogObject } from '../core/utilities';
 
 
-// const TA_REFERENCE_VALIDATOR_VERSION_STRING = '0.3.1';
+// const TA_REFERENCE_VALIDATOR_VERSION_STRING = '0.3.2';
 
 
 export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocation, checkingOptions) {
@@ -106,12 +106,12 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
         taFileContent = await getFile_({ username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch });
         // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
         if (!taFileContent)
-            addNoticePartial({ priority: 889, message: `Unable to find linked TA article`, excerpt: fieldText, location: `${ourLocation} ${filepath}` });
+            addNoticePartial({ priority: 889, message: `Unable to find/load TA article`, details: `linked from TN ${fieldName}`, excerpt: fieldText, location: `${ourLocation} ${filepath}` });
         else if (taFileContent.length < 10)
-            addNoticePartial({ priority: 887, message: `Linked TA article seems empty`, excerpt: fieldText, location: `${ourLocation} ${filepath}` });
+            addNoticePartial({ priority: 887, message: `TA article seems empty`, details: `linked from TN ${fieldName}`, excerpt: fieldText, location: `${ourLocation} ${filepath}` });
     } catch (trcGCerror) {
         // console.error("checkSupportReferenceInTA() failed to load", taRepoUsername, taRepoName, filepath, taRepoBranch, trcGCerror.message);
-        addNoticePartial({ priority: 888, message: `Error loading linked TA article`, excerpt: fieldText, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+        addNoticePartial({ priority: 888, message: `Error loading TA article`, details: `linked from TN ${fieldName}`, excerpt: fieldText, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
     }
 
     // functionLog(`checkSupportReferenceInTA is returning ${JSON.stringify(ctarResult)}`);

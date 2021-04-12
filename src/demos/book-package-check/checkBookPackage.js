@@ -8,7 +8,7 @@ import { checkRepo } from '../repo-check/checkRepo';
 import { userLog, functionLog, parameterAssert, logicAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.7.0';
+// const BP_VALIDATOR_VERSION_STRING = '0.7.1';
 
 const STANDARD_MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -322,7 +322,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     // So now we want to work through checking this one specified Bible book in various repos
     const origLangRepoCode = whichTestament === 'old' ? 'UHB' : 'UGNT';
     if (dataSet === 'DEFAULT')
-      repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ', 'SN', 'SQ'] : [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'];
+      repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'TWL', 'LT', 'ST', 'TN', 'TQ', 'SN', 'SQ'] : [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'];
     else if (dataSet === 'OLD')
       repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'] : [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'];
     else if (dataSet === 'NEW')

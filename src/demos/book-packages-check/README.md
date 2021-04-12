@@ -34,7 +34,7 @@ import BookPackagesCheck from './BookPackagesCheck';
   // The above English book packages should all be finished or well along the way
 
   // We can choose the forthcoming new TSV formats or the existing formats
-  dataSet='OLD' // 'OLD' (Markdown TQ, TSV TN, etc.), 'NEW' (TSV TQ2, TN2, etc.), 'DEFAULT', or 'BOTH'
+  // dataSet='OLD' // 'OLD' (Markdown TQ, TSV TN, etc.), 'NEW' (TSV TQ2, TN2, etc.), 'DEFAULT', or 'BOTH'
 
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'

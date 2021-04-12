@@ -8,7 +8,7 @@ import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMe
 import { userLog } from '../../core/utilities';
 
 
-// const ALL_BPS_VALIDATOR_VERSION_STRING = '0.3.3';
+// const ALL_BPS_VALIDATOR_VERSION_STRING = '0.3.4';
 
 const OLD_TESTAMENT_BOOK_CODES = 'GEN,EXO,LEV,NUM,DEU,JOS,JDG,RUT,1SA,2SA,1KI,2KI,1CH,2CH,EZR,NEH,EST,JOB,PSA,PRO,ECC,SNG,ISA,JER,LAM,EZK,DAN,HOS,JOL,AMO,OBA,JON,MIC,NAM,HAB,ZEP,HAG,ZEC,MAL';
 const NEW_TESTAMENT_BOOK_CODES = 'MAT,MRK,LUK,JHN,ACT,ROM,1CO,2CO,GAL,EPH,PHP,COL,1TH,2TH,1TI,2TI,TIT,PHM,HEB,JAS,1PE,2PE,1JN,2JN,3JN,JUD,REV';
@@ -94,13 +94,13 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
           else await clearCheckedArticleCache();
 
         // Load whole repos, especially if we are going to check files in manifests
-        let repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
+        let repoPreloadList = ['UHB', 'UGNT', 'TWL', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
         if (dataSet === 'OLD')
             repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ'];
         else if (dataSet === 'NEW')
-            repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN2', 'TWL', 'TA', 'TW', 'TQ2'];
+            repoPreloadList = ['UHB', 'UGNT', 'TWL', 'LT', 'ST', 'TN2', 'TA', 'TW', 'TQ2'];
         else if (dataSet === 'BOTH')
-            repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TN2', 'TWL', 'TA', 'TW', 'TQ', 'TQ2'];
+            repoPreloadList = ['UHB', 'UGNT', 'TWL', 'LT', 'ST', 'TN', 'TN2', 'TA', 'TW', 'TQ', 'TQ2'];
 
         setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for all book packages check…</p>);
             const successFlag = await preloadReposIfNecessary(username, languageCode, bookIDList, branch, repoPreloadList);
