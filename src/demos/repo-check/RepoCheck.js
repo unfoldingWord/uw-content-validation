@@ -7,7 +7,7 @@ import { checkRepo } from './checkRepo';
 import { userLog } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.2.3';
+// const REPO_VALIDATOR_VERSION_STRING = '0.2.4';
 
 
 function RepoCheck(/*username, languageCode,*/ props) {
@@ -26,9 +26,9 @@ function RepoCheck(/*username, languageCode,*/ props) {
     // debugLog(`username='${username}'`);
     const repoName = props.repoName;
     // debugLog(`repoName='${repoName}'`);
-    let branch = props.branch;
+    let branchOrRelease = props.branchOrRelease;
     // debugLog(`branch='${branch}'`);
-    if (branch === undefined) branch = 'master';
+    if (branchOrRelease === undefined) branchOrRelease = 'master';
 
     const checkingOptions = { // Uncomment any of these to test them
         // excerptLength: 25,
@@ -90,7 +90,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
             if (repoCode !== 'TA' && repoCode !== 'TW') repoPreloadList.push(repoCode);
             if (repoCode.startsWith('OBS-') || repoCode === 'TWL') { repoPreloadList.unshift('UGNT'); repoPreloadList.unshift('UHB'); repoPreloadList.push('OBS'); }
             setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for {repoName} repo check…</p>);
-            const successFlag = await preloadReposIfNecessary(username, languageCode, [], branch, repoPreloadList);
+            const successFlag = await preloadReposIfNecessary(username, languageCode, [], branchOrRelease, repoPreloadList);
             if (!successFlag)
                 console.error(`RepoCheck error: Failed to pre-load all repos`)
 
@@ -101,7 +101,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
             try {
                 let rawCRResults = {};
                 try {
-                    rawCRResults = await checkRepo(username, repoName, branch, "", setResultValue, checkingOptions);
+                    rawCRResults = await checkRepo(username, repoName, branchOrRelease, "", setResultValue, checkingOptions);
                 } catch (checkRepoError) {
                     rawCRResults = { successList: [], noticeList: [] };
                     rawCRResults.noticeList.push({ priority: 999, message: "checkRepo function FAILED", repoName, excerpt: checkRepoError, location: repoName });
@@ -136,9 +136,9 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 if (props.displayType) displayType = props.displayType;
 
                 function renderSummary(processedResults) {
-                    const repoLink = branch === undefined ? `https://git.door43.org/${username}/${repoName}/` : `https://git.door43.org/${username}/${repoName}/src/branch/${branch}/`;
+                    const repoLink = branchOrRelease === undefined ? `https://git.door43.org/${username}/${repoName}/` : `https://git.door43.org/${username}/${repoName}/src/branch/${branchOrRelease}/`;
                     return (<div>
-                        <p>Checked <b>{username} {repoName}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> <a rel="noopener noreferrer" target="_blank" href={repoLink}>branch</a>)</p>
+                        <p>Checked <b>{username} {repoName}</b> (from <i>{branchOrRelease === undefined ? 'DEFAULT' : branchOrRelease}</i> <a rel="noopener noreferrer" target="_blank" href={repoLink}>branch</a>)</p>
                         <RenderSuccesses username={username} results={processedResults} />
                         <RenderTotals rawNoticeListLength={rawCRResults.noticeList.length} results={processedResults} />
                         {/* <RenderRawResults results={rawCRResults} /> */}

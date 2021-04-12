@@ -24,7 +24,7 @@ and then validates the content of one file selected from the repo.
   // repoName='en_ult' // Can use ult or ust here
   repoName='en_tn' // Can use ta, tw, tn, tq, sn, or sq here
 
-  // If we don’t put the branch here, the default branch is used
+  // If we don’t put the branch, the default branch is used
   // branch='master'
 
   // Of course, the filename must be correct for the chosen repository
