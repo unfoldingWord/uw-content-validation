@@ -8,7 +8,7 @@ import { cachedGetFile, cachedGetFileUsingFullURL, checkMarkdownText } from '../
 import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 
 
-// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.7.17';
+// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.7.19';
 
 // const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -23,7 +23,7 @@ const TA_RELATIVE2_DISPLAY_LINK_REGEX = new RegExp('\\[([^\\]]+?)\\]\\(\\.{2}/\\
 
 const TW_DOUBLE_BRACKETED_LINK_REGEX = new RegExp('\\[\\[rc://([^ /]+?)/tw/dict/bible/([^ /]+?)/([^ /\\]]+?)\\]\\]', 'g'); // Enclosed in [[  ]]
 const TWL_RAW_LINK_REGEX = new RegExp('rc://([^ /]+?)/tw/dict/bible/([^ /]+?)/(.+)', 'g'); // Just a raw link
-const TW_INTERNAL_REGEX = new RegExp('\\[([A-za-z ()]+?)\\]\\(\\.{2}/([a-z]{2,5})/([-A-Za-z\\d]{2,20})\\.md\\)', 'g');// [Asher](../names/asher.md)
+const TW_INTERNAL_REGEX = new RegExp('\\[([-A-Za-z ()]+?)\\]\\(\\.{2}/([a-z]{2,5})/([-A-Za-z\\d]{2,20})\\.md\\)', 'g');// [Asher](../names/asher.md)
 
 // TODO: Do we need to normalise Bible links, i.e., make sure that the link itself
 //          (we don't care about the displayed text) doesn't specify superfluous levels/information
@@ -38,7 +38,7 @@ const THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[(?:verse )?(\\d{1,
 const THIS_VERSE_RANGE_TO_THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[(?:verses )?(\\d{1,3})[–-](\\d{1,3})\\]\\(\\.{2}/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');// [2–7](../09/2.md) or [verses 2–7](../09/2.md) NOTE en-dash
 const BCV_V_TO_THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})[–-](\\d{1,3})\\]\\(\\./(\\d{1,3})\\.md\\)', 'g'); // [Genesis 26:12-14](./12.md) NOTE en-dash
 
-const BIBLE_FULL_HELP_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})(?:-\\d{1,3})?\\]\\(rc://([^ /]+?)/tn/help/([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\)', 'g'); // [Genesis 29:23-24](rc://en/tn/help/gen/29/23)
+const BIBLE_FULL_HELP_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(\\d{1,3}):(\\d{1,3})(?:-\\d{1,3})?\\]\\(rc://([^ /]+?)/tn/help/([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\)', 'g'); // [Song of Solomon 29:23-24](rc://en/tn/help/sng/29/23)
 
 const TN_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})\\]\\((\\.{2})/(\\d{1,3})/(\\d{1,3})/([a-z][a-z0-9][a-z0-9][a-z0-9])\\)', 'g');
 
@@ -177,9 +177,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
         excerptLength = DEFAULT_EXCERPT_LENGTH;
         // debugLog(`Using default excerptLength=${excerptLength}`);
-    }
-    // else
-    // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
+    } // else debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
     const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
     const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
     // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
@@ -224,7 +222,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
         const [totalLink, altText, fetchLink] = regexResultArray;
         // if (altText !== 'OBS Image') userLog("This code was only checked for 'OBS Image' links");
         if (!altText)
-            addNoticePartial({ priority: 349, message: "Markdown image link has no alternative text", excerpt: totalLink, location: ourLocation });
+            addNoticePartial({ priority: 199, message: "Markdown image link has no alternative text", excerpt: totalLink, location: ourLocation });
         if (!fetchLink.startsWith('https://'))
             addNoticePartial({ priority: 749, message: "Markdown image link seems faulty", excerpt: fetchLink, location: ourLocation });
         else if (checkingOptions?.disableAllLinkFetchingFlag !== true) {
@@ -243,7 +241,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
         // debugLog(`Got markdown image in line ${lineNumber}:`, JSON.stringify(regexResultArray));
         const [totalLink, alt, fetchLink, title] = regexResultArray;
         if (!alt)
-            addNoticePartial({ priority: 349, message: "Markdown image link has no alternative text", excerpt: totalLink, location: ourLocation });
+            addNoticePartial({ priority: 199, message: "Markdown image link has no alternative text", excerpt: totalLink, location: ourLocation });
         if (!title)
             addNoticePartial({ priority: 348, message: "Markdown image link has no title text", excerpt: totalLink, location: ourLocation });
         if (!fetchLink.startsWith('https://'))
@@ -271,7 +269,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     let taLinkCount1 = 0, taLinkCount2 = 0, twLinkCount1 = 0, twLinkCount2 = 0, TNLinkCount1 = 0,
         thisChapterBibleLinkCount1 = 0, thisVerseBibleLinkCount1 = 0, thisBookBibleLinkCount1 = 0, otherBookBibleLinkCount1 = 0,
         generalLinkCount1 = 0;
-    let processedLinkList = [];
+    const processedLinkList = [];
 
     // Check for internal TW links like [Asher](../names/asher.md)
     while ((regexResultArray = TW_INTERNAL_REGEX.exec(fieldText))) {

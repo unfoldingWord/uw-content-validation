@@ -9,7 +9,7 @@ import { checkOriginalLanguageQuote } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const NOTES_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.10';
+// const NOTES_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.12';
 
 const NUM_EXPECTED_NOTES_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_NOTES_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tNote';
@@ -436,8 +436,14 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
                 addNoticePartial({ priority: 173, message: "Row ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 2, rowID, excerpt: rowID, location: ourRowLocation });
         }
 
-        if (tags.length)
-            ;
+        if (tags.length) {
+            let tagsList = tags.split('; ');
+            for (const thisTag of tagsList) {
+                // No tags are yet defined for TNs or SNs
+                // if (thisTag !== 'keyterm' && thisTag !== 'name')
+                addNoticePartial({ priority: 746, message: "Unexpected tag", details: thisTag, excerpt: tags, fieldName: 'Tags', rowID, location: ourRowLocation });
+            }
+        }
 
         if (supportReference.length) { // need to check TN2 against TA
             if (isWhitespace(supportReference))
@@ -489,7 +495,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
             }
             else if (occurrence === '-1') // TODO check the special conditions when this can occur???
                 ;
-            else if ('1234567'.indexOf(occurrence) < 0) { // it’s not one of these integers
+            else if ('12345678'.indexOf(occurrence) < 0) { // it’s not one of these integers
                 addNoticePartial({ priority: 792, message: `Invalid occurrence field`, fieldName: 'Occurrence', rowID, excerpt: occurrence, location: ourRowLocation });
                 OSuggestion = '1';
             }
@@ -520,7 +526,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
                 if (linksList.length && V !== 'intro') {
                     let details = supportReference ? `SR='${supportReference}'` : "empty SR field"
                     if (linksList.length > 1) details += `—found ${linksList.length} TA links`;
-                    const excerpt = linksList.length > 1? JSON.stringify(linksList): linksList[0];
+                    const excerpt = linksList.length > 1 ? JSON.stringify(linksList) : linksList[0];
                     if (foundSR) {
                         if (linksList.length > 1)
                             addNoticePartial({ priority: 786, message: "Shouldn’t have multiple TA links in Note", details, rowID, fieldName: 'OccurrenceNote', excerpt, location: ourRowLocation });

@@ -42,7 +42,7 @@ const tableIcons = {
 };
 
 
-// const RENDER_PROCESSED_RESULTS_VERSION = '0.6.0';
+// const RENDER_PROCESSED_RESULTS_VERSION = '0.6.1';
 
 
 export function RenderSuccesses({ username, results }) {
@@ -305,7 +305,7 @@ function RenderExcerpt({ excerpt, message }) {
             const linkPart = excerpt.substring(ix+2, excerpt.length-1); // Step past the ]( but don't include the final )
             const adjLinkPart = message === "Should http link be https" ? linkPart.replace('http:', 'https:') : linkPart;
             // debugLog(`RenderExcerpt from '${excerpt}' got ix=${ix}, displayPart='${displayPart}', linkPart='${linkPart}', adjLinkPart='${adjLinkPart}'`);
-            return <><span style={{ color: 'DimGray' }}>` around ►[${displayPart}](<a rel="noopener noreferrer" target="_blank" href={adjLinkPart}>{linkPart}</a>)◄`</span></>
+            return <><span style={{ color: 'DimGray' }}>` around ►[{displayPart}](<a rel="noopener noreferrer" target="_blank" href={adjLinkPart}>{linkPart}</a>)◄`</span></>
         }
     }
     return <><span style={{ color: 'DimGray' }}>{excerpt ? ` around ►${excerpt}◄` : ""}</span></>

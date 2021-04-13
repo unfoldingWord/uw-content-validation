@@ -90,7 +90,7 @@ export function checkTextfileContents(languageCode, repoCode, fileType, filename
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
         // cptResult.noticeList = cptResult.noticeList.concat(resultObject.noticeList);
-        // If we need to put everything through addNotice9, e.g., for debugging or filtering
+        // If we need to put everything through addNotice, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of resultObject.noticeList)
             addNotice({ ...noticeEntry, filename: textFilename });

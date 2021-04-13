@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Last modified: 2021-01-28 by RJH
+# Last modified: 2021-04-13 by RJH
 #
 
 import os
@@ -26,6 +26,7 @@ for root, dirs, files in os.walk('.'):
                     and 'console.log' not in line and 'userLog' not in line and 'debugLog' not in line \
                     and 'console.assert' not in line and not 'parameterAssert' in line \
                     and 'oticeEntry' not in line \
+                    and 'addNotice(notice);' not in line and 'addNoticePartial(notice);' not in line \
                     and 'grammarCheckResult.error' not in line \
                     and 'MORE SIMILAR' not in line \
                     and '...' not in line:
@@ -35,9 +36,7 @@ for root, dirs, files in os.walk('.'):
                         if not strippedLine.startswith('//'):
                             cleanedLine = strippedLine.replace('addNoticePartial','') \
                                                 .replace('addNotice6to7','') \
-                                                .replace('addNotice5','').replace('addNotice6','').replace('addNotice8','').replace('addNotice9','') \
-                                                .replace('addNoticePartial','').replace('addNotice10','') \
-                                                .replace('addNotice','') \
+                                                .replace('addNoticePartial','').replace('addNotice','') \
                                                 .replace('checkBookPackageResult.noticeList.push({', '') \
                                                 .replace('rawCRResults.noticeList.push({', '') \
                                                 .replace('ctqResult.noticeList.push({', '') \
@@ -48,7 +47,8 @@ for root, dirs, files in os.walk('.'):
                             adjustedLine = cleanedLine.replace(', ourAtString','').replace(', atString','') \
                                                 .replace(', ourLocation','').replace(', ourRowLocation','') \
                                                 .replace('${ourRowLocation}','') \
-                                                .replace('priority:','').replace('message:','')
+                                                .replace('priority:','').replace('message:','') \
+                                                .replace('const notice =  ', '').replace('notice =  ', '')
                             adjustedLine = adjustedLine.strip().replace('  ',' ')
                             print("adjustedLine", adjustedLine)
                             if not adjustedLine: halt

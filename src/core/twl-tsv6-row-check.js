@@ -9,7 +9,7 @@ import { checkOriginalLanguageQuote } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const TWL_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.1.3';
+// const TWL_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.1.5';
 
 const NUM_EXPECTED_TWL_TSV_FIELDS = 6; // so expects 5 tabs per line
 const EXPECTED_TWL_HEADING_LINE = 'Reference\tID\tTags\tOrigWords\tOccurrence\tTWLink';
@@ -348,8 +348,13 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
                 addNoticePartial({ priority: 173, message: "Row ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 2, rowID, excerpt: rowID, location: ourRowLocation });
         }
 
-        if (tags.length)
-            ;
+        if (tags.length) {
+            let tagsList = tags.split('; ');
+            for (const thisTag of tagsList) {
+                if (thisTag !== 'keyterm' && thisTag !== 'name')
+                    addNoticePartial({ priority: 740, message: "Unrecognized tag", details: `found '${thisTag}' but expected 'keyterm' or 'name'`, excerpt: tags, fieldName: 'Tags', rowID, location: ourRowLocation });
+            }
+        }
 
         if (quote.length) { // need to check UTN against UHB and UGNT
             QSuggestion = ourCheckTextField(rowID, 'Quote', quote, false, ourRowLocation, checkingOptions);
@@ -373,7 +378,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
             }
             else if (occurrence === '-1') // TODO check the special conditions when this can occur???
                 ;
-            else if ('1234567'.indexOf(occurrence) < 0) { // it’s not one of these integers
+            else if ('12345678'.indexOf(occurrence) < 0) { // it’s not one of these integers
                 addNoticePartial({ priority: 792, message: `Invalid occurrence field`, fieldName: 'Occurrence', rowID, excerpt: occurrence, location: ourRowLocation });
                 OSuggestion = '1';
             }

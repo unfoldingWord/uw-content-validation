@@ -9,7 +9,7 @@ import { checkOriginalLanguageQuote } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.7.1';
+// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.7.2';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -498,7 +498,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
             }
             else if (occurrence === '-1') // TODO check the special conditions when this can occur???
                 ;
-            else if ('1234567'.indexOf(occurrence) < 0) { // it’s not one of these integers
+            else if ('12345678'.indexOf(occurrence) < 0) { // it’s not one of these integers
                 addNoticePartial({ priority: 792, message: `Invalid occurrence field`, fieldName: 'Occurrence', rowID, excerpt: occurrence, location: ourRowLocation });
                 OSuggestion = '1';
             }
@@ -543,7 +543,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
                 if (linksList.length && V !== 'intro') {
                     let details = supportReference ? `SR='${supportReference}'` : "empty SR field"
                     if (linksList.length > 1) details += `—found ${linksList.length} TA links`;
-                    const excerpt = linksList.length > 1? JSON.stringify(linksList): linksList[0];
+                    const excerpt = linksList.length > 1 ? JSON.stringify(linksList) : linksList[0];
                     if (foundSR) {
                         if (linksList.length > 1)
                             addNoticePartial({ priority: 786, message: "Shouldn’t have multiple TA links in OccurrenceNote", details, rowID, fieldName: 'OccurrenceNote', excerpt, location: ourRowLocation });
