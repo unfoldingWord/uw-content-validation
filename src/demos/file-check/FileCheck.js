@@ -12,7 +12,7 @@ import { checkFileContents } from './checkFileContents';
 import { debugLog, userLog } from '../../core/utilities';
 
 
-// const FILE_CHECK_VERSION_STRING = '0.2.7';
+// const FILE_CHECK_VERSION_STRING = '0.2.9';
 
 
 function FileCheck(props) {
@@ -68,6 +68,7 @@ function FileCheck(props) {
         let repoCodeGuess = '';
         if (repoName === 'hbo_uhb') repoCodeGuess = 'UHB'
         else if (repoName === 'el-x-koine_ugnt') repoCodeGuess = 'UGNT'
+        else if (repoName.endsWith('_twl')) repoCodeGuess = 'TWL'
         else if (repoName.endsWith('_tn')) repoCodeGuess = 'TN'
         else if (repoName.endsWith('_ta')) repoCodeGuess = 'TA'
         else if (repoName.endsWith('_tq')) repoCodeGuess = 'TQ'
@@ -122,6 +123,10 @@ function FileCheck(props) {
       if (props.displayType) displayType = props.displayType;
 
       function renderSummary(processedResults) {
+        let cutoffString = '';
+        // NOTE: Couldn't figure out why ?. was not allowed in the statement below
+        if (rawCFResults && rawCFResults.checkedOptions && rawCFResults.checkedOptions.cutoffPriorityLevel)
+          cutoffString = ` Priority level ${rawCFResults.checkedOptions.cutoffPriorityLevel} or lower were not included.`;
         return (<div>
           <p>Checked <b>{filename}</b> (from <i>{username}</i> {repoName} <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)</p>
           <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCFResults.noticeList.length === 0 ? 'no' : rawCFResults.noticeList.length.toLocaleString()} notice{rawCFResults.noticeList.length === 1 ? '' : 's'}
@@ -129,7 +134,7 @@ function FileCheck(props) {
             {processedResults.numIgnoredNotices ? `${processedResults.numIgnoredNotices.toLocaleString()} ignored notice(s)` : ""}
             {processedResults.numIgnoredNotices && processedResults.numDisabledNotices ? ' and ' : ''}
             {processedResults.numDisabledNotices ? `${processedResults.numDisabledNotices.toLocaleString()} expected/disabled notice(s)` : ""}
-            {processedResults.numIgnoredNotices || processedResults.numDisabledNotices ? ')' : ''}.{rawCFResults.checkedOptions.cutoffPriorityLevel ? ` Priority level ${rawCFResults.checkedOptions.cutoffPriorityLevel} or lower were not included.` : ''}</p>
+            {processedResults.numIgnoredNotices || processedResults.numDisabledNotices ? ')' : ''}.{cutoffString}</p>
           {/* <RenderRawResults results={rawCFResults} /> */}
         </div>);
       }

@@ -250,13 +250,13 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 581)
         && (characterIndex = fieldText.indexOf('\xA0')) >= 0) { // non-break space
         const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/\xA0/g, '⍽') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
-        addNoticePartial({ priority: 581, message: "Unexpected non-break space character", characterIndex, excerpt, location: ourLocation });
+        addNoticePartial({ priority: 581, message: "Unexpected non-break space (uA0) character", characterIndex, excerpt, location: ourLocation });
         suggestion = suggestion.replace(/\xA0/g, ' ');
     }
     if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 580)
         && (characterIndex = fieldText.indexOf('\u202F')) >= 0) { // narrow non-break space
         const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/\u202F/g, '⍽') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
-        const notice = { priority: 580, message: "Unexpected narrow non-break space character", excerpt, location: ourLocation };
+        const notice = { priority: 580, message: "Unexpected narrow non-break space (u202F) character", excerpt, location: ourLocation };
         if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.substring(0, 6) !== 'from \\')
             notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
         addNoticePartial(notice);

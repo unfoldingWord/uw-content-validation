@@ -10,7 +10,7 @@ import { debugLog, userLog } from './utilities';
 */
 
 
-// const DISABLED_NOTICES_VERSION_STRING = '0.3.2';
+// const DISABLED_NOTICES_VERSION_STRING = '0.3.3';
 
 
 const disabledNotices = [
@@ -18,6 +18,7 @@ const disabledNotices = [
   //  i.e., you can be as specific as you need about username and/or lineNumber, etc.
 
   { repoCode: 'TN', priority: 450, }, // TN "Resource container link should have '*' language code with (not 'en')" disabled as tC can’t handle it yet!
+  { repoCode: 'TW', priority: 450, }, // TW "Resource container link should have '*' language code with (not 'en')" disabled as tC can’t handle it yet!
 
   { repoCode: 'ST', message: "Bad punctuation nesting: } closing character doesn’t match", bookID: 'NEH', }, // 777 - complex { } nesting in direct speech
   { repoCode: 'ST', message: "Bad punctuation nesting: ” closing character doesn’t match", bookID: 'NEH', }, // 777 - complex { } nesting in direct speech

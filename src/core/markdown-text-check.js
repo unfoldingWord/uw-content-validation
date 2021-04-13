@@ -186,7 +186,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
         //     const [totalLink, altText, fetchLink] = regexResultArray;
         //     // if (altText !== 'OBS Image') userLog("This code was only checked for 'OBS Image' links");
         //     if (!altText)
-        //         addNotice({ priority: 349, message: "Markdown image link has no alternative text", lineNumber, excerpt: totalLink, location: lineLocation });
+        //         addNotice({ priority: 199, message: "Markdown image link has no alternative text", lineNumber, excerpt: totalLink, location: lineLocation });
         //     if (!fetchLink.startsWith('https://'))
         //         addNotice({ priority: 749, message: "Markdown image link seems faulty", lineNumber, excerpt: fetchLink, location: lineLocation });
         //     else if (checkingOptions?.disableAllLinkFetchingFlag !== true) {
@@ -205,7 +205,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
         //     // debugLog(`Got markdown image in line ${lineNumber}:`, JSON.stringify(regexResultArray));
         //     const [totalLink, alt, fetchLink, title] = regexResultArray;
         //     if (!alt)
-        //         addNotice({ priority: 349, message: "Markdown image link has no alternative text", lineNumber, excerpt: totalLink, location: lineLocation });
+        //         addNotice({ priority: 199, message: "Markdown image link has no alternative text", lineNumber, excerpt: totalLink, location: lineLocation });
         //     if (!title)
         //         addNotice({ priority: 348, message: "Markdown image link has no title text", lineNumber, excerpt: totalLink, location: lineLocation });
         //     if (!fetchLink.startsWith('https://'))

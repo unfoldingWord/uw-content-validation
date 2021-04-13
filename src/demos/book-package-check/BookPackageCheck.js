@@ -8,7 +8,7 @@ import { checkBookPackage } from './checkBookPackage';
 import { userLog, debugLog, parameterAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.5.0';
+// const BP_VALIDATOR_VERSION_STRING = '0.5.1';
 
 
 function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
@@ -84,7 +84,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             // Load whole repos, especially if we are going to check files in manifests
             let repoPreloadList;
             if (bookID === 'OBS') {
-                repoPreloadList = ['OBS', 'TA', 'TW', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ']; // for DEFAULT
+                repoPreloadList = ['OBS', 'OBS-TWL', 'TA', 'TW', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ']; // for DEFAULT
                 if (dataSet === 'OLD')
                     repoPreloadList = ['OBS', 'TA', 'TW', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
                 else if (dataSet === 'NEW')
@@ -92,13 +92,13 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
                 else if (dataSet === 'BOTH')
                     repoPreloadList = ['OBS', 'OBS-TWL', 'TA', 'TW', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SQ'];
             } else { // not OBS
-                repoPreloadList = ['LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
+                repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
                 if (dataSet === 'OLD')
                     repoPreloadList = ['LT', 'ST', 'TN', 'TA', 'TW', 'TQ'];
                 else if (dataSet === 'NEW')
-                    repoPreloadList = ['LT', 'ST', 'TN2', 'TWL', 'TA', 'TW', 'TQ2'];
+                    repoPreloadList = ['TWL', 'LT', 'ST', 'TN2', 'TA', 'TW', 'TQ2'];
                 else if (dataSet === 'BOTH')
-                    repoPreloadList = ['LT', 'ST', 'TN', 'TN2', 'TWL', 'TA', 'TW', 'TQ', 'TQ2'];
+                    repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TN2', 'TA', 'TW', 'TQ', 'TQ2'];
                 const whichTestament = books.testament(bookID); // returns 'old' or 'new'
                 const origLangRepo = whichTestament === 'old' ? 'UHB' : 'UGNT';
                 repoPreloadList.unshift(origLangRepo);

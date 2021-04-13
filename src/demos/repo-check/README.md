@@ -40,8 +40,8 @@ import RepoCheck from './RepoCheck';
   // repoName='en_obs-sq' // Open Bible Stories Study Questions (TSV)
   // repoName='fr_ulb' // No alignment so smaller files (faster demo)
 
-  // If we don’t put the branch here, the default branch is used
-  // branch='master'
+  // If we don’t put the branch or release version here, the default branch is used
+  // branchOrRelease='master'
 
   // The location field appears in check messages to help the user locate the issue
   location="as specified in repo-check/README.md"

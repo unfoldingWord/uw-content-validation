@@ -32,7 +32,7 @@ import BookPackageCheck from './BookPackageCheck';
   bookID='EZR'
 
   // We can choose the forthcoming new TSV formats or the existing formats
-  dataSet='BOTH' // 'OLD' (Markdown TQ, TSV9 TN, etc.), 'NEW' (TSV7 TQ2, TSV7 TN2, TSV6 TWL,etc.), 'DEFAULT', or 'BOTH'
+  // dataSet='BOTH' // 'OLD' (Markdown TQ, TSV9 TN, etc.), 'NEW' (TSV7 TQ2, TSV7 TN2, TSV6 TWL,etc.), 'DEFAULT', or 'BOTH'
 
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'
@@ -41,6 +41,7 @@ import BookPackageCheck from './BookPackageCheck';
   // Normally links in files are downloaded to check that they really exist
   disableAllLinkFetchingFlag='false' // 'true' or 'false'
   // The next two are only relevant if the above is 'false'
+  // They control whether the linked articles themselves are also checked or not
   disableLinkedTAArticlesCheckFlag='false' // 'true' or 'false'
   disableLinkedTWArticlesCheckFlag='false' // 'true' or 'false'
 

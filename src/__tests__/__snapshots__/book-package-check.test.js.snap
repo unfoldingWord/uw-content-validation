@@ -230,6 +230,16 @@ Object {
       "username": "unfoldingWord",
     },
     Object {
+      "details": "username=unfoldingWord",
+      "extra": "TWL",
+      "location": " in TWL in en RUT book package from unfoldingWord master branch",
+      "message": "Repository doesn’t exist",
+      "priority": 997,
+      "repoCode": "TWL",
+      "repoName": "en_twl",
+      "username": "unfoldingWord",
+    },
+    Object {
       "C": "2",
       "V": "1",
       "bookID": "RUT",
@@ -4893,6 +4903,16 @@ Object {
     "en_tq",
   ],
   "noticeList": Array [
+    Object {
+      "details": "username=unfoldingWord",
+      "extra": "TWL",
+      "location": " in TWL in en TIT book package from unfoldingWord master branch",
+      "message": "Repository doesn’t exist",
+      "priority": 997,
+      "repoCode": "TWL",
+      "repoName": "en_twl",
+      "username": "unfoldingWord",
+    },
     Object {
       "C": "1",
       "V": "1",

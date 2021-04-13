@@ -6,10 +6,9 @@ import { countOccurrences } from './text-handling-functions'
 import { cachedGetFile, cachedGetFileUsingFullURL, checkMarkdownText } from '../core';
 // eslint-disable-next-line no-unused-vars
 import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
-// import { consoleLogObject } from '../core/utilities';
 
 
-// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.7.14';
+// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.7.19';
 
 // const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -19,11 +18,12 @@ const GENERAL_MARKDOWN_LINK2_REGEX = new RegExp('\\[\\[[^\\]]+?\\]\\]', 'g'); //
 
 const TA_DOUBLE_BRACKETED_LINK_REGEX = new RegExp('\\[\\[rc://([^ /]+?)/ta/man/([^ /]+?)/([^ \\]]+?)\\]\\]', 'g'); // Enclosed in [[  ]]
 const TA_FULL_DISPLAY_LINK_REGEX = new RegExp('\\[([^\\]]+?)\\]\\(rc://([^ /]+?)/ta/man/([^ /]+?)/([^ \\]]+?)\\)', 'g'); // [How to Translate Names](rc://en/ta/man/translate/translate-names)
-const TA_RELATIVE_DISPLAY_LINK_REGEX = new RegExp('\\[([^\\]]+?)\\]\\(\\.{2}/([^ /\\]]+?)/01\\.md\\)', 'g'); // [Borrow Words](../translate-transliterate/01.md)
+const TA_RELATIVE1_DISPLAY_LINK_REGEX = new RegExp('\\[([^\\]]+?)\\]\\(\\.{2}/([^ /\\]]+?)/01\\.md\\)', 'g'); // [Borrow Words](../translate-transliterate/01.md)
+const TA_RELATIVE2_DISPLAY_LINK_REGEX = new RegExp('\\[([^\\]]+?)\\]\\(\\.{2}/\\.{2}/([^ /\\]]+?)/([^ /\\]]+?)/01\\.md\\)', 'g'); // [Borrow Words](../../translate/translate-transliterate/01.md)
 
 const TW_DOUBLE_BRACKETED_LINK_REGEX = new RegExp('\\[\\[rc://([^ /]+?)/tw/dict/bible/([^ /]+?)/([^ /\\]]+?)\\]\\]', 'g'); // Enclosed in [[  ]]
 const TWL_RAW_LINK_REGEX = new RegExp('rc://([^ /]+?)/tw/dict/bible/([^ /]+?)/(.+)', 'g'); // Just a raw link
-const TW_INTERNAL_REGEX = new RegExp('\\[([A-za-z ()]+?)\\]\\(\\.{2}/([a-z]{2,5})/([-A-Za-z\\d]{2,20})\\.md\\)', 'g');// [Asher](../names/asher.md)
+const TW_INTERNAL_REGEX = new RegExp('\\[([-A-Za-z ()]+?)\\]\\(\\.{2}/([a-z]{2,5})/([-A-Za-z\\d]{2,20})\\.md\\)', 'g');// [Asher](../names/asher.md)
 
 // TODO: Do we need to normalise Bible links, i.e., make sure that the link itself
 //          (we don't care about the displayed text) doesn't specify superfluous levels/information
@@ -31,14 +31,14 @@ const TW_INTERNAL_REGEX = new RegExp('\\[([A-za-z ()]+?)\\]\\(\\.{2}/([a-z]{2,5}
 // TODO: Test to see if "[2:23](../02/03.md)" is found by more than one regex below
 const BIBLE_REGEX_OTHER_BOOK_ABSOLUTE = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})\\]\\(([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Revelation 3:11](rev/03/11.md)
 const BIBLE_REGEX_OTHER_BOOK_RELATIVE = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})\\]\\(\\.{2}/\\.{2}/([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Revelation 3:11](../../rev/03/11.md)
-const BIBLE_REGEX_THIS_BOOK_RELATIVE = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})\\]\\(\\.{2}/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Revelation 3:11](../03/11.md)
+const BIBLE_REGEX_THIS_BOOK_RELATIVE = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(\\d{1,3}):(\\d{1,3})\\]\\(\\.{2}/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Revelation 3:11](../03/11.md) or [Song of Solomon 3:11](../03/11.md)
 const BCV_V_TO_THIS_BOOK_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})[–-](\\d{1,3})\\]\\((\\.{2})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Genesis 26:12-14](../26/12.md) or [4:11–16](../04/11.md) NOTE en-dash
 const BIBLE_REGEX_THIS_CHAPTER_RELATIVE = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(?:(\\d{1,3}):)?(\\d{1,3})\\]\\(\\./(\\d{1,3})\\.md\\)', 'g');
-const THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[(\\d{1,3})\\]\\(\\.{2}/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');// [27](../11/27.md)
-const THIS_VERSE_RANGE_TO_THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[(\\d{1,3})[–-](\\d{1,3})\\]\\(\\.{2}/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');// [2–7](../09/2.md) NOTE en-dash
+const THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[(?:verse )?(\\d{1,3})\\]\\(\\.{2}/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');// [27](../11/27.md) or [verse 27](../11/27.md)
+const THIS_VERSE_RANGE_TO_THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[(?:verses )?(\\d{1,3})[–-](\\d{1,3})\\]\\(\\.{2}/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');// [2–7](../09/2.md) or [verses 2–7](../09/2.md) NOTE en-dash
 const BCV_V_TO_THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})[–-](\\d{1,3})\\]\\(\\./(\\d{1,3})\\.md\\)', 'g'); // [Genesis 26:12-14](./12.md) NOTE en-dash
 
-const BIBLE_FULL_HELP_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})(?:-\\d{1,3})?\\]\\(rc://([^ /]+?)/tn/help/([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\)', 'g'); // [Genesis 29:23-24](rc://en/tn/help/gen/29/23)
+const BIBLE_FULL_HELP_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(\\d{1,3}):(\\d{1,3})(?:-\\d{1,3})?\\]\\(rc://([^ /]+?)/tn/help/([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\)', 'g'); // [Song of Solomon 29:23-24](rc://en/tn/help/sng/29/23)
 
 const TN_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:\\w+? )?)(\\d{1,3}):(\\d{1,3})\\]\\((\\.{2})/(\\d{1,3})/(\\d{1,3})/([a-z][a-z0-9][a-z0-9][a-z0-9])\\)', 'g');
 
@@ -177,9 +177,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
         excerptLength = DEFAULT_EXCERPT_LENGTH;
         // debugLog(`Using default excerptLength=${excerptLength}`);
-    }
-    // else
-    // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
+    } // else debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
     const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
     const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
     // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
@@ -224,7 +222,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
         const [totalLink, altText, fetchLink] = regexResultArray;
         // if (altText !== 'OBS Image') userLog("This code was only checked for 'OBS Image' links");
         if (!altText)
-            addNoticePartial({ priority: 349, message: "Markdown image link has no alternative text", excerpt: totalLink, location: ourLocation });
+            addNoticePartial({ priority: 199, message: "Markdown image link has no alternative text", excerpt: totalLink, location: ourLocation });
         if (!fetchLink.startsWith('https://'))
             addNoticePartial({ priority: 749, message: "Markdown image link seems faulty", excerpt: fetchLink, location: ourLocation });
         else if (checkingOptions?.disableAllLinkFetchingFlag !== true) {
@@ -243,7 +241,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
         // debugLog(`Got markdown image in line ${lineNumber}:`, JSON.stringify(regexResultArray));
         const [totalLink, alt, fetchLink, title] = regexResultArray;
         if (!alt)
-            addNoticePartial({ priority: 349, message: "Markdown image link has no alternative text", excerpt: totalLink, location: ourLocation });
+            addNoticePartial({ priority: 199, message: "Markdown image link has no alternative text", excerpt: totalLink, location: ourLocation });
         if (!title)
             addNoticePartial({ priority: 348, message: "Markdown image link has no title text", excerpt: totalLink, location: ourLocation });
         if (!fetchLink.startsWith('https://'))
@@ -271,7 +269,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     let taLinkCount1 = 0, taLinkCount2 = 0, twLinkCount1 = 0, twLinkCount2 = 0, TNLinkCount1 = 0,
         thisChapterBibleLinkCount1 = 0, thisVerseBibleLinkCount1 = 0, thisBookBibleLinkCount1 = 0, otherBookBibleLinkCount1 = 0,
         generalLinkCount1 = 0;
-    let processedLinkList = [];
+    const processedLinkList = [];
 
     // Check for internal TW links like [Asher](../names/asher.md)
     while ((regexResultArray = TW_INTERNAL_REGEX.exec(fieldText))) {
@@ -296,13 +294,13 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 // if (regexResultArray[3] === 'brother') debugLog(`Fetched fileContent for ${JSON.stringify(twPathParameters)}: ${typeof twFileContent} ${twFileContent.length}`);
             } catch (trcGCerror) {
                 console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TW`, twRepoUsername, twRepoName, filepath, twRepoBranch, trcGCerror.message);
-                addNoticePartial({ priority: 882, message: `Error loading ${fieldName} TW link`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+                addNoticePartial({ priority: 882, message: `Error loading TW article`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
             }
             if (!twFileContent)
-                addNoticePartial({ priority: 883, message: `Unable to find/load ${fieldName} TW link`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                addNoticePartial({ priority: 883, message: `Unable to find/load TW article`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
             else { // we got the content of the TW article
                 if (twFileContent.length < 10)
-                    addNoticePartial({ priority: 881, message: `Linked ${fieldName} TW article seems empty`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                    addNoticePartial({ priority: 881, message: `TW article seems empty`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                 // THIS IS DISABLED COZ IT CAN GIVE AN INFINITE LOOP !!!
                 // else if (checkingOptions?.disableLinkedTWArticlesCheckFlag !== true) {
                 //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTWArticlesCheckFlag} so checking TW article: ${filepath}`);
@@ -359,14 +357,14 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
             } catch (trcGCerror) {
                 // console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
-                addNoticePartial({ priority: 885, message: `Error loading ${fieldName} linked TA article`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+                addNoticePartial({ priority: 885, message: `Error loading TA article`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
                 alreadyGaveError = true;
             }
             if (!alreadyGaveError) {
                 if (!taFileContent)
-                    addNoticePartial({ priority: 886, message: `Unable to find ${fieldName} linked TA article`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                    addNoticePartial({ priority: 886, message: `Unable to find/load TA article`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                 else if (taFileContent.length < 10)
-                    addNoticePartial({ priority: 884, message: `Linked ${fieldName} TA article seems empty`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                    addNoticePartial({ priority: 884, message: `TA article seems empty`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                 else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
                     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
                     if (await alreadyChecked(taPathParameters) !== true) {
@@ -386,19 +384,24 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
         }
     }
 
-    if (fieldName.startsWith('TA ')) {
+    if (repoCode === 'TA' || fieldName.startsWith('TA ')) {
         // Check for relative TA links like [Borrow Words](../translate-transliterate/01.md)
-        while ((regexResultArray = TA_RELATIVE_DISPLAY_LINK_REGEX.exec(fieldText))) {
-            // debugLog(`  checkNotesLinksToOutside TA_RELATIVE_DISPLAY_LINK_REGEX resultArray=${JSON.stringify(regexResultArray)}`);
+        while ((regexResultArray = TA_RELATIVE1_DISPLAY_LINK_REGEX.exec(fieldText))) {
+            // debugLog(`  checkNotesLinksToOutside TA_RELATIVE1_DISPLAY_LINK_REGEX resultArray=${JSON.stringify(regexResultArray)}`);
             taLinkCount1 += 1;
-            parameterAssert(regexResultArray.length === 3, `TA_RELATIVE_DISPLAY_LINK_REGEX expected 3 fields (not ${regexResultArray.length})`)
+            parameterAssert(regexResultArray.length === 3, `TA_RELATIVE1_DISPLAY_LINK_REGEX expected 3 fields (not ${regexResultArray.length})`)
             // eslint-disable-next-line no-unused-vars
             let [totalLink, _displayName, article] = regexResultArray;
             processedLinkList.push(totalLink); // Save the full link
 
             const taRepoName = `${languageCode}_ta`;
             // debugLog(`Got taRepoName=${taRepoName}`);
-            const filepath = `translate/${article}/01.md`; // Other files are title.md, sub-title.md
+            let TAsection = 'translate';
+            if (fieldName.startsWith('checking/')) TAsection = 'checking';
+            else if (fieldName.startsWith('process/')) TAsection = 'process';
+            if (fieldName.startsWith('intro/')) TAsection = 'intro';
+            dataAssert(TAsection === 'translate' || TAsection === 'checking' || TAsection === 'process' || TAsection === 'intro', `Unexpected TA section name = '${TAsection}'`);
+            const filepath = `${TAsection}/${article}/01.md`; // Other files are title.md, sub-title.md
             // debugLog(`Got tA filepath=${filepath}`);
 
             if (!checkingOptions?.disableAllLinkFetchingFlag) {
@@ -410,14 +413,64 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
                 } catch (trcGCerror) {
                     // console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
-                    addNoticePartial({ priority: 885, message: `Error loading ${fieldName} linked TA article`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+                    addNoticePartial({ priority: 885, message: `Error loading TA article`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
                     alreadyGaveError = true;
                 }
                 if (!alreadyGaveError) {
                     if (!taFileContent)
-                        addNoticePartial({ priority: 886, message: `Unable to find ${fieldName} linked TA article`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                        addNoticePartial({ priority: 886, message: `Unable to find/load TA article`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                     else if (taFileContent.length < 10)
-                        addNoticePartial({ priority: 884, message: `Linked ${fieldName} TA article seems empty`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                        addNoticePartial({ priority: 884, message: `TA article seems empty`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                    // Don't do this or it gets infinite recursion!!!
+                    // else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
+                    //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
+                    //     if (await alreadyChecked(taPathParameters) !== true) {
+                    //         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
+                    //         const checkTAFileResult = await checkMarkdownText(languageCode, repoCode, `TA ${regexResultArray[3]}.md`, taFileContent, ourLocation, checkingOptions);
+                    //         for (const noticeObject of checkTAFileResult.noticeList)
+                    //             ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
+                    //         ctarResult.checkedFileCount += 1;
+                    //         ctarResult.checkedFilenames.push(`${regexResultArray[3]}.md`);
+                    //         ctarResult.checkedFilesizes = taFileContent.length;
+                    //         ctarResult.checkedFilenameExtensions = ['md'];
+                    //         ctarResult.checkedRepoNames.push(taRepoName);
+                    //         markAsChecked(taPathParameters); // don’t bother waiting for the result
+                    //     }
+                    // }
+                }
+            }
+        }
+        // Check for relative TA links like [Borrow Words](../../translate/translate-transliterate/01.md)
+        while ((regexResultArray = TA_RELATIVE2_DISPLAY_LINK_REGEX.exec(fieldText))) {
+            // debugLog(`  checkNotesLinksToOutside TA_RELATIVE2_DISPLAY_LINK_REGEX resultArray=${JSON.stringify(regexResultArray)}`);
+            taLinkCount1 += 1;
+            parameterAssert(regexResultArray.length === 4, `TA_RELATIVE2_DISPLAY_LINK_REGEX expected 4 fields (not ${regexResultArray.length})`)
+            // eslint-disable-next-line no-unused-vars
+            let [totalLink, _displayName, TAsection, article] = regexResultArray;
+            processedLinkList.push(totalLink); // Save the full link
+
+            const taRepoName = `${languageCode}_ta`;
+            // debugLog(`Got taRepoName=${taRepoName}`);
+            const filepath = `${TAsection}/${article}/01.md`; // Other files are title.md, sub-title.md
+            // debugLog(`Got tA filepath=${filepath}`);
+
+            if (!checkingOptions?.disableAllLinkFetchingFlag) {
+                // functionLog(`checkNotesLinksToOutside: need to check against ${taRepoName}`);
+                const taPathParameters = { username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch };
+                let taFileContent, alreadyGaveError = false;
+                try {
+                    taFileContent = await getFile_(taPathParameters);
+                    // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
+                } catch (trcGCerror) {
+                    // console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
+                    addNoticePartial({ priority: 885, message: `Error loading TA article`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+                    alreadyGaveError = true;
+                }
+                if (!alreadyGaveError) {
+                    if (!taFileContent)
+                        addNoticePartial({ priority: 886, message: `Unable to find/load TA article`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                    else if (taFileContent.length < 10)
+                        addNoticePartial({ priority: 884, message: `TA article seems empty`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                     // Don't do this or it gets infinite recursion!!!
                     // else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
                     //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
@@ -473,14 +526,14 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
             } catch (trcGCerror) {
                 // console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
-                addNoticePartial({ priority: 885, message: `Error loading ${fieldName} linked TA article`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+                addNoticePartial({ priority: 885, message: `Error loading TA article`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
                 alreadyGaveError = true;
             }
             if (!alreadyGaveError) {
                 if (!taFileContent)
-                    addNoticePartial({ priority: 886, message: `Unable to find ${fieldName} linked TA article`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                    addNoticePartial({ priority: 886, message: `Unable to find/load TA article`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                 else if (taFileContent.length < 10)
-                    addNoticePartial({ priority: 884, message: `Linked ${fieldName} TA article seems empty`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                    addNoticePartial({ priority: 884, message: `TA article seems empty`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                 else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
                     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
                     if (await alreadyChecked(taPathParameters) !== true) {
@@ -526,13 +579,13 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 // if (article === 'brother') debugLog(`Fetched fileContent for ${JSON.stringify(twPathParameters)}: ${typeof twFileContent} ${twFileContent.length}`);
             } catch (trcGCerror) {
                 console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TW`, twRepoUsername, twRepoName, filepath, twRepoBranch, trcGCerror.message);
-                addNoticePartial({ priority: 882, message: `Error loading ${fieldName} TW link`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+                addNoticePartial({ priority: 882, message: `Error loading TW article`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
             }
             if (!twFileContent)
-                addNoticePartial({ priority: 883, message: `Unable to find/load ${fieldName} TW link`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                addNoticePartial({ priority: 883, message: `Unable to find/load TW article`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
             else { // we got the content of the TW article
                 if (twFileContent.length < 10)
-                    addNoticePartial({ priority: 881, message: `Linked ${fieldName} TW article seems empty`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                    addNoticePartial({ priority: 881, message: `TW article seems empty`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                 else if (checkingOptions?.disableLinkedTWArticlesCheckFlag !== true) {
                     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTWArticlesCheckFlag} so checking TW article: ${filepath}`);
                     if (await alreadyChecked(twPathParameters) !== true) {
@@ -1087,7 +1140,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             const dummyPathParameters = { username: uri, repository: '', path: '', branch: '' };
             if (await alreadyChecked(dummyPathParameters) !== true) {
                 // debugLog(`checkNotesLinksToOutside general link check needs to check: ${uri}`);
-                const serverString = uri.replace('://','!!!').split('/')[0].replace('!!!','://').toLowerCase(); // Get the bit before any forward slashes
+                const serverString = uri.replace('://', '!!!').split('/')[0].replace('!!!', '://').toLowerCase(); // Get the bit before any forward slashes
 
                 // NOTE: These message strings must match RenderProcessedResults.js
                 if (!serverString.endsWith('door43.org') && !serverString.endsWith('unfoldingword.org') && !serverString.endsWith('ufw.io')) // don't try to fetch general links
@@ -1114,10 +1167,10 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                         hadError = true;
                     }
                     if (!hadError && !generalFileContent)
-                        addNoticePartial({ priority: 883, message: `Unable to find/load general link`, excerpt: totalLink, location: ourLocation });
+                        addNoticePartial({ priority: 783, message: `Unable to find/load general link`, excerpt: totalLink, location: ourLocation });
                     else if (generalFileContent) { // we got the content of the general article
                         if (generalFileContent.length < 10)
-                            addNoticePartial({ priority: 881, message: `Linked general article seems empty`, excerpt: totalLink, location: ourLocation });
+                            addNoticePartial({ priority: 781, message: `Linked general article seems empty`, excerpt: totalLink, location: ourLocation });
                     }
                 }
                 await markAsChecked(dummyPathParameters); // don’t bother waiting for the result of this async call
