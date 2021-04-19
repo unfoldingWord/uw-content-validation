@@ -4,7 +4,7 @@ import { cachedGetFile } from '../core/getApi';
 import { debugLog, parameterAssert, ourParseInt } from './utilities';
 
 
-// const QUOTE_VALIDATOR_VERSION_STRING = '0.9.0';
+// const QUOTE_VALIDATOR_VERSION_STRING = '0.9.1';
 
 
 /**
@@ -335,17 +335,19 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
             addNotice({ priority: 375, message: "Divider without surrounding snippet", location: ourLocation });
     } else { // Only a single quote (no discontiguousDivider)
         if (verseText.indexOf(fieldText) >= 0) {
+            let remainingBits = verseText.split(fieldText);
             if (occurrence > 1) {
                 // functionLog(`checkOriginalLanguageQuoteAndOccurrence is checking for ${occurrence} occurrences of ${fieldText}`);
-                if (verseText.split(fieldText).length <= occurrence) { // There's not enough of them
+                const actualNumOccurrences = remainingBits.length - 1;
+                if (occurrence > actualNumOccurrences) { // There's not enough of them
+                    const actualOccurrencesText = actualNumOccurrences === 0 ? 'no' : `only ${actualNumOccurrences}`;
                     const excerpt = fieldText.substring(0, excerptHalfLength) + (fieldText.length > 2 * excerptHalfLength ? '…' : '') + fieldText.substring(fieldText.length - excerptHalfLength, fieldText.length);
-                    addNotice({ priority: 917, message: "Unable to find duplicate original language quote in verse text", details: `occurrence=${occurrenceString}, passage ►${verseText}◄`, excerpt, location: ourLocation });
+                    addNotice({ priority: 917, message: "Unable to find duplicate original language quote in verse text", details: `occurrence=${occurrenceString} but ${actualOccurrencesText} occurrence${actualNumOccurrences === 1 ? '' : 's'} found, passage ►${verseText}◄`, excerpt, location: ourLocation });
                 }
             } else { // We only need to check for one occurrence
                 // Double check that it doesn’t start/stop in the middle of a word
                 // debugLog(`Here with fieldText=${fieldText} and verseText=${verseText}`);
-                let remainingBits = verseText.split(fieldText);
-                // debugLog(`remaingBits=${JSON.stringify(remainingBits)}`);
+                // debugLog(`remainingBits=${JSON.stringify(remainingBits)}`);
                 if (remainingBits.length > 2) // Join the extra bits back up
                     remainingBits = [remainingBits[0], remainingBits.slice(1).join(discontiguousDivider)];
                 parameterAssert(remainingBits.length === 2, `remaining bits are ${remainingBits.length}`);
