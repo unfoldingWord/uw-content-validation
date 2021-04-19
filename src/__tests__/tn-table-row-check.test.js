@@ -214,6 +214,20 @@ describe('checkTN_TSV9DataRow() - ', () => {
       expect(rawResults).toMatchSnapshot();
     });
 
+    it('should fail with valid but high occurrence number', async () => {
+      const chosenLine = "MAT\t2\t2\tv248\t\tπροσκυνῆσαι\t2\tto worship\tPossible meanings are (1) they intended to worship the baby as divine, or (2) they wanted to honor him as a human king. If your language has a word that includes both meanings, you should consider using it here.";
+      const rawResults = await checkTN_TSV9DataRow(languageCode, repoCode, chosenLine, 'MAT', '2', '2', 'that was supplied', optionalCheckingOptions);
+      expect(rawResults.noticeList.length).toEqual(1);
+      expect(rawResults).toMatchSnapshot();
+    });
+
+    it('should pass with correct quote', async () => {
+      const chosenLine = "MAT\t2\t2\tv248\t\tπροσκυνῆσαι\t1\tto worship\tPossible meanings are (1) they intended to worship the baby as divine, or (2) they wanted to honor him as a human king. If your language has a word that includes both meanings, you should consider using it here.";
+      const rawResults = await checkTN_TSV9DataRow(languageCode, repoCode, chosenLine, 'MAT', '2', '2', 'that was supplied', optionalCheckingOptions);
+      // console.log(`Got raw results: ${JSON.stringify(rawResults)}`);
+      expect(rawResults.noticeList.length).toEqual(0);
+    });
+
   });
 
   describe('Occurrence Note tests - ', () => {

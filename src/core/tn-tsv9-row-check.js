@@ -5,7 +5,7 @@ import { checkTextField } from './field-text-check';
 import { checkMarkdownText } from './markdown-text-check';
 import { checkSupportReferenceInTA } from './ta-reference-check';
 // import { checkNotesLinksToOutside } from './notes-links-check';
-import { checkOriginalLanguageQuote } from './orig-quote-check';
+import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
@@ -238,25 +238,25 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
      * @param {string} rowLocation
      * @param {Object} checkingOptions
      */
-    async function ourCheckTNOriginalLanguageQuote(rowID, fieldName, fieldText, occurrence, rowLocation, checkingOptions) {
+    async function ourCheckTNOriginalLanguageQuoteAndOccurrence(rowID, fieldName, fieldText, occurrence, rowLocation, checkingOptions) {
         // Checks that the Hebrew/Greek quote can be found in the original texts
 
         // Uses the bookID,C,V values from the main function call
 
         // Updates the global list of notices
 
-        // functionLog(`checkTN_TSV9DataRow ourCheckTNOriginalLanguageQuote(${fieldName}, (${fieldText.length}) '${fieldText}', ${rowLocation}, …)`);
-        parameterAssert(rowID !== undefined, "checkTN_TSV9DataRow ourCheckTNOriginalLanguageQuote: 'rowID' parameter should be defined");
-        parameterAssert(typeof rowID === 'string', `checkTN_TSV9DataRow ourCheckTNOriginalLanguageQuote: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        parameterAssert(fieldName !== undefined, "checkTN_TSV9DataRow ourCheckTNOriginalLanguageQuote: 'fieldName' parameter should be defined");
-        parameterAssert(typeof fieldName === 'string', `checkTN_TSV9DataRow ourCheckTNOriginalLanguageQuote: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        parameterAssert(fieldText !== undefined, "checkTN_TSV9DataRow ourCheckTNOriginalLanguageQuote: 'fieldText' parameter should be defined");
-        parameterAssert(typeof fieldText === 'string', `checkTN_TSV9DataRow ourCheckTNOriginalLanguageQuote: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-        parameterAssert(occurrence !== undefined, "checkTN_TSV9DataRow ourCheckTNOriginalLanguageQuote: 'occurrence' parameter should be defined");
-        parameterAssert(typeof occurrence === 'string', `checkTN_TSV9DataRow ourCheckTNOriginalLanguageQuote: 'occurrence' parameter should be a string not a '${typeof occurrence}'`);
-        parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkTN_TSV9DataRow ourCheckTNOriginalLanguageQuote: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
+        // functionLog(`checkTN_TSV9DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence(${fieldName}, (${fieldText.length}) '${fieldText}', ${rowLocation}, …)`);
+        parameterAssert(rowID !== undefined, "checkTN_TSV9DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'rowID' parameter should be defined");
+        parameterAssert(typeof rowID === 'string', `checkTN_TSV9DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+        parameterAssert(fieldName !== undefined, "checkTN_TSV9DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'fieldName' parameter should be defined");
+        parameterAssert(typeof fieldName === 'string', `checkTN_TSV9DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        parameterAssert(fieldText !== undefined, "checkTN_TSV9DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'fieldText' parameter should be defined");
+        parameterAssert(typeof fieldText === 'string', `checkTN_TSV9DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+        parameterAssert(occurrence !== undefined, "checkTN_TSV9DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'occurrence' parameter should be defined");
+        parameterAssert(typeof occurrence === 'string', `checkTN_TSV9DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'occurrence' parameter should be a string not a '${typeof occurrence}'`);
+        parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkTN_TSV9DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const coqResultObject = await checkOriginalLanguageQuote(languageCode, repoCode, fieldName, fieldText, occurrence, bookID, givenC, givenV, rowLocation, checkingOptions);
+        const coqResultObject = await checkOriginalLanguageQuoteAndOccurrence(languageCode, repoCode, fieldName, fieldText, occurrence, bookID, givenC, givenV, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -264,11 +264,11 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of coqResultObject.noticeList) {
-            // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckTNOriginalLanguageQuote notice length=${Object.keys(noticeEntry).length}`);
+            // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckTNOriginalLanguageQuoteAndOccurrence notice length=${Object.keys(noticeEntry).length}`);
             addNoticePartial({ ...noticeEntry, rowID, fieldName });
         }
     }
-    // end of ourCheckTNOriginalLanguageQuote function
+    // end of ourCheckTNOriginalLanguageQuoteAndOccurrence function
 
 
     // /**
@@ -479,7 +479,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
         if (quote.length) { // need to check UTN against UHB and UGNT
             OQSuggestion = ourCheckTextField(rowID, 'OrigQuote', quote, false, ourRowLocation, checkingOptions);
             if (occurrence.length)
-                await ourCheckTNOriginalLanguageQuote(rowID, 'OrigQuote', quote, occurrence, ourRowLocation, checkingOptions);
+                await ourCheckTNOriginalLanguageQuoteAndOccurrence(rowID, 'OrigQuote', quote, occurrence, ourRowLocation, checkingOptions);
             else
                 addNoticePartial({ priority: 750, message: "Missing occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, location: ourRowLocation });
         }
