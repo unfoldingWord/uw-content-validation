@@ -314,7 +314,7 @@ export async function preloadReposIfNecessary(username, languageCode, bookIDList
  * @return {Promise<null|any>} resolves to file content
  */
 async function cachedFetchFileFromServerBranch({ username, repository, path, branch = 'master' }) {
-  debugLog(`cachedFetchFileFromServerBranch(${username}, ${repository}, ${path}, ${branch})…`);
+  // debugLog(`cachedFetchFileFromServerBranch(${username}, ${repository}, ${path}, ${branch})…`);
   // TODO: Check how slow this next call is -- can it be avoided or cached?
   // RJH removed this 2Oct2020 -- what’s the point -- it just slows things down --
   //      if it needs to be checked, should be checked before this point
@@ -334,7 +334,7 @@ async function cachedFetchFileFromServerBranch({ username, repository, path, bra
  * @return {Promise<null|any>} resolves to file content
  */
  export async function cachedFetchFileFromServerTag({ username, repository, path, tag }) {
-  debugLog(`cachedFetchFileFromServerTag(${username}, ${repository}, ${path}, ${tag})…`);
+  // debugLog(`cachedFetchFileFromServerTag(${username}, ${repository}, ${path}, ${tag})…`);
   // TODO: Check how slow this next call is -- can it be avoided or cached?
   // RJH removed this 2Oct2020 -- what’s the point -- it just slows things down --
   //      if it needs to be checked, should be checked before this point
@@ -354,7 +354,7 @@ async function cachedFetchFileFromServerBranch({ username, repository, path, bra
  * @return {Promise<null|any>} resolves to file content
  */
  async function cachedFetchFileFromServerWorker(uri, username, repository, path, branchOrTag) {
-  debugLog(`cachedFetchFileFromServerWorker(${uri}, ${username}, ${repository}, ${path}, ${branchOrTag})…`);
+  // debugLog(`cachedFetchFileFromServerWorker(${uri}, ${username}, ${repository}, ${path}, ${branchOrTag})…`);
   // TODO: Check how slow this next call is -- can it be avoided or cached?
   // RJH removed this 2Oct2020 -- what’s the point -- it just slows things down --
   //      if it needs to be checked, should be checked before this point

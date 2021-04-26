@@ -201,7 +201,7 @@ function FileCheck(props) {
   // debugLog(`FileCheck repoName='${repoName}'`);
   if (!repoName) return <><b>ERROR</b>: The Door43 <b>repository name</b> must be specified</>;
   let branchOrRelease = props.branchOrRelease;
-  debugLog(`FileCheck branchOrRelease='${branchOrRelease}'`);
+  // debugLog(`FileCheck branchOrRelease='${branchOrRelease}'`);
   if (branchOrRelease === undefined) branchOrRelease = 'master';
   const filename = props.filename;
   // debugLog(`filename='${filename}'`);
