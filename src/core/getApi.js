@@ -5,10 +5,11 @@ import { setup } from 'axios-cache-adapter';
 import JSZip from 'jszip';
 import * as books from './books';
 import { clearCheckedArticleCache } from './notes-links-check';
-import { functionLog, userLog, parameterAssert } from './utilities';
+// eslint-disable-next-line no-unused-vars
+import { functionLog, debugLog, userLog, parameterAssert } from './utilities';
 
 
-// const GETAPI_VERSION_STRING = '0.6.11';
+// const GETAPI_VERSION_STRING = '0.7.0';
 
 const MAX_INDIVIDUAL_FILES_TO_DOWNLOAD = 5; // More than this and it downloads the zipfile for the entire repo
 
@@ -28,7 +29,7 @@ const zipStore = localforage.createInstance({
   name: 'CV-zip-store',
 });
 
-// caches http file fetches done by cachedFetchFileFromServer()
+// caches http file fetches done by cachedFetchFileFromServerBranch()
 const cacheStore = localforage.createInstance({
   driver: [localforage.INDEXEDDB],
   name: 'CV-web-cache',
@@ -133,7 +134,7 @@ async function getUnZippedFile(path) {
  * searches for files in this order:
  *   - cache of uncompressed files (unzipStore)
  *   - cache of zipped repos (zipStore)
- *   - and finally calls cachedFetchFileFromServer() which first checks in cacheStore to see if already fetched. * @param {string} username
+ *   - and finally calls cachedFetchFileFromServerBranch() which first checks in cacheStore to see if already fetched. * @param {string} username
  * @param {string} repository
  * @param {string} path
  * @param {string} branch
@@ -159,7 +160,7 @@ export async function cachedGetFile({ username, repository, path, branch }) {
   //   if (filePath.indexOf('_tq/') < 0) // Don’t log for TQ2 files coz too many
   //     userLog(`  cachedGetFile got ${filePath} from zipfile`);
   if (!contents) {
-    contents = await cachedFetchFileFromServer({ username, repository, path, branch });
+    contents = await cachedFetchFileFromServerBranch({ username, repository, path, branch });
   }
 
   if (contents) {
@@ -312,17 +313,56 @@ export async function preloadReposIfNecessary(username, languageCode, bookIDList
  * @param {string} branch
  * @return {Promise<null|any>} resolves to file content
  */
-async function cachedFetchFileFromServer({ username, repository, path, branch = 'master' }) {
-  // debugLog(`cachedFetchFileFromServer(${username}, ${repository}, ${path}, ${branch})…`);
+async function cachedFetchFileFromServerBranch({ username, repository, path, branch = 'master' }) {
+  debugLog(`cachedFetchFileFromServerBranch(${username}, ${repository}, ${path}, ${branch})…`);
   // TODO: Check how slow this next call is -- can it be avoided or cached?
   // RJH removed this 2Oct2020 -- what’s the point -- it just slows things down --
   //      if it needs to be checked, should be checked before this point
   // const repositoryExistsOnDoor43 = await repositoryExistsOnDoor43({ username, repository });
   // let uri;
   const uri = Path.join(username, repository, 'raw/branch', branch, path);
+  return await cachedFetchFileFromServerWorker(uri, username, repository, path, branch);
+};
+
+
+/**
+ * does http file fetch from server  uses cacheStore to minimize repeated fetches of same file
+ * @param {string} username
+ * @param {string} repository
+ * @param {string} path
+ * @param {string} tag
+ * @return {Promise<null|any>} resolves to file content
+ */
+ export async function cachedFetchFileFromServerTag({ username, repository, path, tag }) {
+  debugLog(`cachedFetchFileFromServerTag(${username}, ${repository}, ${path}, ${tag})…`);
+  // TODO: Check how slow this next call is -- can it be avoided or cached?
+  // RJH removed this 2Oct2020 -- what’s the point -- it just slows things down --
+  //      if it needs to be checked, should be checked before this point
+  // const repositoryExistsOnDoor43 = await repositoryExistsOnDoor43({ username, repository });
+  // let uri;
+  const uri = Path.join(username, repository, 'raw/tag', tag, path);
+  return await cachedFetchFileFromServerWorker(uri, username, repository, path, tag);
+};
+
+
+/**
+ * does http file fetch from server  uses cacheStore to minimize repeated fetches of same file
+ * @param {string} username
+ * @param {string} repository
+ * @param {string} path
+ * @param {string} branch
+ * @return {Promise<null|any>} resolves to file content
+ */
+ async function cachedFetchFileFromServerWorker(uri, username, repository, path, branchOrTag) {
+  debugLog(`cachedFetchFileFromServerWorker(${uri}, ${username}, ${repository}, ${path}, ${branchOrTag})…`);
+  // TODO: Check how slow this next call is -- can it be avoided or cached?
+  // RJH removed this 2Oct2020 -- what’s the point -- it just slows things down --
+  //      if it needs to be checked, should be checked before this point
+  // const repositoryExistsOnDoor43 = await repositoryExistsOnDoor43({ username, repository });
+  // let uri;
   const failMessage = await failedStore.getItem(uri.toLowerCase());
   if (failMessage) {
-    // debugLog(`  cachedFetchFileFromServer failed previously for ${uri}: ${failMessage}`);
+    // debugLog(`  cachedFetchFileFromServerWorker failed previously for ${uri}: ${failMessage}`);
     return null;
   }
   try {
@@ -332,12 +372,12 @@ async function cachedFetchFileFromServer({ username, repository, path, branch = 
     return data;
   }
   catch (fffsError) {
-    console.error(`cachedFetchFileFromServer could not fetch ${username} ${repository} ${branch} ${path}: ${fffsError}`)
+    console.error(`cachedFetchFileFromServerWorker could not fetch ${username} ${repository} ${branchOrTag} ${path}: ${fffsError}`)
       /* await */ failedStore.setItem(uri.toLowerCase(), fffsError.message);
     return null;
   }
   // } else { // ! repositoryExistsOnDoor43
-  //   console.error(`cachedFetchFileFromServer repo ${username} '${repository}' does not exist!`);
+  //   console.error(`cachedFetchFileFromServerWorker repo ${username} '${repository}' does not exist!`);
   //   /* await */ failedStore.setItem(uri.toLowerCase(), `Repo '${repository}' does not exist!`);
   //   return null;
   // }
@@ -358,7 +398,7 @@ async function cachedGetFileFromZipOrServer({ username, repository, path, branch
   let file;
   file = await getFileFromZip({ username, repository, path, branch });
   if (!file) {
-    file = await cachedFetchFileFromServer({ username, repository, path, branch });
+    file = await cachedFetchFileFromServerBranch({ username, repository, path, branch });
   }
   return file;
 }

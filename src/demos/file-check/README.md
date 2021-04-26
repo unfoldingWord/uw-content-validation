@@ -24,8 +24,9 @@ and then validates the content of one file selected from the repo.
   // repoName='en_ult' // Can use ult or ust here
   repoName='en_tn' // Can use ta, tw, tn, tq, sn, or sq here
 
-  // If we don’t put the branch, the default branch is used
-  // branch='master'
+  // If we don’t put the branch or release version here, the default branch is used
+  // branchOrRelease='master'
+  branchOrRelease='v45' // TEMP TEMP TEMP TEMP TEMP TEMP
 
   // Of course, the filename must be correct for the chosen repository
   // filename= '01-GEN.usfm' // e.g., for UHB, LT, or ST
@@ -44,11 +45,12 @@ and then validates the content of one file selected from the repo.
   // filename= 'en_tn_16-NEH.tsv' // for TN
   // filename= 'en_tn_17-EST.tsv' // for TN
   // filename= 'en_tn_31-OBA.tsv' // for TN
+  filename= 'en_tn_43-LUK.tsv' // for TN
   // filename= 'en_tn_50-EPH.tsv' // for TN
   // filename= 'en_tn_57-TIT.tsv' // for TN
   // filename= 'en_tn_58-PHM.tsv' // for TN
   // filename= 'en_tn_61-1PE.tsv' // for TN
-  filename= 'en_tn_65-3JN.tsv' // for TN
+  // filename= 'en_tn_65-3JN.tsv' // for TN
   // It's actually possible to put a filepath in the filename field
   // filename= 'bible/names/zilpah.md' // for TW
 
@@ -61,7 +63,8 @@ and then validates the content of one file selected from the repo.
   // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
 
   // Normally links in files are downloaded to check that they really exist
-  disableAllLinkFetchingFlag='false' // 'true' or 'false'
+  // disableAllLinkFetchingFlag='false' // 'true' or 'false'
+  disableAllLinkFetchingFlag='true' // 'true' or 'false' TEMP TEMP TEMP TEMP TEMP TEMP
   // The next two are only relevant if the above is 'false'
   // They control whether the linked articles themselves are also checked or not
   disableLinkedTAArticlesCheckFlag='false' // 'true' or 'false'
