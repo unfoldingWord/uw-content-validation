@@ -26,7 +26,6 @@ and then validates the content of one file selected from the repo.
 
   // If we don’t put the branch or release version here, the default branch is used
   // branchOrRelease='master'
-  branchOrRelease='v45' // TEMP TEMP TEMP TEMP TEMP TEMP
 
   // Of course, the filename must be correct for the chosen repository
   // filename= '01-GEN.usfm' // e.g., for UHB, LT, or ST
@@ -64,7 +63,7 @@ and then validates the content of one file selected from the repo.
 
   // Normally links in files are downloaded to check that they really exist
   // disableAllLinkFetchingFlag='false' // 'true' or 'false'
-  disableAllLinkFetchingFlag='true' // 'true' or 'false' TEMP TEMP TEMP TEMP TEMP TEMP
+  disableAllLinkFetchingFlag='false' // 'true' or 'false'
   // The next two are only relevant if the above is 'false'
   // They control whether the linked articles themselves are also checked or not
   disableLinkedTAArticlesCheckFlag='false' // 'true' or 'false'
