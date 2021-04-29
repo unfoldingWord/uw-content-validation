@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 // import { Paper, Button } from '@material-ui/core';
 // import { RepositoryContext, FileContext } from 'gitea-react-toolkit';
 import { withStyles } from '@material-ui/core/styles';
-import { clearCaches, clearCheckedArticleCache, ourParseInt, cachedGetFile } from '../../core';
+import { clearCaches, clearCheckedArticleCache, ourParseInt, cachedGetFile, cachedFetchFileFromServerTag } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
 import { checkFileContents } from './checkFileContents';
@@ -12,7 +12,7 @@ import { checkFileContents } from './checkFileContents';
 import { debugLog, userLog } from '../../core/utilities';
 
 
-// const FILE_CHECK_VERSION_STRING = '0.2.9';
+// const FILE_CHECK_VERSION_STRING = '0.3.0';
 
 
 function FileCheck(props) {
@@ -58,7 +58,11 @@ function FileCheck(props) {
       // Display our "waiting" message
       setResultValue(<p style={{ color: 'magenta' }}>Fetching <i>{username}</i> {repoName} <b>{filename}</b>…</p>);
       // debugLog(`FileCheck about to call cachedGetFile(${username}, ${repoName}, ${filename}, ${branch})…`);
-      const fileContent = await cachedGetFile({ username: username, repository: repoName, path: filename, branch: branch });
+      let fileContent = await cachedGetFile({ username: username, repository: repoName, path: filename, branch: branchOrRelease });
+      if (!fileContent) { // could it be a release, not a branch???
+        userLog(`Unable to fetch ${filename} from branch ${branchOrRelease}, so trying a release instead…`)
+        fileContent = await cachedFetchFileFromServerTag({ username: username, repository: repoName, path: filename, tag: branchOrRelease });
+      }
 
       setResultValue(<p style={{ color: 'magenta' }}>Checking <i>{username}</i> {repoName} <b>{filename}</b>…</p>);
       let rawCFResults = { noticeList: [{ priority: 990, message: "Unable to load file", details: `username=${username}`, repoName, filename }], elapsedSeconds: 0 };
@@ -78,7 +82,7 @@ function FileCheck(props) {
         else if (repoName.endsWith('lt')) repoCodeGuess = 'LT'
         else if (repoName.endsWith('st')) repoCodeGuess = 'ST'
 
-        rawCFResults = await checkFileContents(username, languageCode, repoCodeGuess, branch, filename, fileContent, givenLocation, checkingOptions);
+        rawCFResults = await checkFileContents(username, languageCode, repoCodeGuess, branchOrRelease, filename, fileContent, givenLocation, checkingOptions);
         // debugLog(`rawCFResults=${JSON.stringify(rawCFResults)}`);
 
         // Because we know here that we're only checking one file, we don’t need the filename field in the notices
@@ -128,7 +132,7 @@ function FileCheck(props) {
         if (rawCFResults && rawCFResults.checkedOptions && rawCFResults.checkedOptions.cutoffPriorityLevel)
           cutoffString = ` Priority level ${rawCFResults.checkedOptions.cutoffPriorityLevel} or lower were not included.`;
         return (<div>
-          <p>Checked <b>{filename}</b> (from <i>{username}</i> {repoName} <i>{branch === undefined ? 'DEFAULT' : branch}</i> branch)</p>
+          <p>Checked <b>{filename}</b> (from <i>{username}</i> {repoName} <i>{branchOrRelease === undefined ? 'DEFAULT' : branchOrRelease}</i> branch)</p>
           <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCFResults.noticeList.length === 0 ? 'no' : rawCFResults.noticeList.length.toLocaleString()} notice{rawCFResults.noticeList.length === 1 ? '' : 's'}
             {processedResults.numIgnoredNotices || processedResults.numDisabledNotices ? ' (but ' : ''}
             {processedResults.numIgnoredNotices ? `${processedResults.numIgnoredNotices.toLocaleString()} ignored notice(s)` : ""}
@@ -196,9 +200,9 @@ function FileCheck(props) {
   const repoName = props.repoName;
   // debugLog(`FileCheck repoName='${repoName}'`);
   if (!repoName) return <><b>ERROR</b>: The Door43 <b>repository name</b> must be specified</>;
-  let branch = props.branch;
-  // debugLog(`FileCheck branch='${branch}'`);
-  if (branch === undefined) branch = 'master';
+  let branchOrRelease = props.branchOrRelease;
+  // debugLog(`FileCheck branchOrRelease='${branchOrRelease}'`);
+  if (branchOrRelease === undefined) branchOrRelease = 'master';
   const filename = props.filename;
   // debugLog(`filename='${filename}'`);
   if (!filename) return <><b>ERROR</b>: The Door43 <b>filename</b> must be specified</>;

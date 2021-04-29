@@ -3,7 +3,7 @@ import { isWhitespace, countOccurrences } from './text-handling-functions'
 import * as books from './books/books';
 import { checkTextField } from './field-text-check';
 import { checkMarkdownText } from './markdown-text-check';
-import { checkOriginalLanguageQuote } from './orig-quote-check';
+import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
@@ -219,7 +219,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
         parameterAssert(typeof occurrence === 'string', `checkQuestionsTSV7DataRow ourCheckQOriginalLanguageQuote: 'occurrence' parameter should be a string not a '${typeof occurrence}'`);
         parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkQuestionsTSV7DataRow ourCheckQOriginalLanguageQuote: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const coqResultObject = await checkOriginalLanguageQuote(languageCode, repoCode, fieldName, fieldText, occurrence, bookID, givenC, givenV, rowLocation, checkingOptions);
+        const coqResultObject = await checkOriginalLanguageQuoteAndOccurrence(languageCode, repoCode, fieldName, fieldText, occurrence, bookID, givenC, givenV, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field

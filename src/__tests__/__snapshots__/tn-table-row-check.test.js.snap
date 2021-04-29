@@ -500,6 +500,25 @@ Object {
 }
 `;
 
+exports[`checkTN_TSV9DataRow() -  Original Quote tests -  should fail with valid but high occurrence number 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "2",
+      "V": "2",
+      "bookID": "MAT",
+      "details": "occurrence=2 but only 1 occurrence found, passage ►λέγοντες, ποῦ ἐστιν ὁ τεχθεὶς Βασιλεὺς τῶν Ἰουδαίων? εἴδομεν γὰρ αὐτοῦ τὸν ἀστέρα ἐν τῇ ἀνατολῇ καὶ ἤλθομεν προσκυνῆσαι αὐτῷ.◄",
+      "excerpt": "προσκυνῆσαροσκυνῆσαι",
+      "fieldName": "OrigQuote",
+      "location": " that was supplied",
+      "message": "Unable to find duplicate original language quote in verse text",
+      "priority": 917,
+      "rowID": "v248",
+    },
+  ],
+}
+`;
+
 exports[`checkTN_TSV9DataRow() -  Original Quote tests -  should find missing Original Quote 1`] = `
 Object {
   "noticeList": Array [

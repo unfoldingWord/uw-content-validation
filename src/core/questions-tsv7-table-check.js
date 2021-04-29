@@ -5,7 +5,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert } from './utilities';
 
 
-const QUESTIONS_TABLE_VALIDATOR_VERSION_STRING = '0.2.1';
+const QUESTIONS_TABLE_VALIDATOR_VERSION_STRING = '0.2.2';
 
 const NUM_EXPECTED_QUESTIONS_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_QUESTIONS_HEADING_LINE = 'Reference\tID\tTags\tQuote\tOccurrence\tQuestion\tResponse';
@@ -106,7 +106,7 @@ export async function checkQuestionsTSV7Table(languageCode, repoCode, bookID, fi
     // debugLog(`  '${location}' has ${lines.length.toLocaleString()} total lines (expecting ${NUM_EXPECTED_TN_FIELDS} fields in each line)`);
 
     let lastC = '', lastV = '';
-    let rowIDList = [], uniqueRowList = [];
+    let rowIDListForVerse = [], uniqueRowListForVerse = [];
     let numVersesThisChapter = 0;
     for (let n = 0; n < lines.length; n++) {
         // functionLog(`checkQuestionsTSV7Table checking line ${n}: ${JSON.stringify(lines[n])}`);
@@ -155,18 +155,18 @@ export async function checkQuestionsTSV7Table(languageCode, repoCode, bookID, fi
 
                 // So here we only have to check against the previous and next fields for out-of-order problems and duplicate problems
                 if (C !== lastC || V !== lastV) {
-                    rowIDList = []; // ID's only need to be unique within each verse
-                    uniqueRowList = []; // Same for these
+                    rowIDListForVerse = []; // ID's only need to be unique within each verse
+                    uniqueRowListForVerse = []; // Same for these
                 }
 
                 // TODO: Check if we need this at all (even though tC 3.0 can’t display these "duplicate" notes)
                 // Check for duplicate notes
                 const uniqueID = C + V + question + answer; // This combination should not be repeated
-                // if (uniqueRowList.includes(uniqueID))
+                // if (uniqueRowListForVerse.includes(uniqueID))
                 //     addNoticePartial({ priority: 880, C, V, message: `Duplicate note`, rowID, lineNumber: n + 1, location: ourLocation });
-                // if (uniqueRowList.includes(uniqueID))
+                // if (uniqueRowListForVerse.includes(uniqueID))
                 //     addNoticePartial({ priority: 80, C, V, message: `Note: tC 3.0 won’t display duplicate note`, rowID, lineNumber: n + 1, location: ourLocation });
-                uniqueRowList.push(uniqueID);
+                uniqueRowListForVerse.push(uniqueID);
 
                 if (C) {
                     if (C === 'front') { }
@@ -219,8 +219,9 @@ export async function checkQuestionsTSV7Table(languageCode, repoCode, bookID, fi
                     addNoticePartial({ priority: 790, C, V, message: "Missing verse number", rowID, lineNumber: n + 1, location: ` after ${C}:${lastV}${ourLocation}` });
 
                 if (rowID) {
-                    if (rowIDList.includes(rowID))
+                    if (rowIDListForVerse.includes(rowID))
                         addNoticePartial({ priority: 729, C, V, message: `Duplicate '${rowID}' ID`, fieldName: 'ID', rowID, lineNumber: n + 1, location: ourLocation });
+                    rowIDListForVerse.push(rowID);
                 } else
                     addNoticePartial({ priority: 730, C, V, message: "Missing ID", fieldName: 'ID', lineNumber: n + 1, location: ourLocation });
 
