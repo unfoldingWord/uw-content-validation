@@ -220,10 +220,10 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
 
                 if (rowID) {
                     if (rowIDListForVerse.includes(rowID))
-                        addNoticePartial({ priority: 729, C, V, message: `Duplicate '${rowID}' ID`, fieldName: 'ID', rowID, lineNumber: n + 1, location: ourLocation });
+                        addNoticePartial({ priority: 831, C, V, message: `Duplicate '${rowID}' ID`, fieldName: 'ID', rowID, lineNumber: n + 1, location: ourLocation });
                     rowIDListForVerse.push(rowID);
                 } else
-                    addNoticePartial({ priority: 730, C, V, message: "Missing ID", fieldName: 'ID', lineNumber: n + 1, location: ourLocation });
+                    addNoticePartial({ priority: 832, C, V, message: "Missing ID", fieldName: 'ID', lineNumber: n + 1, location: ourLocation });
 
 
                 lastC = C; lastV = V;
