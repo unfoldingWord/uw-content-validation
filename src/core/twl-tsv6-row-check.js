@@ -329,7 +329,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
             addNoticePartial({ priority: 810, message: "Missing verse number", rowID, fieldName: 'Reference', location: ` after ${C}:?${ourRowLocation}` });
 
         if (!rowID.length)
-            addNoticePartial({ priority: 779, message: "Missing row ID field", fieldName: 'Reference', location: ourRowLocation });
+            addNoticePartial({ priority: 808, message: "Missing row ID field", fieldName: 'Reference', location: ourRowLocation });
         else {
             if (rowID.length !== 4) {
                 addNoticePartial({ priority: 778, message: "Row ID should be exactly 4 characters", details: `not ${rowID.length}`, rowID, fieldName: 'ID', excerpt: rowID, location: ourRowLocation });

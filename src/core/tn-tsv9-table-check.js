@@ -234,7 +234,7 @@ export async function checkTN_TSV9Table(languageCode, repoCode, bookID, filename
                         addNoticePartial({ priority: 831, C, V, message: `Duplicate '${rowID}' ID`, fieldName: 'ID', rowID, lineNumber: n + 1, location: ourLocation });
                     rowIDListForVerse.push(rowID);
                 } else
-                    addNoticePartial({ priority: 832, C, V, message: "Missing ID", fieldName: 'ID', lineNumber: n + 1, location: ourLocation });
+                    addNoticePartial({ priority: 832, C, V, message: "Missing row ID", fieldName: 'ID', lineNumber: n + 1, location: ourLocation });
 
 
                 lastB = B; lastC = C; lastV = V;
