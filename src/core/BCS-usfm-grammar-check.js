@@ -1,7 +1,7 @@
 import grammar from 'usfm-grammar';
 import * as books from '../core/books/books';
 import { DEFAULT_EXCERPT_LENGTH } from './defaults'
-import { userLog, parameterAssert } from './utilities';
+import { userLog, debugLog, parameterAssert } from './utilities';
 
 
 // const USFM_GRAMMAR_VALIDATOR_VERSION_STRING = '0.3.3';
@@ -28,21 +28,40 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
     // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
     // Now create the parser and run the check
-    const ourUsfmParser = new grammar.USFMParser(fileText,
-        strictnessString === 'relaxed' ? grammar.LEVEL.RELAXED : null);
-    // Returns a Boolean indicating whether the input USFM text satisfies the grammar or not.
-    // This method is available in both default and relaxed modes.
-    // const parserResult = ourUsfmParser.validate();
-    const parserResult = ourUsfmParser.toJSON()
+    let parserToJSONResultObject, parseWarnings;
+    try {
+        debugLog(`${new Date().getTime()/1000} Setting-up the USFMGrammar checker…`);
+        const ourUsfmParser = new grammar.USFMParser(fileText, strictnessString === 'relaxed' ? grammar.LEVEL.RELAXED : null);
+        // Returns a Boolean indicating whether the input USFM text satisfies the grammar or not.
+        // This method is available in both default and relaxed modes.
+        // const parserResult = ourUsfmParser.validate();
+        debugLog(`${new Date().getTime()/1000} Running the USFMGrammar checker (may take several seconds)…`);
+        parserToJSONResultObject = ourUsfmParser.toJSON()
+        debugLog(`${new Date().getTime()/1000} Got the USFMGrammar checker toJSON result: ${Object.keys(parserToJSONResultObject)}`);
+        debugLog(`${new Date().getTime()/1000} Got the USFMGrammar checker toJSON _messages: ${Object.keys(parserToJSONResultObject._messages)}`);
+        debugLog(`${new Date().getTime()/1000} Got the USFMGrammar checker: ${Object.keys(ourUsfmParser)}`);
+        parseWarnings = parserToJSONResultObject._warnings ? parserToJSONResultObject._warnings : ourUsfmParser.warnings;
+        debugLog(`${new Date().getTime()/1000} Got the warnings from the USFMGrammar checker: (${parseWarnings.length}) ${parseWarnings}`);
+    } catch (parserError) {
+        debugLog(`${new Date().getTime()/1000} Got an exception when using the USFMGrammar checker: ${parserError}`);
+        const ourErrorObject = {
+            priority: 333, message: "USFMGrammar checker failed",
+            details: parserError,
+            filename,
+            location: givenLocation
+        };
+        // Say it's valid so we don't get an additional high-priority error
+        return { isValidUSFM: true, error: ourErrorObject, warnings: [] };
+    }
     let parserMessages;
-    parserMessages = parserResult._messages; // Throw away the JSON (if any)
+    parserMessages = parserToJSONResultObject._messages; // Throw away the JSON (if any)
     // debugLog(`  Finished BCS USFM grammar check with messages: ${JSON.stringify(parserResult)}\n and warnings: ${JSON.stringify(ourUsfmParser.warnings)}.`);
     let parseError;
     parseError = parserMessages._error;
     // debugLog(`  parseError: ${parseError}`);
     let ourErrorMessage, lineNumberString, characterIndex, excerpt;
     // NOTE: The following code is quite fragile
-    //  as it depends on the precise format of the error message return from USFMParser
+    //  as it depends on the precise format of the error message returned from USFMParser
     let ourErrorObject = {};
     if (parseError) {
         const contextRE = /(\d+?)\s\|\s(.+)/g;
@@ -102,7 +121,6 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
         }
     }
 
-    const parseWarnings = parserResult._warnings ? parserResult._warnings : ourUsfmParser.warnings;
     // debugLog(`  Warnings: ${JSON.stringify(parseWarnings)}`);
     let ourWarnings = [];
     for (const warningString of parseWarnings) {
