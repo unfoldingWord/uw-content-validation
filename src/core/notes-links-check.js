@@ -8,7 +8,7 @@ import { cachedGetFile, cachedGetFileUsingFullURL, checkMarkdownText } from '../
 import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 
 
-// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.7.19';
+// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.7.20';
 
 // const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -92,6 +92,8 @@ async function alreadyChecked({ username, repository, path, branch }) {
  * @param {string} languageCode, e.g., 'en'
  * @param {string} repoCode, e.g., 'TN', 'SN', 'TN2', or even 'TWL'
  * @param {string} bookID
+ * @param {string} givenC
+ * @param {string} givenV
  * @param {string} fieldName, e.g., 'TWLink' or 'OccurrenceNote' or 'Note' or .md filename, etc.
  * @param {string} fieldText
  * @param {string} givenLocation
@@ -154,6 +156,11 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
 
     const ctarResult = { noticeList: [], checkedFileCount: 0, checkedFilenames: [], checkedRepoNames: [] };
 
+    /**
+     *
+     * @description - adds a new notice entry from the partial fields given -- adding bookID and fieldName to the given fields
+     * @param {Object} noticeObject expected to contain priority, message, characterIndex, exerpt, location
+     */
     function addNoticePartial(noticeObject) {
         // functionLog(`checkNotesLinksToOutside Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
         parameterAssert(noticeObject.priority !== undefined, "cTNlnk addNoticePartial: 'priority' parameter should be defined");
@@ -294,13 +301,13 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 // if (regexResultArray[3] === 'brother') debugLog(`Fetched fileContent for ${JSON.stringify(twPathParameters)}: ${typeof twFileContent} ${twFileContent.length}`);
             } catch (trcGCerror) {
                 console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TW`, twRepoUsername, twRepoName, filepath, twRepoBranch, trcGCerror.message);
-                addNoticePartial({ priority: 882, message: `Error loading TW article`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+                addNoticePartial({ priority: 882, message: `Error loading TW article`, details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
             }
             if (!twFileContent)
-                addNoticePartial({ priority: 883, message: `Unable to find/load TW article`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                addNoticePartial({ priority: 883, message: `Unable to find/load TW article`, details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
             else { // we got the content of the TW article
                 if (twFileContent.length < 10)
-                    addNoticePartial({ priority: 881, message: `TW article seems empty`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                    addNoticePartial({ priority: 881, message: `TW article seems empty`, details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                 // THIS IS DISABLED COZ IT CAN GIVE AN INFINITE LOOP !!!
                 // else if (checkingOptions?.disableLinkedTWArticlesCheckFlag !== true) {
                 //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTWArticlesCheckFlag} so checking TW article: ${filepath}`);
@@ -357,14 +364,14 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
             } catch (trcGCerror) {
                 // console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
-                addNoticePartial({ priority: 885, message: `Error loading TA article`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+                addNoticePartial({ priority: 885, message: `Error loading TA article`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
                 alreadyGaveError = true;
             }
             if (!alreadyGaveError) {
                 if (!taFileContent)
-                    addNoticePartial({ priority: 886, message: `Unable to find/load TA article`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                    addNoticePartial({ priority: 886, message: `Unable to find/load TA article`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                 else if (taFileContent.length < 10)
-                    addNoticePartial({ priority: 884, message: `TA article seems empty`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                    addNoticePartial({ priority: 884, message: `TA article seems empty`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                 else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
                     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
                     if (await alreadyChecked(taPathParameters) !== true) {
@@ -413,14 +420,14 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
                 } catch (trcGCerror) {
                     // console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
-                    addNoticePartial({ priority: 885, message: `Error loading TA article`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+                    addNoticePartial({ priority: 885, message: `Error loading TA article`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
                     alreadyGaveError = true;
                 }
                 if (!alreadyGaveError) {
                     if (!taFileContent)
-                        addNoticePartial({ priority: 886, message: `Unable to find/load TA article`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                        addNoticePartial({ priority: 886, message: `Unable to find/load TA article`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                     else if (taFileContent.length < 10)
-                        addNoticePartial({ priority: 884, message: `TA article seems empty`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                        addNoticePartial({ priority: 884, message: `TA article seems empty`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                     // Don't do this or it gets infinite recursion!!!
                     // else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
                     //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
@@ -463,14 +470,14 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
                 } catch (trcGCerror) {
                     // console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
-                    addNoticePartial({ priority: 885, message: `Error loading TA article`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+                    addNoticePartial({ priority: 885, message: `Error loading TA article`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
                     alreadyGaveError = true;
                 }
                 if (!alreadyGaveError) {
                     if (!taFileContent)
-                        addNoticePartial({ priority: 886, message: `Unable to find/load TA article`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                        addNoticePartial({ priority: 886, message: `Unable to find/load TA article`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                     else if (taFileContent.length < 10)
-                        addNoticePartial({ priority: 884, message: `TA article seems empty`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                        addNoticePartial({ priority: 884, message: `TA article seems empty`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                     // Don't do this or it gets infinite recursion!!!
                     // else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
                     //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
@@ -526,14 +533,14 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
             } catch (trcGCerror) {
                 // console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
-                addNoticePartial({ priority: 885, message: `Error loading TA article`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+                addNoticePartial({ priority: 885, message: `Error loading TA article`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
                 alreadyGaveError = true;
             }
             if (!alreadyGaveError) {
                 if (!taFileContent)
-                    addNoticePartial({ priority: 886, message: `Unable to find/load TA article`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                    addNoticePartial({ priority: 886, message: `Unable to find/load TA article`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                 else if (taFileContent.length < 10)
-                    addNoticePartial({ priority: 884, message: `TA article seems empty`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                    addNoticePartial({ priority: 884, message: `TA article seems empty`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                 else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
                     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
                     if (await alreadyChecked(taPathParameters) !== true) {
@@ -579,13 +586,13 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 // if (article === 'brother') debugLog(`Fetched fileContent for ${JSON.stringify(twPathParameters)}: ${typeof twFileContent} ${twFileContent.length}`);
             } catch (trcGCerror) {
                 console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TW`, twRepoUsername, twRepoName, filepath, twRepoBranch, trcGCerror.message);
-                addNoticePartial({ priority: 882, message: `Error loading TW article`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+                addNoticePartial({ priority: 882, message: `Error loading TW article`, details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
             }
             if (!twFileContent)
-                addNoticePartial({ priority: 883, message: `Unable to find/load TW article`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                addNoticePartial({ priority: 883, message: `Unable to find/load TW article`, details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
             else { // we got the content of the TW article
                 if (twFileContent.length < 10)
-                    addNoticePartial({ priority: 881, message: `TW article seems empty`, details: `linked from ${fieldName}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                    addNoticePartial({ priority: 881, message: `TW article seems empty`, details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                 else if (checkingOptions?.disableLinkedTWArticlesCheckFlag !== true) {
                     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTWArticlesCheckFlag} so checking TW article: ${filepath}`);
                     if (await alreadyChecked(twPathParameters) !== true) {
