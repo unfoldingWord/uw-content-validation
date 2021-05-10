@@ -4,7 +4,7 @@ import { DEFAULT_EXCERPT_LENGTH } from './defaults'
 import { userLog, debugLog, parameterAssert } from './utilities';
 
 
-// const USFM_GRAMMAR_VALIDATOR_VERSION_STRING = '0.3.3';
+// const USFM_GRAMMAR_VALIDATOR_VERSION_STRING = '0.4.0';
 
 
 export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLocation, checkingOptions) {
@@ -155,30 +155,31 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
 
     const cugResult = { successList: [], noticeList: [] };
 
+    /**
+     *
+     * @param {string} successString
+     */
     function addSuccessMessage(successString) {
         // functionLog(`checkUSFMGrammar success: ${successString}`);
         cugResult.successList.push(successString);
     }
-    function addNotice6to7(noticeObject) {
-        /**
-        * @description - adds a new notice entry, adding bookID,C,V to the given fields
-        * @param {Number} priority - notice priority from 1 (lowest) to 999 (highest)
-        * @param {string} message - the text of the notice message
-        * @param {Number} characterIndex - where the issue occurs in the line
-        * @param {string} excerpt - short excerpt from the line centred on the problem (if available)
-        * @param {string} location - description of where the issue is located
-        */
+    /**
+     *
+     * @description - adds a new notice entry from the partial fields given -- adding bookID and filename to the given fields
+     * @param {Object} noticeObject expected to contain priority, message, characterIndex, exerpt, location
+     */
+    function addNoticePartial(noticeObject) {
         // functionLog(`checkUSFMGrammar notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
-        parameterAssert(noticeObject.priority !== undefined, "cUSFMgr addNotice6to7: 'priority' parameter should be defined");
-        parameterAssert(typeof noticeObject.priority === 'number', `cUSFMgr addNotice6to7: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        parameterAssert(noticeObject.message !== undefined, "cUSFMgr addNotice6to7: 'message' parameter should be defined");
-        parameterAssert(typeof noticeObject.message === 'string', `cUSFMgr addNotice6to7: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // parameterAssert(characterIndex !== undefined, "cUSFMgr addNotice6to7: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cUSFMgr addNotice6to7: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // parameterAssert(excerpt !== undefined, "cUSFMgr addNotice6to7: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `cUSFMgr addNotice6to7: 'excerpt' parameter should be a string not a '${typeof excerpt}': ${noticeObject.excerpt}`);
-        parameterAssert(noticeObject.location !== undefined, "cUSFMgr addNotice6to7: 'location' parameter should be defined");
-        parameterAssert(typeof noticeObject.location === 'string', `cUSFMgr addNotice6to7: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        parameterAssert(noticeObject.priority !== undefined, "cUSFMgr addNoticePartial: 'priority' parameter should be defined");
+        parameterAssert(typeof noticeObject.priority === 'number', `cUSFMgr addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        parameterAssert(noticeObject.message !== undefined, "cUSFMgr addNoticePartial: 'message' parameter should be defined");
+        parameterAssert(typeof noticeObject.message === 'string', `cUSFMgr addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+        // parameterAssert(characterIndex !== undefined, "cUSFMgr addNoticePartial: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cUSFMgr addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        // parameterAssert(excerpt !== undefined, "cUSFMgr addNoticePartial: 'excerpt' parameter should be defined");
+        if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `cUSFMgr addNoticePartial: 'excerpt' parameter should be a string not a '${typeof excerpt}': ${noticeObject.excerpt}`);
+        parameterAssert(noticeObject.location !== undefined, "cUSFMgr addNoticePartial: 'location' parameter should be defined");
+        parameterAssert(typeof noticeObject.location === 'string', `cUSFMgr addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
         cugResult.noticeList.push({ ...noticeObject, bookID, filename });
     }
 
@@ -191,15 +192,15 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
     // debugLog(`grammarCheckResult=${JSON.stringify(grammarCheckResult)}`);
 
     if (!grammarCheckResult.isValidUSFM)
-        addNotice6to7({ priority: 944, message: `USFM3 Grammar Check (${strictnessString} mode) doesn’t pass`, filename, location: ourLocation });
+        addNoticePartial({ priority: 944, message: `USFM3 Grammar Check (${strictnessString} mode) doesn’t pass`, filename, location: ourLocation });
 
     // We only get one error if it fails
     if (grammarCheckResult.error && grammarCheckResult.priority)
-        addNotice6to7(grammarCheckResult.error);
+        addNoticePartial(grammarCheckResult.error);
 
     // Display these warnings but with a lowish priority
     for (const warningString of grammarCheckResult.warnings)
-        addNotice6to7({ priority: 101, message: `USFMGrammar: ${warningString}`, filename, location: ourLocation });
+        addNoticePartial({ priority: 101, message: `USFMGrammar: ${warningString}`, filename, location: ourLocation });
 
     addSuccessMessage(`Checked USFM Grammar (${strictnessString} mode) ${grammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN’T validate)"}`);
     // debugLog(`  checkUSFMGrammar returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);

@@ -10,7 +10,7 @@ import { userLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from '
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.8.6';
+// const USFM_VALIDATOR_VERSION_STRING = '0.8.7';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘`; // '{' gets added for STs
@@ -989,7 +989,10 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         parameterAssert(twLinkText !== undefined, "checkUSFMText ourCheckNotesLinksToOutside: 'twLinkText' parameter should be defined");
         parameterAssert(typeof twLinkText === 'string', `checkUSFMText ourCheckNotesLinksToOutside: 'twLinkText' parameter should be a string not a '${typeof twLinkText}': ${twLinkText}`);
 
-        const coTNlResultObject = await checkNotesLinksToOutside(languageCode, repoCode, bookID, C, V, 'TWLink', twLinkText, location, { ...checkingOptions, defaultLanguageCode: languageCode });
+        // NOTE: This language problem will go away once we move to TSV TWLs
+        let adjustedLanguageCode = languageCode;
+        if (languageCode === 'el-x-koine' || languageCode === 'hbo') adjustedLanguageCode = 'en'; // Just a guess for x-tw
+        const coTNlResultObject = await checkNotesLinksToOutside(adjustedLanguageCode, repoCode, bookID, C, V, 'TWLink', twLinkText, location, { ...checkingOptions, defaultLanguageCode: languageCode });
         // debugLog(`coTNlResultObject=${JSON.stringify(coTNlResultObject)}`);
 
         // Choose only ONE of the following

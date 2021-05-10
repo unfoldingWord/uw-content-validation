@@ -7,7 +7,7 @@ import { repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetR
 import { functionLog, debugLog, logicAssert, parameterAssert } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.4.8';
+// const REPO_VALIDATOR_VERSION_STRING = '0.4.9';
 
 
 /**
@@ -25,7 +25,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
       successList: an array of strings to tell the use exactly what has been checked
       noticeList: an array of 9 (i.e., with extra bookOrFileCode parameter at end) notice components
   */
-  // functionLog(`checkRepo(un='${username}', rN='${repoName}', rBr='${repoBranch}', ${givenLocation}, (fn), ${JSON.stringify(checkingOptions)})…`);
+  functionLog(`checkRepo(un='${username}', rN='${repoName}', rBr='${repoBranch}', ${givenLocation}, (fn), ${JSON.stringify(checkingOptions)})…`);
   parameterAssert(username !== undefined, "checkRepo: 'username' parameter should be defined");
   parameterAssert(typeof username === 'string', `checkRepo: 'username' parameter should be a string not a '${typeof username}'`);
   parameterAssert(repoName !== undefined, "checkRepo: 'repoName' parameter should be defined");
@@ -189,7 +189,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
       // Let’s fetch the zipped repo since it should be much more efficient than individual fetches
       // functionLog(`checkRepo: fetch zip file for ${repoName}…`);
       const fetchRepositoryZipFile_ = (checkingOptions && checkingOptions.fetchRepositoryZipFile) ? checkingOptions.fetchRepositoryZipFile : cachedGetRepositoryZipFile;
-      const zipFetchSucceeded = await fetchRepositoryZipFile_({ username, repository: repoName, branch: repoBranch });
+      const zipFetchSucceeded = await fetchRepositoryZipFile_({ username, repository: repoName, branch: repoBranch, branchOrRelease: repoBranch });
       if (!zipFetchSucceeded) {
         console.error(`checkRepo: misfetched zip file for repo with ${zipFetchSucceeded}`);
         setResultValue(<p style={{ color: 'red' }}>Failed to fetching zipped files from <b>{username}/{repoName}</b> repository</p>);
@@ -201,7 +201,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
       setResultValue(<p style={{ color: 'magenta' }}>Preprocessing file list from <b>{username}/{repoName}</b> repository…</p>);
       // const pathList = await getFileListFromFetchedTreemaps(username, repoName, branch);
       const getFileListFromZip_ = checkingOptions && checkingOptions.getFileListFromZip ? checkingOptions.getFileListFromZip : getFileListFromZip;
-      const pathList = await getFileListFromZip_({ username, repository: repoName, branch: repoBranch });
+      const pathList = await getFileListFromZip_({ username, repository: repoName, branchOrRelease: repoBranch });
       // debugLog(`Got pathlist (${pathList.length}) = ${pathList}`);
 
 

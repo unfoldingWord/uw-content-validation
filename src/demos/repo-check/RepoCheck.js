@@ -4,10 +4,10 @@ import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, proces
 import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderTotals } from '../RenderProcessedResults';
 import { clearCaches, clearCheckedArticleCache, preloadReposIfNecessary, ourParseInt } from '../../core';
 import { checkRepo } from './checkRepo';
-import { userLog } from '../../core/utilities';
+import { logicAssert, userLog } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.2.4';
+// const REPO_VALIDATOR_VERSION_STRING = '0.2.5';
 
 
 function RepoCheck(/*username, languageCode,*/ props) {
@@ -85,12 +85,18 @@ function RepoCheck(/*username, languageCode,*/ props) {
             // debugLog(`RepoCheck languageCode='${languageCode}' repoCode='${repoCode}'`);
 
             // Load whole repos, especially if we are going to check files in manifests
-            const repoPreloadList = ['TW'];
-            if (repoCode !== 'UHB' && repoCode !== 'UGNT') repoPreloadList.push('TA'); // Original languages only have TW links
-            if (repoCode !== 'TA' && repoCode !== 'TW') repoPreloadList.push(repoCode);
+            // NOTE: We make TWO calls to preloadReposIfNecessary()
+            //          because the branchOrRelease only applies to the repo being checked
+            //          for all other repos, we just use `master`
+            const repoPreloadList = repoCode === 'TW' ? [] : ['TW'];
+            if (repoCode !== 'UHB' && repoCode !== 'UGNT' && repoCode !== 'TA')
+                repoPreloadList.push('TA'); // Original languages only have TW links
+            // if (repoCode !== 'TA' && repoCode !== 'TW') repoPreloadList.push(repoCode);
             if (repoCode.startsWith('OBS-') || repoCode === 'TWL') { repoPreloadList.unshift('UGNT'); repoPreloadList.unshift('UHB'); repoPreloadList.push('OBS'); }
-            setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for {repoName} repo check…</p>);
-            const successFlag = await preloadReposIfNecessary(username, languageCode, [], branchOrRelease, repoPreloadList);
+            setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoCode} and {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for {repoName} repo check…</p>);
+            logicAssert(repoPreloadList.indexOf(repoCode) === -1);
+            const successFlag = await preloadReposIfNecessary(username, languageCode, [], branchOrRelease, [repoCode])
+                && preloadReposIfNecessary(username, languageCode, [], 'master', repoPreloadList);
             if (!successFlag)
                 console.error(`RepoCheck error: Failed to pre-load all repos`)
 
@@ -101,6 +107,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
             try {
                 let rawCRResults = {};
                 try {
+                    // Empty string below is for location
                     rawCRResults = await checkRepo(username, repoName, branchOrRelease, "", setResultValue, checkingOptions);
                 } catch (checkRepoError) {
                     rawCRResults = { successList: [], noticeList: [] };

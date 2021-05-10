@@ -1,7 +1,7 @@
 import React from 'react';
 import { forwardRef } from 'react';
 // eslint-disable-next-line no-unused-vars
-import { parameterAssert, userLog, debugLog } from '../core/utilities';
+import { parameterAssert, userLog, debugLog, dataAssert } from '../core/utilities';
 
 // NOTE: The following line is currently giving compile warnings -- a problem in a dependency it seems
 import MaterialTable from 'material-table';
@@ -42,7 +42,7 @@ const tableIcons = {
 };
 
 
-// const RENDER_PROCESSED_RESULTS_VERSION = '0.6.1';
+// const RENDER_PROCESSED_RESULTS_VERSION = '0.6.2';
 
 
 export function RenderSuccesses({ username, results }) {
@@ -70,17 +70,19 @@ export function RenderTotals({ rawNoticeListLength, results }) {
 }
 
 /**
-* @description - Displays a given piece of text (which can include newline characters)
-* @param {string} text - text to render as numbered lines
-* @return {String} - rendered HTML for the numbered list of lines
-*/
-export function RenderLines({ text }) {
+ * @description - Displays a given piece of text (which can include newline characters)
+ * @param {string} text - text to render as numbered lines
+ * @return {String} - rendered HTML for the numbered list of lines
+ */
+/*
+export function RenderNumberedLines({ text }) {
     return <ol>
         {text.split('\n').map(function (line, index) {
             return <li key={index}>{line}</li>;
         })}
     </ol>;
 }
+*/
 
 
 const MAX_ARRAY_ITEMS_TO_DISPLAY = 8; // Or do we want this as a parameter?
@@ -264,12 +266,20 @@ function RenderFileDetails({ username, repoName, branch, filename, lineNumber, r
     if (repoName && repoName.length) resultStart += ` in ${repoName} repository`;
     if (username && repoName && filename) {
         if (filename && filename.length) resultStart += ` in file ${filename}`;
-        try {
-            if (filename.endsWith('.tsv') || filename.endsWith('.md')) { // use blame so we can see the actual line!
-                const folder = repoName.endsWith('_obs') && filename !== 'README.md' && filename !== 'LICENSE.md' ? 'content/' : '';
+        try { // use blame so we can see the actual line!
+            if (filename.endsWith('.tsv') || filename.endsWith('.md')) {
+                let folder = '';
+                if (filename !== 'README.md' && filename !== 'LICENSE.md') {
+                    if (repoName.endsWith('_obs')) folder = 'content/';
+                    else if (repoName.endsWith('_tw')) {
+                        folder = 'bible/';
+                        dataAssert(filename.indexOf('/') > 0); // filename actually contains the subfolder
+                    }
+                }
                 fileLink = `https://git.door43.org/${username}/${repoName}/blame/branch/${branch}/${folder}${filename}`;
-            } else fileLink = `https://git.door43.org/${username}/${repoName}/src/branch/${branch}/${filename}`;
-        } catch { }
+            } else // not TSV or MD
+                fileLink = `https://git.door43.org/${username}/${repoName}/src/branch/${branch}/${filename}`;
+        } catch (someErr) { debugLog(`What was someErr here: ${someErr}`); }
         if (lineNumber) {
             resultStart += ' on ';
             if (fileLink && lineNumber)
@@ -302,7 +312,7 @@ function RenderExcerpt({ excerpt, message }) {
             // debugLog(`Here2 RenderExcerpt(${excerpt}, ${message})`);
             const ix = excerpt.indexOf('](');
             const displayPart = excerpt.substring(1, ix); // Start after the [ unril before the ](
-            const linkPart = excerpt.substring(ix+2, excerpt.length-1); // Step past the ]( but don't include the final )
+            const linkPart = excerpt.substring(ix + 2, excerpt.length - 1); // Step past the ]( but don't include the final )
             const adjLinkPart = message === "Should http link be https" ? linkPart.replace('http:', 'https:') : linkPart;
             // debugLog(`RenderExcerpt from '${excerpt}' got ix=${ix}, displayPart='${displayPart}', linkPart='${linkPart}', adjLinkPart='${adjLinkPart}'`);
             return <><span style={{ color: 'DimGray' }}>` around ►[{displayPart}](<a rel="noopener noreferrer" target="_blank" href={adjLinkPart}>{linkPart}</a>)◄`</span></>
