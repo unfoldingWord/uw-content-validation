@@ -39,7 +39,7 @@
 \w אֶ֤רֶךְ|lemma="אָרֵךְ" strong="H0750" x-morph="He,Aamsc"\w*
 \w אַפַּ֨יִם֙|lemma="אַף" strong="H0639" x-morph="He,Ncmda"\w*
 \w ו⁠גדול|lemma="גָּדוֹל" strong="c:H1419a" x-morph="He,C:Aamsc"\w*־\w כֹּ֔חַ|lemma="כֹּחַ" strong="H3581b" x-morph="He,Ncmsa" x-tw="rc://*/tw/dict/bible/other/strength"\w*
-\f + \ft Q \w וּגְדָל|lemma="גָּדַל" strong="c:H1419a" x-morph="He,C:Vqq3ms"\w*\f*
+\f + \ft Q \+w וּגְדָל|lemma="גָּדַל" strong="c:H1419a" x-morph="He,C:Vqq3ms"\+w*\f*
 \w וְ⁠נַקֵּ֖ה|lemma="נָקָה" strong="c:H5352" x-morph="He,C:Vpa"\w*
 \w לֹ֣א|lemma="לֹא" strong="H3808" x-morph="He,Tn"\w*
 \w יְנַקֶּ֑ה|lemma="נָקָה" strong="H5352" x-morph="He,Vpi3ms"\w*
@@ -202,7 +202,7 @@
 \w יוֹסִ֥יף|lemma="יָסַף" strong="H3254" x-morph="He,Vhi3ms"\w*
 \w ע֛וֹד|lemma="עוֹד" strong="H5750" x-morph="He,D"\w*
 \w לַֽעֲבָר|lemma="עָבַר" strong="l:H5674a" x-morph="He,R:Vqc"\w*־\w בָּ֥⁠ךְ|lemma="" strong="b" x-morph="He,R:Sp2fs"\w*
-\f + \ft K \w ל⁠עבור|lemma="עָבַר" strong="l:H5674a" x-morph="He,R:Vqa"\w*\f*
+\f + \ft K \+w ל⁠עבור|lemma="עָבַר" strong="l:H5674a" x-morph="He,R:Vqa"\+w*\f*
 \w בְּלִיַּ֖עַל|lemma="בְּלִיַּעַל" strong="H1100" x-morph="He,Ncmsa"\w*
 \w כֻּלֹּ֥⁠ה|lemma="כֹּל" strong="H3605" x-morph="He,Ncmsc:Sp3fs"\w*
 \w נִכְרָֽת|lemma="כָּרַת" strong="H3772" x-morph="He,VNp3ms" x-tw="rc://*/tw/dict/bible/other/cutoff"\w*׃
@@ -271,7 +271,7 @@
 \w אַדִּירָ֔י⁠ו|lemma="אַדִּיר" strong="H0117" x-morph="He,Aampc:Sp3ms" x-tw="rc://*/tw/dict/bible/other/noble"\w*
 \w יִכָּשְׁל֖וּ|lemma="כָּשַׁל" strong="H3782" x-morph="He,VNi3mp"\w*
 \w ב⁠הלכות⁠ם|lemma="הֲלִיכָה" strong="b:H1979" x-morph="He,R:Ncfpc:Sp3mp"\w*
-\f + \ft Q \w בַּהֲלִֽיכָתָ֑ם|lemma="הֲלִיכָה" strong="b:H1979" x-morph="He,R:Vqrfpc:Sp3mp"\w*\f*
+\f + \ft Q \+w בַּהֲלִֽיכָתָ֑ם|lemma="הֲלִיכָה" strong="b:H1979" x-morph="He,R:Vqrfpc:Sp3mp"\+w*\f*
 \w יְמַֽהֲרוּ֙|lemma="מָהַר" strong="H4116a" x-morph="He,Vpi3mp"\w*
 \w חֽוֹמָתָ֔⁠הּ|lemma="חוֹמָה" strong="H2346" x-morph="He,Ncfsc:Sp3fs"\w*
 \w וְ⁠הֻכַ֖ן|lemma="כּוּן" strong="c:H3559a" x-morph="He,C:VHp3ms"\w*
@@ -433,7 +433,7 @@
 \w קֵ֨צֶה֙|lemma="קָצֶה" strong="H7097b" x-morph="He,Ncbsa"\w*
 \w לַ⁠גְּוִיָּ֔ה|lemma="גְּוִיָּה" strong="l:H1472" x-morph="He,Rd:Ncfsa"\w*
 \w וְכָשְׁל֖וּ|lemma="כָּשַׁל" strong="H3782" x-morph="He,Vqq3cp"\w*
-\f + \ft K \w יכשלו|lemma="כָּשַׁל" strong="H3782" x-morph="He,Vqi3mp"\w*\f*
+\f + \ft K \+w יכשלו|lemma="כָּשַׁל" strong="H3782" x-morph="He,Vqi3mp"\+w*\f*
 \w בִּ⁠גְוִיָּתָֽ⁠ם|lemma="גְּוִיָּה" strong="b:H1472" x-morph="He,R:Ncfsc:Sp3mp"\w*׃
 
 \v 4

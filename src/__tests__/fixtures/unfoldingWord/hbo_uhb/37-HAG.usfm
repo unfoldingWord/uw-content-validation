@@ -112,7 +112,7 @@
 \w הַ⁠בָּ֑יִת|lemma="בַּיִת" strong="d:H1004b" x-morph="He,Td:Ncmsa" x-tw="rc://*/tw/dict/bible/other/house"\w*
 \w וְ⁠אֶרְצֶה|lemma="רָצָה" strong="c:H7521" x-morph="He,C:Vqi1cs"\w*־\w בּ֥⁠וֹ|lemma="" strong="b" x-morph="He,R:Sp3ms"\w*
 \w ו⁠אכבד|lemma="כָּבַד" strong="c:H3513" x-morph="He,C:VNi1cs"\w*
-\f + \ft Q \w וְאֶכָּבְדָ֖ה|lemma="כָּבַד" strong="c:H3513" x-morph="He,C:VNh1cs"\w*\f*
+\f + \ft Q \+w וְאֶכָּבְדָ֖ה|lemma="כָּבַד" strong="c:H3513" x-morph="He,C:VNh1cs"\+w*\f*
 \w אָמַ֥ר|lemma="אָמַר" strong="H0559" x-morph="He,Vqp3ms"\w*
 \w יְהוָֽה|lemma="יְהֹוָה" strong="H3068" x-morph="He,Np" x-tw="rc://*/tw/dict/bible/kt/yahweh"\w*׃
 

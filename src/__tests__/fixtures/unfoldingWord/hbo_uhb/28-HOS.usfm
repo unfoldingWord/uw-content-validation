@@ -1128,7 +1128,7 @@
 \w יִשְׂרָאֵ֔ל|lemma="יִשְׂרָאֵל" strong="H3478" x-morph="He,Np" x-tw="rc://*/tw/dict/bible/kt/israel"\w*
 \w רָאִ֖יתִי|lemma="רָאָה" strong="H7200" x-morph="He,Vqp1cs"\w*
 \w שַׁעֲרֽוּרִיָּ֑ה|lemma="שַׁעֲרוּרָה" strong="H8186b" x-morph="He,Aafsa"\w*
-\f + \ft K \w שעריריה|lemma="שַׁעֲרוּרָה" strong="H8186b" x-morph="He,Aafsa"\w*\f*
+\f + \ft K \+w שעריריה|lemma="שַׁעֲרוּרָה" strong="H8186b" x-morph="He,Aafsa"\+w*\f*
 \w שָׁ֚ם|lemma="שָׁם" strong="H8033" x-morph="He,D"\w*
 \w זְנ֣וּת|lemma="זְנוּת" strong="H2184" x-morph="He,Ncfsa"\w*
 \w לְ⁠אֶפְרַ֔יִם|lemma="אֶפְרַיִם" strong="l:H0669" x-morph="He,R:Np"\w*
@@ -1478,9 +1478,9 @@
 
 \v 12
 \w אֶ֨כְתָּב|lemma="כָּתַב" strong="H3789" x-morph="He,Vqi1cs"\w*־\w ל֔⁠וֹ|lemma="" strong="l" x-morph="He,R:Sp3ms"\w*
-\f + \ft K \w אכתוב|lemma="כָּתַב" strong="H3789" x-morph="He,Vqi1cs"\w*\f*
+\f + \ft K \+w אכתוב|lemma="כָּתַב" strong="H3789" x-morph="He,Vqi1cs"\+w*\f*
 \w רבו|lemma="רִבּוֹ" strong="H7239" x-morph="He,Ncbsc"\w*
-\f + \ft Q \w רֻבֵּ֖י|lemma="רִבּוֹ" strong="H7239" x-morph="He,Ncbsc"\w*\f*
+\f + \ft Q \+w רֻבֵּ֖י|lemma="רִבּוֹ" strong="H7239" x-morph="He,Ncbsc"\+w*\f*
 \w תּֽוֹרָתִ֑⁠י|lemma="תּוֹרָה" strong="H8451" x-morph="He,Ncfsc:Sp1cs" x-tw="rc://*/tw/dict/bible/kt/lawofmoses"\w*
 \w כְּמוֹ|lemma="כְּמוֹ" strong="H3644" x-morph="He,R"\w*־\w זָ֖ר|lemma="זוּר" strong="H2114a" x-morph="He,Aamsa"\w*
 \w נֶחְשָֽׁבוּ|lemma="חָשַׁב" strong="H2803" x-morph="He,VNp3cp"\w*׃
@@ -1722,7 +1722,7 @@
 \w יָבֵ֖שׁ|lemma="יָבֵשׁ" strong="H3001" x-morph="He,Vqp3ms"\w*
 \w פְּרִ֣י|lemma="פְּרִי" strong="H6529" x-morph="He,Ncmsa" x-tw="rc://*/tw/dict/bible/other/fruit"\w*
 \w בַֽל|lemma="בְּלִי" strong="H1077" x-morph="He,Tn"\w*־\w יַעֲשׂ֑וּ⁠ן|lemma="עָשָׂה" strong="H6213a" x-morph="He,Vqi3mp:Sn"\w*
-\f + \ft K \w בלי|lemma="בְּלִי" strong="H1097" x-morph="He,Tn"\w*\f*
+\f + \ft K \+w בלי|lemma="בְּלִי" strong="H1097" x-morph="He,Tn"\+w*\f*
 \w גַּ֚ם|lemma="גַּם" strong="H1571" x-morph="He,Ta"\w*
 \w כִּ֣י|lemma="כִּי" strong="H3588a" x-morph="He,C"\w*
 \w יֵֽלֵד֔וּ⁠ן|lemma="יָלַד" strong="H3205" x-morph="He,Vqi3mp:Sn"\w*
@@ -1875,7 +1875,7 @@
 \w בְּ⁠אָסְרָ֖⁠ם|lemma="אָסַר" strong="b:H0631" x-morph="He,R:Vqc:Sp3mp"\w*
 \w לִ⁠שְׁתֵּ֥י|lemma="שְׁנַיִם" strong="l:H8147" x-morph="He,R:Acfdc"\w*
 \w עוֹנֹתָֽם|lemma="עַיִן" strong="H5771" x-morph="He,Ncbpc:Sp3mp"\w*׃
-\f + \ft K \w עינת⁠ם|lemma="עַיִן" strong="H5869b" x-morph="He,Ncbpc:Sp3mp"\w*\f*
+\f + \ft K \+w עינת⁠ם|lemma="עַיִן" strong="H5869b" x-morph="He,Ncbpc:Sp3mp"\+w*\f*
 
 \v 11
 \w וְ⁠אֶפְרַ֜יִם|lemma="אֶפְרַיִם" strong="c:H0669" x-morph="He,C:Np"\w*

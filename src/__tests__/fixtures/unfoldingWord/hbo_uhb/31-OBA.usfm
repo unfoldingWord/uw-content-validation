@@ -148,7 +148,7 @@
 \w וְ⁠נָכְרִ֞ים|lemma="נׇכְרִי" strong="c:H5237" x-morph="He,C:Aampa" x-tw="rc://*/tw/dict/bible/other/foreigner"\w*
 \w בָּ֣אוּ|lemma="בּוֹא" strong="H0935" x-morph="He,Vqp3cp"\w*
 \w שְׁעָרָ֗יו|lemma="שַׁעַר" strong="H8179" x-morph="He,Ncmpc:Sp3mp" x-tw="rc://*/tw/dict/bible/other/gate"\w*
-\f + \ft K \ft* \w שער⁠ו|lemma="שַׁעַר" strong="H8179" x-morph="He,Ncmsc:Sp3ms"\w*\f*
+\f + \ft K \ft* \w שער⁠ו|lemma="שַׁעַר" strong="H8179" x-morph="He,Ncmsc:Sp3ms"\+w*\f*
 \w וְ⁠עַל|lemma="עַל" strong="c:H5921a" x-morph="He,C:R"\w*־\w יְרוּשָׁלִַ֨ם֙|lemma="יְרוּשָׁלִַ͏ם" strong="H3389" x-morph="He,Np" x-tw="rc://*/tw/dict/bible/names/jerusalem"\w*
 \k-s | x-tw="rc://*/tw/dict/bible/other/lots"\*\w יַדּ֣וּ|lemma="יָדַד" strong="H3032" x-morph="He,Vqp3cp"\w*
 \w גוֹרָ֔ל|lemma="גּוֹרָל" strong="H1486" x-morph="He,Ncmsa"\w*

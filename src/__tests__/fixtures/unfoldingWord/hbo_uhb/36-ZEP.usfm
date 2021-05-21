@@ -369,7 +369,7 @@
 \w אֱלֹהֵי⁠הֶ֖ם|lemma="אֱלֹהִים" strong="H0430" x-morph="He,Ncmpc:Sp3mp" x-tw="rc://*/tw/dict/bible/kt/god"\w*
 \w וְ⁠שָׁ֥ב|lemma="שׁוּב" strong="c:H7725" x-morph="He,C:Vqq3ms" x-tw="rc://*/tw/dict/bible/other/return"\w*
 \w שבות⁠ם|lemma="שְׁבוּת" strong="H7622" x-morph="He,Ncfsc:Sp3mp" x-tw="rc://*/tw/dict/bible/other/captive"\w*׃
-\f + \ft Q \w שְׁבִיתָֽם|lemma="שְׁבוּת" strong="H7622" x-morph="He,Ncfsc:Sp3mp"\w*\f*
+\f + \ft Q \+w שְׁבִיתָֽם|lemma="שְׁבוּת" strong="H7622" x-morph="He,Ncfsc:Sp3mp"\+w*\f*
 
 \v 8
 \w שָׁמַ֨עְתִּי֙|lemma="שָׁמַע" strong="H8085" x-morph="He,Vqp1cs"\w*
@@ -408,7 +408,7 @@
 \w יְבָזּ֔וּ⁠ם|lemma="בָּזַז" strong="H0962" x-morph="He,Vqi3mp:Sp3mp"\w*
 \w וְ⁠יֶ֥תֶר|lemma="יֶתֶר" strong="c:H3499a" x-morph="He,C:Ncmsc"\w*
 \w גּוֹיִ֖י|lemma="גּוֹי" strong="H1471a" x-morph="He,Ncmsa:Sp1cs" x-tw="rc://*/tw/dict/bible/other/nation"\w*
-\f + \ft K \w גוי|lemma="גּוֹי" strong="H1471a" x-morph="He,Ncmsa"\w*\f*
+\f + \ft K \+w גוי|lemma="גּוֹי" strong="H1471a" x-morph="He,Ncmsa"\+w*\f*
 \w יִנְחָלֽוּ⁠ם|lemma="נָחַל" strong="H5157" x-morph="He,Vqi3mp:Sp3mp"\w*׃
 
 
