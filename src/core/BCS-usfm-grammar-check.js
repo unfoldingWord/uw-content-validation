@@ -41,7 +41,7 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
         // debugLog(`${new Date().getTime() / 1000} Got the USFMGrammar checker toJSON _messages: ${Object.keys(parserToJSONResultObject._messages)}`);
         // debugLog(`${new Date().getTime() / 1000} Got the USFMGrammar checker: ${Object.keys(ourUsfmParser)}`);
         parseWarnings = parserToJSONResultObject._warnings ? parserToJSONResultObject._warnings : ourUsfmParser.warnings;
-        debugLog(`${new Date().getTime() / 1000} Got the warnings from the USFMGrammar checker: (${parseWarnings.length}) ${parseWarnings}`);
+        debugLog(`${new Date().getTime() / 1000} Got warnings from the USFMGrammar checker: (${parseWarnings.length}) ${parseWarnings}`);
     } catch (parserError) { // This is how the Parser returns USFM errors, i.e., it stops after the first error
         debugLog(`${new Date().getTime() / 1000} Got an exception when using the USFMGrammar checker: ${parserError}`);
         const ourErrorObject = {
