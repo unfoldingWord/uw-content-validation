@@ -4839,7 +4839,7 @@ Object {
       "branch": "master",
       "characterIndex": 20,
       "details": "end part of quote = \\"וְ⁠שֵׁ֥ם הַ⁠שֵּׁנִ֖י\\" -- passage ►וַ⁠יִּשְׂא֣וּ לָ⁠הֶ֗ם נָשִׁים֙ מֹֽאֲבִיּ֔וֹת שֵׁ֤ם הָֽ⁠אַחַת֙ עָרְפָּ֔ה וְ⁠שֵׁ֥ם הַ⁠שֵּׁנִ֖ית ר֑וּת וַ⁠יֵּ֥שְׁבוּ שָׁ֖ם כְּ⁠עֶ֥שֶׂר שָׁנִֽים׃◄",
-      "excerpt": "…שֵׁ֥ם הַ⁠שֵּׁנִ֖י(ת=D1514/H5ea)",
+      "excerpt": "…שֵׁ֥ם הַ⁠שֵּׁנִ֖י(ת=D1514/H5ea) occurrence=1",
       "extra": "TN",
       "fieldName": "OrigQuote",
       "filename": "en_tn_08-RUT.tsv",

@@ -1,4 +1,4 @@
-Last updated 2021-05-21 20:42:33.603995 by makeNoticeList.py
+Last updated 2021-05-24 09:07:06.144138 by makeNoticeList.py
 Got 490 notices:
   checkRepoResult.noticeList.push( 997, "Repository doesn’t exist", details, username, repoCode, repoName, location: givenLocation, extra: repoCode	from checkRepo.js line 267
   languageCode === 'en' || languageCode === 'fr' ? 490 : 190, "Expected header field to contain a mixed-case string", fieldName: `\\$marker`, excerpt: rest, C, V, location: lineLocation	from usfm-text-check.js line 971
@@ -71,6 +71,14 @@ Got 490 notices:
   938, `Unable to find project file mentioned in manifest`, excerpt: projectFilepath, location: ourLocation	from manifest-text-check.js line 738
   937, `Linked project file seems empty`, excerpt: projectFilepath, location: ourLocation	from manifest-text-check.js line 740
   936, `Error loading manifest project link`, details: trcGCerror, excerpt: projectFilepath, location: ourLocation	from manifest-text-check.js line 742
+  932, C, V, "Missing row ID", fieldName: 'ID', lineNumber: n + 1, location: ourLocation	from tn-tsv9-table-check.js line 237
+  932, C, V, "Missing row ID", fieldName: 'ID', lineNumber: n + 1, location: ourLocation	from twl-tsv6-table-check.js line 226
+  932, C, V, "Missing row ID", fieldName: 'ID', lineNumber: n + 1, location: ourLocation	from notes-tsv7-table-check.js line 226
+  932, C, V, "Missing row ID", fieldName: 'ID', lineNumber: n + 1, location: ourLocation	from questions-tsv7-table-check.js line 226
+  931, "Missing row ID field", fieldName: 'Reference', location: ourRowLocation	from twl-tsv6-row-check.js line 332
+  931, "Missing row ID field", fieldName: 'Verse', location: ourRowLocation	from tn-tsv9-row-check.js line 371
+  931, "Missing row ID field", fieldName: 'Reference', location: ourRowLocation	from questions-tsv7-row-check.js line 387
+  931, "Missing row ID field", fieldName: 'Reference', location: ourRowLocation	from notes-tsv7-row-check.js line 420
   929, "'projects' key is missing", location: ourLocation	from manifest-text-check.js line 674
   928, "'dublin_core' key is missing", location: ourLocation	from manifest-text-check.js line 672
   920, yamlError.message, location: ourLocation )	from yaml-text-check.js line 175
@@ -149,10 +157,6 @@ Got 490 notices:
   835, "Seems too few original \\k-s attributes", details: `Expected one attribute but only found $attributeCounter`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation	from usfm-text-check.js line 906
   834, "Seems too few translation \\zaln-s attributes", details: `Expected six attributes but only found $attributeCounter`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation	from usfm-text-check.js line 938
   833, "Unexpected extra \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation	from usfm-text-check.js line 935
-  832, C, V, "Missing row ID", fieldName: 'ID', lineNumber: n + 1, location: ourLocation	from tn-tsv9-table-check.js line 237
-  832, C, V, "Missing row ID", fieldName: 'ID', lineNumber: n + 1, location: ourLocation	from twl-tsv6-table-check.js line 226
-  832, C, V, "Missing row ID", fieldName: 'ID', lineNumber: n + 1, location: ourLocation	from notes-tsv7-table-check.js line 226
-  832, C, V, "Missing row ID", fieldName: 'ID', lineNumber: n + 1, location: ourLocation	from questions-tsv7-table-check.js line 226
   831, C, V, `Duplicate '$rowID' ID`, fieldName: 'ID', rowID, lineNumber: n + 1, location: ourLocation	from tn-tsv9-table-check.js line 234
   831, C, V, `Duplicate '$rowID' ID`, fieldName: 'ID', rowID, lineNumber: n + 1, location: ourLocation	from twl-tsv6-table-check.js line 223
   831, C, V, `Duplicate '$rowID' ID`, fieldName: 'ID', rowID, lineNumber: n + 1, location: ourLocation	from notes-tsv7-table-check.js line 223
@@ -207,10 +211,6 @@ Got 490 notices:
   810, "Missing verse number", rowID, fieldName: 'Verse', location: ` after $C:?$ourRowLocation`	from tn-tsv9-row-check.js line 368
   810, "Missing verse number", rowID, fieldName: 'Reference', location: ` after $C:?$ourRowLocation`	from questions-tsv7-row-check.js line 384
   810, "Missing verse number", rowID, fieldName: 'Reference', location: ` after $C:?$ourRowLocation`	from notes-tsv7-row-check.js line 417
-  808, "Missing row ID field", fieldName: 'Reference', location: ourRowLocation	from twl-tsv6-row-check.js line 332
-  808, "Missing row ID field", fieldName: 'Verse', location: ourRowLocation	from tn-tsv9-row-check.js line 371
-  808, "Missing row ID field", fieldName: 'Reference', location: ourRowLocation	from questions-tsv7-row-check.js line 387
-  808, "Missing row ID field", fieldName: 'Reference', location: ourRowLocation	from notes-tsv7-row-check.js line 420
   799, "Missing TWLink field", fieldName: 'TWLink', rowID, location: ourRowLocation	from twl-tsv6-row-check.js line 417
   798, "Field doesn’t contain expected TW link", details: `should start with 'rc://*/tw/dict/bible/'`, fieldName: 'TWLink', rowID, location: ourRowLocation	from twl-tsv6-row-check.js line 401
   797, "Field doesn’t contain proper TW link", details: `should be 'kt', 'names', or 'other'`, fieldName: 'TWLink', rowID, characterIndex, excerpt, location: ourRowLocation	from twl-tsv6-row-check.js line 408

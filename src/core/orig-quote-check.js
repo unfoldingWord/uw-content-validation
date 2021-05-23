@@ -258,7 +258,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
         let details = `passage ►${fullVerseText}◄`;
         if (partDescription.length) details = `${partDescription} part of quote = "${foundQuoteSegment}" -- ${details}`;
 
-        // TODO: This algorithm is inadequate if a word is inside another prior word, e.g., searching for δὲ in οὐδὲν δὲ συνκεκαλυμμένον ἐστὶν
+        // TODO: This algorithm is inadequate if a single word is inside another prior word, e.g., searching for δὲ in οὐδὲν δὲ συνκεκαλυμμένον ἐστὶν
         let remainingVerseBits = partialVerseText.split(foundQuoteSegment);
         if (remainingVerseBits.length > 2) // Join the extra bits back up
             remainingVerseBits = [remainingVerseBits[0], remainingVerseBits.slice(1).join(discontiguousDivider)];

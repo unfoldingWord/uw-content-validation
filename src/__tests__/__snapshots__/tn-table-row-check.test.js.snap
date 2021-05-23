@@ -198,7 +198,7 @@ Object {
       "bookID": "GEN",
       "characterIndex": 0,
       "details": "passage ►וְ⁠הָ⁠אָ֗רֶץ הָיְתָ֥ה תֹ֨הוּ֙ וָ⁠בֹ֔הוּ וְ⁠חֹ֖שֶׁךְ עַל־פְּנֵ֣י תְה֑וֹם וְ⁠ר֣וּחַ אֱלֹהִ֔ים מְרַחֶ֖פֶת עַל־פְּנֵ֥י הַ⁠מָּֽיִם׃◄",
-      "excerpt": "(ּ=D1468/H5bc) וְ⁠חֹ֖שֶׁךְ",
+      "excerpt": "(ּ=D1468/H5bc) וְ⁠חֹ֖שֶׁךְ occurrence=1",
       "fieldName": "OrigQuote",
       "location": " that was supplied",
       "message": "Seems original language quote might not start at the beginning of a word",
@@ -591,7 +591,7 @@ Object {
       "fieldName": "Verse",
       "location": " that was supplied",
       "message": "Missing row ID field",
-      "priority": 808,
+      "priority": 931,
     },
     Object {
       "C": "1",
