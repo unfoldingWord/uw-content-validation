@@ -5,7 +5,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { debugLog, parameterAssert } from './utilities';
 
 
-const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.4.1';
+const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.4.2';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -141,7 +141,7 @@ export async function checkTN_TSV9Table(languageCode, repoCode, bookID, filename
                 for (const drNoticeEntry of drResultObject.noticeList)
                     if (drNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN check
                         ttResult.noticeList.push(drNoticeEntry); // Just copy the complete notice as is
-                    else
+                    else if (drNoticeEntry.priority !== 931) // We already caught Missing row ID
                         addNoticePartial({ ...drNoticeEntry, lineNumber: n + 1 });
                 // The following is needed coz we might be checking the linked TA and/or TW articles
                 if (drResultObject.checkedFileCount && drResultObject.checkedFileCount > 0)
@@ -231,10 +231,10 @@ export async function checkTN_TSV9Table(languageCode, repoCode, bookID, filename
 
                 if (rowID) {
                     if (rowIDListForVerse.includes(rowID))
-                        addNoticePartial({ priority: 729, C, V, message: `Duplicate '${rowID}' ID`, fieldName: 'ID', rowID, lineNumber: n + 1, location: ourLocation });
+                        addNoticePartial({ priority: 831, C, V, message: `Duplicate '${rowID}' ID`, fieldName: 'ID', rowID, lineNumber: n + 1, location: ourLocation });
                     rowIDListForVerse.push(rowID);
                 } else
-                    addNoticePartial({ priority: 730, C, V, message: "Missing ID", fieldName: 'ID', lineNumber: n + 1, location: ourLocation });
+                    addNoticePartial({ priority: 932, C, V, message: "Missing row ID", fieldName: 'ID', lineNumber: n + 1, location: ourLocation });
 
 
                 lastB = B; lastC = C; lastV = V;

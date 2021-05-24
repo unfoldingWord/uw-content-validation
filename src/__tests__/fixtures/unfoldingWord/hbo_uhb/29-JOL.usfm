@@ -755,7 +755,7 @@
 \w הַ⁠הִ֑יא|lemma="הוּא" strong="d:H1931" x-morph="He,Td:Pp3fs"\w*
 \w אֲשֶׁ֥ר|lemma="אֲשֶׁר" strong="H0834a" x-morph="He,Tr"\w*
 \w אָשִׁ֛יב|lemma="שׁוּב" strong="H7725" x-morph="He,Vhi1cs" x-tw="rc://*/tw/dict/bible/other/return"\w*
-\f + \ft K \w אשוב|lemma="שׁוּב" strong="H7725" x-morph="He,Vqi1cs"\w*\f*
+\f + \ft K \+w אשוב|lemma="שׁוּב" strong="H7725" x-morph="He,Vqi1cs"\+w*\f*
 \w אֶת|lemma="אֵת" strong="H0853" x-morph="He,To"\w*־\w שְׁב֥וּת|lemma="שְׁבוּת" strong="H7622" x-morph="He,Ncfsc" x-tw="rc://*/tw/dict/bible/other/captive"\w*
 \w יְהוּדָ֖ה|lemma="יְהוּדָה" strong="H3063" x-morph="He,Np" x-tw="rc://*/tw/dict/bible/names/judah"\w*
 \w וִ⁠ירוּשָׁלִָֽם|lemma="יְרוּשָׁלִַ͏ם" strong="c:H3389" x-morph="He,C:Np" x-tw="rc://*/tw/dict/bible/names/jerusalem"\w*׃

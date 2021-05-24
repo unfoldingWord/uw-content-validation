@@ -181,7 +181,7 @@
 \w בָּתֵּ֨י⁠נוּ֙|lemma="בַּיִת" strong="H1004b" x-morph="He,Ncmpc:Sp1cp" x-tw="rc://*/tw/dict/bible/other/house"\w*
 \w אֲרָזִ֔ים|lemma="אֶרֶז" strong="H0730" x-morph="He,Ncmpa" x-tw="rc://*/tw/dict/bible/other/cedar"\w*
 \w רַהִיטֵ֖נוּ|lemma="רָהִיט" strong="H7351" x-morph="He,Ncmsc:Sp1cp"\w*
-\f + \ft K \w רחיט⁠נו|lemma="רָהִיט" strong="H7351" x-morph="He,Ncmsc:Sp1cp"\w*\f*
+\f + \ft K \+w רחיט⁠נו|lemma="רָהִיט" strong="H7351" x-morph="He,Ncmsc:Sp1cp"\+w*\f*
 \w בְּרוֹתִֽים|lemma="בְּרוֹת" strong="H1266" x-morph="He,Ncmpa"\w*׃
 
 \c 2
@@ -297,7 +297,7 @@
 \v 11
 \w כִּֽי|lemma="כִּי" strong="H3588a" x-morph="He,C"\w*־\w הִנֵּ֥ה|lemma="הִנֵּה" strong="H2009" x-morph="He,Tm"\w*
 \w ה⁠סתו|lemma="סְתָו" strong="d:H5638" x-morph="He,Td:Ncmsa"\w*
-\f + \ft Q \w הַסְּתָ֖יו|lemma="סְתָו" strong="d:H5638" x-morph="He,Td:Ncmsa"\w*\f*
+\f + \ft Q \+w הַסְּתָ֖יו|lemma="סְתָו" strong="d:H5638" x-morph="He,Td:Ncmsa"\+w*\f*
 \w עָבָ֑ר|lemma="עָבַר" strong="H5674a" x-morph="He,Vqp3ms"\w*
 \w הַ⁠גֶּ֕שֶׁם|lemma="גֶּשֶׁם" strong="d:H1653" x-morph="He,Td:Ncmsa"\w*
 \w חָלַ֖ף|lemma="חָלַף" strong="H2498" x-morph="He,Vqp3ms"\w*
@@ -326,7 +326,7 @@
 \w רֵ֑יחַ|lemma="רֵיחַ" strong="H7381" x-morph="He,Ncmsa"\w*
 \w ק֥וּמִי|lemma="קוּם" strong="H6965b" x-morph="He,Vqv2fs"\w*
 \w לכי|lemma="הָלַךְ" strong="H3212" x-morph="He,Vqv2fs" x-tw="rc://*/tw/dict/bible/other/walk"\w*
-\f + \ft Q \w לָךְ|lemma="" strong="l" x-morph="He,R:Sp2fs"\w*\f*
+\f + \ft Q \+w לָךְ|lemma="" strong="l" x-morph="He,R:Sp2fs"\+w*\f*
 \w רַעְיָתִ֥⁠י|lemma="רַעְיָה" strong="H7474" x-morph="He,Ncfsc:Sp1cs"\w*
 \w יָפָתִ֖⁠י|lemma="יָפֶה" strong="H3303" x-morph="He,Aafsc:Sp1cs"\w*
 \w וּ⁠לְכִי|lemma="יָלַךְ" strong="c:H3212" x-morph="He,C:Vqv2fs"\w*־\w לָֽ⁠ךְ|lemma="" strong="l" x-morph="He,R:Sp2fs"\w*׃ס
@@ -641,7 +641,7 @@
 \w כַלָּ֑ה|lemma="כַּלָּה" strong="H3618" x-morph="He,Ncfsa"\w*
 \w לִבַּבְתִּ֨י⁠נִי֙|lemma="לָבַב" strong="H3823a" x-morph="He,Vpp2fs:Sp1cs"\w*
 \w בְּאַחַ֣ת|lemma="אֶחָד" strong="b:H0259" x-morph="He,R:Acfsa"\w*
-\f + \ft K \w ב⁠אחד|lemma="אֶחָד" strong="b:H0259" x-morph="He,R:Acmsa"\w*\f*
+\f + \ft K \+w ב⁠אחד|lemma="אֶחָד" strong="b:H0259" x-morph="He,R:Acmsa"\+w*\f*
 \w מֵ⁠עֵינַ֔יִ⁠ךְ|lemma="עַיִן" strong="m:H5869a" x-morph="He,R:Ncbdc:Sp2fs"\w*
 \w בְּ⁠אַחַ֥ד|lemma="אֶחָד" strong="b:H0259" x-morph="He,R:Acmsc"\w*
 \w עֲנָ֖ק|lemma="עָנָק" strong="H6060b" x-morph="He,Ncmsa"\w*

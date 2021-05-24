@@ -5,7 +5,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert } from './utilities';
 
 
-const NOTES_TABLE_VALIDATOR_VERSION_STRING = '0.3.4';
+const NOTES_TABLE_VALIDATOR_VERSION_STRING = '0.3.5';
 
 const NUM_EXPECTED_NOTES_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_NOTES_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tNote';
@@ -134,7 +134,7 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
                 for (const drNoticeEntry of drResultObject.noticeList)
                     if (drNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN2 check
                         carResult.noticeList.push(drNoticeEntry); // Just copy the complete notice as is
-                    else
+                    else if (drNoticeEntry.priority !== 931) // We already caught Missing row ID
                         addNoticePartial({ ...drNoticeEntry, lineNumber: n + 1 });
                 // The following is needed coz we might be checking the linked TA and/or TW articles
                 if (drResultObject.checkedFileCount && drResultObject.checkedFileCount > 0)
@@ -220,10 +220,10 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
 
                 if (rowID) {
                     if (rowIDListForVerse.includes(rowID))
-                        addNoticePartial({ priority: 729, C, V, message: `Duplicate '${rowID}' ID`, fieldName: 'ID', rowID, lineNumber: n + 1, location: ourLocation });
+                        addNoticePartial({ priority: 831, C, V, message: `Duplicate '${rowID}' ID`, fieldName: 'ID', rowID, lineNumber: n + 1, location: ourLocation });
                     rowIDListForVerse.push(rowID);
                 } else
-                    addNoticePartial({ priority: 730, C, V, message: "Missing ID", fieldName: 'ID', lineNumber: n + 1, location: ourLocation });
+                    addNoticePartial({ priority: 932, C, V, message: "Missing row ID", fieldName: 'ID', lineNumber: n + 1, location: ourLocation });
 
 
                 lastC = C; lastV = V;

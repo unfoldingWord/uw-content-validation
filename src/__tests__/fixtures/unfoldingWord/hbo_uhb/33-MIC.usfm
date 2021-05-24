@@ -50,7 +50,7 @@
 \w וְ⁠יָרַ֥ד|lemma="יָרַד" strong="c:H3381" x-morph="He,C:Vqp3ms"\w*
 \w וְ⁠דָרַ֖ךְ|lemma="דָּרַךְ" strong="c:H1869" x-morph="He,C:Vqp3ms"\w*
 \w עַל|lemma="עַל" strong="H5921a" x-morph="He,R"\w*־\w במותי|lemma="בָּמָה" strong="H1116" x-morph="He,Ncfpc"\w*
-\f + \ft Q \w בָּ֥מֳתֵי|lemma="בָּמָה" strong="H1116" x-morph="He,Ncfpc"\w*\f*
+\f + \ft Q \+w בָּ֥מֳתֵי|lemma="בָּמָה" strong="H1116" x-morph="He,Ncfpc"\+w*\f*
 \w אָֽרֶץ|lemma="אֶרֶץ" strong="H0776" x-morph="He,Ncbsa" x-tw="rc://*/tw/dict/bible/other/earth"\w*׃
 
 \v 4
@@ -119,7 +119,7 @@
 \w וְ⁠אֵילִ֔ילָה|lemma="יָלַל" strong="c:H3213" x-morph="He,C:Vhh1cs"\w*
 \w אֵילְכָ֥ה|lemma="יָלַךְ" strong="H3212" x-morph="He,Vqi1cs" x-tw="rc://*/tw/dict/bible/other/walk"\w*
 \w שׁוֹלָ֖ל|lemma="שׁוֹלָל" strong="H7758" x-morph="He,Aamsa"\w*
-\f + \ft K \w שילל|lemma="שׁוֹלָל" strong="H7758" x-morph="He,Aamsa"\w*\f*
+\f + \ft K \+w שילל|lemma="שׁוֹלָל" strong="H7758" x-morph="He,Aamsa"\+w*\f*
 \w וְ⁠עָר֑וֹם|lemma="עָרוֹם" strong="c:H6174" x-morph="He,C:Aamsa"\w*
 \w אֶעֱשֶׂ֤ה|lemma="עָשָׂה" strong="H6213a" x-morph="He,Vqh1cs"\w*
 \w מִסְפֵּד֙|lemma="מִסְפֵּד" strong="H4553" x-morph="He,Ncmsa"\w*
@@ -148,7 +148,7 @@
 \w לְעַפְרָ֔ה|lemma="בֵּית לְעַפְרָה" strong="H1036" x-morph="He,Np"\w*
 \w עָפָ֖ר|lemma="עָפָר" strong="H6083" x-morph="He,Ncmsa"\w*
 \w הִתְפַּלָּֽשִׁי|lemma="פָּלַשׁ" strong="H6428" x-morph="He,Vtv2ms"\w*׃
-\f + \ft K \w התפלשתי|lemma="פָּלַשׁ" strong="H6428" x-morph="He,Vtp1cs"\w*\f*
+\f + \ft K \+w התפלשתי|lemma="פָּלַשׁ" strong="H6428" x-morph="He,Vtp1cs"\+w*\f*
 
 \v 11
 \w עִבְרִ֥י|lemma="עָבַר" strong="H5674a" x-morph="He,Vqv2fs"\w*
@@ -445,7 +445,7 @@
 \w ט֖וֹב|lemma="טוֹב" strong="H2896b" x-morph="He,Aamsa" x-tw="rc://*/tw/dict/bible/kt/good"\w*
 \w וְ⁠אֹ֣הֲבֵי|lemma="אָהַב" strong="c:H0157" x-morph="He,C:Vqrmpc" x-tw="rc://*/tw/dict/bible/kt/love"\w*
 \w רָ֑ע|lemma="רַע" strong="H7451b" x-morph="He,Aamsa" x-tw="rc://*/tw/dict/bible/kt/evil"\w*
-\f + \ft K \w רעה|lemma="רַע" strong="H7451b" x-morph="He,Aafsa"\w*\f*
+\f + \ft K \+w רעה|lemma="רַע" strong="H7451b" x-morph="He,Aafsa"\+w*\f*
 \w גֹּזְלֵ֤י|lemma="גָּזַל" strong="H1497" x-morph="He,Vqrmpc"\w*
 \w עוֹרָ⁠ם֙|lemma="עוֹר" strong="H5785" x-morph="He,Ncmsc:Sp3mp"\w*
 \w מֵֽ⁠עֲלֵי⁠הֶ֔ם|lemma="עַל" strong="m:H5921a" x-morph="He,R:R:Sp3mp"\w*

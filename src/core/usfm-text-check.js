@@ -10,7 +10,7 @@ import { userLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from '
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.8.6';
+// const USFM_VALIDATOR_VERSION_STRING = '0.8.8';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘`; // '{' gets added for STs
@@ -716,7 +716,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
             const ixZEnd = adjustedRest.indexOf('\\*');
             // debugLog(`  ${nextZIndex} and ${ixZEnd}`);
             if (ixZEnd >= 0) {
-                // dataAssert(ixZEnd > nextZIndex, `Exected closure at ${ixZEnd} to be AFTER \\zaln-s (${nextZIndex})`);
+                // dataAssert(ixZEnd > nextZIndex, `Expected closure at ${ixZEnd} to be AFTER \\zaln-s (${nextZIndex})`);
                 adjustedRest = adjustedRest.substring(0, nextZIndex) + adjustedRest.substring(ixZEnd + 2, adjustedRest.length);
                 // debugLog(`  Now '${adjustedRest}'`);
             } else {
@@ -738,11 +738,32 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
             dataAssert(ixWordEnd > nextWIndex + 3, `Why2 is w| = ${ixWordEnd}? nextWIndex=${nextWIndex} ${languageCode} ${bookID} ${C}:${V} ${lineNumber}`);
             const ixWEnd = adjustedRest.indexOf('\\w*');
             if (ixWEnd >= 0) {
-                dataAssert(ixWEnd > nextWIndex, `Exected closure at ${ixWEnd} to be AFTER \\w (${nextWIndex})`);
+                dataAssert(ixWEnd > nextWIndex, `Expected closure at ${ixWEnd} to be AFTER \\w (${nextWIndex})`);
                 adjustedRest = adjustedRest.substring(0, nextWIndex) + adjustedRest.substring(nextWIndex + 3, ixWordEnd) + adjustedRest.substring(ixWEnd + 3, adjustedRest.length);
                 // debugLog(`After removing w field, got '${adjustedRest}'`);
             } else {
                 userLog(`\\w seems unclosed: 'adjustedRest' from '${rest}'`);
+                break;
+            }
+        }
+        // Remove any other \+w fields in the line
+        while ((nextWIndex = adjustedRest.indexOf('\\+w ')) >= 0) {
+            const ixWordEnd = adjustedRest.indexOf('|');
+            if (ixWordEnd < 0 && adjustedRest.indexOf('lemma="') >= 0) {
+                const characterIndex = nextWIndex + 6; // Presumably, a little bit into the word
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + adjustedRest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < adjustedRest.length ? '…' : '')
+                addNoticePartial({ priority: 911, message: 'Missing | character in \\+w field', details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+                adjustedRest = ''; // Avoid follow-on errors
+                break;
+            }
+            dataAssert(ixWordEnd > nextWIndex + 3, `Why2 is +w| = ${ixWordEnd}? nextWIndex=${nextWIndex} ${languageCode} ${bookID} ${C}:${V} ${lineNumber}`);
+            const ixWEnd = adjustedRest.indexOf('\\+w*');
+            if (ixWEnd >= 0) {
+                dataAssert(ixWEnd > nextWIndex, `Expected closure at ${ixWEnd} to be AFTER \\+w (${nextWIndex})`);
+                adjustedRest = adjustedRest.substring(0, nextWIndex) + adjustedRest.substring(nextWIndex + 3, ixWordEnd) + adjustedRest.substring(ixWEnd + 3, adjustedRest.length);
+                // debugLog(`After removing w field, got '${adjustedRest}'`);
+            } else {
+                userLog(`\\+w seems unclosed: 'adjustedRest' from '${rest}'`);
                 break;
             }
         }
@@ -751,7 +772,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         while ((nextFIndex = adjustedRest.indexOf('\\f + ')) >= 0) {
             const ixFEnd = adjustedRest.indexOf('\\f*');
             if (ixFEnd >= 0) {
-                dataAssert(ixFEnd > nextWIndex, `Exected closure at ${ixFEnd} to be AFTER \\w (${nextFIndex})`);
+                dataAssert(ixFEnd > nextWIndex, `Expected closure at ${ixFEnd} to be AFTER \\w (${nextFIndex})`);
                 adjustedRest = adjustedRest.substring(0, nextFIndex) + adjustedRest.substring(nextFIndex + 5, ixFEnd) + adjustedRest.substring(ixFEnd + 3, adjustedRest.length);
                 // functionLog(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
                 // debugLog(`After removing footnote: '${adjustedRest}'`);
@@ -807,8 +828,11 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
 
         // Put marker inside string so easy to do RegExp searches
         const adjustedRest = `\\${marker} ${rest}`;
-        if (adjustedRest.indexOf('="') !== -1) console.assert(adjustedRest.indexOf('\\w ') !== -1 || adjustedRest.indexOf('\\zaln-s ') !== -1 || adjustedRest.indexOf('\\k-s ') !== -1);
+        if (adjustedRest.indexOf('="') !== -1)
+            dataAssert(adjustedRest.indexOf('\\w ') !== -1 || adjustedRest.indexOf('\\+w ') !== -1 || adjustedRest.indexOf('\\zaln-s ') !== -1 || adjustedRest.indexOf('\\k-s ') !== -1,
+                `Something wrong in USFM line ${lineNumber} ${C}:${V}'${adjustedRest}' \\w=${adjustedRest.indexOf('\\w ')} \\+w=${adjustedRest.indexOf('\\+w ')} \\zaln-s=${adjustedRest.indexOf('\\zaln-s ')} \\k-s=${adjustedRest.indexOf('\\k-s ')}`);
         dataAssert(countOccurrences(adjustedRest, '\\w ') === countOccurrences(adjustedRest, '\\w*'), `checkUSFMLineAttributes expected all \\w fields to be closed in ${adjustedRest}`);
+        dataAssert(countOccurrences(adjustedRest, '\\+w ') === countOccurrences(adjustedRest, '\\+w*'), `checkUSFMLineAttributes expected all \\+w fields to be closed in ${adjustedRest}`);
         // dataAssert(countOccurrences(adjustedRest, '\\zaln-s ') === countOccurrences(adjustedRest, '\\zaln-s*'), `checkUSFMLineAttributes expected all \\zaln-s fields to be closed in ${adjustedRest}`);
         // dataAssert(countOccurrences(adjustedRest, '\\k-s ') === countOccurrences(adjustedRest, '\\k-s*'), `checkUSFMLineAttributes expected all \\k-s fields to be closed in ${adjustedRest}`);
 
@@ -989,7 +1013,10 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         parameterAssert(twLinkText !== undefined, "checkUSFMText ourCheckNotesLinksToOutside: 'twLinkText' parameter should be defined");
         parameterAssert(typeof twLinkText === 'string', `checkUSFMText ourCheckNotesLinksToOutside: 'twLinkText' parameter should be a string not a '${typeof twLinkText}': ${twLinkText}`);
 
-        const coTNlResultObject = await checkNotesLinksToOutside(languageCode, repoCode, bookID, C, V, 'TWLink', twLinkText, location, { ...checkingOptions, defaultLanguageCode: languageCode });
+        // NOTE: This language problem will go away once we move to TSV TWLs
+        let adjustedLanguageCode = languageCode;
+        if (languageCode === 'el-x-koine' || languageCode === 'hbo') adjustedLanguageCode = 'en'; // Just a guess for x-tw
+        const coTNlResultObject = await checkNotesLinksToOutside(adjustedLanguageCode, repoCode, bookID, C, V, 'TWLink', twLinkText, location, { ...checkingOptions, defaultLanguageCode: languageCode });
         // debugLog(`coTNlResultObject=${JSON.stringify(coTNlResultObject)}`);
 
         // Choose only ONE of the following

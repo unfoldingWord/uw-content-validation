@@ -9,7 +9,7 @@ import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const TWL_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.1.5';
+// const TWL_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.1.6';
 
 const NUM_EXPECTED_TWL_TSV_FIELDS = 6; // so expects 5 tabs per line
 const EXPECTED_TWL_HEADING_LINE = 'Reference\tID\tTags\tOrigWords\tOccurrence\tTWLink';
@@ -262,7 +262,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
     let fields = line.split('\t');
     let RIDSuggestion, QSuggestion, OSuggestion, LSuggestion;
     if (fields.length === NUM_EXPECTED_TWL_TSV_FIELDS) {
-        const [reference, rowID, tags, quote, occurrence, TWLink] = fields;
+        const [reference, rowID, tags, origWords, occurrence, TWLink] = fields;
         // let withString = ` with '${rowID}'${inString}`;
         // let CV_withString = ` ${C}:${V}${withString}`;
         // let atString = ` at ${B} ${C}:${V} (${rowID})${inString}`;
@@ -329,7 +329,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
             addNoticePartial({ priority: 810, message: "Missing verse number", rowID, fieldName: 'Reference', location: ` after ${C}:?${ourRowLocation}` });
 
         if (!rowID.length)
-            addNoticePartial({ priority: 779, message: "Missing row ID field", fieldName: 'Reference', location: ourRowLocation });
+            addNoticePartial({ priority: 931, message: "Missing row ID field", fieldName: 'Reference', location: ourRowLocation });
         else {
             if (rowID.length !== 4) {
                 addNoticePartial({ priority: 778, message: "Row ID should be exactly 4 characters", details: `not ${rowID.length}`, rowID, fieldName: 'ID', excerpt: rowID, location: ourRowLocation });
@@ -356,20 +356,20 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
             }
         }
 
-        if (quote.length) { // need to check UTN against UHB and UGNT
-            QSuggestion = ourCheckTextField(rowID, 'Quote', quote, false, ourRowLocation, checkingOptions);
+        if (origWords.length) { // need to check UTN against UHB and UGNT
+            QSuggestion = ourCheckTextField(rowID, 'OrigWords', origWords, false, ourRowLocation, checkingOptions);
             if (occurrence.length)
-                await ourCheckTNOriginalLanguageQuoteAndOccurrence(rowID, 'Quote', quote, occurrence, ourRowLocation, checkingOptions);
+                await ourCheckTNOriginalLanguageQuoteAndOccurrence(rowID, 'OrigWords', origWords, occurrence, ourRowLocation, checkingOptions);
             else
                 addNoticePartial({ priority: 750, message: "Missing occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, location: ourRowLocation });
         }
         else // TODO: Find more details about when these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             if (V !== 'intro' && occurrence !== '0')
-                addNoticePartial({ priority: 919, message: "Missing Quote field", fieldName: 'Quote', rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 919, message: "Missing OrigWords field", fieldName: 'OrigWords', rowID, location: ourRowLocation });
 
         if (occurrence.length) { // This should usually be a digit
             if (occurrence === '0') { // zero means that it doesn’t occur
-                if (quote.length) {
+                if (origWords.length) {
                     addNoticePartial({ priority: 751, message: "Invalid zero occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, excerpt: occurrence, location: ourRowLocation });
                     OSuggestion = '1';
                 }
@@ -383,7 +383,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
                 OSuggestion = '1';
             }
         }
-        else if (quote.length) {
+        else if (origWords.length) {
             addNoticePartial({ priority: 791, message: `Missing occurrence field`, fieldName: 'Occurrence', rowID, location: ourRowLocation });
             OSuggestion = '1';
         }
@@ -417,7 +417,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
             addNoticePartial({ priority: 799, message: "Missing TWLink field", fieldName: 'TWLink', rowID, location: ourRowLocation });
 
         // 7 [reference, rowID, tags, quote, occurrence, TWLink]
-        const suggestion = `${reference}\t${RIDSuggestion === undefined ? rowID : RIDSuggestion}\t${tags}\t${QSuggestion === undefined ? quote : QSuggestion}\t${OSuggestion === undefined ? occurrence : OSuggestion}\t${LSuggestion === undefined ? TWLink : LSuggestion}`;
+        const suggestion = `${reference}\t${RIDSuggestion === undefined ? rowID : RIDSuggestion}\t${tags}\t${QSuggestion === undefined ? origWords : QSuggestion}\t${OSuggestion === undefined ? occurrence : OSuggestion}\t${LSuggestion === undefined ? TWLink : LSuggestion}`;
         if (suggestion !== line) {
             drResult.suggestion = suggestion;
         }

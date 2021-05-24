@@ -8,7 +8,7 @@ import { checkRepo } from '../repo-check/checkRepo';
 import { userLog, functionLog, parameterAssert, logicAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.7.1';
+// const BP_VALIDATOR_VERSION_STRING = '0.7.2';
 
 const STANDARD_MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -615,7 +615,7 @@ async function checkTQMarkdownBook(username, languageCode, repoCode, repoName, b
   // We need to find and check all the markdown folders/files for this book
   const getFileListFromZip_ = checkingOptions && checkingOptions.getFileListFromZip ? checkingOptions.getFileListFromZip : getFileListFromZip;
   let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0;
-  const pathList = await getFileListFromZip_({ username, repository: repoName, branch, optionalPrefix: `${bookID.toLowerCase()}/` });
+  const pathList = await getFileListFromZip_({ username, repository: repoName, branchOrRelease: branch, optionalPrefix: `${bookID.toLowerCase()}/` });
   if (!Array.isArray(pathList) || !pathList.length) {
     // console.error("checkTQrepo failed to load", username, repoName, branch);
     const details = `username=${username}`;

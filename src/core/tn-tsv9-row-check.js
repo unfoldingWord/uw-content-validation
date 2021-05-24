@@ -368,7 +368,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
             addNoticePartial({ priority: 810, message: "Missing verse number", rowID, fieldName: 'Verse', location: ` after ${C}:?${ourRowLocation}` });
 
         if (!rowID.length)
-            addNoticePartial({ priority: 779, message: "Missing row ID field", fieldName: 'Verse', location: ourRowLocation });
+            addNoticePartial({ priority: 931, message: "Missing row ID field", fieldName: 'Verse', location: ourRowLocation });
         else {
             if (rowID.length !== 4) {
                 addNoticePartial({ priority: 778, message: "Row ID should be exactly 4 characters", details: `not ${rowID.length}`, rowID, fieldName: 'ID', excerpt: rowID, location: ourRowLocation });
@@ -421,7 +421,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
         }
         else // TODO: Find more details about when these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             if (V !== 'intro' && occurrence !== '0')
-                addNoticePartial({ priority: 919, message: "Missing Quote field", fieldName: 'OrigQuote', rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 919, message: "Missing OrigQuote field", fieldName: 'OrigQuote', rowID, location: ourRowLocation });
 
         if (occurrence.length) { // This should usually be a digit
             if (occurrence === '0') { // zero means that it doesn’t occur
