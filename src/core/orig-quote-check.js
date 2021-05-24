@@ -258,10 +258,9 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
         let details = `passage ►${fullVerseText}◄`;
         if (partDescription.length) details = `${partDescription} part of quote = "${foundQuoteSegment}" -- ${details}`;
 
-        // TODO: This algorithm is inadequate if a single word is inside another prior word, e.g., searching for δὲ in οὐδὲν δὲ συνκεκαλυμμένον ἐστὶν
-        let remainingVerseBits = partialVerseText.split(foundQuoteSegment);
+        let remainingVerseBits = partialVerseText.split(foundQuoteSegment); // NOTE: can split (badly) on short strings (like δὲ or εἰ) mid-word
         if (remainingVerseBits.length > 2) // Join the extra bits back up
-            remainingVerseBits = [remainingVerseBits[0], remainingVerseBits.slice(1).join(discontiguousDivider)];
+        remainingVerseBits = [remainingVerseBits[0], remainingVerseBits.slice(1).join(discontiguousDivider)];
         logicAssert(remainingVerseBits.length === 2, `remaining bits are ${remainingVerseBits.length}`);
 
         // Note: There's some Hebrew (RTL) characters at the beginning of the following regex
@@ -270,25 +269,35 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
         const precedingChar = remainingVerseBits[0].slice(-1);
         // debugLog(`Previous char before ${C}:${V} '${foundQuoteSegment}' is '${precedingChar}'`);
         // const precedingRegex = new RegExp('[ ־*[("\'“‘]', 'g');
-        if (foundQuoteSegment.slice(0) !== ' ' && remainingVerseBits[0] && precedingChar && ' ־*[("\'“‘—'.indexOf(precedingChar) === -1) {
+        // NOTE: This algorithm has to handle a single word inside another prior word, e.g., searching for δὲ in οὐδὲν δὲ συνκεκαλυμμένον ἐστὶν
+        if (foundQuoteSegment.slice(0) !== ' ' && remainingVerseBits[0]
+         && precedingChar && ' ־*[("\'“‘—'.indexOf(precedingChar) === -1 // handle punctuation expected before words
+         && (foundQuoteSegment.indexOf(' ') !== -1 || partialVerseText.indexOf(` ${foundQuoteSegment}`) === -1) // it's multiword, or there's not another word that fits
+        ) {
             let precederDescription;
             if (precedingChar === '\u2060') precederDescription = 'WordJoiner';
             else if (precedingChar === '\u200D') precederDescription = 'ZeroWidth-WordJoiner';
             else precederDescription = `${precedingChar}=D${precedingChar.charCodeAt(0)}/H${precedingChar.charCodeAt(0).toString(16)}`;
-            debugLog(`Seems '${foundQuoteSegment}' might not start at the beginning of a word—it’s preceded by '${precederDescription}' in '${fullVerseText}'`);
+            debugLog(`Seems ${bookID} ${C}:${V} '${foundQuoteSegment}' might not start at the beginning of a word—it’s preceded by '${precederDescription}' in '${partialVerseText}' of '${fullVerseText}'`);
             const excerpt = `(${precederDescription})${foundQuoteSegment.substring(0, excerptLength - 3)}${(foundQuoteSegment.length > excerptLength - 3 ? '…' : '')}${occurrenceString.length? ` occurrence=${occurrenceString}`:''}`;
-            addNotice({ priority: 909, message: "Seems original language quote might not start at the beginning of a word", details, characterIndex: 0, excerpt, location });
+            // We greatly lower the priority if we're less sure that it's a genuine error
+            addNotice({ priority: foundQuoteSegment.indexOf(' ') !== -1 || fullVerseText.search(` ${foundQuoteSegment}`) === -1?909: 389, message: "Seems original language quote might not start at the beginning of a word", details, characterIndex: 0, excerpt, location });
         }
-        // Note: There's some Hebrew (RTL) characters at the beginning of the following regex
         const followingChar = remainingVerseBits[1][0];
         // debugLog(`Next char after ${C}:${V} '${foundQuoteSegment}' is '${followingChar}'`);
-        // const followingRegex = new RegExp('[ ׃־.,:;?!–)]', 'g');
-        if (foundQuoteSegment.slice(-1) !== ' ' && remainingVerseBits[1] && followingChar && ' ׃־.,:;?!–—)'.indexOf(followingChar) === -1) {
+        // Note: There's some Hebrew (RTL) characters at the beginning of the following string used in regex
+        const allowedWordEndChars = ' ׃־.,:;?!–—)';
+        const followingRegex = new RegExp(`${foundQuoteSegment}[${allowedWordEndChars}]`, 'g');
+        if (foundQuoteSegment.slice(-1) !== ' ' && remainingVerseBits[1]
+        && followingChar && allowedWordEndChars.indexOf(followingChar) === -1 // handle punctuation expected after words
+         && (foundQuoteSegment.indexOf(' ') !== -1 || partialVerseText.search(followingRegex) === -1) // it's multiword, or there's not another word that fits
+         ) {
             // No problems if quote is followed by expected terminator-type punctuation
             const badCharString = `'${followingChar}'=D${followingChar.charCodeAt(0)}/H${followingChar.charCodeAt(0).toString(16)}`;
-            debugLog(`Seems '${foundQuoteSegment}' might not finish at the end of a word—it’s followed by ${badCharString} in '${fullVerseText}'`);
+            debugLog(`Seems ${bookID} ${C}:${V} '${foundQuoteSegment}' might not finish at the end of a word—it’s followed by ${badCharString} in '${partialVerseText}' of '${fullVerseText}'`);
             const excerpt = `${(foundQuoteSegment.length > excerptLength - 3 ? '…' : '')}${foundQuoteSegment.substring(foundQuoteSegment.length - excerptLength + 3, foundQuoteSegment.length)}(${followingChar}=D${remainingVerseBits[1].charCodeAt(0)}/H${remainingVerseBits[1].charCodeAt(0).toString(16)})${occurrenceString.length? ` occurrence=${occurrenceString}`:''}`;
-            addNotice({ priority: 908, message: "Seems original language quote might not finish at the end of a word", details, characterIndex: foundQuoteSegment.length, excerpt, location });
+            // We greatly lower the priority if we're less sure that it's a genuine error
+            addNotice({ priority: foundQuoteSegment.indexOf(' ') !== -1 || fullVerseText.search(followingRegex) === -1? 908: 388, message: "Seems original language quote might not finish at the end of a word", details, characterIndex: foundQuoteSegment.length, excerpt, location });
         }
     }
     // end of checkFoundQuoteSegment function
@@ -456,7 +465,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
                     }
                 } else { // We found this bit
                     // debugLog(`Found ${C}:${V} origQuote portion ${bitIndex} '${quoteBits[bitIndex]}' at ${quoteIndex} (num text chars = ${verseText.length})`);
-                    const verseTextBits = verseText.split(quoteBits[bitIndex]);
+                    const verseTextBits = verseText.split(quoteBits[bitIndex]); // NOTE: can split (badly) on short strings (like δὲ or εἰ) mid-word
                     checkFoundQuoteSegment(quoteBits[bitIndex], partDescription, occurrenceString, `${verseTextBits[occurrence-1]}${quoteBits[bitIndex]}${verseTextBits[occurrence]}`, verseText, ourLocation);
                 }
             }
@@ -466,7 +475,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
         if (verseText.indexOf(fieldText) >= 0) {
             if (occurrence > 1) {
                 // functionLog(`checkOriginalLanguageQuoteAndOccurrence is checking for ${occurrence} occurrences of ${fieldText}`);
-                const verseTextBits = verseText.split(fieldText);
+                const verseTextBits = verseText.split(fieldText); // NOTE: can split (badly) on short strings (like δὲ or εἰ) mid-word
                 const actualNumOccurrences = verseTextBits.length - 1;
                 if (occurrence > actualNumOccurrences) { // There's not enough of them
                     const actualOccurrencesText = actualNumOccurrences === 0 ? 'no' : `only ${actualNumOccurrences}`;
