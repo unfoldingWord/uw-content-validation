@@ -25,7 +25,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
       successList: an array of strings to tell the use exactly what has been checked
       noticeList: an array of 9 (i.e., with extra bookOrFileCode parameter at end) notice components
   */
-  functionLog(`checkRepo(un='${username}', rN='${repoName}', rBr='${repoBranch}', ${givenLocation}, (fn), ${JSON.stringify(checkingOptions)})…`);
+  // functionLog(`checkRepo(un='${username}', rN='${repoName}', rBr='${repoBranch}', ${givenLocation}, (fn), ${JSON.stringify(checkingOptions)})…`);
   parameterAssert(username !== undefined, "checkRepo: 'username' parameter should be defined");
   parameterAssert(typeof username === 'string', `checkRepo: 'username' parameter should be a string not a '${typeof username}'`);
   parameterAssert(repoName !== undefined, "checkRepo: 'repoName' parameter should be defined");

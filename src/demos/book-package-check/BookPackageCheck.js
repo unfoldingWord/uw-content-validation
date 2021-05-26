@@ -8,7 +8,7 @@ import { checkBookPackage } from './checkBookPackage';
 import { userLog, debugLog, parameterAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.5.1';
+// const BP_VALIDATOR_VERSION_STRING = '0.5.2';
 
 
 function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
@@ -84,28 +84,27 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             // Load whole repos, especially if we are going to check files in manifests
             let repoPreloadList;
             if (bookID === 'OBS') {
-                repoPreloadList = ['OBS', 'OBS-TWL', 'TA', 'TW', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ']; // for DEFAULT
+                repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ']; // for DEFAULT
                 if (dataSet === 'OLD')
-                    repoPreloadList = ['OBS', 'TA', 'TW', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
+                    repoPreloadList = ['OBS', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
                 else if (dataSet === 'NEW')
-                    repoPreloadList = ['OBS', 'OBS-TWL', 'TA', 'TW', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN', 'OBS-SQ'];
+                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN', 'OBS-SQ'];
                 else if (dataSet === 'BOTH')
-                    repoPreloadList = ['OBS', 'OBS-TWL', 'TA', 'TW', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SQ'];
+                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SQ'];
             } else { // not OBS
-                repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
+                repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TQ', 'SN', 'SQ']; // for DEFAULT
                 if (dataSet === 'OLD')
-                    repoPreloadList = ['LT', 'ST', 'TN', 'TA', 'TW', 'TQ'];
+                    repoPreloadList = ['LT', 'ST', 'TN', 'TQ'];
                 else if (dataSet === 'NEW')
-                    repoPreloadList = ['TWL', 'LT', 'ST', 'TN2', 'TA', 'TW', 'TQ2'];
+                    repoPreloadList = ['TWL', 'LT', 'ST', 'TN2', 'TQ2', 'SN', 'SQ'];
                 else if (dataSet === 'BOTH')
-                    repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TN2', 'TA', 'TW', 'TQ', 'TQ2'];
+                    repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TN2', 'TQ', 'TQ2', 'SN', 'SQ'];
                 const whichTestament = books.testament(bookID); // returns 'old' or 'new'
                 const origLangRepo = whichTestament === 'old' ? 'UHB' : 'UGNT';
                 repoPreloadList.unshift(origLangRepo);
-                // TODO: Eventually we'll have all books here, so the repos can be included above
-                if (bookID === 'TIT') {
-                    repoPreloadList.push('SN');
-                    repoPreloadList.push('SQ');
+                if (!checkingOptions.disableAllLinkFetchingFlag) {
+                    repoPreloadList.push('TW');
+                    repoPreloadList.push('TA');
                 }
             }
             debugLog(`BookPackageCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
