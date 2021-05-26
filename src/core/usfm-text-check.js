@@ -213,7 +213,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         // Doublecheck -- we don’t want "Mismatched {}" per line, only per file
         const noticeObjectString = JSON.stringify(noticeObject);
         parameterAssert(noticeObject.message.indexOf("Mismatched {}") === -1 || noticeObject.lineNumber === undefined, `checkUSFMText addNoticePartial: got bad notice: ${noticeObjectString}`);
-        parameterAssert(noticeObjectString.indexOf('NONE') === -1 && noticeObjectString.indexOf('SPECIAL') === -1, `'NONE' & 'SPECIAL' shouldn't make it thru to end user: ${noticeObjectString}`)
+        parameterAssert(noticeObjectString.indexOf('NONE') === -1 && noticeObjectString.indexOf('SPECIAL') === -1, `checkUSFMText addNoticePartial: 'NONE' & 'SPECIAL' shouldn't make it thru to end user: ${noticeObjectString}`)
         if (noticeObject.debugChain) noticeObject.debugChain = `checkUSFMText ${noticeObject.debugChain}`;
         result.noticeList.push({ ...noticeObject, bookID, filename });
     }
