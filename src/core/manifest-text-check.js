@@ -759,9 +759,9 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
             if (repoFilepath.endsWith('.tsv')
                 || repoFilepath.endsWith('.usfm')
                 || (repoFilepath.endsWith('.md') && repoFilepath !== 'LICENSE.md' && repoFilepath !== 'README.md')) {
-                const adjRepoFilepath = `./${repoFilepath}`;
+                const adjRepoFilepath = `./${repoFilepath.split('/')[0]}`; // TQ manifest only lists folders so change '1co/01/02.md' to './1co'
                 // debugLog(`  Checking ${adjRepoFilepath} from repoFileList`);
-                if (ourProjectPathList.indexOf(adjRepoFilepath) === -1) {
+                if (ourProjectPathList.indexOf(repoFilepath) === -1 && ourProjectPathList.indexOf(adjRepoFilepath) === -1) {
                     // debugLog(`    Seems we couldn't find ${repoFilepath} in the manifest`);
                     addNotice({ priority: 832, message: `Seems project file is missing from the manifest`, excerpt: repoFilepath, location: ourLocation });
                 }
