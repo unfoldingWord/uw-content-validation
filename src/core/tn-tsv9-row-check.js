@@ -356,7 +356,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
                 else {
                     if (haveGoodChapterNumber) {
                         if (intV > numVersesThisChapter)
-                            addNoticePartial({ priority: 813, message: "Invalid large verse number", rowID, fieldName: 'Verse', excerpt: V, location: ourRowLocation });
+                            addNoticePartial({ priority: 813, message: "Invalid large verse number", details: `${bookID} chapter ${C} only has ${numVersesThisChapter} verses`, rowID, fieldName: 'Verse', excerpt: V, location: ourRowLocation });
                     } else
                         addNoticePartial({ priority: 812, message: "Unable to check verse number", rowID, fieldName: 'Verse', location: ourRowLocation });
                 }

@@ -9,7 +9,7 @@ import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const NOTES_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.12';
+// const NOTES_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.13';
 
 const NUM_EXPECTED_NOTES_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_NOTES_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tNote';
@@ -405,7 +405,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
                 else {
                     if (haveGoodChapterNumber) {
                         if (intV > numVersesThisChapter)
-                            addNoticePartial({ priority: 813, message: "Invalid large verse number", rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+                            addNoticePartial({ priority: 813, message: "Invalid large verse number", details: `${bookID} chapter ${C} only has ${numVersesThisChapter} verses`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
                     } else
                         addNoticePartial({ priority: 812, message: "Unable to check verse number", rowID, fieldName: 'Reference', location: ourRowLocation });
                 }
@@ -506,6 +506,10 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
         }
 
         if (note.length) {
+            if (note.indexOf('<br>') >= 0) {
+                const charCount = countOccurrences(note, '<br>');
+                addNoticePartial({ priority: 674, message: "Field contains HTML <br> field(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found—should be '\\n' instead`, fieldName: 'Note', rowID, location: ourRowLocation });
+            }
             if (note.indexOf('\u200B') >= 0) {
                 const charCount = countOccurrences(note, '\u200B');
                 addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, fieldName: 'Note', rowID, location: ourRowLocation });

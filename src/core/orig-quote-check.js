@@ -485,6 +485,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
                     checkFoundQuoteSegment(fieldText, '', occurrenceString, `${verseTextBits[occurrence-1]}${fieldText}${verseTextBits[occurrence]}`, verseText, ourLocation);
                 }
             } else { // We only need to check for one occurrence
+                // TODO: The error in the next line has been notified elsewhere, but should we try to handle it more intelligently here ???
                 logicAssert(occurrence === 1 || occurrence === -1, `Expected ${C}:${V} occurrence to be 1 or -1 not ${occurrence} from '${occurrenceString}' for ${C}:${V} '${fieldText}'`);
                 // Double check that it doesn’t start/stop in the middle of a word
                 // debugLog(`Here with fieldText=${fieldText} and verseText=${verseText}`);
