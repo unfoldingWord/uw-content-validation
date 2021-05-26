@@ -4,10 +4,11 @@ import * as books from './books/books';
 import { checkTextField } from './field-text-check';
 import { checkMarkdownText } from './markdown-text-check';
 import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
-import { parameterAssert } from './utilities';
+// eslint-disable-next-line no-unused-vars
+import { debugLog, parameterAssert } from './utilities';
 
 
-// const QUESTIONS_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.2.3';
+// const QUESTIONS_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.2.4';
 
 const NUM_EXPECTED_QUESTIONS_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_QUESTIONS_HEADING_LINE = 'Reference\tID\tTags\tQuote\tOccurrence\tQuestion\tResponse';
@@ -324,8 +325,11 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
 
         // Check the fields one-by-one
         const [C, V] = reference.split(':');
+        if (C === undefined || V === undefined)
+            addNoticePartial({ priority: 901, message: "Unexpected reference field", details: "expected C:V", fieldName: 'Reference', rowID, excerpt: reference, location: ourRowLocation });
+
         let numVersesThisChapter, haveGoodChapterNumber;
-        if (C.length) {
+        if (C?.length) {
             if (C !== givenC)
                 addNoticePartial({ priority: 976, message: "Wrong chapter number", details: `expected '${givenC}'`, fieldName: 'Reference', rowID, excerpt: C, location: ourRowLocation });
             if (C === 'front') { }
@@ -361,7 +365,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
         else
             addNoticePartial({ priority: 820, message: "Missing chapter number", rowID, fieldName: 'Reference', location: ` ?:${V}${ourRowLocation}` });
 
-        if (V.length) {
+        if (V?.length) {
             if (V !== givenV)
                 addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected '${givenV}'`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
             if (bookID === 'OBS' || V === 'intro') { }
