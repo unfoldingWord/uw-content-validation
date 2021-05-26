@@ -2,7 +2,7 @@ import { userLog, parameterAssert } from '../core/utilities';
 import { isDisabledNotice } from '../core/disabled-notices';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.11';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.12';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -201,9 +201,13 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             }
             if (thisC)
                 parameterAssert(thisC === 'front' || !isNaN(thisC * 1), `C '${thisC}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
-            if (thisV) // TODO: We'll need to remove this check once we start getting verse ranges, etc.
-                // NOTE: Question mark below is in "bad verse number" notices
-                parameterAssert(thisV === 'intro' || thisV === '?' || !isNaN(thisV * 1), `V '${thisV}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+            if (thisV) { // NOTE: We don't allow for a en-dash in verse ranges -- should we?
+                if (thisV.indexOf('-') !== -1) { // it contains a hyphen, i.e., a verse range
+                    const vBits = thisV.split('-');
+                    parameterAssert(vBits.length === 2 && !isNaN(vBits[0] * 1) && !isNaN(vBits[1] * 1), `V '${thisV}' verse range contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+                } else // NOTE: Question mark below is in "bad verse number" notices
+                    parameterAssert(thisV === 'intro' || thisV === '?' || !isNaN(thisV * 1), `V '${thisV}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+            }
             if (thisRowID) {
                 parameterAssert(thisRowID.indexOf(' ') < 0 && thisRowID.indexOf('/') < 0 && thisRowID.indexOf('\\') < 0, `rowID '${thisRowID}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 if (thisLocation)
