@@ -5,10 +5,10 @@ import { BibleBookData } from './books/books'
 import Ajv from 'ajv';
 import { removeDisabledNotices } from './disabled-notices';
 // eslint-disable-next-line no-unused-vars
-import { debugLog, parameterAssert } from './utilities';
+import { debugLog, functionLog, parameterAssert } from './utilities';
 
 
-const MANIFEST_VALIDATOR_VERSION_STRING = '0.4.3';
+const MANIFEST_VALIDATOR_VERSION_STRING = '0.4.4';
 
 // Pasted in 2020-10-02 from https://raw.githubusercontent.com/unfoldingWord/dcs/master/options/schema/rc.schema.json
 // Updated 2021-02-19
@@ -577,7 +577,7 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
 
     Returns a result object containing a successList and a noticeList
     */
-    // functionLog(`checkManifestText(${username}, ${repoName}, ${repoBranch}, ${manifestText.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
+    // functionLog(`checkManifestText(${username}, ${repoCode}, ${repoName}, ${repoBranch}, ${manifestText.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
     parameterAssert(languageCode !== undefined, "checkManifestText: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkManifestText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
     parameterAssert(repoCode !== undefined, "checkManifestText: 'repoCode' parameter should be defined");
@@ -716,7 +716,7 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
         const getFile_ = (checkingOptions && checkingOptions?.getFile) ? checkingOptions?.getFile : cachedGetFile;
         const ourProjectPathList = []; // Make a list for the next check
         for (const projectEntry of formData['projects']) {
-            // debugLog(`Manifest project: ${JSON.stringify(projectEntry)}`);
+            debugLog(`Manifest project: ${JSON.stringify(projectEntry)}`);
             const projectKeys = Object.keys(projectEntry); // Expect title, versification, identifier, sort, path, categories
             // debugLog("Project keys", JSON.stringify(projectKeys));
             for (const keyName of ['identifier', 'path', 'sort'])
@@ -724,11 +724,11 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
                     addNotice({ priority: 939, message: "Key is missing for project", details: keyName, excerpt: JSON.stringify(projectEntry), location: ourLocation });
 
             const projectFilepath = projectEntry['path'];
+            ourProjectPathList.push(projectFilepath);
             if (repoName
                 && projectFilepath !== './content' // Ignore this common folder path
                 && projectFilepath !== './bible' // Ignore this common folder path
                 && projectFilepath !== './intro' && projectFilepath !== './process' && projectFilepath !== './translate' && projectFilepath !== './checking') { // Ignore these TA folder paths
-                ourProjectPathList.push(projectFilepath);
                 if (!checkingOptions || checkingOptions?.disableAllLinkFetchingFlag !== true) { // Try fetching the file maybe
                     let isBookFolder = false;
                     for (const thisBookID of Object.keys(BibleBookData))
