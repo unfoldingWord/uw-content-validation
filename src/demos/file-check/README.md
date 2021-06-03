@@ -16,6 +16,7 @@ and then validates the content of one file selected from the repo.
   // Set to N to rerun the check without fetching new copies of the files (slightly faster)
   reloadAllFilesFirst='Y' // 'Y' (for Yes -- same as ClearCache in menu) or 'N' (for No)
 
+  // username='Door43-Catalog'
   username='unfoldingWord'
 
   // Lines starting with // are ignored -- you can add or remove // as desired
@@ -30,6 +31,7 @@ and then validates the content of one file selected from the repo.
   // Of course, the filename must be correct for the chosen repository
   // filename= '01-GEN.usfm' // e.g., for UHB, LT, or ST
   // filename= '08-RUT.usfm' // e.g., for UHB, LT, or ST
+  // filename= '39-MAL.usfm' // e.g., for UHB, LT, or ST
   // filename= '41-MAT.usfm' // e.g., for UGNT, LT, or ST
   // filename= '42-MRK.usfm' // e.g., for UGNT, LT, or ST
   // filename= '43-LUK.usfm' // e.g., for UGNT, LT, or ST
@@ -39,17 +41,20 @@ and then validates the content of one file selected from the repo.
   // filename= '57-TIT.usfm' // e.g., for UGNT, LT, or ST
   // filename= '65-3JN.usfm' // e.g., for UGNT, LT, or ST
   // filename= '67-REV.usfm' // e.g., for UGNT, LT, or ST
-  // filename= 'en_tn_01-GEN.tsv' // for TN
-  // filename= 'en_tn_15-EZR.tsv' // for TN
-  // filename= 'en_tn_16-NEH.tsv' // for TN
-  // filename= 'en_tn_17-EST.tsv' // for TN
-  // filename= 'en_tn_31-OBA.tsv' // for TN
-  filename= 'en_tn_43-LUK.tsv' // for TN
-  // filename= 'en_tn_50-EPH.tsv' // for TN
-  // filename= 'en_tn_57-TIT.tsv' // for TN
-  // filename= 'en_tn_58-PHM.tsv' // for TN
-  // filename= 'en_tn_61-1PE.tsv' // for TN
-  // filename= 'en_tn_65-3JN.tsv' // for TN
+  // filename= 'en_tn_01-GEN.tsv' // for TSV9 TN
+  // filename= 'en_tn_15-EZR.tsv' // for TSV9 TN
+  // filename= 'en_tn_16-NEH.tsv' // for TSV9 TN
+  // filename= 'en_tn_17-EST.tsv' // for TSV9 TN
+  // filename= 'en_tn_31-OBA.tsv' // for TSV9 TN
+  // filename= 'en_tn_39-MAL.tsv' // for TSV9 TN
+  // filename= 'en_tn_41-MAT.tsv' // for TSV9 TN
+  // filename= 'en_tn_43-LUK.tsv' // for TSV9 TN
+  // filename= 'en_tn_50-EPH.tsv' // for TSV9 TN
+  filename= 'en_tn_57-TIT.tsv' // for TSV9 TN
+  // filename= 'en_tn_58-PHM.tsv' // for TSV9 TN
+  // filename= 'en_tn_61-1PE.tsv' // for TSV9 TN
+  // filename= 'en_tn_65-3JN.tsv' // for TSV9 TN
+  // filename= 'en_tn_67-REV.tsv' // for TSV9 TN
   // It's actually possible to put a filepath in the filename field
   // filename= 'bible/names/zilpah.md' // for TW
 

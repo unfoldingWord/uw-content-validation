@@ -716,7 +716,7 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
         const getFile_ = (checkingOptions && checkingOptions?.getFile) ? checkingOptions?.getFile : cachedGetFile;
         const ourProjectPathList = []; // Make a list for the next check
         for (const projectEntry of formData['projects']) {
-            debugLog(`Manifest project: ${JSON.stringify(projectEntry)}`);
+            // debugLog(`Manifest project: ${JSON.stringify(projectEntry)}`);
             const projectKeys = Object.keys(projectEntry); // Expect title, versification, identifier, sort, path, categories
             // debugLog("Project keys", JSON.stringify(projectKeys));
             for (const keyName of ['identifier', 'path', 'sort'])
