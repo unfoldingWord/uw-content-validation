@@ -37,7 +37,7 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
         // const parserResult = ourUsfmParser.validate();
         // debugLog(`${new Date().getTime() / 1000} Running the USFMGrammar checker (may take several seconds)…`);
         debugLog("Running the USFMGrammar checker (may take several seconds)…");
-        parserToJSONResultObject = ourUsfmParser.toJSON()
+        parserToJSONResultObject = ourUsfmParser.toJSON();
         // debugLog(`${new Date().getTime() / 1000} Got the USFMGrammar checker toJSON result: ${Object.keys(parserToJSONResultObject)}`);
         // debugLog(`${new Date().getTime() / 1000} Got the USFMGrammar checker toJSON _messages: ${Object.keys(parserToJSONResultObject._messages)}`);
         // debugLog(`${new Date().getTime() / 1000} Got the USFMGrammar checker: ${Object.keys(ourUsfmParser)}`);
