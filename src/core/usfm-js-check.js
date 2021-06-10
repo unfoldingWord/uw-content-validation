@@ -80,11 +80,11 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, chec
 
     // Set your options here -- change values or comment out lines
     const convertOptions = {
-        'chunk': true,
-        'content-source': ourLocation,
+        'chunk': false, // true: returns headers/chapters/verses (seems weird???); false: returns headers/chapters only.
+        //'content-source': ourLocation, // Seems to be included in every sub-object -- wasted space ???
         'convertToInt': []
     };
-    const convertCheckResult = runUsfmJsCheck(givenText, ourLocation, convertOptions);
+    const convertCheckResult = runUsfmJsCheck(givenText, convertOptions);
     // NOTE: We haven’t figured out how to get ERRORS out of this parser yet
 
     if (!convertCheckResult.isValidUSFM)
