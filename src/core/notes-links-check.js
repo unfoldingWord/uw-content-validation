@@ -8,7 +8,7 @@ import { cachedGetFile, cachedGetFileUsingFullURL, checkMarkdownText } from '../
 import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 
 
-// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.7.21';
+// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.7.22';
 
 // const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -629,7 +629,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
         if (Lg !== '*' && Lg !== languageCode)
             addNoticePartial({ priority: 669, message: "Unexpected language code in link", details: `resource language code is '${languageCode}'`, excerpt: Lg, location: ourLocation });
 
-        if (optionalN1) parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+        if (optionalN1) parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}' in '${totalLink}'`);
         if (optionalB1) {
             optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
             if (defaultLanguageCode === 'en') { // should be able to check the book name
@@ -662,13 +662,16 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 addNoticePartial({ priority: 655, message: "Bad story number in markdown OBS help link", details: `${linkBookCode} ${linkChapterInt} vs ${numStories} chapters`, excerpt: totalLink, location: ourLocation });
             else if (!linkVerseInt || linkVerseInt < 0 || linkVerseInt > numFramesThisStory)
                 addNoticePartial({ priority: 653, message: "Bad frame number in markdown OBS help link", details: `${linkBookCode} ${linkChapterInt}:${linkVerseInt} vs ${numFramesThisStory} verses`, excerpt: totalLink, location: ourLocation });
-        } else if (linkBookCode) { // then we know which Bible book this link is to
+        } else if (linkBookCode.length) { // then we know which Bible book this link is to
             // So we can check for valid C:V numbers
             let numChaptersThisBook, numVersesThisChapter;
             logicAssert(linkBookCode.toLowerCase() !== 'obs', `BIBLE_FULL_HELP_REGEX linkBookCode shouldn’t be '${linkBookCode}' in notes-links-check`);
             try {
                 numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
-            } catch (tlcNCerror) { }
+            } catch (tlcNCerror) {
+                debugLog(`checkNotesLinksToOutside1 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
+                numChaptersThisBook = 0;
+             }
             try {
                 numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
             } catch (tlcNVerror) { }
@@ -722,13 +725,16 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             console.error(`TN Link Check1 couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C1}:${V1} from '${fieldText}': ${vvError}`);
         }
 
-        if (linkBookCode) { // then we know which Bible book this link is to
+        if (linkBookCode.length) { // then we know which Bible book this link is to
             // So we can check for valid C:V numbers
             let numChaptersThisBook, numVersesThisChapter;
             logicAssert(linkBookCode.toLowerCase() !== 'obs', `BIBLE_REGEX_THIS_CHAPTER_RELATIVE linkBookCode shouldn’t be '${linkBookCode}' in notes-links-check`);
             try {
                 numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
-            } catch (tlcNCerror) { }
+            } catch (tlcNCerror) {
+                debugLog(`checkNotesLinksToOutside2 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
+                numChaptersThisBook = 0;
+             }
             try {
                 numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), givenCint);
             } catch (tlcNVerror) { }
@@ -759,13 +765,16 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             console.error(`TN Link Check1b couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} ${V1} with ${C2}:${V2} from '${fieldText}': ${vvError}`);
         }
 
-        if (linkBookCode) { // then we know which Bible book this link is to
+        if (linkBookCode.length) { // then we know which Bible book this link is to
             // So we can check for valid C:V numbers
             let numChaptersThisBook, numVersesThisChapter;
             logicAssert(linkBookCode.toLowerCase() !== 'obs', `THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX linkBookCode shouldn’t be '${linkBookCode}' in notes-links-check`);
             try {
                 numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
-            } catch (tlcNCerror) { }
+            } catch (tlcNCerror) {
+                debugLog(`checkNotesLinksToOutside3 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
+                numChaptersThisBook = 0;
+             }
             try {
                 numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
             } catch (tlcNVerror) { }
@@ -800,13 +809,16 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
         if (verseInt1b <= verseInt1a)
             addNoticePartial({ priority: 741, message: "Verse numbers of markdown Bible link range out of order", details: `${V1a} to ${V1b}`, excerpt: totalLink, location: ourLocation });
 
-        if (linkBookCode) { // then we know which Bible book this link is to
+        if (linkBookCode.length) { // then we know which Bible book this link is to
             // So we can check for valid C:V numbers
             let numChaptersThisBook, numVersesThisChapter;
             logicAssert(linkBookCode.toLowerCase() !== 'obs', `THIS_VERSE_RANGE_TO_THIS_CHAPTER_BIBLE_REGEX linkBookCode shouldn’t be '${linkBookCode}' in notes-links-check`);
             try {
                 numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
-            } catch (tlcNCerror) { }
+            } catch (tlcNCerror) {
+                debugLog(`checkNotesLinksToOutside4 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
+                numChaptersThisBook = 0;
+             }
             try {
                 numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
             } catch (tlcNVerror) { }
@@ -851,13 +863,16 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             console.error(`TN Link Check2 couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C2}:${V2} from '${fieldText}': ${vvError}`);
         }
 
-        if (linkBookCode) { // then we know which Bible book this link is to
+        if (linkBookCode.length) { // then we know which Bible book this link is to
             // So we can check for valid C:V numbers
             let numChaptersThisBook, numVersesThisChapter;
             logicAssert(linkBookCode.toLowerCase() !== 'obs', `BIBLE_REGEX_THIS_BOOK_RELATIVE linkBookCode shouldn’t be '${linkBookCode}' in notes-links-check`);
             try {
                 numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
-            } catch (tlcNCerror) { }
+            } catch (tlcNCerror) {
+                debugLog(`checkNotesLinksToOutside5 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
+                numChaptersThisBook = 0;
+             }
             try {
                 numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
             } catch (tlcNVerror) { }
@@ -909,13 +924,16 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             console.error(`TN Link Check2c couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C2}:${V2} from '${fieldText}': ${vvError}`);
         }
 
-        if (linkBookCode) { // then we know which Bible book this link is to
+        if (linkBookCode.length) { // then we know which Bible book this link is to
             // So we can check for valid C:V numbers
             let numChaptersThisBook, numVersesThisChapter;
             logicAssert(linkBookCode.toLowerCase() !== 'obs', `BCV_V_TO_THIS_BOOK_BIBLE_REGEX linkBookCode shouldn’t be '${linkBookCode}' in notes-links-check`);
             try {
                 numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
-            } catch (tlcNCerror) { }
+            } catch (tlcNCerror) {
+                debugLog(`checkNotesLinksToOutside6 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
+                numChaptersThisBook = 0;
+             }
             try {
                 numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
             } catch (tlcNVerror) { }
@@ -961,7 +979,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             console.error(`TN Link Check2e couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C1}:${V2} from '${fieldText}': ${vvError}`);
         }
 
-        if (linkBookCode) { // then we know which Bible book this link is to
+        if (linkBookCode.length) { // then we know which Bible book this link is to
             // So we can check for valid C:V numbers
             let numVersesThisChapter;
             logicAssert(linkBookCode.toLowerCase() !== 'obs', `BCV_V_TO_THIS_CHAPTER_BIBLE_REGEX linkBookCode shouldn’t be '${linkBookCode}' in notes-links-check`);
@@ -1011,13 +1029,16 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             console.error(`TN Link Check3 couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C1}:${V1} from '${fieldText}': ${vvError}`);
         }
 
-        if (linkBookCode) { // then we know which Bible book this link is to
+        if (linkBookCode.length) { // then we know which Bible book this link is to
             // So we can check for valid C:V numbers
             let numChaptersThisBook, numVersesThisChapter;
             logicAssert(linkBookCode.toLowerCase() !== 'obs', `BIBLE_REGEX_OTHER_BOOK_ABSOLUTE linkBookCode shouldn’t be '${linkBookCode}' in notes-links-check`);
             try {
                 numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
-            } catch (tlcNCerror) { }
+            } catch (tlcNCerror) {
+                debugLog(`checkNotesLinksToOutside8 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
+                numChaptersThisBook = 0;
+             }
             try {
                 numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
             } catch (tlcNVerror) { }
@@ -1063,13 +1084,16 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             console.error(`TN Link Check3 couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C1}:${V1} from '${fieldText}': ${vvError}`);
         }
 
-        if (linkBookCode) { // then we know which Bible book this link is to
+        if (linkBookCode.length) { // then we know which Bible book this link is to
             // So we can check for valid C:V numbers
             let numChaptersThisBook, numVersesThisChapter;
             logicAssert(linkBookCode.toLowerCase() !== 'obs', `BIBLE_REGEX_OTHER_BOOK_RELATIVE linkBookCode shouldn’t be '${linkBookCode}' in notes-links-check`);
             try {
                 numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
-            } catch (tlcNCerror) { }
+            } catch (tlcNCerror) {
+                debugLog(`checkNotesLinksToOutside9 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
+                numChaptersThisBook = 0;
+             }
             try {
                 numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
             } catch (tlcNVerror) { }
@@ -1116,13 +1140,16 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             console.error(`TN Link Check3b couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C1}:${V1} from '${fieldText}': ${vvError}`);
         }
 
-        if (linkBookCode) { // then we know which Bible book this link is to
+        if (linkBookCode.length) { // then we know which Bible book this link is to
             // So we can check for valid C:V numbers
             let numChaptersThisBook, numVersesThisChapter;
             logicAssert(linkBookCode.toLowerCase() !== 'obs', `TN_REGEX linkBookCode shouldn’t be '${linkBookCode}' in notes-links-check`);
             try {
                 numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
-            } catch (tlcNCerror) { }
+            } catch (tlcNCerror) {
+                debugLog(`checkNotesLinksToOutside10 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
+                numChaptersThisBook = 0;
+             }
             try {
                 numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
             } catch (tlcNVerror) { }

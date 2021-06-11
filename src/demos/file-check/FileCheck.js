@@ -1,8 +1,4 @@
 import React, { useEffect, useState } from 'react';
-// import PropTypes from 'prop-types';
-// import ReactJson from 'react-json-view';
-// import { Paper, Button } from '@material-ui/core';
-// import { RepositoryContext, FileContext } from 'gitea-react-toolkit';
 import { withStyles } from '@material-ui/core/styles';
 import { clearCaches, clearCheckedArticleCache, ourParseInt, cachedGetFile, cachedFetchFileFromServerTag } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
@@ -12,7 +8,7 @@ import { checkFileContents } from './checkFileContents';
 import { debugLog, userLog } from '../../core/utilities';
 
 
-// const FILE_CHECK_VERSION_STRING = '0.3.0';
+// const FILE_CHECK_VERSION_STRING = '0.3.1';
 
 
 function FileCheck(props) {
@@ -137,7 +133,7 @@ function FileCheck(props) {
             {processedResults.numIgnoredNotices || processedResults.numDisabledNotices ? ' (but ' : ''}
             {processedResults.numIgnoredNotices ? `${processedResults.numIgnoredNotices.toLocaleString()} ignored notice(s)` : ""}
             {processedResults.numIgnoredNotices && processedResults.numDisabledNotices ? ' and ' : ''}
-            {processedResults.numDisabledNotices ? `${processedResults.numDisabledNotices.toLocaleString()} expected/disabled notice(s)` : ""}
+            {processedResults.numDisabledNotices ? `${processedResults.numDisabledNotices.toLocaleString()} expected/disabled notice${processedResults.numDisabledNotices === 1 ? '' : 's'}` : ""}
             {processedResults.numIgnoredNotices || processedResults.numDisabledNotices ? ')' : ''}.{cutoffString}</p>
           {/* <RenderRawResults results={rawCFResults} /> */}
         </div>);

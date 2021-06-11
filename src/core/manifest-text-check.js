@@ -1,23 +1,25 @@
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
 import { checkYAMLText } from './yaml-text-check';
-import { cachedGetFile } from './getApi';
+import { cachedGetFile, getFileListFromZip } from './getApi';
 import { BibleBookData } from './books/books'
 import Ajv from 'ajv';
 import { removeDisabledNotices } from './disabled-notices';
-import { parameterAssert } from './utilities';
+// eslint-disable-next-line no-unused-vars
+import { debugLog, functionLog, parameterAssert } from './utilities';
 
 
-const MANIFEST_VALIDATOR_VERSION_STRING = '0.4.2';
+const MANIFEST_VALIDATOR_VERSION_STRING = '0.4.4';
 
 // Pasted in 2020-10-02 from https://raw.githubusercontent.com/unfoldingWord/dcs/master/options/schema/rc.schema.json
 // Updated 2021-02-19
 // Now March 2021 it's moved to https://github.com/unfoldingWord/rc-schema/blob/master/rc.schema.json
+// TODO: Load the latest one dynamically
 const MANIFEST_SCHEMA = {
     "$schema": "http://json-schema.org/draft-07/schema",
     "$id": "https://resource-container.readthedocs.io/schema/rc.schema.json",
     "$$target": [
-            "rc.schema.json#/definitions/languageTag",
-            "rc.schema.json#/definitions/localizedText"
+        "rc.schema.json#/definitions/languageTag",
+        "rc.schema.json#/definitions/localizedText"
     ],
     "title": "Root",
     "type": "object",
@@ -65,7 +67,7 @@ const MANIFEST_SCHEMA = {
                     "title": "Contributor",
                     "type": "array",
                     "default": [],
-                    "items":{
+                    "items": {
                         "$id": "#root/dublin_core/contributor/items",
                         "title": "Items",
                         "type": "string",
@@ -174,7 +176,7 @@ const MANIFEST_SCHEMA = {
                     "title": "Relation",
                     "type": "array",
                     "default": [],
-                    "items":{
+                    "items": {
                         "$id": "#root/dublin_core/relation/items",
                         "$ref": "#/definitions/relationItem",
                         "title": "Items",
@@ -202,7 +204,7 @@ const MANIFEST_SCHEMA = {
                     "title": "Source",
                     "type": "array",
                     "default": [],
-                    "items":{
+                    "items": {
                         "$id": "#root/dublin_core/source/items",
                         "title": "Items",
                         "type": "object",
@@ -260,7 +262,7 @@ const MANIFEST_SCHEMA = {
                         "OBS Translation Questions",
                         "Open Bible Stories",
                         "Study Notes",
-                            "Study Questions",
+                        "Study Questions",
                         "Translation Academy",
                         "Translation Notes",
                         "Translation Questions",
@@ -321,7 +323,7 @@ const MANIFEST_SCHEMA = {
                     "title": "Checking_entity",
                     "type": "array",
                     "default": [],
-                    "items":{
+                    "items": {
                         "$id": "#root/checking/checking_entity/items",
                         "title": "Items",
                         "type": "string",
@@ -349,7 +351,7 @@ const MANIFEST_SCHEMA = {
             "title": "Projects",
             "type": "array",
             "default": [],
-            "items":{
+            "items": {
                 "$id": "#root/projects/items",
                 "title": "Items",
                 "type": "object",
@@ -403,7 +405,7 @@ const MANIFEST_SCHEMA = {
                         "title": "Categories",
                         "type": ["array", "null"],
                         "default": [],
-                        "items":{
+                        "items": {
                             "$id": "#root/projects/items/categories/items",
                             "title": "Items",
                             "type": "string",
@@ -428,10 +430,10 @@ const MANIFEST_SCHEMA = {
         "localizedText": {
             "type": "object",
             "additionalProperties": {
-                    "$ref": "#/definitions/trimmedText"
+                "$ref": "#/definitions/trimmedText"
             },
             "propertyNames": {
-                    "$ref": "#/definitions/languageTag"
+                "$ref": "#/definitions/languageTag"
             },
             "minProperties": 1,
             "description": "A textual string specified in one or multiple languages, indexed by IETF language tag."
@@ -575,7 +577,7 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
 
     Returns a result object containing a successList and a noticeList
     */
-    // functionLog(`checkManifestText(${username}, ${repoName}, ${repoBranch}, ${manifestText.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
+    // functionLog(`checkManifestText(${username}, ${repoCode}, ${repoName}, ${repoBranch}, ${manifestText.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
     parameterAssert(languageCode !== undefined, "checkManifestText: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkManifestText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
     parameterAssert(repoCode !== undefined, "checkManifestText: 'repoCode' parameter should be defined");
@@ -710,8 +712,9 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
             }
         }
 
-        // Check the project files in the manifest actually exist
+        // Check that the project files in the manifest actually exist
         const getFile_ = (checkingOptions && checkingOptions?.getFile) ? checkingOptions?.getFile : cachedGetFile;
+        const ourProjectPathList = []; // Make a list for the next check
         for (const projectEntry of formData['projects']) {
             // debugLog(`Manifest project: ${JSON.stringify(projectEntry)}`);
             const projectKeys = Object.keys(projectEntry); // Expect title, versification, identifier, sort, path, categories
@@ -721,29 +724,48 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
                     addNotice({ priority: 939, message: "Key is missing for project", details: keyName, excerpt: JSON.stringify(projectEntry), location: ourLocation });
 
             const projectFilepath = projectEntry['path'];
+            ourProjectPathList.push(projectFilepath);
             if (repoName
                 && projectFilepath !== './content' // Ignore this common folder path
                 && projectFilepath !== './bible' // Ignore this common folder path
-                && projectFilepath !== './intro' && projectFilepath !== './process' && projectFilepath !== './translate' && projectFilepath !== './checking' // Ignore these TA folder paths
-                && (!checkingOptions || checkingOptions?.disableAllLinkFetchingFlag !== true)) { // Try fetching the file maybe
-                let isBookFolder = false;
-                for (const thisBookID of Object.keys(BibleBookData))
-                    if (projectFilepath === `./${thisBookID}`) { isBookFolder = true; break; }
-                if (!isBookFolder) {
-                    let projectFileContent;
-                    try {
-                        projectFileContent = await getFile_({ username, repository: repoName, path: projectFilepath, branch: repoBranch });
-                        // debugLog("Fetched manifest project fileContent for", repoName, projectFilepath, typeof projectFileContent, projectFileContent.length);
-                        if (!projectFileContent)
-                            addNotice({ priority: 938, message: `Unable to find project file mentioned in manifest`, excerpt: projectFilepath, location: ourLocation });
-                        else if (projectFileContent.length < 10)
-                            addNotice({ priority: 937, message: `Linked project file seems empty`, excerpt: projectFilepath, location: ourLocation });
-                    } catch (trcGCerror) {
-                        addNotice({ priority: 936, message: `Error loading manifest project link`, details: trcGCerror, excerpt: projectFilepath, location: ourLocation });
+                && projectFilepath !== './intro' && projectFilepath !== './process' && projectFilepath !== './translate' && projectFilepath !== './checking') { // Ignore these TA folder paths
+                if (!checkingOptions || checkingOptions?.disableAllLinkFetchingFlag !== true) { // Try fetching the file maybe
+                    let isBookFolder = false;
+                    for (const thisBookID of Object.keys(BibleBookData))
+                        if (projectFilepath === `./${thisBookID}`) { isBookFolder = true; break; }
+                    if (!isBookFolder) {
+                        let projectFileContent;
+                        try {
+                            projectFileContent = await getFile_({ username, repository: repoName, path: projectFilepath, branch: repoBranch });
+                            // debugLog("Fetched manifest project fileContent for", repoName, projectFilepath, typeof projectFileContent, projectFileContent.length);
+                            if (!projectFileContent)
+                                addNotice({ priority: 938, message: `Unable to find project file mentioned in manifest`, excerpt: projectFilepath, location: ourLocation });
+                            else if (projectFileContent.length < 10)
+                                addNotice({ priority: 937, message: `Linked project file seems empty`, excerpt: projectFilepath, location: ourLocation });
+                        } catch (trcGCerror) {
+                            addNotice({ priority: 936, message: `Error loading manifest project link`, details: trcGCerror, excerpt: projectFilepath, location: ourLocation });
+                        }
                     }
                 }
             }
         }
+
+        // Check that the project files in the repo are included in the manifest
+        // Use ourProjectPathList created by the above check
+        // debugLog(`checkManifestText got projectPathList: (${ourProjectPathList.length}) ${ourProjectPathList}`);
+        const repoFileList = await getFileListFromZip({ username, repository: repoName, branchOrRelease: repoBranch }); // not using optionalPrefix
+        // debugLog(`checkManifestText got repoFileList: (${repoFileList.length}) ${repoFileList}`);
+        for (const repoFilepath of repoFileList)
+            if (repoFilepath.endsWith('.tsv')
+                || repoFilepath.endsWith('.usfm')
+                || (repoFilepath.endsWith('.md') && repoFilepath !== 'LICENSE.md' && repoFilepath !== 'README.md')) {
+                const adjRepoFilepath = `./${repoFilepath.split('/')[0]}`; // TQ manifest only lists folders so change '1co/01/02.md' to './1co'
+                // debugLog(`  Checking ${adjRepoFilepath} from repoFileList`);
+                if (ourProjectPathList.indexOf(repoFilepath) === -1 && ourProjectPathList.indexOf(adjRepoFilepath) === -1) {
+                    // debugLog(`    Seems we couldn't find ${repoFilepath} in the manifest`);
+                    addNotice({ priority: 832, message: `Seems project file is missing from the manifest`, excerpt: repoFilepath, location: ourLocation });
+                }
+            }
     }
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {

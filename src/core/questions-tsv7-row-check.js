@@ -4,10 +4,11 @@ import * as books from './books/books';
 import { checkTextField } from './field-text-check';
 import { checkMarkdownText } from './markdown-text-check';
 import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
-import { parameterAssert } from './utilities';
+// eslint-disable-next-line no-unused-vars
+import { debugLog, parameterAssert } from './utilities';
 
 
-// const QUESTIONS_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.2.3';
+// const QUESTIONS_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.2.5';
 
 const NUM_EXPECTED_QUESTIONS_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_QUESTIONS_HEADING_LINE = 'Reference\tID\tTags\tQuote\tOccurrence\tQuestion\tResponse';
@@ -324,8 +325,11 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
 
         // Check the fields one-by-one
         const [C, V] = reference.split(':');
+        if (C === undefined || V === undefined)
+            addNoticePartial({ priority: 901, message: "Unexpected reference field", details: "expected C:V", fieldName: 'Reference', rowID, excerpt: reference, location: ourRowLocation });
+
         let numVersesThisChapter, haveGoodChapterNumber;
-        if (C.length) {
+        if (C?.length) {
             if (C !== givenC)
                 addNoticePartial({ priority: 976, message: "Wrong chapter number", details: `expected '${givenC}'`, fieldName: 'Reference', rowID, excerpt: C, location: ourRowLocation });
             if (C === 'front') { }
@@ -359,26 +363,50 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
                 addNoticePartial({ priority: 821, message: "Bad chapter number", excerpt: C, rowID, fieldName: 'Reference', location: ourRowLocation });
         }
         else
-            addNoticePartial({ priority: 820, message: "Missing chapter number", rowID, fieldName: 'Reference', location: ` ?:${V}${ourRowLocation}` });
+            addNoticePartial({ priority: 820, message: "Missing chapter number", rowID, fieldName: 'Reference', excerpt: `?:${V}`, location: ourRowLocation });
 
-        if (V.length) {
-            if (V !== givenV)
-                addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected '${givenV}'`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
-            if (bookID === 'OBS' || V === 'intro') { }
-            else if (/^\d+$/.test(V)) {
-                let intV = Number(V);
-                if (intV === 0 && bookID !== 'PSA') // Psalms have \d as verse zero
-                    addNoticePartial({ priority: 814, message: "Invalid zero verse number", rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
-                else {
-                    if (haveGoodChapterNumber) {
-                        if (intV > numVersesThisChapter)
-                            addNoticePartial({ priority: 813, message: "Invalid large verse number", rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
-                    } else
-                        addNoticePartial({ priority: 812, message: "Unable to check verse number", rowID, fieldName: 'Reference', location: ourRowLocation });
+        if (V?.length) {
+            if (V.indexOf('-') === -1) { // Not a verse bridge
+                if (V !== givenV)
+                    addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected '${givenV}'`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+                if (bookID === 'OBS' || V === 'intro') { }
+                else if (/^\d+$/.test(V)) {
+                    let intV = Number(V);
+                    if (intV === 0 && bookID !== 'PSA') // Psalms have \d as verse zero
+                        addNoticePartial({ priority: 814, message: "Invalid zero verse number", rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+                    else {
+                        if (haveGoodChapterNumber) {
+                            if (intV > numVersesThisChapter)
+                                addNoticePartial({ priority: 813, message: "Invalid large verse number", details: `${bookID} chapter ${C} only has ${numVersesThisChapter} verses`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+                        } else
+                            addNoticePartial({ priority: 812, message: "Unable to check verse number", rowID, fieldName: 'Reference', location: ourRowLocation });
+                    }
                 }
+                else
+                    addNoticePartial({ priority: 811, message: "Bad verse number", rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+            } else { // it's a verse bridge
+                if (countOccurrences(V, '-') > 1)
+                    addNoticePartial({ priority: 808, message: "Bad verse range", details: "Too many hyphens", rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+                const [V1, V2] = V.split('-');
+                if (/^\d+$/.test(V1) && /^\d+$/.test(V2)) {
+                    const intV1 = Number(V1), intV2 = Number(V2), intGivenV = Number(givenV);
+                    if (intGivenV < intV1 || intGivenV > intV2)
+                        addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected '${givenV}' to be inside range`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+                    else if (intV1 >= intV2)
+                        addNoticePartial({ priority: 808, message: "Bad verse range", details: "Second digits should be greater", rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+                        else if (intV1 === 0 && bookID !== 'PSA') // Psalms have \d as verse zero
+                        addNoticePartial({ priority: 814, message: "Invalid zero verse number", rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+                    else {
+                        if (haveGoodChapterNumber) {
+                            if (intV2 > numVersesThisChapter)
+                                addNoticePartial({ priority: 813, message: "Invalid large verse number", details: `${bookID} chapter ${C} only has ${numVersesThisChapter} verses`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+                        } else
+                            addNoticePartial({ priority: 812, message: "Unable to check verse number", rowID, fieldName: 'Reference', location: ourRowLocation });
+                    }
+                } else
+                    addNoticePartial({ priority: 808, message: "Bad verse range", details: "Should be digits", rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+
             }
-            else
-                addNoticePartial({ priority: 811, message: "Bad verse number", rowID, fieldName: 'Reference', location: ` '${V}'${ourRowLocation}` });
         }
         else
             addNoticePartial({ priority: 810, message: "Missing verse number", rowID, fieldName: 'Reference', location: ` after ${C}:?${ourRowLocation}` });
@@ -445,6 +473,10 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
         }
 
         if (question.length) {
+            if (question.indexOf('<br>') >= 0) {
+                const charCount = countOccurrences(question, '<br>');
+                addNoticePartial({ priority: 674, message: "Field contains HTML <br> field(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found—should be '\\n' instead`, fieldName: 'Question', rowID, location: ourRowLocation });
+            }
             if (question.indexOf('\u200B') >= 0) {
                 const charCount = countOccurrences(question, '\u200B');
                 addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, fieldName: 'Question', rowID, location: ourRowLocation });
@@ -470,6 +502,10 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
                 addNoticePartial({ priority: 274, message: "Missing Question field", fieldName: 'Question', rowID, location: ourRowLocation });
 
         if (response.length) {
+            if (response.indexOf('<br>') >= 0) {
+                const charCount = countOccurrences(response, '<br>');
+                addNoticePartial({ priority: 674, message: "Field contains HTML <br> field(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found—should be '\\n' instead`, fieldName: 'Response', rowID, location: ourRowLocation });
+            }
             if (response.indexOf('\u200B') >= 0) {
                 const charCount = countOccurrences(response, '\u200B');
                 addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, fieldName: 'Response', rowID, location: ourRowLocation });

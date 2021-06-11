@@ -8,7 +8,7 @@ import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMe
 import { userLog, debugLog } from '../../core/utilities';
 
 
-// const BPS_VALIDATOR_VERSION_STRING = '0.2.3';
+// const BPS_VALIDATOR_VERSION_STRING = '0.2.4';
 
 
 /**
@@ -34,7 +34,7 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     let branch = props.branch;
     // debugLog(`branch='${branch}'`);
 
-    let bookIDList = [];
+    const bookIDList = [];
     let bookIDInvalid;
     let haveOT = false, haveNT = false;
     for (let bookID of bookIDs.split(',')) {
@@ -59,6 +59,11 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     // Or this allows the parameters to be specified as a BookPackagesCheck property
     if (props.excerptLength) checkingOptions.excerptLength = ourParseInt(props.excerptLength);
     if (props.cutoffPriorityLevel) checkingOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
+    if (props.disableAllLinkFetchingFlag) checkingOptions.disableAllLinkFetchingFlag = props.disableAllLinkFetchingFlag.toLowerCase() === 'true';
+    if (props.disableLinkedTAArticlesCheckFlag) checkingOptions.disableLinkedTAArticlesCheckFlag = props.disableLinkedTAArticlesCheckFlag.toLowerCase() === 'true';
+    if (props.disableLinkedTWArticlesCheckFlag) checkingOptions.disableLinkedTWArticlesCheckFlag = props.disableLinkedTWArticlesCheckFlag.toLowerCase() === 'true';
+    // functionLog(`checkingOptions.disableLinkedTAArticlesCheckFlag ${checkingOptions.disableLinkedTAArticlesCheckFlag} from '${props.disableLinkedTAArticlesCheckFlag}'`);
+    // functionLog(`checkingOptions.disableLinkedTWArticlesCheckFlag ${checkingOptions.disableLinkedTWArticlesCheckFlag} from '${props.disableLinkedTWArticlesCheckFlag}'`);
 
     useEffect(() => {
         // debugLog("BookPackagesCheck.useEffect() called with ", JSON.stringify(props));
@@ -83,16 +88,20 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         else await clearCheckedArticleCache();
 
         // Load whole repos, especially if we are going to check files in manifests
-        let repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
+        let repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TQ', 'SN', 'SQ']; // for DEFAULT
         if (dataSet === 'OLD')
-            repoPreloadList = ['LT', 'ST', 'TN', 'TA', 'TW', 'TQ'];
+            repoPreloadList = ['LT', 'ST', 'TN', 'TQ'];
         else if (dataSet === 'NEW')
-            repoPreloadList = ['TWL', 'LT', 'ST', 'TN2', 'TA', 'TW', 'TQ2'];
+            repoPreloadList = ['TWL', 'LT', 'ST', 'TN2', 'TQ2', 'SN', 'SQ'];
         else if (dataSet === 'BOTH')
-            repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TN2', 'TA', 'TW', 'TQ', 'TQ2'];
+            repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TN2', 'TQ', 'TQ2', 'SN', 'SQ'];
         if (haveNT) repoPreloadList.unshift('UGNT');
         if (haveOT) repoPreloadList.unshift('UHB');
-        debugLog(`BookPackagesCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
+        if (!checkingOptions.disableAllLinkFetchingFlag) {
+          repoPreloadList.push('TW');
+          repoPreloadList.push('TA');
+      }
+      debugLog(`BookPackagesCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
 
         setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for book packages check…</p>);
           const successFlag = await preloadReposIfNecessary(username, languageCode, bookIDList, branch, repoPreloadList);

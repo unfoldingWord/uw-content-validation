@@ -5,10 +5,10 @@ import { formRepoName, repositoryExistsOnDoor43, getFileListFromZip, cachedGetFi
 import { checkFileContents } from '../file-check/checkFileContents';
 import { checkRepo } from '../repo-check/checkRepo';
 // eslint-disable-next-line no-unused-vars
-import { userLog, functionLog, parameterAssert, logicAssert } from '../../core/utilities';
+import { userLog, functionLog, debugLog, parameterAssert, logicAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.7.2';
+// const BP_VALIDATOR_VERSION_STRING = '0.7.3';
 
 const STANDARD_MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -291,7 +291,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
 
   // Main code for checkBookPackage()
   // NOTE: TN and TQ are used here for the old resource formats, e.g., 9-column TSV TN2 and markdown TQ2
-  //        The TN2, TQ2, SN, and SQ repoCodes refer to the new 7-column notes TSV format.
+  //        The TN2, TQ2, SN, and if (linkBookCode.length) repoCodes refer to the new 7-column notes TSV format.
   // debugLog("checkBookPackage() main code…");
   let repoCodeList;
   let bookNumberAndName, whichTestament;
@@ -433,7 +433,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         // debugLog(`Maybe checking MANIFEST etc. for ${repoName}`);
 
         if (newCheckingOptions?.checkManifestFlag) {
-          // debugLog(`Checking MANIFEST for ${repoName}`);
+          // debugLog(`checkBookPackage: checking MANIFEST for ${repoName}`);
           const numCheckedCharacters = await ourCheckManifestFile(repoCode, repoName, adjustedBranch, generalLocation, newCheckingOptions);
           if (numCheckedCharacters > 0) {
             checkedFileCount += 1;
@@ -447,7 +447,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
 
         // We can also check the README file for each repo if requested
         if (newCheckingOptions?.checkReadmeFlag) {
-          // debugLog(`Checking README for ${repoName}`);
+          // debugLog(`checkBookPackage: checking README for ${repoName}`);
           const filename = 'README.md';
           const numCheckedCharacters = await ourCheckMarkdownFile(repoCode, repoName, adjustedBranch, filename, generalLocation, newCheckingOptions);
           if (numCheckedCharacters > 0) {
@@ -516,7 +516,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
  * @return {Object} - containing successList and noticeList
  */
 async function checkTQMarkdownBook(username, languageCode, repoCode, repoName, branch, bookID, checkingOptions) {
-  // functionLog(`checkTQMarkdownBook(${username}, ${repoName}, ${branch}, ${bookID}, ${JSON.stringify(checkingOptions)})…`)
+  // functionLog(`checkBookPackage checkTQMarkdownBook(${username}, ${languageCode}, ${repoCode} ${repoName}, ${branch}, ${bookID}, ${JSON.stringify(checkingOptions)})…`)
   parameterAssert(username !== undefined, "checkTQMarkdownBook: 'username' parameter should be defined");
   parameterAssert(typeof username === 'string', `checkTQMarkdownBook: 'username' parameter should be a string not a '${typeof username}': '${username}'`);
   parameterAssert(languageCode !== undefined, "checkTQMarkdownBook: 'languageCode' parameter should be defined");
@@ -582,7 +582,7 @@ async function checkTQMarkdownBook(username, languageCode, repoCode, repoName, b
    * @param {Object} checkingOptions
    */
   async function ourCheckTQFileContents(repoCode, bookID, C, V, cfFilename, fileContent, fileLocation, checkingOptions) {
-    // functionLog(`checkBookPackage ourCheckTQFileContents(${cfFilename})`);
+    // functionLog(`checkBookPackage ourCheckTQFileContents(${repoCode}, ${bookID} ${C}:${V} ${cfFilename}…)…`);
 
     // Updates the global list of notices
     parameterAssert(repoCode !== undefined, "cTQ ourCheckTQFileContents: 'repoCode' parameter should be defined");

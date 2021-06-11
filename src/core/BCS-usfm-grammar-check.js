@@ -4,7 +4,7 @@ import { DEFAULT_EXCERPT_LENGTH } from './defaults'
 import { userLog, debugLog, parameterAssert } from './utilities';
 
 
-// const USFM_GRAMMAR_VALIDATOR_VERSION_STRING = '0.4.1';
+// const USFM_GRAMMAR_VALIDATOR_VERSION_STRING = '0.4.2';
 
 
 export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLocation, checkingOptions) {
@@ -35,15 +35,16 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
         // Returns a Boolean indicating whether the input USFM text satisfies the grammar or not.
         // This method is available in both default and relaxed modes.
         // const parserResult = ourUsfmParser.validate();
-        debugLog(`${new Date().getTime() / 1000} Running the USFMGrammar checker (may take several seconds)…`);
-        parserToJSONResultObject = ourUsfmParser.toJSON()
+        // debugLog(`${new Date().getTime() / 1000} Running the USFMGrammar checker (may take several seconds)…`);
+        debugLog("Running the USFMGrammar checker (may take several seconds)…");
+        parserToJSONResultObject = ourUsfmParser.toJSON();
         // debugLog(`${new Date().getTime() / 1000} Got the USFMGrammar checker toJSON result: ${Object.keys(parserToJSONResultObject)}`);
         // debugLog(`${new Date().getTime() / 1000} Got the USFMGrammar checker toJSON _messages: ${Object.keys(parserToJSONResultObject._messages)}`);
         // debugLog(`${new Date().getTime() / 1000} Got the USFMGrammar checker: ${Object.keys(ourUsfmParser)}`);
         parseWarnings = parserToJSONResultObject._warnings ? parserToJSONResultObject._warnings : ourUsfmParser.warnings;
-        debugLog(`${new Date().getTime() / 1000} Got warnings from the USFMGrammar checker: (${parseWarnings.length}) ${parseWarnings}`);
+        // debugLog(`${new Date().getTime() / 1000} Got warnings from the USFMGrammar checker: (${parseWarnings.length}) ${parseWarnings}`);
     } catch (parserError) { // This is how the Parser returns USFM errors, i.e., it stops after the first error
-        debugLog(`${new Date().getTime() / 1000} Got an exception when using the USFMGrammar checker: ${parserError}`);
+        // debugLog(`${new Date().getTime() / 1000} Got an exception when using the USFMGrammar checker: ${parserError}`);
         const ourErrorObject = {
             priority: 840, message: "USFMGrammar check failed",
             details: parserError,

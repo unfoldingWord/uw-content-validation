@@ -29,8 +29,8 @@ import BookPackagesCheck from './BookPackagesCheck';
   languageCode='en'
   // Enter a string containing UPPERCASE USFM book identifiers separated only by commas
   //  and can also include OBS (for Open Bible Stories)
-  bookIDs='RUT,EZR,NEH,EST,OBA,JON' // OT
-  // bookIDs='LUK,ACT,EPH,1TI,2TI,TIT,2JN,3JN' // NT
+  // bookIDs='RUT,EZR,NEH,EST,OBA,JON' // OT
+  bookIDs='EPH,1TI,2TI,TIT,1JN,2JN,3JN' // NT
   // The above English book packages should all be finished or well along the way
 
   // We can choose the forthcoming new TSV formats or the existing formats

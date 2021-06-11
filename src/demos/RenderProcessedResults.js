@@ -42,7 +42,7 @@ const tableIcons = {
 };
 
 
-// const RENDER_PROCESSED_RESULTS_VERSION = '0.6.2';
+// const RENDER_PROCESSED_RESULTS_VERSION = '0.6.3';
 
 
 export function RenderSuccesses({ username, results }) {
@@ -245,6 +245,7 @@ function RenderBCV({ bookID, C, V }) {
     return null;
 }
 
+
 /**
 * @description - Displays the repoName and filename/lineNumber details if specified
 * @param {string} username - (optional) username/orgName string
@@ -255,50 +256,62 @@ function RenderBCV({ bookID, C, V }) {
 * @param {string} fieldName - (optional) name of field
 * @return {String} - rendered HTML for the given reference
 */
-function RenderFileDetails({ username, repoName, branch, filename, lineNumber, rowID, fieldName }) {
+function RenderFileDetails({ givenEntry }) {
     // These are all optional parameters - they may be undefined or blank if irrelevant
-    // debugLog(`RenderFileDetails(${repoName}, ${branch}, ${filename}, ${lineNumber}, ${rowID}, ${fieldName})`);
-    if (!repoName && !filename && !lineNumber && !rowID && !fieldName)
+    // debugLog(`RenderFileDetails(${JSON.stringify(givenEntry)})`);
+    // debugLog(`RenderFileDetails(${username}, ${repoName}, ${branch}, ${filename}, ${lineNumber}, ${rowID}, ${fieldName})`);
+    if (!givenEntry.repoName && !givenEntry.filename && !givenEntry.lineNumber && !givenEntry.rowID && !givenEntry.fieldName)
         return null; // They're all undefined or blank!
-    if (!branch) branch = repoName?.endsWith('2') ? 'newFormat' : 'master'; // default but with TEMP code for newFormat
+
+    if (!givenEntry.branch) givenEntry.branch = givenEntry.repoName?.endsWith('2') ? 'newFormat' : 'master'; // default but with TEMP code for newFormat
     // debugLog(`RenderFileDetails2 ${repoName}, ${filename}, ${lineNumber}`);
+
+    // Not sure if this happens with BP check, but filecheck for TN was giving bad links for TA warnings
+    let adjustedRepoName = givenEntry.repoName;
+    const firstMsgWord = givenEntry.message.split(' ')[0]; // This might be the former 'extra' field
+    if (['TA', 'TW'].indexOf(firstMsgWord) >= 0) {
+        adjustedRepoName = `${givenEntry.repoName.split('_')[0]}_${firstMsgWord.toLowerCase()}`;
+        if (adjustedRepoName!==givenEntry.repoName) debugLog(`RenderFileDetails: trying adjusting repoName from '${givenEntry.repoName}' to '${adjustedRepoName}' for ${JSON.stringify(givenEntry)}`);
+    }
+
     let resultStart = '', lineResult = '', resultEnd = '', fileLineLink = '', fileLink = '';
-    if (repoName && repoName.length) resultStart += ` in ${repoName} repository`;
-    if (username && repoName && filename) {
-        if (filename && filename.length) resultStart += ` in file ${filename}`;
+    if (adjustedRepoName?.length) resultStart += ` in ${adjustedRepoName} repository`;
+    if (givenEntry.username && adjustedRepoName && givenEntry.filename) {
+        if (givenEntry.filename && givenEntry.filename.length) resultStart += ` in file ${givenEntry.filename}`;
         try { // use blame so we can see the actual line!
-            if (filename.endsWith('.tsv') || filename.endsWith('.md')) {
+            if (givenEntry.filename.endsWith('.tsv') || givenEntry.filename.endsWith('.md')) {
                 let folder = '';
-                if (filename !== 'README.md' && filename !== 'LICENSE.md') {
-                    if (repoName.endsWith('_obs')) folder = 'content/';
-                    else if (repoName.endsWith('_tw')) {
+                if (givenEntry.filename !== 'README.md' && givenEntry.filename !== 'LICENSE.md') {
+                    if (adjustedRepoName.endsWith('_obs')) folder = 'content/';
+                    else if (adjustedRepoName.endsWith('_tw')) {
                         folder = 'bible/';
-                        dataAssert(filename.indexOf('/') > 0); // filename actually contains the subfolder
+                        dataAssert(givenEntry.filename.indexOf('/') > 0); // filename actually contains the subfolder
                     }
                 }
-                fileLink = `https://git.door43.org/${username}/${repoName}/blame/branch/${branch}/${folder}${filename}`;
+                fileLink = `https://git.door43.org/${givenEntry.username}/${adjustedRepoName}/blame/branch/${givenEntry.branch}/${folder}${givenEntry.filename}`;
             } else // not TSV or MD
-                fileLink = `https://git.door43.org/${username}/${repoName}/src/branch/${branch}/${filename}`;
+                fileLink = `https://git.door43.org/${givenEntry.username}/${adjustedRepoName}/src/branch/${givenEntry.branch}/${givenEntry.filename}`;
         } catch (someErr) { debugLog(`What was someErr here: ${someErr}`); }
-        if (lineNumber) {
+        if (givenEntry.lineNumber) {
             resultStart += ' on ';
-            if (fileLink && lineNumber)
-                fileLineLink = `${fileLink}#L${lineNumber}`;
-            lineResult = `line ${lineNumber.toLocaleString()}`;
+            if (fileLink && givenEntry.lineNumber)
+                fileLineLink = `${fileLink}#L${givenEntry.lineNumber}`;
+            lineResult = `line ${givenEntry.lineNumber.toLocaleString()}`;
         }
         // else resultEnd += " no lineNumber";
     }
     // else if (!username) resultEnd += " no username";
     // else if (!repoName) resultEnd += " no repoName";
     // else if (!filename) resultEnd += " no filename";
-    if (rowID && rowID.length) resultEnd += ` with row ID ${rowID}`;
-    if (fieldName && fieldName.length) resultEnd += ` in ${fieldName} field`;
+    if (givenEntry.rowID && givenEntry.rowID.length) resultEnd += ` with row ID ${givenEntry.rowID}`;
+    if (givenEntry.fieldName && givenEntry.fieldName.length) resultEnd += ` in ${givenEntry.fieldName} field`;
 
     if (fileLineLink) return <>{resultStart}<a rel="noopener noreferrer" target="_blank" href={fileLineLink}>{lineResult}</a>{resultEnd}</>;
-    else if (fileLink) return <>{resultStart} in file <a rel="noopener noreferrer" target="_blank" href={fileLink}>{filename}</a>{resultEnd}</>;
+    else if (fileLink) return <>{resultStart} in file <a rel="noopener noreferrer" target="_blank" href={fileLink}>{givenEntry.filename}</a>{resultEnd}</>;
     else return <>{resultStart}<b>{lineResult}</b>{resultEnd}</>;
 }
 // end of RenderFileDetails
+
 
 function RenderExcerpt({ excerpt, message }) {
     // debugLog(`RenderExcerpt(${excerpt}, ${message})`);
@@ -358,6 +371,11 @@ function RenderPriority({ entry }) {
         return <small style={{ color: 'Gray' }}> ({entry.priority >= 0 ? "Priority " + entry.priority : ""})</small>
 }
 
+/**
+ *
+ * @param {Object} param0 with arrayType of 'w','e','s' and an array of results
+ * @returns JSX rendered table
+ */
 function RenderProcessedArray({ arrayType, results }) {
     // Display our array of objects in a nicer format
     //  priority (integer), message (string)
@@ -365,7 +383,7 @@ function RenderProcessedArray({ arrayType, results }) {
     //      bookID, C, V, repoName, filename, lineNumber
     //      characterIindex (integer), excerpt (string), location (string)
     //
-    // debugLog("In RenderProcessedArray with ", arrayType);
+    debugLog("In RenderProcessedArray with ", arrayType);
     // consoleLogObject('RenderProcessedArray results', results);
 
     if (arrayType === 's')
@@ -379,7 +397,7 @@ function RenderProcessedArray({ arrayType, results }) {
                 return <li key={index}>
                     <RenderMessage color={arrayType === 'e' ? 'red' : 'orange'} message={listEntry.message} details={listEntry.details} />
                     <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
-                    <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} branch={listEntry.branch} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
+                    <RenderFileDetails givenEntry={listEntry} />
                     {listEntry.characterIndex > 0 ? " (at character " + (listEntry.characterIndex + 1) + ")" : ""}
                     <RenderExcerpt excerpt={listEntry.excerpt} message={listEntry.message} />
                     {listEntry.location}
@@ -407,7 +425,7 @@ function RenderGivenArray({ array, color }) {
             return <li key={index}>
                 <RenderMessage color={color} message={listEntry.message} details={listEntry.details} />
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
-                <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} branch={listEntry.branch} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
+                <RenderFileDetails givenEntry={listEntry} />
                 {listEntry.characterIndex !== undefined && listEntry.characterIndex >= 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
                 <RenderExcerpt excerpt={listEntry.excerpt} message={listEntry.message} />
                 {listEntry.location}
@@ -445,7 +463,7 @@ function RenderWarningsGradient({ results }) {
             return <li key={index}>
                 <RenderMessage color={thiscolor} message={listEntry.message} details={listEntry.details} />
                 <RenderBCV bookID={listEntry.bookID} C={listEntry.C} V={listEntry.V} />
-                <RenderFileDetails username={listEntry.username} repoName={listEntry.repoName} branch={listEntry.branch} filename={listEntry.filename} lineNumber={listEntry.lineNumber} rowID={listEntry.rowID} fieldName={listEntry.fieldName} />
+                <RenderFileDetails givenEntry={listEntry} />
                 {listEntry.characterIndex !== undefined && listEntry.characterIndex >= 0 ? " (at character " + (listEntry.characterIndex + 1) + " of line)" : ""}
                 <RenderExcerpt excerpt={listEntry.excerpt} message={listEntry.message} />
                 {listEntry.location}
