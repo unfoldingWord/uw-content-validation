@@ -8,7 +8,7 @@ import { cachedGetFile, cachedGetFileUsingFullURL, checkMarkdownText } from '../
 import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 
 
-// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.7.22';
+// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.7.23';
 
 // const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -133,6 +133,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     // functionLog(`checkNotesLinksToOutside('${languageCode}', '${repoCode}', ${bookID} ${givenC}:${givenV} '${fieldName}', (${fieldText.length})'${fieldText}', ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
     parameterAssert(languageCode !== undefined, "checkNotesLinksToOutside: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkNotesLinksToOutside: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    parameterAssert(languageCode !== 'hbo' && languageCode !== 'el-x-koine', `checkNotesLinksToOutside: 'languageCode' parameter should not be an original language code: '${languageCode}'`);
     parameterAssert(repoCode !== undefined, "checkNotesLinksToOutside: 'repoCode' parameter should be defined");
     parameterAssert(typeof repoCode === 'string', `checkNotesLinksToOutside: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
     parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkNotesLinksToOutside: 'repoCode' parameter should not be '${repoCode}'`);
@@ -671,7 +672,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             } catch (tlcNCerror) {
                 debugLog(`checkNotesLinksToOutside1 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
                 numChaptersThisBook = 0;
-             }
+            }
             try {
                 numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
             } catch (tlcNVerror) { }
@@ -706,7 +707,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
 
         const linkVerseInt = ourParseInt(V2);
         if (C1 === undefined) {
-            if (!books.isOneChapterBook(linkBookCode)) {
+            if (linkBookCode.length === 0 || !books.isOneChapterBook(linkBookCode)) {
                 // debugLog(`  checkNotesLinksToOutside C1 missing in BIBLE_REGEX_THIS_CHAPTER_RELATIVE regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
                 addNoticePartial({ priority: 555, message: "Possible missing chapter number in markdown Bible link", excerpt: totalLink, location: ourLocation });
             }
@@ -734,7 +735,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             } catch (tlcNCerror) {
                 debugLog(`checkNotesLinksToOutside2 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
                 numChaptersThisBook = 0;
-             }
+            }
             try {
                 numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), givenCint);
             } catch (tlcNVerror) { }
@@ -774,7 +775,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             } catch (tlcNCerror) {
                 debugLog(`checkNotesLinksToOutside3 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
                 numChaptersThisBook = 0;
-             }
+            }
             try {
                 numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
             } catch (tlcNVerror) { }
@@ -818,7 +819,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             } catch (tlcNCerror) {
                 debugLog(`checkNotesLinksToOutside4 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
                 numChaptersThisBook = 0;
-             }
+            }
             try {
                 numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
             } catch (tlcNVerror) { }
@@ -872,7 +873,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             } catch (tlcNCerror) {
                 debugLog(`checkNotesLinksToOutside5 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
                 numChaptersThisBook = 0;
-             }
+            }
             try {
                 numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
             } catch (tlcNVerror) { }
@@ -933,7 +934,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             } catch (tlcNCerror) {
                 debugLog(`checkNotesLinksToOutside6 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
                 numChaptersThisBook = 0;
-             }
+            }
             try {
                 numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
             } catch (tlcNVerror) { }
@@ -1038,7 +1039,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             } catch (tlcNCerror) {
                 debugLog(`checkNotesLinksToOutside8 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
                 numChaptersThisBook = 0;
-             }
+            }
             try {
                 numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
             } catch (tlcNVerror) { }
@@ -1093,7 +1094,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             } catch (tlcNCerror) {
                 debugLog(`checkNotesLinksToOutside9 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
                 numChaptersThisBook = 0;
-             }
+            }
             try {
                 numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
             } catch (tlcNVerror) { }
@@ -1149,7 +1150,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             } catch (tlcNCerror) {
                 debugLog(`checkNotesLinksToOutside10 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
                 numChaptersThisBook = 0;
-             }
+            }
             try {
                 numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
             } catch (tlcNVerror) { }
