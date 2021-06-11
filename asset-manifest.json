@@ -1,16 +1,16 @@
 {
   "files": {
-    "build/0.e4c77859.js": "/uw-content-validation/build/0.e4c77859.js",
-    "build/1.a1b3f0de.js": "/uw-content-validation/build/1.a1b3f0de.js",
+    "build/0.9e61e04a.js": "/uw-content-validation/build/0.9e61e04a.js",
+    "build/1.4f40a4e3.js": "/uw-content-validation/build/1.4f40a4e3.js",
     "build/2.9894d305.js": "/uw-content-validation/build/2.9894d305.js",
     "build/3.0ea9b813.js": "/uw-content-validation/build/3.0ea9b813.js",
-    "main.js": "/uw-content-validation/build/main.be795e27.js",
-    "runtime-main.js": "/uw-content-validation/build/bundle.3355ad0f.js",
+    "main.js": "/uw-content-validation/build/main.6652186d.js",
+    "runtime-main.js": "/uw-content-validation/build/bundle.f658669e.js",
     "index.html": "/uw-content-validation/index.html"
   },
   "entrypoints": [
-    "build/bundle.3355ad0f.js",
-    "build/0.e4c77859.js",
-    "build/main.be795e27.js"
+    "build/bundle.f658669e.js",
+    "build/0.9e61e04a.js",
+    "build/main.6652186d.js"
   ]
 }
