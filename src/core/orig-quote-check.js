@@ -380,9 +380,9 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
     catch { dataAssert(false, `NOTE: We got occurrence=${occurrence} from ${C}:${V} '${occurrenceString}'`); } // errors in this field are noted elsewhere
 
     // if fieldText.lstrip() !== fieldText:
-    //     addNotice({priority:0, message:`Unexpected whitespace at start of {TNid} '{fieldText}'")
+    //     addNotice({priority:0, message:`Unexpected whitespace at start of ${TNid} '${fieldText}'")
     // if fieldText.rstrip() !== fieldText:
-    //     addNotice({priority:0, message:`Unexpected whitespace at end of {TNid} '{fieldText}'")
+    //     addNotice({priority:0, message:`Unexpected whitespace at end of ${TNid} '${fieldText}'")
     // fieldText = fieldText.strip() # so we don’t get consequential errors
 
     let characterIndex;
