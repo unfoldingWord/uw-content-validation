@@ -1,6 +1,6 @@
 ## Door43 Repo Check - Readme
 
-The code below requests some info and then checks a Door43 repository.You can enter the `repoName`, i.e., the `username/repoName` in the code below. (Unfortunately if you refresh the page from the browser controls, it will return to the default setting. If you want to restart the test without returning to the default repo, just change one letter in a `//` comment line below.)
+The code below requests some info and then downloads and checks a Door43 repository.You can enter the `repoName`, i.e., the `username/repoName` in the code below. (Unfortunately if you refresh the page from the browser controls, it will return to the default setting. If you want to restart the test without returning to the default repo, just change one letter in a `//` comment line below.)
 
 **Warning**: Some repos contain many files and/or very large files, and downloading them all and then checking them might slow down your browser—maybe even causing pop-up messages asking to confirm that you want to keep waiting.
 
@@ -17,6 +17,7 @@ import RepoCheck from './RepoCheck';
   wait='Y' // 'Y' (for Yes, i.e., to wait) or 'N' (for No, i.e., to start checking)
 
   // Set to N to rerun the check without fetching new copies of the files (slightly faster)
+  // If you're checking and then editing & saving files, ensure that it's set to Y before you recheck
   reloadAllFilesFirst='Y' // 'Y' (for Yes -- same as ClearCache in menu) or 'N' (for No)
 
   // username = 'Door43-Catalog'

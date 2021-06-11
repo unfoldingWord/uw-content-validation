@@ -14,6 +14,7 @@ and then validates the content of one file selected from the repo.
   wait='Y' // 'Y' (for Yes, i.e., to wait) or 'N' (for No, i.e., to start checking)
 
   // Set to N to rerun the check without fetching new copies of the files (slightly faster)
+  // If you're checking and then editing & saving files, ensure that it's set to Y before you recheck
   reloadAllFilesFirst='Y' // 'Y' (for Yes -- same as ClearCache in menu) or 'N' (for No)
 
   // username='Door43-Catalog'

@@ -1,6 +1,6 @@
 ## Door43 All Book Packages Check - Readme
 
-The code below requests some info and then checks the requested Bible books—NT or OT or ALL across several repos. OBS (Open Bible Stories) can also be added. This is convenient to see all these check results collected into one place.
+The code below requests some info and then downloads and checks the requested Bible books—NT or OT or ALL across several repos. OBS (Open Bible Stories) can also be added. This is convenient to see all these check results collected into one place.
 
 `All Book Packages Check` calls `checkBookPackages()` which then calls `checkBookPackage()` for each given book identifier, which in turn calls `checkFileContents()` for the book file in each repo (or calls `checkRepo()` for **OBS**).
 
@@ -19,6 +19,7 @@ import AllBookPackagesCheck from './AllBookPackagesCheck';
   wait='Y' // 'Y' (for Yes, i.e., to wait) or 'N' (for No, i.e., to start checking)
 
   // Set to N to rerun the check without fetching new copies of the files (slightly faster)
+  // If you're checking and then editing & saving files, ensure that it's set to Y before you recheck
   reloadAllFilesFirst='Y' // 'Y' (for Yes -- same as ClearCache in menu) or 'N' (for No)
 
   username='unfoldingWord'

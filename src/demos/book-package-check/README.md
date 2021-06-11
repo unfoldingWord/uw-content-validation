@@ -1,6 +1,6 @@
 ## Door43 Book Package Check - Readme
 
-The code below requests some info and then checks the single specified Bible book in several repos. This is convenient to see all these check results collected into one place.
+The code below requests some info and then downloads and checks the single specified Bible book in several repos. This is convenient to see all these check results collected into one place.
 
 See a list of valid book identifiers [here](http://ubsicap.github.io/usfm/identification/books.html), although only `GEN` to `REV` from that list are useful here.
 
@@ -23,6 +23,7 @@ import BookPackageCheck from './BookPackageCheck';
   wait='Y' // 'Y' (for Yes, i.e., to wait) or 'N' (for No, i.e., to start checking)
 
   // Set to N to rerun the check without fetching new copies of the files (slightly faster)
+  // If you're checking and then editing & saving files, ensure that it's set to Y before you recheck
   reloadAllFilesFirst='Y' // 'Y' (for Yes -- same as ClearCache in menu) or 'N' (for No)
 
   username='unfoldingWord'

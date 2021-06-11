@@ -1,6 +1,6 @@
 ## Door43 Gateway Language Book Package Check - Readme
 
-The code below requests some info and then checks the single specified Bible book in several repos. This is convenient to see all these check results collected into one place.
+The code below requests some info and then downloads and checks the single specified Bible book in several repos. This is convenient to see all these check results collected into one place.
 
 See a list of valid book identifiers [here](http://ubsicap.github.io/usfm/identification/books.html), although only `GEN` to `REV` from that list are useful here.
 
