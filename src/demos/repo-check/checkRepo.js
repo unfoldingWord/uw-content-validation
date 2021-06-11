@@ -45,7 +45,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
   if (repoCode === 'TN2') {
     repoCode = 'TN';
     if (repoBranch === undefined) repoBranch = 'newFormat';
-  }else if (repoCode === 'TQ2') {
+  } else if (repoCode === 'TQ2') {
     repoCode = 'TQ';
     if (repoBranch === undefined) repoBranch = 'newFormat';
   }
@@ -128,7 +128,11 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
     parameterAssert(typeof fileLocation === 'string', `ourCheckRepoFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
     parameterAssert(checkingOptions !== undefined, "ourCheckRepoFileContents: 'checkingOptions' parameter should be defined");
 
-    const cfcResultObject = await checkFileContents(username, languageCode, repoCode, repoBranch, filename, fileContent, fileLocation, checkingOptions);
+    let adjustedLanguageCode = languageCode;
+    if (filename === 'manifest.yaml' || filename === 'LICENSE.md'
+      || ((languageCode === 'el-x-koine' || languageCode === 'hbo') && filename === 'README.md'))
+      adjustedLanguageCode = 'en'; // Correct the language for these auxilliary files
+    const cfcResultObject = await checkFileContents(username, adjustedLanguageCode, repoCode, repoBranch, filename, fileContent, fileLocation, checkingOptions);
     // debugLog("checkFileContents() returned", resultObject.successList.length, "success message(s) and", resultObject.noticeList.length, "notice(s)");
     // for (const successEntry of resultObject.successList)
     //     userLog("  ", successEntry);
