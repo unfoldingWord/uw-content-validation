@@ -12,7 +12,7 @@ These raw notice components can then be filtered and/or sorted as required by th
 
 import React, { useState, useEffect } from 'react';
 import { checkTN_TSV9DataRow } from './tn-tsv9-row-check';
-import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
+import { RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Empty, Header, Nonsense, Good, Bad, Very bad, and Actual line samples
 const lineE = "";

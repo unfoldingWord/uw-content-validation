@@ -8,7 +8,7 @@ import { cachedGetFile, cachedGetFileUsingFullURL, checkMarkdownText } from '../
 import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 
 
-// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.7.23';
+// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.7.25';
 
 // const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -133,7 +133,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     // functionLog(`checkNotesLinksToOutside('${languageCode}', '${repoCode}', ${bookID} ${givenC}:${givenV} '${fieldName}', (${fieldText.length})'${fieldText}', ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
     parameterAssert(languageCode !== undefined, "checkNotesLinksToOutside: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkNotesLinksToOutside: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
-    parameterAssert(languageCode !== 'hbo' && languageCode !== 'el-x-koine', `checkNotesLinksToOutside: 'languageCode' parameter should not be an original language code: '${languageCode}'`);
+    // parameterAssert(languageCode !== 'hbo' && languageCode !== 'el-x-koine', `checkNotesLinksToOutside: 'languageCode' parameter should not be an original language code: '${languageCode}'`);
     parameterAssert(repoCode !== undefined, "checkNotesLinksToOutside: 'repoCode' parameter should be defined");
     parameterAssert(typeof repoCode === 'string', `checkNotesLinksToOutside: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
     parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkNotesLinksToOutside: 'repoCode' parameter should not be '${repoCode}'`);
@@ -148,7 +148,11 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     // }
     parameterAssert(fieldName !== undefined, "checkNotesLinksToOutside: 'fieldText' parameter should be defined");
     parameterAssert(typeof fieldName === 'string', `checkNotesLinksToOutside: 'fieldText' parameter should be a string not a '${typeof fieldName}'`);
-    // parameterAssert(fieldName === 'OccurrenceNote' || fieldName === 'Note' || fieldName === 'TWLink', `checkNotesLinksToOutside: 'fieldName' parameter should be 'OccurrenceNote' or 'Note' or 'TWLink' not '${fieldName}'`);
+    parameterAssert(fieldName !== `${languageCode}_${repoCode.toLowerCase()}`, `checkNotesLinksToOutside: 'fieldText' parameter should not be the repoName: '${fieldName}'`);
+    // if (fieldName === `${languageCode}_${repoCode.toLowerCase()}`) { console.trace('checkNotesLinksToOutside()'); }
+    if (!fieldName.startsWith('TA ') && !fieldName.startsWith('TW ') && fieldName.indexOf('/') === -1)
+        parameterAssert(fieldName === 'OccurrenceNote' || fieldName === 'Note' || fieldName === 'TWLink' || fieldName === 'Response' || fieldName === 'README' || fieldName === 'LICENSE',
+            `checkNotesLinksToOutside: 'fieldName' parameter should be 'OccurrenceNote', 'Note', 'TWLink', 'Response', 'README' or 'LICENSE' not '${fieldName}'`);
     parameterAssert(fieldText !== undefined, "checkNotesLinksToOutside: 'fieldText' parameter should be defined");
     parameterAssert(typeof fieldText === 'string', `checkNotesLinksToOutside: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
     parameterAssert(givenLocation !== undefined, "checkNotesLinksToOutside: 'fieldText' parameter should be defined");
@@ -165,18 +169,18 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
      * @param {Object} noticeObject expected to contain priority, message, characterIndex, exerpt, location
      */
     function addNoticePartial(noticeObject) {
-        // functionLog(`checkNotesLinksToOutside Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
+        // functionLog(`checkNotesLinksToOutside Notice: (priority = ${ priority }) ${ message } ${ characterIndex > 0 ? ` (at character ${characterIndex})` : "" } ${ excerpt ? ` ${excerpt}` : "" } ${ location } `);
         parameterAssert(noticeObject.priority !== undefined, "cTNlnk addNoticePartial: 'priority' parameter should be defined");
-        parameterAssert(typeof noticeObject.priority === 'number', `cTNlnk addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        parameterAssert(typeof noticeObject.priority === 'number', `cTNlnk addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority} `);
         parameterAssert(noticeObject.message !== undefined, "cTNlnk addNoticePartial: 'message' parameter should be defined");
-        parameterAssert(typeof noticeObject.message === 'string', `cTNlnk addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+        parameterAssert(typeof noticeObject.message === 'string', `cTNlnk addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message} `);
         // parameterAssert(characterIndex !== undefined, "cTNlnk addNoticePartial: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cTNlnk addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cTNlnk addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex} `);
         // parameterAssert(excerpt !== undefined, "cTNlnk addNoticePartial: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `cTNlnk addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `cTNlnk addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt} `);
         parameterAssert(noticeObject.location !== undefined, "cTNlnk addNoticePartial: 'location' parameter should be defined");
-        parameterAssert(typeof noticeObject.location === 'string', `cTNlnk addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
-        // noticeObject.debugChain = noticeObject.debugChain ? `checkNotesLinksToOutside ${noticeObject.debugChain}` : `checkNotesLinksToOutside(${fieldName})`;
+        parameterAssert(typeof noticeObject.location === 'string', `cTNlnk addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location} `);
+        // noticeObject.debugChain = noticeObject.debugChain ? `checkNotesLinksToOutside ${ noticeObject.debugChain } ` : `checkNotesLinksToOutside(${ fieldName })`;
         ctarResult.noticeList.push({ ...noticeObject, bookID, fieldName });
     }
 
@@ -186,17 +190,19 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     let excerptLength = checkingOptions?.excerptLength;
     if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
         excerptLength = DEFAULT_EXCERPT_LENGTH;
-        // debugLog(`Using default excerptLength=${excerptLength}`);
-    } // else debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
+        // debugLog(`Using default excerptLength = ${ excerptLength } `);
+    } // else debugLog(`Using supplied excerptLength = ${ excerptLength } `, `cf.default = ${ DEFAULT_EXCERPT_LENGTH } `);
     const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
     const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
-    // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
+    // debugLog(`Using excerptHalfLength = ${ excerptHalfLength } `, `excerptHalfLengthPlus = ${ excerptHalfLengthPlus } `);
 
     const getFile_ = (checkingOptions && checkingOptions?.getFile) ? checkingOptions?.getFile : cachedGetFile;
     let defaultLanguageCode = checkingOptions?.defaultLanguageCode;
     // if (!defaultLanguageCode) defaultLanguageCode = DEFAULT_LANGUAGE_CODE;
-    if (!defaultLanguageCode) defaultLanguageCode = languageCode;
-    // debugLog("checkNotesLinksToOutside defaultLanguageCode", defaultLanguageCode);
+    let adjustedLanguageCode = languageCode; // This is the language code of the resource with the link
+    if (languageCode === 'hbo' || languageCode === 'el-x-koine') adjustedLanguageCode = 'en' // This is a guess (and won't be needed for TWs when we switch to TWLs)
+    if (!defaultLanguageCode) defaultLanguageCode = adjustedLanguageCode;
+    // debugLog(`checkNotesLinksToOutside defaultLanguageCode=${defaultLanguageCode}`);
 
     let taRepoUsername = checkingOptions?.taRepoUsername;
     if (!taRepoUsername) taRepoUsername = defaultLanguageCode === 'en' ? 'unfoldingWord' : 'Door43-Catalog';
@@ -218,9 +224,22 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
         try {
             givenCint = (givenC === 'front') ? 0 : ourParseInt(givenC);
             givenVint = (givenV === 'intro') ? 0 : ourParseInt(givenVfirstPart);
-            if (givenVfirstPart !== givenV && givenV !== 'intro') debugLog(`From '${givenC}':'${givenV}' got '${givenC}':'${givenVfirstPart}' then integers ${givenCint}:${givenVint}`);
+            if (givenVfirstPart !== givenV && givenV !== 'intro') debugLog(`From '${givenC}': '${givenV}' got '${givenC}': '${givenVfirstPart}' then integers ${givenCint}: ${givenVint} `);
         } catch (cvError) {
-            console.error(`TN Link Check couldn’t parse given chapter and verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName}' via ${givenC}:${givenVfirstPart} got ${givenCint}:${givenVint} with ${cvError}`);
+            console.error(`TN Link Check couldn’t parse given chapter and verse numbers for ${bookID} ${givenC}: ${givenV} ${fieldName} ' via ${givenC}:${givenVfirstPart} got ${givenCint}:${givenVint} with ${cvError}`);
+        }
+    }
+
+    if (fieldName === 'x-tw' || fieldName === 'TWLink' || fieldName === 'SupportReference') {
+        // The link should be the entire field, so check for leading/trailing spaces
+        const trimStartFieldText = fieldText.trimStart(), trimEndFieldText = fieldText.trimEnd();
+        if (trimStartFieldText !== fieldText) {
+            const excerpt = fieldText.substring(0, excerptLength).replace(/ /g, '␣') + (fieldText.length > excerptLength ? '…' : '');
+            addNoticePartial({ priority: 784, message: "Unexpected leading whitespace in link field", excerpt, characterIndex: 0, location: ourLocation });
+        }
+        else if (trimEndFieldText !== fieldText) {
+            const excerpt = (fieldText.length > excerptLength ? '…' : '') + fieldText.substring(fieldText.length - 10).replace(/ /g, '␣');
+            addNoticePartial({ priority: 785, message: "Unexpected trailing whitespace in link field", excerpt, characterIndex: fieldText.length - 1, location: ourLocation });
         }
     }
 
@@ -290,7 +309,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
         let [totalLink, _displayName, category, article] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
 
-        const twRepoName = `${languageCode}_tw`;
+        const twRepoName = `${defaultLanguageCode}_tw`;
         // debugLog(`Got twRepoName=${twRepoName}`);
         const filepath = `bible/${category}/${article}.md`;
         // debugLog(`Got tW filepath=${filepath}`);
@@ -404,7 +423,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             let [totalLink, _displayName, article] = regexResultArray;
             processedLinkList.push(totalLink); // Save the full link
 
-            const taRepoName = `${languageCode}_ta`;
+            const taRepoName = `${defaultLanguageCode}_ta`;
             // debugLog(`Got taRepoName=${taRepoName}`);
             let TAsection = 'translate';
             if (fieldName.startsWith('checking/')) TAsection = 'checking';
@@ -459,7 +478,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             let [totalLink, _displayName, TAsection, article] = regexResultArray;
             processedLinkList.push(totalLink); // Save the full link
 
-            const taRepoName = `${languageCode}_ta`;
+            const taRepoName = `${defaultLanguageCode}_ta`;
             // debugLog(`Got taRepoName=${taRepoName}`);
             const filepath = `${TAsection}/${article}/01.md`; // Other files are title.md, sub-title.md
             // debugLog(`Got tA filepath=${filepath}`);

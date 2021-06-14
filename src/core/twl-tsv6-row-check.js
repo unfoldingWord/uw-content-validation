@@ -9,7 +9,7 @@ import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const TWL_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.1.6';
+// const TWL_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.1.7';
 
 const NUM_EXPECTED_TWL_TSV_FIELDS = 6; // so expects 5 tabs per line
 const EXPECTED_TWL_HEADING_LINE = 'Reference\tID\tTags\tOrigWords\tOccurrence\tTWLink';
@@ -193,7 +193,9 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         parameterAssert(twLinkText !== undefined, "checkTWL_TSV6DataRow ourCheckNotesLinksToOutside: 'twLinkText' parameter should be defined");
         parameterAssert(typeof twLinkText === 'string', `checkTWL_TSV6DataRow ourCheckNotesLinksToOutside: 'twLinkText' parameter should be a string not a '${typeof twLinkText}'`);
 
-        const coTNlResultObject = await checkNotesLinksToOutside(languageCode, repoCode, bookID, givenC, givenV, fieldName, twLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: languageCode });
+        let adjustedLanguageCode = languageCode; // This is the language code of the resource with the link
+        if (languageCode === 'hbo' || languageCode === 'el-x-koine') adjustedLanguageCode = 'en' // This is a guess (and won't be needed for TWs when we switch to TWLs)
+        const coTNlResultObject = await checkNotesLinksToOutside(languageCode, repoCode, bookID, givenC, givenV, fieldName, twLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: adjustedLanguageCode });
         // debugLog(`coTNlResultObject=${JSON.stringify(coTNlResultObject)}`);
 
         // Choose only ONE of the following

@@ -13,7 +13,7 @@ These raw notice components can then be filtered and/or sorted as required by th
 //        Simply click inside here and add, change, or delete text as required.
 
 import { checkUSFMToJSON } from './usfm-js-check';
-import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
+import { RenderNumberedLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // USFM samples
 const textS = `\\id GEN Short test
@@ -187,7 +187,7 @@ const chosenText = textH;
 const rawResults = checkUSFMToJSON('GEN', chosenTextName, chosenText, 'that was supplied');
 
 <>
-<b>Check</b><RenderLines text={chosenText} />
+<b>Check</b><RenderNumberedLines text={chosenText} />
 <RenderRawResults results={rawResults} />
 </>
 ```

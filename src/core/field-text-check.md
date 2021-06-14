@@ -11,7 +11,7 @@ This demonstration doesn’t display the raw notices, but rather displays the pr
 //        Simply click inside here and add, change, or delete text as required.
 
 import { checkTextField } from './field-text-check';
-import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
+import { RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Empty, space, good, and bad, link, and RC text samples
 const textE = "";

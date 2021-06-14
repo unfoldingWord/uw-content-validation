@@ -260,7 +260,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
 
         let remainingVerseBits = partialVerseText.split(foundQuoteSegment); // NOTE: can split (badly) on short strings (like δὲ or εἰ) mid-word
         if (remainingVerseBits.length > 2) // Join the extra bits back up
-        remainingVerseBits = [remainingVerseBits[0], remainingVerseBits.slice(1).join(discontiguousDivider)];
+            remainingVerseBits = [remainingVerseBits[0], remainingVerseBits.slice(1).join(discontiguousDivider)];
         logicAssert(remainingVerseBits.length === 2, `remaining bits are ${remainingVerseBits.length}`);
 
         // Note: There's some Hebrew (RTL) characters at the beginning of the following regex
@@ -271,17 +271,17 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
         // const precedingRegex = new RegExp('[ ־*[("\'“‘]', 'g');
         // NOTE: This algorithm has to handle a single word inside another prior word, e.g., searching for δὲ in οὐδὲν δὲ συνκεκαλυμμένον ἐστὶν
         if (foundQuoteSegment.slice(0) !== ' ' && remainingVerseBits[0]
-         && precedingChar && ' ־*[("\'“‘—'.indexOf(precedingChar) === -1 // handle punctuation expected before words
-         && (foundQuoteSegment.indexOf(' ') !== -1 || partialVerseText.indexOf(` ${foundQuoteSegment}`) === -1) // it's multiword, or there's not another word that fits
+            && precedingChar && ' ־*[("\'“‘—'.indexOf(precedingChar) === -1 // handle punctuation expected before words
+            && (foundQuoteSegment.indexOf(' ') !== -1 || partialVerseText.indexOf(` ${foundQuoteSegment}`) === -1) // it's multiword, or there's not another word that fits
         ) {
             let precederDescription;
             if (precedingChar === '\u2060') precederDescription = 'WordJoiner';
             else if (precedingChar === '\u200D') precederDescription = 'ZeroWidth-WordJoiner';
             else precederDescription = `${precedingChar}=D${precedingChar.charCodeAt(0)}/H${precedingChar.charCodeAt(0).toString(16)}`;
             // debugLog(`Seems ${bookID} ${C}:${V} '${foundQuoteSegment}' might not start at the beginning of a word—it’s preceded by '${precederDescription}' in '${partialVerseText}' of '${fullVerseText}'`);
-            const excerpt = `(${precederDescription})${foundQuoteSegment.substring(0, excerptLength - 3)}${(foundQuoteSegment.length > excerptLength - 3 ? '…' : '')}${occurrenceString.length? ` occurrence=${occurrenceString}`:''}`;
+            const excerpt = `(${precederDescription})${foundQuoteSegment.substring(0, excerptLength - 3)}${(foundQuoteSegment.length > excerptLength - 3 ? '…' : '')}${occurrenceString.length ? ` occurrence=${occurrenceString}` : ''}`;
             // We greatly lower the priority if we're less sure that it's a genuine error
-            addNotice({ priority: foundQuoteSegment.indexOf(' ') !== -1 || fullVerseText.search(` ${foundQuoteSegment}`) === -1?909: 389, message: "Seems original language quote might not start at the beginning of a word", details, characterIndex: 0, excerpt, location });
+            addNotice({ priority: foundQuoteSegment.indexOf(' ') !== -1 || fullVerseText.search(` ${foundQuoteSegment}`) === -1 ? 909 : 389, message: "Seems original language quote might not start at the beginning of a word", details, characterIndex: 0, excerpt, location });
         }
         const followingChar = remainingVerseBits[1][0];
         // debugLog(`Next char after ${C}:${V} '${foundQuoteSegment}' is '${followingChar}'`);
@@ -289,15 +289,15 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
         const allowedWordEndChars = ' ׃־.,:;?!–—)';
         const followingRegex = new RegExp(`${foundQuoteSegment}[${allowedWordEndChars}]`, 'g');
         if (foundQuoteSegment.slice(-1) !== ' ' && remainingVerseBits[1]
-        && followingChar && allowedWordEndChars.indexOf(followingChar) === -1 // handle punctuation expected after words
-         && (foundQuoteSegment.indexOf(' ') !== -1 || partialVerseText.search(followingRegex) === -1) // it's multiword, or there's not another word that fits
-         ) {
+            && followingChar && allowedWordEndChars.indexOf(followingChar) === -1 // handle punctuation expected after words
+            && (foundQuoteSegment.indexOf(' ') !== -1 || partialVerseText.search(followingRegex) === -1) // it's multiword, or there's not another word that fits
+        ) {
             // No problems if quote is followed by expected terminator-type punctuation
             // const badCharString = `'${followingChar}'=D${followingChar.charCodeAt(0)}/H${followingChar.charCodeAt(0).toString(16)}`;
             // debugLog(`Seems ${bookID} ${C}:${V} '${foundQuoteSegment}' might not finish at the end of a word—it’s followed by ${badCharString} in '${partialVerseText}' of '${fullVerseText}'`);
-            const excerpt = `${(foundQuoteSegment.length > excerptLength - 3 ? '…' : '')}${foundQuoteSegment.substring(foundQuoteSegment.length - excerptLength + 3, foundQuoteSegment.length)}(${followingChar}=D${remainingVerseBits[1].charCodeAt(0)}/H${remainingVerseBits[1].charCodeAt(0).toString(16)})${occurrenceString.length? ` occurrence=${occurrenceString}`:''}`;
+            const excerpt = `${(foundQuoteSegment.length > excerptLength - 3 ? '…' : '')}${foundQuoteSegment.substring(foundQuoteSegment.length - excerptLength + 3, foundQuoteSegment.length)}(${followingChar}=D${remainingVerseBits[1].charCodeAt(0)}/H${remainingVerseBits[1].charCodeAt(0).toString(16)})${occurrenceString.length ? ` occurrence=${occurrenceString}` : ''}`;
             // We greatly lower the priority if we're less sure that it's a genuine error
-            addNotice({ priority: foundQuoteSegment.indexOf(' ') !== -1 || fullVerseText.search(followingRegex) === -1? 908: 388, message: "Seems original language quote might not finish at the end of a word", details, characterIndex: foundQuoteSegment.length, excerpt, location });
+            addNotice({ priority: foundQuoteSegment.indexOf(' ') !== -1 || fullVerseText.search(followingRegex) === -1 ? 908 : 388, message: "Seems original language quote might not finish at the end of a word", details, characterIndex: foundQuoteSegment.length, excerpt, location });
         }
     }
     // end of checkFoundQuoteSegment function
@@ -466,7 +466,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
                 } else { // We found this bit
                     // debugLog(`Found ${C}:${V} origQuote portion ${bitIndex} '${quoteBits[bitIndex]}' at ${quoteIndex} (num text chars = ${verseText.length})`);
                     const verseTextBits = verseText.split(quoteBits[bitIndex]); // NOTE: can split (badly) on short strings (like δὲ or εἰ) mid-word
-                    checkFoundQuoteSegment(quoteBits[bitIndex], partDescription, occurrenceString, `${verseTextBits[occurrence-1]}${quoteBits[bitIndex]}${verseTextBits[occurrence]}`, verseText, ourLocation);
+                    checkFoundQuoteSegment(quoteBits[bitIndex], partDescription, occurrenceString, `${verseTextBits[occurrence - 1]}${quoteBits[bitIndex]}${verseTextBits[occurrence]}`, verseText, ourLocation);
                 }
             }
         } else // < 2
@@ -482,7 +482,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
                     const excerpt = fieldText.substring(0, excerptHalfLength) + (fieldText.length > 2 * excerptHalfLength ? '…' : '') + fieldText.substring(fieldText.length - excerptHalfLength, fieldText.length);
                     addNotice({ priority: 917, message: "Unable to find duplicate original language quote in verse text", details: `occurrence=${occurrenceString} but ${actualOccurrencesText} occurrence${actualNumOccurrences === 1 ? '' : 's'} found, passage ►${verseText}◄`, excerpt, location: ourLocation });
                 } else {
-                    checkFoundQuoteSegment(fieldText, '', occurrenceString, `${verseTextBits[occurrence-1]}${fieldText}${verseTextBits[occurrence]}`, verseText, ourLocation);
+                    checkFoundQuoteSegment(fieldText, '', occurrenceString, `${verseTextBits[occurrence - 1]}${fieldText}${verseTextBits[occurrence]}`, verseText, ourLocation);
                 }
             } else { // We only need to check for one occurrence
                 // TODO: The error in the next line has been notified elsewhere, but should we try to handle it more intelligently here ???

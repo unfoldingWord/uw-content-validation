@@ -81,16 +81,15 @@ export async function checkFileContents(username, languageCode, repoCode, branch
     const bookID = filenameMain.substring(filenameMain.length - 3);
     // debugLog(`Have USFM bookcode=${bookID}`);
     parameterAssert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
-    checkFileResult = checkUSFMText(languageCode, repoCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
+    checkFileResult = await checkUSFMText(languageCode, repoCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
   } else if (filenameLower.endsWith('.sfm')) {
     const filenameMain = filename.substring(0, filename.length - 4); // drop .sfm
     userLog(`checkFileContents have SFM filenameMain=${filenameMain}`);
     const bookID = filenameMain.substring(2, 5);
     userLog(`checkFileContents have SFM bookcode=${bookID}`);
     parameterAssert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
-    checkFileResult = checkUSFMText(languageCode, repoCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
+    checkFileResult = await checkUSFMText(languageCode, repoCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
   } else if (filenameLower.endsWith('.md'))
-    // NOTE: File types with possible link checking need AWAIT
     checkFileResult = await checkMarkdownFileContents(languageCode, repoCode, filename, fileContent, ourCFLocation, checkingOptions);
   else if (filenameLower.endsWith('.txt'))
     checkFileResult = checkPlainText(languageCode, repoCode, 'text', filename, fileContent, ourCFLocation, checkingOptions);

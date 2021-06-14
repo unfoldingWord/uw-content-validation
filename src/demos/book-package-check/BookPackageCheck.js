@@ -5,10 +5,11 @@ import { clearCaches, clearCheckedArticleCache, ourParseInt, preloadReposIfNeces
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderTotals } from '../RenderProcessedResults';
 import { checkBookPackage } from './checkBookPackage';
+// eslint-disable-next-line no-unused-vars
 import { userLog, debugLog, parameterAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.5.2';
+// const BP_VALIDATOR_VERSION_STRING = '0.5.3';
 
 
 function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
@@ -107,7 +108,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
                     repoPreloadList.push('TA');
                 }
             }
-            debugLog(`BookPackageCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
+            // debugLog(`BookPackageCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
 
             // if (bookID !== 'OBS') { // Preload the reference repos
             setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for <b>{bookID}</b> book package check…</p>);

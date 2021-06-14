@@ -577,7 +577,7 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
 
     Returns a result object containing a successList and a noticeList
     */
-    // functionLog(`checkManifestText(${username}, ${repoCode}, ${repoName}, ${repoBranch}, ${manifestText.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
+    functionLog(`checkManifestText(${languageCode}, ${repoCode}, ${username}, ${repoName}, ${repoBranch}, ${manifestText.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
     parameterAssert(languageCode !== undefined, "checkManifestText: 'languageCode' parameter should be defined");
     parameterAssert(typeof languageCode === 'string', `checkManifestText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
     parameterAssert(repoCode !== undefined, "checkManifestText: 'repoCode' parameter should be defined");

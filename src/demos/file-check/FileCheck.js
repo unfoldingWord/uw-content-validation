@@ -53,6 +53,8 @@ function FileCheck(props) {
 
       // Display our "waiting" message
       setResultValue(<p style={{ color: 'magenta' }}>Fetching <i>{username}</i> {repoName} <b>{filename}</b>…</p>);
+
+      // Fetch the file that we need to check (but it might already be in the cache)
       // debugLog(`FileCheck about to call cachedGetFile(${username}, ${repoName}, ${filename}, ${branch})…`);
       let fileContent = await cachedGetFile({ username: username, repository: repoName, path: filename, branch: branchOrRelease });
       if (!fileContent) { // could it be a release, not a branch???

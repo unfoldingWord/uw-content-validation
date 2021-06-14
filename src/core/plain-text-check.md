@@ -11,7 +11,7 @@ These raw notice components can then be filtered and/or sorted as required by th
 //        Simply click inside here and add, change, or delete text as required.
 
 import { checkPlainText } from './plain-text-check';
-import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
+import { RenderNumberedLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Plain text samples
 const textSG = `Short Good Plain Test
@@ -48,7 +48,7 @@ if (!rawResults.successList || !rawResults.successList.length)
   rawResults.successList = ["Done plain text checks"];
 
 <>
-<b>Source (normalized)</b>: <RenderLines text={chosenText} />
+<b>Source (normalized)</b>: <RenderNumberedLines text={chosenText} />
 <RenderRawResults results={rawResults} />
 </>
 ```

@@ -12,7 +12,7 @@ These raw notice components can then be filtered and/or sorted as required by th
 
 import React, { useState, useEffect } from 'react';
 import { checkQuestionsTSV7Table } from './questions-tsv7-table-check';
-import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
+import { RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Text samples
 const textA = `Reference\tID\tTags\tQuote\tOccurrence\tQuestion\tResponse

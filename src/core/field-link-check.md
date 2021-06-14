@@ -8,7 +8,7 @@ This function is for checking text fields that are links, or that contain links.
 
 import { checkFieldLinks } from './field-link-check';
 import { processNoticesToErrorsWarnings } from '../demos/notice-processing-functions';
-import { RenderLines, RenderRawResults, RenderSuccessesErrorsWarnings } from '../demos/RenderProcessedResults';
+import { RenderRawResults, RenderSuccessesErrorsWarnings } from '../demos/RenderProcessedResults';
 import { userLog } from './utilities';
 
 // Empty, space, link, RC, good, and bad text samples

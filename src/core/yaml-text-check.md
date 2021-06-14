@@ -13,7 +13,7 @@ Note that we have a more specialised function for checking `manifest.yaml` files
 //        Simply click inside here and add, change, or delete text as required.
 
 import { checkYAMLText } from './yaml-text-check';
-import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
+import { RenderNumberedLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // YAML empty, good and bad text samples
 const textE = '';
@@ -224,7 +224,7 @@ const checkingOptions = {};
 const rawResults = checkYAMLText('en', '', chosenTextName, chosenText, 'in YAML data that was supplied', checkingOptions);
 
 <>
-<b>YAML contents</b>: <RenderLines text={chosenText} />
+<b>YAML contents</b>: <RenderNumberedLines text={chosenText} />
 <RenderRawResults results={rawResults} />
 </>
 ```

@@ -12,7 +12,7 @@ These raw notice components can then be filtered and/or sorted as required by th
 
 import React, { useState, useEffect } from 'react';
 import { checkTN_TSV9Table } from './tn-tsv9-table-check';
-import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
+import { RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Text samples
 const textA = `Book\tChapter\tVerse\tID\tSupportReference\tQuote\tOccurrence\tGLQuote\tOccurrenceNote

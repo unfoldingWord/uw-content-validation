@@ -42,7 +42,7 @@ const tableIcons = {
 };
 
 
-// const RENDER_PROCESSED_RESULTS_VERSION = '0.6.3';
+// const RENDER_PROCESSED_RESULTS_VERSION = '0.6.5';
 
 
 export function RenderSuccesses({ username, results }) {
@@ -57,7 +57,7 @@ export function RenderTotals({ rawNoticeListLength, results }) {
     if (results.numIgnoredNotices || results.numDisabledNotices) {
         const netNumNotices = rawNoticeListLength - results.numIgnoredNotices - results.numDisabledNotices;
         return (<p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={results.elapsedSeconds} /> with {netNumNotices === 0 ? 'no' : netNumNotices.toLocaleString()} notice{netNumNotices === 1 ? ' ' : 's '}
-             ({rawNoticeListLength === 0 ? 'no' : rawNoticeListLength.toLocaleString()} raw notice{rawNoticeListLength === 1 ? '' : 's'} but
+            ({rawNoticeListLength === 0 ? 'no' : rawNoticeListLength.toLocaleString()} raw notice{rawNoticeListLength === 1 ? '' : 's'} but
             {results.numIgnoredNotices ? ` ${results.numIgnoredNotices.toLocaleString()} ignored notice${results.numIgnoredNotices === 1 ? '' : 's'}` : ""}
             {results.numIgnoredNotices && results.numDisabledNotices ? ' and' : ''}
             {results.numDisabledNotices ? ` ${results.numDisabledNotices.toLocaleString()} expected/disabled notice${results.numDisabledNotices === 1 ? '' : 's'}` : ""}
@@ -74,15 +74,14 @@ export function RenderTotals({ rawNoticeListLength, results }) {
  * @param {string} text - text to render as numbered lines
  * @return {String} - rendered HTML for the numbered list of lines
  */
-/*
 export function RenderNumberedLines({ text }) {
+    // This function is only used in some of the demos
     return <ol>
         {text.split('\n').map(function (line, index) {
             return <li key={index}>{line}</li>;
         })}
     </ol>;
 }
-*/
 
 
 const MAX_ARRAY_ITEMS_TO_DISPLAY = 8; // Or do we want this as a parameter?
@@ -270,8 +269,10 @@ function RenderFileDetails({ givenEntry }) {
     let adjustedRepoName = givenEntry.repoName;
     const firstMsgWord = givenEntry.message.split(' ')[0]; // This might be the former 'extra' field
     if (['TA', 'TW'].indexOf(firstMsgWord) >= 0) {
-        adjustedRepoName = `${givenEntry.repoName.split('_')[0]}_${firstMsgWord.toLowerCase()}`;
-        if (adjustedRepoName!==givenEntry.repoName) debugLog(`RenderFileDetails: trying adjusting repoName from '${givenEntry.repoName}' to '${adjustedRepoName}' for ${JSON.stringify(givenEntry)}`);
+        let adjustedLanguageCode = givenEntry.repoName.split('_')[0];
+        if (adjustedLanguageCode === 'hbo' || adjustedLanguageCode === 'el-x-koine') adjustedLanguageCode = 'en'; // This is a guess (and won't be needed for TWs when we switch to TWLs)
+        adjustedRepoName = `${adjustedLanguageCode}_${firstMsgWord.toLowerCase()}`;
+        if (adjustedRepoName !== givenEntry.repoName) debugLog(`RenderFileDetails: trying adjusting repoName from '${givenEntry.repoName}' to '${adjustedRepoName}' for ${JSON.stringify(givenEntry)}`);
     }
 
     let resultStart = '', lineResult = '', resultEnd = '', fileLineLink = '', fileLink = '';
@@ -283,9 +284,9 @@ function RenderFileDetails({ givenEntry }) {
                 let folder = '';
                 if (givenEntry.filename !== 'README.md' && givenEntry.filename !== 'LICENSE.md') {
                     if (adjustedRepoName.endsWith('_obs')) folder = 'content/';
-                    else if (adjustedRepoName.endsWith('_tw')) {
+                    else if (adjustedRepoName.endsWith('_tw') && !givenEntry.filename.startsWith('bible/')) {
                         folder = 'bible/';
-                        dataAssert(givenEntry.filename.indexOf('/') > 0); // filename actually contains the subfolder
+                        dataAssert(givenEntry.filename.indexOf('/') === 1); // filename actually contains the subfolder
                     }
                 }
                 fileLink = `https://git.door43.org/${givenEntry.username}/${adjustedRepoName}/blame/branch/${givenEntry.branch}/${folder}${givenEntry.filename}`;
@@ -383,7 +384,7 @@ function RenderProcessedArray({ arrayType, results }) {
     //      bookID, C, V, repoName, filename, lineNumber
     //      characterIindex (integer), excerpt (string), location (string)
     //
-    debugLog("In RenderProcessedArray with ", arrayType);
+    // debugLog("In RenderProcessedArray with ", arrayType);
     // consoleLogObject('RenderProcessedArray results', results);
 
     if (arrayType === 's')

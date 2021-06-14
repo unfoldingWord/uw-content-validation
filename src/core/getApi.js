@@ -333,7 +333,7 @@ async function cachedFetchFileFromServerBranch({ username, repository, path, bra
  * @param {string} tag
  * @return {Promise<null|any>} resolves to file content
  */
- export async function cachedFetchFileFromServerTag({ username, repository, path, tag }) {
+export async function cachedFetchFileFromServerTag({ username, repository, path, tag }) {
   // functionLog(`cachedFetchFileFromServerTag(${username}, ${repository}, ${path}, ${tag})…`);
   // TODO: Check how slow this next call is -- can it be avoided or cached?
   // RJH removed this 2Oct2020 -- what’s the point -- it just slows things down --
@@ -353,7 +353,7 @@ async function cachedFetchFileFromServerBranch({ username, repository, path, bra
  * @param {string} branch
  * @return {Promise<null|any>} resolves to file content
  */
- async function cachedFetchFileFromServerWorker(uri, username, repository, path, branchOrTag) {
+async function cachedFetchFileFromServerWorker(uri, username, repository, path, branchOrTag) {
   // functionLog(`cachedFetchFileFromServerWorker(${uri}, ${username}, ${repository}, ${path}, ${branchOrTag})…`);
   // TODO: Check how slow this next call is -- can it be avoided or cached?
   // RJH removed this 2Oct2020 -- what’s the point -- it just slows things down --

@@ -7,7 +7,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert, dataAssert, debugLog } from './utilities';
 
 
-const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.7.1';
+const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.7.3';
 
 
 /**
@@ -35,6 +35,8 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
     parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkMarkdownText: 'repoCode' parameter should not be '${repoCode}'`);
     parameterAssert(textOrFileName !== undefined, "checkMarkdownText: 'textOrFileName' parameter should be defined");
     parameterAssert(typeof textOrFileName === 'string', `checkMarkdownText: 'textOrFileName' parameter should be a string not a '${typeof textOrFileName}': ${textOrFileName}`);
+    parameterAssert(textOrFileName !== `${languageCode}_${repoCode.toLowerCase()}`, `checkMarkdownText: 'textOrFileName' parameter should not be the repoName: '${textOrFileName}'`);
+    if (textOrFileName === `${languageCode}_${repoCode.toLowerCase()}`) { console.trace('checkMarkdownText()'); }
     parameterAssert(markdownText !== undefined, "checkMarkdownText: 'markdownText' parameter should be defined");
     parameterAssert(typeof markdownText === 'string', `checkMarkdownText: 'markdownText' parameter should be a string not a '${typeof markdownText}': ${markdownText}`);
     parameterAssert(givenLocation !== undefined, "checkMarkdownText: 'optionalFieldLocation' parameter should be defined");
@@ -134,7 +136,12 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
         parameterAssert(location !== undefined, "checkUSFMText ourCheckNotesLinksToOutside: 'location' parameter should be defined");
         parameterAssert(typeof location === 'string', `checkUSFMText ourCheckNotesLinksToOutside: 'location' parameter should be a string not a '${typeof location}': ${location}`);
 
-        const coTNlResultObject = await checkNotesLinksToOutside(languageCode, repoCode, '', '', '', textOrFileName, lineText, location, { ...checkingOptions, defaultLanguageCode: languageCode });
+        // Empty fields on the next line are bookID, C, V (as we don't have that information here)
+        let adjustedTextOrFileName = textOrFileName;
+        if (textOrFileName === 'README.md' || textOrFileName === 'LICENSE.md') adjustedTextOrFileName = textOrFileName.substring(0, textOrFileName.length - 3);
+        let adjustedLanguageCode = languageCode; // This is the language code of the resource with the link
+        if (languageCode === 'hbo' || languageCode === 'el-x-koine') adjustedLanguageCode = 'en' // This is a guess (and won't be needed for TWs when we switch to TWLs)
+        const coTNlResultObject = await checkNotesLinksToOutside(languageCode, repoCode, '', '', '', adjustedTextOrFileName, lineText, location, { ...checkingOptions, defaultLanguageCode: adjustedLanguageCode });
         // debugLog(`coTNlResultObject=${JSON.stringify(coTNlResultObject)}`);
 
         // Choose only ONE of the following

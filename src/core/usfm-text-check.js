@@ -11,7 +11,7 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.8.9';
+// const USFM_VALIDATOR_VERSION_STRING = '0.8.10';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘`; // '{' gets added for STs
@@ -141,7 +141,7 @@ const BAD_HEBREW_VOWEL_DAGESH_REGEX = new RegExp('[\\u05b4\\u05b5\\u05b6\\u05b7\
  * @param {string} givenLocation
  * @param {Object} checkingOptions
  */
-export function checkUSFMText(languageCode, repoCode, bookID, filename, givenText, givenLocation, checkingOptions) {
+export async function checkUSFMText(languageCode, repoCode, bookID, filename, givenText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
     bookID is a three-character UPPERCASE USFM book identifier.
@@ -228,7 +228,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
     function ourRunBCSGrammarCheck(filename, fileText, fileLocation) {
         // Runs the BCS USFM Grammar checker
         //  which can be quite time-consuming on large, complex USFM files
-        // debugLog("Running our BCS USFM grammar check (can take quite a while for a large book)…");
+        // functionLog("Running our BCS USFM grammar check (can take quite a while for a large book)…");
 
         const grammarCheckResult = runBCSGrammarCheck('strict', fileText, filename, fileLocation, checkingOptions);
         // NOTE: We haven’t figured out how to get ERRORS out of this parser yet
@@ -285,9 +285,9 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         Note that this code below does NOT check for chapters and verses
             being in the correct order. That’s done elsewhere.
         */
-        // debugLog("Running CVCheck() using USFM-JS (can take quite a while for a large book)…");
-        let chapterNumberString, verseNumberString;
+        // functionLog(`Running CVCheck(${bookID}, ${givenText.length}, ${CVlocation}) using USFM-JS (can take quite a while for a large book)…`);
 
+        let chapterNumberString, verseNumberString;
 
         const MINIMUM_TEXT_WORDS = 4;
         const MINIMUM_WORD_LENGTH = 2;
@@ -488,7 +488,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 }
             }
         }
-        addSuccessMessage(`Checked CV patterns for ${bookID}${CVlocation}`);
+        addSuccessMessage(`Checked C:V patterns for ${bookID}${CVlocation}`);
     }
     // end of CVCheck function
 
@@ -596,6 +596,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         //                      and close ')' in another. So the USFM line check can’t check that.
         //          Also, the USFM v3.0 spec seems to allow/require whitespace reduction,
         //              i.e., newLines can conceivably appear WITHIN a footnote for example.
+        // functionLog(`checkUSFMFileContents(${filename}, ${fileText.length}, ${markerSet}, ${fileLocation}, ${JSON.stringify(checkingOptions)})…`);
 
         // Check markers like \add ... \add*, \f .. \f*
         checkUSFMCharacterFields(filename, fileText, fileLocation)
@@ -838,7 +839,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
      * @param {string} lineLocation
      * @param {Object} checkingOptions
      */
-    function checkUSFMLineAttributes(lineNumber, C, V, marker, rest, lineLocation, checkingOptions) {
+    async function checkUSFMLineAttributes(lineNumber, C, V, marker, rest, lineLocation, checkingOptions) {
         // Looks for USFM fields with attributes, e.g., \w, \zaln-s, \k-s
         // functionLog(`checkUSFMLineAttributes(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
         // functionLog(`checkUSFMLineAttributes(${lineNumber}, ${C}:${V}, ${marker}=${rest.length} chars, ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
@@ -859,8 +860,8 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
          *
          * @param {string} wContents
          */
-        function checkWAttributes(wContents) {
-            functionLog(`checkWattributes(${wContents})…`);
+        async function checkWAttributes(wContents) {
+            // functionLog(`checkWAttributes(${wContents})…`);
             let regexResultArray, attributeCounter = 0;
             while ((regexResultArray = ATTRIBUTE_REGEX.exec(wContents))) {
                 attributeCounter += 1;
@@ -898,7 +899,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                             || (repoCode === 'UGNT' && !attributeValue.startsWith('Gr,'))))
                         addNoticePartial({ priority: 852, message: "Unexpected original \\w x-morph language prefix", details: "Expected 'He,' 'Ar,' or 'Gr,'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
                     else if (attributeName === 'x-tw')
-                        ourCheckNotesLinksToOutside(lineNumber, C, V, marker, attributeValue, lineLocation, checkingOptions);
+                        await ourCheckNotesLinksToOutside(lineNumber, C, V, marker, attributeValue, lineLocation, checkingOptions);
                 } else { // a translation -- not UHB or UGNT
                     if (attributeCounter === 1) {
                         if (attributeName !== 'x-occurrence')
@@ -921,7 +922,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         let regexResultArray1;
         while ((regexResultArray1 = W_REGEX.exec(adjustedRest))) {
             // debugLog(`Got ${repoCode} \\w Regex in ${C}:${V} line: '${JSON.stringify(regexResultArray1)}`);
-            checkWAttributes(regexResultArray1[1]);
+            await checkWAttributes(regexResultArray1[1]);
         }
         let regexResultArray2;
         while ((regexResultArray1 = KS_REGEX.exec(adjustedRest))) {
@@ -987,11 +988,11 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
      * @param {string} lineLocation
      * @param {Object} checkingOptions
      */
-    function checkUSFMLineContents(lineNumber, C, V, marker, rest, lineLocation, checkingOptions) {
+    async function checkUSFMLineContents(lineNumber, C, V, marker, rest, lineLocation, checkingOptions) {
         // Looks at the marker and determines what content is allowed/expected on the rest of the line
         // 'SPECIAL' is used internally here when a character other than a backslash starts a line
 
-        function checkUSFMLineInternals(lineNumber, C, V, marker, rest, lineLocation, checkingOptions) {
+        async function checkUSFMLineInternals(lineNumber, C, V, marker, rest, lineLocation, checkingOptions) {
             // Handles character formatting within the line contents
             // functionLog(`checkUSFMLineInternals(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
 
@@ -1010,7 +1011,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 checkUSFMLineText(lineNumber, C, V, marker, rest, lineLocation, checkingOptions);
 
                 if (rest.indexOf('=') >= 0 || rest.indexOf('"') >= 0)
-                    checkUSFMLineAttributes(lineNumber, C, V, marker, rest, lineLocation, checkingOptions);
+                    await checkUSFMLineAttributes(lineNumber, C, V, marker, rest, lineLocation, checkingOptions);
 
                 const allowedLinks = (marker === 'w' || marker === 'k-s' || marker === 'f' || marker === 'SPECIAL')
                     // (because we don’t know what marker SPECIAL is, so default to "no false alarms")
@@ -1033,7 +1034,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         } else // it’s not a recognised line marker
             // Lower priority of deprecated \s5 markers (compared to all other unknown markers)
             addNoticePartial({ priority: marker === 's5' ? 111 : 809, message: `${marker === 's5' ? 'Deprecated' : 'Unexpected'} '\\${marker}' marker at start of line`, C, V, lineNumber, characterIndex: 1, location: lineLocation });
-        if (rest) checkUSFMLineInternals(lineNumber, C, V, marker, rest, lineLocation, checkingOptions);
+        if (rest) await checkUSFMLineInternals(lineNumber, C, V, marker, rest, lineLocation, checkingOptions);
     }
     // end of checkUSFMLineContents function
 
@@ -1049,11 +1050,9 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
         parameterAssert(twLinkText !== undefined, "checkUSFMText ourCheckNotesLinksToOutside: 'twLinkText' parameter should be defined");
         parameterAssert(typeof twLinkText === 'string', `checkUSFMText ourCheckNotesLinksToOutside: 'twLinkText' parameter should be a string not a '${typeof twLinkText}': ${twLinkText}`);
 
-        // NOTE: This language problem will go away once we move to TSV TWLs
-        let adjustedLanguageCode = languageCode;
-        if (languageCode === 'el-x-koine' || languageCode === 'hbo') adjustedLanguageCode = 'en'; // Just a guess for x-tw
-        // debugLog(`ourCheckNotesLinksToOutside: adjustedLanguageCode='${adjustedLanguageCode}'`);
-        const coTNlResultObject = await checkNotesLinksToOutside(adjustedLanguageCode, repoCode, bookID, C, V, 'TWLink', twLinkText, location, { ...checkingOptions, defaultLanguageCode: languageCode });
+        let adjustedLanguageCode = languageCode; // This is the language code of the resource with the link
+        if (languageCode === 'hbo' || languageCode === 'el-x-koine') adjustedLanguageCode = 'en' // This is a guess (and won't be needed for TWs when we switch to TWLs)
+        const coTNlResultObject = await checkNotesLinksToOutside(languageCode, repoCode, bookID, C, V, 'TWLink', twLinkText, location, { ...checkingOptions, defaultLanguageCode: adjustedLanguageCode });
         // debugLog(`coTNlResultObject=${JSON.stringify(coTNlResultObject)}`);
 
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
@@ -1091,7 +1090,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
      * @param {string} givenText -- text of the USFM file
      * @param {string} location -- optional
      */
-    function mainUSFMCheck(bookID, filename, givenText, location) {
+    async function mainUSFMCheck(bookID, filename, givenText, location) {
         // functionLog(`checkUSFMText mainUSFMCheck(${bookID}, ${filename}, ${givenText.length}, ${location}) (can take quite a while for a large book)…`);
 
         let ourLocation = location;
@@ -1260,7 +1259,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
                 addNoticePartial({ priority: C === '1' ? 657 : 457, C, V, message: "Paragraph marker expected before first verse", lineNumber: n, characterIndex: 1, details: `'\\${marker}' after '\\${lastMarker}'`, location: ourLocation });
 
             // Do general checks
-            checkUSFMLineContents(n, C, V, marker, rest, ourLocation, checkingOptions);
+            await checkUSFMLineContents(n, C, V, marker, rest, ourLocation, checkingOptions);
 
             lastMarker = marker; lastRest = rest;
         }
@@ -1301,7 +1300,7 @@ export function checkUSFMText(languageCode, repoCode, bookID, filename, givenTex
     // NOTE: If we're careful about how/when we add their notices to our global list,
     //  we should be able to run these three slowish checks in parallel on different threads/processes
     let allResults = [];
-    allResults.push(mainUSFMCheck(bookID, filename, givenText, ourLocation));
+    allResults.push(await mainUSFMCheck(bookID, filename, givenText, ourLocation));
     allResults.push(CVCheck(bookID, givenText, ourLocation));
     if (!books.isExtraBookID(bookID))
         allResults.push(ourRunBCSGrammarCheck(filename, givenText, ourLocation));

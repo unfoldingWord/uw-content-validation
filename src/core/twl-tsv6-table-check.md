@@ -12,7 +12,7 @@ These raw notice components can then be filtered and/or sorted as required by th
 
 import React, { useState, useEffect } from 'react';
 import { checkTWL_TSV6Table } from './twl-tsv6-table-check';
-import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
+import { RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Text samples
 const textA = `Reference\tID\tTags\tOrigWords\tOccurrence\tTWLink
