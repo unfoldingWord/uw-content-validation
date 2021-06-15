@@ -1,16 +1,18 @@
 import grammar from 'usfm-grammar';
 import * as books from '../core/books/books';
 import { DEFAULT_EXCERPT_LENGTH } from './defaults'
-import { userLog, debugLog, parameterAssert } from './utilities';
+import { userLog, debugLog, functionLog, parameterAssert, ourParseInt } from './utilities';
 
 
-// const USFM_GRAMMAR_VALIDATOR_VERSION_STRING = '0.4.2';
+// const USFM_GRAMMAR_VALIDATOR_VERSION_STRING = '0.4.3';
+
+const LINE_COLUMN_NUMBERS_REGEX = new RegExp('Line (\\d{1,6}), col (\\d{1,4}):'); // e.g., "Line 1538, col 4: 1537 ..."
 
 
-export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLocation, checkingOptions) {
+export function runBCSGrammarCheck(strictnessString, bookID, fileText, filename, givenLocation, checkingOptions) {
     // Runs the BCS USFM Grammar checker
     //  which can be quite time-consuming on large, complex USFM files
-    // debugLog(`Running ${strictnessString} BCS USFM grammar check${givenLocation} (can take quite a while for a large book)…`);
+    // userLog(`Running ${strictnessString} BCS USFM grammar check${givenLocation} (can take quite a while for a large book)…`);
     parameterAssert(strictnessString === 'strict' || strictnessString === 'relaxed', `Unexpected strictnessString='${strictnessString}'`);
 
     let excerptLength;
@@ -36,7 +38,7 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
         // This method is available in both default and relaxed modes.
         // const parserResult = ourUsfmParser.validate();
         // debugLog(`${new Date().getTime() / 1000} Running the USFMGrammar checker (may take several seconds)…`);
-        debugLog("Running the USFMGrammar checker (may take several seconds)…");
+        userLog(`Running the USFMGrammar checker for ${bookID} (may take several seconds)…`);
         parserToJSONResultObject = ourUsfmParser.toJSON();
         // debugLog(`${new Date().getTime() / 1000} Got the USFMGrammar checker toJSON result: ${Object.keys(parserToJSONResultObject)}`);
         // debugLog(`${new Date().getTime() / 1000} Got the USFMGrammar checker toJSON _messages: ${Object.keys(parserToJSONResultObject._messages)}`);
@@ -51,20 +53,36 @@ export function runBCSGrammarCheck(strictnessString, fileText, filename, givenLo
             filename,
             location: givenLocation
         };
+        try { // See if we can improve the result with line and column numbers
+            // NOTE: The following code is quite fragile
+            //  as it depends on the precise format of the error message returned from USFMParser
+            const regexResultArray = LINE_COLUMN_NUMBERS_REGEX.exec(parserError);
+            const [totalLink, lineNumberString, columnNumberString] = regexResultArray;
+            ourErrorObject.lineNumber = ourParseInt(lineNumberString);
+            ourErrorObject.characterIndex = ourParseInt(columnNumberString) - 1;
+            const errorLineText = fileText.split('\n')[ourErrorObject.lineNumber - 1];
+            ourErrorObject.excerpt = (ourErrorObject.characterIndex > excerptHalfLength ? '…' : '') + errorLineText.substring(ourErrorObject.characterIndex - excerptHalfLength, ourErrorObject.characterIndex + excerptHalfLengthPlus) + (ourErrorObject.characterIndex + excerptHalfLengthPlus < errorLineText.length ? '…' : '');
+            // NOTE: Not 100% sure that it's more helpful to the user if we do this next line ???
+            ourErrorObject.details = ourErrorObject.details.substring(totalLink.length); // Delete the line and column numbers that we found
+        } catch (secondError) {
+            debugLog(`USFMGrammar second error: ${secondError}`);
+        }
         // Say it's valid so we don't get an additional high-priority error
         return { isValidUSFM: true, error: ourErrorObject, warnings: [] };
     }
     let parserMessages;
     parserMessages = parserToJSONResultObject._messages; // Throw away the JSON (if any)
     // debugLog(`  Finished BCS USFM grammar check with messages: ${JSON.stringify(parserResult)}\n and warnings: ${JSON.stringify(ourUsfmParser.warnings)}.`);
+
+    // TODO: I think most of the following code is now obsolete and can be deleted
     let parseError;
     parseError = parserMessages._error;
-    // debugLog(`  parseError: ${parseError}`);
     let ourErrorMessage, lineNumberString, characterIndex, excerpt;
     // NOTE: The following code is quite fragile
     //  as it depends on the precise format of the error message returned from USFMParser
     let ourErrorObject = {};
     if (parseError) {
+        debugLog("Oh! This USFMGrammer check code IS still needed!!!");
         const contextRE = /(\d+?)\s\|\s(.+)/g;
         for (const errorLine of parseError.split('\n')) {
             // debugLog(`BCS errorLine=${errorLine}`);
@@ -147,7 +165,7 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
 
      Returns a result object containing a successList and a noticeList
      */
-    userLog(`checkUSFMGrammar(${givenText.length.toLocaleString()} chars, '${givenLocation}')…`);
+    functionLog(`checkUSFMGrammar(${givenText.length.toLocaleString()} chars, '${givenLocation}')…`);
     parameterAssert(strictnessString === 'strict' || strictnessString === 'relaxed', `Unexpected strictnessString='${strictnessString}'`);
 
     let ourLocation = givenLocation;
@@ -189,7 +207,7 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
     if (books.isExtraBookID(bookID)) // doesn’t work for these
         return cugResult;
 
-    const grammarCheckResult = runBCSGrammarCheck(strictnessString, givenText, filename, ourLocation, checkingOptions);
+    const grammarCheckResult = runBCSGrammarCheck(strictnessString, bookID, givenText, filename, ourLocation, checkingOptions);
     // debugLog(`grammarCheckResult=${JSON.stringify(grammarCheckResult)}`);
 
     if (!grammarCheckResult.isValidUSFM)
