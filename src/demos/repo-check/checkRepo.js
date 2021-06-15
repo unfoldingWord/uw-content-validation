@@ -41,15 +41,16 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
   let [languageCode, repoCode] = repoName.split('_');
   repoCode = repoCode.toUpperCase();
   // debugLog(`checkRepo got languageCode='${languageCode}' repoCode='${repoCode}' repoBranch='${repoBranch}'`);
-  logicAssert(REPO_CODES_LIST.includes(repoCode), `checkRepo: 'repoCode' parameter should not be '${repoCode}'`);
   if (repoCode === 'TN2') {
     repoCode = 'TN';
     if (repoBranch === undefined) repoBranch = 'newFormat';
   } else if (repoCode === 'TQ2') {
     repoCode = 'TQ';
     if (repoBranch === undefined) repoBranch = 'newFormat';
-  }
+  } else if (repoCode.endsWith('LT')) repoCode = 'LT';
+  else if (repoCode.endsWith('ST')) repoCode = 'ST';
   // debugLog(`checkRepo now has languageCode='${languageCode}' repoCode='${repoCode}' repoBranch='${repoBranch}'`);
+  logicAssert(REPO_CODES_LIST.includes(repoCode), `checkRepo: 'repoCode' parameter should not be '${repoCode}'`);
 
   if (repoBranch === undefined) repoBranch = 'master'; // Ideally we should ask what the default branch is
 

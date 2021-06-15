@@ -2,7 +2,7 @@ import { userLog, parameterAssert } from '../core/utilities';
 import { isDisabledNotice } from '../core/disabled-notices';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.12';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.13';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -217,7 +217,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 // NOTE: fieldName can be a USFM marker, e.g., 'from \w'
                 parameterAssert(thisFieldName.indexOf('/') < 0, `fieldName '${thisFieldName}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 if (thisLocation)
-                    parameterAssert(thisLocation.indexOf(thisFieldName) < 0, `fieldName is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
+                    parameterAssert(thisFieldName === 'w' // 'w' is just too likely to occur in the location string
+                        || thisLocation.indexOf(thisFieldName) < 0, `fieldName is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
             }
             if (thisLineNumber) {
                 parameterAssert(typeof thisLineNumber === 'number' && thisLineNumber > 0, `lineNumber '${thisLineNumber}' contains unexpected value in ${JSON.stringify(thisGivenNotice)}`);

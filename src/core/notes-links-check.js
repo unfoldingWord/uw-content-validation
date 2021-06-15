@@ -8,7 +8,7 @@ import { cachedGetFile, cachedGetFileUsingFullURL, checkMarkdownText } from '../
 import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 
 
-// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.7.25';
+// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.7.26';
 
 // const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -311,7 +311,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
 
         const twRepoName = `${defaultLanguageCode}_tw`;
         // debugLog(`Got twRepoName=${twRepoName}`);
-        const filepath = `bible/${category}/${article}.md`;
+        const filepath = `bible/${category}/${article.trim()}.md`;
         // debugLog(`Got tW filepath=${filepath}`);
 
         if (!checkingOptions?.disableAllLinkFetchingFlag) {
@@ -335,11 +335,11 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTWArticlesCheckFlag} so checking TW article: ${filepath}`);
                 //     if (await alreadyChecked(twPathParameters) !== true) {
                 //         // functionLog(`checkNotesLinksToOutside needs to check TW article: ${filepath}`);
-                //         const checkTWFileResult = await checkMarkdownText(languageCode, repoCode, `TW ${regexResultArray[3]}.md`, twFileContent, ourLocation, checkingOptions);
+                //         const checkTWFileResult = await checkMarkdownText(languageCode, repoCode, `TW ${regexResultArray[3].trim()}.md`, twFileContent, ourLocation, checkingOptions);
                 //         for (const noticeObject of checkTWFileResult.noticeList)
                 //             ctarResult.noticeList.push({ ...noticeObject, username: twRepoUsername, repoCode: 'TW', repoName: twRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TW' });
                 //         ctarResult.checkedFileCount += 1;
-                //         ctarResult.checkedFilenames.push(`${regexResultArray[3]}.md`);
+                //         ctarResult.checkedFilenames.push(`${regexResultArray[3].trim()}.md`);
                 //         ctarResult.checkedFilesizes = twFileContent.length;
                 //         ctarResult.checkedFilenameExtensions = ['md'];
                 //         ctarResult.checkedRepoNames.push(twRepoName);
@@ -398,11 +398,11 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
                     if (await alreadyChecked(taPathParameters) !== true) {
                         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
-                        const checkTAFileResult = await checkMarkdownText(foundLanguageCode, repoCode, `TA ${regexResultArray[3]}.md`, taFileContent, ourLocation, checkingOptions);
+                        const checkTAFileResult = await checkMarkdownText(foundLanguageCode, repoCode, `TA ${regexResultArray[3].trim()}.md`, taFileContent, ourLocation, checkingOptions);
                         for (const noticeObject of checkTAFileResult.noticeList)
                             ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
                         ctarResult.checkedFileCount += 1;
-                        ctarResult.checkedFilenames.push(`${regexResultArray[3]}.md`);
+                        ctarResult.checkedFilenames.push(`${regexResultArray[3].trim()}.md`);
                         ctarResult.checkedFilesizes = taFileContent.length;
                         ctarResult.checkedFilenameExtensions = ['md'];
                         ctarResult.checkedRepoNames.push(taRepoName);
@@ -455,11 +455,11 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
                     //     if (await alreadyChecked(taPathParameters) !== true) {
                     //         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
-                    //         const checkTAFileResult = await checkMarkdownText(languageCode, repoCode, `TA ${regexResultArray[3]}.md`, taFileContent, ourLocation, checkingOptions);
+                    //         const checkTAFileResult = await checkMarkdownText(languageCode, repoCode, `TA ${regexResultArray[3].trim()}.md`, taFileContent, ourLocation, checkingOptions);
                     //         for (const noticeObject of checkTAFileResult.noticeList)
                     //             ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
                     //         ctarResult.checkedFileCount += 1;
-                    //         ctarResult.checkedFilenames.push(`${regexResultArray[3]}.md`);
+                    //         ctarResult.checkedFilenames.push(`${regexResultArray[3].trim()}.md`);
                     //         ctarResult.checkedFilesizes = taFileContent.length;
                     //         ctarResult.checkedFilenameExtensions = ['md'];
                     //         ctarResult.checkedRepoNames.push(taRepoName);
@@ -505,11 +505,11 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
                     //     if (await alreadyChecked(taPathParameters) !== true) {
                     //         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
-                    //         const checkTAFileResult = await checkMarkdownText(languageCode, repoCode, `TA ${regexResultArray[3]}.md`, taFileContent, ourLocation, checkingOptions);
+                    //         const checkTAFileResult = await checkMarkdownText(languageCode, repoCode, `TA ${regexResultArray[3].trim()}.md`, taFileContent, ourLocation, checkingOptions);
                     //         for (const noticeObject of checkTAFileResult.noticeList)
                     //             ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
                     //         ctarResult.checkedFileCount += 1;
-                    //         ctarResult.checkedFilenames.push(`${regexResultArray[3]}.md`);
+                    //         ctarResult.checkedFilenames.push(`${regexResultArray[3].trim()}.md`);
                     //         ctarResult.checkedFilesizes = taFileContent.length;
                     //         ctarResult.checkedFilenameExtensions = ['md'];
                     //         ctarResult.checkedRepoNames.push(taRepoName);
@@ -567,11 +567,11 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
                     if (await alreadyChecked(taPathParameters) !== true) {
                         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
-                        const checkTAFileResult = await checkMarkdownText(foundLanguageCode, repoCode, `TA ${regexResultArray[3]}.md`, taFileContent, ourLocation, checkingOptions);
+                        const checkTAFileResult = await checkMarkdownText(foundLanguageCode, repoCode, `TA ${regexResultArray[3].trim()}.md`, taFileContent, ourLocation, checkingOptions);
                         for (const noticeObject of checkTAFileResult.noticeList)
                             ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
                         ctarResult.checkedFileCount += 1;
-                        ctarResult.checkedFilenames.push(`${regexResultArray[3]}.md`);
+                        ctarResult.checkedFilenames.push(`${regexResultArray[3].trim()}.md`);
                         ctarResult.checkedFilesizes = taFileContent.length;
                         ctarResult.checkedFilenameExtensions = ['md'];
                         ctarResult.checkedRepoNames.push(taRepoName);
@@ -596,7 +596,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
         if (!foundLanguageCode || foundLanguageCode === '*') foundLanguageCode = defaultLanguageCode;
         const twRepoName = `${foundLanguageCode}_tw`;
         // debugLog(`Got twRepoName=${twRepoName}`);
-        const filepath = `bible/${category}/${article}.md`;
+        const filepath = `bible/${category}/${article.trim()}.md`;
         // debugLog(`Got tW filepath=${filepath}`);
 
         if (!checkingOptions?.disableAllLinkFetchingFlag) {
@@ -619,11 +619,11 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTWArticlesCheckFlag} so checking TW article: ${filepath}`);
                     if (await alreadyChecked(twPathParameters) !== true) {
                         // functionLog(`checkNotesLinksToOutside needs to check TW article: ${filepath}`);
-                        const checkTWFileResult = await checkMarkdownText(foundLanguageCode, repoCode, `TW ${regexResultArray[3]}.md`, twFileContent, ourLocation, checkingOptions);
+                        const checkTWFileResult = await checkMarkdownText(foundLanguageCode, repoCode, `TW ${regexResultArray[3].trim()}.md`, twFileContent, ourLocation, checkingOptions);
                         for (const noticeObject of checkTWFileResult.noticeList)
                             ctarResult.noticeList.push({ ...noticeObject, username: twRepoUsername, repoCode: 'TW', repoName: twRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TW' });
                         ctarResult.checkedFileCount += 1;
-                        ctarResult.checkedFilenames.push(`${regexResultArray[3]}.md`);
+                        ctarResult.checkedFilenames.push(`${regexResultArray[3].trim()}.md`);
                         ctarResult.checkedFilesizes = twFileContent.length;
                         ctarResult.checkedFilenameExtensions = ['md'];
                         ctarResult.checkedRepoNames.push(twRepoName);

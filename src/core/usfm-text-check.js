@@ -11,7 +11,7 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.8.10';
+// const USFM_VALIDATOR_VERSION_STRING = '0.8.11';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘`; // '{' gets added for STs
@@ -230,7 +230,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         //  which can be quite time-consuming on large, complex USFM files
         // functionLog("Running our BCS USFM grammar check (can take quite a while for a large book)…");
 
-        const grammarCheckResult = runBCSGrammarCheck('strict', fileText, filename, fileLocation, checkingOptions);
+        const grammarCheckResult = runBCSGrammarCheck('strict', bookID, fileText, filename, fileLocation, checkingOptions);
         // NOTE: We haven’t figured out how to get ERRORS out of this parser yet
         // debugLog(`  Finished our BCS USFM grammar check with ${grammarCheckResult.isValidUSFM} and ${grammarCheckResult.warnings.length} warnings.`);
         addSuccessMessage(`Checked USFM Grammar (strict mode) ${grammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN’T validate)"}`);
@@ -259,7 +259,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                 addNoticePartial({ priority: 102, message: `USFMGrammar: ${warningString}`, location: fileLocation });
 
         if (!grammarCheckResult.isValidUSFM) {
-            const relaxedGrammarCheckResult = runBCSGrammarCheck('relaxed', fileText, filename, fileLocation);
+            const relaxedGrammarCheckResult = runBCSGrammarCheck('relaxed', bookID, fileText, filename, fileLocation);
             addSuccessMessage(`Checked USFM Grammar (relaxed mode) ${relaxedGrammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN’T validate)"}`);
             if (!relaxedGrammarCheckResult.isValidUSFM)
                 addNoticePartial({ priority: 644, message: "USFM3 Grammar Check (relaxed mode) doesn’t pass either", location: fileLocation });
@@ -776,11 +776,11 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                 adjustedRest = ''; // Avoid follow-on errors
                 break;
             }
-            dataAssert(ixWordEnd > nextWIndex + 3, `Why2 is +w| = ${ixWordEnd}? nextWIndex=${nextWIndex} ${languageCode} ${bookID} ${C}:${V} ${lineNumber}`);
+            dataAssert(ixWordEnd > nextWIndex + 4, `Why2 is +w| = ${ixWordEnd}? nextWIndex=${nextWIndex} ${languageCode} ${bookID} ${C}:${V} ${lineNumber}`);
             const ixWEnd = adjustedRest.indexOf('\\+w*');
             if (ixWEnd >= 0) {
                 dataAssert(ixWEnd > nextWIndex, `Expected closure at ${ixWEnd} to be AFTER \\+w (${nextWIndex})`);
-                adjustedRest = adjustedRest.substring(0, nextWIndex) + adjustedRest.substring(nextWIndex + 3, ixWordEnd) + adjustedRest.substring(ixWEnd + 3, adjustedRest.length);
+                adjustedRest = adjustedRest.substring(0, nextWIndex) + adjustedRest.substring(nextWIndex + 4, ixWordEnd) + adjustedRest.substring(ixWEnd + 4, adjustedRest.length);
                 // debugLog(`After removing w field, got '${adjustedRest}'`);
             } else {
                 userLog(`\\+w seems unclosed: 'adjustedRest' from '${rest}'`);

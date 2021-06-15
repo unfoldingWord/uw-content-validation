@@ -46,7 +46,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     parameterAssert(fieldText !== undefined, "checkTextField: 'fieldText' parameter should be defined");
     parameterAssert(typeof fieldText === 'string', `checkTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}': ${fieldText}`);
     parameterAssert(allowedLinks === true || allowedLinks === false, "checkTextField: allowedLinks parameter must be either true or false");
-    if (!allowedLinks) parameterAssert(fieldText.indexOf('x-tw') < 0, `checkTextField should be allowedLinks for ${fieldType} ${fieldName} ${fieldText}`)
+    if (!allowedLinks) parameterAssert(fieldText.indexOf('x-tw') < 0, `checkTextField should be allowedLinks for ${fieldType} ${fieldName} ${fieldText}`);
     parameterAssert(optionalFieldLocation !== undefined, "checkTextField: 'optionalFieldLocation' parameter should be defined");
     parameterAssert(typeof optionalFieldLocation === 'string', `checkTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}': ${optionalFieldLocation}`);
     parameterAssert(optionalFieldLocation.indexOf('true') === -1, `checkTextField: 'optionalFieldLocation' parameter should not be '${optionalFieldLocation}'`);
@@ -103,7 +103,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 895)
         && (characterIndex = fieldText.indexOf('\u200B')) >= 0) {
         const charCount = countOccurrences(fieldText, '\u200B');
-        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/\u200B/g, '‼') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
+        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/\u200B/g, '‼') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
         addNoticePartial({ priority: 895, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, characterIndex, excerpt, location: ourLocation });
         suggestion = suggestion.replace(/\u200B/g, ''); // Or should it be space ???
     }
@@ -117,20 +117,20 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 993)
         && (characterIndex = fieldText.indexOf('<<<<<<<')) >= 0) {
         const iy = characterIndex + excerptHalfLength; // Want excerpt to focus more on what follows
-        const excerpt = (iy > excerptHalfLength ? '…' : '') + fieldText.substring(iy - excerptHalfLength, iy + excerptHalfLengthPlus).replace(/ /g, '␣') + (iy + excerptHalfLengthPlus < fieldText.length ? '…' : '')
+        const excerpt = (iy > excerptHalfLength ? '…' : '') + fieldText.substring(iy - excerptHalfLength, iy + excerptHalfLengthPlus).replace(/ /g, '␣') + (iy + excerptHalfLengthPlus < fieldText.length ? '…' : '');
 
         addNoticePartial({ priority: 993, message: "Unresolved GIT conflict", characterIndex, excerpt, location: ourLocation });
     } else {
         if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 992)
             && (characterIndex = fieldText.indexOf('=======')) >= 0) {
             const iy = characterIndex + excerptHalfLength; // Want excerpt to focus more on what follows
-            const excerpt = (iy > excerptHalfLength ? '…' : '') + fieldText.substring(iy - excerptHalfLength, iy + excerptHalfLengthPlus).replace(/ /g, '␣') + (iy + excerptHalfLengthPlus < fieldText.length ? '…' : '')
+            const excerpt = (iy > excerptHalfLength ? '…' : '') + fieldText.substring(iy - excerptHalfLength, iy + excerptHalfLengthPlus).replace(/ /g, '␣') + (iy + excerptHalfLengthPlus < fieldText.length ? '…' : '');
             addNoticePartial({ priority: 992, message: "Unresolved GIT conflict", characterIndex, excerpt, location: ourLocation });
         } else {
             if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 991)
                 && (characterIndex = fieldText.indexOf('>>>>>>>>')) >= 0) {
                 const iy = characterIndex + excerptHalfLength; // Want excerpt to focus more on what follows
-                const excerpt = (iy > excerptHalfLength ? '…' : '') + fieldText.substring(iy - excerptHalfLength, iy + excerptHalfLengthPlus).replace(/ /g, '␣') + (iy + excerptHalfLengthPlus < fieldText.length ? '…' : '')
+                const excerpt = (iy > excerptHalfLength ? '…' : '') + fieldText.substring(iy - excerptHalfLength, iy + excerptHalfLengthPlus).replace(/ /g, '␣') + (iy + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                 addNoticePartial({ priority: 991, message: "Unresolved GIT conflict", characterIndex, excerpt, location: ourLocation });
             }
         }
@@ -153,12 +153,12 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     }
     if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 64)
         && (characterIndex = fieldText.indexOf('<br> ')) >= 0) {
-        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
+        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
         addNoticePartial({ priority: 64, message: "Unexpected leading space(s) after break", characterIndex, excerpt, location: ourLocation });
     }
     if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 63)
         && (characterIndex = fieldText.indexOf('\\n ')) >= 0) {
-        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
+        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
         addNoticePartial({ priority: 63, message: "Unexpected leading space(s) after line break", characterIndex, excerpt, location: ourLocation });
     }
 
@@ -199,12 +199,12 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
         }
     if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 94)
         && (characterIndex = fieldText.indexOf(' <br')) >= 0) {
-        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
+        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
         addNoticePartial({ priority: 94, message: "Unexpected trailing space(s) before break", characterIndex, excerpt, location: ourLocation });
     }
     if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 93)
         && (characterIndex = fieldText.indexOf(' \\n')) >= 0) {
-        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
+        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
         addNoticePartial({ priority: 93, message: "Unexpected trailing space(s) before line break", characterIndex, excerpt, location: ourLocation });
     }
 
@@ -222,7 +222,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 124)
         && (characterIndex = fieldText.indexOf('  ')) >= 0
         && (fieldType !== 'markdown' || characterIndex !== fieldText.length - 2)) {
-        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
+        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
         const doubleCount = countOccurrences(fieldText, '  ');
         let notice;
         if (doubleCount === 1)
@@ -237,25 +237,25 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     }
     if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 583)
         && (characterIndex = fieldText.indexOf('\n')) >= 0) {
-        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
+        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
         addNoticePartial({ priority: 583, message: "Unexpected newLine character", characterIndex, excerpt, location: ourLocation });
         suggestion = suggestion.replace(/\n/g, ' ');
     }
     if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 582)
         && (characterIndex = fieldText.indexOf('\r')) >= 0) {
-        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
+        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
         addNoticePartial({ priority: 582, message: "Unexpected carriageReturn character", characterIndex, excerpt, location: ourLocation });
         suggestion = suggestion.replace(/\r/g, ' ');
     }
     if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 581)
         && (characterIndex = fieldText.indexOf('\xA0')) >= 0) { // non-break space
-        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/\xA0/g, '⍽') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
+        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/\xA0/g, '⍽') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
         addNoticePartial({ priority: 581, message: "Unexpected non-break space (uA0) character", characterIndex, excerpt, location: ourLocation });
         suggestion = suggestion.replace(/\xA0/g, ' ');
     }
     if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 580)
         && (characterIndex = fieldText.indexOf('\u202F')) >= 0) { // narrow non-break space
-        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/\u202F/g, '⍽') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
+        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/\u202F/g, '⍽') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
         const notice = { priority: 580, message: "Unexpected narrow non-break space (u202F) character", excerpt, location: ourLocation };
         if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.substring(0, 6) !== 'from \\')
             notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
@@ -265,13 +265,13 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     if (fieldName === 'OrigQuote' || fieldName === 'Quote') {
         if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 179)
             && (characterIndex = fieldText.indexOf(' …')) >= 0) {
-            const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
+            const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
             addNoticePartial({ priority: 179, message: "Unexpected space before ellipse character", characterIndex, excerpt, location: ourLocation });
             suggestion = suggestion.replace(/ …/g, '…');
         }
         if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 178)
             && (characterIndex = fieldText.indexOf('… ')) >= 0) {
-            const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
+            const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
             addNoticePartial({ priority: 178, message: "Unexpected space after ellipse character", characterIndex, excerpt, location: ourLocation });
             suggestion = suggestion.replace(/… /g, '…');
         }
@@ -290,7 +290,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
             doubledPunctuationCheckList += '-';
         for (const punctChar of doubledPunctuationCheckList) {
             if ((characterIndex = fieldText.indexOf(punctChar + punctChar)) >= 0) {
-                let excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                 const notice = { priority: 177, message: `Unexpected doubled ${punctChar} characters`, excerpt, location: ourLocation };
                 if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.substring(0, 6) !== 'from \\')
                     notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
@@ -309,7 +309,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
         for (const punctChar of afterSpaceCheckList) {
             if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 191)
                 && (characterIndex = fieldText.indexOf(' ' + punctChar)) >= 0) {
-                let excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                 const notice = { priority: 191, message: `Unexpected ${punctChar} character after space`, excerpt, location: ourLocation };
                 if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.substring(0, 6) !== 'from \\')
                     notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
@@ -320,7 +320,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
                 && (punctChar !== '!' || fieldType !== 'markdown') // image tag
                 && fieldText[0] === punctChar) {
                 characterIndex = 0;
-                let excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                 addNoticePartial({ priority: 195, message: `Unexpected ${punctChar} character at start of line`, characterIndex, excerpt, location: ourLocation });
             }
         }
@@ -338,7 +338,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
         if (fieldType !== 'YAML') beforeSpaceCheckList += '[';
         for (const punctChar of beforeSpaceCheckList) {
             if ((characterIndex = fieldText.indexOf(punctChar + ' ')) >= 0) {
-                let excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                 const notice = { priority: 192, message: `Unexpected space after ${punctChar} character`, excerpt, location: ourLocation };
                 if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.substring(0, 6) !== 'from \\')
                     notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
@@ -356,7 +356,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
         for (const punctChar of beforeEOLCheckList) {
             if (punctChar !== '—' && fieldText[fieldText.length - 1] === punctChar) {
                 characterIndex = fieldText.length - 1;
-                let excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                 const notice = { priority: 193, message: `Unexpected ${punctChar} character at end of line`, excerpt, location: ourLocation };
                 if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.substring(0, 6) !== 'from \\')
                     notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
@@ -369,7 +369,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
         // Check for bad combinations of characters
         for (const badCharCombination of BAD_CHARACTER_COMBINATIONS)
             if ((characterIndex = fieldText.indexOf(badCharCombination)) >= 0) {
-                let excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                 addNoticePartial({ priority: 849, message: `Unexpected '${badCharCombination}' character combination`, characterIndex, excerpt, location: ourLocation });
             }
 
@@ -377,7 +377,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     // characterIndex = fieldText.indexOf('\\[');
     // if (characterIndex === -1) characterIndex = fieldText.indexOf('\\]');
     // if (characterIndex !== -1) {
-    //     let excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
+    //     const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
     //     addNoticePartial({ priority: 849, message: "Unexpected \\[ or \\] characters", characterIndex, excerpt, location: ourLocation });
     // }
 
@@ -442,7 +442,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
         if (characterIndex === -1) characterIndex = fieldText.indexOf('.info');
         if (characterIndex === -1) characterIndex = fieldText.indexOf('.bible');
         if (characterIndex >= 0) {
-            let excerpt = `${characterIndex > excerptHalfLength ? '…' : ''}${fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus)}${characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : ''}`
+            const excerpt = `${characterIndex > excerptHalfLength ? '…' : ''}${fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus)}${characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : ''}`
             addNoticePartial({ priority: 765, message: "Unexpected link", characterIndex, excerpt, location: ourLocation });
         }
     }
