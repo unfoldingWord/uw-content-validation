@@ -322,7 +322,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
         parameterAssert(location !== undefined, "checkNotFoundQuoteSegment: 'location' parameter should be defined");
         parameterAssert(typeof location === 'string', `checkNotFoundQuoteSegment: 'location' parameter should be a string not a '${typeof location}'`);
 
-        const excerpt = partDescription ? `${partDescription ? '(' + partDescription + ' quote portion)' : ''} '${notFoundQuoteSegment}'` : '';
+        let excerpt = partDescription ? `${partDescription ? '(' + partDescription + ' quote portion)' : ''} '${notFoundQuoteSegment}'` : '';
 
         const noBreakSpaceText = notFoundQuoteSegment.indexOf('\u00A0') >= 0 ? "quote which contains No-Break Space shown as '⍽'" : "";
         if (noBreakSpaceText) notFoundQuoteSegment = notFoundQuoteSegment.replace(/\u00A0/g, '⍽');
