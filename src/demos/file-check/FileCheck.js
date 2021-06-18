@@ -49,7 +49,7 @@ function FileCheck(props) {
         setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running file check…</p>);
         await clearCaches();
       }
-      else await clearCheckedArticleCache();
+      else await clearCheckedArticleCache(); // Why did we always need to clear these?
 
       // Display our "waiting" message
       setResultValue(<p style={{ color: 'magenta' }}>Fetching <i>{username}</i> {repoName} <b>{filename}</b>…</p>);

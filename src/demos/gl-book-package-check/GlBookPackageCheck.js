@@ -8,7 +8,7 @@ import { checkBookPackage } from '../book-package-check/checkBookPackage';
 import { userLog } from '../../core/utilities';
 
 
-// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.10';
+// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.11';
 
 
 function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
@@ -78,7 +78,7 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
             // Load whole repos, especially if we are going to check files in manifests
             let repoPreloadList = ['UHB', 'UGNT', 'TWL', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
             if (dataSet === 'OLD')
-                repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ'];
+                repoPreloadList = ['UHB', 'UGNT', 'TWL', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ'];
             else if (dataSet === 'NEW')
                 repoPreloadList = ['UHB', 'UGNT', 'TWL', 'LT', 'ST', 'TN2', 'TA', 'TW', 'TQ2'];
             else if (dataSet === 'BOTH')

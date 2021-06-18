@@ -9,7 +9,7 @@ import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMe
 import { userLog, debugLog } from '../../core/utilities';
 
 
-// const BPS_VALIDATOR_VERSION_STRING = '0.2.5';
+// const BPS_VALIDATOR_VERSION_STRING = '0.2.6';
 
 
 /**
@@ -91,7 +91,7 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
       // Load whole repos, especially if we are going to check files in manifests
       let repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TQ', 'SN', 'SQ']; // for DEFAULT
       if (dataSet === 'OLD')
-        repoPreloadList = ['LT', 'ST', 'TN', 'TQ'];
+        repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TQ'];
       else if (dataSet === 'NEW')
         repoPreloadList = ['TWL', 'LT', 'ST', 'TN2', 'TQ2', 'SN', 'SQ'];
       else if (dataSet === 'BOTH')

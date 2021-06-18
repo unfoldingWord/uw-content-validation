@@ -9,7 +9,7 @@ import { checkBookPackage } from './checkBookPackage';
 import { userLog, debugLog, parameterAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.5.3';
+// const BP_VALIDATOR_VERSION_STRING = '0.5.4';
 
 
 function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
@@ -87,7 +87,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             if (bookID === 'OBS') {
                 repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ']; // for DEFAULT
                 if (dataSet === 'OLD')
-                    repoPreloadList = ['OBS', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
+                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
                 else if (dataSet === 'NEW')
                     repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN', 'OBS-SQ'];
                 else if (dataSet === 'BOTH')
@@ -95,7 +95,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             } else { // not OBS
                 repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TQ', 'SN', 'SQ']; // for DEFAULT
                 if (dataSet === 'OLD')
-                    repoPreloadList = ['LT', 'ST', 'TN', 'TQ'];
+                    repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TQ'];
                 else if (dataSet === 'NEW')
                     repoPreloadList = ['TWL', 'LT', 'ST', 'TN2', 'TQ2', 'SN', 'SQ'];
                 else if (dataSet === 'BOTH')

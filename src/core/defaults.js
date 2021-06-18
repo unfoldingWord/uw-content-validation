@@ -4,6 +4,7 @@ export const REPO_CODES_LIST = [
   'UHB', 'UGNT',
   'LT', 'ST',
   'TA', 'TW', 'TWL',
+  // The ones with 2 suffix are the 2021 new TSV format repos
   'TN', 'TN2', 'TQ', 'TQ2',
   'SN', 'SQ',
   'OBS', 'OBS-TWL',
