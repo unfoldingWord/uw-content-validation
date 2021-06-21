@@ -9,6 +9,16 @@ import { userLog, debugLog, functionLog, parameterAssert, ourParseInt } from './
 const LINE_COLUMN_NUMBERS_REGEX = new RegExp('Line (\\d{1,6}), col (\\d{1,4}):'); // e.g., "Line 1538, col 4: 1537 ..."
 
 
+/**
+ *
+ * @param {string} strictnessString -- 'strict' or 'relaxed'
+ * @param {string} bookID -- 3-character book ID
+ * @param {string} fileText -- the actual USFM text
+ * @param {string} filename -- for error messages
+ * @param {string} givenLocation -- for error messages
+ * @param {Object} checkingOptions -- optional options
+ * @returns
+ */
 export function runBCSGrammarCheck(strictnessString, bookID, fileText, filename, givenLocation, checkingOptions) {
     // Runs the BCS USFM Grammar checker
     //  which can be quite time-consuming on large, complex USFM files
