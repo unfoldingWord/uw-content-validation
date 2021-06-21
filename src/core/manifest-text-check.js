@@ -1,14 +1,14 @@
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
 import { checkYAMLText } from './yaml-text-check';
 import { cachedGetFile, getFileListFromZip } from './getApi';
-import { BibleBookData } from './books/books'
+import { BibleBookData, testament } from './books/books'
 import Ajv from 'ajv';
 import { removeDisabledNotices } from './disabled-notices';
 // eslint-disable-next-line no-unused-vars
 import { debugLog, functionLog, parameterAssert } from './utilities';
 
 
-const MANIFEST_VALIDATOR_VERSION_STRING = '0.4.4';
+const MANIFEST_VALIDATOR_VERSION_STRING = '0.4.5';
 
 // Pasted in 2020-10-02 from https://raw.githubusercontent.com/unfoldingWord/dcs/master/options/schema/rc.schema.json
 // Updated 2021-02-19
@@ -714,14 +714,20 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
 
         // Check that the project files in the manifest actually exist
         const getFile_ = (checkingOptions && checkingOptions?.getFile) ? checkingOptions?.getFile : cachedGetFile;
+        let haveOTbooks = false, haveNTbooks = false;
         const ourProjectPathList = []; // Make a list for the next check
         for (const projectEntry of formData['projects']) {
             // debugLog(`Manifest project: ${JSON.stringify(projectEntry)}`);
             const projectKeys = Object.keys(projectEntry); // Expect title, versification, identifier, sort, path, categories
             // debugLog("Project keys", JSON.stringify(projectKeys));
             for (const keyName of ['identifier', 'path', 'sort'])
+                // TODO: What about 'title', 'versification', 'categories' -- are they not compulsory
                 if (projectKeys.indexOf(keyName) === -1)
                     addNotice({ priority: 939, message: "Key is missing for project", details: keyName, excerpt: JSON.stringify(projectEntry), location: ourLocation });
+            const whichTestament = testament(projectEntry['identifier']); // returns 'old' or 'new'
+            if (whichTestament === 'old') haveOTbooks = true;
+            else if (whichTestament === 'new') haveNTbooks = true;
+
 
             const projectFilepath = projectEntry['path'];
             ourProjectPathList.push(projectFilepath);
@@ -766,6 +772,27 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
                     addNotice({ priority: 832, message: `Seems project file is missing from the manifest`, excerpt: repoFilepath, location: ourLocation });
                 }
             }
+
+        if (repoCode === 'TWL' || repoCode === 'TN' || repoCode === 'TN2') {
+            // Check that the necessary relation fields are present
+            const relationList = []; // Make a list for the next check
+            let haveUHB = false, haveUGNT = false;
+            try {
+                for (const relation of formData['dublin_core']['relation']) {
+                    // debugLog(`${repoCode} manifest relation: ${relation}`);
+                    relationList.push(relation);
+                    if (relation.startsWith('hbo/uhb')) haveUHB = true;
+                    if (relation.startsWith('el-x-koine/ugnt')) haveUGNT = true;
+                }
+            } catch (e) {
+                debugLog(`checkManifestText got error ${e.message} while loading 'relation' fields`);
+                addNotice({ priority: 930, message: "'relation' key is missing", location: ourLocation });
+            }
+            if (haveOTbooks && !haveUHB)
+                addNotice({ priority: 817, message: `UHB 'relation' is missing`, details: JSON.stringify(relationList), location: ourLocation });
+            if (haveNTbooks && !haveUGNT)
+                addNotice({ priority: 816, message: `UGNT 'relation' is missing`, details: JSON.stringify(relationList), location: ourLocation });
+        }
     }
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
