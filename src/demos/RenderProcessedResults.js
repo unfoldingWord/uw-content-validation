@@ -42,7 +42,7 @@ const tableIcons = {
 };
 
 
-// const RENDER_PROCESSED_RESULTS_VERSION = '0.6.6';
+// const RENDER_PROCESSED_RESULTS_VERSION = '0.6.7';
 
 
 export function RenderSuccesses({ username, results }) {
@@ -219,7 +219,7 @@ function RenderMessage({ color, message, details }) {
     let detailsString = '';
     if (details)
         if (details.startsWith('verse text ►'))
-            detailsString = <> with verse text ►<span style={{ 'background-color': 'Khaki' }}>{details.slice(12, -1)}</span>◄</>;
+            detailsString = <> with verse text ►<span style={{ backgroundColor: 'LemonChiffon' }}>{details.slice(12, -1)}</span>◄</>;
         else if (details.length)
             detailsString = <> with '{details}'</>;
     return <><b style={{ color: color }}>{message}</b>{detailsString}</>;
@@ -308,7 +308,7 @@ function RenderFileDetails({ givenEntry }) {
     // else if (!repoName) resultEnd += " no repoName";
     // else if (!filename) resultEnd += " no filename";
     if (givenEntry.rowID && givenEntry.rowID.length)
-        resultEnd = <>{resultEnd} with row ID <b><span style={{ 'font-family': 'Courier New, courier, monospace' }}>{givenEntry.rowID}</span></b></>;
+        resultEnd = <>{resultEnd} with row ID <b><span style={{ fontFamily: 'Courier New, courier, monospace' }}>{givenEntry.rowID}</span></b></>;
     if (givenEntry.fieldName && givenEntry.fieldName.length)
         resultEnd = <>{resultEnd} in {givenEntry.fieldName} field</>;
 
@@ -330,17 +330,20 @@ function RenderExcerpt({ excerpt, message }) {
         || message.endsWith("Error loading general link")
         || message.endsWith("Should http link be https")) {
         // debugLog(`Here1 RenderExcerpt(${excerpt}, ${message})`);
-        if (excerpt && excerpt[0] === '[' && excerpt.slice(-1) === ')') {
+        if (excerpt && excerpt[0] === '[' && excerpt.slice(-1) === ')') { // then the excerpt is a link so let's liven it
             // debugLog(`Here2 RenderExcerpt(${excerpt}, ${message})`);
             const ix = excerpt.indexOf('](');
-            const displayPart = excerpt.substring(1, ix); // Start after the [ unril before the ](
+            const displayPart = excerpt.substring(1, ix); // Start after the [ until before the ](
             const linkPart = excerpt.substring(ix + 2, excerpt.length - 1); // Step past the ]( but don't include the final )
             const adjLinkPart = message === "Should http link be https" ? linkPart.replace('http:', 'https:') : linkPart;
             // debugLog(`RenderExcerpt from '${excerpt}' got ix=${ix}, displayPart='${displayPart}', linkPart='${linkPart}', adjLinkPart='${adjLinkPart}'`);
             return <><span style={{ color: 'DimGray' }}>` around ►[{displayPart}](<a rel="noopener noreferrer" target="_blank" href={adjLinkPart}>{linkPart}</a>)◄`</span></>
         }
     }
-    return <><span style={{ color: 'DimGray' }}>{excerpt ? ` around ►${excerpt}◄` : ""}</span></>;
+    if (excerpt && excerpt.length)
+        return <>around ►<b>{excerpt}</b>◄</>;
+    // else
+    return null;
 }
 // end of RenderExcerpt
 
