@@ -217,8 +217,11 @@ export function RenderRawResults({ results }) {
 */
 function RenderMessage({ color, message, details }) {
     let detailsString = '';
-    if (details && details.length)
-        detailsString = ' with ' + (details[0] === '(' ? details : `'${details}'`);
+    if (details)
+        if (details.startsWith('verse text ►'))
+            detailsString = <> with verse text ►<span style={{ 'background-color': 'Khaki' }}>{details.slice(12, -1)}</span>◄</>;
+        else if (details.length)
+            detailsString = <> with '{details}'</>;
     return <><b style={{ color: color }}>{message}</b>{detailsString}</>;
 }
 
