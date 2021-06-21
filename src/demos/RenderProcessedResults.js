@@ -42,7 +42,7 @@ const tableIcons = {
 };
 
 
-// const RENDER_PROCESSED_RESULTS_VERSION = '0.6.5';
+// const RENDER_PROCESSED_RESULTS_VERSION = '0.6.6';
 
 
 export function RenderSuccesses({ username, results }) {
@@ -304,12 +304,17 @@ function RenderFileDetails({ givenEntry }) {
     // else if (!username) resultEnd += " no username";
     // else if (!repoName) resultEnd += " no repoName";
     // else if (!filename) resultEnd += " no filename";
-    if (givenEntry.rowID && givenEntry.rowID.length) resultEnd += ` with row ID ${givenEntry.rowID}`;
-    if (givenEntry.fieldName && givenEntry.fieldName.length) resultEnd += ` in ${givenEntry.fieldName} field`;
+    if (givenEntry.rowID && givenEntry.rowID.length)
+        resultEnd = <>{resultEnd} with row ID <b><span style={{ 'font-family': 'Courier New, courier, monospace' }}>{givenEntry.rowID}</span></b></>;
+    if (givenEntry.fieldName && givenEntry.fieldName.length)
+        resultEnd = <>{resultEnd} in {givenEntry.fieldName} field</>;
 
-    if (fileLineLink) return <>{resultStart}<a rel="noopener noreferrer" target="_blank" href={fileLineLink}>{lineResult}</a>{resultEnd}</>;
-    else if (fileLink) return <>{resultStart} in file <a rel="noopener noreferrer" target="_blank" href={fileLink}>{givenEntry.filename}</a>{resultEnd}</>;
-    else return <>{resultStart}<b>{lineResult}</b>{resultEnd}</>;
+    if (fileLineLink)
+        return <>{resultStart}<a rel="noopener noreferrer" target="_blank" href={fileLineLink}>{lineResult}</a>{resultEnd}</>;
+    else if (fileLink)
+        return <>{resultStart} in file <a rel="noopener noreferrer" target="_blank" href={fileLink}>{givenEntry.filename}</a>{resultEnd}</>;
+    else
+        return <>{resultStart}<b>{lineResult}</b>{resultEnd}</>;
 }
 // end of RenderFileDetails
 
@@ -332,7 +337,7 @@ function RenderExcerpt({ excerpt, message }) {
             return <><span style={{ color: 'DimGray' }}>` around ►[{displayPart}](<a rel="noopener noreferrer" target="_blank" href={adjLinkPart}>{linkPart}</a>)◄`</span></>
         }
     }
-    return <><span style={{ color: 'DimGray' }}>{excerpt ? ` around ►${excerpt}◄` : ""}</span></>
+    return <><span style={{ color: 'DimGray' }}>{excerpt ? ` around ►${excerpt}◄` : ""}</span></>;
 }
 // end of RenderExcerpt
 
