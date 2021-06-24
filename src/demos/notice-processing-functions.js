@@ -1,4 +1,5 @@
-import { userLog, parameterAssert } from '../core/utilities';
+// eslint-disable-next-line no-unused-vars
+import { userLog, parameterAssert, logicAssert } from '../core/utilities';
 import { isDisabledNotice } from '../core/disabled-notices';
 
 
@@ -142,6 +143,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     // Run a check through the noticeList to help discover any programming errors that need fixing
     // This entire section may be commented out of production code
     if (givenNoticeObject.noticeList && givenNoticeObject.noticeList.length) {
+        // eslint-disable-next-line no-unused-vars
         const ALL_TSV_FIELDNAMES = ['Book', 'Chapter', 'Verse', 'Reference',
             'ID', 'Tags', 'SupportReference',
             'OrigWords', 'TWLink',
@@ -151,8 +153,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         const numberStore = {}, duplicatePriorityList = [];
         for (const thisGivenNotice of standardisedNoticeList) {
             const thisPriority = thisGivenNotice.priority, thisMsg = thisGivenNotice.message;
-            parameterAssert(typeof thisPriority === 'number' && thisPriority > 0 && thisPriority < 10000, `BAD PRIORITY for ${JSON.stringify(thisGivenNotice)}`);
-            parameterAssert(typeof thisMsg === 'string' && thisMsg.length >= 10, `BAD MESSAGE for ${JSON.stringify(thisGivenNotice)}`);
+            //(typeof thisPriority === 'number' && thisPriority > 0 && thisPriority < 10000, `BAD PRIORITY for ${JSON.stringify(thisGivenNotice)}`);
+            //parameterAssert(typeof thisMsg === 'string' && thisMsg.length >= 10, `BAD MESSAGE for ${JSON.stringify(thisGivenNotice)}`);
 
             // Check that notice priority numbers are unique (to detect programming errors)
             const oldMsg = numberStore[thisPriority];
@@ -186,9 +188,9 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 thisRowID = thisGivenNotice.rowID, thisFieldName = thisGivenNotice.fieldName,
                 thisLocation = thisGivenNotice.location, thisExtra = thisGivenNotice.extra;
             if (thisRepoName) {
-                parameterAssert(thisRepoName.indexOf(' ') < 0 && thisRepoName.indexOf('/') < 0 && thisRepoName.indexOf('\\') < 0, `repoName '${thisRepoName}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
-                if (thisLocation)
-                    parameterAssert(thisLocation.indexOf(thisRepoName) < 0, `repoName is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
+                //parameterAssert(thisRepoName.indexOf(' ') < 0 && thisRepoName.indexOf('/') < 0 && thisRepoName.indexOf('\\') < 0, `repoName '${thisRepoName}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+                if (thisLocation) { //parameterAssert(thisLocation.indexOf(thisRepoName) < 0, `repoName is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
+                }
             }
             if (thisFilename) {
                 parameterAssert(thisFilename.indexOf(':') < 0 && thisFilename.indexOf('\\') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
@@ -197,38 +199,37 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 // if (!thisRepoName || !(thisRepoName.endsWith('_obs') || thisRepoName.endsWith('_ta') || thisRepoName.endsWith('_tw')))
                 //     parameterAssert(thisFilename.indexOf('/') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 if (thisLocation)
-                    parameterAssert(thisLocation.indexOf(thisFilename) < 0, `filename is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
+                    logicAssert(thisLocation.indexOf(thisFilename) < 0, `filename is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
             }
             if (thisC)
-                parameterAssert(thisC === 'front' || !isNaN(thisC * 1), `C '${thisC}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+                logicAssert(thisC === 'front' || !isNaN(thisC * 1), `C '${thisC}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
             if (thisV) { // NOTE: We don't allow for a en-dash in verse ranges -- should we?
                 if (thisV.indexOf('-') !== -1) { // it contains a hyphen, i.e., a verse range
                     const vBits = thisV.split('-');
-                    parameterAssert(vBits.length === 2 && !isNaN(vBits[0] * 1) && !isNaN(vBits[1] * 1), `V '${thisV}' verse range contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+                    logicAssert(vBits.length === 2 && !isNaN(vBits[0] * 1) && !isNaN(vBits[1] * 1), `V '${thisV}' verse range contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 } else // NOTE: Question mark below is in "bad verse number" notices
-                    parameterAssert(thisV === 'intro' || thisV === '?' || !isNaN(thisV * 1), `V '${thisV}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+                    logicAssert(thisV === 'intro' || thisV === '?' || !isNaN(thisV * 1), `V '${thisV}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
             }
             if (thisRowID) {
-                parameterAssert(thisRowID.indexOf(' ') < 0 && thisRowID.indexOf('/') < 0 && thisRowID.indexOf('\\') < 0, `rowID '${thisRowID}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+                logicAssert(thisRowID.indexOf(' ') < 0 && thisRowID.indexOf('/') < 0 && thisRowID.indexOf('\\') < 0, `rowID '${thisRowID}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 if (thisLocation)
-                    parameterAssert(thisLocation.indexOf(thisRowID) < 0, `rowID is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
+                    logicAssert(thisLocation.indexOf(thisRowID) < 0, `rowID is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
             }
             if (thisFieldName) {
                 // NOTE: fieldName can be a USFM marker, e.g., 'from \w'
-                parameterAssert(thisFieldName.indexOf('/') < 0, `fieldName '${thisFieldName}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+                logicAssert(thisFieldName.indexOf('/') < 0, `fieldName '${thisFieldName}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 if (thisLocation)
-                    parameterAssert(thisFieldName === 'w' // 'w' is just too likely to occur in the location string
+                    logicAssert(thisFieldName === 'w' // 'w' is just too likely to occur in the location string
                         || thisLocation.indexOf(thisFieldName) < 0, `fieldName is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
             }
             if (thisLineNumber) {
-                parameterAssert(typeof thisLineNumber === 'number' && thisLineNumber > 0, `lineNumber '${thisLineNumber}' contains unexpected value in ${JSON.stringify(thisGivenNotice)}`);
+                logicAssert(typeof thisLineNumber === 'number' && thisLineNumber > 0, `lineNumber '${thisLineNumber}' contains unexpected value in ${JSON.stringify(thisGivenNotice)}`);
                 // Note: lineNumber can occur in location, e.g., in 3 in '3JN' or 'Door43' so have to take additional care not to give false alarms
                 if (thisLocation && thisLineNumber > 4 && thisLineNumber !== 43)
                     // && (!thisGivenNotice.bookID || thisGivenNotice.bookID.indexOf(thisLineNumber + '') < 0)
-                    parameterAssert(thisLocation.indexOf(thisLineNumber + '') < 0 && thisLocation.indexOf(thisLineNumber.toLocaleString()) < 0, `lineNumber might be repeated in location in ${JSON.stringify(thisGivenNotice)}`);
+                    logicAssert(thisLocation.indexOf(thisLineNumber + '') < 0 && thisLocation.indexOf(thisLineNumber.toLocaleString()) < 0, `lineNumber might be repeated in location in ${JSON.stringify(thisGivenNotice)}`);
             }
-            if (thisExtra)
-                parameterAssert(thisExtra !== '01', `extra should not be '${thisExtra}'`);
+            if (thisExtra) { parameterAssert(thisExtra !== '01', `extra should not be '${thisExtra}'`); }
             numberStore[thisPriority] = thisMsg;
         }
     }
@@ -290,6 +291,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         else { // successList is fairly long -- maybe we can shorten it by combining multiple similar messages
             const BibleRegex = /\d\d-(\w\w\w).usfm/; // "Checked JUD file: 66-JUD.usfm"
             const NotesRegex = /\d\d-(\w\w\w).tsv/; // "Checked EN_TN_01-GEN.TSV file: en_tn_01-GEN.tsv"
+            // const TWLRegex = /_(\w\w\w).tsv/; // From repoCheck "Checked en_twl BBB file: twl_BBB.tsv"
             const manifestRegex = /Checked ([\w\-_]{2,25}) manifest file/;
             const READMEregex = /Checked ([\w\-_]{2,25}) README file/;
             const LICENSEregex = /Checked ([\w\-_]{2,25}) LICENSE file/;
@@ -484,7 +486,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         const newNoticeList = [];
         for (const thisNotice of remainingNoticeList) {
             const thisExtra = thisNotice.extra;
-            parameterAssert(thisExtra && thisExtra.length, `Expect thisNotice to have an "extra" field: ${JSON.stringify(thisNotice)}`)
+            logicAssert(thisExtra && thisExtra.length, `Expect thisNotice to have an "extra" field: ${JSON.stringify(thisNotice)}`)
             const newNotice = { ...thisNotice };
             // We don’t need the extra field if we've already got this info
             if (thisExtra !== thisNotice.repoName && thisExtra !== thisNotice.bookID)

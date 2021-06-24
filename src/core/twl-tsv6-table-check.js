@@ -2,6 +2,7 @@ import * as books from './books/books';
 import { DEFAULT_EXCERPT_LENGTH } from './defaults'
 import { checkTWL_TSV6DataRow } from './twl-tsv6-row-check';
 import { removeDisabledNotices } from './disabled-notices';
+// eslint-disable-next-line no-unused-vars
 import { parameterAssert } from './utilities';
 
 
@@ -31,16 +32,16 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
      Returns a result object containing a successList and a noticeList
      */
     // functionLog(`checkTWL_TSV6Table(${languageCode}, ${repoCode}, ${bookID}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
-    parameterAssert(languageCode !== undefined, "checkTWL_TSV6Table: 'languageCode' parameter should be defined");
-    parameterAssert(typeof languageCode === 'string', `checkTWL_TSV6Table: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
-    parameterAssert(repoCode === 'TWL' || repoCode === 'OBS-TWL', `checkTWL_TSV6Table: repoCode expected 'TWL' or 'OBS-TWL' not '${repoCode}'`);
-    parameterAssert(bookID !== undefined, "checkTWL_TSV6Table: 'bookID' parameter should be defined");
-    parameterAssert(typeof bookID === 'string', `checkTWL_TSV6Table: 'bookID' parameter should be a string not a '${typeof bookID}'`);
-    parameterAssert(bookID.length === 3, `checkTWL_TSV6Table: 'bookID' parameter should be three characters long not ${bookID.length}`);
-    parameterAssert(bookID.toUpperCase() === bookID, `checkTWL_TSV6Table: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-    parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkTWL_TSV6Table: '${bookID}' is not a valid USFM book identifier`);
-    parameterAssert(givenLocation !== undefined, "checkTWL_TSV6Table: 'givenLocation' parameter should be defined");
-    parameterAssert(typeof givenLocation === 'string', `checkTWL_TSV6Table: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
+    //parameterAssert(languageCode !== undefined, "checkTWL_TSV6Table: 'languageCode' parameter should be defined");
+    //parameterAssert(typeof languageCode === 'string', `checkTWL_TSV6Table: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    //parameterAssert(repoCode === 'TWL' || repoCode === 'OBS-TWL', `checkTWL_TSV6Table: repoCode expected 'TWL' or 'OBS-TWL' not '${repoCode}'`);
+    //parameterAssert(bookID !== undefined, "checkTWL_TSV6Table: 'bookID' parameter should be defined");
+    //parameterAssert(typeof bookID === 'string', `checkTWL_TSV6Table: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+    //parameterAssert(bookID.length === 3, `checkTWL_TSV6Table: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    //parameterAssert(bookID.toUpperCase() === bookID, `checkTWL_TSV6Table: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+    //parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkTWL_TSV6Table: '${bookID}' is not a valid USFM book identifier`);
+    //parameterAssert(givenLocation !== undefined, "checkTWL_TSV6Table: 'givenLocation' parameter should be defined");
+    //parameterAssert(typeof givenLocation === 'string', `checkTWL_TSV6Table: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -53,20 +54,24 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
     }
     function addNoticePartial(noticeObject) {
         // functionLog(`checkTWL_TSV6Table notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
-        parameterAssert(noticeObject.priority !== undefined, "ATSV addNoticePartial: 'priority' parameter should be defined");
-        parameterAssert(typeof noticeObject.priority === 'number', `TSV addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        parameterAssert(noticeObject.message !== undefined, "ATSV addNoticePartial: 'message' parameter should be defined");
-        parameterAssert(typeof noticeObject.message === 'string', `TSV addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // parameterAssert(C !== undefined, "ATSV addNoticePartial: 'C' parameter should be defined");
-        if (noticeObject.C) parameterAssert(typeof noticeObject.C === 'string', `TSV addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
-        // parameterAssert(V !== undefined, "ATSV addNoticePartial: 'V' parameter should be defined");
-        if (noticeObject.V) parameterAssert(typeof noticeObject.V === 'string', `TSV addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
-        // parameterAssert(characterIndex !== undefined, "ATSV addNoticePartial: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `TSV addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // parameterAssert(excerpt !== undefined, "ATSV addNoticePartial: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `TSV addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
-        parameterAssert(noticeObject.location !== undefined, "ATSV addNoticePartial: 'location' parameter should be defined");
-        parameterAssert(typeof noticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        //parameterAssert(noticeObject.priority !== undefined, "ATSV addNoticePartial: 'priority' parameter should be defined");
+        //parameterAssert(typeof noticeObject.priority === 'number', `TSV addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        //parameterAssert(noticeObject.message !== undefined, "ATSV addNoticePartial: 'message' parameter should be defined");
+        //parameterAssert(typeof noticeObject.message === 'string', `TSV addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+        // //parameterAssert(C !== undefined, "ATSV addNoticePartial: 'C' parameter should be defined");
+        if (noticeObject.C) { //parameterAssert(typeof noticeObject.C === 'string', `TSV addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
+        }
+        // //parameterAssert(V !== undefined, "ATSV addNoticePartial: 'V' parameter should be defined");
+        if (noticeObject.V) { //parameterAssert(typeof noticeObject.V === 'string', `TSV addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
+        }
+        // //parameterAssert(characterIndex !== undefined, "ATSV addNoticePartial: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `TSV addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        }
+        // //parameterAssert(excerpt !== undefined, "ATSV addNoticePartial: 'excerpt' parameter should be defined");
+        if (noticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `TSV addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        }
+        //parameterAssert(noticeObject.location !== undefined, "ATSV addNoticePartial: 'location' parameter should be defined");
+        //parameterAssert(typeof noticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
         if (noticeObject.debugChain) noticeObject.debugChain = `checkTWL_TSV6Table ${noticeObject.debugChain}`;
         carResult.noticeList.push({ ...noticeObject, bookID, filename, repoCode });
@@ -92,9 +97,9 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
     if (bookID === 'OBS')
         numChaptersThisBook = 50; // There's 50 Open Bible Stories
     else {
-        parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in checkTWL_TSV6Table");
+        //parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in checkTWL_TSV6Table");
         try {
-            numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
+            numChaptersThisBook = books.chaptersInBook(bookID);
         }
         catch {
             if (!books.isValidBookID(bookID)) // must not be in FRT, BAK, etc.

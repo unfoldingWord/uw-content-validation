@@ -1,7 +1,9 @@
+// eslint-disable-next-line no-unused-vars
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
 import { OPEN_CLOSE_PUNCTUATION_PAIRS, PAIRED_PUNCTUATION_OPENERS, PAIRED_PUNCTUATION_CLOSERS, isWhitespace, countOccurrences } from './text-handling-functions'
 import { checkTextField } from './field-text-check';
 import { removeDisabledNotices } from './disabled-notices';
+// eslint-disable-next-line no-unused-vars
 import { parameterAssert } from './utilities';
 
 
@@ -26,20 +28,20 @@ export function checkPlainText(languageCode, repoCode, textType, textName, plain
      Returns a result object containing a successList and a noticeList
      */
     // functionLog(`checkPlainText(${textName}, (${plainText.length} chars), ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
-    parameterAssert(languageCode !== undefined, "checkPlainText: 'languageCode' parameter should be defined");
-    parameterAssert(typeof languageCode === 'string', `checkPlainText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
-    parameterAssert(languageCode !== 'markdown' && languageCode !== 'USFM' && languageCode !== 'YAML' && languageCode !== 'text' && languageCode !== 'raw' && languageCode !== 'unfoldingWord', `checkPlainText: 'languageCode' ${languageCode} parameter should be not be '${languageCode}'`);
-    parameterAssert(repoCode !== undefined, "checkPlainText: 'repoCode' parameter should be defined");
-    parameterAssert(typeof repoCode === 'string', `checkPlainText: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
-    parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkPlainText: 'repoCode' parameter should not be '${repoCode}'`);
-    parameterAssert(textType !== undefined, "checkPlainText: 'textType' parameter should be defined");
-    parameterAssert(typeof textType === 'string', `checkPlainText: 'textType' parameter should be a string not a '${typeof textType}': ${textType}`);
-    parameterAssert(textType === 'markdown' || textType === 'USFM' || textType === 'YAML' || textType === 'text' || textType === 'raw', `checkPlainText: unrecognised 'textType' parameter: '${textType}'`);
-    parameterAssert(textName !== undefined, "checkPlainText: 'textName' parameter should be defined");
-    parameterAssert(typeof textName === 'string', `checkPlainText: 'textName' parameter should be a string not a '${typeof textName}': ${textName}`);
-    parameterAssert(plainText !== undefined, "checkPlainText: 'plainText' parameter should be defined");
-    parameterAssert(typeof plainText === 'string', `checkPlainText: 'plainText' parameter should be a string not a '${typeof plainText}': ${plainText}`);
-    parameterAssert(checkingOptions !== undefined, "checkPlainText: 'checkingOptions' parameter should be defined");
+    //parameterAssert(languageCode !== undefined, "checkPlainText: 'languageCode' parameter should be defined");
+    //parameterAssert(typeof languageCode === 'string', `checkPlainText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
+    //parameterAssert(languageCode !== 'markdown' && languageCode !== 'USFM' && languageCode !== 'YAML' && languageCode !== 'text' && languageCode !== 'raw' && languageCode !== 'unfoldingWord', `checkPlainText: 'languageCode' ${languageCode} parameter should be not be '${languageCode}'`);
+    //parameterAssert(repoCode !== undefined, "checkPlainText: 'repoCode' parameter should be defined");
+    //parameterAssert(typeof repoCode === 'string', `checkPlainText: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
+    //parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkPlainText: 'repoCode' parameter should not be '${repoCode}'`);
+    //parameterAssert(textType !== undefined, "checkPlainText: 'textType' parameter should be defined");
+    //parameterAssert(typeof textType === 'string', `checkPlainText: 'textType' parameter should be a string not a '${typeof textType}': ${textType}`);
+    //parameterAssert(textType === 'markdown' || textType === 'USFM' || textType === 'YAML' || textType === 'text' || textType === 'raw', `checkPlainText: unrecognised 'textType' parameter: '${textType}'`);
+    //parameterAssert(textName !== undefined, "checkPlainText: 'textName' parameter should be defined");
+    //parameterAssert(typeof textName === 'string', `checkPlainText: 'textName' parameter should be a string not a '${typeof textName}': ${textName}`);
+    //parameterAssert(plainText !== undefined, "checkPlainText: 'plainText' parameter should be defined");
+    //parameterAssert(typeof plainText === 'string', `checkPlainText: 'plainText' parameter should be a string not a '${typeof plainText}': ${plainText}`);
+    //parameterAssert(checkingOptions !== undefined, "checkPlainText: 'checkingOptions' parameter should be defined");
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -67,15 +69,17 @@ export function checkPlainText(languageCode, repoCode, textType, textName, plain
     function addNotice(noticeObject) {
         // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
         // functionLog(`checkPlainText notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
-        parameterAssert(noticeObject.priority !== undefined, "cPT addNotice: 'priority' parameter should be defined");
-        parameterAssert(typeof noticeObject.priority === 'number', `cPT addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        parameterAssert(noticeObject.message !== undefined, "cPT addNotice: 'message' parameter should be defined");
-        parameterAssert(typeof noticeObject.message === 'string', `cPT addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cPT addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // parameterAssert(excerpt!==undefined, "cPT addNotice: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `cPT addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
-        parameterAssert(noticeObject.location !== undefined, "cPT addNotice: 'location' parameter should be defined");
-        parameterAssert(typeof noticeObject.location === 'string', `cPT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        //parameterAssert(noticeObject.priority !== undefined, "cPT addNotice: 'priority' parameter should be defined");
+        //parameterAssert(typeof noticeObject.priority === 'number', `cPT addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        //parameterAssert(noticeObject.message !== undefined, "cPT addNotice: 'message' parameter should be defined");
+        //parameterAssert(typeof noticeObject.message === 'string', `cPT addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+        if (noticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cPT addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        }
+        // //parameterAssert(excerpt!==undefined, "cPT addNotice: 'excerpt' parameter should be defined");
+        if (noticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cPT addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        }
+        //parameterAssert(noticeObject.location !== undefined, "cPT addNotice: 'location' parameter should be defined");
+        //parameterAssert(typeof noticeObject.location === 'string', `cPT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
         // noticeObject.debugChain = noticeObject.debugChain ? `checkPlainText(${textType}, ${textName}) ${noticeObject.debugChain}` : `checkPlainText(${textType}, ${textName})`;
         cptResult.noticeList.push(noticeObject);
@@ -96,13 +100,13 @@ export function checkPlainText(languageCode, repoCode, textType, textName, plain
 
         // Updates the global list of notices
         // debugLog(`cPT ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${fieldLocation}, …)`);
-        parameterAssert(lineNumber !== undefined, "cPT ourCheckTextField: 'lineNumber' parameter should be defined");
-        parameterAssert(typeof lineNumber === 'number', `cPT ourCheckTextField: 'fieldName' parameter should be a number not a '${typeof lineNumber}'`);
-        parameterAssert(fieldText !== undefined, "cPT ourCheckTextField: 'fieldText' parameter should be defined");
-        parameterAssert(typeof fieldText === 'string', `cPT ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-        parameterAssert(allowedLinks === true || allowedLinks === false, "cPT ourCheckTextField: allowedLinks parameter must be either true or false");
-        parameterAssert(optionalFieldLocation !== undefined, "cPT ourCheckTextField: 'optionalFieldLocation' parameter should be defined");
-        parameterAssert(typeof optionalFieldLocation === 'string', `cPT ourCheckTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
+        //parameterAssert(lineNumber !== undefined, "cPT ourCheckTextField: 'lineNumber' parameter should be defined");
+        //parameterAssert(typeof lineNumber === 'number', `cPT ourCheckTextField: 'fieldName' parameter should be a number not a '${typeof lineNumber}'`);
+        //parameterAssert(fieldText !== undefined, "cPT ourCheckTextField: 'fieldText' parameter should be defined");
+        //parameterAssert(typeof fieldText === 'string', `cPT ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+        //parameterAssert(allowedLinks === true || allowedLinks === false, "cPT ourCheckTextField: allowedLinks parameter must be either true or false");
+        //parameterAssert(optionalFieldLocation !== undefined, "cPT ourCheckTextField: 'optionalFieldLocation' parameter should be defined");
+        //parameterAssert(typeof optionalFieldLocation === 'string', `cPT ourCheckTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
         const resultObject = checkTextField(languageCode, repoCode, textType, '', fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
 

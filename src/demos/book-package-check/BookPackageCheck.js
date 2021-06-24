@@ -82,7 +82,9 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             }
             else await clearCheckedArticleCache();
 
-            // Load whole repos, especially if we are going to check files in manifests
+            // Load whole repo zip files which is maybe faster than loading several individual files
+            //  especially if we are going to also check the manifests, license, and ReadMe files as well as the book file.
+            // Remember that the manifest check actually checks the existence of all the projects, i.e., all files in the repo
             let repoPreloadList;
             if (bookID === 'OBS') {
                 repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ']; // for DEFAULT
@@ -144,7 +146,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             // if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
             if (props.sortBy) processOptions.sortBy = props.sortBy;
             if (props.ignorePriorityNumberList) { // We need to convert from string to Array
-                parameterAssert(props.ignorePriorityNumberList[0] === '[' && props.ignorePriorityNumberList[props.ignorePriorityNumberList.length - 1] === ']', `Format of props.ignorePriorityNumberList '${props.ignorePriorityNumberList}' is wrong should be enclosed in []`)
+                //parameterAssert(props.ignorePriorityNumberList[0] === '[' && props.ignorePriorityNumberList[props.ignorePriorityNumberList.length - 1] === ']', `Format of props.ignorePriorityNumberList '${props.ignorePriorityNumberList}' is wrong should be enclosed in []`)
                 processOptions.ignorePriorityNumberList = [];
                 for (const stringBit of props.ignorePriorityNumberList.substring(1, props.ignorePriorityNumberList.length - 1).split(',')) {
                     const intBit = ourParseInt(stringBit.trim()); // trim allows comma,space to also be used as separator

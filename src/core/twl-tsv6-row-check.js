@@ -1,11 +1,12 @@
-import { DEFAULT_EXCERPT_LENGTH } from './defaults'
-import { isWhitespace, countOccurrences } from './text-handling-functions'
+import { DEFAULT_EXCERPT_LENGTH } from './defaults';
+import { isWhitespace, countOccurrences } from './text-handling-functions';
 import * as books from './books/books';
 import { checkTextField } from './field-text-check';
 // import { checkMarkdownText } from './markdown-text-check';
 // import { checkSupportReferenceInTA } from './ta-reference-check';
 import { checkNotesLinksToOutside } from './notes-links-check';
 import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
+// eslint-disable-next-line no-unused-vars
 import { parameterAssert } from './utilities';
 
 
@@ -47,23 +48,25 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         Returns an object containing the noticeList.
     */
     // functionLog(`checkTWL_TSV6DataRow(${languageCode}, ${repoCode}, ${line}, ${bookID}, ${givenRowLocation}, ${JSON.stringify(checkingOptions)})…`);
-    parameterAssert(languageCode !== undefined, "checkTWL_TSV6DataRow: 'languageCode' parameter should be defined");
-    parameterAssert(typeof languageCode === 'string', `checkTWL_TSV6DataRow: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
-    parameterAssert(repoCode === 'TWL' || repoCode === 'OBS-TWL', `checkTWL_TSV6DataRow: repoCode expected 'TWL' or 'OBS-TWL' not '${repoCode}'`);
-    parameterAssert(line !== undefined, "checkTWL_TSV6DataRow: 'line' parameter should be defined");
-    parameterAssert(typeof line === 'string', `checkTWL_TSV6DataRow: 'line' parameter should be a string not a '${typeof line}'`);
-    parameterAssert(bookID !== undefined, "checkTWL_TSV6DataRow: 'bookID' parameter should be defined");
-    parameterAssert(typeof bookID === 'string', `checkTWL_TSV6DataRow: 'bookID' parameter should be a string not a '${typeof bookID}'`);
-    parameterAssert(bookID.length === 3, `checkTWL_TSV6DataRow: 'bookID' parameter should be three characters long not ${bookID.length}`);
-    parameterAssert(bookID.toUpperCase() === bookID, `checkTWL_TSV6DataRow: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-    parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkTWL_TSV6DataRow: '${bookID}' is not a valid USFM book identifier`);
-    // parameterAssert(givenC !== undefined, "checkTWL_TSV6DataRow: 'givenC' parameter should be defined");
-    if (givenC) parameterAssert(typeof givenC === 'string', `checkTWL_TSV6DataRow: 'givenC' parameter should be a string not a '${typeof givenC}'`);
-    // parameterAssert(givenV !== undefined, "checkTWL_TSV6DataRow: 'givenV' parameter should be defined");
-    if (givenV) parameterAssert(typeof givenV === 'string', `checkTWL_TSV6DataRow: 'givenV' parameter should be a string not a '${typeof givenV}'`);
-    parameterAssert(givenRowLocation !== undefined, "checkTWL_TSV6DataRow: 'givenRowLocation' parameter should be defined");
-    parameterAssert(typeof givenRowLocation === 'string', `checkTWL_TSV6DataRow: 'givenRowLocation' parameter should be a string not a '${typeof givenRowLocation}'`);
-    parameterAssert(givenRowLocation.indexOf('true') === -1, "checkTWL_TSV6DataRow: 'givenRowLocation' parameter should not be 'true'");
+    //parameterAssert(languageCode !== undefined, "checkTWL_TSV6DataRow: 'languageCode' parameter should be defined");
+    //parameterAssert(typeof languageCode === 'string', `checkTWL_TSV6DataRow: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    //parameterAssert(repoCode === 'TWL' || repoCode === 'OBS-TWL', `checkTWL_TSV6DataRow: repoCode expected 'TWL' or 'OBS-TWL' not '${repoCode}'`);
+    //parameterAssert(line !== undefined, "checkTWL_TSV6DataRow: 'line' parameter should be defined");
+    //parameterAssert(typeof line === 'string', `checkTWL_TSV6DataRow: 'line' parameter should be a string not a '${typeof line}'`);
+    //parameterAssert(bookID !== undefined, "checkTWL_TSV6DataRow: 'bookID' parameter should be defined");
+    //parameterAssert(typeof bookID === 'string', `checkTWL_TSV6DataRow: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+    //parameterAssert(bookID.length === 3, `checkTWL_TSV6DataRow: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    //parameterAssert(bookID.toUpperCase() === bookID, `checkTWL_TSV6DataRow: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+    //parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkTWL_TSV6DataRow: '${bookID}' is not a valid USFM book identifier`);
+    // //parameterAssert(givenC !== undefined, "checkTWL_TSV6DataRow: 'givenC' parameter should be defined");
+    if (givenC) { //parameterAssert(typeof givenC === 'string', `checkTWL_TSV6DataRow: 'givenC' parameter should be a string not a '${typeof givenC}'`);
+    }
+    // //parameterAssert(givenV !== undefined, "checkTWL_TSV6DataRow: 'givenV' parameter should be defined");
+    if (givenV) { //parameterAssert(typeof givenV === 'string', `checkTWL_TSV6DataRow: 'givenV' parameter should be a string not a '${typeof givenV}'`);
+    }
+    //parameterAssert(givenRowLocation !== undefined, "checkTWL_TSV6DataRow: 'givenRowLocation' parameter should be defined");
+    //parameterAssert(typeof givenRowLocation === 'string', `checkTWL_TSV6DataRow: 'givenRowLocation' parameter should be a string not a '${typeof givenRowLocation}'`);
+    //parameterAssert(givenRowLocation.indexOf('true') === -1, "checkTWL_TSV6DataRow: 'givenRowLocation' parameter should not be 'true'");
 
     let ourRowLocation = givenRowLocation;
     if (ourRowLocation && ourRowLocation[0] !== ' ') ourRowLocation = ` ${ourRowLocation}`;
@@ -85,18 +88,20 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         * @param {string} location - description of where the issue is located
         */
         // functionLog(`checkTWL_TSV6DataRow addNoticePartial(priority=${noticeObject.priority}) ${noticeObject.message}, ${noticeObject.characterIndex}, ${noticeObject.excerpt}, ${noticeObject.location}`);
-        parameterAssert(noticeObject.priority !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'priority' parameter should be defined");
-        parameterAssert(typeof noticeObject.priority === 'number', `checkTWL_TSV6DataRow addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        parameterAssert(noticeObject.message !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'message' parameter should be defined");
-        parameterAssert(typeof noticeObject.message === 'string', `checkTWL_TSV6DataRow addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // parameterAssert(lineNumber !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'lineNumber' parameter should be defined");
-        // parameterAssert(typeof lineNumber === 'number', `checkTWL_TSV6DataRow addNoticePartial: 'lineNumber' parameter should be a number not a '${typeof lineNumber}': ${lineNumber}`);
-        // parameterAssert(characterIndex !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `checkTWL_TSV6DataRow addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // parameterAssert(excerpt !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `checkTWL_TSV6DataRow addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
-        parameterAssert(noticeObject.location !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'location' parameter should be defined");
-        parameterAssert(typeof noticeObject.location === 'string', `checkTWL_TSV6DataRow addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        //parameterAssert(noticeObject.priority !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'priority' parameter should be defined");
+        //parameterAssert(typeof noticeObject.priority === 'number', `checkTWL_TSV6DataRow addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        //parameterAssert(noticeObject.message !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'message' parameter should be defined");
+        //parameterAssert(typeof noticeObject.message === 'string', `checkTWL_TSV6DataRow addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+        // //parameterAssert(lineNumber !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'lineNumber' parameter should be defined");
+        // //parameterAssert(typeof lineNumber === 'number', `checkTWL_TSV6DataRow addNoticePartial: 'lineNumber' parameter should be a number not a '${typeof lineNumber}': ${lineNumber}`);
+        // //parameterAssert(characterIndex !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `checkTWL_TSV6DataRow addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        }
+        // //parameterAssert(excerpt !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'excerpt' parameter should be defined");
+        if (noticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `checkTWL_TSV6DataRow addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        }
+        //parameterAssert(noticeObject.location !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'location' parameter should be defined");
+        //parameterAssert(typeof noticeObject.location === 'string', `checkTWL_TSV6DataRow addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
         // Also uses the given bookID,C,V, parameters from the main function call
         // noticeObject.debugChain = noticeObject.debugChain ? `checkTWL_TSV6DataRow ${noticeObject.debugChain}` : `checkTWL_TSV6DataRow(${repoCode})`;
@@ -120,16 +125,16 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         // Updates the global list of notices
 
         // functionLog(`checkTWL_TSV6DataRow ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
-        parameterAssert(rowID !== undefined, "checkTWL_TSV6DataRow ourCheckTextField: 'rowID' parameter should be defined");
-        parameterAssert(typeof rowID === 'string', `checkTWL_TSV6DataRow ourCheckTextField: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        parameterAssert(fieldName !== undefined, "checkTWL_TSV6DataRow ourCheckTextField: 'fieldName' parameter should be defined");
-        parameterAssert(typeof fieldName === 'string', `checkTWL_TSV6DataRow ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        parameterAssert(fieldText !== undefined, "checkTWL_TSV6DataRow ourCheckTextField: 'fieldText' parameter should be defined");
-        parameterAssert(typeof fieldText === 'string', `checkTWL_TSV6DataRow ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-        parameterAssert(allowedLinks === true || allowedLinks === false, "checkTWL_TSV6DataRow ourCheckTextField: allowedLinks parameter must be either true or false");
-        parameterAssert(rowLocation !== undefined, "checkTWL_TSV6DataRow ourCheckTextField: 'rowLocation' parameter should be defined");
-        parameterAssert(typeof rowLocation === 'string', `checkTWL_TSV6DataRow ourCheckTextField: 'rowLocation' parameter should be a string not a '${typeof rowLocation}'`);
-        parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkTWL_TSV6DataRow ourCheckTextField: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
+        //parameterAssert(rowID !== undefined, "checkTWL_TSV6DataRow ourCheckTextField: 'rowID' parameter should be defined");
+        //parameterAssert(typeof rowID === 'string', `checkTWL_TSV6DataRow ourCheckTextField: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+        //parameterAssert(fieldName !== undefined, "checkTWL_TSV6DataRow ourCheckTextField: 'fieldName' parameter should be defined");
+        //parameterAssert(typeof fieldName === 'string', `checkTWL_TSV6DataRow ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        //parameterAssert(fieldText !== undefined, "checkTWL_TSV6DataRow ourCheckTextField: 'fieldText' parameter should be defined");
+        //parameterAssert(typeof fieldText === 'string', `checkTWL_TSV6DataRow ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+        //parameterAssert(allowedLinks === true || allowedLinks === false, "checkTWL_TSV6DataRow ourCheckTextField: allowedLinks parameter must be either true or false");
+        //parameterAssert(rowLocation !== undefined, "checkTWL_TSV6DataRow ourCheckTextField: 'rowLocation' parameter should be defined");
+        //parameterAssert(typeof rowLocation === 'string', `checkTWL_TSV6DataRow ourCheckTextField: 'rowLocation' parameter should be a string not a '${typeof rowLocation}'`);
+        //parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkTWL_TSV6DataRow ourCheckTextField: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
         const fieldType = 'raw';
         const octfResultObject = checkTextField(languageCode, repoCode, fieldType, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions);
@@ -140,7 +145,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of octfResultObject.noticeList) {
-            // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
+            // //parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
             addNoticePartial({ ...noticeEntry, rowID, fieldName });
         }
         return octfResultObject.suggestion; // There may or may not be one!
@@ -156,15 +161,15 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         // Updates the global list of notices
 
         // functionLog(`checkTWL_TSV6DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence(${fieldName}, (${fieldText.length}) '${fieldText}', ${rowLocation}, …)`);
-        parameterAssert(rowID !== undefined, "checkTWL_TSV6DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'rowID' parameter should be defined");
-        parameterAssert(typeof rowID === 'string', `checkTWL_TSV6DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        parameterAssert(fieldName !== undefined, "checkTWL_TSV6DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'fieldName' parameter should be defined");
-        parameterAssert(typeof fieldName === 'string', `checkTWL_TSV6DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        parameterAssert(fieldText !== undefined, "checkTWL_TSV6DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'fieldText' parameter should be defined");
-        parameterAssert(typeof fieldText === 'string', `checkTWL_TSV6DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-        parameterAssert(occurrence !== undefined, "checkTWL_TSV6DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'occurrence' parameter should be defined");
-        parameterAssert(typeof occurrence === 'string', `checkTWL_TSV6DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'occurrence' parameter should be a string not a '${typeof occurrence}'`);
-        parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkTWL_TSV6DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
+        //parameterAssert(rowID !== undefined, "checkTWL_TSV6DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'rowID' parameter should be defined");
+        //parameterAssert(typeof rowID === 'string', `checkTWL_TSV6DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+        //parameterAssert(fieldName !== undefined, "checkTWL_TSV6DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'fieldName' parameter should be defined");
+        //parameterAssert(typeof fieldName === 'string', `checkTWL_TSV6DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        //parameterAssert(fieldText !== undefined, "checkTWL_TSV6DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'fieldText' parameter should be defined");
+        //parameterAssert(typeof fieldText === 'string', `checkTWL_TSV6DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+        //parameterAssert(occurrence !== undefined, "checkTWL_TSV6DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'occurrence' parameter should be defined");
+        //parameterAssert(typeof occurrence === 'string', `checkTWL_TSV6DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'occurrence' parameter should be a string not a '${typeof occurrence}'`);
+        //parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkTWL_TSV6DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
         const colqResultObject = await checkOriginalLanguageQuoteAndOccurrence(languageCode, repoCode, fieldName, fieldText, occurrence, bookID, givenC, givenV, rowLocation, checkingOptions);
 
@@ -174,7 +179,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of colqResultObject.noticeList) {
-            // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckTNOriginalLanguageQuoteAndOccurrence notice length=${Object.keys(noticeEntry).length}`);
+            // //parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckTNOriginalLanguageQuoteAndOccurrence notice length=${Object.keys(noticeEntry).length}`);
             addNoticePartial({ ...noticeEntry, rowID, fieldName });
         }
     }
@@ -187,11 +192,11 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         // Updates the global list of notices
 
         // functionLog(`checkTWL_TSV6DataRow ourCheckNotesLinksToOutside(${rowID}, ${fieldName}, (${twLinkText.length}) '${twLinkText}', ${rowLocation}, ${JSON.stringify(checkingOptions)})`);
-        parameterAssert(rowID !== undefined, "checkTWL_TSV6DataRow ourCheckNotesLinksToOutside: 'rowID' parameter should be defined");
-        parameterAssert(typeof rowID === 'string', `checkTWL_TSV6DataRow ourCheckNotesLinksToOutside: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        parameterAssert(fieldName === 'TWLink', `checkTWL_TSV6DataRow ourCheckNotesLinksToOutside: 'fieldName' parameter should be 'TWLink' not '${fieldName}'`);
-        parameterAssert(twLinkText !== undefined, "checkTWL_TSV6DataRow ourCheckNotesLinksToOutside: 'twLinkText' parameter should be defined");
-        parameterAssert(typeof twLinkText === 'string', `checkTWL_TSV6DataRow ourCheckNotesLinksToOutside: 'twLinkText' parameter should be a string not a '${typeof twLinkText}'`);
+        //parameterAssert(rowID !== undefined, "checkTWL_TSV6DataRow ourCheckNotesLinksToOutside: 'rowID' parameter should be defined");
+        //parameterAssert(typeof rowID === 'string', `checkTWL_TSV6DataRow ourCheckNotesLinksToOutside: 'rowID' parameter should be a string not a '${typeof rowID}'`);
+        //parameterAssert(fieldName === 'TWLink', `checkTWL_TSV6DataRow ourCheckNotesLinksToOutside: 'fieldName' parameter should be 'TWLink' not '${fieldName}'`);
+        //parameterAssert(twLinkText !== undefined, "checkTWL_TSV6DataRow ourCheckNotesLinksToOutside: 'twLinkText' parameter should be defined");
+        //parameterAssert(typeof twLinkText === 'string', `checkTWL_TSV6DataRow ourCheckNotesLinksToOutside: 'twLinkText' parameter should be a string not a '${typeof twLinkText}'`);
 
         let adjustedLanguageCode = languageCode; // This is the language code of the resource with the link
         if (languageCode === 'hbo' || languageCode === 'el-x-koine') adjustedLanguageCode = 'en' // This is a guess (and won't be needed for TWs when we switch to TWLs)
@@ -252,9 +257,9 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
     if (bookID === 'OBS')
         numChaptersThisBook = 50; // There's 50 Open Bible Stories
     else {
-        parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in checkTWL_TSV6DataRow");
+        //parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in checkTWL_TSV6DataRow");
         try {
-            numChaptersThisBook = books.chaptersInBook(lowercaseBookID).length;
+            numChaptersThisBook = books.chaptersInBook(bookID);
         } catch (tlcNCerror) {
             addNoticePartial({ priority: 979, message: "Invalid book identifier passed to checkTWL_TSV6DataRow", location: ` '${bookID}' in first parameter: ${tlcNCerror}` });
         }
@@ -378,8 +383,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
                 // if (V !== 'intro')
                 //     addNoticePartial({priority:500, message:"Invalid zero occurrence field", rowID, location:rowLocation);
             }
-            else if (occurrence === '-1') // TODO check the special conditions when this can occur???
-                ;
+            else if (occurrence === '-1') { }// TODO check the special conditions when this can occur???
             else if ('12345678'.indexOf(occurrence) < 0) { // it’s not one of these integers
                 addNoticePartial({ priority: 792, message: `Invalid occurrence field`, fieldName: 'Occurrence', rowID, excerpt: occurrence, location: ourRowLocation });
                 OSuggestion = '1';

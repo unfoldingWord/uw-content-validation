@@ -1,6 +1,7 @@
 import localforage from 'localforage';
 import Path from 'path';
 import * as books from '../core/books/books';
+// eslint-disable-next-line no-unused-vars
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
 import { countOccurrences } from './text-handling-functions'
 import { cachedGetFile, cachedGetFileUsingFullURL, checkMarkdownText } from '../core';
@@ -8,7 +9,7 @@ import { cachedGetFile, cachedGetFileUsingFullURL, checkMarkdownText } from '../
 import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 
 
-// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.7.27';
+// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.7.28';
 
 // const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -131,32 +132,31 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
 
     // if (fieldText.indexOf('brother') !== -1)
     // functionLog(`checkNotesLinksToOutside('${languageCode}', '${repoCode}', ${bookID} ${givenC}:${givenV} '${fieldName}', (${fieldText.length})'${fieldText}', ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
-    parameterAssert(languageCode !== undefined, "checkNotesLinksToOutside: 'languageCode' parameter should be defined");
-    parameterAssert(typeof languageCode === 'string', `checkNotesLinksToOutside: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
-    // parameterAssert(languageCode !== 'hbo' && languageCode !== 'el-x-koine', `checkNotesLinksToOutside: 'languageCode' parameter should not be an original language code: '${languageCode}'`);
-    parameterAssert(repoCode !== undefined, "checkNotesLinksToOutside: 'repoCode' parameter should be defined");
-    parameterAssert(typeof repoCode === 'string', `checkNotesLinksToOutside: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
-    parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkNotesLinksToOutside: 'repoCode' parameter should not be '${repoCode}'`);
-    parameterAssert(bookID !== undefined, "checkNotesLinksToOutside: 'bookID' parameter should be defined");
-    parameterAssert(typeof bookID === 'string', `checkNotesLinksToOutside: 'bookID' parameter should be a string not a '${typeof bookID}'`);
-    parameterAssert(typeof givenC === 'string', `checkNotesLinksToOutside: 'givenC' parameter should be a string not a '${typeof givenC}'`);
-    parameterAssert(typeof givenV === 'string', `checkNotesLinksToOutside: 'givenV' parameter should be a string not a '${typeof givenV}'`);
+    //parameterAssert(languageCode !== undefined, "checkNotesLinksToOutside: 'languageCode' parameter should be defined");
+    //parameterAssert(typeof languageCode === 'string', `checkNotesLinksToOutside: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    // //parameterAssert(languageCode !== 'hbo' && languageCode !== 'el-x-koine', `checkNotesLinksToOutside: 'languageCode' parameter should not be an original language code: '${languageCode}'`);
+    //parameterAssert(repoCode !== undefined, "checkNotesLinksToOutside: 'repoCode' parameter should be defined");
+    //parameterAssert(typeof repoCode === 'string', `checkNotesLinksToOutside: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
+    //parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkNotesLinksToOutside: 'repoCode' parameter should not be '${repoCode}'`);
+    //parameterAssert(bookID !== undefined, "checkNotesLinksToOutside: 'bookID' parameter should be defined");
+    //parameterAssert(typeof bookID === 'string', `checkNotesLinksToOutside: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+    //parameterAssert(typeof givenC === 'string', `checkNotesLinksToOutside: 'givenC' parameter should be a string not a '${typeof givenC}'`);
+    //parameterAssert(typeof givenV === 'string', `checkNotesLinksToOutside: 'givenV' parameter should be a string not a '${typeof givenV}'`);
     // if (fieldName !== 'MDFile') {
-    //     parameterAssert(bookID.length === 3, `checkNotesLinksToOutside: 'bookID' parameter should be three characters long not ${bookID.length}`);
-    //     parameterAssert(bookID.toUpperCase() === bookID, `checkNotesLinksToOutside: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-    //     parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkNotesLinksToOutside: '${bookID}' is not a valid USFM book identifier`);
+    //     //parameterAssert(bookID.length === 3, `checkNotesLinksToOutside: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    //     //parameterAssert(bookID.toUpperCase() === bookID, `checkNotesLinksToOutside: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+    //     //parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkNotesLinksToOutside: '${bookID}' is not a valid USFM book identifier`);
     // }
-    parameterAssert(fieldName !== undefined, "checkNotesLinksToOutside: 'fieldText' parameter should be defined");
-    parameterAssert(typeof fieldName === 'string', `checkNotesLinksToOutside: 'fieldText' parameter should be a string not a '${typeof fieldName}'`);
-    parameterAssert(fieldName !== `${languageCode}_${repoCode.toLowerCase()}`, `checkNotesLinksToOutside: 'fieldText' parameter should not be the repoName: '${fieldName}'`);
+    //parameterAssert(fieldName !== undefined, "checkNotesLinksToOutside: 'fieldText' parameter should be defined");
+    //parameterAssert(typeof fieldName === 'string', `checkNotesLinksToOutside: 'fieldText' parameter should be a string not a '${typeof fieldName}'`);
+    //parameterAssert(fieldName !== `${languageCode}_${repoCode.toLowerCase()}`, `checkNotesLinksToOutside: 'fieldText' parameter should not be the repoName: '${fieldName}'`);
     // if (fieldName === `${languageCode}_${repoCode.toLowerCase()}`) { console.trace('checkNotesLinksToOutside()'); }
-    if (!fieldName.startsWith('TA ') && !fieldName.startsWith('TW ') && fieldName.indexOf('/') === -1)
-        parameterAssert(fieldName === 'OccurrenceNote' || fieldName === 'Note' || fieldName === 'TWLink' || fieldName === 'Response' || fieldName === 'README' || fieldName === 'LICENSE',
-            `checkNotesLinksToOutside: 'fieldName' parameter should be 'OccurrenceNote', 'Note', 'TWLink', 'Response', 'README' or 'LICENSE' not '${fieldName}'`);
-    parameterAssert(fieldText !== undefined, "checkNotesLinksToOutside: 'fieldText' parameter should be defined");
-    parameterAssert(typeof fieldText === 'string', `checkNotesLinksToOutside: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-    parameterAssert(givenLocation !== undefined, "checkNotesLinksToOutside: 'fieldText' parameter should be defined");
-    parameterAssert(typeof givenLocation === 'string', `checkNotesLinksToOutside: 'fieldText' parameter should be a string not a '${typeof givenLocation}'`);
+    if (!fieldName.startsWith('TA ') && !fieldName.startsWith('TW ') && fieldName.indexOf('/') === -1) { //parameterAssert(fieldName === 'OccurrenceNote' || fieldName === 'Note' || fieldName === 'TWLink' || fieldName === 'Response' || fieldName === 'README' || fieldName === 'LICENSE', `checkNotesLinksToOutside: 'fieldName' parameter should be 'OccurrenceNote', 'Note', 'TWLink', 'Response', 'README' or 'LICENSE' not '${fieldName}'`);
+    }
+    //parameterAssert(fieldText !== undefined, "checkNotesLinksToOutside: 'fieldText' parameter should be defined");
+    //parameterAssert(typeof fieldText === 'string', `checkNotesLinksToOutside: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+    //parameterAssert(givenLocation !== undefined, "checkNotesLinksToOutside: 'fieldText' parameter should be defined");
+    //parameterAssert(typeof givenLocation === 'string', `checkNotesLinksToOutside: 'fieldText' parameter should be a string not a '${typeof givenLocation}'`);
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -170,16 +170,18 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
      */
     function addNoticePartial(noticeObject) {
         // functionLog(`checkNotesLinksToOutside Notice: (priority = ${ priority }) ${ message } ${ characterIndex > 0 ? ` (at character ${characterIndex})` : "" } ${ excerpt ? ` ${excerpt}` : "" } ${ location } `);
-        parameterAssert(noticeObject.priority !== undefined, "cTNlnk addNoticePartial: 'priority' parameter should be defined");
-        parameterAssert(typeof noticeObject.priority === 'number', `cTNlnk addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority} `);
-        parameterAssert(noticeObject.message !== undefined, "cTNlnk addNoticePartial: 'message' parameter should be defined");
-        parameterAssert(typeof noticeObject.message === 'string', `cTNlnk addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message} `);
-        // parameterAssert(characterIndex !== undefined, "cTNlnk addNoticePartial: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cTNlnk addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex} `);
-        // parameterAssert(excerpt !== undefined, "cTNlnk addNoticePartial: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `cTNlnk addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt} `);
-        parameterAssert(noticeObject.location !== undefined, "cTNlnk addNoticePartial: 'location' parameter should be defined");
-        parameterAssert(typeof noticeObject.location === 'string', `cTNlnk addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location} `);
+        //parameterAssert(noticeObject.priority !== undefined, "cTNlnk addNoticePartial: 'priority' parameter should be defined");
+        //parameterAssert(typeof noticeObject.priority === 'number', `cTNlnk addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority} `);
+        //parameterAssert(noticeObject.message !== undefined, "cTNlnk addNoticePartial: 'message' parameter should be defined");
+        //parameterAssert(typeof noticeObject.message === 'string', `cTNlnk addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message} `);
+        // //parameterAssert(characterIndex !== undefined, "cTNlnk addNoticePartial: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cTNlnk addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex} `);
+        }
+        // //parameterAssert(excerpt !== undefined, "cTNlnk addNoticePartial: 'excerpt' parameter should be defined");
+        if (noticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cTNlnk addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt} `);
+        }
+        //parameterAssert(noticeObject.location !== undefined, "cTNlnk addNoticePartial: 'location' parameter should be defined");
+        //parameterAssert(typeof noticeObject.location === 'string', `cTNlnk addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location} `);
         // noticeObject.debugChain = noticeObject.debugChain ? `checkNotesLinksToOutside ${ noticeObject.debugChain } ` : `checkNotesLinksToOutside(${ fieldName })`;
         ctarResult.noticeList.push({ ...noticeObject, bookID, fieldName });
     }
@@ -304,7 +306,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = TW_INTERNAL_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside TW_INTERNAL_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
         twLinkCount1 += 1;
-        parameterAssert(regexResultArray.length === 4, `TW_INTERNAL_REGEX expected 4 fields (not ${regexResultArray.length})`);
+        //parameterAssert(regexResultArray.length === 4, `TW_INTERNAL_REGEX expected 4 fields (not ${regexResultArray.length})`);
         // eslint-disable-next-line no-unused-vars
         let [totalLink, _displayName, category, article] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
@@ -356,7 +358,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = TA_FULL_DISPLAY_LINK_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside TA_FULL_DISPLAY_LINK_REGEX resultArray=${JSON.stringify(regexResultArray)}`);
         taLinkCount1 += 1;
-        parameterAssert(regexResultArray.length === 5, `TA_FULL_DISPLAY_LINK_REGEX expected 5 fields (not ${regexResultArray.length})`)
+        //parameterAssert(regexResultArray.length === 5, `TA_FULL_DISPLAY_LINK_REGEX expected 5 fields (not ${regexResultArray.length})`)
         // eslint-disable-next-line no-unused-vars
         let [totalLink, _displayName, foundLanguageCode, part, article] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
@@ -418,7 +420,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
         while ((regexResultArray = TA_RELATIVE1_DISPLAY_LINK_REGEX.exec(fieldText))) {
             // debugLog(`  checkNotesLinksToOutside TA_RELATIVE1_DISPLAY_LINK_REGEX resultArray=${JSON.stringify(regexResultArray)}`);
             taLinkCount1 += 1;
-            parameterAssert(regexResultArray.length === 3, `TA_RELATIVE1_DISPLAY_LINK_REGEX expected 3 fields (not ${regexResultArray.length})`)
+            //parameterAssert(regexResultArray.length === 3, `TA_RELATIVE1_DISPLAY_LINK_REGEX expected 3 fields (not ${regexResultArray.length})`)
             // eslint-disable-next-line no-unused-vars
             let [totalLink, _displayName, article] = regexResultArray;
             processedLinkList.push(totalLink); // Save the full link
@@ -473,7 +475,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
         while ((regexResultArray = TA_RELATIVE2_DISPLAY_LINK_REGEX.exec(fieldText))) {
             // debugLog(`  checkNotesLinksToOutside TA_RELATIVE2_DISPLAY_LINK_REGEX resultArray=${JSON.stringify(regexResultArray)}`);
             taLinkCount1 += 1;
-            parameterAssert(regexResultArray.length === 4, `TA_RELATIVE2_DISPLAY_LINK_REGEX expected 4 fields (not ${regexResultArray.length})`)
+            //parameterAssert(regexResultArray.length === 4, `TA_RELATIVE2_DISPLAY_LINK_REGEX expected 4 fields (not ${regexResultArray.length})`)
             // eslint-disable-next-line no-unused-vars
             let [totalLink, _displayName, TAsection, article] = regexResultArray;
             processedLinkList.push(totalLink); // Save the full link
@@ -526,7 +528,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = TA_DOUBLE_BRACKETED_LINK_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside TA_DOUBLE_BRACKETED_LINK_REGEX resultArray=${JSON.stringify(regexResultArray)}`);
         taLinkCount2 += 1;
-        parameterAssert(regexResultArray.length === 4, `TA_DOUBLE_BRACKETED_LINK_REGEX expected 4 fields (not ${regexResultArray.length})`)
+        //parameterAssert(regexResultArray.length === 4, `TA_DOUBLE_BRACKETED_LINK_REGEX expected 4 fields (not ${regexResultArray.length})`)
         let [totalLink, foundLanguageCode, part, article] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
 
@@ -589,7 +591,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = ourTWRegex.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside ${languageCode} ${repoCode} ${fieldName} ${givenC}:${givenV} found TW resultArray=${JSON.stringify(regexResultArray)}`);
         twLinkCount2 += 1;
-        parameterAssert(regexResultArray.length === 4, `TW_REGEX expected 4 fields (not ${regexResultArray.length})`)
+        //parameterAssert(regexResultArray.length === 4, `TW_REGEX expected 4 fields (not ${regexResultArray.length})`)
         let [totalLink, foundLanguageCode, category, article] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
 
@@ -641,7 +643,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = BIBLE_FULL_HELP_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside BIBLE_FULL_HELP_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
         otherBookBibleLinkCount1 += 1;
-        parameterAssert(regexResultArray.length === 9, `BIBLE_FULL_HELP_REGEX expected 9 fields (not ${regexResultArray.length})`);
+        //parameterAssert(regexResultArray.length === 9, `BIBLE_FULL_HELP_REGEX expected 9 fields (not ${regexResultArray.length})`);
         let [totalLink, optionalN1, optionalB1, C1, V1, Lg, B2, C2, V2] = regexResultArray;
         // debugLog(`Lg='${Lg}' B2='${B2}' C2='${C2}' V2='${V2}'`);
         processedLinkList.push(totalLink); // Save the full link
@@ -649,14 +651,16 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
         if (Lg !== '*' && Lg !== languageCode)
             addNoticePartial({ priority: 669, message: "Unexpected language code in link", details: `resource language code is '${languageCode}'`, excerpt: Lg, location: ourLocation });
 
-        if (optionalN1) parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}' in '${totalLink}'`);
+        if (optionalN1) { //parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}' in '${totalLink}'`);
+        }
         if (optionalB1) {
             optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
             if (defaultLanguageCode === 'en') { // should be able to check the book name
                 const checkResult = books.isGoodEnglishBookName(optionalB1);
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
-                    addNoticePartial({ priority: 143, message: "Unknown Bible book name in TN RC link", details: totalLink, excerpt: optionalB1, location: ourLocation });
+                    // NOTE: Our English bookname table has 'Song of Songs'
+                    addNoticePartial({ priority: optionalB1 === 'Song of Solomon' ? 43 : 143, message: `${optionalB1 === 'Song of Solomon' ? 'Unexpected' : 'Unknown'} Bible book name in TN RC link`, details: totalLink, excerpt: optionalB1, location: ourLocation });
             }
         }
 
@@ -687,13 +691,13 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             let numChaptersThisBook, numVersesThisChapter;
             logicAssert(linkBookCode.toLowerCase() !== 'obs', `BIBLE_FULL_HELP_REGEX linkBookCode shouldn’t be '${linkBookCode}' in notes-links-check`);
             try {
-                numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
+                numChaptersThisBook = books.chaptersInBook(linkBookCode);
             } catch (tlcNCerror) {
                 debugLog(`checkNotesLinksToOutside1 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
                 numChaptersThisBook = 0;
             }
             try {
-                numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
+                numVersesThisChapter = books.versesInChapter(linkBookCode, linkChapterInt);
             } catch (tlcNVerror) { }
             if (!linkChapterInt || linkChapterInt < 1 || linkChapterInt > numChaptersThisBook)
                 addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible help link", details: `${linkBookCode} ${linkChapterInt} vs ${numChaptersThisBook} chapters`, excerpt: totalLink, location: ourLocation });
@@ -707,18 +711,20 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = BIBLE_REGEX_THIS_CHAPTER_RELATIVE.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside BIBLE_REGEX_THIS_CHAPTER_RELATIVE regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
         thisChapterBibleLinkCount1 += 1;
-        parameterAssert(regexResultArray.length === 6, `BIBLE_REGEX_THIS_CHAPTER_RELATIVE expected 6 fields (not ${regexResultArray.length})`);
+        //parameterAssert(regexResultArray.length === 6, `BIBLE_REGEX_THIS_CHAPTER_RELATIVE expected 6 fields (not ${regexResultArray.length})`);
         let [totalLink, optionalN1, optionalB1, C1, V1, V2] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
 
-        if (optionalN1) parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+        if (optionalN1) { //parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+        }
         if (optionalB1) {
             optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
             if (defaultLanguageCode === 'en') { // should be able to check the book name
                 const checkResult = books.isGoodEnglishBookName(optionalB1);
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
-                    addNoticePartial({ priority: 143, message: "Unknown Bible book name in Bible link", details: totalLink, excerpt: optionalB1, location: ourLocation });
+                    // NOTE: Our English bookname table has 'Song of Songs'
+                    addNoticePartial({ priority: optionalB1 === 'Song of Solomon' ? 43 : 143, message: `${optionalB1 === 'Song of Solomon' ? 'Unexpected' : 'Unknown'} Bible book name in Bible link`, details: totalLink, excerpt: optionalB1, location: ourLocation });
             }
         }
 
@@ -750,13 +756,13 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             let numChaptersThisBook, numVersesThisChapter;
             logicAssert(linkBookCode.toLowerCase() !== 'obs', `BIBLE_REGEX_THIS_CHAPTER_RELATIVE linkBookCode shouldn’t be '${linkBookCode}' in notes-links-check`);
             try {
-                numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
+                numChaptersThisBook = books.chaptersInBook(linkBookCode);
             } catch (tlcNCerror) {
                 debugLog(`checkNotesLinksToOutside2 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
                 numChaptersThisBook = 0;
             }
             try {
-                numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), givenCint);
+                numVersesThisChapter = books.versesInChapter(linkBookCode, givenCint);
             } catch (tlcNVerror) { }
             if (!givenCint || givenCint < 1 || givenCint > numChaptersThisBook)
                 addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible link", details: `${linkBookCode} ${givenCint} vs ${numChaptersThisBook} chapters`, excerpt: totalLink, location: ourLocation });
@@ -769,7 +775,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
         thisVerseBibleLinkCount1 += 1;
-        parameterAssert(regexResultArray.length === 4, `THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX expected 4 fields (not ${regexResultArray.length})`);
+        //parameterAssert(regexResultArray.length === 4, `THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX expected 4 fields (not ${regexResultArray.length})`);
         let [totalLink, V1, C2, V2] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
 
@@ -790,13 +796,13 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             let numChaptersThisBook, numVersesThisChapter;
             logicAssert(linkBookCode.toLowerCase() !== 'obs', `THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX linkBookCode shouldn’t be '${linkBookCode}' in notes-links-check`);
             try {
-                numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
+                numChaptersThisBook = books.chaptersInBook(linkBookCode);
             } catch (tlcNCerror) {
                 debugLog(`checkNotesLinksToOutside3 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
                 numChaptersThisBook = 0;
             }
             try {
-                numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
+                numVersesThisChapter = books.versesInChapter(linkBookCode, linkChapterInt);
             } catch (tlcNVerror) { }
             if (!linkChapterInt || linkChapterInt < 1 || linkChapterInt > numChaptersThisBook)
                 addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt} vs ${numChaptersThisBook} chapters`, excerpt: totalLink, location: ourLocation });
@@ -809,7 +815,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = THIS_VERSE_RANGE_TO_THIS_CHAPTER_BIBLE_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside THIS_VERSE_RANGE_TO_THIS_CHAPTER_BIBLE_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
         thisVerseBibleLinkCount1 += 1;
-        parameterAssert(regexResultArray.length === 5, `THIS_VERSE_RANGE_TO_THIS_CHAPTER_BIBLE_REGEX expected 5 fields (not ${regexResultArray.length})`);
+        //parameterAssert(regexResultArray.length === 5, `THIS_VERSE_RANGE_TO_THIS_CHAPTER_BIBLE_REGEX expected 5 fields (not ${regexResultArray.length})`);
         let [totalLink, V1a, V1b, C2, V2] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
 
@@ -834,13 +840,13 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             let numChaptersThisBook, numVersesThisChapter;
             logicAssert(linkBookCode.toLowerCase() !== 'obs', `THIS_VERSE_RANGE_TO_THIS_CHAPTER_BIBLE_REGEX linkBookCode shouldn’t be '${linkBookCode}' in notes-links-check`);
             try {
-                numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
+                numChaptersThisBook = books.chaptersInBook(linkBookCode);
             } catch (tlcNCerror) {
                 debugLog(`checkNotesLinksToOutside4 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
                 numChaptersThisBook = 0;
             }
             try {
-                numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
+                numVersesThisChapter = books.versesInChapter(linkBookCode, linkChapterInt);
             } catch (tlcNVerror) { }
             if (!linkChapterInt || linkChapterInt < 1 || linkChapterInt > numChaptersThisBook)
                 addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt} vs ${numChaptersThisBook} chapters`, excerpt: totalLink, location: ourLocation });
@@ -853,18 +859,20 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = BIBLE_REGEX_THIS_BOOK_RELATIVE.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside BIBLE_REGEX_THIS_BOOK_RELATIVE regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
         thisBookBibleLinkCount1 += 1;
-        parameterAssert(regexResultArray.length === 7, `BIBLE_REGEX_THIS_BOOK_RELATIVE expected 7 fields (not ${regexResultArray.length})`);
+        //parameterAssert(regexResultArray.length === 7, `BIBLE_REGEX_THIS_BOOK_RELATIVE expected 7 fields (not ${regexResultArray.length})`);
         let [totalLink, optionalN1, optionalB1, C1, V1, C2, V2] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
 
-        if (optionalN1) parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+        if (optionalN1) { //parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+        }
         if (optionalB1) {
             optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
             if (defaultLanguageCode === 'en') { // should be able to check the book name
                 const checkResult = books.isGoodEnglishBookName(optionalB1);
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
-                    addNoticePartial({ priority: 143, message: "Unknown Bible book name in relative Bible link", details: totalLink, excerpt: optionalB1, location: ourLocation });
+                    // NOTE: Our English bookname table has 'Song of Songs'
+                    addNoticePartial({ priority: optionalB1 === 'Song of Solomon' ? 43 : 143, message: `${optionalB1==='Song of Solomon'?'Unexpected' : 'Unknown'} Bible book name in relative Bible link`, details: totalLink, excerpt: optionalB1, location: ourLocation });
             }
         }
 
@@ -888,13 +896,13 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             let numChaptersThisBook, numVersesThisChapter;
             logicAssert(linkBookCode.toLowerCase() !== 'obs', `BIBLE_REGEX_THIS_BOOK_RELATIVE linkBookCode shouldn’t be '${linkBookCode}' in notes-links-check`);
             try {
-                numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
+                numChaptersThisBook = books.chaptersInBook(linkBookCode);
             } catch (tlcNCerror) {
                 debugLog(`checkNotesLinksToOutside5 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
                 numChaptersThisBook = 0;
             }
             try {
-                numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
+                numVersesThisChapter = books.versesInChapter(linkBookCode, linkChapterInt);
             } catch (tlcNVerror) { }
             if (!linkChapterInt || linkChapterInt < 1 || linkChapterInt > numChaptersThisBook)
                 addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt} vs ${numChaptersThisBook} chapters`, excerpt: totalLink, location: ourLocation });
@@ -907,18 +915,20 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = BCV_V_TO_THIS_BOOK_BIBLE_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside BCV_V_TO_THIS_BOOK_BIBLE_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
         thisBookBibleLinkCount1 += 1;
-        parameterAssert(regexResultArray.length === 9, `BCV_V_TO_THIS_BOOK_BIBLE_REGEX expected 9 fields (not ${regexResultArray.length})`);
+        //parameterAssert(regexResultArray.length === 9, `BCV_V_TO_THIS_BOOK_BIBLE_REGEX expected 9 fields (not ${regexResultArray.length})`);
         let [totalLink, optionalN1, optionalB1, C1, V1a, V1b, B2, C2, V2] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
 
-        if (optionalN1) parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+        if (optionalN1) { //parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+        }
         if (optionalB1) {
             optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
             if (defaultLanguageCode === 'en') { // should be able to check the book name
                 const checkResult = books.isGoodEnglishBookName(optionalB1);
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
-                    addNoticePartial({ priority: 143, message: "Unknown Bible book name in Bible link", details: totalLink, excerpt: optionalB1, location: ourLocation });
+                    // NOTE: Our English bookname table has 'Song of Songs'
+                    addNoticePartial({ priority: optionalB1 === 'Song of Solomon' ? 43 : 143, message: `${optionalB1==='Song of Solomon'?'Unexpected' : 'Unknown'} Bible book name in Bible link`, details: totalLink, excerpt: optionalB1, location: ourLocation });
             }
         }
 
@@ -949,13 +959,13 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             let numChaptersThisBook, numVersesThisChapter;
             logicAssert(linkBookCode.toLowerCase() !== 'obs', `BCV_V_TO_THIS_BOOK_BIBLE_REGEX linkBookCode shouldn’t be '${linkBookCode}' in notes-links-check`);
             try {
-                numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
+                numChaptersThisBook = books.chaptersInBook(linkBookCode);
             } catch (tlcNCerror) {
                 debugLog(`checkNotesLinksToOutside6 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
                 numChaptersThisBook = 0;
             }
             try {
-                numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
+                numVersesThisChapter = books.versesInChapter(linkBookCode, linkChapterInt);
             } catch (tlcNVerror) { }
             if (!linkChapterInt || linkChapterInt < 1 || linkChapterInt > numChaptersThisBook)
                 addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt} vs ${numChaptersThisBook} chapters`, excerpt: totalLink, location: ourLocation });
@@ -968,18 +978,21 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = BCV_V_TO_THIS_CHAPTER_BIBLE_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside BCV_V_TO_THIS_CHAPTER_BIBLE_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
         thisChapterBibleLinkCount1 += 1;
-        parameterAssert(regexResultArray.length === 7, `BCV_V_TO_THIS_CHAPTER_BIBLE_REGEX expected 7 fields (not ${regexResultArray.length})`);
+        //parameterAssert(regexResultArray.length === 7, `BCV_V_TO_THIS_CHAPTER_BIBLE_REGEX expected 7 fields (not ${regexResultArray.length})`);
         let [totalLink, optionalN1, optionalB1, C1, V1a, V1b, V2] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
 
-        if (optionalN1) parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+        if (optionalN1) {
+            //parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+        }
         if (optionalB1) {
             optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
             if (defaultLanguageCode === 'en') { // should be able to check the book name
                 const checkResult = books.isGoodEnglishBookName(optionalB1);
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
-                    addNoticePartial({ priority: 143, message: "Unknown Bible book name in Bible link", details: totalLink, excerpt: optionalB1, location: ourLocation });
+                    // NOTE: Our English bookname table has 'Song of Songs'
+                    addNoticePartial({ priority: optionalB1 === 'Song of Solomon' ? 43 : 143, message: `${optionalB1==='Song of Solomon'?'Unexpected' : 'Unknown'} Bible book name in Bible link`, details: totalLink, excerpt: optionalB1, location: ourLocation });
             }
         }
 
@@ -1004,10 +1017,10 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             let numVersesThisChapter;
             logicAssert(linkBookCode.toLowerCase() !== 'obs', `BCV_V_TO_THIS_CHAPTER_BIBLE_REGEX linkBookCode shouldn’t be '${linkBookCode}' in notes-links-check`);
             // try {
-            //     numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
+            //     numChaptersThisBook = books.chaptersInBook(linkBookCode);
             // } catch (tlcNCerror) { }
             try {
-                numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), givenC);
+                numVersesThisChapter = books.versesInChapter(linkBookCode, givenC);
             } catch (tlcNVerror) { }
             if (!linkVerseInt || linkVerseInt < 0 || linkVerseInt > numVersesThisChapter)
                 addNoticePartial({ priority: 653, message: "Bad verse number in markdown Bible link", details: `${linkBookCode} ${givenC}:${linkVerseInt} vs ${numVersesThisChapter} verses`, excerpt: totalLink, location: ourLocation });
@@ -1018,18 +1031,21 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = BIBLE_REGEX_OTHER_BOOK_ABSOLUTE.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside BIBLE_REGEX_OTHER_BOOK_ABSOLUTE regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
         otherBookBibleLinkCount1 += 1;
-        parameterAssert(regexResultArray.length === 8, `BIBLE_REGEX_OTHER_BOOK_ABSOLUTE expected 8 fields (not ${regexResultArray.length})`);
+        //parameterAssert(regexResultArray.length === 8, `BIBLE_REGEX_OTHER_BOOK_ABSOLUTE expected 8 fields (not ${regexResultArray.length})`);
         let [totalLink, optionalN1, optionalB1, C1, V1, B2, C2, V2] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
 
-        if (optionalN1) parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+        if (optionalN1) {
+            //parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+        }
         if (optionalB1) {
             optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
             if (defaultLanguageCode === 'en') { // should be able to check the book name
                 const checkResult = books.isGoodEnglishBookName(optionalB1);
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
-                    addNoticePartial({ priority: 143, message: "Unknown Bible book name in Bible link", details: totalLink, excerpt: optionalB1, location: ourLocation });
+                    // NOTE: Our English bookname table has 'Song of Songs'
+                    addNoticePartial({ priority: optionalB1 === 'Song of Solomon' ? 43 : 143, message: `${optionalB1==='Song of Solomon'?'Unexpected' : 'Unknown'} Bible book name in Bible link`, details: totalLink, excerpt: optionalB1, location: ourLocation });
             }
         }
 
@@ -1054,13 +1070,13 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             let numChaptersThisBook, numVersesThisChapter;
             logicAssert(linkBookCode.toLowerCase() !== 'obs', `BIBLE_REGEX_OTHER_BOOK_ABSOLUTE linkBookCode shouldn’t be '${linkBookCode}' in notes-links-check`);
             try {
-                numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
+                numChaptersThisBook = books.chaptersInBook(linkBookCode);
             } catch (tlcNCerror) {
                 debugLog(`checkNotesLinksToOutside8 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
                 numChaptersThisBook = 0;
             }
             try {
-                numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
+                numVersesThisChapter = books.versesInChapter(linkBookCode, linkChapterInt);
             } catch (tlcNVerror) { }
             if (!linkChapterInt || linkChapterInt < 1 || linkChapterInt > numChaptersThisBook)
                 addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt} vs ${numChaptersThisBook} chapters`, excerpt: totalLink, location: ourLocation });
@@ -1073,18 +1089,21 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = BIBLE_REGEX_OTHER_BOOK_RELATIVE.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside BIBLE_REGEX_OTHER_BOOK_RELATIVE regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
         otherBookBibleLinkCount1 += 1;
-        parameterAssert(regexResultArray.length === 8, `BIBLE_REGEX_OTHER_BOOK_RELATIVE expected 8 fields (not ${regexResultArray.length})`);
+        //parameterAssert(regexResultArray.length === 8, `BIBLE_REGEX_OTHER_BOOK_RELATIVE expected 8 fields (not ${regexResultArray.length})`);
         let [totalLink, optionalN1, optionalB1, C1, V1, B2, C2, V2] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
 
-        if (optionalN1) parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+        if (optionalN1) {
+            //parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+        }
         if (optionalB1) {
             optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
             if (defaultLanguageCode === 'en') { // should be able to check the book name
                 const checkResult = books.isGoodEnglishBookName(optionalB1);
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
-                    addNoticePartial({ priority: 143, message: "Unknown Bible book name in Bible link", details: totalLink, excerpt: optionalB1, location: ourLocation });
+                    // NOTE: Our English bookname table has 'Song of Songs'
+                    addNoticePartial({ priority: optionalB1 === 'Song of Solomon' ? 43 : 143, message: `${optionalB1==='Song of Solomon'?'Unexpected' : 'Unknown'} Bible book name in Bible link`, details: totalLink, excerpt: optionalB1, location: ourLocation });
             }
         }
 
@@ -1109,13 +1128,13 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             let numChaptersThisBook, numVersesThisChapter;
             logicAssert(linkBookCode.toLowerCase() !== 'obs', `BIBLE_REGEX_OTHER_BOOK_RELATIVE linkBookCode shouldn’t be '${linkBookCode}' in notes-links-check`);
             try {
-                numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
+                numChaptersThisBook = books.chaptersInBook(linkBookCode);
             } catch (tlcNCerror) {
                 debugLog(`checkNotesLinksToOutside9 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
                 numChaptersThisBook = 0;
             }
             try {
-                numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
+                numVersesThisChapter = books.versesInChapter(linkBookCode, linkChapterInt);
             } catch (tlcNVerror) { }
             if (!linkChapterInt || linkChapterInt < 1 || linkChapterInt > numChaptersThisBook)
                 addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt} vs ${numChaptersThisBook} chapters`, excerpt: totalLink, location: ourLocation });
@@ -1128,12 +1147,13 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = TN_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside TN_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
         TNLinkCount1 += 1;
-        parameterAssert(regexResultArray.length === 9, `TN_REGEX expected 9 fields (not ${regexResultArray.length})`);
+        //parameterAssert(regexResultArray.length === 9, `TN_REGEX expected 9 fields (not ${regexResultArray.length})`);
         // eslint-disable-next-line no-unused-vars
         let [totalLink, optionalN1, optionalB1, C1, V1, B2, C2, V2, _noteID2] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
 
-        if (optionalN1) parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+        if (optionalN1) { //parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+        }
         if (optionalB1) {
             optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
             if (defaultLanguageCode === 'en') { // should be able to check the book name
@@ -1165,13 +1185,13 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             let numChaptersThisBook, numVersesThisChapter;
             logicAssert(linkBookCode.toLowerCase() !== 'obs', `TN_REGEX linkBookCode shouldn’t be '${linkBookCode}' in notes-links-check`);
             try {
-                numChaptersThisBook = books.chaptersInBook(linkBookCode.toLowerCase()).length;
+                numChaptersThisBook = books.chaptersInBook(linkBookCode);
             } catch (tlcNCerror) {
                 debugLog(`checkNotesLinksToOutside10 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
                 numChaptersThisBook = 0;
             }
             try {
-                numVersesThisChapter = books.versesInChapter(linkBookCode.toLowerCase(), linkChapterInt);
+                numVersesThisChapter = books.versesInChapter(linkBookCode, linkChapterInt);
             } catch (tlcNVerror) { }
             if (!linkChapterInt || linkChapterInt < 1 || linkChapterInt > numChaptersThisBook)
                 addNoticePartial({ priority: 656, message: "Bad chapter number in markdown TN link", details: `${linkBookCode} ${linkChapterInt} vs ${numChaptersThisBook} chapters`, excerpt: totalLink, location: ourLocation });
@@ -1187,7 +1207,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = SIMPLE_DISPLAY_LINK_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside SIMPLE_DISPLAY_LINK_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
         generalLinkCount1 += 1;
-        parameterAssert(regexResultArray.length === 3, `SIMPLE_DISPLAY_LINK_REGEX expected 3 fields (not ${regexResultArray.length})`);
+        //parameterAssert(regexResultArray.length === 3, `SIMPLE_DISPLAY_LINK_REGEX expected 3 fields (not ${regexResultArray.length})`);
         // eslint-disable-next-line no-unused-vars
         let [totalLink, displayText, uri] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link

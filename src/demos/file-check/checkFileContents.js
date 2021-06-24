@@ -1,5 +1,7 @@
+// eslint-disable-next-line no-unused-vars
 import * as books from '../../core/books/books';
 import {
+  // eslint-disable-next-line no-unused-vars
   REPO_CODES_LIST,
   formRepoName,
   checkUSFMText, checkMarkdownFileContents, checkPlainText, checkYAMLText, checkManifestText,
@@ -27,22 +29,22 @@ export async function checkFileContents(username, languageCode, repoCode, branch
   // Determine the file type from the filename extension
   //  and return the results of checking that kind of file text
   // functionLog(`checkFileContents(un='${username}', lC='${languageCode}', rC='${repoCode}', rBr='${branch}', fn='${filename}', ${fileContent.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
-  parameterAssert(username !== undefined, "checkFileContents: 'username' parameter should be defined");
-  parameterAssert(typeof username === 'string', `checkFileContents: 'username' parameter should be a string not a '${typeof username}': ${username}`);
-  parameterAssert(languageCode !== undefined, "checkFileContents: 'languageCode' parameter should be defined");
-  parameterAssert(typeof languageCode === 'string', `checkFileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
-  parameterAssert(repoCode !== undefined, "checkFileContents: 'repoCode' parameter should be defined");
-  parameterAssert(typeof repoCode === 'string', `checkFileContents: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
-  parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkFileContents: 'repoCode' parameter should not be '${repoCode}'`);
-  parameterAssert(branch !== undefined, "checkFileContents: 'branch' parameter should be defined");
-  parameterAssert(typeof branch === 'string', `checkFileContents: 'branch' parameter should be a string not a '${typeof branch}': ${branch}`);
-  parameterAssert(filename !== undefined, "checkFileContents: 'filename' parameter should be defined");
-  parameterAssert(typeof filename === 'string', `checkFileContents: 'filename' parameter should be a string not a '${typeof filename}': ${filename}`);
-  parameterAssert(fileContent !== undefined, "checkFileContents: 'fileContent' parameter should be defined");
-  parameterAssert(typeof fileContent === 'string', `checkFileContents: 'fileContent' parameter should be a string not a '${typeof fileContent}': ${fileContent.length}`);
-  parameterAssert(givenLocation !== undefined, "checkFileContents: 'givenLocation' parameter should be defined");
-  parameterAssert(typeof givenLocation === 'string', `checkFileContents: 'givenLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
-  parameterAssert(checkingOptions !== undefined, "checkFileContents: 'checkingOptions' parameter should be defined");
+  //parameterAssert(username !== undefined, "checkFileContents: 'username' parameter should be defined");
+  //parameterAssert(typeof username === 'string', `checkFileContents: 'username' parameter should be a string not a '${typeof username}': ${username}`);
+  //parameterAssert(languageCode !== undefined, "checkFileContents: 'languageCode' parameter should be defined");
+  //parameterAssert(typeof languageCode === 'string', `checkFileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
+  //parameterAssert(repoCode !== undefined, "checkFileContents: 'repoCode' parameter should be defined");
+  //parameterAssert(typeof repoCode === 'string', `checkFileContents: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
+  //parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkFileContents: 'repoCode' parameter should not be '${repoCode}'`);
+  //parameterAssert(branch !== undefined, "checkFileContents: 'branch' parameter should be defined");
+  //parameterAssert(typeof branch === 'string', `checkFileContents: 'branch' parameter should be a string not a '${typeof branch}': ${branch}`);
+  //parameterAssert(filename !== undefined, "checkFileContents: 'filename' parameter should be defined");
+  //parameterAssert(typeof filename === 'string', `checkFileContents: 'filename' parameter should be a string not a '${typeof filename}': ${filename}`);
+  //parameterAssert(fileContent !== undefined, "checkFileContents: 'fileContent' parameter should be defined");
+  //parameterAssert(typeof fileContent === 'string', `checkFileContents: 'fileContent' parameter should be a string not a '${typeof fileContent}': ${fileContent.length}`);
+  //parameterAssert(givenLocation !== undefined, "checkFileContents: 'givenLocation' parameter should be defined");
+  //parameterAssert(typeof givenLocation === 'string', `checkFileContents: 'givenLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
+  //parameterAssert(checkingOptions !== undefined, "checkFileContents: 'checkingOptions' parameter should be defined");
 
   const startTime = new Date();
 
@@ -58,7 +60,7 @@ export async function checkFileContents(username, languageCode, repoCode, branch
     // functionLog(`checkFileContents have TSV filenameMain=${filenameMain}`);
     const bookID = filenameMain.startsWith(`${languageCode}_`) || filenameMain.startsWith('en_') ? filenameMain.substring(filenameMain.length - 3) : filenameMain.substring(filenameMain.length - 3, filenameMain.length).toUpperCase();
     // functionLog(`checkFileContents have TSV bookID=${bookID}`);
-    parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
+    //parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
     if (filename.startsWith(`${languageCode}_`) || filenameMain.startsWith('en_')) {
       logicAssert(repoCode === 'TN', `These filenames ${filenameMain} are only for TN ${repoCode}`);
       checkFileResult = await checkTN_TSV9Table(languageCode, repoCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
@@ -80,14 +82,14 @@ export async function checkFileContents(username, languageCode, repoCode, branch
     // debugLog(`Have USFM filenameMain=${filenameMain}`);
     const bookID = filenameMain.substring(filenameMain.length - 3);
     // debugLog(`Have USFM bookcode=${bookID}`);
-    parameterAssert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
+    //parameterAssert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
     checkFileResult = await checkUSFMText(languageCode, repoCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
   } else if (filenameLower.endsWith('.sfm')) {
     const filenameMain = filename.substring(0, filename.length - 4); // drop .sfm
     userLog(`checkFileContents have SFM filenameMain=${filenameMain}`);
     const bookID = filenameMain.substring(2, 5);
     userLog(`checkFileContents have SFM bookcode=${bookID}`);
-    parameterAssert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
+    //parameterAssert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
     checkFileResult = await checkUSFMText(languageCode, repoCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
   } else if (filenameLower.endsWith('.md'))
     checkFileResult = await checkMarkdownFileContents(languageCode, repoCode, filename, fileContent, ourCFLocation, checkingOptions);

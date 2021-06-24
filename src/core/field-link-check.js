@@ -1,6 +1,8 @@
+// eslint-disable-next-line no-unused-vars
 import { REPO_CODES_LIST } from './defaults';
 import { checkTextField } from './field-text-check'
 import { cachedGetFileUsingFullURL } from './getApi';
+// eslint-disable-next-line no-unused-vars
 import { userLog, parameterAssert } from './utilities';
 
 
@@ -18,16 +20,18 @@ export async function startLiveLinksCheck(linksList, existingNoticeList, callbac
 
     function addNoticePartial({ priority, message, characterIndex, excerpt, location }) {
         userLog(`sLLC Link Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
-        parameterAssert(priority !== undefined, "sLLC addNoticePartial: 'priority' parameter should be defined");
-        parameterAssert(typeof priority === 'number', `sLLC addNoticePartial: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        parameterAssert(message !== undefined, "sLLC addNoticePartial: 'message' parameter should be defined");
-        parameterAssert(typeof message === 'string', `sLLC addNoticePartial: 'message' parameter should be a string not a '${typeof message}':${message}`);
-        // parameterAssert(characterIndex!==undefined, "sLLC addNoticePartial: 'characterIndex' parameter should be defined");
-        if (characterIndex) parameterAssert(typeof characterIndex === 'number', `sLLC addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
-        // parameterAssert(excerpt!==undefined, "sLLC addNoticePartial: 'excerpt' parameter should be defined");
-        if (excerpt) parameterAssert(typeof excerpt === 'string', `sLLC addNoticePartial: 'excerpt' parameter should be a string not a '${typeof excerpt}': ${excerpt}`);
-        // parameterAssert(location!==undefined, "sLLC addNoticePartial: 'location' parameter should be defined");
-        // parameterAssert(typeof location==='string', `sLLC addNoticePartial: 'location' parameter should be a string not a '${typeof location}': ${location}`);
+        //parameterAssert(priority !== undefined, "sLLC addNoticePartial: 'priority' parameter should be defined");
+        //parameterAssert(typeof priority === 'number', `sLLC addNoticePartial: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
+        //parameterAssert(message !== undefined, "sLLC addNoticePartial: 'message' parameter should be defined");
+        //parameterAssert(typeof message === 'string', `sLLC addNoticePartial: 'message' parameter should be a string not a '${typeof message}':${message}`);
+        // //parameterAssert(characterIndex!==undefined, "sLLC addNoticePartial: 'characterIndex' parameter should be defined");
+        if (characterIndex) { //parameterAssert(typeof characterIndex === 'number', `sLLC addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
+        }
+        // //parameterAssert(excerpt!==undefined, "sLLC addNoticePartial: 'excerpt' parameter should be defined");
+        if (excerpt) { //parameterAssert(typeof excerpt === 'string', `sLLC addNoticePartial: 'excerpt' parameter should be a string not a '${typeof excerpt}': ${excerpt}`);
+        }
+        // //parameterAssert(location!==undefined, "sLLC addNoticePartial: 'location' parameter should be defined");
+        // //parameterAssert(typeof location==='string', `sLLC addNoticePartial: 'location' parameter should be a string not a '${typeof location}': ${location}`);
         result.noticeList.push({ priority, message, characterIndex, excerpt, location });
     }
 
@@ -78,18 +82,18 @@ export function checkFieldLinks(languageCode, repoCode, fieldName, fieldText, li
     userLog(`checkFieldLinks('${languageCode}', '${repoCode}', '${fieldName}', '${fieldText}', ${JSON.stringify(linkOptions)}, '${optionalFieldLocation}', ${JSON.stringify(checkingOptions)})…`);
     // debugLog( "linkOptions", JSON.stringify(linkOptions));
     // debugLog( "linkOptionsEC", linkOptions.expectedCount);
-    parameterAssert(languageCode !== undefined, "checkFieldLinks: 'languageCode' parameter should be defined");
-    parameterAssert(typeof languageCode === 'string', `checkFieldLinks: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
-    parameterAssert(repoCode !== undefined, "checkFieldLinks: 'repoCode' parameter should be defined");
-    parameterAssert(typeof repoCode === 'string', `checkFieldLinks: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
-    parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkFieldLinks: 'repoCode' parameter should not be '${repoCode}'`);
-    parameterAssert(fieldName !== undefined, "checkFieldLinks: 'fieldName' parameter should be defined");
-    parameterAssert(typeof fieldName === 'string', `checkFieldLinks: 'fieldName' parameter should be a string not a '${typeof fieldName}': ${fieldName}`);
-    parameterAssert(fieldText !== undefined, "checkFieldLinks: 'fieldText' parameter should be defined");
-    parameterAssert(typeof fieldText === 'string', `checkFieldLinks: 'fieldText' parameter should be a string not a '${typeof fieldText}': ${fieldText}`);
-    parameterAssert(optionalFieldLocation !== undefined, "checkFieldLinks: 'optionalFieldLocation' parameter should be defined");
-    parameterAssert(typeof optionalFieldLocation === 'string', `checkFieldLinks: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}': ${optionalFieldLocation}`);
-    parameterAssert(optionalFieldLocation.indexOf('true') === -1, `checkFieldLinks: 'optionalFieldLocation' parameter should not be '${optionalFieldLocation}'`);
+    //parameterAssert(languageCode !== undefined, "checkFieldLinks: 'languageCode' parameter should be defined");
+    //parameterAssert(typeof languageCode === 'string', `checkFieldLinks: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
+    //parameterAssert(repoCode !== undefined, "checkFieldLinks: 'repoCode' parameter should be defined");
+    //parameterAssert(typeof repoCode === 'string', `checkFieldLinks: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
+    //parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkFieldLinks: 'repoCode' parameter should not be '${repoCode}'`);
+    //parameterAssert(fieldName !== undefined, "checkFieldLinks: 'fieldName' parameter should be defined");
+    //parameterAssert(typeof fieldName === 'string', `checkFieldLinks: 'fieldName' parameter should be a string not a '${typeof fieldName}': ${fieldName}`);
+    //parameterAssert(fieldText !== undefined, "checkFieldLinks: 'fieldText' parameter should be defined");
+    //parameterAssert(typeof fieldText === 'string', `checkFieldLinks: 'fieldText' parameter should be a string not a '${typeof fieldText}': ${fieldText}`);
+    //parameterAssert(optionalFieldLocation !== undefined, "checkFieldLinks: 'optionalFieldLocation' parameter should be defined");
+    //parameterAssert(typeof optionalFieldLocation === 'string', `checkFieldLinks: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}': ${optionalFieldLocation}`);
+    //parameterAssert(optionalFieldLocation.indexOf('true') === -1, `checkFieldLinks: 'optionalFieldLocation' parameter should not be '${optionalFieldLocation}'`);
 
     let ourLocation = optionalFieldLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -98,16 +102,18 @@ export function checkFieldLinks(languageCode, repoCode, fieldName, fieldText, li
 
     function addNoticePartial({ priority, message, characterIndex, excerpt, location }) {
         userLog(`cFLs addNoticePartial: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
-        parameterAssert(priority !== undefined, "cFLs addNoticePartial: 'priority' parameter should be defined");
-        parameterAssert(typeof priority === 'number', `cFLs addNoticePartial: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        parameterAssert(message !== undefined, "cFLs addNoticePartial: 'message' parameter should be defined");
-        parameterAssert(typeof message === 'string', `cFLs addNoticePartial: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        // parameterAssert(characterIndex!==undefined, "cFLs addNoticePartial: 'characterIndex' parameter should be defined");
-        if (characterIndex) parameterAssert(typeof characterIndex === 'number', `cFLs addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
-        // parameterAssert(excerpt!==undefined, "cFLs addNoticePartial: 'excerpt' parameter should be defined");
-        if (excerpt) parameterAssert(typeof excerpt === 'string', `cFLs addNoticePartial: 'excerpt' parameter should be a string not a '${typeof excerpt}': ${excerpt}`);
-        parameterAssert(location !== undefined, "cFLs addNoticePartial: 'location' parameter should be defined");
-        parameterAssert(typeof location === 'string', `cFLs addNoticePartial: 'location' parameter should be a string not a '${typeof location}': ${location}`);
+        //parameterAssert(priority !== undefined, "cFLs addNoticePartial: 'priority' parameter should be defined");
+        //parameterAssert(typeof priority === 'number', `cFLs addNoticePartial: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
+        //parameterAssert(message !== undefined, "cFLs addNoticePartial: 'message' parameter should be defined");
+        //parameterAssert(typeof message === 'string', `cFLs addNoticePartial: 'message' parameter should be a string not a '${typeof message}': ${message}`);
+        // //parameterAssert(characterIndex!==undefined, "cFLs addNoticePartial: 'characterIndex' parameter should be defined");
+        if (characterIndex) { //parameterAssert(typeof characterIndex === 'number', `cFLs addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
+        }
+        // //parameterAssert(excerpt!==undefined, "cFLs addNoticePartial: 'excerpt' parameter should be defined");
+        if (excerpt) { //parameterAssert(typeof excerpt === 'string', `cFLs addNoticePartial: 'excerpt' parameter should be a string not a '${typeof excerpt}': ${excerpt}`);
+        }
+        //parameterAssert(location !== undefined, "cFLs addNoticePartial: 'location' parameter should be defined");
+        //parameterAssert(typeof location === 'string', `cFLs addNoticePartial: 'location' parameter should be a string not a '${typeof location}': ${location}`);
 
         result.noticeList.push({ priority, message, characterIndex, excerpt, location });
     }

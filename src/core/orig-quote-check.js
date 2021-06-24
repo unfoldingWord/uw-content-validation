@@ -1,4 +1,5 @@
 import * as books from '../core/books/books';
+// eslint-disable-next-line no-unused-vars
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
 import { cachedGetFile } from '../core/getApi';
 // eslint-disable-next-line no-unused-vars
@@ -36,29 +37,29 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
     //      checkingOptions?.originalLanguageRepoBranch (or tag)
 
     // functionLog(`checkOriginalLanguageQuoteAndOccurrence v${QUOTE_VALIDATOR_VERSION_STRING} ${languageCode}, ${repoCode}, ${fieldName}, (${fieldText.length}) '${fieldText}', ${occurrenceString}, ${bookID} ${C}:${V} ${givenLocation}, …)…`);
-    parameterAssert(languageCode !== undefined, "checkOriginalLanguageQuoteAndOccurrence: 'languageCode' parameter should be defined");
-    parameterAssert(typeof languageCode === 'string', `checkOriginalLanguageQuoteAndOccurrence: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
-    parameterAssert(repoCode !== undefined, "checkOriginalLanguageQuoteAndOccurrence: 'repoCode' parameter should be defined");
-    parameterAssert(typeof repoCode === 'string', `checkOriginalLanguageQuoteAndOccurrence: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
-    parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkOriginalLanguageQuoteAndOccurrence: 'repoCode' parameter should not be '${repoCode}'`);
-    parameterAssert(fieldName !== undefined, "checkOriginalLanguageQuoteAndOccurrence: 'fieldName' parameter should be defined");
-    parameterAssert(typeof fieldName === 'string', `checkOriginalLanguageQuoteAndOccurrence: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-    parameterAssert(fieldText !== undefined, "checkOriginalLanguageQuoteAndOccurrence: 'fieldText' parameter should be defined");
-    parameterAssert(typeof fieldText === 'string', `checkOriginalLanguageQuoteAndOccurrence: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-    parameterAssert(fieldText.length >= 1, `checkOriginalLanguageQuoteAndOccurrence: 'fieldText' parameter should have text not ${fieldText.length} characters`);
-    parameterAssert(occurrenceString !== undefined, "checkOriginalLanguageQuoteAndOccurrence: 'occurrenceString' parameter should be defined");
-    parameterAssert(typeof occurrenceString === 'string', `checkOriginalLanguageQuoteAndOccurrence: 'occurrenceString' parameter should be a string not a '${typeof occurrenceString}'`);
-    parameterAssert(bookID !== undefined, "checkOriginalLanguageQuoteAndOccurrence: 'bookID' parameter should be defined");
-    parameterAssert(typeof bookID === 'string', `checkOriginalLanguageQuoteAndOccurrence: 'bookID' parameter should be a string not a '${typeof bookID}'`);
-    parameterAssert(bookID.length === 3, `checkOriginalLanguageQuoteAndOccurrence: 'bookID' parameter should be three characters long not ${bookID.length}`);
-    parameterAssert(bookID.toUpperCase() === bookID, `checkOriginalLanguageQuoteAndOccurrence: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-    parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkOriginalLanguageQuoteAndOccurrence: '${bookID}' is not a valid USFM book identifier`);
-    parameterAssert(C !== undefined, "checkOriginalLanguageQuoteAndOccurrence: 'C' parameter should be defined");
-    parameterAssert(typeof C === 'string', `checkOriginalLanguageQuoteAndOccurrence: 'C' parameter should be a string not a '${typeof C}'`);
-    parameterAssert(V !== undefined, "checkOriginalLanguageQuoteAndOccurrence: 'V' parameter should be defined");
-    parameterAssert(typeof V === 'string', `checkOriginalLanguageQuoteAndOccurrence: 'V' parameter should be a string not a '${typeof V}'`);
-    parameterAssert(givenLocation !== undefined, "checkOriginalLanguageQuoteAndOccurrence: 'givenLocation' parameter should be defined");
-    parameterAssert(typeof givenLocation === 'string', `checkOriginalLanguageQuoteAndOccurrence: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
+    //parameterAssert(languageCode !== undefined, "checkOriginalLanguageQuoteAndOccurrence: 'languageCode' parameter should be defined");
+    //parameterAssert(typeof languageCode === 'string', `checkOriginalLanguageQuoteAndOccurrence: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    //parameterAssert(repoCode !== undefined, "checkOriginalLanguageQuoteAndOccurrence: 'repoCode' parameter should be defined");
+    //parameterAssert(typeof repoCode === 'string', `checkOriginalLanguageQuoteAndOccurrence: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
+    //parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkOriginalLanguageQuoteAndOccurrence: 'repoCode' parameter should not be '${repoCode}'`);
+    //parameterAssert(fieldName !== undefined, "checkOriginalLanguageQuoteAndOccurrence: 'fieldName' parameter should be defined");
+    //parameterAssert(typeof fieldName === 'string', `checkOriginalLanguageQuoteAndOccurrence: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+    //parameterAssert(fieldText !== undefined, "checkOriginalLanguageQuoteAndOccurrence: 'fieldText' parameter should be defined");
+    //parameterAssert(typeof fieldText === 'string', `checkOriginalLanguageQuoteAndOccurrence: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+    //parameterAssert(fieldText.length >= 1, `checkOriginalLanguageQuoteAndOccurrence: 'fieldText' parameter should have text not ${fieldText.length} characters`);
+    //parameterAssert(occurrenceString !== undefined, "checkOriginalLanguageQuoteAndOccurrence: 'occurrenceString' parameter should be defined");
+    //parameterAssert(typeof occurrenceString === 'string', `checkOriginalLanguageQuoteAndOccurrence: 'occurrenceString' parameter should be a string not a '${typeof occurrenceString}'`);
+    //parameterAssert(bookID !== undefined, "checkOriginalLanguageQuoteAndOccurrence: 'bookID' parameter should be defined");
+    //parameterAssert(typeof bookID === 'string', `checkOriginalLanguageQuoteAndOccurrence: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+    //parameterAssert(bookID.length === 3, `checkOriginalLanguageQuoteAndOccurrence: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    //parameterAssert(bookID.toUpperCase() === bookID, `checkOriginalLanguageQuoteAndOccurrence: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+    //parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkOriginalLanguageQuoteAndOccurrence: '${bookID}' is not a valid USFM book identifier`);
+    //parameterAssert(C !== undefined, "checkOriginalLanguageQuoteAndOccurrence: 'C' parameter should be defined");
+    //parameterAssert(typeof C === 'string', `checkOriginalLanguageQuoteAndOccurrence: 'C' parameter should be a string not a '${typeof C}'`);
+    //parameterAssert(V !== undefined, "checkOriginalLanguageQuoteAndOccurrence: 'V' parameter should be defined");
+    //parameterAssert(typeof V === 'string', `checkOriginalLanguageQuoteAndOccurrence: 'V' parameter should be a string not a '${typeof V}'`);
+    //parameterAssert(givenLocation !== undefined, "checkOriginalLanguageQuoteAndOccurrence: 'givenLocation' parameter should be defined");
+    //parameterAssert(typeof givenLocation === 'string', `checkOriginalLanguageQuoteAndOccurrence: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
 
     const discontiguousDivider = (repoCode === 'TN') ? '…' : ' & ';
     // debugLog(`Got discontiguousDivider='${discontiguousDivider}' for ${repoCode}`);
@@ -70,16 +71,18 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
 
     function addNotice(noticeObject) {
         // functionLog(`checkOriginalLanguageQuoteAndOccurrence Notice: (priority=${noticeObject.priority}) ${noticeObject.message}${characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.excerpt ? ` ${noticeObject.excerpt}` : ""}${noticeObject.location}`);
-        parameterAssert(noticeObject.priority !== undefined, "cOLQ addNotice: 'priority' parameter should be defined");
-        parameterAssert(typeof noticeObject.priority === 'number', `cOLQ addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        parameterAssert(noticeObject.message !== undefined, "cOLQ addNotice: 'message' parameter should be defined");
-        parameterAssert(typeof noticeObject.message === 'string', `cOLQ addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // parameterAssert(characterIndex !== undefined, "cOLQ addNotice: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cOLQ addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // parameterAssert(excerpt !== undefined, "cOLQ addNotice: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `cOLQ addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt} for ${noticeObject.priority}`);
-        parameterAssert(noticeObject.location !== undefined, "cOLQ addNotice: 'location' parameter should be defined");
-        parameterAssert(typeof noticeObject.location === 'string', `cOLQ addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        //parameterAssert(noticeObject.priority !== undefined, "cOLQ addNotice: 'priority' parameter should be defined");
+        //parameterAssert(typeof noticeObject.priority === 'number', `cOLQ addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        //parameterAssert(noticeObject.message !== undefined, "cOLQ addNotice: 'message' parameter should be defined");
+        //parameterAssert(typeof noticeObject.message === 'string', `cOLQ addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+        // //parameterAssert(characterIndex !== undefined, "cOLQ addNotice: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cOLQ addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        }
+        // //parameterAssert(excerpt !== undefined, "cOLQ addNotice: 'excerpt' parameter should be defined");
+        if (noticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cOLQ addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt} for ${noticeObject.priority}`);
+        }
+        //parameterAssert(noticeObject.location !== undefined, "cOLQ addNotice: 'location' parameter should be defined");
+        //parameterAssert(typeof noticeObject.location === 'string', `cOLQ addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
         colqResult.noticeList.push(noticeObject);
     }
 
@@ -216,11 +219,11 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
 
             // Final clean-up (shouldn’t be necessary, but just in case)
             verseText = verseText.replace(/ {2}/g, ' ');
-            parameterAssert(verseText.indexOf('\\w') === -1, `getOriginalPassage: Should be no \\w in ${bookID} ${C}:${V} '${verseText}'`);
-            parameterAssert(verseText.indexOf('\\k') === -1, `getOriginalPassage: Should be no \\k in ${bookID} ${C}:${V} '${verseText}'`);
-            parameterAssert(verseText.indexOf('x-') === -1, `getOriginalPassage: Should be no x- in ${bookID} ${C}:${V} '${verseText}'`);
-            parameterAssert(verseText.indexOf('\\f') === -1, `getOriginalPassage: Should be no \\f in ${bookID} ${C}:${V} '${verseText}'`);
-            parameterAssert(verseText.indexOf('\\x') === -1, `getOriginalPassage: Should be no \\x in ${bookID} ${C}:${V} '${verseText}'`);
+            //parameterAssert(verseText.indexOf('\\w') === -1, `getOriginalPassage: Should be no \\w in ${bookID} ${C}:${V} '${verseText}'`);
+            //parameterAssert(verseText.indexOf('\\k') === -1, `getOriginalPassage: Should be no \\k in ${bookID} ${C}:${V} '${verseText}'`);
+            //parameterAssert(verseText.indexOf('x-') === -1, `getOriginalPassage: Should be no x- in ${bookID} ${C}:${V} '${verseText}'`);
+            //parameterAssert(verseText.indexOf('\\f') === -1, `getOriginalPassage: Should be no \\f in ${bookID} ${C}:${V} '${verseText}'`);
+            //parameterAssert(verseText.indexOf('\\x') === -1, `getOriginalPassage: Should be no \\x in ${bookID} ${C}:${V} '${verseText}'`);
         }
 
         // debugLog(`  getOriginalPassage(${bookID} ${C}:${V}) is returning '${verseText}'`);
@@ -241,19 +244,19 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
      */
     function checkFoundQuoteSegment(foundQuoteSegment, partDescription, occurrenceString, partialVerseText, fullVerseText, location) {
         // if (partDescription) functionLog(`checkFoundQuoteSegment(${foundQuoteSegment}, ${partDescription}, ${verseText}, ${location}) ${C}:${V}…`);
-        parameterAssert(foundQuoteSegment !== undefined, "checkFoundQuoteSegment: 'foundQuoteSegment' parameter should be defined");
-        parameterAssert(typeof foundQuoteSegment === 'string', `checkFoundQuoteSegment: 'foundQuoteSegment' parameter should be a string not a '${typeof foundQuoteSegment}'`);
-        parameterAssert(partDescription !== undefined, "checkFoundQuoteSegment: 'partDescription' parameter should be defined");
-        parameterAssert(typeof partDescription === 'string', `checkFoundQuoteSegment: 'partDescription' parameter should be a string not a '${typeof partDescription}'`);
-        parameterAssert(occurrenceString !== undefined, "checkFoundQuoteSegment: 'occurrenceString' parameter should be defined");
-        parameterAssert(typeof occurrenceString === 'string', `checkFoundQuoteSegment: 'occurrenceString' parameter should be a string not a '${typeof occurrenceString}'`);
-        parameterAssert(partialVerseText !== undefined, "checkFoundQuoteSegment: 'partialVerseText' parameter should be defined");
-        parameterAssert(typeof partialVerseText === 'string', `checkFoundQuoteSegment: 'partialVerseText' parameter should be a string not a '${typeof partialVerseText}'`);
-        parameterAssert(fullVerseText !== undefined, "checkFoundQuoteSegment: 'fullVerseText' parameter should be defined");
-        parameterAssert(typeof fullVerseText === 'string', `checkFoundQuoteSegment: 'fullVerseText' parameter should be a string not a '${typeof fullVerseText}'`);
-        parameterAssert(fullVerseText.length >= partialVerseText.length, `checkFoundQuoteSegment: 'partialVerseText' should not be longer`);
-        parameterAssert(location !== undefined, "checkFoundQuoteSegment: 'location' parameter should be defined");
-        parameterAssert(typeof location === 'string', `checkFoundQuoteSegment: 'location' parameter should be a string not a '${typeof location}'`);
+        //parameterAssert(foundQuoteSegment !== undefined, "checkFoundQuoteSegment: 'foundQuoteSegment' parameter should be defined");
+        //parameterAssert(typeof foundQuoteSegment === 'string', `checkFoundQuoteSegment: 'foundQuoteSegment' parameter should be a string not a '${typeof foundQuoteSegment}'`);
+        //parameterAssert(partDescription !== undefined, "checkFoundQuoteSegment: 'partDescription' parameter should be defined");
+        //parameterAssert(typeof partDescription === 'string', `checkFoundQuoteSegment: 'partDescription' parameter should be a string not a '${typeof partDescription}'`);
+        //parameterAssert(occurrenceString !== undefined, "checkFoundQuoteSegment: 'occurrenceString' parameter should be defined");
+        //parameterAssert(typeof occurrenceString === 'string', `checkFoundQuoteSegment: 'occurrenceString' parameter should be a string not a '${typeof occurrenceString}'`);
+        //parameterAssert(partialVerseText !== undefined, "checkFoundQuoteSegment: 'partialVerseText' parameter should be defined");
+        //parameterAssert(typeof partialVerseText === 'string', `checkFoundQuoteSegment: 'partialVerseText' parameter should be a string not a '${typeof partialVerseText}'`);
+        //parameterAssert(fullVerseText !== undefined, "checkFoundQuoteSegment: 'fullVerseText' parameter should be defined");
+        //parameterAssert(typeof fullVerseText === 'string', `checkFoundQuoteSegment: 'fullVerseText' parameter should be a string not a '${typeof fullVerseText}'`);
+        //parameterAssert(fullVerseText.length >= partialVerseText.length, `checkFoundQuoteSegment: 'partialVerseText' should not be longer`);
+        //parameterAssert(location !== undefined, "checkFoundQuoteSegment: 'location' parameter should be defined");
+        //parameterAssert(typeof location === 'string', `checkFoundQuoteSegment: 'location' parameter should be a string not a '${typeof location}'`);
 
         let details = `verse text ►${fullVerseText}◄`;
         if (partDescription.length) details = `${partDescription} part of quote = "${foundQuoteSegment}" -- ${details}`;
@@ -286,7 +289,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
         const followingChar = remainingVerseBits[1][0];
         // debugLog(`Next char after ${C}:${V} '${foundQuoteSegment}' is '${followingChar}'`);
         // Note: There's some Hebrew (RTL) characters at the beginning of the following string used in regex
-        const allowedWordEndChars = ' ׃־.,:;?!–—)';
+        const allowedWordEndChars = ' ׃־.,:;?!–—)…'; // Ellipsis occurs in UGNT, e.g., Rom 3:15, Rev 2:26, 18:7
         const followingRegex = new RegExp(`${foundQuoteSegment}[${allowedWordEndChars}]`, 'g');
         if (foundQuoteSegment.slice(-1) !== ' ' && remainingVerseBits[1]
             && followingChar && allowedWordEndChars.indexOf(followingChar) === -1 // handle punctuation expected after words
@@ -313,14 +316,14 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
      */
     function checkNotFoundQuoteSegment(notFoundQuoteSegment, partDescription, occurrenceString, fullVerseText, location) {
         if (partDescription) functionLog(`checkNotFoundQuoteSegment(${notFoundQuoteSegment}, ${partDescription}, ${fullVerseText}, ${location}) ${C}:${V}…`);
-        parameterAssert(notFoundQuoteSegment !== undefined, "checkNotFoundQuoteSegment: 'notFoundQuoteSegment' parameter should be defined");
-        parameterAssert(typeof notFoundQuoteSegment === 'string', `checkNotFoundQuoteSegment: 'notFoundQuoteSegment' parameter should be a string not a '${typeof notFoundQuoteSegment}'`);
-        parameterAssert(partDescription !== undefined, "checkNotFoundQuoteSegment: 'partDescription' parameter should be defined");
-        parameterAssert(typeof partDescription === 'string', `checkNotFoundQuoteSegment: 'partDescription' parameter should be a string not a '${typeof partDescription}'`);
-        parameterAssert(fullVerseText !== undefined, "checkNotFoundQuoteSegment: 'fullVerseText' parameter should be defined");
-        parameterAssert(typeof fullVerseText === 'string', `checkNotFoundQuoteSegment: 'fullVerseText' parameter should be a string not a '${typeof fullVerseText}'`);
-        parameterAssert(location !== undefined, "checkNotFoundQuoteSegment: 'location' parameter should be defined");
-        parameterAssert(typeof location === 'string', `checkNotFoundQuoteSegment: 'location' parameter should be a string not a '${typeof location}'`);
+        //parameterAssert(notFoundQuoteSegment !== undefined, "checkNotFoundQuoteSegment: 'notFoundQuoteSegment' parameter should be defined");
+        //parameterAssert(typeof notFoundQuoteSegment === 'string', `checkNotFoundQuoteSegment: 'notFoundQuoteSegment' parameter should be a string not a '${typeof notFoundQuoteSegment}'`);
+        //parameterAssert(partDescription !== undefined, "checkNotFoundQuoteSegment: 'partDescription' parameter should be defined");
+        //parameterAssert(typeof partDescription === 'string', `checkNotFoundQuoteSegment: 'partDescription' parameter should be a string not a '${typeof partDescription}'`);
+        //parameterAssert(fullVerseText !== undefined, "checkNotFoundQuoteSegment: 'fullVerseText' parameter should be defined");
+        //parameterAssert(typeof fullVerseText === 'string', `checkNotFoundQuoteSegment: 'fullVerseText' parameter should be a string not a '${typeof fullVerseText}'`);
+        //parameterAssert(location !== undefined, "checkNotFoundQuoteSegment: 'location' parameter should be defined");
+        //parameterAssert(typeof location === 'string', `checkNotFoundQuoteSegment: 'location' parameter should be a string not a '${typeof location}'`);
 
         let excerpt = partDescription ? `${partDescription ? '(' + partDescription + ' quote portion)' : ''} '${notFoundQuoteSegment}'` : '';
 
@@ -436,7 +439,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
 
     // Now check if the quote can be found in the verse text
     if (quoteBits) { // it had an ellipsis
-        // parameterAssert(occurrence === 1, `Oh -- can get '${fieldText}' with occurrence=${occurrence} in ${bookID} ${C}:${V}`);
+        // //parameterAssert(occurrence === 1, `Oh -- can get '${fieldText}' with occurrence=${occurrence} in ${bookID} ${C}:${V}`);
         if (occurrence !== 1) {
             addNotice({ priority: 50, message: "Is this quote/occurrence correct???", details: `Occurrence=${occurrence}`, excerpt: fieldText, location: ourLocation });
         }

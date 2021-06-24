@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
 import { checkTextField } from './field-text-check';
 import { checkNotesLinksToOutside } from './notes-links-check';
@@ -27,24 +28,24 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
      Returns a result object containing a successList and a noticeList
      */
     // functionLog(`checkMarkdownText(${languageCode}, ${repoCode}, ${textOrFileName}, ${markdownText.length}, ${givenLocation}, …)…`);
-    parameterAssert(languageCode !== undefined, "checkMarkdownText: 'languageCode' parameter should be defined");
-    parameterAssert(typeof languageCode === 'string', `checkMarkdownText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
-    parameterAssert(languageCode !== 'unfoldingWord', `checkMarkdownText: 'languageCode' ${languageCode} parameter should be not be 'unfoldingWord'`);
-    parameterAssert(repoCode !== undefined, "checkMarkdownText: 'repoCode' parameter should be defined");
-    parameterAssert(typeof repoCode === 'string', `checkMarkdownText: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
-    parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkMarkdownText: 'repoCode' parameter should not be '${repoCode}'`);
-    parameterAssert(textOrFileName !== undefined, "checkMarkdownText: 'textOrFileName' parameter should be defined");
-    parameterAssert(typeof textOrFileName === 'string', `checkMarkdownText: 'textOrFileName' parameter should be a string not a '${typeof textOrFileName}': ${textOrFileName}`);
-    parameterAssert(textOrFileName !== `${languageCode}_${repoCode.toLowerCase()}`, `checkMarkdownText: 'textOrFileName' parameter should not be the repoName: '${textOrFileName}'`);
+    //parameterAssert(languageCode !== undefined, "checkMarkdownText: 'languageCode' parameter should be defined");
+    //parameterAssert(typeof languageCode === 'string', `checkMarkdownText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
+    //parameterAssert(languageCode !== 'unfoldingWord', `checkMarkdownText: 'languageCode' ${languageCode} parameter should be not be 'unfoldingWord'`);
+    //parameterAssert(repoCode !== undefined, "checkMarkdownText: 'repoCode' parameter should be defined");
+    //parameterAssert(typeof repoCode === 'string', `checkMarkdownText: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
+    //parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkMarkdownText: 'repoCode' parameter should not be '${repoCode}'`);
+    //parameterAssert(textOrFileName !== undefined, "checkMarkdownText: 'textOrFileName' parameter should be defined");
+    //parameterAssert(typeof textOrFileName === 'string', `checkMarkdownText: 'textOrFileName' parameter should be a string not a '${typeof textOrFileName}': ${textOrFileName}`);
+    //parameterAssert(textOrFileName !== `${languageCode}_${repoCode.toLowerCase()}`, `checkMarkdownText: 'textOrFileName' parameter should not be the repoName: '${textOrFileName}'`);
     if (textOrFileName === `${languageCode}_${repoCode.toLowerCase()}`) { console.trace('checkMarkdownText()'); }
-    parameterAssert(markdownText !== undefined, "checkMarkdownText: 'markdownText' parameter should be defined");
-    parameterAssert(typeof markdownText === 'string', `checkMarkdownText: 'markdownText' parameter should be a string not a '${typeof markdownText}': ${markdownText}`);
-    parameterAssert(givenLocation !== undefined, "checkMarkdownText: 'optionalFieldLocation' parameter should be defined");
-    parameterAssert(typeof givenLocation === 'string', `checkMarkdownText: 'optionalFieldLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
-    parameterAssert(givenLocation.indexOf('true') === -1, `checkMarkdownText: 'optionalFieldLocation' parameter should not be '${givenLocation}'`);
-    parameterAssert(checkingOptions !== undefined, "checkMarkdownText: 'checkingOptions' parameter should be defined");
-    if (checkingOptions !== undefined)
-        parameterAssert(typeof checkingOptions === 'object', `checkMarkdownText: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
+    //parameterAssert(markdownText !== undefined, "checkMarkdownText: 'markdownText' parameter should be defined");
+    //parameterAssert(typeof markdownText === 'string', `checkMarkdownText: 'markdownText' parameter should be a string not a '${typeof markdownText}': ${markdownText}`);
+    //parameterAssert(givenLocation !== undefined, "checkMarkdownText: 'optionalFieldLocation' parameter should be defined");
+    //parameterAssert(typeof givenLocation === 'string', `checkMarkdownText: 'optionalFieldLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
+    //parameterAssert(givenLocation.indexOf('true') === -1, `checkMarkdownText: 'optionalFieldLocation' parameter should not be '${givenLocation}'`);
+    //parameterAssert(checkingOptions !== undefined, "checkMarkdownText: 'checkingOptions' parameter should be defined");
+    if (checkingOptions !== undefined) { //parameterAssert(typeof checkingOptions === 'object', `checkMarkdownText: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
+    }
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -71,16 +72,18 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
     }
     function addNotice(noticeObject) {
         // functionLog(`checkMarkdownText addNotice: (priority=${noticeObject.priority}) ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.excerpt ? " " + excerpt : ""}${noticeObject.location}`);
-        parameterAssert(noticeObject.priority !== undefined, "cMdT addNotice: 'priority' parameter should be defined");
-        parameterAssert(typeof noticeObject.priority === 'number', `cMdT addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        parameterAssert(noticeObject.message !== undefined, "cMdT addNotice: 'message' parameter should be defined");
-        parameterAssert(typeof noticeObject.message === 'string', `cMdT addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // parameterAssert(characterIndex !== undefined, "cMdT addNotice: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cMdT addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // parameterAssert(excerpt !== undefined, "cMdT addNotice: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `cMdT addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
-        parameterAssert(noticeObject.location !== undefined, "cMdT addNotice: 'location' parameter should be defined");
-        parameterAssert(typeof noticeObject.location === 'string', `cMdT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        //parameterAssert(noticeObject.priority !== undefined, "cMdT addNotice: 'priority' parameter should be defined");
+        //parameterAssert(typeof noticeObject.priority === 'number', `cMdT addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        //parameterAssert(noticeObject.message !== undefined, "cMdT addNotice: 'message' parameter should be defined");
+        //parameterAssert(typeof noticeObject.message === 'string', `cMdT addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+        // //parameterAssert(characterIndex !== undefined, "cMdT addNotice: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cMdT addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        }
+        // //parameterAssert(excerpt !== undefined, "cMdT addNotice: 'excerpt' parameter should be defined");
+        if (noticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cMdT addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        }
+        //parameterAssert(noticeObject.location !== undefined, "cMdT addNotice: 'location' parameter should be defined");
+        //parameterAssert(typeof noticeObject.location === 'string', `cMdT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
         // noticeObject.debugChain = noticeObject.debugChain ? `checkMarkdownText(${languageCode}, ${textOrFileName}) ${noticeObject.debugChain}` : `checkMarkdownText(${languageCode}, ${textOrFileName})`;
         result.noticeList.push(noticeObject); // Used to have filename: textName, but that isn’t always a filename !!!
@@ -102,15 +105,15 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
 
         // Updates the global list of notices
         // functionLog(`cMdT ourCheckTextField(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${optionalFieldLocation}, …)`);
-        parameterAssert(fieldName !== undefined, "cMdT ourCheckTextField: 'fieldName' parameter should be defined");
-        parameterAssert(typeof fieldName === 'string', `cMdT ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-        parameterAssert(lineNumber !== undefined, "cMdT ourCheckTextField: 'lineNumber' parameter should be defined");
-        parameterAssert(typeof lineNumber === 'number', `cMdT ourCheckTextField: 'lineNumber' parameter should be a number not a '${typeof lineNumber}'`);
-        parameterAssert(fieldText !== undefined, "cMdT ourCheckTextField: 'fieldText' parameter should be defined");
-        parameterAssert(typeof fieldText === 'string', `cMdT ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-        parameterAssert(allowedLinks === true || allowedLinks === false, "cMdT ourCheckTextField: allowedLinks parameter must be either true or false");
-        parameterAssert(optionalFieldLocation !== undefined, "cMdT ourCheckTextField: 'optionalFieldLocation' parameter should be defined");
-        parameterAssert(typeof optionalFieldLocation === 'string', `cMdT ourCheckTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
+        //parameterAssert(fieldName !== undefined, "cMdT ourCheckTextField: 'fieldName' parameter should be defined");
+        //parameterAssert(typeof fieldName === 'string', `cMdT ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        //parameterAssert(lineNumber !== undefined, "cMdT ourCheckTextField: 'lineNumber' parameter should be defined");
+        //parameterAssert(typeof lineNumber === 'number', `cMdT ourCheckTextField: 'lineNumber' parameter should be a number not a '${typeof lineNumber}'`);
+        //parameterAssert(fieldText !== undefined, "cMdT ourCheckTextField: 'fieldText' parameter should be defined");
+        //parameterAssert(typeof fieldText === 'string', `cMdT ourCheckTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+        //parameterAssert(allowedLinks === true || allowedLinks === false, "cMdT ourCheckTextField: allowedLinks parameter must be either true or false");
+        //parameterAssert(optionalFieldLocation !== undefined, "cMdT ourCheckTextField: 'optionalFieldLocation' parameter should be defined");
+        //parameterAssert(typeof optionalFieldLocation === 'string', `cMdT ourCheckTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
         const dbtcResultObject = checkTextField(languageCode, repoCode, 'markdown', fieldName, fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
 
@@ -129,12 +132,12 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
         // Updates the global list of notices
 
         // functionLog(`checkUSFMText ourCheckNotesLinksToOutside(${lineNumber}, ${C}:${V}, ${marker}, (${twLinkText.length}) '${twLinkText}', ${location}, ${JSON.stringify(checkingOptions)})`);
-        parameterAssert(lineNumber !== undefined, "checkUSFMText ourCheckNotesLinksToOutside: 'lineNumber' parameter should be defined");
-        parameterAssert(typeof lineNumber === 'number', `checkUSFMText ourCheckNotesLinksToOutside: 'lineNumber' parameter should be a number not a '${typeof lineNumber}': ${lineNumber}`);
-        parameterAssert(lineText !== undefined, "checkUSFMText ourCheckNotesLinksToOutside: 'lineText' parameter should be defined");
-        parameterAssert(typeof lineText === 'string', `checkUSFMText ourCheckNotesLinksToOutside: 'lineText' parameter should be a string not a '${typeof lineText}': ${lineText}`);
-        parameterAssert(location !== undefined, "checkUSFMText ourCheckNotesLinksToOutside: 'location' parameter should be defined");
-        parameterAssert(typeof location === 'string', `checkUSFMText ourCheckNotesLinksToOutside: 'location' parameter should be a string not a '${typeof location}': ${location}`);
+        //parameterAssert(lineNumber !== undefined, "checkUSFMText ourCheckNotesLinksToOutside: 'lineNumber' parameter should be defined");
+        //parameterAssert(typeof lineNumber === 'number', `checkUSFMText ourCheckNotesLinksToOutside: 'lineNumber' parameter should be a number not a '${typeof lineNumber}': ${lineNumber}`);
+        //parameterAssert(lineText !== undefined, "checkUSFMText ourCheckNotesLinksToOutside: 'lineText' parameter should be defined");
+        //parameterAssert(typeof lineText === 'string', `checkUSFMText ourCheckNotesLinksToOutside: 'lineText' parameter should be a string not a '${typeof lineText}': ${lineText}`);
+        //parameterAssert(location !== undefined, "checkUSFMText ourCheckNotesLinksToOutside: 'location' parameter should be defined");
+        //parameterAssert(typeof location === 'string', `checkUSFMText ourCheckNotesLinksToOutside: 'location' parameter should be a string not a '${typeof location}': ${location}`);
 
         // Empty fields on the next line are bookID, C, V (as we don't have that information here)
         let adjustedTextOrFileName = textOrFileName;
