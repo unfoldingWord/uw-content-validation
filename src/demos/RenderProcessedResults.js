@@ -341,7 +341,7 @@ function RenderExcerpt({ excerpt, message }) {
         }
     }
     if (excerpt && excerpt.length)
-        return <>around ►<b>{excerpt}</b>◄</>;
+        return <> around ►<span style={{ color: 'DarkOrange' }}><b>{excerpt}</b></span>◄</>;
     // else
     return null;
 }
@@ -633,6 +633,6 @@ export function RenderElapsedTime({ elapsedSeconds }) {
     remainingTime = Math.floor(remainingTime / 60);
     const hours = Math.round(remainingTime % 24);
     remainingTime = Math.floor(remainingTime / 24);
-    parameterAssert(remainingTime === 0, `Elapsed time also contains ${remainingTime} days`);
+    //parameterAssert(remainingTime === 0, `Elapsed time also contains ${remainingTime} days`);
     return <>{hours ? `${hours} hour` : ''}{hours && hours !== 1 ? 's' : ''}{hours ? ', ' : ''}{minutes ? `${minutes} minute` : ''}{minutes && minutes !== 1 ? 's' : ''}{minutes ? ', ' : ''}{seconds} second{seconds === 1 ? '' : 's'}</>;
 }
