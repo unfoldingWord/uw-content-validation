@@ -54,7 +54,7 @@ import RepoCheck from './RepoCheck';
   // Specifying maximumSimilarMessages and excerptLength is just to show off options
   // —those fields are not necessary (or normal) here
   maximumSimilarMessages='4' // Default is 3 (0 means don’t suppress any)
-  // excerptLength='20' // Default is 15
+  // excerptLength='25' // Default is 20 characters
   // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
   showDisabledNoticesFlag='false' // Display known specific non-issues: 'true' or 'false'
 />

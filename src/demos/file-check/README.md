@@ -64,7 +64,7 @@ and then validates the content of one file selected from the repo.
 
   // Specifying excerptLength and cutoffPriorityLevel is just to show off options
   // —those fields are not necessary (or normal) here
-  excerptLength='20' // Default is 15
+  excerptLength='25' // Default is 20 characters
   // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
 
   // Normally links in files are downloaded to check that they really exist

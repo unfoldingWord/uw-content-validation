@@ -36,7 +36,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
 
     const checkingOptions = { // Uncomment any of these to test them
         dataSet: dataSet, // Can be 'OLD' (Markdown, etc.), 'NEW' (TSV only), or 'BOTH', or 'DEFAULT'
-        // excerptLength: 25, // default is 15
+        // excerptLength: 25, // default is 20 characters
         checkManifestFlag: true,
         checkReadmeFlag: true,
         checkLicenseFlag: true,

@@ -3,7 +3,7 @@ import { userLog, parameterAssert, logicAssert } from '../core/utilities';
 import { isDisabledNotice } from '../core/disabled-notices';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.13';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.14';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -193,8 +193,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 }
             }
             if (thisFilename) {
-                parameterAssert(thisFilename.indexOf(':') < 0 && thisFilename.indexOf('\\') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
-                parameterAssert(ALL_TSV_FIELDNAMES.indexOf(thisFilename) < 0, `filename '${thisFilename}' contains a TSV fieldName!`);
+                logicAssert(thisFilename.indexOf(':') < 0 && thisFilename.indexOf('\\') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+                logicAssert(ALL_TSV_FIELDNAMES.indexOf(thisFilename) < 0, `filename '${thisFilename}' contains a TSV fieldName!`);
                 // NOTE: Some OBS and other messages have to include part of the part in the 'filename' (to prevent ambiguity) so we don’t disallow forward slash
                 // if (!thisRepoName || !(thisRepoName.endsWith('_obs') || thisRepoName.endsWith('_ta') || thisRepoName.endsWith('_tw')))
                 //     parameterAssert(thisFilename.indexOf('/') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
@@ -229,7 +229,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                     // && (!thisGivenNotice.bookID || thisGivenNotice.bookID.indexOf(thisLineNumber + '') < 0)
                     logicAssert(thisLocation.indexOf(thisLineNumber + '') < 0 && thisLocation.indexOf(thisLineNumber.toLocaleString()) < 0, `lineNumber might be repeated in location in ${JSON.stringify(thisGivenNotice)}`);
             }
-            if (thisExtra) { parameterAssert(thisExtra !== '01', `extra should not be '${thisExtra}'`); }
+            if (thisExtra) { logicAssert(thisExtra !== '01', `extra should not be '${thisExtra}'`); }
             numberStore[thisPriority] = thisMsg;
         }
     }
@@ -256,7 +256,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         // debugLog(`Using default ignorePriorityNumberList=${JSON.stringify(ignorePriorityNumberList)}`);
     }
     else userLog(`processNoticesCommon: Using supplied ignorePriorityNumberList=${JSON.stringify(ignorePriorityNumberList)} cf. default=${JSON.stringify(DEFAULT_IGNORE_PRIORITY_NUMBER_LIST)}`);
-    parameterAssert(Array.isArray(ignorePriorityNumberList), `ignorePriorityNumberList should be an Array, not ${typeof ignorePriorityNumberList}=${ignorePriorityNumberList}`);
+    //parameterAssert(Array.isArray(ignorePriorityNumberList), `ignorePriorityNumberList should be an Array, not ${typeof ignorePriorityNumberList}=${ignorePriorityNumberList}`);
     let sortBy;
     try {
         sortBy = optionalProcessingOptions.sortBy;
@@ -291,7 +291,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         else { // successList is fairly long -- maybe we can shorten it by combining multiple similar messages
             const BibleRegex = /\d\d-(\w\w\w).usfm/; // "Checked JUD file: 66-JUD.usfm"
             const NotesRegex = /\d\d-(\w\w\w).tsv/; // "Checked EN_TN_01-GEN.TSV file: en_tn_01-GEN.tsv"
-            // const TWLRegex = /_(\w\w\w).tsv/; // From repoCheck "Checked en_twl BBB file: twl_BBB.tsv"
+            // const TWLRegex = /twl_(\w\w\w).tsv/; // From repoCheck "Checked en_twl BBB file: twl_BBB.tsv"
             const manifestRegex = /Checked ([\w\-_]{2,25}) manifest file/;
             const READMEregex = /Checked ([\w\-_]{2,25}) README file/;
             const LICENSEregex = /Checked ([\w\-_]{2,25}) LICENSE file/;
@@ -306,6 +306,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                     UHBBookList.push(thisParticularSuccessMsg.substring(18, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked UGNT file: '))
                     UGNTBookList.push(thisParticularSuccessMsg.substring(19, thisParticularSuccessMsg.length))
+                else if (thisParticularSuccessMsg.startsWith('Checked TWL file: '))
+                    TWLList.push(thisParticularSuccessMsg.substring(18, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked LT file: '))
                     LTBookList.push(thisParticularSuccessMsg.substring(17, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked ST file: '))
@@ -313,9 +315,9 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 else if (thisParticularSuccessMsg.startsWith('Checked TN file: '))
                     TNBookList.push(thisParticularSuccessMsg.substring(17, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked TN2 file: '))
-                    TN2BookList.push(thisParticularSuccessMsg.substring(17, thisParticularSuccessMsg.length))
+                    TN2BookList.push(thisParticularSuccessMsg.substring(18, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked TQ2 file: '))
-                    TQ2BookList.push(thisParticularSuccessMsg.substring(17, thisParticularSuccessMsg.length))
+                    TQ2BookList.push(thisParticularSuccessMsg.substring(18, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked TN2 ') && thisParticularSuccessMsg.substring(14, 20) === ' file:')
                     TNList.push(thisParticularSuccessMsg.substring(21, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked TQ2 ') && thisParticularSuccessMsg.substring(14, 20) === ' file:')
@@ -330,6 +332,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                     // but don’t do it for Book Package checks (in different repos)
                     && thisParticularSuccessMsg.startsWith(`Checked ${regexResult[1]} file`))
                     TSVNotesList.push(regexResult[1]);
+                // else if ((regexResult = TWLRegex.exec(thisParticularSuccessMsg)) !== null)
+                //     TWLList.push(regexResult[1]);
                 else if ((regexResult = manifestRegex.exec(thisParticularSuccessMsg)) !== null)
                     manifestsList.push(regexResult[1]);
                 else if ((regexResult = READMEregex.exec(thisParticularSuccessMsg)) !== null)
@@ -344,6 +348,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 resultObject.successList.push(`Checked UHB file: ${UHBBookList[0]}`);
             if (UGNTBookList.length === 1)
                 resultObject.successList.push(`Checked UGNT file: ${UGNTBookList[0]}`);
+            // if (TWLBookList.length === 1)
+            // resultObject.successList.push(`Checked TWL file: ${TWLBookList[0]}`);
             if (LTBookList.length === 1)
                 resultObject.successList.push(`Checked LT file: ${LTBookList[0]}`);
             if (STBookList.length === 1)
@@ -398,6 +404,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 resultObject.successList.unshift(`Checked ${STBookList.length} ST files: ${STBookList.join(', ')}`);
             if (LTBookList.length > 1)
                 resultObject.successList.unshift(`Checked ${LTBookList.length} LT files: ${LTBookList.join(', ')}`);
+            // if (TWLBookList.length > 1)
+            // resultObject.successList.unshift(`Checked ${TWLBookList.length} TWL files: ${LTBookList.join(', ')}`);
             if (UGNTBookList.length > 1)
                 resultObject.successList.unshift(`Checked ${UGNTBookList.length} UGNT files: ${UGNTBookList.join(', ')}`);
             if (UHBBookList.length > 1)
@@ -572,12 +580,12 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
         if (maximumSimilarMessages > 0 && allTotals[thisCombinedID] > maximumSimilarMessages + 1 && counter[thisCombinedID] === maximumSimilarMessages + 1) {
             if (thisPriority >= errorPriorityLevel) {
                 const numSuppressed = allTotals[thisCombinedID] - maximumSimilarMessages;
-                parameterAssert(numSuppressed !== 1, `Shouldn’t suppress just one error of priority ${thisPriority}`);
+                logicAssert(numSuppressed !== 1, `Shouldn’t suppress just one error of priority ${thisPriority}`);
                 resultObject.errorList.push({ priority: -1, message: thisMsg, location: ` ▲ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
                 resultObject.numSuppressedErrors++;
             } else {
                 const numSuppressed = allTotals[thisCombinedID] - maximumSimilarMessages;
-                parameterAssert(numSuppressed !== 1, `Shouldn’t suppress just one warning of priority ${thisPriority}`);
+                logicAssert(numSuppressed !== 1, `Shouldn’t suppress just one warning of priority ${thisPriority}`);
                 resultObject.warningList.push({ priority: -1, message: thisMsg, location: ` ▲ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
                 resultObject.numSuppressedWarnings++;
             }
@@ -670,17 +678,17 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
         if (maximumSimilarMessages > 0 && allTotals[thisCombinedID] > maximumSimilarMessages + 1 && counter[thisCombinedID] === maximumSimilarMessages + 1) {
             if (thisPriority >= severePriorityLevel) {
                 const numSuppressed = allTotals[thisCombinedID] - maximumSimilarMessages;
-                parameterAssert(numSuppressed !== 1, `Shouldn’t suppress just one severe error of priority ${thisPriority}`);
+                logicAssert(numSuppressed !== 1, `Shouldn’t suppress just one severe error of priority ${thisPriority}`);
                 resultObject.severeList.push({ priority: -1, message: thisMsg, location: ` ▲ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
                 resultObject.numSevereSuppressed++;
             } else if (thisPriority >= mediumPriorityLevel) {
                 const numSuppressed = allTotals[thisCombinedID] - maximumSimilarMessages;
-                parameterAssert(numSuppressed !== 1, `Shouldn’t suppress just one medium error of priority ${thisPriority}`);
+                logicAssert(numSuppressed !== 1, `Shouldn’t suppress just one medium error of priority ${thisPriority}`);
                 resultObject.mediumList.push({ priority: -1, message: thisMsg, location: ` ▲ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
                 resultObject.numMediumSuppressed++;
             } else {
                 const numSuppressed = allTotals[thisCombinedID] - maximumSimilarMessages;
-                parameterAssert(numSuppressed !== 1, `Shouldn’t suppress just one low warning of priority ${thisPriority}`);
+                logicAssert(numSuppressed !== 1, `Shouldn’t suppress just one low warning of priority ${thisPriority}`);
                 resultObject.lowList.push({ priority: -1, message: thisMsg, location: ` ▲ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
                 resultObject.numLowSuppressed++;
             }
@@ -755,7 +763,7 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
         else counter[thisCombinedID]++;
         if (maximumSimilarMessages > 0 && allTotals[thisCombinedID] > maximumSimilarMessages + 1 && counter[thisCombinedID] === maximumSimilarMessages + 1) {
             const numSuppressed = allTotals[thisCombinedID] - maximumSimilarMessages;
-            parameterAssert(numSuppressed !== 1, `Shouldn’t suppress just one notice of priority ${thisPriority}`);
+            logicAssert(numSuppressed !== 1, `Shouldn’t suppress just one notice of priority ${thisPriority}`);
             resultObject.warningList.push({ priority: thisPriority, message: thisMsg, location: ` ▲ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
             resultObject.numSuppressedWarnings++;
         } else if (maximumSimilarMessages > 0 && counter[thisCombinedID] > maximumSimilarMessages + 1) {

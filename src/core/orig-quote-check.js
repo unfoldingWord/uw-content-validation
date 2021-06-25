@@ -6,7 +6,7 @@ import { cachedGetFile } from '../core/getApi';
 import { functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 
 
-// const QUOTE_VALIDATOR_VERSION_STRING = '0.9.2';
+// const QUOTE_VALIDATOR_VERSION_STRING = '0.9.3';
 
 
 /**
