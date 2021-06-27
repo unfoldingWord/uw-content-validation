@@ -9,7 +9,7 @@ import { checkRepo } from '../repo-check/checkRepo';
 import { userLog, functionLog, debugLog, parameterAssert, logicAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.7.6';
+// const BP_VALIDATOR_VERSION_STRING = '0.7.7';
 
 const STANDARD_MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -418,7 +418,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         else {
           // eslint-disable-next-line eqeqeq
           if (cBPgfError != 'TypeError: repoFileContent is null') details += ` error=${cBPgfError}`;
-          addNoticePartial({ priority: 996, message: "Unable to load", details, repoCode, repoName, filename, location: repoLocation, extra: repoCode });
+          addNoticePartial({ priority: repoCode === 'SN' || repoCode === 'SQ' ? 196 : 996, message: "Unable to load", details, repoCode, repoName, filename, location: repoLocation, extra: repoCode });
         }
       }
       if (repoFileContent) {
