@@ -211,7 +211,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
 
   // {/* <div className={classes.root}> */}
   return (
-    <div className="Fred">
+    <div className="whatGoesHere">
       {result}
     </div>
   );

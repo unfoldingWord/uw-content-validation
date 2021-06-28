@@ -5,7 +5,7 @@ import { DEFAULT_EXCERPT_LENGTH } from './defaults'
 import { userLog, debugLog, functionLog, parameterAssert, ourParseInt } from './utilities';
 
 
-// const USFM_GRAMMAR_VALIDATOR_VERSION_STRING = '0.4.3';
+// const USFM_GRAMMAR_VALIDATOR_VERSION_STRING = '0.4.4';
 
 const LINE_COLUMN_NUMBERS_REGEX = new RegExp('Line (\\d{1,6}), col (\\d{1,4}):'); // e.g., "Line 1538, col 4: 1537 ..."
 
@@ -18,7 +18,7 @@ const LINE_COLUMN_NUMBERS_REGEX = new RegExp('Line (\\d{1,6}), col (\\d{1,4}):')
  * @param {string} filename -- for error messages
  * @param {string} givenLocation -- for error messages
  * @param {Object} checkingOptions -- optional options
- * @returns
+ * @returns {Object} including isValidUSFM flag
  */
 export function runBCSGrammarCheck(strictnessString, bookID, fileText, filename, givenLocation, checkingOptions) {
     // Runs the BCS USFM Grammar checker
@@ -78,8 +78,7 @@ export function runBCSGrammarCheck(strictnessString, bookID, fileText, filename,
         } catch (secondError) {
             debugLog(`USFMGrammar second error: ${secondError}`);
         }
-        // Say it's valid so we don't get an additional high-priority error
-        return { isValidUSFM: true, error: ourErrorObject, warnings: [] };
+        return { isValidUSFM: false, error: ourErrorObject, warnings: [] };
     }
     let parserMessages;
     parserMessages = parserToJSONResultObject._messages; // Throw away the JSON (if any)

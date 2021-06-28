@@ -12,13 +12,13 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.8.13';
+// const USFM_VALIDATOR_VERSION_STRING = '0.8.14';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘`; // '{' gets added for STs
 
 // See http://ubsicap.github.io/usfm/master/index.html
-const COMPULSORY_MARKERS = ['id', 'ide'];
+// const COMPULSORY_MARKERS = ['id', 'ide'];
 const EXPECTED_MARKERS = ['usfm', 'mt1'];
 const EXPECTED_BIBLE_BOOK_MARKERS = ['h', 'toc1', 'toc2', 'toc3'];
 const EXPECTED_PERIPHERAL_BOOK_MARKERS = ['periph'];
@@ -610,9 +610,10 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         // Now do the general global checks (e.g., for general punctuation)
         ourBasicFileChecks(filename, fileText, fileLocation, checkingOptions);
 
-        for (const compulsoryMarker of COMPULSORY_MARKERS)
-            if (!markerSet.has(compulsoryMarker))
-                addNoticePartial({ priority: 819, message: "Missing compulsory USFM line", excerpt: `missing \\${compulsoryMarker}`, location: fileLocation });
+        // Handled elsewhere
+        // for (const compulsoryMarker of COMPULSORY_MARKERS)
+        //     if (!markerSet.has(compulsoryMarker))
+        //         addNoticePartial({ priority: 819, message: "Missing compulsory USFM line", excerpt: `missing \\${compulsoryMarker}`, location: fileLocation });
         for (const expectedMarker of EXPECTED_MARKERS)
             if (!markerSet.has(expectedMarker)
                 && (!expectedMarker.endsWith('1') || !markerSet.has(expectedMarker.substring(0, expectedMarker.length - 1))))
@@ -1149,6 +1150,14 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         let lines = givenText.split('\n');
         // debugLog(`  '${ourLocation}' has ${lines.length.toLocaleString()} total lines`);
 
+        if (lines.length === 0 || !lines[0].startsWith('\\id ') || lines[0].length < 7 || !books.isValidBookID(lines[0].slice(4, 7)))
+            addNoticePartial({ priority: 994, message: "USFM file must start with a valid \\id line", lineNumber: 1, location: ourLocation });
+        const haveUSFM3Line = lines.length > 1 && lines[1] === '\\usfm 3.0';
+        const ideIndex = haveUSFM3Line ? 2 : 1;
+        if (lines.length < ideIndex || !lines[ideIndex].startsWith('\\ide ') || lines[ideIndex].length < 7)
+            addNoticePartial({ priority: 719, message: "USFM file is recommended to have \\ide line", lineNumber: ideIndex + 1, location: ourLocation });
+        else if (!lines[ideIndex].endsWith(' UTF-8'))
+            addNoticePartial({ priority: 619, message: "USFM \\ide field is recommended to be set to 'UTF-8'", lineNumber: ideIndex + 1, characterIndex: 5, excerpt: lines[ideIndex], location: ourLocation });
         // let lastB = '';
         let lastC = '', lastV = '', C = '0', V = '0';
         let lastIntC = 0, lastIntV = 0;

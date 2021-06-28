@@ -6,7 +6,7 @@ import { cachedGetFile } from '../core/getApi';
 import { functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 
 
-// const QUOTE_VALIDATOR_VERSION_STRING = '0.9.3';
+// const QUOTE_VALIDATOR_VERSION_STRING = '0.9.4';
 
 
 /**
@@ -290,6 +290,8 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
         // debugLog(`Next char after ${C}:${V} '${foundQuoteSegment}' is '${followingChar}'`);
         // Note: There's some Hebrew (RTL) characters at the beginning of the following string used in regex
         const allowedWordEndChars = ' ׃־.,:;?!–—)…'; // Ellipsis occurs in UGNT, e.g., Rom 3:15, Rev 2:26, 18:7
+        // We make up the RegEx on the fly but we need to escape special chars in foundQuoteSegment
+        // debugLog(`checkFoundQuoteSegment ${bookID} ${C}:${V} regex will be '${foundQuoteSegment}[${allowedWordEndChars}]'`);
         const followingRegex = new RegExp(`${foundQuoteSegment}[${allowedWordEndChars}]`, 'g');
         if (foundQuoteSegment.slice(-1) !== ' ' && remainingVerseBits[1]
             && followingChar && allowedWordEndChars.indexOf(followingChar) === -1 // handle punctuation expected after words
