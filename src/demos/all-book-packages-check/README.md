@@ -25,7 +25,7 @@ import AllBookPackagesCheck from './AllBookPackagesCheck';
   username='unfoldingWord'
   languageCode='en'
   includeOBS='N' // 'Y' or 'N' for Open Bible Stories
-  testament='XX' // 'OT' or 'NT' or 'ALL' to start check
+  testament='NT' // 'OT' or 'NT' or 'ALL'
 
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'
