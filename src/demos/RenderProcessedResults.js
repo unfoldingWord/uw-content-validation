@@ -46,7 +46,7 @@ const tableIcons = {
 
 
 export function RenderSuccesses({ username, results }) {
-    if (results.checkedFileCount > 0)
+    if (results?.checkedFileCount > 0)
         return (<p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {results.checkedFileCount.toLocaleString()} file{results.checkedFileCount === 1 ? '' : 's'} from {results.checkedRepoNames.length.toLocaleString()} <i>{username}</i> repo{results.checkedRepoNames.length === 1 ? '' : 's'}: {results.checkedRepoNames.join(', ')}
             <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {results.checkedFilenameExtensions.length} file type{results.checkedFilenameExtensions.size === 1 ? '' : 's'}: {results.checkedFilenameExtensions.join(', ')}.</p>);
     else
@@ -54,7 +54,7 @@ export function RenderSuccesses({ username, results }) {
 }
 
 export function RenderTotals({ rawNoticeListLength, results }) {
-    if (results.numIgnoredNotices || results.numDisabledNotices) {
+    if (results?.numIgnoredNotices || results?.numDisabledNotices) {
         const netNumNotices = rawNoticeListLength - results.numIgnoredNotices - results.numDisabledNotices;
         return (<p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={results.elapsedSeconds} /> with {netNumNotices === 0 ? 'no' : netNumNotices.toLocaleString()} notice{netNumNotices === 1 ? ' ' : 's '}
             ({rawNoticeListLength === 0 ? 'no' : rawNoticeListLength.toLocaleString()} raw notice{rawNoticeListLength === 1 ? '' : 's'} but

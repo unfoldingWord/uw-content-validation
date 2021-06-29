@@ -6,10 +6,10 @@ import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, proces
 import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderTotals } from '../RenderProcessedResults';
 import { checkBookPackage } from './checkBookPackage';
 // eslint-disable-next-line no-unused-vars
-import { userLog, debugLog, parameterAssert } from '../../core/utilities';
+import { userLog, debugLog, parameterAssert, logicAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.5.4';
+// const BP_VALIDATOR_VERSION_STRING = '0.5.5';
 
 
 function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
@@ -103,6 +103,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
                 else if (dataSet === 'BOTH')
                     repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TN2', 'TQ', 'TQ2', 'SN', 'SQ'];
                 const whichTestament = books.testament(bookID); // returns 'old' or 'new'
+                logicAssert(whichTestament === 'old' || whichTestament === 'new', `BookPackageCheck() couldn't find testament for '${bookID}'`);
                 const origLangRepo = whichTestament === 'old' ? 'UHB' : 'UGNT';
                 repoPreloadList.unshift(origLangRepo);
                 if (!checkingOptions.disableAllLinkFetchingFlag) {

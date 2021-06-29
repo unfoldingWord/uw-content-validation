@@ -6,10 +6,10 @@ import { BibleBookData, testament } from './books/books'
 import Ajv from 'ajv';
 import { removeDisabledNotices } from './disabled-notices';
 // eslint-disable-next-line no-unused-vars
-import { debugLog, functionLog, parameterAssert } from './utilities';
+import { debugLog, functionLog, parameterAssert, logicAssert } from './utilities';
 
 
-const MANIFEST_VALIDATOR_VERSION_STRING = '0.4.5';
+const MANIFEST_VALIDATOR_VERSION_STRING = '0.4.6';
 
 // Pasted in 2020-10-02 from https://raw.githubusercontent.com/unfoldingWord/dcs/master/options/schema/rc.schema.json
 // Updated 2021-02-19
@@ -727,7 +727,10 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
                 // TODO: What about 'title', 'versification', 'categories' -- are they not compulsory
                 if (projectKeys.indexOf(keyName) === -1)
                     addNotice({ priority: 939, message: "Key is missing for project", details: keyName, excerpt: JSON.stringify(projectEntry), location: ourLocation });
-            const whichTestament = testament(projectEntry['identifier']); // returns 'old' or 'new'
+            let whichTestament;
+            try {
+                whichTestament = testament(projectEntry['identifier']); // returns 'old' or 'new' for valid Bible books
+            } catch { }
             if (whichTestament === 'old') haveOTbooks = true;
             else if (whichTestament === 'new') haveNTbooks = true;
 

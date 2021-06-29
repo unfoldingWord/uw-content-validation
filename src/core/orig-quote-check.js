@@ -6,7 +6,7 @@ import { cachedGetFile } from '../core/getApi';
 import { functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 
 
-// const QUOTE_VALIDATOR_VERSION_STRING = '0.9.4';
+// const QUOTE_VALIDATOR_VERSION_STRING = '0.9.6';
 
 
 /**
@@ -140,7 +140,14 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
             // debugLog(`Got OBS ${V}:${C} '${verseText}'`);
         } else { // not OBS, so a USFM Bible book
             const bookNumberAndName = books.usfmNumberName(bookID);
-            const whichTestament = books.testament(bookID); // returns 'old' or 'new'
+            let whichTestament;
+            try {
+                whichTestament = books.testament(bookID); // returns 'old' or 'new'
+            } catch (bNNerror) {
+                if (books.isValidBookID(bookID)) // must be in FRT, BAK, etc.
+                    whichTestament = 'other';
+            }
+            logicAssert(whichTestament === 'old' || whichTestament === 'new', `getOriginalPassage() couldn't find testament for '${bookID}'`);
             const originalLanguageRepoLanguageCode = whichTestament === 'old' ? 'hbo' : 'el-x-koine';
             const originalLanguageRepoCode = whichTestament === 'old' ? 'UHB' : 'UGNT';
             const originalLanguageRepoName = `${originalLanguageRepoLanguageCode}_${originalLanguageRepoCode.toLowerCase()}`;
@@ -292,7 +299,9 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
         const allowedWordEndChars = ' ׃־.,:;?!–—)…'; // Ellipsis occurs in UGNT, e.g., Rom 3:15, Rev 2:26, 18:7
         // We make up the RegEx on the fly but we need to escape special chars in foundQuoteSegment
         // debugLog(`checkFoundQuoteSegment ${bookID} ${C}:${V} regex will be '${foundQuoteSegment}[${allowedWordEndChars}]'`);
-        const followingRegex = new RegExp(`${foundQuoteSegment}[${allowedWordEndChars}]`, 'g');
+        const escapedFoundQuoteSegment = foundQuoteSegment.replace(/\(/g, '\\(').replace(/\)/g, '\\)'); // Segments may have any one or more of these (not necessarily matched)
+        // if (escapedFoundQuoteSegment !== foundQuoteSegment ) debugLog(`checkFoundQuoteSegment ${bookID} ${C}:${V} from '${foundQuoteSegment}' regex will be '${escapedFoundQuoteSegment}[${allowedWordEndChars}]'`);
+        const followingRegex = new RegExp(`${escapedFoundQuoteSegment}[${allowedWordEndChars}]`, 'g');
         if (foundQuoteSegment.slice(-1) !== ' ' && remainingVerseBits[1]
             && followingChar && allowedWordEndChars.indexOf(followingChar) === -1 // handle punctuation expected after words
             && (foundQuoteSegment.indexOf(' ') !== -1 || partialVerseText.search(followingRegex) === -1) // it's multiword, or there's not another word that fits

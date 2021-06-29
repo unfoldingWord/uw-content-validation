@@ -6,7 +6,7 @@ import JSZip from 'jszip';
 import * as books from './books';
 import { clearCheckedArticleCache } from './notes-links-check';
 // eslint-disable-next-line no-unused-vars
-import { functionLog, debugLog, userLog, parameterAssert } from './utilities';
+import { functionLog, debugLog, userLog, parameterAssert, logicAssert } from './utilities';
 
 
 // const GETAPI_VERSION_STRING = '0.7.1';
@@ -250,6 +250,7 @@ export async function preloadReposIfNecessary(username, languageCode, bookIDList
     for (const bookID of bookIDList) {
       if (bookID !== 'OBS') {
         const whichTestament = books.testament(bookID); // returns 'old' or 'new'
+        logicAssert(whichTestament === 'old' || whichTestament === 'new', `preloadReposIfNecessary() couldn't find testament for '${bookID}'`);
         const origLangRepo = whichTestament === 'old' ? 'UHB' : 'UGNT';
         if (!repos_.includes(origLangRepo))
           repos_.unshift(origLangRepo);

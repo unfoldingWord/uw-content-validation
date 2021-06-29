@@ -6,10 +6,10 @@ import { checkBookPackages } from './checkBookPackages';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderTotals } from '../RenderProcessedResults';
 // eslint-disable-next-line no-unused-vars
-import { userLog, debugLog } from '../../core/utilities';
+import { userLog, debugLog, logicAssert } from '../../core/utilities';
 
 
-// const BPS_VALIDATOR_VERSION_STRING = '0.2.6';
+// const BPS_VALIDATOR_VERSION_STRING = '0.2.7';
 
 
 /**
@@ -46,6 +46,7 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     bookIDList.push(bookID);
     if (books.isValidBookID(bookID)) {
       const whichTestament = books.testament(bookID);
+      logicAssert(whichTestament === 'old' || whichTestament === 'new', `BookPackagesCheck() couldn't find testament for '${bookID}'`);
       if (whichTestament === 'old') haveOT = true;
       if (whichTestament === 'new') haveNT = true;
     }

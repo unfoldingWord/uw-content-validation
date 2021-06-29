@@ -4,7 +4,8 @@ import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, proces
 import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderTotals } from '../RenderProcessedResults';
 import { clearCaches, clearCheckedArticleCache, preloadReposIfNecessary, ourParseInt } from '../../core';
 import { checkRepo } from './checkRepo';
-import { logicAssert, userLog } from '../../core/utilities';
+// eslint-disable-next-line no-unused-vars
+import { logicAssert, userLog, debugLog } from '../../core/utilities';
 
 
 // const REPO_VALIDATOR_VERSION_STRING = '0.2.5';
@@ -109,6 +110,9 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 try {
                     // Empty string below is for location
                     rawCRResults = await checkRepo(username, repoName, branchOrRelease, "", setResultValue, checkingOptions);
+                    // debugLog(`rawCRResults keys: ${Object.keys(rawCRResults)}`);
+                    // debugLog(`rawCRResults: ${JSON.stringify(rawCRResults)}`);
+                    // logicAssert('checkedFileCount' in rawCRResults, `Expected rawCBPsResults to contain 'checkedFileCount': ${Object.keys(rawCRResults)}`);
                 } catch (checkRepoError) {
                     rawCRResults = { successList: [], noticeList: [] };
                     rawCRResults.noticeList.push({ priority: 999, message: "checkRepo function FAILED", repoName, excerpt: checkRepoError, location: repoName });

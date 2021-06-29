@@ -5,10 +5,11 @@ import { clearCaches, clearCheckedArticleCache, ourParseInt, preloadReposIfNeces
 import { checkBookPackages } from '../book-packages-check/checkBookPackages';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderTotals } from '../RenderProcessedResults';
-import { userLog } from '../../core/utilities';
+// eslint-disable-next-line no-unused-vars
+import { logicAssert, userLog, debugLog } from '../../core/utilities';
 
 
-// const ALL_BPS_VALIDATOR_VERSION_STRING = '0.3.5';
+// const ALL_BPS_VALIDATOR_VERSION_STRING = '0.3.6';
 
 const OLD_TESTAMENT_BOOK_CODES = 'GEN,EXO,LEV,NUM,DEU,JOS,JDG,RUT,1SA,2SA,1KI,2KI,1CH,2CH,EZR,NEH,EST,JOB,PSA,PRO,ECC,SNG,ISA,JER,LAM,EZK,DAN,HOS,JOL,AMO,OBA,JON,MIC,NAM,HAB,ZEP,HAG,ZEC,MAL';
 const NEW_TESTAMENT_BOOK_CODES = 'MAT,MRK,LUK,JHN,ACT,ROM,1CO,2CO,GAL,EPH,PHP,COL,1TH,2TH,1TI,2TI,TIT,PHM,HEB,JAS,1PE,2PE,1JN,2JN,3JN,JUD,REV';
@@ -110,17 +111,20 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
       // Display our "waiting" message
       setResultValue(<p style={{ color: 'magenta' }}>Checking <i>{username}</i> {languageCode} <b>{bookIDList.join(', ')}</b> book packages…</p>);
 
-      let rawCBPsResults = {};
-      if (bookIDList.length)
-        rawCBPsResults = await checkBookPackages(username, languageCode, bookIDList, setResultValue, checkingOptions);
+      let rawABPsResults = {};
+      if (bookIDList.length) {
+        rawABPsResults = await checkBookPackages(username, languageCode, bookIDList, setResultValue, checkingOptions);
+        // debugLog(`rawCBPsResults keys: ${Object.keys(rawABPsResults)}`);
+        // logicAssert('checkedFileCount' in rawABPsResults, `Expected rawCBPsResults to contain 'checkedFileCount': ${Object.keys(rawABPsResults)}`);
+      }
 
       // Add some extra fields to our rawCBPsResults object in case we need this information again later
-      rawCBPsResults.checkType = 'BookPackages';
-      rawCBPsResults.username = username;
-      rawCBPsResults.languageCode = languageCode;
-      rawCBPsResults.bookIDs = bookIDs;
-      rawCBPsResults.bookIDList = bookIDList;
-      rawCBPsResults.checkedOptions = checkingOptions;
+      rawABPsResults.checkType = 'AllBookPackages';
+      rawABPsResults.username = username;
+      rawABPsResults.languageCode = languageCode;
+      rawABPsResults.bookIDs = bookIDs;
+      rawABPsResults.bookIDList = bookIDList;
+      rawABPsResults.checkedOptions = checkingOptions;
 
       // debugLog("Here with CBPs rawCBPsResults", typeof rawCBPsResults);
       // Now do our final handling of the result -- we have some options available
@@ -145,13 +149,13 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         return (<div>
           <p>Checked <b>{username} {languageCode} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
           <RenderSuccesses username={username} results={processedResults} />
-          <RenderTotals rawNoticeListLength={rawCBPsResults.noticeList.length} results={processedResults} />
+          <RenderTotals rawNoticeListLength={rawABPsResults.noticeList.length} results={processedResults} />
           {/* <RenderRawResults results={rawCBPsResults} /> */}
         </div>);
       }
 
       if (displayType === 'ErrorsWarnings') {
-        const processedResults = processNoticesToErrorsWarnings(rawCBPsResults, processOptions);
+        const processedResults = processNoticesToErrorsWarnings(rawABPsResults, processOptions);
         //       userLog(`AllBookPackagesCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
         // numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
@@ -159,42 +163,42 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
 
         if (processedResults.errorList.length || processedResults.warningList.length)
           setResultValue(<>
-            {renderSummary()}
+            {renderSummary(processedResults)}
             <RenderSuccessesErrorsWarnings results={processedResults} />
           </>);
         else // no errors or warnings
           setResultValue(<>
-            {renderSummary()}
+            {renderSummary(processedResults)}
             <RenderSuccessesErrorsWarnings results={processedResults} />
           </>);
       } else if (displayType === 'SevereMediumLow') {
-        const processedResults = processNoticesToSevereMediumLow(rawCBPsResults, processOptions);
+        const processedResults = processNoticesToSevereMediumLow(rawABPsResults, processOptions);
         //                 userLog(`AllBookPackagesCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
         //   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
         if (processedResults.severeList.length || processedResults.mediumList.length || processedResults.lowList.length)
           setResultValue(<>
-            {renderSummary()}
+            {renderSummary(processedResults)}
             <RenderSuccessesSevereMediumLow results={processedResults} />
           </>);
         else // no severe, medium, or low notices
           setResultValue(<>
-            {renderSummary()}
+            {renderSummary(processedResults)}
             <RenderSuccessesSevereMediumLow results={processedResults} />
           </>);
       } else if (displayType === 'SingleList') {
-        const processedResults = processNoticesToSingleList(rawCBPsResults, processOptions);
+        const processedResults = processNoticesToSingleList(rawABPsResults, processOptions);
         //       userLog(`AllBookPackagesCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s) and ${processedResults.warningList.length.toLocaleString()} notice(s)
         // numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
         if (processedResults.warningList.length)
           setResultValue(<>
-            {renderSummary()}
+            {renderSummary(processedResults)}
             <RenderSuccessesWarningsGradient results={processedResults} />
           </>);
         else // no warnings
           setResultValue(<>
-            {renderSummary()}
+            {renderSummary(processedResults)}
             <RenderSuccessesWarningsGradient results={processedResults} />
           </>);
       } else setResultValue(<b style={{ color: 'red' }}>Invalid displayType='{displayType}'</b>)

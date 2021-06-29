@@ -8,7 +8,7 @@ import { checkBookPackage } from '../book-package-check/checkBookPackage';
 import { userLog } from '../../core/utilities';
 
 
-// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.11';
+// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.12';
 
 
 function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
@@ -92,14 +92,14 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
             // Display our "waiting" message
             setResultValue(<p style={{ color: 'magenta' }}>Checking <i>{username}</i> {languageCode} <b>{bookID}</b> book packages…</p>);
 
-            const rawCBPsResults = await checkBookPackage(username, languageCode, bookID, setResultValue, checkingOptions);
+            const rawGlBPsResults = await checkBookPackage(username, languageCode, bookID, setResultValue, checkingOptions);
             // debugLog("checkBookPackage() returned", typeof rawCBPsResults); //, JSON.stringify(rawCBPsResults));
 
             // Add some extra fields to our rawCBPsResults object in case we need this information again later
-            rawCBPsResults.checkType = 'BookPackages';
-            rawCBPsResults.username = username;
-            rawCBPsResults.languageCode = languageCode;
-            rawCBPsResults.checkedOptions = checkingOptions;
+            rawGlBPsResults.checkType = 'GLBookPackages';
+            rawGlBPsResults.username = username;
+            rawGlBPsResults.languageCode = languageCode;
+            rawGlBPsResults.checkedOptions = checkingOptions;
 
             // debugLog("Here with CBPs rawCBPsResults", typeof rawCBPsResults);
             // Now do our final handling of the result -- we have some options available
@@ -124,13 +124,13 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
                 return (<div>
                     <p>Checked <b>{username} {languageCode} {bookID}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
                     <RenderSuccesses username={username} results={processedResults} />
-                    <RenderTotals rawNoticeListLength={rawCBPsResults.noticeList.length} results={processedResults} />
+                    <RenderTotals rawNoticeListLength={rawGlBPsResults.noticeList.length} results={processedResults} />
                     {/* <RenderRawResults results={rawCBPsResults} /> */}
                 </div>);
             }
 
             if (displayType === 'ErrorsWarnings') {
-                const processedResults = processNoticesToErrorsWarnings(rawCBPsResults, processOptions);
+                const processedResults = processNoticesToErrorsWarnings(rawGlBPsResults, processOptions);
                 //                 userLog(`GlBookPackageCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
                 //   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
@@ -148,7 +148,7 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
                     </>);
 
             } else if (displayType === 'SevereMediumLow') {
-                const processedResults = processNoticesToSevereMediumLow(rawCBPsResults, processOptions);
+                const processedResults = processNoticesToSevereMediumLow(rawGlBPsResults, processOptions);
                 //                 userLog(`GlBookPackageCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
                 //   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
@@ -164,7 +164,7 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
                     </>);
 
             } else if (displayType === 'SingleList') {
-                const processedResults = processNoticesToSingleList(rawCBPsResults, processOptions);
+                const processedResults = processNoticesToSingleList(rawGlBPsResults, processOptions);
                 //                 userLog(`GlBookPackageCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s) and ${processedResults.warningList.length.toLocaleString()} notice(s)
                 //   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 

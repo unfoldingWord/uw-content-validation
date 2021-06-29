@@ -153,12 +153,13 @@ export const versesInChapter = (bookId, chapter) => {
 };
 
 export const testament = (bookId) => {
-  const _testament = BibleBookData[bookId.toUpperCase()].testament;
-  return _testament;
+  try { return BibleBookData[bookId.toUpperCase()].testament; }
+  catch (err) { throw new Error(`testament() given invalid bookId: '${bookId}'`); }
 };
 
 export function getEnglishBookName(bookId) {
-  return BibleBookData[bookId.toUpperCase()].title;
+  try { return BibleBookData[bookId.toUpperCase()].title; }
+  catch (err) { throw new Error(`getEnglishBookName() given invalid bookId: '${bookId}'`); }
 }
 
 export function isGoodEnglishBookName(givenBookName) {

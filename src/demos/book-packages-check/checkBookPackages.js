@@ -3,7 +3,7 @@ import { checkBookPackage } from '../book-package-check/checkBookPackage';
 // eslint-disable-next-line no-unused-vars
 import { userLog, parameterAssert } from '../../core/utilities';
 
-// const BPs_VALIDATOR_VERSION_STRING = '0.2.5';
+// const BPs_VALIDATOR_VERSION_STRING = '0.2.6';
 
 
 /**
@@ -75,7 +75,6 @@ export async function checkBookPackages(username, languageCode, bookIDList, setR
             let bookNumberAndName;
             try {
                 bookNumberAndName = books.usfmNumberName(bookID);
-                // whichTestament = books.testament(bookID); // returns 'old' or 'new'
             } catch (CBPsError) {
                 addNotice({ priority: 900, message: "Bad parameter: should be given a valid book abbreviation", excerpt: bookIDList, location: ` (not '${bookIDList}')` });
                 return checkBookPackagesResult;

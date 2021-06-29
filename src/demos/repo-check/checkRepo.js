@@ -326,7 +326,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
     }
   }
   checkRepoResult.elapsedSeconds = (new Date() - startTime) / 1000; // seconds
-  // functionLog(`checkRepo() returning ${JSON.stringify(checkRepoResult)}`);
+  // debugLog(`checkRepo() returning ${JSON.stringify(checkRepoResult)}`);
   return checkRepoResult;
 };
 // end of checkRepo()
