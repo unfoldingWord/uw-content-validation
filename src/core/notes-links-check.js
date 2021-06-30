@@ -53,11 +53,13 @@ const TITLED_IMAGE_REGEX = new RegExp('!\\[([^\\]]*?)\\]\\(([^ \\)]+?) "([^"\\)]
 
 // Caches the path names of files which have been already checked
 //  Used for storing paths to TA and TW articles that have already been checked
+//      so that we don't needless check them again each time they're linked to
 const checkedArticleStore = localforage.createInstance({
     driver: [localforage.INDEXEDDB],
     name: 'CV-checked-path-store',
 });
 
+// Sadly we have to clear this for each run, otherwise we wouldn't get any warnings that were from these checks
 export async function clearCheckedArticleCache() {
     userLog("clearCheckedArticleCache()…");
     await checkedArticleStore.clear();
@@ -247,7 +249,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
 
     let regexResultArray;
 
-    // Check for image links
+    // Check for image links (including OBS pictures)
     while ((regexResultArray = SIMPLE_IMAGE_REGEX.exec(fieldText))) {
         // debugLog(`Got markdown image in line ${lineNumber}:`, JSON.stringify(regexResultArray));
         const [totalLink, altText, fetchLink] = regexResultArray;

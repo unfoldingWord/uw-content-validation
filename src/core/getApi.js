@@ -9,12 +9,15 @@ import { clearCheckedArticleCache } from './notes-links-check';
 import { functionLog, debugLog, userLog, parameterAssert, logicAssert } from './utilities';
 
 
-// const GETAPI_VERSION_STRING = '0.7.1';
+// const GETAPI_VERSION_STRING = '0.8.0';
 
 const MAX_INDIVIDUAL_FILES_TO_DOWNLOAD = 5; // More than this and it downloads the zipfile for the entire repo
 
-const baseURL = 'https://git.door43.org/';
-const apiPath = 'api/v1';
+const DOOR43_BASE_URL = 'https://git.door43.org/';
+const API_PATH = 'api/v1';
+
+const OBS_PICTURE_ZIP_FILENAME = 'obs-images-360px.zip';
+const OBS_PICTURE_ZIP_URI = `https://cdn.door43.org/obs/jpg/${OBS_PICTURE_ZIP_FILENAME}`;
 
 
 // caches failed http file fetches so we don’t waste time with repeated attempts
@@ -29,7 +32,7 @@ const zipStore = localforage.createInstance({
   name: 'CV-zip-store',
 });
 
-// caches http file fetches done by cachedFetchFileFromServerBranch()
+// caches http file fetches done by cachedFetchFileFromServerWithBranch()
 const cacheStore = localforage.createInstance({
   driver: [localforage.INDEXEDDB],
   name: 'CV-web-cache',
@@ -45,7 +48,7 @@ const unzipStore = localforage.createInstance({
 // NOTE: Even if data expires in this AxiosCacheAdapter, the localforage caches don’t have the same / any expiry ages
 //        (We expect the users of the demos to manually clear the caches when an update is required.)
 const Door43Api = setup({
-  baseURL: baseURL,
+  baseURL: DOOR43_BASE_URL,
   cache: {
     store: cacheStore,
     maxAge: 1 * 60 * 60 * 1000, // 1 hour (unless they manually clear the cache)
@@ -129,12 +132,23 @@ async function getUnZippedFile(path) {
   return contents;
 }
 
+/**
+ * try to get previously unzipped picture file from cache
+ * @param {string} uri
+ * @return {Promise<unknown>} resolves to file contents or null if not found
+ */
+async function getUnZippedPictureFile(uri) {
+  // functionLog(`getUnZippedPictureFile(${uri})`);
+  const contents = await unzipStore.getItem(uri);
+  return contents;
+}
+
 
 /**
  * searches for files in this order:
  *   - cache of uncompressed files (unzipStore)
  *   - cache of zipped repos (zipStore)
- *   - and finally calls cachedFetchFileFromServerBranch() which first checks in cacheStore to see if already fetched. * @param {string} username
+ *   - and finally calls cachedFetchFileFromServerWithBranch() which first checks in cacheStore to see if already fetched. * @param {string} username
  * @param {string} repository
  * @param {string} path
  * @param {string} branch
@@ -160,7 +174,7 @@ export async function cachedGetFile({ username, repository, path, branch }) {
   //   if (filePath.indexOf('_tq/') < 0) // Don’t log for TQ2 files coz too many
   //     userLog(`  cachedGetFile got ${filePath} from zipfile`);
   if (!contents) {
-    contents = await cachedFetchFileFromServerBranch({ username, repository, path, branch });
+    contents = await cachedFetchFileFromServerWithBranch({ username, repository, path, branch });
   }
 
   if (contents) {
@@ -237,11 +251,11 @@ export async function preloadReposIfNecessary(username, languageCode, bookIDList
   // NOTE: We preload TA and TW by default because we are likely to have many links to those repos
   //        We preload TQ by default because it has thousands of files (17,337), so individual file fetches might be slow
   //          even for one book which might have several hundred files.
-  functionLog(`preloadReposIfNecessary(${username}, ${languageCode}, ${bookIDList} (${typeof bookID}), ${branchOrRelease}, [${repoList}])…`);
+  // functionLog(`preloadReposIfNecessary(${username}, ${languageCode}, ${bookIDList} (${typeof bookID}), ${branchOrRelease}, [${repoList}])…`);
   let success = true;
 
   const repos_ = [...repoList];
-  if (bookIDList.length === 1 && bookIDList[0] === 'OBS') {
+  if (bookIDList.includes('OBS')) {
     if (!repos_.includes('OBS'))
       repos_.unshift('OBS'); // push to beginning of list
   }
@@ -257,7 +271,7 @@ export async function preloadReposIfNecessary(username, languageCode, bookIDList
       }
     }
   }
-  // debugLog("  Adjusted repo list", repos_.length, JSON.stringify(repos_));
+  // debugLog(`  Adjusted repo list: (${repos_.length}) ${JSON.stringify(repos_)}`);
 
   // // See if the required repos are there already
   // debugLog(`Check if need to preload ${repos_.length} repos: ${repos_}`)
@@ -285,21 +299,41 @@ export async function preloadReposIfNecessary(username, languageCode, bookIDList
   // else userLog("All repos were cached already!");
 
   for (const repoCode of repos_) {
+    // debugLog(`preloadReposIfNecessary: looking at repoCode '${repoCode}'…`);
     let adjustedLanguageCode = languageCode;
     if ((languageCode === 'hbo' && repoCode !== 'UHB') || (languageCode === 'el-x-koine' && repoCode !== 'UGNT'))
       adjustedLanguageCode = 'en'; // Assume English then
     let adjustedBranchOrRelease = branchOrRelease;
     let adjustedRepoCode = repoCode;
-    if (adjustedRepoCode.endsWith('2')) {
+    if (repoCode.endsWith('2')) {
       adjustedRepoCode = adjustedRepoCode.substring(0, adjustedRepoCode.length - 1); // Remove the '2' from the end
       adjustedBranchOrRelease = 'newFormat';
     }
+    // else if (repoCode === 'OBS-TN' || repoCode === 'OBS-TQ' || repoCode === 'OBS-SN' || repoCode === 'OBS-SQ')
+    //   adjustedBranchOrRelease = 'newFormat';
     const repoName = formRepoName(adjustedLanguageCode, adjustedRepoCode);
     // debugLog(`preloadReposIfNecessary: preloading zip file for ${repoName}…`);
     const zipFetchSucceeded = await cachedGetRepositoryZipFile({ username, repository: repoName, branchOrRelease: adjustedBranchOrRelease });
     if (!zipFetchSucceeded) {
       console.error(`preloadReposIfNecessary() misfetched zip file for ${repoCode} (${adjustedRepoCode}) repo with ${zipFetchSucceeded}`);
       success = false;
+    }
+    if (repoCode === 'OBS') {
+      debugLog(`preloadReposIfNecessary: preloading OBS zipped pictures file from ${OBS_PICTURE_ZIP_URI}…`);
+      const zipBlob = await zipStore.getItem(OBS_PICTURE_ZIP_FILENAME);
+      // debugLog(`  getZipFromStore(${uri} -- empty: ${!zipBlob}`);
+      if (!zipBlob) {
+        userLog(`downloadingOBSPicturesZipFile(${OBS_PICTURE_ZIP_URI})…`);
+        const response = await fetch(OBS_PICTURE_ZIP_URI);
+        if (response.status === 200 || response.status === 0) {
+          const zipArrayBuffer = await response.arrayBuffer(); // blob storage not supported on mobile
+          await zipStore.setItem(OBS_PICTURE_ZIP_FILENAME, zipArrayBuffer);
+          // debugLog(`  downloadingOBSPicturesZipFile(${uri}) -- saved zip`);
+        } else {
+          console.error(`downloadingOBSPicturesZipFile(${OBS_PICTURE_ZIP_URI}) -- got response status: ${response.status}`);
+          success = false;
+        }
+      }
     }
   }
   return success;
@@ -314,8 +348,8 @@ export async function preloadReposIfNecessary(username, languageCode, bookIDList
  * @param {string} branch
  * @return {Promise<null|any>} resolves to file content
  */
-async function cachedFetchFileFromServerBranch({ username, repository, path, branch = 'master' }) {
-  // functionLog(`cachedFetchFileFromServerBranch(${username}, ${repository}, ${path}, ${branch})…`);
+async function cachedFetchFileFromServerWithBranch({ username, repository, path, branch = 'master' }) {
+  // functionLog(`cachedFetchFileFromServerWithBranch(${username}, ${repository}, ${path}, ${branch})…`);
   // TODO: Check how slow this next call is -- can it be avoided or cached?
   // RJH removed this 2Oct2020 -- what’s the point -- it just slows things down --
   //      if it needs to be checked, should be checked before this point
@@ -334,8 +368,8 @@ async function cachedFetchFileFromServerBranch({ username, repository, path, bra
  * @param {string} tag
  * @return {Promise<null|any>} resolves to file content
  */
-export async function cachedFetchFileFromServerTag({ username, repository, path, tag }) {
-  // functionLog(`cachedFetchFileFromServerTag(${username}, ${repository}, ${path}, ${tag})…`);
+export async function cachedFetchFileFromServerWithTag({ username, repository, path, tag }) {
+  // functionLog(`cachedFetchFileFromServerWithTag(${username}, ${repository}, ${path}, ${tag})…`);
   // TODO: Check how slow this next call is -- can it be avoided or cached?
   // RJH removed this 2Oct2020 -- what’s the point -- it just slows things down --
   //      if it needs to be checked, should be checked before this point
@@ -399,7 +433,7 @@ async function cachedGetFileFromZipOrServer({ username, repository, path, branch
   let file;
   file = await getFileFromZip({ username, repository, path, branch });
   if (!file) {
-    file = await cachedFetchFileFromServerBranch({ username, repository, path, branch });
+    file = await cachedFetchFileFromServerWithBranch({ username, repository, path, branch });
   }
   return file;
 }
@@ -407,7 +441,7 @@ async function cachedGetFileFromZipOrServer({ username, repository, path, branch
 
 async function getUID({ username }) {
   // functionLog(`getUID(${username})…`);
-  const uri = Path.join(apiPath, 'users', username);
+  const uri = Path.join(API_PATH, 'users', username);
   // debugLog(`getUID uri=${uri}`);
   const user = await cachedGetFileUsingPartialURL({ uri });
   // debugLog(`getUID user=${user}`);
@@ -428,7 +462,7 @@ export async function repositoryExistsOnDoor43({ username, repository }) {
   // debugLog(`repositoryExistsOnDoor43 uid=${uid}`);
   // Default limit is 10 -- way too small
   const params = { q: repository, limit: 500, uid }; // Documentation says limit is 50, but larger numbers seem to work ok
-  const uri = Path.join(apiPath, 'repos', `search`);
+  const uri = Path.join(API_PATH, 'repos', `search`);
   // debugLog(`repositoryExistsOnDoor43 uri=${uri}`);
   let retrievedRepoList;
   try {
@@ -461,7 +495,7 @@ export async function repositoryExistsOnDoor43({ username, repository }) {
 async function cachedGetFileUsingPartialURL({ uri, params }) {
   // functionLog(`cachedGetFileUsingPartialURL(${uri}, ${JSON.stringify(params)})…`);
   // debugLog(`  get querying: ${baseURL+uri}`);
-  const response = await Door43Api.get(baseURL + uri, { params });
+  const response = await Door43Api.get(DOOR43_BASE_URL + uri, { params });
   if (response.request.fromCache !== true) userLog(`  Door43Api downloaded Door43 ${uri}`);
   // debugLog(`  cachedGetFileUsingPartialURL returning: ${JSON.stringify(response.data)}`);
   return response.data;
@@ -469,6 +503,44 @@ async function cachedGetFileUsingPartialURL({ uri, params }) {
 
 export async function cachedGetFileUsingFullURL({ uri, params }) {
   // functionLog(`cachedGetFileUsingFullURL(${uri}, ${params})…`);
+  if (uri.startsWith('https://cdn.door43.org/obs/jpg/360px/obs')) {
+    // userLog("cachedGetFileUsingFullURL() is checking if the OBS picture is in a downloaded zip file…");
+    let pictureContents = await getUnZippedPictureFile(uri);
+    if (pictureContents) {
+      // debugLog(`cachedGetFileUsingFullURL got ${uri} from unzipped cache`);
+      return pictureContents;
+    }
+    const zipBlob = await zipStore.getItem(OBS_PICTURE_ZIP_FILENAME);
+    // debugLog(`  getZipFromStore(${OBS_PICTURE_ZIP_FILENAME} -- empty: ${!zipBlob}`);
+    try {
+      if (zipBlob) {
+        // debugLog(`  Got zipBlob for ${OBS_PICTURE_ZIP_FILENAME}`);
+        const zip = await JSZip.loadAsync(zipBlob);
+        // zip.forEach(function (relativePath) {
+          // debugLog(`relPath=${relativePath}`); // Displays 'relPath=360px/obs-en-17-09.jpg'
+        // })
+        const zipPath = uri.substring(31); // Drop https://cdn.door43.org/obs/jpg/ to get 360px/obs-en-01-05.jpg
+        // debugLog(`  zipPath=${zipPath}`);
+        pictureContents = await zip.file(zipPath).async('string');
+        // debugLog(`    Got zipBlob ${pictureContents.length} bytes`);
+      }
+      // else userLog("  No zipBlob");
+    } catch (error) {
+      if (error.message.indexOf(' is null') < 0)
+        console.error(`cachedGetFileUsingPartialURL for ${uri} got: ${error.message}`);
+      pictureContents = null;
+    }
+    // if (contents)
+    //   if (filePath.indexOf('_tq/') < 0) // Don’t log for TQ2 files coz too many
+    //     userLog(`  cachedGetFile got ${filePath} from zipfile`);
+    if (pictureContents) {
+      // save unzipped file in cache to speed later retrieval
+      await unzipStore.setItem(uri, pictureContents);
+      // userLog(`cachedGetFileUsingFullURL saved ${uri} to cache for next time`);
+      return pictureContents;
+    }
+    // else console.error(`cachedGetFileUsingFullURL(${uri}) -- failed to get file from zip`);
+  }
   const response = await Door43Api.get(uri, { params });
   if (response.request.fromCache !== true) userLog(`  Door43Api downloaded ${uri}`);
   // debugLog(`  cachedGetFileUsingFullURL returning: ${response.data}`);
@@ -645,7 +717,7 @@ async function getFileFromZip({ username, repository, path, branchOrRelease }) {
 function zipUri({ username, repository, branchOrRelease = 'master' }) {
   // functionLog(`zipUri(${username}, ${repository}, ${branchOrRelease})…`);
   const zipPath = Path.join(username, repository, 'archive', `${branchOrRelease}.zip`);
-  const zipUri = baseURL + zipPath;
+  const zipUri = DOOR43_BASE_URL + zipPath;
   return zipUri;
 };
 
