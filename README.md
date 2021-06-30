@@ -140,13 +140,13 @@ There is a list of open issues at [[https://github.com/unfoldingWord/uw-content-
 1. Checking of general markdown and naked links (esp. in plain text and markdown files)
 1. Work through all [Issues](https://github.com/unfoldingWord/uw-content-validation/issues)
 1. Work through all `ToDo`s in code
-1. Standardise parameters according to best practice (i.e., dereferencing, etc.)—might be too late now???
-1. Document the API with (JsDoc)
+1. Standardise parameters according to best practice (i.e., dereferencing, etc.)—might be too late now coz it would affect API presented to users???
+1. Document the API (with JsDoc)
 1. Improve general documentation in the code and readMe files
 1. Is our `RepoCheck` the same as `ResourceContainerCheck`? Or is the latter more specific?
 1. Understand and standardise React stuff in the demos, e.g., e.g., withStyles, etc.
 1. Check for and remove left-over (but unused) code from the source projects that the original code was copied from
-1. Remove all debug code and console logging, and to consider possible speed and memory optimizations
+1. Remove all debug code and console logging, and to consider possible speed and memory optimizations (incl. async and/or multi-worker operations)
 1. Add a Scripture Burrito check (once Door43 has that available).
 
 Known bugs:

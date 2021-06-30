@@ -9,7 +9,7 @@ import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMe
 import { logicAssert, userLog, debugLog } from '../../core/utilities';
 
 
-// const ALL_BPS_VALIDATOR_VERSION_STRING = '0.3.6';
+// const ALL_BPS_VALIDATOR_VERSION_STRING = '0.3.7';
 
 const OLD_TESTAMENT_BOOK_CODES = 'GEN,EXO,LEV,NUM,DEU,JOS,JDG,RUT,1SA,2SA,1KI,2KI,1CH,2CH,EZR,NEH,EST,JOB,PSA,PRO,ECC,SNG,ISA,JER,LAM,EZK,DAN,HOS,JOL,AMO,OBA,JON,MIC,NAM,HAB,ZEP,HAG,ZEC,MAL';
 const NEW_TESTAMENT_BOOK_CODES = 'MAT,MRK,LUK,JHN,ACT,ROM,1CO,2CO,GAL,EPH,PHP,COL,1TH,2TH,1TI,2TI,TIT,PHM,HEB,JAS,1PE,2PE,1JN,2JN,3JN,JUD,REV';
@@ -41,27 +41,28 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
 
   // Enter a string containing UPPERCASE USFM book identifiers separated only by commas
   //  and can also include OBS (for Open Bible Stories)
-  let bookIDs = '';
+  let bookIDsString = '';
   if (testament.toUpperCase() === 'OT' || testament.toUpperCase() === 'OLD')
-    bookIDs = OLD_TESTAMENT_BOOK_CODES;
+    bookIDsString = OLD_TESTAMENT_BOOK_CODES;
   else if (testament.toUpperCase() === 'NT' || testament.toUpperCase() === 'NEW')
-    bookIDs = NEW_TESTAMENT_BOOK_CODES;
-  else if (testament.toUpperCase() === 'ALL')
-    bookIDs = `${OLD_TESTAMENT_BOOK_CODES},${NEW_TESTAMENT_BOOK_CODES}`;
+    bookIDsString = '3JN';//NEW_TESTAMENT_BOOK_CODES;
+  else if (testament.toUpperCase() === 'ALL' || testament.toUpperCase() === 'BOTH')
+    bookIDsString = `${OLD_TESTAMENT_BOOK_CODES},${NEW_TESTAMENT_BOOK_CODES}`;
   else
     setResultValue(<p style={{ color: 'red' }}>No testament selected</p>);
   if (includeOBS.toUpperCase() === 'Y' || includeOBS.toUpperCase() === 'YES')
-    bookIDs += ',OBS';
+    bookIDsString += ',OBS';
 
   let bookIDList = [];
   let bookIDInvalid;
-  for (let bookID of bookIDs.split(',')) {
+  for (let bookID of bookIDsString.split(',')) {
     bookID = bookID.trim();
     if (!books.isValidBookID(bookID) && bookID !== 'OBS') {
       bookIDInvalid = bookID;
     }
     bookIDList.push(bookID);
   }
+  // TODO: I don't understand why this command gets executed multiple times!!!
   userLog(`AllBookPackagesCheck bookIDList (${bookIDList.length}) = ${bookIDList.join(', ')}`);
 
   const checkingOptions = { // Uncomment any of these to test them
@@ -92,7 +93,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running all book packages check…</p>);
         await clearCaches();
       }
-      else await clearCheckedArticleCache();
+      else await clearCheckedArticleCache(); // otherwise we wouldn't see any of the warnings again from checking these
 
       // Load whole repos, especially if we are going to check files in manifests
       let repoPreloadList = ['UHB', 'UGNT', 'TWL', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
@@ -102,6 +103,16 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         repoPreloadList = ['UHB', 'UGNT', 'TWL', 'LT', 'ST', 'TN2', 'TA', 'TW', 'TQ2'];
       else if (dataSet === 'BOTH')
         repoPreloadList = ['UHB', 'UGNT', 'TWL', 'LT', 'ST', 'TN', 'TN2', 'TA', 'TW', 'TQ', 'TQ2'];
+      if (bookIDList.includes('OBS')) {
+        let obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2']; // for DEFAULT
+        if (dataSet === 'OLD')
+          obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
+        else if (dataSet === 'NEW')
+          obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN', 'OBS-SQ'];
+        else if (dataSet === 'BOTH')
+          obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SN', 'OBS-SN2', 'OBS-SQ2'];
+        repoPreloadList.push.apply(repoPreloadList, obsRepoPreloadList);
+      }
 
       setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for all book packages check…</p>);
       const successFlag = await preloadReposIfNecessary(username, languageCode, bookIDList, branch, repoPreloadList);
@@ -122,7 +133,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
       rawABPsResults.checkType = 'AllBookPackages';
       rawABPsResults.username = username;
       rawABPsResults.languageCode = languageCode;
-      rawABPsResults.bookIDs = bookIDs;
+      rawABPsResults.bookIDs = bookIDsString;
       rawABPsResults.bookIDList = bookIDList;
       rawABPsResults.checkedOptions = checkingOptions;
 
@@ -207,7 +218,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     })(); // end of async part in unnamedFunction
     // Doesn’t work if we add this to next line: bookIDList,bookIDs,username,branch,checkingOptions,languageCode,props
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(bookIDList), bookIDs, branch, JSON.stringify(checkingOptions), languageCode, JSON.stringify(props), username]); // end of useEffect part
+  }, [JSON.stringify(bookIDList), bookIDsString, branch, JSON.stringify(checkingOptions), languageCode, JSON.stringify(props), username]); // end of useEffect part
 
   if (bookIDInvalid) {
     return (<p>Please enter only valid USFM book identifiers separated by commas. ('{bookIDInvalid}' is not valid.)</p>);

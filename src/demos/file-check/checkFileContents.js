@@ -11,7 +11,7 @@ import {
 import { userLog, debugLog, functionLog, parameterAssert, logicAssert } from '../../core';
 
 
-// const CHECK_FILE_CONTENTS_VERSION_STRING = '0.4.4';
+// const CHECK_FILE_CONTENTS_VERSION_STRING = '0.4.5';
 
 
 /**
@@ -65,15 +65,18 @@ export async function checkFileContents(username, languageCode, repoCode, branch
       logicAssert(repoCode === 'TN', `These filenames ${filenameMain} are only for TN ${repoCode}`);
       checkFileResult = await checkTN_TSV9Table(languageCode, repoCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
     } else {
-      let adjustedRepoCode = repoCode;
-      if (adjustedRepoCode.startsWith('OBS-'))
-        adjustedRepoCode = adjustedRepoCode.substring(4); // Remove the 'OBS-' from the beginning
-      logicAssert(adjustedRepoCode !== 'TN', `This code with ${filenameMain} is not for TN`);
-      let checkFunction = {
-        TN2: checkNotesTSV7Table, SN: checkNotesTSV7Table,
-        TQ2: checkQuestionsTSV7Table, SQ: checkQuestionsTSV7Table,
-        TWL: checkTWL_TSV6Table,
-      }[adjustedRepoCode];
+      // let adjustedRepoCode = repoCode;
+      // if (adjustedRepoCode.startsWith('OBS-'))
+      //   adjustedRepoCode = adjustedRepoCode.substring(4); // Remove the 'OBS-' from the beginning
+      logicAssert(repoCode !== 'TN' && repoCode !== 'TQ' && repoCode !== 'OBS-TN' && repoCode !== 'OBS-TQ' && repoCode !== 'OBS_SN' && repoCode !== 'OBS-SQ', `This code with ${filenameMain} is not for ${repoCode}`);
+      const checkFunction = {
+        'TWL': checkTWL_TSV6Table,'OBS-TWL': checkTWL_TSV6Table,
+        'TN2': checkNotesTSV7Table, 'OBS-TN2': checkNotesTSV7Table,
+        'TQ2': checkQuestionsTSV7Table, 'OBS-TQ2': checkQuestionsTSV7Table,
+        'SN': checkNotesTSV7Table, 'OBS-SN2': checkNotesTSV7Table,
+        'SQ': checkQuestionsTSV7Table, 'OBS-SQ2': checkQuestionsTSV7Table,
+      }[repoCode];
+      // debugLog(`checkFileContents() got ${checkFunction} function for ${repoCode}`);
       checkFileResult = await checkFunction(languageCode, repoCode, bookID, filename, fileContent, ourCFLocation, checkingOptions);
     }
   }

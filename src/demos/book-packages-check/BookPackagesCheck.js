@@ -87,7 +87,7 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running book packages check…</p>);
         await clearCaches();
       }
-      else await clearCheckedArticleCache();
+      else await clearCheckedArticleCache(); // otherwise we wouldn't see any of the warnings again from checking these
 
       // Load whole repos, especially if we are going to check files in manifests
       let repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TQ', 'SN', 'SQ']; // for DEFAULT
@@ -102,6 +102,16 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
       if (!checkingOptions.disableAllLinkFetchingFlag) {
         repoPreloadList.push('TW');
         repoPreloadList.push('TA');
+      }
+      if (bookIDList.includes('OBS')) {
+        let obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2']; // for DEFAULT
+        if (dataSet === 'OLD')
+          obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
+        else if (dataSet === 'NEW')
+          obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2'];
+        else if (dataSet === 'BOTH')
+          obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SN', 'OBS-SN2', 'OBS-SQ2'];
+        repoPreloadList.push.apply(repoPreloadList, obsRepoPreloadList);
       }
       // debugLog(`BookPackagesCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
 

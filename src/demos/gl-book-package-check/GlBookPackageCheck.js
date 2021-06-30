@@ -73,7 +73,7 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
                 setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running GL book packages check…</p>);
                 await clearCaches();
             }
-            else await clearCheckedArticleCache();
+            else await clearCheckedArticleCache(); // otherwise we wouldn't see any of the warnings again from checking these
 
             // Load whole repos, especially if we are going to check files in manifests
             let repoPreloadList = ['UHB', 'UGNT', 'TWL', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT

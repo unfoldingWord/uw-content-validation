@@ -9,7 +9,7 @@ import { checkRepo } from '../repo-check/checkRepo';
 import { userLog, functionLog, debugLog, parameterAssert, logicAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.7.7';
+// const BP_VALIDATOR_VERSION_STRING = '0.7.8';
 
 const STANDARD_MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -65,7 +65,8 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   let originalBranch = 'master';
 
   // If it's a big book, drop this location string to reduce memory use in case of thousands of errors
-  const generalLocation = books.chaptersInBook(bookID) > 10 ? '' : ` in ${languageCode} ${bookID} book package from ${username} ${originalBranch} branch`;
+  let generalLocation = bookID === 'OBS' ? ` in ${languageCode} ${bookID} from ${username} ${originalBranch} branch` :
+    books.chaptersInBook(bookID) > 10 ? '' : ` in ${languageCode} ${bookID} book package from ${username} ${originalBranch} branch`;
 
 
   function addSuccessMessage(successString) {
@@ -304,13 +305,13 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   if (bookID === 'OBS') {
     // NOTE: No code below to handle OBS TN and TQ which are markdown repos
     if (dataSet === 'DEFAULT')
-      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN', 'OBS-SQ'];
+      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2'];
     else if (dataSet === 'OLD')
       repoCodeList = ['OBS', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
     else if (dataSet === 'NEW')
-      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN', 'OBS-SQ'];
+      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2'];
     else if (dataSet === 'BOTH')
-      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SQ'];
+      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SN', 'OBS-SN2', 'OBS-SQ2'];
   } else { // not OBS
     // We also need to know the number for USFM books
     try {
@@ -344,13 +345,15 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   for (const repoCode of repoCodeList) {
     // debugLog(`checkBookPackage for ${bookID} got repoCode=${repoCode} abortFlag=${abortFlag} from ${repoCodeList}`);
     if (abortFlag) break;
-    const repoLocation = ` in ${repoCode}${generalLocation}`;
     let adjustedRepoCode = repoCode, adjustedBranch = originalBranch;
     if (adjustedRepoCode.endsWith('2')) {
       adjustedRepoCode = adjustedRepoCode.substring(0, adjustedRepoCode.length - 1); // Remove the '2' from the end
       adjustedBranch = 'newFormat';
-    }
+      generalLocation = generalLocation.replace(originalBranch, adjustedBranch);
+    } else // doesn't end with 2
+      generalLocation = generalLocation.replace(adjustedBranch, originalBranch);
     let repoName = formRepoName(languageCode, adjustedRepoCode);
+    const repoLocation = ` in ${repoCode}${generalLocation}`;
     if (adjustedRepoCode.startsWith('OBS-'))
       adjustedRepoCode = adjustedRepoCode.substring(4); // Remove the 'OBS-' from the beginning
     // if (bookID === 'OBS' && dataSet === 'OLD' && repoCode !== 'OBS' && repoCode !== 'TWL' && repoName === `${languageCode}_${adjustedRepoCode.toLowerCase()}`)
@@ -382,11 +385,21 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
 
     if (repoCode === 'OBS') {
       // debugLog("Calling OBS checkRepo()…");
-      checkBookPackageResult = await checkRepo(username, `${languageCode}_obs`, originalBranch, generalLocation, setResultValue, newCheckingOptions); // Adds the notices to checkBookPackageResult
-      // functionLog(`checkRepo() returned ${checkBookPackageResult.successList.length} success message(s) and ${checkBookPackageResult.noticeList.length} notice(s)`);
-      // debugLog("crResultObject keys", JSON.stringify(Object.keys(checkBookPackageResult)));
+      const crResultObject = await checkRepo(username, `${languageCode}_obs`, originalBranch, generalLocation, setResultValue, newCheckingOptions); // Adds the notices to checkBookPackageResult
+      // debugLog(`checkRepo('OBS') returned ${crResultObject.successList.length} success message(s) and ${crResultObject.noticeList.length} notice(s)`);
+      // debugLog(`crResultObject keys: ${JSON.stringify(Object.keys(crResultObject))}`);
+      // debugLog(`crResultObject checkedRepoNames: ${crResultObject.checkedRepoNames}`);
+      checkBookPackageResult.successList = checkBookPackageResult.successList.concat(crResultObject.successList);
+      checkBookPackageResult.noticeList = checkBookPackageResult.noticeList.concat(crResultObject.noticeList);
+      if (crResultObject.checkedFileCount > 0) {
+        checkedFilenames = checkedFilenames.concat(crResultObject.checkedFilenames);
+        checkedFilenameExtensions = new Set([...checkedFilenameExtensions, ...crResultObject.checkedFilenameExtensions]);
+        checkedFileCount += crResultObject.checkedFileCount;
+        totalCheckedSize += crResultObject.totalCheckedSize;
+        checkedRepoNames.add(repoName);
+      }
       addSuccessMessage(`Checked ${languageCode} OBS repo from ${username}`);
-    } else if (adjustedRepoCode === 'TQ' || repoCode === 'OBS-TN') { // OBS-TN is markdown also for now
+    } else if (repoCode === 'TQ' || repoCode === 'OBS-TN'|| repoCode === 'OBS-TQ') { // These are still markdown for now
       // This is the old markdown resource with hundreds/thousands of files
       const tqResultObject = await checkTQMarkdownBook(username, languageCode, repoCode, repoName, originalBranch, bookID, newCheckingOptions);
       checkBookPackageResult.successList = checkBookPackageResult.successList.concat(tqResultObject.successList);
@@ -501,7 +514,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
 
   checkBookPackageResult.elapsedSeconds = (new Date() - startTime) / 1000; // seconds
   // debugLog("checkBookPackageResult:", JSON.stringify(checkBookPackageResult));
-  // functionLog(`checkBookPackageResult(${bookID}): elapsedSeconds = ${checkBookPackageResult.elapsedSeconds}, notices count = ${checkBookPackageResult.noticeList.length}`);
+  // debugLog(`checkBookPackageResult(${bookID}): elapsedSeconds = ${checkBookPackageResult.elapsedSeconds}, notices count = ${checkBookPackageResult.noticeList.length}`);
   return checkBookPackageResult;
 };
 // end of checkBookPackage()

@@ -8,7 +8,7 @@ import { repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetR
 import { functionLog, debugLog, logicAssert, parameterAssert } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.4.9';
+// const REPO_VALIDATOR_VERSION_STRING = '0.4.11';
 
 
 /**
@@ -47,6 +47,12 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
     if (repoBranch === undefined) repoBranch = 'newFormat';
   } else if (repoCode === 'TQ2') {
     repoCode = 'TQ';
+    if (repoBranch === undefined) repoBranch = 'newFormat';
+  } else if (repoCode === 'SN2') {
+    repoCode = 'SN';
+    if (repoBranch === undefined) repoBranch = 'newFormat';
+  } else if (repoCode === 'SQ2') {
+    repoCode = 'SQ';
     if (repoBranch === undefined) repoBranch = 'newFormat';
   } else if (repoCode.endsWith('LT')) repoCode = 'LT';
   else if (repoCode.endsWith('ST')) repoCode = 'ST';
@@ -312,7 +318,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
       checkRepoResult.checkedFilenames = checkedFilenames;
       checkRepoResult.checkedFilenameExtensions = [...checkRepoResult.checkedFilenameExtensions, ...checkedFilenameExtensions]; // convert Set to Array
       checkRepoResult.checkedFilesizes += totalCheckedSize;
-      checkRepoResult.checkedRepoNames.unshift([`${username}/${repoName}`]);
+      checkRepoResult.checkedRepoNames.unshift(`${username}/${repoName}`);
       // checkRepoResult.checkedOptions = checkingOptions; // This is done at the caller level
 
       addSuccessMessage(`Checked ${username} repo: ${repoName}`);
