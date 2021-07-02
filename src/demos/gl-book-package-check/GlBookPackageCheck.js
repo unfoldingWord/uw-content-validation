@@ -5,10 +5,10 @@ import { clearCaches, clearCheckedArticleCache, preloadReposIfNecessary, ourPars
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderTotals } from '../RenderProcessedResults';
 import { checkBookPackage } from '../book-package-check/checkBookPackage';
-import { userLog } from '../../core/utilities';
+import { userLog, logicAssert } from '../../core/utilities';
 
 
-// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.12';
+// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.13';
 
 
 function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
@@ -30,9 +30,6 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
     // debugLog(`dataSet='${dataSet}'`);
     let branch = props.branch;
     // debugLog(`branch='${branch}'`);
-
-    // Clear cached files if we've changed repo
-    //  autoClearCache(bookIDs); // This technique avoids the complications of needing a button
 
     const checkingOptions = { // Uncomment any of these to test them
         // excerptLength: 25,
@@ -75,14 +72,36 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
             }
             else await clearCheckedArticleCache(); // otherwise we wouldn't see any of the warnings again from checking these
 
-            // Load whole repos, especially if we are going to check files in manifests
-            let repoPreloadList = ['UHB', 'UGNT', 'TWL', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
-            if (dataSet === 'OLD')
-                repoPreloadList = ['UHB', 'UGNT', 'TWL', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ'];
-            else if (dataSet === 'NEW')
-                repoPreloadList = ['UHB', 'UGNT', 'TWL', 'LT', 'ST', 'TN2', 'TA', 'TW', 'TQ2'];
-            else if (dataSet === 'BOTH')
-                repoPreloadList = ['UHB', 'UGNT', 'TWL', 'LT', 'ST', 'TN', 'TN2', 'TA', 'TW', 'TQ', 'TQ2'];
+            // Load whole repo zip files which is maybe faster than loading several individual files
+            //  especially if we are going to also check the manifests, license, and ReadMe files as well as the book file.
+            // Remember that the manifest check actually checks the existence of all the projects, i.e., all files in the repo
+            let repoPreloadList;
+            if (bookID === 'OBS') {
+                repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2']; // for DEFAULT
+                if (dataSet === 'OLD')
+                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
+                else if (dataSet === 'NEW')
+                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN', 'OBS-SQ'];
+                else if (dataSet === 'BOTH')
+                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SN', 'OBS-SN2', 'OBS-SQ2'];
+            } else { // not OBS
+                repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TQ', 'SN', 'SQ']; // for DEFAULT
+                if (dataSet === 'OLD')
+                    repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TQ'];
+                else if (dataSet === 'NEW')
+                    repoPreloadList = ['TWL', 'LT', 'ST', 'TN2', 'TQ2', 'SN', 'SQ'];
+                else if (dataSet === 'BOTH')
+                    repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TN2', 'TQ', 'TQ2', 'SN', 'SQ'];
+                const whichTestament = books.testament(bookID); // returns 'old' or 'new'
+                logicAssert(whichTestament === 'old' || whichTestament === 'new', `BookPackageCheck() couldn't find testament for '${bookID}'`);
+                const origLangRepo = whichTestament === 'old' ? 'UHB' : 'UGNT';
+                repoPreloadList.unshift(origLangRepo);
+            }
+            if (!checkingOptions.disableAllLinkFetchingFlag) { // Both Bible books and OBS refer to TW and TA
+                repoPreloadList.push('TW');
+                repoPreloadList.push('TA');
+            }
+            // debugLog(`GlBookPackageCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
 
             setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for GL book package check…</p>);
             const successFlag = await preloadReposIfNecessary(username, languageCode, [bookID], branch, repoPreloadList);

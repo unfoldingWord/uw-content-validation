@@ -7,8 +7,10 @@ This generic function returns a list/array of notices, that can then be post-pro
 This demonstration doesn’t display the raw notices, but rather displays the processed and formatted lists of errors and warnings.
 
 ```js
-// The code in this box is editable for changing settings—
-//        Simply click inside here and add, change, or delete text as required.
+// The control code in this box is editable for changing settings—
+//    simply click inside here and add, change, or delete text as required.
+// Note that (gray) lines starting with // are "comments", i.e., they are ignored by the software
+//    so if you want to enable those lines, you must remove the // from the beginning of the line.
 
 import { checkTextField } from './field-text-check';
 import { RenderRawResults } from '../demos/RenderProcessedResults';

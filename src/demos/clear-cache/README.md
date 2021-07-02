@@ -11,8 +11,10 @@ Unless you use this `ClearCache` function below, these demos can cache files for
 Simply change `N` to `Y` below to clear the internal caches.
 
 ```js
-// The code in this box is editable for changing settings—
-//        Simply click inside here and add, change, or delete text as required.
+// The control code in this box is editable for changing settings—
+//    simply click inside here and add, change, or delete text as required.
+// Note that (gray) lines starting with // are "comments", i.e., they are ignored by the software
+//    so if you want to enable those lines, you must remove the // from the beginning of the line.
 
 import ClearCache from './ClearCache';
 

@@ -9,8 +9,10 @@ The code below requests some info and then downloads and checks the requested Bi
 **Note**: This demonstration can use saved (cached) copies of files stored inside the local browser. This makes reruns of the checks faster, but it won’t notice if you have recently updated the files on Door43. If you want to clear the local caches, use either the `reloadAllFilesFirst` variable below, or the `Clear Cache` function from the menu.
 
 ```js
-// The code in this box is editable for changing settings—
-//        Simply click inside here and add, change, or delete text as required.
+// The control code in this box is editable for changing settings—
+//    simply click inside here and add, change, or delete text as required.
+// Note that (gray) lines starting with // are "comments", i.e., they are ignored by the software
+//    so if you want to enable those lines, you must remove the // from the beginning of the line.
 
 import AllBookPackagesCheck from './AllBookPackagesCheck';
 
@@ -24,8 +26,8 @@ import AllBookPackagesCheck from './AllBookPackagesCheck';
 
   username='unfoldingWord'
   languageCode='en'
-  includeOBS='N' // 'Y' or 'N' for Open Bible Stories
-  testament='NT' // 'OT' or 'NT' or 'ALL'
+  includeOBS='N' // 'Y' or 'N' for adding Open Bible Stories (OBS) to check
+  testament='NT' // 'OT' (~3 hrs) or 'NT' (1+ hrs) or 'ALL' (~4 hrs)
 
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'

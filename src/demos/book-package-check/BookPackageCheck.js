@@ -31,9 +31,6 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
     let branch = props.branch;
     // debugLog(`branch='${branch}'`);
 
-    // Clear cached files if we've changed repo
-    //  autoClearCache(bookID); // This technique avoids the complications of needing a button
-
     const checkingOptions = { // Uncomment any of these to test them
         dataSet: dataSet, // Can be 'OLD' (Markdown, etc.), 'NEW' (TSV only), or 'BOTH', or 'DEFAULT'
         // excerptLength: 25, // default is 20 characters

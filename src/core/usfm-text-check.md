@@ -13,8 +13,10 @@ Note that unfoldingWord has three distinct forms of USFM files (and these functi
 1. Some of our USFM Bible books simply contain the (normal) Bible text. (Of course, these files are much smaller and quicker to validate.)
 
 ```js
-// The code in this box is editable for changing settings—
-//        Simply click inside here and add, change, or delete text as required.
+// The control code in this box is editable for changing settings—
+//    simply click inside here and add, change, or delete text as required.
+// Note that (gray) lines starting with // are "comments", i.e., they are ignored by the software
+//    so if you want to enable those lines, you must remove the // from the beginning of the line.
 
 import React, { useState, useEffect } from 'react';
 import { checkUSFMText } from './usfm-text-check';
