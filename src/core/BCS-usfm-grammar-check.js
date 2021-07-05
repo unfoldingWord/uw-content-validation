@@ -5,7 +5,7 @@ import { DEFAULT_EXCERPT_LENGTH } from './defaults'
 import { userLog, debugLog, functionLog, parameterAssert, ourParseInt } from './utilities';
 
 
-// const USFM_GRAMMAR_VALIDATOR_VERSION_STRING = '0.4.4';
+// const USFM_GRAMMAR_VALIDATOR_VERSION_STRING = '0.4.5';
 
 const LINE_COLUMN_NUMBERS_REGEX = new RegExp('Line (\\d{1,6}), col (\\d{1,4}):'); // e.g., "Line 1538, col 4: 1537 ..."
 
@@ -48,16 +48,16 @@ export function runBCSGrammarCheck(strictnessString, bookID, fileText, filename,
         // Returns a Boolean indicating whether the input USFM text satisfies the grammar or not.
         // This method is available in both default and relaxed modes.
         // const parserResult = ourUsfmParser.validate();
-        // debugLog(`${new Date().getTime() / 1000} Running the USFMGrammar checker (may take several seconds)…`);
-        // userLog(`Running the USFMGrammar checker for ${bookID} (may take several seconds)…`);
+        // debugLog(`${new Date().getTime() / 1000} Running the BCS USFMGrammar checker (may take several seconds)…`);
+        // userLog(`Running the BCS USFMGrammar checker for ${bookID} (may take several seconds)…`);
         parserToJSONResultObject = ourUsfmParser.toJSON();
-        // debugLog(`${new Date().getTime() / 1000} Got the USFMGrammar checker toJSON result: ${Object.keys(parserToJSONResultObject)}`);
-        // debugLog(`${new Date().getTime() / 1000} Got the USFMGrammar checker toJSON _messages: ${Object.keys(parserToJSONResultObject._messages)}`);
-        // debugLog(`${new Date().getTime() / 1000} Got the USFMGrammar checker: ${Object.keys(ourUsfmParser)}`);
+        // debugLog(`${new Date().getTime() / 1000} Got the BCS USFMGrammar checker toJSON result: ${Object.keys(parserToJSONResultObject)}`);
+        // debugLog(`${new Date().getTime() / 1000} Got the BCS USFMGrammar checker toJSON _messages: ${Object.keys(parserToJSONResultObject._messages)}`);
+        // debugLog(`${new Date().getTime() / 1000} Got the BCS USFMGrammar checker: ${Object.keys(ourUsfmParser)}`);
         parseWarnings = parserToJSONResultObject._warnings ? parserToJSONResultObject._warnings : ourUsfmParser.warnings;
-        // debugLog(`${new Date().getTime() / 1000} Got warnings from the USFMGrammar checker: (${parseWarnings.length}) ${parseWarnings}`);
+        // debugLog(`${new Date().getTime() / 1000} Got warnings from the BCS USFMGrammar checker: (${parseWarnings.length}) ${parseWarnings}`);
     } catch (parserError) { // This is how the Parser returns USFM errors, i.e., it stops after the first error
-        // debugLog(`${new Date().getTime() / 1000} Got an exception when using the USFMGrammar checker: ${parserError}`);
+        // debugLog(`${new Date().getTime() / 1000} Got an exception when using the BCS USFMGrammar checker: ${parserError}`);
         const ourErrorObject = {
             priority: 840, message: "USFMGrammar check failed",
             details: parserError,

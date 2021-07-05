@@ -12,14 +12,14 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.8.14';
+// const USFM_VALIDATOR_VERSION_STRING = '0.8.15';
 
 
-const VALID_LINE_START_CHARACTERS = `([“‘`; // '{' gets added for STs
+const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for STs
 
 // See http://ubsicap.github.io/usfm/master/index.html
-// const COMPULSORY_MARKERS = ['id', 'ide'];
-const EXPECTED_MARKERS = ['usfm', 'mt1'];
+// const COMPULSORY_MARKERS = ['id', 'ide']; // These are specifically checked for by the code near the start of mainUSFMCheck()
+const EXPECTED_MARKERS = ['usfm', 'mt1']; // The check also allows for removal of the final '1'
 const EXPECTED_BIBLE_BOOK_MARKERS = ['h', 'toc1', 'toc2', 'toc3'];
 const EXPECTED_PERIPHERAL_BOOK_MARKERS = ['periph'];
 
@@ -54,7 +54,7 @@ const PARAGRAPH_MARKERS = ['p',
     'po', 'pm',
     'ph', 'ph1', 'ph2', 'ph3', 'ph4',
     'tr'];
-const NOTE_MARKERS = ['f', 'x'];
+const MAIN_NOTE_MARKERS = ['f', 'x'];
 const SPECIAL_MARKERS = ['w', 'zaln-s', 'k-s',
     'qt-s', 'qt1-s', 'qt2-s',
     'lit'];
@@ -62,15 +62,15 @@ const MILESTONE_MARKERS = ['ts\\*', 'ts-s', 'ts-e', 'k-e\\*']; // Is this a good
 const MARKERS_WITHOUT_CONTENT = ['b', 'nb', 'ib', 'ie'].concat(MILESTONE_MARKERS);
 const ALLOWED_LINE_START_MARKERS = [].concat(INTRO_LINE_START_MARKERS).concat(HEADING_TYPE_MARKERS)
     .concat(CV_MARKERS).concat(PARAGRAPH_MARKERS)
-    .concat(NOTE_MARKERS).concat(SPECIAL_MARKERS).concat(MARKERS_WITHOUT_CONTENT)
-    .concat(MILESTONE_MARKERS);
+    .concat(MAIN_NOTE_MARKERS).concat(SPECIAL_MARKERS).concat(MARKERS_WITHOUT_CONTENT)
+    .concat(MILESTONE_MARKERS).concat(['qs']);
 const DEPRECATED_MARKERS = [
     'h1', 'h2', 'h3', 'h4',
     'pr',
     'ph', 'ph1', 'ph2', 'ph3', 'ph4',
     'addpn', 'pro', 'fdc', 'xdc'];
 const MARKERS_WITH_COMPULSORY_CONTENT = [].concat(INTRO_LINE_START_MARKERS).concat(HEADING_TYPE_MARKERS)
-    .concat(CV_MARKERS).concat(NOTE_MARKERS).concat(SPECIAL_MARKERS);
+    .concat(CV_MARKERS).concat(MAIN_NOTE_MARKERS).concat(SPECIAL_MARKERS);
 const FOOTNOTE_INTERNAL_MARKERS = ['fr', 'fq', 'fqa', 'fk', 'fl', 'fw', 'fp', 'fv', 'ft', 'fdc', 'fm', 'xt'];
 const XREF_INTERNAL_MARKERS = ['xo', 'xk', 'xq', 'xt', 'xta', 'xop', 'xot', 'xnt', 'xdc', 'rq'];
 const SIMPLE_CHARACTER_MARKERS = ['add', 'bk', 'dc', 'k', 'nd', 'ord', 'pn', 'png', 'addpn',
@@ -87,7 +87,7 @@ const CANONICAL_TEXT_MARKERS = ['d'].concat(PARAGRAPH_MARKERS).concat(CHARACTER_
 // eslint-disable-next-line no-unused-vars
 const ANY_TEXT_MARKERS = [].concat(INTRO_LINE_START_MARKERS).concat(HEADING_TYPE_MARKERS)
     .concat(PARAGRAPH_MARKERS).concat(CHARACTER_MARKERS)
-    .concat(NOTE_MARKERS).concat(SPECIAL_MARKERS);
+    .concat(MAIN_NOTE_MARKERS).concat(SPECIAL_MARKERS);
 const MATCHED_CHARACTER_FORMATTING_PAIRS = [
     ['\\add ', '\\add*'], ['\\addpn ', '\\addpn*'],
     ['\\bd ', '\\bd*'], ['\\bdit ', '\\bdit*'],
@@ -617,7 +617,8 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         for (const expectedMarker of EXPECTED_MARKERS)
             if (!markerSet.has(expectedMarker)
                 && (!expectedMarker.endsWith('1') || !markerSet.has(expectedMarker.substring(0, expectedMarker.length - 1))))
-                addNoticePartial({ priority: 519, message: "Missing expected USFM line", excerpt: `missing \\${expectedMarker}`, location: fileLocation });
+                // NOTE: \mt(1) is required by Proskomma so increased this priority
+                addNoticePartial({ priority: expectedMarker === 'mt1' ? 921 : 519, message: "Missing expected USFM line", excerpt: `missing \\${expectedMarker}`, location: fileLocation });
         if (books.isExtraBookID(bookID))
             for (const expectedMarker of EXPECTED_PERIPHERAL_BOOK_MARKERS)
                 if (!markerSet.has(expectedMarker))
@@ -1158,6 +1159,8 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             addNoticePartial({ priority: 719, message: "USFM file is recommended to have \\ide line", lineNumber: ideIndex + 1, location: ourLocation });
         else if (!lines[ideIndex].endsWith(' UTF-8'))
             addNoticePartial({ priority: 619, message: "USFM \\ide field is recommended to be set to 'UTF-8'", lineNumber: ideIndex + 1, characterIndex: 5, excerpt: lines[ideIndex], location: ourLocation });
+
+
         // let lastB = '';
         let lastC = '', lastV = '', C = '0', V = '0';
         let lastIntC = 0, lastIntV = 0;
@@ -1190,7 +1193,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                 rest = line;
                 if (validLineStartCharacters.indexOf(line[0]) === -1) { // These are the often expected characters
                     // Drop the priority if it’s a "half-likely" character
-                    addNoticePartial({ priority: `"`.indexOf(line[0]) < 0 ? 880 : 180, C, V, message: "Expected line to start with backslash", lineNumber: n, characterIndex: 0, excerpt: line[0], location: ourLocation });
+                    addNoticePartial({ priority: line[0] === ' ' || line[0] === '"' ? 180 : 880, C, V, message: "Expected line to start with backslash", lineNumber: n, characterIndex: 0, excerpt: line[0], location: ourLocation });
                     if (line[1] === '\\') { // Let’s drop the leading punctuation and try to check the rest of the line
                         marker = line.substring(2).split(' ', 1)[0];
                         rest = line.substring(marker.length + 2 + 1); // Skip leading character, backslash, marker, and space after marker
@@ -1311,18 +1314,17 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
 
     // Main code for checkUSFMText()
     // debugLog("Starting USFM checking tasks…");
-    /*
-    const tasks = [1,2].map(runSlowTask);
-    const allResults = await Promise.all(tasks);
-    userLog(`  Finished all tasks with ${JSON.stringify(allResults)}.`);
-    userLog("  Finished all tasks.");
-    if (!allResults[1].isValidUSFM)
-        addNoticePartial({priority: 942, "USFM Grammar check fails", location});
-    userLog("  Warnings:", JSON.stringify(allResults[1].warnings));
-    // Display these warnings but with a lower priority
-    for (const warningString of allResults[1].warnings)
-        addNoticePartial({priority:103, `USFMGrammar: ${warningString.trim()}`, location});
-    */
+
+    // const tasks = [1,2].map(runSlowTask);
+    // const allResults = await Promise.all(tasks);
+    // userLog(`  Finished all tasks with ${JSON.stringify(allResults)}.`);
+    // userLog("  Finished all tasks.");
+    // if (!allResults[1].isValidUSFM)
+    //     addNoticePartial({priority: 942, "USFM Grammar check fails", location});
+    // userLog("  Warnings:", JSON.stringify(allResults[1].warnings));
+    // // Display these warnings but with a lower priority
+    // for (const warningString of allResults[1].warnings)
+    //     addNoticePartial({priority:103, `USFMGrammar: ${warningString.trim()}`, location});
 
     // NOTE: If we're careful about how/when we add their notices to our global list,
     //  we should be able to run these three slowish checks in parallel on different threads/processes
@@ -1333,13 +1335,13 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         const numChapters = books.chaptersInBook(bookID);
         const kB = Math.trunc(givenText.length / 1024);
         if (numChapters < 20 || kB < 2048) { // 2MB -- large files can run the grammar checker out of memory
-            userLog(`Running the USFMGrammar checker for ${repoCode} ${bookID} (${kB.toLocaleString()} KB) -- may take several ${kB > 1200 ? 'minutes' : 'seconds'}…`);
+            userLog(`Running the BCS USFMGrammar checker for ${repoCode} ${bookID} (${kB.toLocaleString()} KB) -- may take several ${kB > 1200 ? 'minutes' : 'seconds'}…`);
             allResults.push(ourRunBCSGrammarCheck(filename, givenText, ourLocation));
         } else {
-            userLog(`Skipped running USFMGrammar checker for ${repoCode} ${bookID} (${kB.toLocaleString()} KB with ${numChapters} chapters)`);
+            userLog(`Skipped running BCS USFMGrammar checker for ${repoCode} ${bookID} (${kB.toLocaleString()} KB with ${numChapters} chapters)`);
             // Success message seems not to be displayed in the demos
-            addSuccessMessage(`Skipped running USFMGrammar checker for ${repoCode} ${bookID} (${kB.toLocaleString()} KB with ${numChapters} chapters)`);
-            addNoticePartial({ priority: 25, message: "Note: skipped running USFMGrammar checker for large book", details: `${numChapters} chapters (${kB.toLocaleString()} KB)`, location: ourLocation });
+            addSuccessMessage(`Skipped running BCS USFMGrammar checker for ${repoCode} ${bookID} (${kB.toLocaleString()} KB with ${numChapters} chapters)`);
+            addNoticePartial({ priority: 25, message: "Note: skipped running BCS USFMGrammar checker for large book", details: `${numChapters} chapters (${kB.toLocaleString()} KB)`, location: ourLocation });
         }
     }
     // logicAssert(allResults.length === 2);
