@@ -562,14 +562,14 @@ const validate = ajv.compile(MANIFEST_SCHEMA);
 
 /**
  *
- * @param {string} languageCode
- * @param {string} repoCode
- * @param {string} username
- * @param {string} repoName
- * @param {string} repoBranch
- * @param {string} manifestText
- * @param {string} givenLocation
- * @param {Object} checkingOptions
+ * @param {string} languageCode -- language of main thing being checked -- normally the same as the first part of the repoName, e.g., 'en', but may differ for original language repos
+ * @param {string} repoCode -- e.g., 'UHB', 'LT', 'TN', 'SQ2'
+ * @param {string} username -- or orgname -- owner of DCS repo
+ * @param {string} repoName -- e.g., 'en_tn'
+ * @param {string} repoBranch -- e.g., 'master'
+ * @param {string} manifestText -- contents of manifest.yaml
+ * @param {string} givenLocation -- optional description of location of manifest
+ * @param {Object} checkingOptions -- optional option key:value pairs
  */
 export async function checkManifestText(languageCode, repoCode, username, repoName, repoBranch, manifestText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
@@ -588,6 +588,7 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
     //parameterAssert(typeof username === 'string', `checkManifestText: 'username' parameter should be a string not a '${typeof username}': ${username}`);
     //parameterAssert(repoName !== undefined, "checkManifestText: 'repoName' parameter should be defined");
     //parameterAssert(typeof repoName === 'string', `checkManifestText: 'repoName' parameter should be a string not a '${typeof repoName}': ${repoName}`);
+    if (repoCode !== 'UHB' && repoCode !== 'UGNT') { parameterAssert(repoName.startsWith(languageCode), `checkManifestText: 'repoName' parameter '${repoName}' should start with language code: '${languageCode}_'`); }
     //parameterAssert(repoBranch !== undefined, "checkManifestText: 'repoBranch' parameter should be defined");
     //parameterAssert(typeof repoBranch === 'string', `checkManifestText: 'repoBranch' parameter should be a string not a '${typeof repoBranch}': ${repoBranch}`);
     //parameterAssert(manifestText !== undefined, "checkManifestText: 'manifestText' parameter should be defined");
@@ -683,6 +684,18 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
         // Check Dublin Core stuff
         // const DublinCoreData = formData.dublin_core
         // debugLog("checkManifestText DublinCoreData", JSON.stringify(DublinCoreData));
+
+
+        try {
+            const languageIdentifier = formData['dublin_core']['language']['identifier'];
+            if ((repoCode === 'UHB' && languageIdentifier !== 'hbo')
+                || (repoCode === 'UGNT' && languageIdentifier !== 'el-x-koine')
+                || (repoCode !== 'UHB' && repoCode !== 'UGNT' && languageIdentifier !== languageCode)) // for most repos
+                addNotice({ priority: 933, message: "Manifest' language' 'identifier' doesn't match", details: `expected '${languageCode}' but manifest has '${languageIdentifier}'`, location: ourLocation });
+        } catch (e) {
+            debugLog(`checkManifestText got error ${e.message} while loading 'language' 'identifier'`);
+            addNotice({ priority: 934, message: "'language' key or 'idenfier' subkey is missing", location: ourLocation });
+        }
 
         // TODO: We could add a lot more checking here
         // for (const mainKey in formData) {
