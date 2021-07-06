@@ -48,6 +48,7 @@ describe('checkBookPackage() - ', () => {
     const languageCode = 'zzz';
     const bookID = 'TIT';
     const rawResults = await checkBookPackage(username, languageCode, bookID, () => {}, optionalCheckingOptions);
+    console.log(`TIT unsupported language BP test took ${rawResults.elapsedSeconds} seconds`);
     expect(rawResults.noticeList.length).toBeGreaterThan(0);
     const filteredResults = {
       successList: rawResults.successList,
@@ -56,7 +57,7 @@ describe('checkBookPackage() - ', () => {
       checkedRepoNames: rawResults.checkedRepoNames,
     };
     expect(filteredResults).toMatchSnapshot();
-  });
+  }, 6000); // Allow 6 seconds
 
   it('TIT should fail on missing repo', async() => {
     const username = 'unfoldingWord';
@@ -67,6 +68,7 @@ describe('checkBookPackage() - ', () => {
     };
 
     const rawResults = await checkBookPackage(username, languageCode, bookID, () => {}, optionalCheckingOptions);
+    console.log(`TIT missing repo BP test took ${rawResults.elapsedSeconds} seconds`);
     expect(rawResults.noticeList.length).toBeGreaterThan(0);
     const filteredResults = {
       successList: rawResults.successList,
@@ -75,13 +77,14 @@ describe('checkBookPackage() - ', () => {
       checkedRepoNames: rawResults.checkedRepoNames,
     };
     expect(filteredResults).toMatchSnapshot();
-  });
+  }, 12000); // Allow 12 seconds
 
   it('TIT should pass', async() => {
     const username = 'unfoldingWord';
     const languageCode = 'en';
     const bookID = 'TIT';
     const rawResults = await checkBookPackage(username, languageCode, bookID, () => {}, optionalCheckingOptions);
+    console.log(`TIT BP test took ${rawResults.elapsedSeconds} seconds`);
     expect(rawResults.noticeList.length).toBeGreaterThanOrEqual(0);
     const filteredResults = {
       successList: rawResults.successList,
@@ -90,13 +93,14 @@ describe('checkBookPackage() - ', () => {
       checkedRepoNames: rawResults.checkedRepoNames,
     };
     expect(filteredResults).toMatchSnapshot();
-  });
+  }, 15000); // Allow 15 seconds
 
   it('RUT should pass', async() => {
     const username = 'unfoldingWord';
     const languageCode = 'en';
     const bookID = 'RUT';
     const rawResults = await checkBookPackage(username, languageCode, bookID, () => {}, optionalCheckingOptions);
+    console.log(`RUT BP test took ${rawResults.elapsedSeconds} seconds`);
     expect(rawResults.noticeList.length).toBeGreaterThanOrEqual(4);
     const filteredResults = {
       successList: rawResults.successList,
@@ -105,7 +109,7 @@ describe('checkBookPackage() - ', () => {
       checkedRepoNames: rawResults.checkedRepoNames,
     };
     expect(filteredResults).toMatchSnapshot();
-  });
+  }, 20000); // Allow 20 seconds
 
 })
 
