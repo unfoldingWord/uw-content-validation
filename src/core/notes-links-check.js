@@ -9,7 +9,7 @@ import { cachedGetFile, cachedGetFileUsingFullURL, checkMarkdownText } from '../
 import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 
 
-// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.7.28';
+// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.7.29';
 
 // const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -95,7 +95,7 @@ async function alreadyChecked({ username, repository, path, branch }) {
 /**
  *
  * @param {string} languageCode, e.g., 'en'
- * @param {string} repoCode, e.g., 'TN', 'SN', 'TN2', or even 'TWL'
+ * @param {string} repoCode, e.g., 'TN', 'SN', 'TN2', or even 'UHB', 'UGNT', or 'TWL' for the initial repo for the file being checked
  * @param {string} bookID
  * @param {string} givenC
  * @param {string} givenV
@@ -216,6 +216,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     if (!twRepoUsername) twRepoUsername = defaultLanguageCode === 'en' ? 'unfoldingWord' : 'Door43-Catalog';
     let twRepoBranch = checkingOptions?.twRepoBranch;
     if (!twRepoBranch) twRepoBranch = DEFAULT_BRANCH;
+    // debugLog(`checkNotesLinksToOutside ended up with taRepoUsername=${taRepoUsername} taRepoBranch=${taRepoBranch} twRepoUsername=${twRepoUsername} twRepoBranch=${twRepoBranch}`);
 
     // Convert our given C:V strings to integers
     let givenVfirstPart = '';
@@ -350,10 +351,10 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 //         markAsChecked(twPathParameters); // don’t bother waiting for the result
                 //     }
                 // }
-                // else debugLog("disableLinkedTWArticlesCheckFlag is set to TRUE!");
+                // else debugLog("checkNotesLinksToOutside: disableLinkedTWArticlesCheckFlag is set to TRUE!");
             }
         }
-        else debugLog("disableAllLinkFetchingFlag is set to TRUE!");
+        // else debugLog("checkNotesLinksToOutside: disableAllLinkFetchingFlag is set to TRUE!");
     }
 
     // Check for TA links like [How to Translate Names](rc://en/ta/man/translate/translate-names)
@@ -404,6 +405,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
                         const checkTAFileResult = await checkMarkdownText(foundLanguageCode, repoCode, `TA ${regexResultArray[3].trim()}.md`, taFileContent, ourLocation, checkingOptions);
                         for (const noticeObject of checkTAFileResult.noticeList)
+                            // Why don't we use addNoticePartial() here? (It adds bookID and fieldName.) Maybe it would be misleading???
                             ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
                         ctarResult.checkedFileCount += 1;
                         ctarResult.checkedFilenames.push(`${regexResultArray[3].trim()}.md`);
@@ -573,6 +575,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
                         const checkTAFileResult = await checkMarkdownText(foundLanguageCode, repoCode, `TA ${regexResultArray[3].trim()}.md`, taFileContent, ourLocation, checkingOptions);
                         for (const noticeObject of checkTAFileResult.noticeList)
+                            // Why don't we use addNoticePartial() here? (It adds bookID and fieldName.) Maybe it would be misleading???
                             ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
                         ctarResult.checkedFileCount += 1;
                         ctarResult.checkedFilenames.push(`${regexResultArray[3].trim()}.md`);
@@ -625,6 +628,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                         // functionLog(`checkNotesLinksToOutside needs to check TW article: ${filepath}`);
                         const checkTWFileResult = await checkMarkdownText(foundLanguageCode, repoCode, `TW ${regexResultArray[3].trim()}.md`, twFileContent, ourLocation, checkingOptions);
                         for (const noticeObject of checkTWFileResult.noticeList)
+                            // Why don't we use addNoticePartial() here? (It adds bookID and fieldName.) Maybe it would be misleading???
                             ctarResult.noticeList.push({ ...noticeObject, username: twRepoUsername, repoCode: 'TW', repoName: twRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TW' });
                         ctarResult.checkedFileCount += 1;
                         ctarResult.checkedFilenames.push(`${regexResultArray[3].trim()}.md`);
@@ -634,10 +638,10 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                         markAsChecked(twPathParameters); // don’t bother waiting for the result
                     }
                 }
-                else debugLog("disableLinkedTWArticlesCheckFlag is set to TRUE!");
+                // else debugLog("checkNotesLinksToOutside: disableLinkedTWArticlesCheckFlag is set to TRUE!");
             }
         }
-        else debugLog("disableAllLinkFetchingFlag is set to TRUE!");
+        // else debugLog("checkNotesLinksToOutside: disableAllLinkFetchingFlag is set to TRUE!");
     }
 
     // debugLog("checkNotesLinksToOutside: Search for Bible links")

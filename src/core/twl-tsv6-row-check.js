@@ -10,7 +10,7 @@ import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const TWL_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.1.7';
+// const TWL_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.1.8';
 
 const NUM_EXPECTED_TWL_TSV_FIELDS = 6; // so expects 5 tabs per line
 const EXPECTED_TWL_HEADING_LINE = 'Reference\tID\tTags\tOrigWords\tOccurrence\tTWLink';
@@ -313,7 +313,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         else
             addNoticePartial({ priority: 820, message: "Missing chapter number", rowID, fieldName: 'Reference', location: ` ?:${V}${ourRowLocation}` });
 
-        if (V.length) {
+        if (V?.length) { // can be undefined if no colon at split above
             if (V !== givenV)
                 addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected '${givenV}'`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
             if (bookID === 'OBS' || V === 'intro') { }

@@ -9,7 +9,7 @@ import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
 import { debugLog, parameterAssert } from './utilities';
 
 
-// const QUESTIONS_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.2.5';
+// const QUESTIONS_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.2.6';
 
 const NUM_EXPECTED_QUESTIONS_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_QUESTIONS_HEADING_LINE = 'Reference\tID\tTags\tQuote\tOccurrence\tQuestion\tResponse';
@@ -324,7 +324,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
         else
             addNoticePartial({ priority: 820, message: "Missing chapter number", rowID, fieldName: 'Reference', excerpt: `?:${V}`, location: ourRowLocation });
 
-        if (V?.length) {
+        if (V?.length) { // can be undefined if no colon at split above
             if (V.indexOf('-') === -1) { // Not a verse bridge
                 if (V !== givenV)
                     addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected '${givenV}'`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });

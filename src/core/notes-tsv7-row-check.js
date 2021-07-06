@@ -11,7 +11,7 @@ import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const NOTES_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.13';
+// const NOTES_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.14';
 
 const NUM_EXPECTED_NOTES_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_NOTES_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tNote';
@@ -56,7 +56,8 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
     //parameterAssert(typeof languageCode === 'string', `checkNotesTSV7DataRow: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
     //parameterAssert(repoCode !== undefined, "checkNotesTSV7DataRow: 'repoCode' parameter should be defined");
     //parameterAssert(typeof repoCode === 'string', `checkNotesTSV7DataRow: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
-    //parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkNotesTSV7DataRow: 'repoCode' parameter should not be '${repoCode}'`);
+    // parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkNotesTSV7DataRow: 'repoCode' parameter should not be '${repoCode}'`);
+    parameterAssert(repoCode==='TN2' || repoCode==='SN', `checkNotesTSV7DataRow: 'repoCode' parameter should be 'TN2' or 'SN', not '${repoCode}'`);
     //parameterAssert(line !== undefined, "checkNotesTSV7DataRow: 'line' parameter should be defined");
     //parameterAssert(typeof line === 'string', `checkNotesTSV7DataRow: 'line' parameter should be a string not a '${typeof line}'`);
     //parameterAssert(bookID !== undefined, "checkNotesTSV7DataRow: 'bookID' parameter should be defined");
@@ -352,7 +353,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
         else
             addNoticePartial({ priority: 820, message: "Missing chapter number", rowID, fieldName: 'Reference', location: ` ?:${V}${ourRowLocation}` });
 
-        if (V.length) {
+        if (V?.length) { // can be undefined if no colon at split above
             if (V !== givenV)
                 addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected '${givenV}'`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
             if (bookID === 'OBS' || V === 'intro') { }
