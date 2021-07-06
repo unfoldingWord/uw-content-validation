@@ -1,11 +1,11 @@
 // eslint-disable-next-line no-unused-vars
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
-import { OPEN_CLOSE_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, isWhitespace, countOccurrences } from './text-handling-functions'
+import { OPEN_CLOSE_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, LEADING_ZERO_COMBINATIONS, isWhitespace, countOccurrences } from './text-handling-functions'
 // eslint-disable-next-line no-unused-vars
 import { parameterAssert } from './utilities';
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.5';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.6';
 
 
 /**
@@ -376,6 +376,16 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
             if ((characterIndex = fieldText.indexOf(badCharCombination)) >= 0) {
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                 addNoticePartial({ priority: 849, message: `Unexpected '${badCharCombination}' character combination`, characterIndex, excerpt, location: ourLocation });
+            }
+
+    if (!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 92)
+        // Check for leading zeroes in numbers
+        for (const badZeroCharCombination of LEADING_ZERO_COMBINATIONS)
+            if ((characterIndex = fieldText.indexOf(badZeroCharCombination)) >= 0
+                // but not an error perhaps if followed by period, e.g., 0.32.
+                && (fieldText.substring(characterIndex + badZeroCharCombination.length, characterIndex + badZeroCharCombination.length + 1) !== '.')) {
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
+                addNoticePartial({ priority: 92, message: `Unexpected leading zero`, characterIndex, excerpt, location: ourLocation });
             }
 
     // // Check for problems created by tC Create or something
