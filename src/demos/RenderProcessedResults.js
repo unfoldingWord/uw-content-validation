@@ -42,11 +42,11 @@ const tableIcons = {
 };
 
 
-// const RENDER_PROCESSED_RESULTS_VERSION = '0.6.3';
+// const RENDER_PROCESSED_RESULTS_VERSION = '0.6.7';
 
 
 export function RenderSuccesses({ username, results }) {
-    if (results.checkedFileCount > 0)
+    if (results?.checkedFileCount > 0)
         return (<p>&nbsp;&nbsp;&nbsp;&nbsp;Successfully checked {results.checkedFileCount.toLocaleString()} file{results.checkedFileCount === 1 ? '' : 's'} from {results.checkedRepoNames.length.toLocaleString()} <i>{username}</i> repo{results.checkedRepoNames.length === 1 ? '' : 's'}: {results.checkedRepoNames.join(', ')}
             <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;including {results.checkedFilenameExtensions.length} file type{results.checkedFilenameExtensions.size === 1 ? '' : 's'}: {results.checkedFilenameExtensions.join(', ')}.</p>);
     else
@@ -54,10 +54,10 @@ export function RenderSuccesses({ username, results }) {
 }
 
 export function RenderTotals({ rawNoticeListLength, results }) {
-    if (results.numIgnoredNotices || results.numDisabledNotices) {
+    if (results?.numIgnoredNotices || results?.numDisabledNotices) {
         const netNumNotices = rawNoticeListLength - results.numIgnoredNotices - results.numDisabledNotices;
         return (<p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={results.elapsedSeconds} /> with {netNumNotices === 0 ? 'no' : netNumNotices.toLocaleString()} notice{netNumNotices === 1 ? ' ' : 's '}
-             ({rawNoticeListLength === 0 ? 'no' : rawNoticeListLength.toLocaleString()} raw notice{rawNoticeListLength === 1 ? '' : 's'} but
+            ({rawNoticeListLength === 0 ? 'no' : rawNoticeListLength.toLocaleString()} raw notice{rawNoticeListLength === 1 ? '' : 's'} but
             {results.numIgnoredNotices ? ` ${results.numIgnoredNotices.toLocaleString()} ignored notice${results.numIgnoredNotices === 1 ? '' : 's'}` : ""}
             {results.numIgnoredNotices && results.numDisabledNotices ? ' and' : ''}
             {results.numDisabledNotices ? ` ${results.numDisabledNotices.toLocaleString()} expected/disabled notice${results.numDisabledNotices === 1 ? '' : 's'}` : ""}
@@ -74,15 +74,14 @@ export function RenderTotals({ rawNoticeListLength, results }) {
  * @param {string} text - text to render as numbered lines
  * @return {String} - rendered HTML for the numbered list of lines
  */
-/*
 export function RenderNumberedLines({ text }) {
+    // This function is only used in some of the demos
     return <ol>
         {text.split('\n').map(function (line, index) {
             return <li key={index}>{line}</li>;
         })}
     </ol>;
 }
-*/
 
 
 const MAX_ARRAY_ITEMS_TO_DISPLAY = 8; // Or do we want this as a parameter?
@@ -218,8 +217,11 @@ export function RenderRawResults({ results }) {
 */
 function RenderMessage({ color, message, details }) {
     let detailsString = '';
-    if (details && details.length)
-        detailsString = ' with ' + (details[0] === '(' ? details : `'${details}'`);
+    if (details)
+        if (details.startsWith('verse text ►'))
+            detailsString = <> with verse text ►<span style={{ backgroundColor: 'LemonChiffon' }}>{details.slice(12, -1)}</span>◄</>;
+        else if (details.length)
+            detailsString = <> with '{details}'</>;
     return <><b style={{ color: color }}>{message}</b>{detailsString}</>;
 }
 
@@ -270,8 +272,10 @@ function RenderFileDetails({ givenEntry }) {
     let adjustedRepoName = givenEntry.repoName;
     const firstMsgWord = givenEntry.message.split(' ')[0]; // This might be the former 'extra' field
     if (['TA', 'TW'].indexOf(firstMsgWord) >= 0) {
-        adjustedRepoName = `${givenEntry.repoName.split('_')[0]}_${firstMsgWord.toLowerCase()}`;
-        if (adjustedRepoName!==givenEntry.repoName) debugLog(`RenderFileDetails: trying adjusting repoName from '${givenEntry.repoName}' to '${adjustedRepoName}' for ${JSON.stringify(givenEntry)}`);
+        let adjustedLanguageCode = givenEntry.repoName.split('_')[0];
+        if (adjustedLanguageCode === 'hbo' || adjustedLanguageCode === 'el-x-koine') adjustedLanguageCode = 'en'; // This is a guess (and won't be needed for TWs when we switch to TWLs)
+        adjustedRepoName = `${adjustedLanguageCode}_${firstMsgWord.toLowerCase()}`;
+        if (adjustedRepoName !== givenEntry.repoName) debugLog(`RenderFileDetails: trying adjusting repoName from '${givenEntry.repoName}' to '${adjustedRepoName}' for ${JSON.stringify(givenEntry)}`);
     }
 
     let resultStart = '', lineResult = '', resultEnd = '', fileLineLink = '', fileLink = '';
@@ -283,9 +287,9 @@ function RenderFileDetails({ givenEntry }) {
                 let folder = '';
                 if (givenEntry.filename !== 'README.md' && givenEntry.filename !== 'LICENSE.md') {
                     if (adjustedRepoName.endsWith('_obs')) folder = 'content/';
-                    else if (adjustedRepoName.endsWith('_tw')) {
+                    else if (adjustedRepoName.endsWith('_tw') && !givenEntry.filename.startsWith('bible/')) {
                         folder = 'bible/';
-                        dataAssert(givenEntry.filename.indexOf('/') > 0); // filename actually contains the subfolder
+                        dataAssert(givenEntry.filename.indexOf('/') === 1); // filename actually contains the subfolder
                     }
                 }
                 fileLink = `https://git.door43.org/${givenEntry.username}/${adjustedRepoName}/blame/branch/${givenEntry.branch}/${folder}${givenEntry.filename}`;
@@ -303,12 +307,17 @@ function RenderFileDetails({ givenEntry }) {
     // else if (!username) resultEnd += " no username";
     // else if (!repoName) resultEnd += " no repoName";
     // else if (!filename) resultEnd += " no filename";
-    if (givenEntry.rowID && givenEntry.rowID.length) resultEnd += ` with row ID ${givenEntry.rowID}`;
-    if (givenEntry.fieldName && givenEntry.fieldName.length) resultEnd += ` in ${givenEntry.fieldName} field`;
+    if (givenEntry.rowID && givenEntry.rowID.length)
+        resultEnd = <>{resultEnd} with row ID <b><span style={{ fontFamily: 'Courier New, courier, monospace' }}>{givenEntry.rowID}</span></b></>;
+    if (givenEntry.fieldName && givenEntry.fieldName.length)
+        resultEnd = <>{resultEnd} in {givenEntry.fieldName} field</>;
 
-    if (fileLineLink) return <>{resultStart}<a rel="noopener noreferrer" target="_blank" href={fileLineLink}>{lineResult}</a>{resultEnd}</>;
-    else if (fileLink) return <>{resultStart} in file <a rel="noopener noreferrer" target="_blank" href={fileLink}>{givenEntry.filename}</a>{resultEnd}</>;
-    else return <>{resultStart}<b>{lineResult}</b>{resultEnd}</>;
+    if (fileLineLink)
+        return <>{resultStart}<a rel="noopener noreferrer" target="_blank" href={fileLineLink}>{lineResult}</a>{resultEnd}</>;
+    else if (fileLink)
+        return <>{resultStart} in file <a rel="noopener noreferrer" target="_blank" href={fileLink}>{givenEntry.filename}</a>{resultEnd}</>;
+    else
+        return <>{resultStart}<b>{lineResult}</b>{resultEnd}</>;
 }
 // end of RenderFileDetails
 
@@ -321,17 +330,20 @@ function RenderExcerpt({ excerpt, message }) {
         || message.endsWith("Error loading general link")
         || message.endsWith("Should http link be https")) {
         // debugLog(`Here1 RenderExcerpt(${excerpt}, ${message})`);
-        if (excerpt && excerpt[0] === '[' && excerpt.slice(-1) === ')') {
+        if (excerpt && excerpt[0] === '[' && excerpt.slice(-1) === ')') { // then the excerpt is a link so let's liven it
             // debugLog(`Here2 RenderExcerpt(${excerpt}, ${message})`);
             const ix = excerpt.indexOf('](');
-            const displayPart = excerpt.substring(1, ix); // Start after the [ unril before the ](
+            const displayPart = excerpt.substring(1, ix); // Start after the [ until before the ](
             const linkPart = excerpt.substring(ix + 2, excerpt.length - 1); // Step past the ]( but don't include the final )
             const adjLinkPart = message === "Should http link be https" ? linkPart.replace('http:', 'https:') : linkPart;
             // debugLog(`RenderExcerpt from '${excerpt}' got ix=${ix}, displayPart='${displayPart}', linkPart='${linkPart}', adjLinkPart='${adjLinkPart}'`);
             return <><span style={{ color: 'DimGray' }}>` around ►[{displayPart}](<a rel="noopener noreferrer" target="_blank" href={adjLinkPart}>{linkPart}</a>)◄`</span></>
         }
     }
-    return <><span style={{ color: 'DimGray' }}>{excerpt ? ` around ►${excerpt}◄` : ""}</span></>
+    if (excerpt && excerpt.length)
+        return <> around ►<span style={{ color: 'DarkOrange' }}><b>{excerpt}</b></span>◄</>;
+    // else
+    return null;
 }
 // end of RenderExcerpt
 
@@ -383,7 +395,7 @@ function RenderProcessedArray({ arrayType, results }) {
     //      bookID, C, V, repoName, filename, lineNumber
     //      characterIindex (integer), excerpt (string), location (string)
     //
-    debugLog("In RenderProcessedArray with ", arrayType);
+    // debugLog("In RenderProcessedArray with ", arrayType);
     // consoleLogObject('RenderProcessedArray results', results);
 
     if (arrayType === 's')
@@ -621,6 +633,6 @@ export function RenderElapsedTime({ elapsedSeconds }) {
     remainingTime = Math.floor(remainingTime / 60);
     const hours = Math.round(remainingTime % 24);
     remainingTime = Math.floor(remainingTime / 24);
-    parameterAssert(remainingTime === 0, `Elapsed time also contains ${remainingTime} days`);
+    //parameterAssert(remainingTime === 0, `Elapsed time also contains ${remainingTime} days`);
     return <>{hours ? `${hours} hour` : ''}{hours && hours !== 1 ? 's' : ''}{hours ? ', ' : ''}{minutes ? `${minutes} minute` : ''}{minutes && minutes !== 1 ? 's' : ''}{minutes ? ', ' : ''}{seconds} second{seconds === 1 ? '' : 's'}</>;
 }

@@ -1,6 +1,6 @@
 ## Door43 Book Package Check - Readme
 
-The code below requests some info and then checks the single specified Bible book in several repos. This is convenient to see all these check results collected into one place.
+The code below requests some info and then downloads and checks the single specified Bible book in several repos. This is convenient to see all these check results collected into one place.
 
 See a list of valid book identifiers [here](http://ubsicap.github.io/usfm/identification/books.html), although only `GEN` to `REV` from that list are useful here.
 
@@ -13,8 +13,10 @@ Note that `OBS` can also be entered here as a *pseudo book identifier* in order 
 **Note**: This demonstration can use saved (cached) copies of files stored inside the local browser. This makes reruns of the checks faster, but it won’t notice if you have recently updated the files on Door43. If you want to clear the local caches, use either the `reloadAllFilesFirst` variable below, or the `Clear Cache` function from the menu.
 
 ```js
-// The code in this box is editable for changing settings—
-//        Simply click inside here and add, change, or delete text as required.
+// The control code in this box is editable for changing settings—
+//    simply click inside here and add, change, or delete text as required.
+// Note that (gray) lines starting with // are "comments", i.e., they are ignored by the software
+//    so if you want to enable those lines, you must remove the // from the beginning of the line.
 
 import BookPackageCheck from './BookPackageCheck';
 
@@ -23,13 +25,14 @@ import BookPackageCheck from './BookPackageCheck';
   wait='Y' // 'Y' (for Yes, i.e., to wait) or 'N' (for No, i.e., to start checking)
 
   // Set to N to rerun the check without fetching new copies of the files (slightly faster)
+  // If you're checking and then editing & saving files, ensure that it's set to Y before you recheck
   reloadAllFilesFirst='Y' // 'Y' (for Yes -- same as ClearCache in menu) or 'N' (for No)
 
   username='unfoldingWord'
   languageCode='en'
   // bookID can be a USFM bookID, e.g., 'GEN', 'MAT', '3JN'
   //  and can also be 'OBS' (for Open Bible Stories)
-  bookID='LUK'
+  bookID='JAS'
 
   // We can choose the forthcoming new TSV formats or the existing formats
   // dataSet='BOTH' // 'OLD' (Markdown TQ, TSV9 TN, etc.), 'NEW' (TSV7 TQ2, TSV7 TN2, TSV6 TWL,etc.), 'DEFAULT', or 'BOTH'
@@ -48,7 +51,7 @@ import BookPackageCheck from './BookPackageCheck';
   // Lines starting with // are ignored -- you can add or remove // as desired
   // Specifying excerptLength and maximumSimilarMessages is just to show off options
   // —those fields are not necessary (or normal) here
-  excerptLength='20' // Default is 15
+  excerptLength='25' // Default is 20 characters
   // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
   maximumSimilarMessages='5' // Default is 3 (0 means don’t suppress any)
   // ignorePriorityNumberList='[]'

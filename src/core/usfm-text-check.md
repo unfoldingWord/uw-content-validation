@@ -13,11 +13,14 @@ Note that unfoldingWord has three distinct forms of USFM files (and these functi
 1. Some of our USFM Bible books simply contain the (normal) Bible text. (Of course, these files are much smaller and quicker to validate.)
 
 ```js
-// The code in this box is editable for changing settings—
-//        Simply click inside here and add, change, or delete text as required.
+// The control code in this box is editable for changing settings—
+//    simply click inside here and add, change, or delete text as required.
+// Note that (gray) lines starting with // are "comments", i.e., they are ignored by the software
+//    so if you want to enable those lines, you must remove the // from the beginning of the line.
 
+import React, { useState, useEffect } from 'react';
 import { checkUSFMText } from './usfm-text-check';
-import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
+import { RenderRawResults } from '../demos/RenderProcessedResults';
 
 // USFM samples
 const textS = `\\id GEN Short test
@@ -179,18 +182,43 @@ const textB = `\\id GEN Bad USFM test
 \\v 2 Not good here
 `;
 
-// You can choose any of the above texts here
-//  (to demonstrate differing results)
-const chosenText = textH;
+const data = {
+  // You can choose any of the above lines here
+  //  (to demonstrate differing results)
+  languageCode: 'el-x-koine',
+  repoCode: 'UGNT',
+  USFMTextName : 'textG',
+  USFMText : textG,
+  bookID : 'GEN',
+  filename: 'dummyFilename',
+  givenLocation : 'that was supplied',
+}
 
-// Fourth (unused) parameter is filename
-const checkingOptions = {};
-const rawResults = checkUSFMText('en', 'UHB', 'GEN', '', chosenText, 'that was supplied', checkingOptions);
-if (!rawResults.successList || !rawResults.successList.length)
-    rawResults.successList = ["Done USFM text checks"];
+function OurCheckUSFMText(props) {
+  const { languageCode, repoCode, bookID, filename, USFMText, USFMTextName, givenLocation } = props.data;
 
-<>
-<b>Check</b><RenderLines text={chosenText} />
-<RenderRawResults results={rawResults} />
-</>
+  const [results, setResults] = useState(null);
+
+  // We need the following construction because checkUSFMText is an ASYNC function
+  useEffect(() => {
+    // Use an IIFE (Immediately Invoked Function Expression)
+    //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
+    (async () => {
+      // Display our "waiting" message
+      setResults(<p style={{ color: 'magenta' }}>Checking {languageCode} {repoCode} for {USFMTextName} <b>{bookID}</b>…</p>);
+      const checkingOptions = {};
+      const rawResults = await checkUSFMText(languageCode, repoCode, bookID, filename, USFMText, givenLocation, checkingOptions);
+      setResults(
+        <div>
+          <b>Check</b> {USFMTextName}: "{USFMText.substr(0,256)}…"<br/><br/>
+          <RenderRawResults results={rawResults} />
+        </div>
+      );
+    })(); // end of async part in unnamedFunction
+  }, []); // end of useEffect part
+
+  return results;
+} // end of OurCheckUSFMText function
+
+<OurCheckUSFMText data={data}/>
 ```

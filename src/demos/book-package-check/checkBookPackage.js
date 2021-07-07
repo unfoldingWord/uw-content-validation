@@ -1,4 +1,5 @@
 import React from 'react';
+// eslint-disable-next-line no-unused-vars
 import { REPO_CODES_LIST } from '../../core/defaults';
 import * as books from '../../core/books/books';
 import { formRepoName, repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetBookFilenameFromManifest, checkManifestText, checkMarkdownText } from '../../core';
@@ -8,7 +9,7 @@ import { checkRepo } from '../repo-check/checkRepo';
 import { userLog, functionLog, debugLog, parameterAssert, logicAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.7.3';
+// const BP_VALIDATOR_VERSION_STRING = '0.7.8';
 
 const STANDARD_MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -32,15 +33,15 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   Note that bookID here can also be the 'OBS' pseudo bookID.
   */
   // functionLog(`checkBookPackage(un='${username}', lC='${languageCode}', bk='${bookID}', (fn), ${JSON.stringify(checkingOptions)})…`)
-  parameterAssert(username !== undefined, "checkBookPackage: 'username' parameter should be defined");
-  parameterAssert(typeof username === 'string', `checkBookPackage: 'username' parameter should be a string not a '${typeof username}': ${username}`);
-  parameterAssert(languageCode !== undefined, "checkBookPackage: 'languageCode' parameter should be defined");
-  parameterAssert(typeof languageCode === 'string', `checkBookPackage: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
-  parameterAssert(bookID !== undefined, "checkBookPackage: 'bookID' parameter should be defined");
-  parameterAssert(typeof bookID === 'string', `checkBookPackage: 'bookID' parameter should be a string not a '${typeof bookID}': ${bookID}`);
-  parameterAssert(bookID.length === 3, `checkBookPackage: 'bookID' parameter should be three characters long not ${bookID.length}`);
-  parameterAssert(bookID.toUpperCase() === bookID, `checkBookPackage: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-  parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkBookPackage: '${bookID}' is not a valid USFM book identifier`);
+  //parameterAssert(username !== undefined, "checkBookPackage: 'username' parameter should be defined");
+  //parameterAssert(typeof username === 'string', `checkBookPackage: 'username' parameter should be a string not a '${typeof username}': ${username}`);
+  //parameterAssert(languageCode !== undefined, "checkBookPackage: 'languageCode' parameter should be defined");
+  //parameterAssert(typeof languageCode === 'string', `checkBookPackage: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
+  //parameterAssert(bookID !== undefined, "checkBookPackage: 'bookID' parameter should be defined");
+  //parameterAssert(typeof bookID === 'string', `checkBookPackage: 'bookID' parameter should be a string not a '${typeof bookID}': ${bookID}`);
+  //parameterAssert(bookID.length === 3, `checkBookPackage: 'bookID' parameter should be three characters long not ${bookID.length}`);
+  //parameterAssert(bookID.toUpperCase() === bookID, `checkBookPackage: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+  //parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkBookPackage: '${bookID}' is not a valid USFM book identifier`);
 
   let abortFlag = false;
   const startTime = new Date();
@@ -63,7 +64,9 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   //  coz if it’s not 'master', it’s unlikely to be common for all the repos
   let originalBranch = 'master';
 
-  const generalLocation = ` in ${languageCode} ${bookID} book package from ${username} ${originalBranch} branch`;
+  // If it's a big book, drop this location string to reduce memory use in case of thousands of errors
+  let generalLocation = bookID === 'OBS' ? ` in ${languageCode} ${bookID} from ${username} ${originalBranch} branch` :
+    books.chaptersInBook(bookID) > 10 ? '' : ` in ${languageCode} ${bookID} book package from ${username} ${originalBranch} branch`;
 
 
   function addSuccessMessage(successString) {
@@ -75,28 +78,32 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   function addNoticePartial(noticeObject) {
     // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
     // functionLog(`checkBookPackage addNoticePartial: (priority=${noticeObject.priority}) ${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
-    parameterAssert(noticeObject.priority !== undefined, "cBP addNoticePartial: 'priority' parameter should be defined");
-    parameterAssert(typeof noticeObject.priority === 'number', `cBP addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-    parameterAssert(noticeObject.message !== undefined, "cBP addNoticePartial: 'message' parameter should be defined");
-    parameterAssert(typeof noticeObject.message === 'string', `cBP addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-    // parameterAssert(bookID !== undefined, "cBP addNoticePartial: 'bookID' parameter should be defined");
+    //parameterAssert(noticeObject.priority !== undefined, "cBP addNoticePartial: 'priority' parameter should be defined");
+    //parameterAssert(typeof noticeObject.priority === 'number', `cBP addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+    //parameterAssert(noticeObject.message !== undefined, "cBP addNoticePartial: 'message' parameter should be defined");
+    //parameterAssert(typeof noticeObject.message === 'string', `cBP addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+    // //parameterAssert(bookID !== undefined, "cBP addNoticePartial: 'bookID' parameter should be defined");
     if (noticeObject.bookID) {
-      parameterAssert(typeof noticeObject.bookID === 'string', `cBP addNoticePartial: 'bookID' parameter should be a string not a '${typeof noticeObject.bookID}': ${noticeObject.bookID}`);
-      parameterAssert(noticeObject.bookID.length === 3, `cBP addNoticePartial: 'bookID' parameter should be three characters long not ${noticeObject.bookID.length}`);
-      parameterAssert(bookID === 'OBS' || books.isValidBookID(noticeObject.bookID), `cBP addNoticePartial: '${noticeObject.bookID}' is not a valid USFM book identifier`);
+      //parameterAssert(typeof noticeObject.bookID === 'string', `cBP addNoticePartial: 'bookID' parameter should be a string not a '${typeof noticeObject.bookID}': ${noticeObject.bookID}`);
+      //parameterAssert(noticeObject.bookID.length === 3, `cBP addNoticePartial: 'bookID' parameter should be three characters long not ${noticeObject.bookID.length}`);
+      //parameterAssert(bookID === 'OBS' || books.isValidBookID(noticeObject.bookID), `cBP addNoticePartial: '${noticeObject.bookID}' is not a valid USFM book identifier`);
     }
-    // parameterAssert(C !== undefined, "cBP addNoticePartial: 'C' parameter should be defined");
-    if (noticeObject.C) parameterAssert(typeof noticeObject.C === 'string', `cBP addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
-    // parameterAssert(V !== undefined, "cBP addNoticePartial: 'V' parameter should be defined");
-    if (noticeObject.V) parameterAssert(typeof noticeObject.V === 'string', `cBP addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
-    // parameterAssert(characterIndex !== undefined, "cBP addNoticePartial: 'characterIndex' parameter should be defined");
-    if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cBP addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-    // parameterAssert(excerpt !== undefined, "cBP addNoticePartial: 'excerpt' parameter should be defined");
-    if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `cBP addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
-    parameterAssert(noticeObject.location !== undefined, "cBP addNoticePartial: 'location' parameter should be defined");
-    parameterAssert(typeof noticeObject.location === 'string', `cBP addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
-    parameterAssert(noticeObject.extra !== undefined, "cBP addNoticePartial: 'extra' parameter should be defined");
-    parameterAssert(typeof noticeObject.extra === 'string', `cBP addNoticePartial: 'extra' parameter should be a string not a '${typeof noticeObject.extra}': ${noticeObject.extra}`);
+    // //parameterAssert(C !== undefined, "cBP addNoticePartial: 'C' parameter should be defined");
+    if (noticeObject.C) { //parameterAssert(typeof noticeObject.C === 'string', `cBP addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
+    }
+    // //parameterAssert(V !== undefined, "cBP addNoticePartial: 'V' parameter should be defined");
+    if (noticeObject.V) { //parameterAssert(typeof noticeObject.V === 'string', `cBP addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
+    }
+    // //parameterAssert(characterIndex !== undefined, "cBP addNoticePartial: 'characterIndex' parameter should be defined");
+    if (noticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cBP addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+    }
+    // //parameterAssert(excerpt !== undefined, "cBP addNoticePartial: 'excerpt' parameter should be defined");
+    if (noticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cBP addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+    }
+    //parameterAssert(noticeObject.location !== undefined, "cBP addNoticePartial: 'location' parameter should be defined");
+    //parameterAssert(typeof noticeObject.location === 'string', `cBP addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+    //parameterAssert(noticeObject.extra !== undefined, "cBP addNoticePartial: 'extra' parameter should be defined");
+    //parameterAssert(typeof noticeObject.extra === 'string', `cBP addNoticePartial: 'extra' parameter should be a string not a '${typeof noticeObject.extra}': ${noticeObject.extra}`);
     if (noticeObject.debugChain) noticeObject.debugChain = `checkBookPackage ${noticeObject.debugChain}`;
     checkBookPackageResult.noticeList.push({ ...noticeObject, bookID, username });
   }
@@ -106,20 +113,20 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     // functionLog(`checkBookPackage ourCheckBPFileContents(rC='${repoCode}', rN='${repoName}', rBr='${repoBranch}', fn='${cfFilename}', ${fileContent.length}, ${fileLocation}, ${JSON.stringify(checkingOptions)})…`);
 
     // Updates the global list of notices
-    parameterAssert(repoCode !== undefined, "cBP ourCheckBPFileContents: 'repoCode' parameter should be defined");
-    parameterAssert(typeof repoCode === 'string', `cBP ourCheckBPFileContents: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
-    parameterAssert(REPO_CODES_LIST.includes(repoCode), `cBP ourCheckBPFileContents: 'repoCode' parameter should not be '${repoCode}'`);
-    parameterAssert(repoName !== undefined, "cBP ourCheckBPFileContents: 'repoName' parameter should be defined");
-    parameterAssert(typeof repoName === 'string', `cBP ourCheckBPFileContents: 'repoName' parameter should be a string not a '${typeof repoName}': ${repoName}`);
-    parameterAssert(repoBranch !== undefined, "cBP ourCheckBPFileContents: 'repoBranch' parameter should be defined");
-    parameterAssert(typeof repoBranch === 'string', `cBP ourCheckBPFileContents: 'repoBranch' parameter should be a string not a '${typeof repoBranch}': ${repoBranch}`);
-    parameterAssert(cfFilename !== undefined, "cBP ourCheckBPFileContents: 'cfFilename' parameter should be defined");
-    parameterAssert(typeof cfFilename === 'string', `cBP ourCheckBPFileContents: 'cfFilename' parameter should be a string not a '${typeof cfFilename}'`);
-    parameterAssert(fileContent !== undefined, "cBP ourCheckBPFileContents: 'fileContent' parameter should be defined");
-    parameterAssert(typeof fileContent === 'string', `cBP ourCheckBPFileContents: 'fileContent' parameter should be a string not a '${typeof fileContent}'`);
-    parameterAssert(fileLocation !== undefined, "cBP ourCheckBPFileContents: 'fileLocation' parameter should be defined");
-    parameterAssert(typeof fileLocation === 'string', `cBP ourCheckBPFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
-    parameterAssert(checkingOptions !== undefined, "cBP ourCheckBPFileContents: 'checkingOptions' parameter should be defined");
+    //parameterAssert(repoCode !== undefined, "cBP ourCheckBPFileContents: 'repoCode' parameter should be defined");
+    //parameterAssert(typeof repoCode === 'string', `cBP ourCheckBPFileContents: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
+    //parameterAssert(REPO_CODES_LIST.includes(repoCode), `cBP ourCheckBPFileContents: 'repoCode' parameter should not be '${repoCode}'`);
+    //parameterAssert(repoName !== undefined, "cBP ourCheckBPFileContents: 'repoName' parameter should be defined");
+    //parameterAssert(typeof repoName === 'string', `cBP ourCheckBPFileContents: 'repoName' parameter should be a string not a '${typeof repoName}': ${repoName}`);
+    //parameterAssert(repoBranch !== undefined, "cBP ourCheckBPFileContents: 'repoBranch' parameter should be defined");
+    //parameterAssert(typeof repoBranch === 'string', `cBP ourCheckBPFileContents: 'repoBranch' parameter should be a string not a '${typeof repoBranch}': ${repoBranch}`);
+    //parameterAssert(cfFilename !== undefined, "cBP ourCheckBPFileContents: 'cfFilename' parameter should be defined");
+    //parameterAssert(typeof cfFilename === 'string', `cBP ourCheckBPFileContents: 'cfFilename' parameter should be a string not a '${typeof cfFilename}'`);
+    //parameterAssert(fileContent !== undefined, "cBP ourCheckBPFileContents: 'fileContent' parameter should be defined");
+    //parameterAssert(typeof fileContent === 'string', `cBP ourCheckBPFileContents: 'fileContent' parameter should be a string not a '${typeof fileContent}'`);
+    //parameterAssert(fileLocation !== undefined, "cBP ourCheckBPFileContents: 'fileLocation' parameter should be defined");
+    //parameterAssert(typeof fileLocation === 'string', `cBP ourCheckBPFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
+    //parameterAssert(checkingOptions !== undefined, "cBP ourCheckBPFileContents: 'checkingOptions' parameter should be defined");
 
     let adjustedLanguageCode = languageCode;
     // if (repoCode === 'UHB') adjustedLanguageCode = 'hbo'; // NO -- we need the languageCode of the BP being checked (so we can resolve TW links with * for language) !!!
@@ -164,15 +171,15 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   async function ourCheckManifestFile(repoCode, repoName, repoBranch, manifestLocation, checkingOptions) {
     // Updates the global list of notices
     // functionLog(`checkBookPackage ourCheckManifestFile(${repoCode}, ${repoName}, ${repoBranch}, ${manifestLocation}, ${JSON.stringify(checkingOptions)})…`);
-    parameterAssert(repoCode !== undefined, "cBP ourCheckManifestFile: 'repoCode' parameter should be defined");
-    parameterAssert(typeof repoCode === 'string', `cBP ourCheckManifestFile: 'repoCode' parameter should be a string not a '${typeof repoCode}' : ${repoCode}`);
-    parameterAssert(REPO_CODES_LIST.includes(repoCode), `cBP ourCheckManifestFile: 'repoCode' parameter should not be '${repoCode}'`);
-    parameterAssert(repoName !== undefined, "cBP ourCheckManifestFile: 'repoName' parameter should be defined");
-    parameterAssert(typeof repoName === 'string', `cBP ourCheckManifestFile: 'repoName' parameter should be a string not a '${typeof repoName}': ${repoName}`);
-    parameterAssert(repoBranch !== undefined, "cBP ourCheckManifestFile: 'repoBranch' parameter should be defined");
-    parameterAssert(typeof repoBranch === 'string', `cBP ourCheckManifestFile: 'repoBranch' parameter should be a string not a '${typeof repoBranch}': ${repoBranch}`);
-    parameterAssert(manifestLocation !== undefined, "cBP ourCheckManifestFile: 'manifestLocation' parameter should be defined");
-    parameterAssert(typeof manifestLocation === 'string', `cBP ourCheckManifestFile: 'manifestLocation' parameter should be a string not a '${typeof manifestLocation}'`);
+    //parameterAssert(repoCode !== undefined, "cBP ourCheckManifestFile: 'repoCode' parameter should be defined");
+    //parameterAssert(typeof repoCode === 'string', `cBP ourCheckManifestFile: 'repoCode' parameter should be a string not a '${typeof repoCode}' : ${repoCode}`);
+    //parameterAssert(REPO_CODES_LIST.includes(repoCode), `cBP ourCheckManifestFile: 'repoCode' parameter should not be '${repoCode}'`);
+    //parameterAssert(repoName !== undefined, "cBP ourCheckManifestFile: 'repoName' parameter should be defined");
+    //parameterAssert(typeof repoName === 'string', `cBP ourCheckManifestFile: 'repoName' parameter should be a string not a '${typeof repoName}': ${repoName}`);
+    //parameterAssert(repoBranch !== undefined, "cBP ourCheckManifestFile: 'repoBranch' parameter should be defined");
+    //parameterAssert(typeof repoBranch === 'string', `cBP ourCheckManifestFile: 'repoBranch' parameter should be a string not a '${typeof repoBranch}': ${repoBranch}`);
+    //parameterAssert(manifestLocation !== undefined, "cBP ourCheckManifestFile: 'manifestLocation' parameter should be defined");
+    //parameterAssert(typeof manifestLocation === 'string', `cBP ourCheckManifestFile: 'manifestLocation' parameter should be a string not a '${typeof manifestLocation}'`);
 
     let manifestFileContent;
     try {
@@ -227,17 +234,17 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   async function ourCheckMarkdownFile(repoCode, repoName, repoBranch, filename, markdownLocation, checkingOptions) {
     // Updates the global list of notices
     // functionLog(`checkBookPackage ourCheckMarkdownFile(${repoCode}, ${repoName}, ${filename}, ${repoBranch}, ${markdownLocation}, ${JSON.stringify(checkingOptions)})…`);
-    parameterAssert(repoCode !== undefined, "cBP ourCheckMarkdownFile: 'repoCode' parameter should be defined");
-    parameterAssert(typeof repoCode === 'string', `cBP ourCheckMarkdownFile: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
-    parameterAssert(REPO_CODES_LIST.includes(repoCode), `cBP ourCheckMarkdownFile: 'repoCode' parameter should not be '${repoCode}'`);
-    parameterAssert(repoName !== undefined, "cBP ourCheckMarkdownFile: 'repoName' parameter should be defined");
-    parameterAssert(typeof repoName === 'string', `cBP ourCheckMarkdownFile: 'repoName' parameter should be a string not a '${typeof repoName}'`);
-    parameterAssert(repoBranch !== undefined, "cBP ourCheckMarkdownFile: 'repoBranch' parameter should be defined");
-    parameterAssert(typeof repoBranch === 'string', `cBP ourCheckMarkdownFile: 'repoBranch' parameter should be a string not a '${typeof repoBranch}'`);
-    parameterAssert(filename !== undefined, "cBP ourCheckMarkdownFile: 'filename' parameter should be defined");
-    parameterAssert(typeof filename === 'string', `cBP ourCheckMarkdownFile: 'filename' parameter should be a string not a '${typeof filename}': ${filename}`);
-    parameterAssert(markdownLocation !== undefined, "cBP ourCheckMarkdownFile: 'markdownLocation' parameter should be defined");
-    parameterAssert(typeof markdownLocation === 'string', `cBP ourCheckMarkdownFile: 'markdownLocation' parameter should be a string not a '${typeof markdownLocation}'`);
+    //parameterAssert(repoCode !== undefined, "cBP ourCheckMarkdownFile: 'repoCode' parameter should be defined");
+    //parameterAssert(typeof repoCode === 'string', `cBP ourCheckMarkdownFile: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
+    //parameterAssert(REPO_CODES_LIST.includes(repoCode), `cBP ourCheckMarkdownFile: 'repoCode' parameter should not be '${repoCode}'`);
+    //parameterAssert(repoName !== undefined, "cBP ourCheckMarkdownFile: 'repoName' parameter should be defined");
+    //parameterAssert(typeof repoName === 'string', `cBP ourCheckMarkdownFile: 'repoName' parameter should be a string not a '${typeof repoName}'`);
+    //parameterAssert(repoBranch !== undefined, "cBP ourCheckMarkdownFile: 'repoBranch' parameter should be defined");
+    //parameterAssert(typeof repoBranch === 'string', `cBP ourCheckMarkdownFile: 'repoBranch' parameter should be a string not a '${typeof repoBranch}'`);
+    //parameterAssert(filename !== undefined, "cBP ourCheckMarkdownFile: 'filename' parameter should be defined");
+    //parameterAssert(typeof filename === 'string', `cBP ourCheckMarkdownFile: 'filename' parameter should be a string not a '${typeof filename}': ${filename}`);
+    //parameterAssert(markdownLocation !== undefined, "cBP ourCheckMarkdownFile: 'markdownLocation' parameter should be defined");
+    //parameterAssert(typeof markdownLocation === 'string', `cBP ourCheckMarkdownFile: 'markdownLocation' parameter should be a string not a '${typeof markdownLocation}'`);
 
     let markdownFileContent;
     try {
@@ -257,7 +264,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       }
     }
     if (markdownFileContent) {
-      const cmtResultObject = await checkMarkdownText(languageCode, repoCode, repoName, markdownFileContent, markdownLocation, checkingOptions);
+      const cmtResultObject = await checkMarkdownText(languageCode, repoCode, filename.substring(0, filename.length - 3), markdownFileContent, markdownLocation, checkingOptions);
       // debugLog(`ourCheckMarkdownFile checkMarkdownText(${repoName}) returned ${cmtResultObject.successList.length} success message(s) and ${cmtResultObject.noticeList.length} notice(s)`);
       // debugLog(`ourCheckMarkdownFile checkMarkdownText(${repoName}) returned ${JSON.stringify(cmtResultObject)}`);
       // NOTE: We ignore the returned success messages here
@@ -298,13 +305,13 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   if (bookID === 'OBS') {
     // NOTE: No code below to handle OBS TN and TQ which are markdown repos
     if (dataSet === 'DEFAULT')
-      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN', 'OBS-SQ'];
+      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2'];
     else if (dataSet === 'OLD')
       repoCodeList = ['OBS', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
     else if (dataSet === 'NEW')
-      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN', 'OBS-SQ'];
+      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2'];
     else if (dataSet === 'BOTH')
-      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SQ'];
+      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SN', 'OBS-SN2', 'OBS-SQ2'];
   } else { // not OBS
     // We also need to know the number for USFM books
     try {
@@ -324,7 +331,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     if (dataSet === 'DEFAULT')
       repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'TWL', 'LT', 'ST', 'TN', 'TQ', 'SN', 'SQ'] : [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'];
     else if (dataSet === 'OLD')
-      repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'] : [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'];
+      repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'TWL', 'LT', 'ST', 'TN', 'TQ'] : [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'];
     else if (dataSet === 'NEW')
       repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'TWL', 'LT', 'ST', 'TN2', 'TQ2', 'SN', 'SQ'] : [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'];
     else if (dataSet === 'BOTH')
@@ -338,13 +345,15 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   for (const repoCode of repoCodeList) {
     // debugLog(`checkBookPackage for ${bookID} got repoCode=${repoCode} abortFlag=${abortFlag} from ${repoCodeList}`);
     if (abortFlag) break;
-    const repoLocation = ` in ${repoCode}${generalLocation}`;
     let adjustedRepoCode = repoCode, adjustedBranch = originalBranch;
     if (adjustedRepoCode.endsWith('2')) {
       adjustedRepoCode = adjustedRepoCode.substring(0, adjustedRepoCode.length - 1); // Remove the '2' from the end
       adjustedBranch = 'newFormat';
-    }
+      generalLocation = generalLocation.replace(originalBranch, adjustedBranch);
+    } else // doesn't end with 2
+      generalLocation = generalLocation.replace(adjustedBranch, originalBranch);
     let repoName = formRepoName(languageCode, adjustedRepoCode);
+    const repoLocation = ` in ${repoCode}${generalLocation}`;
     if (adjustedRepoCode.startsWith('OBS-'))
       adjustedRepoCode = adjustedRepoCode.substring(4); // Remove the 'OBS-' from the beginning
     // if (bookID === 'OBS' && dataSet === 'OLD' && repoCode !== 'OBS' && repoCode !== 'TWL' && repoName === `${languageCode}_${adjustedRepoCode.toLowerCase()}`)
@@ -376,11 +385,21 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
 
     if (repoCode === 'OBS') {
       // debugLog("Calling OBS checkRepo()…");
-      checkBookPackageResult = await checkRepo(username, `${languageCode}_obs`, originalBranch, generalLocation, setResultValue, newCheckingOptions); // Adds the notices to checkBookPackageResult
-      // functionLog(`checkRepo() returned ${checkBookPackageResult.successList.length} success message(s) and ${checkBookPackageResult.noticeList.length} notice(s)`);
-      // debugLog("crResultObject keys", JSON.stringify(Object.keys(checkBookPackageResult)));
+      const crResultObject = await checkRepo(username, `${languageCode}_obs`, originalBranch, generalLocation, setResultValue, newCheckingOptions); // Adds the notices to checkBookPackageResult
+      // debugLog(`checkRepo('OBS') returned ${crResultObject.successList.length} success message(s) and ${crResultObject.noticeList.length} notice(s)`);
+      // debugLog(`crResultObject keys: ${JSON.stringify(Object.keys(crResultObject))}`);
+      // debugLog(`crResultObject checkedRepoNames: ${crResultObject.checkedRepoNames}`);
+      checkBookPackageResult.successList = checkBookPackageResult.successList.concat(crResultObject.successList);
+      checkBookPackageResult.noticeList = checkBookPackageResult.noticeList.concat(crResultObject.noticeList);
+      if (crResultObject.checkedFileCount > 0) {
+        checkedFilenames = checkedFilenames.concat(crResultObject.checkedFilenames);
+        checkedFilenameExtensions = new Set([...checkedFilenameExtensions, ...crResultObject.checkedFilenameExtensions]);
+        checkedFileCount += crResultObject.checkedFileCount;
+        totalCheckedSize += crResultObject.totalCheckedSize;
+        checkedRepoNames.add(repoName);
+      }
       addSuccessMessage(`Checked ${languageCode} OBS repo from ${username}`);
-    } else if (adjustedRepoCode === 'TQ' || repoCode === 'OBS-TN') { // OBS-TN is markdown also for now
+    } else if (repoCode === 'TQ' || repoCode === 'OBS-TN'|| repoCode === 'OBS-TQ') { // These are still markdown for now
       // This is the old markdown resource with hundreds/thousands of files
       const tqResultObject = await checkTQMarkdownBook(username, languageCode, repoCode, repoName, originalBranch, bookID, newCheckingOptions);
       checkBookPackageResult.successList = checkBookPackageResult.successList.concat(tqResultObject.successList);
@@ -412,7 +431,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         else {
           // eslint-disable-next-line eqeqeq
           if (cBPgfError != 'TypeError: repoFileContent is null') details += ` error=${cBPgfError}`;
-          addNoticePartial({ priority: 996, message: "Unable to load", details, repoCode, repoName, filename, location: repoLocation, extra: repoCode });
+          addNoticePartial({ priority: repoCode === 'SN' || repoCode === 'SQ' ? 196 : 996, message: "Unable to load", details, repoCode, repoName, filename, location: repoLocation, extra: repoCode });
         }
       }
       if (repoFileContent) {
@@ -495,7 +514,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
 
   checkBookPackageResult.elapsedSeconds = (new Date() - startTime) / 1000; // seconds
   // debugLog("checkBookPackageResult:", JSON.stringify(checkBookPackageResult));
-  // functionLog(`checkBookPackageResult(${bookID}): elapsedSeconds = ${checkBookPackageResult.elapsedSeconds}, notices count = ${checkBookPackageResult.noticeList.length}`);
+  // debugLog(`checkBookPackageResult(${bookID}): elapsedSeconds = ${checkBookPackageResult.elapsedSeconds}, notices count = ${checkBookPackageResult.noticeList.length}`);
   return checkBookPackageResult;
 };
 // end of checkBookPackage()
@@ -517,22 +536,22 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
  */
 async function checkTQMarkdownBook(username, languageCode, repoCode, repoName, branch, bookID, checkingOptions) {
   // functionLog(`checkBookPackage checkTQMarkdownBook(${username}, ${languageCode}, ${repoCode} ${repoName}, ${branch}, ${bookID}, ${JSON.stringify(checkingOptions)})…`)
-  parameterAssert(username !== undefined, "checkTQMarkdownBook: 'username' parameter should be defined");
-  parameterAssert(typeof username === 'string', `checkTQMarkdownBook: 'username' parameter should be a string not a '${typeof username}': '${username}'`);
-  parameterAssert(languageCode !== undefined, "checkTQMarkdownBook: 'languageCode' parameter should be defined");
-  parameterAssert(typeof languageCode === 'string', `checkTQMarkdownBook: 'languageCode' parameter should be a string not a '${typeof languageCode}': '${languageCode}'`);
-  parameterAssert(repoCode !== undefined, "checkTQMarkdownBook: 'repoCode' parameter should be defined");
-  parameterAssert(typeof repoCode === 'string', `checkTQMarkdownBook: 'repoCode' parameter should be a string not a '${typeof repoCode}': '${repoCode}'`);
-  parameterAssert(repoCode === 'TQ' || repoCode === 'OBS-TQ', `checkTQMarkdownBook: 'repoCode' parameter should be 'TQ' or 'OBS-TQ' not '${repoCode}'`);
-  parameterAssert(repoName !== undefined, "checkTQMarkdownBook: 'repoName' parameter should be defined");
-  parameterAssert(typeof repoName === 'string', `checkTQMarkdownBook: 'repoName' parameter should be a string not a '${typeof repoName}': ${repoName}`);
-  parameterAssert(branch !== undefined, "checkTQMarkdownBook: 'branch' parameter should be defined");
-  parameterAssert(typeof branch === 'string', `checkTQMarkdownBook: 'branch' parameter should be a string not a '${typeof branch}': '${branch}'`);
-  parameterAssert(bookID !== undefined, "checkTQMarkdownBook: 'bookID' parameter should be defined");
-  parameterAssert(typeof bookID === 'string', `checkTQMarkdownBook: 'bookID' parameter should be a string not a '${typeof bookID}': ${bookID}`);
-  parameterAssert(bookID.length === 3, `checkTQMarkdownBook: 'bookID' parameter should be three characters long not ${bookID.length}`);
-  parameterAssert(bookID.toUpperCase() === bookID, `checkTQMarkdownBook: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-  parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkTQMarkdownBook: '${bookID}' is not a valid USFM book identifier`);
+  //parameterAssert(username !== undefined, "checkTQMarkdownBook: 'username' parameter should be defined");
+  //parameterAssert(typeof username === 'string', `checkTQMarkdownBook: 'username' parameter should be a string not a '${typeof username}': '${username}'`);
+  //parameterAssert(languageCode !== undefined, "checkTQMarkdownBook: 'languageCode' parameter should be defined");
+  //parameterAssert(typeof languageCode === 'string', `checkTQMarkdownBook: 'languageCode' parameter should be a string not a '${typeof languageCode}': '${languageCode}'`);
+  //parameterAssert(repoCode !== undefined, "checkTQMarkdownBook: 'repoCode' parameter should be defined");
+  //parameterAssert(typeof repoCode === 'string', `checkTQMarkdownBook: 'repoCode' parameter should be a string not a '${typeof repoCode}': '${repoCode}'`);
+  //parameterAssert(repoCode === 'TQ' || repoCode === 'OBS-TQ', `checkTQMarkdownBook: 'repoCode' parameter should be 'TQ' or 'OBS-TQ' not '${repoCode}'`);
+  //parameterAssert(repoName !== undefined, "checkTQMarkdownBook: 'repoName' parameter should be defined");
+  //parameterAssert(typeof repoName === 'string', `checkTQMarkdownBook: 'repoName' parameter should be a string not a '${typeof repoName}': ${repoName}`);
+  //parameterAssert(branch !== undefined, "checkTQMarkdownBook: 'branch' parameter should be defined");
+  //parameterAssert(typeof branch === 'string', `checkTQMarkdownBook: 'branch' parameter should be a string not a '${typeof branch}': '${branch}'`);
+  //parameterAssert(bookID !== undefined, "checkTQMarkdownBook: 'bookID' parameter should be defined");
+  //parameterAssert(typeof bookID === 'string', `checkTQMarkdownBook: 'bookID' parameter should be a string not a '${typeof bookID}': ${bookID}`);
+  //parameterAssert(bookID.length === 3, `checkTQMarkdownBook: 'bookID' parameter should be three characters long not ${bookID.length}`);
+  //parameterAssert(bookID.toUpperCase() === bookID, `checkTQMarkdownBook: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+  //parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkTQMarkdownBook: '${bookID}' is not a valid USFM book identifier`);
 
   const generalLocation = ` in ${username} (${branch})`;
 
@@ -546,26 +565,30 @@ async function checkTQMarkdownBook(username, languageCode, repoCode, repoName, b
   function addNoticePartial(noticeObject) {
     // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
     // functionLog(`checkTQMarkdownBook addNoticePartial: ${noticeObject.priority}:${noticeObject.message} ${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.filename}:${noticeObject.lineNumber} ${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.excerpt ? ` ${noticeObject.excerpt}` : ""}${noticeObject.location}`);
-    parameterAssert(noticeObject.priority !== undefined, "cTQ addNoticePartial: 'priority' parameter should be defined");
-    parameterAssert(typeof noticeObject.priority === 'number', `cTQ addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}'`);
-    parameterAssert(noticeObject.message !== undefined, "cTQ addNoticePartial: 'message' parameter should be defined");
-    parameterAssert(typeof noticeObject.message === 'string', `cTQ addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}'`);
-    parameterAssert(noticeObject.bookID !== undefined, "cTQ addNoticePartial: 'bookID' parameter should be defined");
-    parameterAssert(typeof noticeObject.bookID === 'string', `cTQ addNoticePartial: 'bookID' parameter should be a string not a '${typeof noticeObject.bookID}'`);
-    parameterAssert(noticeObject.bookID.length === 3, `cTQ addNoticePartial: 'bookID' parameter should be three characters long not ${noticeObject.bookID.length}`);
-    parameterAssert(noticeObject.bookID === 'OBS' || books.isValidBookID(noticeObject.bookID), `cTQ addNoticePartial: '${noticeObject.bookID}' is not a valid USFM book identifier`);
-    // parameterAssert(C !== undefined, "cTQ addNoticePartial: 'C' parameter should be defined");
-    if (noticeObject.C) parameterAssert(typeof noticeObject.C === 'string', `cTQ addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}'`);
-    // parameterAssert(V !== undefined, "cTQ addNoticePartial: 'V' parameter should be defined");
-    if (noticeObject.V) parameterAssert(typeof noticeObject.V === 'string', `cTQ addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}'`);
-    // parameterAssert(characterIndex !== undefined, "cTQ addNoticePartial: 'characterIndex' parameter should be defined");
-    if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cTQ addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}'`);
-    // parameterAssert(excerpt !== undefined, "cTQ addNoticePartial: 'excerpt' parameter should be defined");
-    if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `cTQ addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}'`);
-    parameterAssert(noticeObject.location !== undefined, "cTQ addNoticePartial: 'location' parameter should be defined");
-    parameterAssert(typeof noticeObject.location === 'string', `cTQ addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}'`);
-    parameterAssert(noticeObject.extra !== undefined, "cTQ addNoticePartial: 'extra' parameter should be defined");
-    parameterAssert(typeof noticeObject.extra === 'string', `cTQ addNoticePartial: 'extra' parameter should be a string not a '${typeof noticeObject.extra}'`);
+    //parameterAssert(noticeObject.priority !== undefined, "cTQ addNoticePartial: 'priority' parameter should be defined");
+    //parameterAssert(typeof noticeObject.priority === 'number', `cTQ addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}'`);
+    //parameterAssert(noticeObject.message !== undefined, "cTQ addNoticePartial: 'message' parameter should be defined");
+    //parameterAssert(typeof noticeObject.message === 'string', `cTQ addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}'`);
+    //parameterAssert(noticeObject.bookID !== undefined, "cTQ addNoticePartial: 'bookID' parameter should be defined");
+    //parameterAssert(typeof noticeObject.bookID === 'string', `cTQ addNoticePartial: 'bookID' parameter should be a string not a '${typeof noticeObject.bookID}'`);
+    //parameterAssert(noticeObject.bookID.length === 3, `cTQ addNoticePartial: 'bookID' parameter should be three characters long not ${noticeObject.bookID.length}`);
+    //parameterAssert(noticeObject.bookID === 'OBS' || books.isValidBookID(noticeObject.bookID), `cTQ addNoticePartial: '${noticeObject.bookID}' is not a valid USFM book identifier`);
+    // //parameterAssert(C !== undefined, "cTQ addNoticePartial: 'C' parameter should be defined");
+    if (noticeObject.C) { //parameterAssert(typeof noticeObject.C === 'string', `cTQ addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}'`);
+    }
+    // //parameterAssert(V !== undefined, "cTQ addNoticePartial: 'V' parameter should be defined");
+    if (noticeObject.V) { //parameterAssert(typeof noticeObject.V === 'string', `cTQ addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}'`);
+    }
+    // //parameterAssert(characterIndex !== undefined, "cTQ addNoticePartial: 'characterIndex' parameter should be defined");
+    if (noticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cTQ addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}'`);
+    }
+    // //parameterAssert(excerpt !== undefined, "cTQ addNoticePartial: 'excerpt' parameter should be defined");
+    if (noticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cTQ addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}'`);
+    }
+    //parameterAssert(noticeObject.location !== undefined, "cTQ addNoticePartial: 'location' parameter should be defined");
+    //parameterAssert(typeof noticeObject.location === 'string', `cTQ addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}'`);
+    //parameterAssert(noticeObject.extra !== undefined, "cTQ addNoticePartial: 'extra' parameter should be defined");
+    //parameterAssert(typeof noticeObject.extra === 'string', `cTQ addNoticePartial: 'extra' parameter should be a string not a '${typeof noticeObject.extra}'`);
     ctqResult.noticeList.push({ ...noticeObject, username, repoCode, repoName, bookID });
   }
 
@@ -585,16 +608,16 @@ async function checkTQMarkdownBook(username, languageCode, repoCode, repoName, b
     // functionLog(`checkBookPackage ourCheckTQFileContents(${repoCode}, ${bookID} ${C}:${V} ${cfFilename}…)…`);
 
     // Updates the global list of notices
-    parameterAssert(repoCode !== undefined, "cTQ ourCheckTQFileContents: 'repoCode' parameter should be defined");
-    parameterAssert(typeof repoCode === 'string', `cTQ ourCheckTQFileContents: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
-    parameterAssert(REPO_CODES_LIST.includes(repoCode), `cTQ ourCheckTQFileContents: 'repoCode' parameter should not be '${repoCode}'`);
-    parameterAssert(cfFilename !== undefined, "cTQ ourCheckTQFileContents: 'cfFilename' parameter should be defined");
-    parameterAssert(typeof cfFilename === 'string', `cTQ ourCheckTQFileContents: 'cfFilename' parameter should be a string not a '${typeof cfFilename}'`);
-    parameterAssert(fileContent !== undefined, "cTQ ourCheckTQFileContents: 'fileContent' parameter should be defined");
-    parameterAssert(typeof fileContent === 'string', `cTQ ourCheckTQFileContents: 'fileContent' parameter should be a string not a '${typeof fileContent}'`);
-    parameterAssert(fileLocation !== undefined, "cTQ ourCheckTQFileContents: 'fileLocation' parameter should be defined");
-    parameterAssert(typeof fileLocation === 'string', `cTQ ourCheckTQFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
-    parameterAssert(checkingOptions !== undefined, "cTQ ourCheckTQFileContents: 'checkingOptions' parameter should be defined");
+    //parameterAssert(repoCode !== undefined, "cTQ ourCheckTQFileContents: 'repoCode' parameter should be defined");
+    //parameterAssert(typeof repoCode === 'string', `cTQ ourCheckTQFileContents: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
+    //parameterAssert(REPO_CODES_LIST.includes(repoCode), `cTQ ourCheckTQFileContents: 'repoCode' parameter should not be '${repoCode}'`);
+    //parameterAssert(cfFilename !== undefined, "cTQ ourCheckTQFileContents: 'cfFilename' parameter should be defined");
+    //parameterAssert(typeof cfFilename === 'string', `cTQ ourCheckTQFileContents: 'cfFilename' parameter should be a string not a '${typeof cfFilename}'`);
+    //parameterAssert(fileContent !== undefined, "cTQ ourCheckTQFileContents: 'fileContent' parameter should be defined");
+    //parameterAssert(typeof fileContent === 'string', `cTQ ourCheckTQFileContents: 'fileContent' parameter should be a string not a '${typeof fileContent}'`);
+    //parameterAssert(fileLocation !== undefined, "cTQ ourCheckTQFileContents: 'fileLocation' parameter should be defined");
+    //parameterAssert(typeof fileLocation === 'string', `cTQ ourCheckTQFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
+    //parameterAssert(checkingOptions !== undefined, "cTQ ourCheckTQFileContents: 'checkingOptions' parameter should be defined");
 
     const cfResultObject = await checkFileContents(username, languageCode, repoCode, branch, cfFilename, fileContent, fileLocation, checkingOptions);
     // debugLog("checkFileContents() returned", cfResultObject.successList.length, "success message(s) and", cfResultObject.noticeList.length, "notice(s)");
@@ -603,7 +626,7 @@ async function checkTQMarkdownBook(username, languageCode, repoCode, repoName, b
     // Process noticeList line by line,  appending the repoCode as an extra field as we go
     for (const noticeEntry of cfResultObject.noticeList) {
       // noticeEntry is an array of eight fields: 1=priority, 2=bookID, 3=C, 4=V, 5=msg, 6=characterIndex, 7=excerpt, 8=location
-      // parameterAssert(Object.keys(noticeEntry).length === 5, `cTQ ourCheckTQFileContents notice length=${Object.keys(noticeEntry).length}`);
+      // //parameterAssert(Object.keys(noticeEntry).length === 5, `cTQ ourCheckTQFileContents notice length=${Object.keys(noticeEntry).length}`);
       // We add the repoCode as an extra value
       addNoticePartial({ ...noticeEntry, bookID, C, V, extra: repoCode });
     }
@@ -629,7 +652,7 @@ async function checkTQMarkdownBook(username, languageCode, repoCode, repoName, b
     for (const thisPath of pathList) {
       // debugLog("checkTQMarkdownBook: Try to load", username, repoName, thisPath, branch);
 
-      parameterAssert(thisPath.endsWith('.md'), `Expected ${thisPath} to end with .md`);
+      //parameterAssert(thisPath.endsWith('.md'), `Expected ${thisPath} to end with .md`);
       // const filename = thisPath.split('/').pop();
       const pathParts = thisPath.slice(0, -3).split('/');
       const C = pathParts[pathParts.length - 2].replace(/^0+(?=\d)/, ''); // Remove leading zeroes

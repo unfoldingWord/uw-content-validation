@@ -1,8 +1,9 @@
-import { userLog, parameterAssert } from '../core/utilities';
+// eslint-disable-next-line no-unused-vars
+import { userLog, parameterAssert, logicAssert } from '../core/utilities';
 import { isDisabledNotice } from '../core/disabled-notices';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.12';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.14';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -142,6 +143,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     // Run a check through the noticeList to help discover any programming errors that need fixing
     // This entire section may be commented out of production code
     if (givenNoticeObject.noticeList && givenNoticeObject.noticeList.length) {
+        // eslint-disable-next-line no-unused-vars
         const ALL_TSV_FIELDNAMES = ['Book', 'Chapter', 'Verse', 'Reference',
             'ID', 'Tags', 'SupportReference',
             'OrigWords', 'TWLink',
@@ -151,8 +153,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         const numberStore = {}, duplicatePriorityList = [];
         for (const thisGivenNotice of standardisedNoticeList) {
             const thisPriority = thisGivenNotice.priority, thisMsg = thisGivenNotice.message;
-            parameterAssert(typeof thisPriority === 'number' && thisPriority > 0 && thisPriority < 10000, `BAD PRIORITY for ${JSON.stringify(thisGivenNotice)}`);
-            parameterAssert(typeof thisMsg === 'string' && thisMsg.length >= 10, `BAD MESSAGE for ${JSON.stringify(thisGivenNotice)}`);
+            //(typeof thisPriority === 'number' && thisPriority > 0 && thisPriority < 10000, `BAD PRIORITY for ${JSON.stringify(thisGivenNotice)}`);
+            //parameterAssert(typeof thisMsg === 'string' && thisMsg.length >= 10, `BAD MESSAGE for ${JSON.stringify(thisGivenNotice)}`);
 
             // Check that notice priority numbers are unique (to detect programming errors)
             const oldMsg = numberStore[thisPriority];
@@ -186,48 +188,48 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 thisRowID = thisGivenNotice.rowID, thisFieldName = thisGivenNotice.fieldName,
                 thisLocation = thisGivenNotice.location, thisExtra = thisGivenNotice.extra;
             if (thisRepoName) {
-                parameterAssert(thisRepoName.indexOf(' ') < 0 && thisRepoName.indexOf('/') < 0 && thisRepoName.indexOf('\\') < 0, `repoName '${thisRepoName}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
-                if (thisLocation)
-                    parameterAssert(thisLocation.indexOf(thisRepoName) < 0, `repoName is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
+                //parameterAssert(thisRepoName.indexOf(' ') < 0 && thisRepoName.indexOf('/') < 0 && thisRepoName.indexOf('\\') < 0, `repoName '${thisRepoName}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+                if (thisLocation) { //parameterAssert(thisLocation.indexOf(thisRepoName) < 0, `repoName is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
+                }
             }
             if (thisFilename) {
-                parameterAssert(thisFilename.indexOf(':') < 0 && thisFilename.indexOf('\\') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
-                parameterAssert(ALL_TSV_FIELDNAMES.indexOf(thisFilename) < 0, `filename '${thisFilename}' contains a TSV fieldName!`);
+                logicAssert(thisFilename.indexOf(':') < 0 && thisFilename.indexOf('\\') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+                logicAssert(ALL_TSV_FIELDNAMES.indexOf(thisFilename) < 0, `filename '${thisFilename}' contains a TSV fieldName!`);
                 // NOTE: Some OBS and other messages have to include part of the part in the 'filename' (to prevent ambiguity) so we don’t disallow forward slash
                 // if (!thisRepoName || !(thisRepoName.endsWith('_obs') || thisRepoName.endsWith('_ta') || thisRepoName.endsWith('_tw')))
                 //     parameterAssert(thisFilename.indexOf('/') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 if (thisLocation)
-                    parameterAssert(thisLocation.indexOf(thisFilename) < 0, `filename is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
+                    logicAssert(thisLocation.indexOf(thisFilename) < 0, `filename is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
             }
             if (thisC)
-                parameterAssert(thisC === 'front' || !isNaN(thisC * 1), `C '${thisC}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+                logicAssert(thisC === 'front' || !isNaN(thisC * 1), `C '${thisC}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
             if (thisV) { // NOTE: We don't allow for a en-dash in verse ranges -- should we?
                 if (thisV.indexOf('-') !== -1) { // it contains a hyphen, i.e., a verse range
                     const vBits = thisV.split('-');
-                    parameterAssert(vBits.length === 2 && !isNaN(vBits[0] * 1) && !isNaN(vBits[1] * 1), `V '${thisV}' verse range contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+                    logicAssert(vBits.length === 2 && !isNaN(vBits[0] * 1) && !isNaN(vBits[1] * 1), `V '${thisV}' verse range contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 } else // NOTE: Question mark below is in "bad verse number" notices
-                    parameterAssert(thisV === 'intro' || thisV === '?' || !isNaN(thisV * 1), `V '${thisV}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+                    logicAssert(thisV === 'intro' || thisV === '?' || !isNaN(thisV * 1), `V '${thisV}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
             }
             if (thisRowID) {
-                parameterAssert(thisRowID.indexOf(' ') < 0 && thisRowID.indexOf('/') < 0 && thisRowID.indexOf('\\') < 0, `rowID '${thisRowID}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+                logicAssert(thisRowID.indexOf(' ') < 0 && thisRowID.indexOf('/') < 0 && thisRowID.indexOf('\\') < 0, `rowID '${thisRowID}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 if (thisLocation)
-                    parameterAssert(thisLocation.indexOf(thisRowID) < 0, `rowID is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
+                    logicAssert(thisLocation.indexOf(thisRowID) < 0, `rowID is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
             }
             if (thisFieldName) {
                 // NOTE: fieldName can be a USFM marker, e.g., 'from \w'
-                parameterAssert(thisFieldName.indexOf('/') < 0, `fieldName '${thisFieldName}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+                logicAssert(thisFieldName.indexOf('/') < 0, `fieldName '${thisFieldName}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 if (thisLocation)
-                    parameterAssert(thisLocation.indexOf(thisFieldName) < 0, `fieldName is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
+                    logicAssert(thisFieldName === 'w' // 'w' is just too likely to occur in the location string
+                        || thisLocation.indexOf(thisFieldName) < 0, `fieldName is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
             }
             if (thisLineNumber) {
-                parameterAssert(typeof thisLineNumber === 'number' && thisLineNumber > 0, `lineNumber '${thisLineNumber}' contains unexpected value in ${JSON.stringify(thisGivenNotice)}`);
+                logicAssert(typeof thisLineNumber === 'number' && thisLineNumber > 0, `lineNumber '${thisLineNumber}' contains unexpected value in ${JSON.stringify(thisGivenNotice)}`);
                 // Note: lineNumber can occur in location, e.g., in 3 in '3JN' or 'Door43' so have to take additional care not to give false alarms
                 if (thisLocation && thisLineNumber > 4 && thisLineNumber !== 43)
                     // && (!thisGivenNotice.bookID || thisGivenNotice.bookID.indexOf(thisLineNumber + '') < 0)
-                    parameterAssert(thisLocation.indexOf(thisLineNumber + '') < 0 && thisLocation.indexOf(thisLineNumber.toLocaleString()) < 0, `lineNumber might be repeated in location in ${JSON.stringify(thisGivenNotice)}`);
+                    logicAssert(thisLocation.indexOf(thisLineNumber + '') < 0 && thisLocation.indexOf(thisLineNumber.toLocaleString()) < 0, `lineNumber might be repeated in location in ${JSON.stringify(thisGivenNotice)}`);
             }
-            if (thisExtra)
-                parameterAssert(thisExtra !== '01', `extra should not be '${thisExtra}'`);
+            if (thisExtra) { logicAssert(thisExtra !== '01', `extra should not be '${thisExtra}'`); }
             numberStore[thisPriority] = thisMsg;
         }
     }
@@ -254,7 +256,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         // debugLog(`Using default ignorePriorityNumberList=${JSON.stringify(ignorePriorityNumberList)}`);
     }
     else userLog(`processNoticesCommon: Using supplied ignorePriorityNumberList=${JSON.stringify(ignorePriorityNumberList)} cf. default=${JSON.stringify(DEFAULT_IGNORE_PRIORITY_NUMBER_LIST)}`);
-    parameterAssert(Array.isArray(ignorePriorityNumberList), `ignorePriorityNumberList should be an Array, not ${typeof ignorePriorityNumberList}=${ignorePriorityNumberList}`);
+    //parameterAssert(Array.isArray(ignorePriorityNumberList), `ignorePriorityNumberList should be an Array, not ${typeof ignorePriorityNumberList}=${ignorePriorityNumberList}`);
     let sortBy;
     try {
         sortBy = optionalProcessingOptions.sortBy;
@@ -289,6 +291,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         else { // successList is fairly long -- maybe we can shorten it by combining multiple similar messages
             const BibleRegex = /\d\d-(\w\w\w).usfm/; // "Checked JUD file: 66-JUD.usfm"
             const NotesRegex = /\d\d-(\w\w\w).tsv/; // "Checked EN_TN_01-GEN.TSV file: en_tn_01-GEN.tsv"
+            // const TWLRegex = /twl_(\w\w\w).tsv/; // From repoCheck "Checked en_twl BBB file: twl_BBB.tsv"
             const manifestRegex = /Checked ([\w\-_]{2,25}) manifest file/;
             const READMEregex = /Checked ([\w\-_]{2,25}) README file/;
             const LICENSEregex = /Checked ([\w\-_]{2,25}) LICENSE file/;
@@ -303,6 +306,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                     UHBBookList.push(thisParticularSuccessMsg.substring(18, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked UGNT file: '))
                     UGNTBookList.push(thisParticularSuccessMsg.substring(19, thisParticularSuccessMsg.length))
+                else if (thisParticularSuccessMsg.startsWith('Checked TWL file: '))
+                    TWLList.push(thisParticularSuccessMsg.substring(18, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked LT file: '))
                     LTBookList.push(thisParticularSuccessMsg.substring(17, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked ST file: '))
@@ -310,9 +315,9 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 else if (thisParticularSuccessMsg.startsWith('Checked TN file: '))
                     TNBookList.push(thisParticularSuccessMsg.substring(17, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked TN2 file: '))
-                    TN2BookList.push(thisParticularSuccessMsg.substring(17, thisParticularSuccessMsg.length))
+                    TN2BookList.push(thisParticularSuccessMsg.substring(18, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked TQ2 file: '))
-                    TQ2BookList.push(thisParticularSuccessMsg.substring(17, thisParticularSuccessMsg.length))
+                    TQ2BookList.push(thisParticularSuccessMsg.substring(18, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked TN2 ') && thisParticularSuccessMsg.substring(14, 20) === ' file:')
                     TNList.push(thisParticularSuccessMsg.substring(21, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked TQ2 ') && thisParticularSuccessMsg.substring(14, 20) === ' file:')
@@ -327,6 +332,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                     // but don’t do it for Book Package checks (in different repos)
                     && thisParticularSuccessMsg.startsWith(`Checked ${regexResult[1]} file`))
                     TSVNotesList.push(regexResult[1]);
+                // else if ((regexResult = TWLRegex.exec(thisParticularSuccessMsg)) !== null)
+                //     TWLList.push(regexResult[1]);
                 else if ((regexResult = manifestRegex.exec(thisParticularSuccessMsg)) !== null)
                     manifestsList.push(regexResult[1]);
                 else if ((regexResult = READMEregex.exec(thisParticularSuccessMsg)) !== null)
@@ -341,6 +348,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 resultObject.successList.push(`Checked UHB file: ${UHBBookList[0]}`);
             if (UGNTBookList.length === 1)
                 resultObject.successList.push(`Checked UGNT file: ${UGNTBookList[0]}`);
+            // if (TWLBookList.length === 1)
+            // resultObject.successList.push(`Checked TWL file: ${TWLBookList[0]}`);
             if (LTBookList.length === 1)
                 resultObject.successList.push(`Checked LT file: ${LTBookList[0]}`);
             if (STBookList.length === 1)
@@ -395,6 +404,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 resultObject.successList.unshift(`Checked ${STBookList.length} ST files: ${STBookList.join(', ')}`);
             if (LTBookList.length > 1)
                 resultObject.successList.unshift(`Checked ${LTBookList.length} LT files: ${LTBookList.join(', ')}`);
+            // if (TWLBookList.length > 1)
+            // resultObject.successList.unshift(`Checked ${TWLBookList.length} TWL files: ${LTBookList.join(', ')}`);
             if (UGNTBookList.length > 1)
                 resultObject.successList.unshift(`Checked ${UGNTBookList.length} UGNT files: ${UGNTBookList.join(', ')}`);
             if (UHBBookList.length > 1)
@@ -483,7 +494,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         const newNoticeList = [];
         for (const thisNotice of remainingNoticeList) {
             const thisExtra = thisNotice.extra;
-            parameterAssert(thisExtra && thisExtra.length, `Expect thisNotice to have an "extra" field: ${JSON.stringify(thisNotice)}`)
+            logicAssert(thisExtra && thisExtra.length, `Expect thisNotice to have an "extra" field: ${JSON.stringify(thisNotice)}`)
             const newNotice = { ...thisNotice };
             // We don’t need the extra field if we've already got this info
             if (thisExtra !== thisNotice.repoName && thisExtra !== thisNotice.bookID)
@@ -569,12 +580,12 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
         if (maximumSimilarMessages > 0 && allTotals[thisCombinedID] > maximumSimilarMessages + 1 && counter[thisCombinedID] === maximumSimilarMessages + 1) {
             if (thisPriority >= errorPriorityLevel) {
                 const numSuppressed = allTotals[thisCombinedID] - maximumSimilarMessages;
-                parameterAssert(numSuppressed !== 1, `Shouldn’t suppress just one error of priority ${thisPriority}`);
+                logicAssert(numSuppressed !== 1, `Shouldn’t suppress just one error of priority ${thisPriority}`);
                 resultObject.errorList.push({ priority: -1, message: thisMsg, location: ` ▲ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
                 resultObject.numSuppressedErrors++;
             } else {
                 const numSuppressed = allTotals[thisCombinedID] - maximumSimilarMessages;
-                parameterAssert(numSuppressed !== 1, `Shouldn’t suppress just one warning of priority ${thisPriority}`);
+                logicAssert(numSuppressed !== 1, `Shouldn’t suppress just one warning of priority ${thisPriority}`);
                 resultObject.warningList.push({ priority: -1, message: thisMsg, location: ` ▲ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
                 resultObject.numSuppressedWarnings++;
             }
@@ -667,17 +678,17 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
         if (maximumSimilarMessages > 0 && allTotals[thisCombinedID] > maximumSimilarMessages + 1 && counter[thisCombinedID] === maximumSimilarMessages + 1) {
             if (thisPriority >= severePriorityLevel) {
                 const numSuppressed = allTotals[thisCombinedID] - maximumSimilarMessages;
-                parameterAssert(numSuppressed !== 1, `Shouldn’t suppress just one severe error of priority ${thisPriority}`);
+                logicAssert(numSuppressed !== 1, `Shouldn’t suppress just one severe error of priority ${thisPriority}`);
                 resultObject.severeList.push({ priority: -1, message: thisMsg, location: ` ▲ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
                 resultObject.numSevereSuppressed++;
             } else if (thisPriority >= mediumPriorityLevel) {
                 const numSuppressed = allTotals[thisCombinedID] - maximumSimilarMessages;
-                parameterAssert(numSuppressed !== 1, `Shouldn’t suppress just one medium error of priority ${thisPriority}`);
+                logicAssert(numSuppressed !== 1, `Shouldn’t suppress just one medium error of priority ${thisPriority}`);
                 resultObject.mediumList.push({ priority: -1, message: thisMsg, location: ` ▲ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
                 resultObject.numMediumSuppressed++;
             } else {
                 const numSuppressed = allTotals[thisCombinedID] - maximumSimilarMessages;
-                parameterAssert(numSuppressed !== 1, `Shouldn’t suppress just one low warning of priority ${thisPriority}`);
+                logicAssert(numSuppressed !== 1, `Shouldn’t suppress just one low warning of priority ${thisPriority}`);
                 resultObject.lowList.push({ priority: -1, message: thisMsg, location: ` ▲ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
                 resultObject.numLowSuppressed++;
             }
@@ -752,7 +763,7 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
         else counter[thisCombinedID]++;
         if (maximumSimilarMessages > 0 && allTotals[thisCombinedID] > maximumSimilarMessages + 1 && counter[thisCombinedID] === maximumSimilarMessages + 1) {
             const numSuppressed = allTotals[thisCombinedID] - maximumSimilarMessages;
-            parameterAssert(numSuppressed !== 1, `Shouldn’t suppress just one notice of priority ${thisPriority}`);
+            logicAssert(numSuppressed !== 1, `Shouldn’t suppress just one notice of priority ${thisPriority}`);
             resultObject.warningList.push({ priority: thisPriority, message: thisMsg, location: ` ▲ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
             resultObject.numSuppressedWarnings++;
         } else if (maximumSimilarMessages > 0 && counter[thisCombinedID] > maximumSimilarMessages + 1) {

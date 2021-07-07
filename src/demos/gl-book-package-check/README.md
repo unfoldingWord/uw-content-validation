@@ -1,6 +1,6 @@
 ## Door43 Gateway Language Book Package Check - Readme
 
-The code below requests some info and then checks the single specified Bible book in several repos. This is convenient to see all these check results collected into one place.
+The code below requests some info and then downloads and checks the single specified Bible book in several repos. This is convenient to see all these check results collected into one place.
 
 See a list of valid book identifiers [here](http://ubsicap.github.io/usfm/identification/books.html), although only `GEN` to `REV` from that list are useful here.
 
@@ -13,8 +13,10 @@ Note that `OBS` can also be entered here as a *pseudo book identifier* in order 
 **Note**: This demonstration can use saved (cached) copies of files stored inside the local browser. This makes reruns of the checks faster, but it won’t notice if you have recently updated the files on Door43. If you want to clear the local caches, use either the `reloadAllFilesFirst` variable below, or the `Clear Cache` function from the menu.
 
 ```js
-// The code in this box is editable for changing settings—
-//        Simply click inside here and add, change, or delete text as required.
+// The control code in this box is editable for changing settings—
+//    simply click inside here and add, change, or delete text as required.
+// Note that (gray) lines starting with // are "comments", i.e., they are ignored by the software
+//    so if you want to enable those lines, you must remove the // from the beginning of the line.
 
 import { clearCheckedArticleCache } from '../../core';
 import GlBookPackageCheck from './GlBookPackageCheck';
@@ -49,7 +51,7 @@ clearCheckedArticleCache();
   // Specifying maximumSimilarMessages and excerptLength is just to show off options
   // —those fields are not necessary (or normal) here
   maximumSimilarMessages='4' // Default is 3 (0 means don’t suppress any)
-  // excerptLength='20' // Default is 15
+  // excerptLength='25' // Default is 20 characters
   // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
   />
 ```

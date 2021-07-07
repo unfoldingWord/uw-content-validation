@@ -105,7 +105,7 @@ There is provision for checking to be altered and/or sped-up when the calling ap
 - `taRepoUsername`, `taRepoBranchName`: these two fields can be used to specify the username/organisation and/or the branch/tag name for fetching the TA files for checking
 - `taRepoLanguageCode`, and `taRepoSectionName`: can be used to specify how the `SupportReference` field is checked in TA—defaults are 'en' and 'translate'
 - `twRepoUsername`, `twRepoBranchName`: these two fields can be used to specify the username/organisation and/or the branch/tag name for fetching the TW files for checking
-- `excerptLength`: an integer which defines how long excerpts of lines containing errors should be—the default is 15 characters—the package attempts to place the error in the middle of the excerpt
+- `excerptLength`: an integer which defines how long excerpts of lines containing errors should be—the default is 20 characters—the package attempts to place the error in the middle of the excerpt
 - `cutoffPriorityLevel`: an integer which can define notices to not be detected—defaults to 0 so none are dropped. Note that this will also affect the `suggestion` response. (Only partially implemented at present, so drops some but not all low priority notices.)
 - `suppressNoticeDisablingFlag`: Defaults to `false`, i.e., to removing (thus suppressing) notices for warnings which are expected in certain files and hence we don’t want them displayed. Note that this is always set to `true` for the demos (because they suppress these notices later—see the `showDisabledNoticesFlag` below).
 
@@ -140,13 +140,13 @@ There is a list of open issues at [[https://github.com/unfoldingWord/uw-content-
 1. Checking of general markdown and naked links (esp. in plain text and markdown files)
 1. Work through all [Issues](https://github.com/unfoldingWord/uw-content-validation/issues)
 1. Work through all `ToDo`s in code
-1. Standardise parameters according to best practice (i.e., dereferencing, etc.)—might be too late now???
-1. Document the API with (JsDoc)
+1. Standardise parameters according to best practice (i.e., dereferencing, etc.)—might be too late now coz it would affect API presented to users???
+1. Document the API (with JsDoc)
 1. Improve general documentation in the code and readMe files
 1. Is our `RepoCheck` the same as `ResourceContainerCheck`? Or is the latter more specific?
 1. Understand and standardise React stuff in the demos, e.g., e.g., withStyles, etc.
 1. Check for and remove left-over (but unused) code from the source projects that the original code was copied from
-1. Remove all debug code and console logging, and to consider possible speed and memory optimizations
+1. Remove all debug code and console logging, and to consider possible speed and memory optimizations (incl. async and/or multi-worker operations)
 1. Add a Scripture Burrito check (once Door43 has that available).
 
 Known bugs:

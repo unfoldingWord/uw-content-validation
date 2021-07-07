@@ -5,10 +5,10 @@ import { clearCaches, clearCheckedArticleCache, preloadReposIfNecessary, ourPars
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderTotals } from '../RenderProcessedResults';
 import { checkBookPackage } from '../book-package-check/checkBookPackage';
-import { userLog } from '../../core/utilities';
+import { userLog, logicAssert } from '../../core/utilities';
 
 
-// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.10';
+// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.13';
 
 
 function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
@@ -30,9 +30,6 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
     // debugLog(`dataSet='${dataSet}'`);
     let branch = props.branch;
     // debugLog(`branch='${branch}'`);
-
-    // Clear cached files if we've changed repo
-    //  autoClearCache(bookIDs); // This technique avoids the complications of needing a button
 
     const checkingOptions = { // Uncomment any of these to test them
         // excerptLength: 25,
@@ -73,16 +70,38 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
                 setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running GL book packages check…</p>);
                 await clearCaches();
             }
-            else await clearCheckedArticleCache();
+            else await clearCheckedArticleCache(); // otherwise we wouldn't see any of the warnings again from checking these
 
-            // Load whole repos, especially if we are going to check files in manifests
-            let repoPreloadList = ['UHB', 'UGNT', 'TWL', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
-            if (dataSet === 'OLD')
-                repoPreloadList = ['UHB', 'UGNT', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ'];
-            else if (dataSet === 'NEW')
-                repoPreloadList = ['UHB', 'UGNT', 'TWL', 'LT', 'ST', 'TN2', 'TA', 'TW', 'TQ2'];
-            else if (dataSet === 'BOTH')
-                repoPreloadList = ['UHB', 'UGNT', 'TWL', 'LT', 'ST', 'TN', 'TN2', 'TA', 'TW', 'TQ', 'TQ2'];
+            // Load whole repo zip files which is maybe faster than loading several individual files
+            //  especially if we are going to also check the manifests, license, and ReadMe files as well as the book file.
+            // Remember that the manifest check actually checks the existence of all the projects, i.e., all files in the repo
+            let repoPreloadList;
+            if (bookID === 'OBS') {
+                repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2']; // for DEFAULT
+                if (dataSet === 'OLD')
+                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
+                else if (dataSet === 'NEW')
+                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN', 'OBS-SQ'];
+                else if (dataSet === 'BOTH')
+                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SN', 'OBS-SN2', 'OBS-SQ2'];
+            } else { // not OBS
+                repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TQ', 'SN', 'SQ']; // for DEFAULT
+                if (dataSet === 'OLD')
+                    repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TQ'];
+                else if (dataSet === 'NEW')
+                    repoPreloadList = ['TWL', 'LT', 'ST', 'TN2', 'TQ2', 'SN', 'SQ'];
+                else if (dataSet === 'BOTH')
+                    repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TN2', 'TQ', 'TQ2', 'SN', 'SQ'];
+                const whichTestament = books.testament(bookID); // returns 'old' or 'new'
+                logicAssert(whichTestament === 'old' || whichTestament === 'new', `BookPackageCheck() couldn't find testament for '${bookID}'`);
+                const origLangRepo = whichTestament === 'old' ? 'UHB' : 'UGNT';
+                repoPreloadList.unshift(origLangRepo);
+            }
+            if (!checkingOptions.disableAllLinkFetchingFlag) { // Both Bible books and OBS refer to TW and TA
+                repoPreloadList.push('TW');
+                repoPreloadList.push('TA');
+            }
+            // debugLog(`GlBookPackageCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
 
             setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for GL book package check…</p>);
             const successFlag = await preloadReposIfNecessary(username, languageCode, [bookID], branch, repoPreloadList);
@@ -92,14 +111,14 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
             // Display our "waiting" message
             setResultValue(<p style={{ color: 'magenta' }}>Checking <i>{username}</i> {languageCode} <b>{bookID}</b> book packages…</p>);
 
-            const rawCBPsResults = await checkBookPackage(username, languageCode, bookID, setResultValue, checkingOptions);
+            const rawGlBPsResults = await checkBookPackage(username, languageCode, bookID, setResultValue, checkingOptions);
             // debugLog("checkBookPackage() returned", typeof rawCBPsResults); //, JSON.stringify(rawCBPsResults));
 
             // Add some extra fields to our rawCBPsResults object in case we need this information again later
-            rawCBPsResults.checkType = 'BookPackages';
-            rawCBPsResults.username = username;
-            rawCBPsResults.languageCode = languageCode;
-            rawCBPsResults.checkedOptions = checkingOptions;
+            rawGlBPsResults.checkType = 'GLBookPackages';
+            rawGlBPsResults.username = username;
+            rawGlBPsResults.languageCode = languageCode;
+            rawGlBPsResults.checkedOptions = checkingOptions;
 
             // debugLog("Here with CBPs rawCBPsResults", typeof rawCBPsResults);
             // Now do our final handling of the result -- we have some options available
@@ -124,13 +143,13 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
                 return (<div>
                     <p>Checked <b>{username} {languageCode} {bookID}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
                     <RenderSuccesses username={username} results={processedResults} />
-                    <RenderTotals rawNoticeListLength={rawCBPsResults.noticeList.length} results={processedResults} />
+                    <RenderTotals rawNoticeListLength={rawGlBPsResults.noticeList.length} results={processedResults} />
                     {/* <RenderRawResults results={rawCBPsResults} /> */}
                 </div>);
             }
 
             if (displayType === 'ErrorsWarnings') {
-                const processedResults = processNoticesToErrorsWarnings(rawCBPsResults, processOptions);
+                const processedResults = processNoticesToErrorsWarnings(rawGlBPsResults, processOptions);
                 //                 userLog(`GlBookPackageCheck got back processedResults with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
                 //   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
@@ -148,7 +167,7 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
                     </>);
 
             } else if (displayType === 'SevereMediumLow') {
-                const processedResults = processNoticesToSevereMediumLow(rawCBPsResults, processOptions);
+                const processedResults = processNoticesToSevereMediumLow(rawGlBPsResults, processOptions);
                 //                 userLog(`GlBookPackageCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s), ${processedResults.errorList.length.toLocaleString()} error(s) and ${processedResults.warningList.length.toLocaleString()} warning(s)
                 //   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedErrors=${processedResults.numSuppressedErrors.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 
@@ -164,7 +183,7 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
                     </>);
 
             } else if (displayType === 'SingleList') {
-                const processedResults = processNoticesToSingleList(rawCBPsResults, processOptions);
+                const processedResults = processNoticesToSingleList(rawGlBPsResults, processOptions);
                 //                 userLog(`GlBookPackageCheck got processed results with ${processedResults.successList.length.toLocaleString()} success message(s) and ${processedResults.warningList.length.toLocaleString()} notice(s)
                 //   numIgnoredNotices=${processedResults.numIgnoredNotices.toLocaleString()} numSuppressedWarnings=${processedResults.numSuppressedWarnings.toLocaleString()}`);
 

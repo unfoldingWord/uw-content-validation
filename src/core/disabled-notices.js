@@ -1,4 +1,5 @@
-import { debugLog, userLog } from './utilities';
+// eslint-disable-next-line no-unused-vars
+import { debugLog, userLog, functionLog } from './utilities';
 
 /* This file handles the suppression of notices where we don’t want to disable or remove the actual check,
     but we just want to disable it for certain resources to handle special cases.
@@ -10,7 +11,7 @@ import { debugLog, userLog } from './utilities';
 */
 
 
-// const DISABLED_NOTICES_VERSION_STRING = '0.3.4';
+// const DISABLED_NOTICES_VERSION_STRING = '0.3.5';
 
 
 const disabledNotices = [
@@ -19,6 +20,7 @@ const disabledNotices = [
 
   { repoCode: 'TN', priority: 450, }, // TN "Resource container link should have '*' language code with (not 'en')" disabled as tC can’t handle it yet!
   { repoCode: 'TW', priority: 450, }, // TW "Resource container link should have '*' language code with (not 'en')" disabled as tC can’t handle it yet!
+  { extra: 'TW', priority: 450, }, // TW "Resource container link should have '*' language code with (not 'en')" disabled as tC can’t handle it yet!
 
   { repoCode: 'ST', message: "Bad punctuation nesting: } closing character doesn’t match", bookID: 'NEH', }, // 777 - complex { } nesting in direct speech
   { repoCode: 'ST', message: "Bad punctuation nesting: ” closing character doesn’t match", bookID: 'NEH', }, // 777 - complex { } nesting in direct speech
@@ -72,7 +74,8 @@ const disabledNotices = [
  */
 export function isDisabledNotice(givenNotice) {
   // NOTE: The function will fail if repoCode is not set in the notices passed to this function
-  // debugLog(`isDisabledNotice(${JSON.stringify(givenNotice)})…`);
+  // NOTE: 'extra' is still valid at this point (not yet prepended to 'message')
+  // functionLog(`isDisabledNotice(${JSON.stringify(givenNotice)})…`);
   // if (givenNotice.repoCode === undefined) debugLog(`isDisabledNotice() cannot work without repoCode for ${JSON.stringify(givenNotice)}`);
   for (const disabledNotice of disabledNotices) {
     let matchedAllSpecifiedFields = true;

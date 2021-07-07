@@ -1,18 +1,20 @@
 ## Manifest Text Check Sandbox
 
-This function checks the given manifest.yaml for typical formatting errors. See https://resource-container.readthedocs.io/en/latest/manifest.html for the manifest specification.
+This function checks the given manifest.yaml for typical formatting errors. See [[https://resource-container.readthedocs.io/en/latest/manifest.html]] for the manifest specification.
 
 It returns a list of success messages and a list of notice components. (There is always a priority number in the range 0..999 and the main message string, as well as other details to help locate the error as available.)
 
 These raw notice components can then be filtered and/or sorted as required by the calling program, and then divided into a list of errors and a list of warnings or whatever as desired.
 
 ```js
-// The code in this box is editable for changing settings—
-//        Simply click inside here and add, change, or delete text as required.
+// The control code in this box is editable for changing settings—
+//    simply click inside here and add, change, or delete text as required.
+// Note that (gray) lines starting with // are "comments", i.e., they are ignored by the software
+//    so if you want to enable those lines, you must remove the // from the beginning of the line.
 
 import React, { useState, useEffect } from 'react';
 import { checkManifestText } from './manifest-text-check';
-import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
+import { RenderNumberedLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Manifest empty, good and bad text samples
 const textE = '';
@@ -228,7 +230,7 @@ function OurCheckManifestText(props) {
 
   const [results, setResults] = useState(null);
 
-  // We need the following construction because checkTN_TSV9DataRow is an ASYNC function
+  // We need the following construction because checkManifestText is an ASYNC function
   useEffect(() => {
     // Use an IIFE (Immediately Invoked Function Expression)
     //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
@@ -236,13 +238,13 @@ function OurCheckManifestText(props) {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {chosenTextName}…</p>);
       const checkingOptions = {};
-      const rawResults = await checkManifestText('en', 'LT', 'unfoldingWord', 'en_ult', 'master', chosenText, 'in manifest data that was supplied', checkingOptions);
+      const rawResults = await checkManifestText(languageCode, 'LT', 'unfoldingWord', 'en_ult', 'master', chosenText, givenLocation, checkingOptions);
       if (!rawResults.successList || !rawResults.successList.length)
         rawResults.successList = ["Done manifest text checks"];
       setResults(
         <div>
           <b>Check</b> {chosenTextName}: "{chosenText.substr(0,256)}…"<br/><br/>
-          <b>Manifest contents</b>: <RenderLines text={chosenText} />
+          <b>Manifest contents</b>: <RenderNumberedLines text={chosenText} />
           <RenderRawResults results={rawResults} />
         </div>
       );

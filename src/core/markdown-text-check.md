@@ -7,13 +7,15 @@ It returns a list of success messages and a list of notice components. (There is
 These raw notice components can then be filtered and/or sorted as required by the calling program, and then divided into a list of errors and a list of warnings or whatever as desired.
 
 ```js
-// The code in this box is editable for changing settings—
-//        Simply click inside here and add, change, or delete text as required.
+// The control code in this box is editable for changing settings—
+//    simply click inside here and add, change, or delete text as required.
+// Note that (gray) lines starting with // are "comments", i.e., they are ignored by the software
+//    so if you want to enable those lines, you must remove the // from the beginning of the line.
 
 import React, { useState, useEffect } from 'react';
 import Markdown from 'react-markdown'
 import { checkMarkdownText } from './markdown-text-check';
-import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
+import { RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Markdown text samples
 const textSG = `# Short Good Markdown Test
@@ -53,7 +55,7 @@ function OurCheckMarkdownText(props) {
 
   const [results, setResults] = useState(null);
 
-  // We need the following construction because checkTN_TSV9DataRow is an ASYNC function
+  // We need the following construction because checkMarkdownText is an ASYNC function
   useEffect(() => {
     // Use an IIFE (Immediately Invoked Function Expression)
     //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174

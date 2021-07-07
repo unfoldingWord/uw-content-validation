@@ -1,14 +1,15 @@
+// eslint-disable-next-line no-unused-vars
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
 import { checkYAMLText } from './yaml-text-check';
 import { cachedGetFile, getFileListFromZip } from './getApi';
-import { BibleBookData } from './books/books'
+import { BibleBookData, testament } from './books/books'
 import Ajv from 'ajv';
 import { removeDisabledNotices } from './disabled-notices';
 // eslint-disable-next-line no-unused-vars
-import { debugLog, functionLog, parameterAssert } from './utilities';
+import { debugLog, functionLog, parameterAssert, logicAssert } from './utilities';
 
 
-const MANIFEST_VALIDATOR_VERSION_STRING = '0.4.4';
+const MANIFEST_VALIDATOR_VERSION_STRING = '0.4.6';
 
 // Pasted in 2020-10-02 from https://raw.githubusercontent.com/unfoldingWord/dcs/master/options/schema/rc.schema.json
 // Updated 2021-02-19
@@ -561,14 +562,14 @@ const validate = ajv.compile(MANIFEST_SCHEMA);
 
 /**
  *
- * @param {string} languageCode
- * @param {string} repoCode
- * @param {string} username
- * @param {string} repoName
- * @param {string} repoBranch
- * @param {string} manifestText
- * @param {string} givenLocation
- * @param {Object} checkingOptions
+ * @param {string} languageCode -- language of main thing being checked -- normally the same as the first part of the repoName, e.g., 'en', but may differ for original language repos
+ * @param {string} repoCode -- e.g., 'UHB', 'LT', 'TN', 'SQ2'
+ * @param {string} username -- or orgname -- owner of DCS repo
+ * @param {string} repoName -- e.g., 'en_tn'
+ * @param {string} repoBranch -- e.g., 'master'
+ * @param {string} manifestText -- contents of manifest.yaml
+ * @param {string} givenLocation -- optional description of location of manifest
+ * @param {Object} checkingOptions -- optional option key:value pairs
  */
 export async function checkManifestText(languageCode, repoCode, username, repoName, repoBranch, manifestText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
@@ -577,26 +578,27 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
 
     Returns a result object containing a successList and a noticeList
     */
-    // functionLog(`checkManifestText(${username}, ${repoCode}, ${repoName}, ${repoBranch}, ${manifestText.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
-    parameterAssert(languageCode !== undefined, "checkManifestText: 'languageCode' parameter should be defined");
-    parameterAssert(typeof languageCode === 'string', `checkManifestText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
-    parameterAssert(repoCode !== undefined, "checkManifestText: 'repoCode' parameter should be defined");
-    parameterAssert(typeof repoCode === 'string', `checkManifestText: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
-    parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkManifestText: 'repoCode' parameter should not be '${repoCode}'`);
-    parameterAssert(username !== undefined, "checkManifestText: 'username' parameter should be defined");
-    parameterAssert(typeof username === 'string', `checkManifestText: 'username' parameter should be a string not a '${typeof username}': ${username}`);
-    parameterAssert(repoName !== undefined, "checkManifestText: 'repoName' parameter should be defined");
-    parameterAssert(typeof repoName === 'string', `checkManifestText: 'repoName' parameter should be a string not a '${typeof repoName}': ${repoName}`);
-    parameterAssert(repoBranch !== undefined, "checkManifestText: 'repoBranch' parameter should be defined");
-    parameterAssert(typeof repoBranch === 'string', `checkManifestText: 'repoBranch' parameter should be a string not a '${typeof repoBranch}': ${repoBranch}`);
-    parameterAssert(manifestText !== undefined, "checkManifestText: 'manifestText' parameter should be defined");
-    parameterAssert(typeof manifestText === 'string', `checkManifestText: 'manifestText' parameter should be a string not a '${typeof manifestText}': ${manifestText}`);
-    parameterAssert(givenLocation !== undefined, "checkManifestText: 'optionalFieldLocation' parameter should be defined");
-    parameterAssert(typeof givenLocation === 'string', `checkManifestText: 'optionalFieldLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
-    parameterAssert(givenLocation.indexOf('true') === -1, `checkManifestText: 'optionalFieldLocation' parameter should not be '${givenLocation}'`);
-    parameterAssert(checkingOptions !== undefined, "checkManifestText: 'checkingOptions' parameter should be defined");
-    if (checkingOptions !== undefined)
-        parameterAssert(typeof checkingOptions === 'object', `checkManifestText: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
+    // functionLog(`checkManifestText(${languageCode}, ${repoCode}, ${username}, ${repoName}, ${repoBranch}, ${manifestText.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
+    //parameterAssert(languageCode !== undefined, "checkManifestText: 'languageCode' parameter should be defined");
+    //parameterAssert(typeof languageCode === 'string', `checkManifestText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
+    //parameterAssert(repoCode !== undefined, "checkManifestText: 'repoCode' parameter should be defined");
+    //parameterAssert(typeof repoCode === 'string', `checkManifestText: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
+    //parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkManifestText: 'repoCode' parameter should not be '${repoCode}'`);
+    //parameterAssert(username !== undefined, "checkManifestText: 'username' parameter should be defined");
+    //parameterAssert(typeof username === 'string', `checkManifestText: 'username' parameter should be a string not a '${typeof username}': ${username}`);
+    //parameterAssert(repoName !== undefined, "checkManifestText: 'repoName' parameter should be defined");
+    //parameterAssert(typeof repoName === 'string', `checkManifestText: 'repoName' parameter should be a string not a '${typeof repoName}': ${repoName}`);
+    if (repoCode !== 'UHB' && repoCode !== 'UGNT') { parameterAssert(repoName.startsWith(languageCode), `checkManifestText: 'repoName' parameter '${repoName}' should start with language code: '${languageCode}_'`); }
+    //parameterAssert(repoBranch !== undefined, "checkManifestText: 'repoBranch' parameter should be defined");
+    //parameterAssert(typeof repoBranch === 'string', `checkManifestText: 'repoBranch' parameter should be a string not a '${typeof repoBranch}': ${repoBranch}`);
+    //parameterAssert(manifestText !== undefined, "checkManifestText: 'manifestText' parameter should be defined");
+    //parameterAssert(typeof manifestText === 'string', `checkManifestText: 'manifestText' parameter should be a string not a '${typeof manifestText}': ${manifestText}`);
+    //parameterAssert(givenLocation !== undefined, "checkManifestText: 'optionalFieldLocation' parameter should be defined");
+    //parameterAssert(typeof givenLocation === 'string', `checkManifestText: 'optionalFieldLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
+    //parameterAssert(givenLocation.indexOf('true') === -1, `checkManifestText: 'optionalFieldLocation' parameter should not be '${givenLocation}'`);
+    //parameterAssert(checkingOptions !== undefined, "checkManifestText: 'checkingOptions' parameter should be defined");
+    if (checkingOptions !== undefined) { //parameterAssert(typeof checkingOptions === 'object', `checkManifestText: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
+    }
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -623,16 +625,18 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
     }
     function addNotice(noticeObject) {
         // functionLog(`checkManifestText Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
-        parameterAssert(noticeObject.priority !== undefined, "cManT addNotice: 'priority' parameter should be defined");
-        parameterAssert(typeof noticeObject.priority === 'number', `cManT addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        parameterAssert(noticeObject.message !== undefined, "cManT addNotice: 'message' parameter should be defined");
-        parameterAssert(typeof noticeObject.message === 'string', `cManT addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // parameterAssert(characterIndex !== undefined, "cManT addNotice: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) parameterAssert(typeof noticeObject.characterIndex === 'number', `cManT addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
-        // parameterAssert(excerpt !== undefined, "cManT addNotice: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) parameterAssert(typeof noticeObject.excerpt === 'string', `cManT addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
-        parameterAssert(noticeObject.location !== undefined, "cManT addNotice: 'location' parameter should be defined");
-        parameterAssert(typeof noticeObject.location === 'string', `cManT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        //parameterAssert(noticeObject.priority !== undefined, "cManT addNotice: 'priority' parameter should be defined");
+        //parameterAssert(typeof noticeObject.priority === 'number', `cManT addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        //parameterAssert(noticeObject.message !== undefined, "cManT addNotice: 'message' parameter should be defined");
+        //parameterAssert(typeof noticeObject.message === 'string', `cManT addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+        // //parameterAssert(characterIndex !== undefined, "cManT addNotice: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cManT addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        }
+        // //parameterAssert(excerpt !== undefined, "cManT addNotice: 'excerpt' parameter should be defined");
+        if (noticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cManT addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        }
+        //parameterAssert(noticeObject.location !== undefined, "cManT addNotice: 'location' parameter should be defined");
+        //parameterAssert(typeof noticeObject.location === 'string', `cManT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
         if (repoName) noticeObject.repoName = repoName;
         if (noticeObject.debugChain) noticeObject.debugChain = `checkManifestText ${noticeObject.debugChain}`;
@@ -647,11 +651,11 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
 
         // Updates the global list of notices
         // debugLog(`cManT ourYAMLTextChecks(${textName}, (${fieldText.length}), ${allowedLinks}, ${fieldLocation}, …)`);
-        parameterAssert(textName !== undefined, "cManT ourYAMLTextChecks: 'textName' parameter should be defined");
-        parameterAssert(typeof textName === 'string', `cManT ourYAMLTextChecks: 'textName' parameter should be a string not a '${typeof textName}'`);
-        parameterAssert(manifestText !== undefined, "cManT ourYAMLTextChecks: 'manifestText' parameter should be defined");
-        parameterAssert(typeof manifestText === 'string', `cManT ourYAMLTextChecks: 'manifestText' parameter should be a string not a '${typeof manifestText}'`);
-        // parameterAssert( allowedLinks===true || allowedLinks===false, "cManT ourYAMLTextChecks: allowedLinks parameter must be either true or false");
+        //parameterAssert(textName !== undefined, "cManT ourYAMLTextChecks: 'textName' parameter should be defined");
+        //parameterAssert(typeof textName === 'string', `cManT ourYAMLTextChecks: 'textName' parameter should be a string not a '${typeof textName}'`);
+        //parameterAssert(manifestText !== undefined, "cManT ourYAMLTextChecks: 'manifestText' parameter should be defined");
+        //parameterAssert(typeof manifestText === 'string', `cManT ourYAMLTextChecks: 'manifestText' parameter should be a string not a '${typeof manifestText}'`);
+        // //parameterAssert( allowedLinks===true || allowedLinks===false, "cManT ourYAMLTextChecks: allowedLinks parameter must be either true or false");
 
         const cYtResultObject = checkYAMLText('en', repoCode, textName, manifestText, givenLocation, checkingOptions);
 
@@ -680,6 +684,18 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
         // Check Dublin Core stuff
         // const DublinCoreData = formData.dublin_core
         // debugLog("checkManifestText DublinCoreData", JSON.stringify(DublinCoreData));
+
+
+        try {
+            const languageIdentifier = formData['dublin_core']['language']['identifier'];
+            if ((repoCode === 'UHB' && languageIdentifier !== 'hbo')
+                || (repoCode === 'UGNT' && languageIdentifier !== 'el-x-koine')
+                || (repoCode !== 'UHB' && repoCode !== 'UGNT' && languageIdentifier !== languageCode)) // for most repos
+                addNotice({ priority: 933, message: "Manifest' language' 'identifier' doesn't match", details: `expected '${languageCode}' but manifest has '${languageIdentifier}'`, location: ourLocation });
+        } catch (e) {
+            debugLog(`checkManifestText got error ${e.message} while loading 'language' 'identifier'`);
+            addNotice({ priority: 934, message: "'language' key or 'idenfier' subkey is missing", location: ourLocation });
+        }
 
         // TODO: We could add a lot more checking here
         // for (const mainKey in formData) {
@@ -714,14 +730,23 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
 
         // Check that the project files in the manifest actually exist
         const getFile_ = (checkingOptions && checkingOptions?.getFile) ? checkingOptions?.getFile : cachedGetFile;
+        let haveOTbooks = false, haveNTbooks = false;
         const ourProjectPathList = []; // Make a list for the next check
         for (const projectEntry of formData['projects']) {
             // debugLog(`Manifest project: ${JSON.stringify(projectEntry)}`);
             const projectKeys = Object.keys(projectEntry); // Expect title, versification, identifier, sort, path, categories
             // debugLog("Project keys", JSON.stringify(projectKeys));
             for (const keyName of ['identifier', 'path', 'sort'])
+                // TODO: What about 'title', 'versification', 'categories' -- are they not compulsory
                 if (projectKeys.indexOf(keyName) === -1)
                     addNotice({ priority: 939, message: "Key is missing for project", details: keyName, excerpt: JSON.stringify(projectEntry), location: ourLocation });
+            let whichTestament;
+            try {
+                whichTestament = testament(projectEntry['identifier']); // returns 'old' or 'new' for valid Bible books
+            } catch { }
+            if (whichTestament === 'old') haveOTbooks = true;
+            else if (whichTestament === 'new') haveNTbooks = true;
+
 
             const projectFilepath = projectEntry['path'];
             ourProjectPathList.push(projectFilepath);
@@ -732,7 +757,7 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
                 if (!checkingOptions || checkingOptions?.disableAllLinkFetchingFlag !== true) { // Try fetching the file maybe
                     let isBookFolder = false;
                     for (const thisBookID of Object.keys(BibleBookData))
-                        if (projectFilepath === `./${thisBookID}`) { isBookFolder = true; break; }
+                        if (projectFilepath === `./${thisBookID.toLowerCase()}`) { isBookFolder = true; break; }
                     if (!isBookFolder) {
                         let projectFileContent;
                         try {
@@ -766,6 +791,27 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
                     addNotice({ priority: 832, message: `Seems project file is missing from the manifest`, excerpt: repoFilepath, location: ourLocation });
                 }
             }
+
+        if (repoCode === 'TWL' || repoCode === 'TN' || repoCode === 'TN2') {
+            // Check that the necessary relation fields are present
+            const relationList = []; // Make a list for the next check
+            let haveUHB = false, haveUGNT = false;
+            try {
+                for (const relation of formData['dublin_core']['relation']) {
+                    // debugLog(`${repoCode} manifest relation: ${relation}`);
+                    relationList.push(relation);
+                    if (relation.startsWith('hbo/uhb')) haveUHB = true;
+                    if (relation.startsWith('el-x-koine/ugnt')) haveUGNT = true;
+                }
+            } catch (e) {
+                debugLog(`checkManifestText got error ${e.message} while loading 'relation' fields`);
+                addNotice({ priority: 930, message: "'relation' key is missing", location: ourLocation });
+            }
+            if (haveOTbooks && !haveUHB)
+                addNotice({ priority: 817, message: `UHB 'relation' is missing`, details: JSON.stringify(relationList), location: ourLocation });
+            if (haveNTbooks && !haveUGNT)
+                addNotice({ priority: 816, message: `UGNT 'relation' is missing`, details: JSON.stringify(relationList), location: ourLocation });
+        }
     }
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {

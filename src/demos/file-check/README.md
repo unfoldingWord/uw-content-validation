@@ -6,14 +6,17 @@ and then validates the content of one file selected from the repo.
 **Note**: This demonstration can use saved (cached) copies of files stored inside the local browser. This makes reruns of the checks faster, but it won’t notice if you have recently updated the files on Door43. If you want to clear the local caches, use either the `reloadAllFilesFirst` variable below, or the `Clear Cache` function from the menu.
 
 ```js
-// The code in this box is editable for changing settings—
-//        Simply click inside here and add, change, or delete text as required.
+// The control code in this box is editable for changing settings—
+//    simply click inside here and add, change, or delete text as required.
+// Note that (gray) lines starting with // are "comments", i.e., they are ignored by the software
+//    so if you want to enable those lines, you must remove the // from the beginning of the line.
 
 <FileCheck
   // Leave as Y while adjusting settings below, then change to N to start the check
   wait='Y' // 'Y' (for Yes, i.e., to wait) or 'N' (for No, i.e., to start checking)
 
   // Set to N to rerun the check without fetching new copies of the files (slightly faster)
+  // If you're checking and then editing & saving files, ensure that it's set to Y before you recheck
   reloadAllFilesFirst='Y' // 'Y' (for Yes -- same as ClearCache in menu) or 'N' (for No)
 
   // username='Door43-Catalog'
@@ -63,7 +66,7 @@ and then validates the content of one file selected from the repo.
 
   // Specifying excerptLength and cutoffPriorityLevel is just to show off options
   // —those fields are not necessary (or normal) here
-  excerptLength='20' // Default is 15
+  excerptLength='25' // Default is 20 characters
   // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
 
   // Normally links in files are downloaded to check that they really exist

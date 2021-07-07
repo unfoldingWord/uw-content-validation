@@ -20,8 +20,10 @@ Note below that the optional `processOptions` object allows the user to adjust t
 Although this demonstration here formats and colours the error and warning lists, it’s expected that the encapsulating program will format and use the fields as desired. Because they are returned as an array of fields rather than simply strings, it’s certainly possible for the encapsulating program to sort or filter the messages as desired.
 
 ```js
-// The code in this box is editable for changing settings—
-//        Simply click inside here and add, change, or delete text as required.
+// The control code in this box is editable for changing settings—
+//    simply click inside here and add, change, or delete text as required.
+// Note that (gray) lines starting with // are "comments", i.e., they are ignored by the software
+//    so if you want to enable those lines, you must remove the // from the beginning of the line.
 
 import { checkTextField } from '../core/field-text-check';
 import { processNoticesToSevereMediumLow } from './notice-processing-functions';

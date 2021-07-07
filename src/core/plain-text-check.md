@@ -7,11 +7,13 @@ It returns a list of success messages and a list of notice components. (There is
 These raw notice components can then be filtered and/or sorted as required by the calling program, and then divided into a list of errors and a list of warnings or whatever as desired.
 
 ```js
-// The code in this box is editable for changing settings—
-//        Simply click inside here and add, change, or delete text as required.
+// The control code in this box is editable for changing settings—
+//    simply click inside here and add, change, or delete text as required.
+// Note that (gray) lines starting with // are "comments", i.e., they are ignored by the software
+//    so if you want to enable those lines, you must remove the // from the beginning of the line.
 
 import { checkPlainText } from './plain-text-check';
-import { RenderLines, RenderRawResults } from '../demos/RenderProcessedResults';
+import { RenderNumberedLines, RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Plain text samples
 const textSG = `Short Good Plain Test
@@ -48,7 +50,7 @@ if (!rawResults.successList || !rawResults.successList.length)
   rawResults.successList = ["Done plain text checks"];
 
 <>
-<b>Source (normalized)</b>: <RenderLines text={chosenText} />
+<b>Source (normalized)</b>: <RenderNumberedLines text={chosenText} />
 <RenderRawResults results={rawResults} />
 </>
 ```

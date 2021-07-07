@@ -16,6 +16,9 @@ export const BAD_CHARACTER_COMBINATIONS = [
     '\\[\\[', '\\]\\]', // These were introduced by a tC Create bug (NOTE: \[ or \] is quite legal)
     '] (http', '] (.', // Bad markdown links (with a space between the parts)
 ];
+export const LEADING_ZERO_COMBINATIONS = [
+    ' 0', ':0', '<br>0', '“0', '‘0',
+];
 
 export function isWhitespace(myString) {
     // includes zero-width space

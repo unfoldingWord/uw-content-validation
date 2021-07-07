@@ -5,10 +5,11 @@ import { clearCaches, clearCheckedArticleCache, ourParseInt, preloadReposIfNeces
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderTotals } from '../RenderProcessedResults';
 import { checkBookPackage } from './checkBookPackage';
-import { userLog, debugLog, parameterAssert } from '../../core/utilities';
+// eslint-disable-next-line no-unused-vars
+import { userLog, debugLog, parameterAssert, logicAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.5.2';
+// const BP_VALIDATOR_VERSION_STRING = '0.5.5';
 
 
 function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
@@ -30,12 +31,9 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
     let branch = props.branch;
     // debugLog(`branch='${branch}'`);
 
-    // Clear cached files if we've changed repo
-    //  autoClearCache(bookID); // This technique avoids the complications of needing a button
-
     const checkingOptions = { // Uncomment any of these to test them
         dataSet: dataSet, // Can be 'OLD' (Markdown, etc.), 'NEW' (TSV only), or 'BOTH', or 'DEFAULT'
-        // excerptLength: 25, // default is 15
+        // excerptLength: 25, // default is 20 characters
         checkManifestFlag: true,
         checkReadmeFlag: true,
         checkLicenseFlag: true,
@@ -79,35 +77,38 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
                 setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running book package check…</p>);
                 await clearCaches();
             }
-            else await clearCheckedArticleCache();
+            else await clearCheckedArticleCache(); // otherwise we wouldn't see any of the warnings again from checking these
 
-            // Load whole repos, especially if we are going to check files in manifests
+            // Load whole repo zip files which is maybe faster than loading several individual files
+            //  especially if we are going to also check the manifests, license, and ReadMe files as well as the book file.
+            // Remember that the manifest check actually checks the existence of all the projects, i.e., all files in the repo
             let repoPreloadList;
             if (bookID === 'OBS') {
-                repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ']; // for DEFAULT
+                repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2']; // for DEFAULT
                 if (dataSet === 'OLD')
-                    repoPreloadList = ['OBS', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
+                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
                 else if (dataSet === 'NEW')
                     repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN', 'OBS-SQ'];
                 else if (dataSet === 'BOTH')
-                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SQ'];
+                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SN', 'OBS-SN2', 'OBS-SQ2'];
             } else { // not OBS
                 repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TQ', 'SN', 'SQ']; // for DEFAULT
                 if (dataSet === 'OLD')
-                    repoPreloadList = ['LT', 'ST', 'TN', 'TQ'];
+                    repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TQ'];
                 else if (dataSet === 'NEW')
                     repoPreloadList = ['TWL', 'LT', 'ST', 'TN2', 'TQ2', 'SN', 'SQ'];
                 else if (dataSet === 'BOTH')
                     repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TN2', 'TQ', 'TQ2', 'SN', 'SQ'];
                 const whichTestament = books.testament(bookID); // returns 'old' or 'new'
+                logicAssert(whichTestament === 'old' || whichTestament === 'new', `BookPackageCheck() couldn't find testament for '${bookID}'`);
                 const origLangRepo = whichTestament === 'old' ? 'UHB' : 'UGNT';
                 repoPreloadList.unshift(origLangRepo);
-                if (!checkingOptions.disableAllLinkFetchingFlag) {
-                    repoPreloadList.push('TW');
-                    repoPreloadList.push('TA');
-                }
             }
-            debugLog(`BookPackageCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
+            if (!checkingOptions.disableAllLinkFetchingFlag) { // Both Bible books and OBS refer to TW and TA
+                repoPreloadList.push('TW');
+                repoPreloadList.push('TA');
+            }
+            // debugLog(`BookPackageCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
 
             // if (bookID !== 'OBS') { // Preload the reference repos
             setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for <b>{bookID}</b> book package check…</p>);
@@ -143,7 +144,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             // if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
             if (props.sortBy) processOptions.sortBy = props.sortBy;
             if (props.ignorePriorityNumberList) { // We need to convert from string to Array
-                parameterAssert(props.ignorePriorityNumberList[0] === '[' && props.ignorePriorityNumberList[props.ignorePriorityNumberList.length - 1] === ']', `Format of props.ignorePriorityNumberList '${props.ignorePriorityNumberList}' is wrong should be enclosed in []`)
+                //parameterAssert(props.ignorePriorityNumberList[0] === '[' && props.ignorePriorityNumberList[props.ignorePriorityNumberList.length - 1] === ']', `Format of props.ignorePriorityNumberList '${props.ignorePriorityNumberList}' is wrong should be enclosed in []`)
                 processOptions.ignorePriorityNumberList = [];
                 for (const stringBit of props.ignorePriorityNumberList.substring(1, props.ignorePriorityNumberList.length - 1).split(',')) {
                     const intBit = ourParseInt(stringBit.trim()); // trim allows comma,space to also be used as separator

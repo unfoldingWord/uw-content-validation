@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { clearCaches, clearCheckedArticleCache, ourParseInt, cachedGetFile, cachedFetchFileFromServerTag } from '../../core';
+import { clearCaches, clearCheckedArticleCache, ourParseInt, cachedGetFile, cachedFetchFileFromServerWithTag } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesWarningsGradient, RenderElapsedTime } from '../RenderProcessedResults';
 import { checkFileContents } from './checkFileContents';
@@ -8,7 +8,7 @@ import { checkFileContents } from './checkFileContents';
 import { debugLog, userLog } from '../../core/utilities';
 
 
-// const FILE_CHECK_VERSION_STRING = '0.3.1';
+// const FILE_CHECK_VERSION_STRING = '0.3.2';
 
 
 function FileCheck(props) {
@@ -49,15 +49,17 @@ function FileCheck(props) {
         setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running file check…</p>);
         await clearCaches();
       }
-      else await clearCheckedArticleCache();
+      else await clearCheckedArticleCache(); // otherwise we wouldn't see any of the warnings again from checking these
 
       // Display our "waiting" message
       setResultValue(<p style={{ color: 'magenta' }}>Fetching <i>{username}</i> {repoName} <b>{filename}</b>…</p>);
+
+      // Fetch the file that we need to check (but it might already be in the cache)
       // debugLog(`FileCheck about to call cachedGetFile(${username}, ${repoName}, ${filename}, ${branch})…`);
       let fileContent = await cachedGetFile({ username: username, repository: repoName, path: filename, branch: branchOrRelease });
       if (!fileContent) { // could it be a release, not a branch???
         userLog(`Unable to fetch ${filename} from branch ${branchOrRelease}, so trying a release instead…`)
-        fileContent = await cachedFetchFileFromServerTag({ username: username, repository: repoName, path: filename, tag: branchOrRelease });
+        fileContent = await cachedFetchFileFromServerWithTag({ username: username, repository: repoName, path: filename, tag: branchOrRelease });
       }
 
       setResultValue(<p style={{ color: 'magenta' }}>Checking <i>{username}</i> {repoName} <b>{filename}</b>…</p>);
