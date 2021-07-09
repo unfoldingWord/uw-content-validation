@@ -35,7 +35,7 @@ import BookPackageCheck from './BookPackageCheck';
   bookID='JAS'
 
   // We can choose the forthcoming new TSV formats or the existing formats
-  // dataSet='BOTH' // 'OLD' (Markdown TQ, TSV9 TN, etc.), 'NEW' (TSV7 TQ2, TSV7 TN2, TSV6 TWL,etc.), 'DEFAULT', or 'BOTH'
+  // dataSet='BOTH' // 'OLD' (Markdown TQ, TSV9 TN, etc.), 'NEW' (TSV7 TQ2, TSV7 TN2, etc.), 'DEFAULT', or 'BOTH'
 
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'

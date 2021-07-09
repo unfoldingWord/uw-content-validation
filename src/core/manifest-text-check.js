@@ -588,7 +588,7 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
     //parameterAssert(typeof username === 'string', `checkManifestText: 'username' parameter should be a string not a '${typeof username}': ${username}`);
     //parameterAssert(repoName !== undefined, "checkManifestText: 'repoName' parameter should be defined");
     //parameterAssert(typeof repoName === 'string', `checkManifestText: 'repoName' parameter should be a string not a '${typeof repoName}': ${repoName}`);
-    if (repoCode !== 'UHB' && repoCode !== 'UGNT') { parameterAssert(repoName.startsWith(languageCode), `checkManifestText: 'repoName' parameter '${repoName}' should start with language code: '${languageCode}_'`); }
+    if (repoCode !== 'UHB' && repoCode !== 'UGNT') { //parameterAssert(repoName.startsWith(languageCode), `checkManifestText: 'repoName' parameter '${repoName}' should start with language code: '${languageCode}_'`); }
     //parameterAssert(repoBranch !== undefined, "checkManifestText: 'repoBranch' parameter should be defined");
     //parameterAssert(typeof repoBranch === 'string', `checkManifestText: 'repoBranch' parameter should be a string not a '${typeof repoBranch}': ${repoBranch}`);
     //parameterAssert(manifestText !== undefined, "checkManifestText: 'manifestText' parameter should be defined");

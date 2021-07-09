@@ -197,7 +197,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 logicAssert(ALL_TSV_FIELDNAMES.indexOf(thisFilename) < 0, `filename '${thisFilename}' contains a TSV fieldName!`);
                 // NOTE: Some OBS and other messages have to include part of the part in the 'filename' (to prevent ambiguity) so we don’t disallow forward slash
                 // if (!thisRepoName || !(thisRepoName.endsWith('_obs') || thisRepoName.endsWith('_ta') || thisRepoName.endsWith('_tw')))
-                //     parameterAssert(thisFilename.indexOf('/') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
+                //     //parameterAssert(thisFilename.indexOf('/') < 0, `filename '${thisFilename}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
                 if (thisLocation)
                     logicAssert(thisLocation.indexOf(thisFilename) < 0, `filename is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
             }
