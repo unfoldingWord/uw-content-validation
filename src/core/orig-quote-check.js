@@ -267,7 +267,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
         //parameterAssert(location !== undefined, "checkFoundQuoteSegment: 'location' parameter should be defined");
         //parameterAssert(typeof location === 'string', `checkFoundQuoteSegment: 'location' parameter should be a string not a '${typeof location}'`);
 
-        let details = `verse text ►${fullVerseText}◄`;
+        let details = `verse text ◗${fullVerseText}◖`;
         if (partDescription.length) details = `${partDescription} part of quote = "${foundQuoteSegment}" -- ${details}`;
 
         let remainingVerseBits = partialVerseText.split(foundQuoteSegment); // NOTE: can split (badly) on short strings (like δὲ or εἰ) mid-word
@@ -371,7 +371,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
             addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which ends with 'zero-width joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: ourLocation });
         } else {
             if (!excerpt) excerpt = notFoundQuoteSegment.length <= excerptLength ? notFoundQuoteSegment : (notFoundQuoteSegment.substring(0, excerptHalfLength) + (notFoundQuoteSegment.length > 2 * excerptHalfLength ? '…' : '') + notFoundQuoteSegment.substring(notFoundQuoteSegment.length - excerptHalfLength, notFoundQuoteSegment.length));
-            addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: noBreakSpaceText ? noBreakSpaceText : `verse text ►${fullVerseText}◄`, excerpt, location: ourLocation });
+            addNotice({ priority: 916, message: "Unable to find original language quote in verse text", details: noBreakSpaceText ? noBreakSpaceText : `verse text ◗${fullVerseText}◖`, excerpt, location: ourLocation });
         }
     }
     // end of warnForNotFoundQuoteSegment function
@@ -405,7 +405,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
     let characterIndex;
     if ((characterIndex = fieldText.indexOf(wrongDiscontiguousDivider)) !== -1) {
         const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
-        addNotice({ priority: 918, message: `Seems like the wrong divider for discontiguous quote segments`, details: `expected ►${discontiguousDivider}◄`, characterIndex, excerpt, location: ourLocation });
+        addNotice({ priority: 918, message: `Seems like the wrong divider for discontiguous quote segments`, details: `expected ◗${discontiguousDivider}◖`, characterIndex, excerpt, location: ourLocation });
     }
 
     if (discontiguousDivider === '…' && (characterIndex = fieldText.indexOf('...')) >= 0) {
@@ -467,7 +467,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
         if (numQuoteBits >= 2) {
             let quoteIndex = -1; // These parts have to be in order, i.e., found in the verse one AFTER the other
             for (let bitIndex = 0; bitIndex < numQuoteBits; bitIndex++) {
-                debugLog(`Checking quote part ${bitIndex} '${quoteBits[bitIndex]}' in '${verseText.substring(quoteIndex)}' from '${verseText}'`)
+                // debugLog(`warnForNotFoundQuoteSegment: checking quote part ${bitIndex} '${quoteBits[bitIndex]}' from '${fieldText}' against '${verseText.substring(quoteIndex)}' from '${verseText}'`)
                 let partDescription;
                 if (numQuoteBits === 1) partDescription = '';
                 else if (bitIndex === 0) partDescription = 'beginning';
@@ -479,11 +479,11 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
                     if (verseText.indexOf(quoteBits[bitIndex]) >= 0) {
                         logicAssert(bitIndex > 0, "This shouldn't happen for bitIndex of zero!");
                         // debugLog(`914, Unable to find '${fieldText}' ${numQuoteBits === 1 ? '' : `'${quoteBits[bitIndex]}' `}${partDescription ? '(' + partDescription + ') ' : ''}in '${verseText}'`);
-                        addNotice({ priority: 914, message: "Unable to find original language quote portion in the right place in the verse text", details: `verse text ►${verseText}◄`, excerpt, location: ourLocation });
+                        addNotice({ priority: 914, message: "Unable to find original language quote portion in the right place in the verse text", details: `verse text ◗${verseText}◖`, excerpt, location: ourLocation });
                     } else {
                         // debugLog(`915, Unable to find '${fieldText}' ${numQuoteBits === 1 ? '' : `'${quoteBits[bitIndex]}' `}${partDescription ? '(' + partDescription + ') ' : ''}in '${verseText}'`);
                         warnForNotFoundQuoteSegment(fieldText, partDescription, occurrenceString, verseText, ourLocation);
-                        // addNotice({ priority: 915, message: "Unable to find original language quote portion in verse text", details: `verse text ►${verseText}◄`, excerpt, location: ourLocation });
+                        // addNotice({ priority: 915, message: "Unable to find original language quote portion in verse text", details: `verse text ◗${verseText}◖`, excerpt, location: ourLocation });
                     }
                 } else { // We found this bit
                     // debugLog(`Found ${C}:${V} origQuote portion ${bitIndex} '${quoteBits[bitIndex]}' at ${quoteIndex} (num text chars = ${verseText.length})`);
@@ -502,7 +502,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
                 if (occurrence > actualNumOccurrences) { // There's not enough of them
                     const actualOccurrencesText = actualNumOccurrences === 0 ? 'no' : `only ${actualNumOccurrences}`;
                     const excerpt = fieldText.substring(0, excerptHalfLength) + (fieldText.length > 2 * excerptHalfLength ? '…' : '') + fieldText.substring(fieldText.length - excerptHalfLength, fieldText.length);
-                    addNotice({ priority: 917, message: "Unable to find duplicate original language quote in verse text", details: `occurrence=${occurrenceString} but ${actualOccurrencesText} occurrence${actualNumOccurrences === 1 ? '' : 's'} found, passage ►${verseText}◄`, excerpt, location: ourLocation });
+                    addNotice({ priority: 917, message: "Unable to find duplicate original language quote in verse text", details: `occurrence=${occurrenceString} but ${actualOccurrencesText} occurrence${actualNumOccurrences === 1 ? '' : 's'} found, passage ◗${verseText}◖`, excerpt, location: ourLocation });
                 } else {
                     checkFoundQuoteSegment(fieldText, '', occurrenceString, `${verseTextBits[occurrence - 1]}${fieldText}${verseTextBits[occurrence]}`, verseText, ourLocation);
                 }

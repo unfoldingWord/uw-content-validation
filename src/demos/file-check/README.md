@@ -83,6 +83,6 @@ and then validates the content of one file selected from the repo.
 
   // Specifying maximumSimilarMessages is just to show off options
   // —those fields are not necessary (or normal) here
-  maximumSimilarMessages='0' // Default is 3 (0 means don’t suppress any)
+  //maximumSimilarMessages='0' // Default is 3 (0 means don’t suppress any)
   />
 ```

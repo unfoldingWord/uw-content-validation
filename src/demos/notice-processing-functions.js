@@ -3,7 +3,7 @@ import { userLog, parameterAssert, logicAssert } from '../core/utilities';
 import { isDisabledNotice } from '../core/disabled-notices';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.9.14';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.10.0';
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -84,7 +84,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 Contains the following:
                     successList -- a list of strings noting what has been checked
                     numIgnored Notices (int)
-                    numSuppressedWarnings (int)
+                    numHiddenWarnings (int)
                     processingOptions (a copy of the optionalProcessingOptions passed to these functions)
                     Any other fields that were part of the givenNoticeObject passed to these functions. These might include:
                         checkedFilenames -- list of strings
@@ -238,7 +238,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     const resultObject = { // inititalise with our new fields
         numIgnoredNotices: 0, // Ignored by unique priority number
         numDisabledNotices: 0, // Individually disabled
-        numSuppressedWarnings: 0,
+        numHiddenWarnings: 0,
         processingOptions: optionalProcessingOptions, // Just helpfully includes what we were given (may be undefined)
     };
     // Copy across all the other properties that we aren’t interested in
@@ -469,7 +469,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         const newNoticeList = [];
         for (const thisNotice of remainingNoticeList)
             if (thisNotice.priority < cutoffPriorityLevel)
-                resultObject.numSuppressedWarnings++;
+                resultObject.numHiddenWarnings++;
             else newNoticeList.push(thisNotice);
         remainingNoticeList = newNoticeList;
     }
@@ -536,7 +536,7 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
             successList: a list of strings describing what has been checked
             errorList
             warningList
-            numIgnoredNotices, numDisabledNotices, numSuppressedErrors, numSuppressedWarnings
+            numIgnoredNotices, numDisabledNotices, numHiddenErrors, numHiddenWarnings
             processingOptions: just helpfully passes on what we were given (may be undefined)
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
@@ -548,7 +548,7 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
 
     // Add the fields that we need here to the existing resultObject
     resultObject.errorList = []; resultObject.warningList = [];
-    resultObject.numSuppressedErrors = 0; resultObject.numSuppressedWarnings = 0;
+    resultObject.numHiddenErrors = 0; resultObject.numHiddenWarnings = 0;
 
     let maximumSimilarMessages;
     try {
@@ -579,21 +579,24 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
         else counter[thisCombinedID]++;
         if (maximumSimilarMessages > 0 && allTotals[thisCombinedID] > maximumSimilarMessages + 1 && counter[thisCombinedID] === maximumSimilarMessages + 1) {
             if (thisPriority >= errorPriorityLevel) {
-                const numSuppressed = allTotals[thisCombinedID] - maximumSimilarMessages;
-                logicAssert(numSuppressed !== 1, `Shouldn’t suppress just one error of priority ${thisPriority}`);
-                resultObject.errorList.push({ priority: -1, message: thisMsg, location: ` ▲ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
-                resultObject.numSuppressedErrors++;
+                const numHidden = allTotals[thisCombinedID] - maximumSimilarMessages;
+                logicAssert(numHidden !== 1, `Shouldn’t suppress just one error of priority ${thisPriority}`);
+                resultObject.errorList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${numHidden.toLocaleString()} MORE SIMILAR ERROR${numHidden === 1 ? '' : 'S'} HIDDEN`, hiddenNotices: [thisNotice] });
+                resultObject.numHiddenErrors++;
             } else {
-                const numSuppressed = allTotals[thisCombinedID] - maximumSimilarMessages;
-                logicAssert(numSuppressed !== 1, `Shouldn’t suppress just one warning of priority ${thisPriority}`);
-                resultObject.warningList.push({ priority: -1, message: thisMsg, location: ` ▲ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
-                resultObject.numSuppressedWarnings++;
+                const numHidden = allTotals[thisCombinedID] - maximumSimilarMessages;
+                logicAssert(numHidden !== 1, `Shouldn’t suppress just one warning of priority ${thisPriority}`);
+                resultObject.warningList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${numHidden.toLocaleString()} MORE SIMILAR WARNING${numHidden === 1 ? '' : 'S'} HIDDEN`, hiddenNotices: [thisNotice] });
+                resultObject.numHiddenWarnings++;
             }
         } else if (maximumSimilarMessages > 0 && counter[thisCombinedID] > maximumSimilarMessages + 1) {
-            if (thisPriority >= errorPriorityLevel)
-                resultObject.numSuppressedErrors++;
-            else
-                resultObject.numSuppressedWarnings++;
+            if (thisPriority >= errorPriorityLevel) {
+                resultObject.errorList[resultObject.errorList.length - 1].hiddenNotices.push(thisNotice);
+                resultObject.numHiddenErrors++;
+            } else {
+                resultObject.warningList[resultObject.warningList.length - 1].hiddenNotices.push(thisNotice);
+                resultObject.numHiddenWarnings++;
+            }
         } else if (thisPriority >= errorPriorityLevel)
             resultObject.errorList.push(thisNotice);
         else
@@ -601,7 +604,7 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
     }
 
     // debugLog(`processNoticesToErrorsWarnings is returning ${resultObject.successList.length} successes, ${resultObject.errorList.length} errors, and ${resultObject.warningList.length} warnings
-    //   numIgnoredNotices=${resultObject.numIgnoredNotices} numSuppressedErrors=${resultObject.numSuppressedErrors} numSuppressedWarnings=${resultObject.numSuppressedWarnings}`);
+    //   numIgnoredNotices=${resultObject.numIgnoredNotices} numHiddenErrors=${resultObject.numHiddenErrors} numHiddenWarnings=${resultObject.numHiddenWarnings}`);
     return resultObject;
 }
 // end of processNoticesToErrorsWarnings function
@@ -625,7 +628,7 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
             severeList
             mediumList
             lowList
-            numIgnoredNotices, numDisabledNotices, numSevereSuppressed, numMediumSuppressed, numLowSuppressed
+            numIgnoredNotices, numDisabledNotices, numHiddenSevere, numHiddenMedium, numHiddenLow
             processingOptions: just helpfully passes on what we were given (may be undefined)
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
@@ -637,7 +640,7 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
 
     // Add the fields that we need here to the existing resultObject
     resultObject.severeList = []; resultObject.mediumList = []; resultObject.lowList = [];
-    resultObject.numSevereSuppressed = 0; resultObject.numMediumSuppressed = 0; resultObject.numLowSuppressed = 0;
+    resultObject.numHiddenSevere = 0; resultObject.numHiddenMedium = 0; resultObject.numHiddenLow = 0;
 
     let maximumSimilarMessages;
     try {
@@ -677,28 +680,32 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
         else counter[thisCombinedID]++;
         if (maximumSimilarMessages > 0 && allTotals[thisCombinedID] > maximumSimilarMessages + 1 && counter[thisCombinedID] === maximumSimilarMessages + 1) {
             if (thisPriority >= severePriorityLevel) {
-                const numSuppressed = allTotals[thisCombinedID] - maximumSimilarMessages;
-                logicAssert(numSuppressed !== 1, `Shouldn’t suppress just one severe error of priority ${thisPriority}`);
-                resultObject.severeList.push({ priority: -1, message: thisMsg, location: ` ▲ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
-                resultObject.numSevereSuppressed++;
+                const numHidden = allTotals[thisCombinedID] - maximumSimilarMessages;
+                logicAssert(numHidden !== 1, `Shouldn’t suppress just one severe error of priority ${thisPriority}`);
+                resultObject.severeList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${numHidden.toLocaleString()} MORE SIMILAR ERROR${numHidden === 1 ? '' : 'S'} HIDDEN`, hiddenNotices: [thisNotice] });
+                resultObject.numHiddenSevere++;
             } else if (thisPriority >= mediumPriorityLevel) {
-                const numSuppressed = allTotals[thisCombinedID] - maximumSimilarMessages;
-                logicAssert(numSuppressed !== 1, `Shouldn’t suppress just one medium error of priority ${thisPriority}`);
-                resultObject.mediumList.push({ priority: -1, message: thisMsg, location: ` ▲ ${numSuppressed.toLocaleString()} MORE SIMILAR ERROR${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
-                resultObject.numMediumSuppressed++;
+                const numHidden = allTotals[thisCombinedID] - maximumSimilarMessages;
+                logicAssert(numHidden !== 1, `Shouldn’t suppress just one medium error of priority ${thisPriority}`);
+                resultObject.mediumList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${numHidden.toLocaleString()} MORE SIMILAR ERROR${numHidden === 1 ? '' : 'S'} HIDDEN`, hiddenNotices: [thisNotice] });
+                resultObject.numHiddenMedium++;
             } else {
-                const numSuppressed = allTotals[thisCombinedID] - maximumSimilarMessages;
-                logicAssert(numSuppressed !== 1, `Shouldn’t suppress just one low warning of priority ${thisPriority}`);
-                resultObject.lowList.push({ priority: -1, message: thisMsg, location: ` ▲ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
-                resultObject.numLowSuppressed++;
+                const numHidden = allTotals[thisCombinedID] - maximumSimilarMessages;
+                logicAssert(numHidden !== 1, `Shouldn’t suppress just one low warning of priority ${thisPriority}`);
+                resultObject.lowList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${numHidden.toLocaleString()} MORE SIMILAR WARNING${numHidden === 1 ? '' : 'S'} HIDDEN`, hiddenNotices: [thisNotice] });
+                resultObject.numHiddenLow++;
             }
         } else if (maximumSimilarMessages > 0 && counter[thisCombinedID] > maximumSimilarMessages + 1) {
-            if (thisPriority >= severePriorityLevel)
-                resultObject.numSevereSuppressed++;
-            else if (thisPriority >= mediumPriorityLevel)
-                resultObject.numMediumSuppressed++;
-            else
-                resultObject.numLowSuppressed++;
+            if (thisPriority >= severePriorityLevel) {
+                resultObject.severeList[resultObject.severeList.length - 1].hiddenNotices.push(thisNotice);
+                resultObject.numHiddenSevere++;
+            } else if (thisPriority >= mediumPriorityLevel) {
+                resultObject.mediumList[resultObject.mediumList.length - 1].hiddenNotices.push(thisNotice);
+                resultObject.numHiddenMedium++;
+            } else {
+                resultObject.lowList[resultObject.lowList.length - 1].hiddenNotices.push(thisNotice);
+                resultObject.numHiddenLow++;
+            }
         } else if (thisPriority >= severePriorityLevel)
             resultObject.severeList.push(thisNotice);
         else if (thisPriority >= mediumPriorityLevel)
@@ -708,7 +715,7 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
     }
 
     // debugLog(`processNoticesToSevereMediumLow is returning ${resultObject.successList.length} successes, ${resultObject.severeList.length} severe, ${resultObject.mediumList.length} medium, and ${resultObject.lowList.length} low
-    //   numIgnoredNotices=${resultObject.numIgnoredNotices} numSevereSuppressed=${resultObject.numSevereSuppressed} numMediumSuppressed=${resultObject.numMediumSuppressed} numLowSuppressed=${resultObject.numLowSuppressed}`);
+    //   numIgnoredNotices=${resultObject.numIgnoredNotices} numHiddenSevere=${resultObject.numHiddenSevere} numHiddenMedium=${resultObject.numHiddenMedium} numHiddenLow=${resultObject.numHiddenLow}`);
     return resultObject;
 }
 // end of processNoticesToSevereMediumLow function
@@ -730,7 +737,7 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
         Returns an object with:
             successList: a list of strings describing what has been checked
             warningList
-            numIgnoredNotices, numDisabledNotices, numSevereSuppressed, numMediumSuppressed, numLowSuppressed
+            numIgnoredNotices, numDisabledNotices, numHiddenNotices
             processingOptions: just helpfully passes on what we were given (may be undefined)
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
@@ -741,7 +748,7 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
     const [remainingNoticeList, allTotals, resultObject] = processNoticesCommon(givenNoticeObject, optionalProcessingOptions);
 
     // Add the fields that we need here to the existing resultObject
-    resultObject.warningList = []; resultObject.numSuppressedWarnings = 0;
+    resultObject.warningList = []; resultObject.numHiddenNotices = 0;
 
     let maximumSimilarMessages;
     try {
@@ -762,18 +769,19 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
         if (isNaN(counter[thisCombinedID])) counter[thisCombinedID] = 1;
         else counter[thisCombinedID]++;
         if (maximumSimilarMessages > 0 && allTotals[thisCombinedID] > maximumSimilarMessages + 1 && counter[thisCombinedID] === maximumSimilarMessages + 1) {
-            const numSuppressed = allTotals[thisCombinedID] - maximumSimilarMessages;
-            logicAssert(numSuppressed !== 1, `Shouldn’t suppress just one notice of priority ${thisPriority}`);
-            resultObject.warningList.push({ priority: thisPriority, message: thisMsg, location: ` ▲ ${numSuppressed.toLocaleString()} MORE SIMILAR WARNING${numSuppressed === 1 ? '' : 'S'} SUPPRESSED` });
-            resultObject.numSuppressedWarnings++;
+            const numHidden = allTotals[thisCombinedID] - maximumSimilarMessages;
+            logicAssert(numHidden !== 1, `Shouldn’t suppress just one notice of priority ${thisPriority}`);
+            resultObject.warningList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${numHidden.toLocaleString()} MORE SIMILAR NOTICE${numHidden === 1 ? '' : 'S'} HIDDEN`, hiddenNotices: [thisNotice] });
+            resultObject.numHiddenNotices++;
         } else if (maximumSimilarMessages > 0 && counter[thisCombinedID] > maximumSimilarMessages + 1) {
-            resultObject.numSuppressedWarnings++;
+            resultObject.warningList[resultObject.warningList.length - 1].hiddenNotices.push(thisNotice);
+            resultObject.numHiddenNotices++;
         } else
             resultObject.warningList.push(thisNotice);
     }
 
     // debugLog(`processNoticesToSingleList is returning ${resultObject.successList.length} successes, ${resultObject.warningList.length} warnings
-    //   numIgnoredNotices=${resultObject.numIgnoredNotices} numSuppressedWarnings=${resultObject.numSuppressedWarnings}`);
+    //   numIgnoredNotices=${resultObject.numIgnoredNotices} numHiddenNotices=${resultObject.numHiddenNotices}`);
     return resultObject;
 }
 // end of processNoticesToSingleList function
