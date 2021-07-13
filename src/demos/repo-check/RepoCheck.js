@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
-import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesNoticesGradient, RenderTotals } from '../RenderProcessedResults';
+import { RenderCheckedFilesList, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesNoticesGradient, RenderTotals } from '../RenderProcessedResults';
 import { clearCaches, clearCheckedArticleCache, preloadReposIfNecessary, ourParseInt } from '../../core';
 import { checkRepo } from './checkRepo';
 // eslint-disable-next-line no-unused-vars
@@ -150,7 +150,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
                     const repoLink = branchOrRelease === undefined ? `https://git.door43.org/${username}/${repoName}/` : `https://git.door43.org/${username}/${repoName}/src/branch/${branchOrRelease}/`;
                     return (<div>
                         <p>Checked <b>{username} {repoName}</b> (from <i>{branchOrRelease === undefined ? 'DEFAULT' : branchOrRelease}</i> <a rel="noopener noreferrer" target="_blank" href={repoLink}>branch</a>)</p>
-                        <RenderSuccesses username={username} results={processedResults} />
+                        <RenderCheckedFilesList username={username} results={processedResults} />
                         <RenderTotals rawNoticeListLength={rawCRResults.noticeList.length} results={processedResults} />
                         {/* <RenderRawResults results={rawCRResults} /> */}
                     </div>);

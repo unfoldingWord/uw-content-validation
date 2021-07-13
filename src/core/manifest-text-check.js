@@ -789,7 +789,7 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
                 // debugLog(`  Checking ${adjRepoFilepath} from repoFileList`);
                 if (ourProjectPathList.indexOf(repoFilepath) === -1 && ourProjectPathList.indexOf(adjRepoFilepath) === -1) {
                     // debugLog(`    Seems we couldn't find ${repoFilepath} in the manifest`);
-                    addNotice({ priority: 832, message: `Seems project file is missing from the manifest`, excerpt: repoFilepath, location: ourLocation });
+                    addNotice({ priority: 832, message: `Seems filename is missing from the manifest project list`, excerpt: repoFilepath, location: ourLocation });
                 }
             }
 

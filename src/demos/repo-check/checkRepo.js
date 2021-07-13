@@ -155,11 +155,11 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
       if (cfcNoticeEntry.extra)
         checkRepoResult.noticeList.push(cfcNoticeEntry); // Add this notice directly
       else {
-        // const newNoticeObject = { ...cfcNoticeEntry, bookID: cfBookID };
-        // if (!repoName.endsWith('_ta') && !repoName.endsWith('_tw') && bookOrFileCode !== '01')
-        //   newNoticeObject.extra = bookOrFileCode;
-        // addNoticePartial(newNoticeObject);
-        addNoticePartial({ ...cfcNoticeEntry, bookID: cfBookID, extra: bookOrFileCode.toUpperCase() });
+        // addNoticePartial({ ...cfcNoticeEntry, bookID: cfBookID, extra: bookOrFileCode.toUpperCase() });
+        const newNoticeObject = { ...cfcNoticeEntry, bookID: cfBookID };
+        if (bookOrFileCode !== '01')
+          newNoticeObject.extra = bookOrFileCode.toUpperCase();
+        addNoticePartial(newNoticeObject);
       }
     /* Removing the following code as it’s unneeded
     //  as we don’t enable TA or TW checking per repo anyway
@@ -226,7 +226,11 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
       const countString = `${pathList.length.toLocaleString()} file${pathList.length === 1 ? '' : 's'}`;
       let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0;
       for (const thisFilepath of pathList) {
-        // debugLog(`At top of loop: thisFilepath='${thisFilepath}'`);
+        // debugLog(`checkRepo: at top of loop: thisFilepath='${thisFilepath}'`);
+        // if (repoCode === 'UHAL' || repoCode === 'UGL') { // temp .........................XXXXXXXXXXXXXXXXXXX
+        //   if (thisFilepath.startsWith('LXX_Mapping/')) continue; // skip
+        //   if (checkedFileCount > 100) break;
+        // }
         if (abortFlag) break;
 
         // Update our "waiting" message

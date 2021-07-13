@@ -4,7 +4,7 @@ import * as books from '../../core/books/books';
 import { clearCaches, clearCheckedArticleCache, ourParseInt, preloadReposIfNecessary } from '../../core';
 import { checkBookPackages } from '../book-packages-check/checkBookPackages';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
-import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesNoticesGradient, RenderTotals } from '../RenderProcessedResults';
+import { RenderCheckedFilesList, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesNoticesGradient, RenderTotals } from '../RenderProcessedResults';
 // eslint-disable-next-line no-unused-vars
 import { logicAssert, userLog, debugLog } from '../../core/utilities';
 
@@ -166,7 +166,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
       function renderSummary(processedResults) {
         return (<div>
           <p>Checked <b>{username} {languageCode} {bookIDList.join(', ')}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
-          <RenderSuccesses username={username} results={processedResults} />
+          <RenderCheckedFilesList username={username} results={processedResults} />
           <RenderTotals rawNoticeListLength={rawABPsResults.noticeList.length} results={processedResults} />
           {/* <RenderRawResults results={rawCBPsResults} /> */}
         </div>);

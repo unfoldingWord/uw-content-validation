@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import * as books from '../../core/books/books';
 import { clearCaches, clearCheckedArticleCache, preloadReposIfNecessary, ourParseInt } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
-import { RenderSuccesses, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesNoticesGradient, RenderTotals } from '../RenderProcessedResults';
+import { RenderCheckedFilesList, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesNoticesGradient, RenderTotals } from '../RenderProcessedResults';
 import { checkBookPackage } from '../book-package-check/checkBookPackage';
 import { userLog, logicAssert } from '../../core/utilities';
 
@@ -142,7 +142,7 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
             function renderSummary(processedResults) {
                 return (<div>
                     <p>Checked <b>{username} {languageCode} {bookID}</b> (from <i>{branch === undefined ? 'DEFAULT' : branch}</i> branches)</p>
-                    <RenderSuccesses username={username} results={processedResults} />
+                    <RenderCheckedFilesList username={username} results={processedResults} />
                     <RenderTotals rawNoticeListLength={rawGlBPsResults.noticeList.length} results={processedResults} />
                     {/* <RenderRawResults results={rawCBPsResults} /> */}
                 </div>);

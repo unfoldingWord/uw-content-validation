@@ -1,9 +1,12 @@
 // eslint-disable-next-line no-unused-vars
-import { userLog, parameterAssert, logicAssert } from '../core/utilities';
+import { userLog, parameterAssert, logicAssert, debugLog } from '../core/utilities';
 import { isDisabledNotice } from '../core/disabled-notices';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.10.0';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.10.1';
+
+const DEFAULT_MAXIMUM_HIDDEN_NOTICES = 60; // Don't want to hide HUNDREDS/THOUSANDS of notices for each notice type
+const DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE = `Further hidden notices (beyond ${DEFAULT_MAXIMUM_HIDDEN_NOTICES}) were suppressed!`;
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
@@ -32,7 +35,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         Expects to get an object with:
             successList: a list of strings describing what has been checked
             noticeList: a list of components to notices, being:
-                priority: A notice priority number in the range 1-1000.
+                priority: A notice priority number in the range 1-1,000.
                     Each different type of warning/error has a unique number
                       (but not each instance of those warnings/errors).
                     By default, notice priority numbers 700 and over are
@@ -84,7 +87,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 Contains the following:
                     successList -- a list of strings noting what has been checked
                     numIgnored Notices (int)
-                    numHiddenWarnings (int)
+                    numSuppressedNotices (int)
                     processingOptions (a copy of the optionalProcessingOptions passed to these functions)
                     Any other fields that were part of the givenNoticeObject passed to these functions. These might include:
                         checkedFilenames -- list of strings
@@ -238,7 +241,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     const resultObject = { // inititalise with our new fields
         numIgnoredNotices: 0, // Ignored by unique priority number
         numDisabledNotices: 0, // Individually disabled
-        numHiddenWarnings: 0,
+        numSuppressedNotices: 0, // Low priority notices dropped completely
         processingOptions: optionalProcessingOptions, // Just helpfully includes what we were given (may be undefined)
     };
     // Copy across all the other properties that we aren’t interested in
@@ -469,7 +472,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         const newNoticeList = [];
         for (const thisNotice of remainingNoticeList)
             if (thisNotice.priority < cutoffPriorityLevel)
-                resultObject.numHiddenWarnings++;
+                resultObject.numSuppressedNotices++;
             else newNoticeList.push(thisNotice);
         remainingNoticeList = newNoticeList;
     }
@@ -479,7 +482,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     // Sort the remainingNoticeList as required
     const SORT_LIST = ['TN', 'TN2', 'LT', 'ST', 'UHB', 'UGNT', 'TWL', 'TW', 'TQ', 'TQ2', 'SN', 'SQ', 'TA', undefined, 'README', 'LICENSE'];
     if (sortBy === 'ByPriority' || sortBy === 'ByRepo')
-        remainingNoticeList.sort(function (a, b) { return b.priority - a.priority; });
+        // NOTE: We do have some notices with the same priority but different actual messages, esp. 191 Unexpected xx character after space
+        remainingNoticeList.sort(function (a, b) { return (b.priority + b.message) > (a.priority + a.message); });
     else if (sortBy !== 'AsFound')
         console.error(`Sorting '${sortBy}' is not implemented yet!!!`);
     if (sortBy === 'ByRepo') // sort again by repoCode string
@@ -494,11 +498,11 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         const newNoticeList = [];
         for (const thisNotice of remainingNoticeList) {
             const thisExtra = thisNotice.extra;
-            logicAssert(thisExtra && thisExtra.length, `Expect thisNotice to have an "extra" field: ${JSON.stringify(thisNotice)}`)
+            // logicAssert(thisExtra && thisExtra.length, `Expect thisNotice to have an "extra" field: ${JSON.stringify(thisNotice)}`)
             const newNotice = { ...thisNotice };
             // We don’t need the extra field if we've already got this info
-            if (thisExtra !== thisNotice.repoName && thisExtra !== thisNotice.bookID)
-                newNotice.message = `${thisNotice.extra} ${thisNotice.message}`;
+            if (thisExtra && thisExtra !== thisNotice.repoName && thisExtra !== thisNotice.bookID)
+                newNotice.message = `${thisExtra} ${thisNotice.message}`;
             delete newNotice.extra; // since we've used it (if it existed)
             newNoticeList.push(newNotice);
         }
@@ -536,7 +540,7 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
             successList: a list of strings describing what has been checked
             errorList
             warningList
-            numIgnoredNotices, numDisabledNotices, numHiddenErrors, numHiddenWarnings
+            numIgnoredNotices, numDisabledNotices, numSuppressedNotices, numHiddenErrors, numHiddenWarnings
             processingOptions: just helpfully passes on what we were given (may be undefined)
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
@@ -581,21 +585,41 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
             if (thisPriority >= errorPriorityLevel) {
                 const numHidden = allTotals[thisCombinedID] - maximumSimilarMessages;
                 logicAssert(numHidden !== 1, `Shouldn’t suppress just one error of priority ${thisPriority}`);
-                resultObject.errorList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${numHidden.toLocaleString()} MORE SIMILAR ERROR${numHidden === 1 ? '' : 'S'} HIDDEN`, hiddenNotices: [thisNotice] });
+                const adjHidden = Math.min(numHidden, DEFAULT_MAXIMUM_HIDDEN_NOTICES);
+                const numSuppressed = numHidden - adjHidden;
+                resultObject.errorList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${adjHidden.toLocaleString()} MORE SIMILAR ERROR${adjHidden === 1 ? '' : 'S'} HIDDEN${numSuppressed? ` (PLUS ${numSuppressed.toLocaleString()} SUPPRESSED)`: ''}`, hiddenNotices: [thisNotice] });
                 resultObject.numHiddenErrors++;
             } else {
                 const numHidden = allTotals[thisCombinedID] - maximumSimilarMessages;
                 logicAssert(numHidden !== 1, `Shouldn’t suppress just one warning of priority ${thisPriority}`);
-                resultObject.warningList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${numHidden.toLocaleString()} MORE SIMILAR WARNING${numHidden === 1 ? '' : 'S'} HIDDEN`, hiddenNotices: [thisNotice] });
+                const adjHidden = Math.min(numHidden, DEFAULT_MAXIMUM_HIDDEN_NOTICES);
+                const numSuppressed = numHidden - adjHidden;
+                resultObject.warningList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${adjHidden.toLocaleString()} MORE SIMILAR WARNING${adjHidden === 1 ? '' : 'S'} HIDDEN${numSuppressed? ` (PLUS ${numSuppressed.toLocaleString()} SUPPRESSED)`: ''}`, hiddenNotices: [thisNotice] });
                 resultObject.numHiddenWarnings++;
             }
         } else if (maximumSimilarMessages > 0 && counter[thisCombinedID] > maximumSimilarMessages + 1) {
             if (thisPriority >= errorPriorityLevel) {
-                resultObject.errorList[resultObject.errorList.length - 1].hiddenNotices.push(thisNotice);
-                resultObject.numHiddenErrors++;
+                const previousObject = resultObject.errorList[resultObject.errorList.length - 1];
+                if (previousObject.hiddenNotices.length < DEFAULT_MAXIMUM_HIDDEN_NOTICES) {
+                    previousObject.hiddenNotices.push(thisNotice);
+                    resultObject.numHiddenErrors++;
+                } else { // suppress these excess notices
+                    const lastHiddenNoticeObject = previousObject.hiddenNotices[previousObject.hiddenNotices.length - 1];
+                    if (lastHiddenNoticeObject.message !== DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE)
+                        previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE });
+                    resultObject.numSuppressedNotices++;
+                }
             } else {
-                resultObject.warningList[resultObject.warningList.length - 1].hiddenNotices.push(thisNotice);
-                resultObject.numHiddenWarnings++;
+                const previousObject = resultObject.warningList[resultObject.warningList.length - 1];
+                if (previousObject.hiddenNotices.length < DEFAULT_MAXIMUM_HIDDEN_NOTICES) {
+                    previousObject.hiddenNotices.push(thisNotice);
+                    resultObject.numHiddenWarnings++;
+                } else { // suppress these excess notices
+                    const lastHiddenNoticeObject = previousObject.hiddenNotices[previousObject.hiddenNotices.length - 1];
+                    if (lastHiddenNoticeObject.message !== DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE)
+                        previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE });
+                    resultObject.numSuppressedNotices++;
+                }
             }
         } else if (thisPriority >= errorPriorityLevel)
             resultObject.errorList.push(thisNotice);
@@ -628,7 +652,7 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
             severeList
             mediumList
             lowList
-            numIgnoredNotices, numDisabledNotices, numHiddenSevere, numHiddenMedium, numHiddenLow
+            numIgnoredNotices, numDisabledNotices, numSuppressedNotices, numHiddenSevere, numHiddenMedium, numHiddenLow
             processingOptions: just helpfully passes on what we were given (may be undefined)
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
@@ -682,29 +706,59 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
             if (thisPriority >= severePriorityLevel) {
                 const numHidden = allTotals[thisCombinedID] - maximumSimilarMessages;
                 logicAssert(numHidden !== 1, `Shouldn’t suppress just one severe error of priority ${thisPriority}`);
-                resultObject.severeList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${numHidden.toLocaleString()} MORE SIMILAR ERROR${numHidden === 1 ? '' : 'S'} HIDDEN`, hiddenNotices: [thisNotice] });
+                const adjHidden = Math.min(numHidden, DEFAULT_MAXIMUM_HIDDEN_NOTICES);
+                const numSuppressed = numHidden - adjHidden;
+                resultObject.severeList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${adjHidden.toLocaleString()} MORE SIMILAR ERROR${adjHidden === 1 ? '' : 'S'} HIDDEN${numSuppressed? ` (PLUS ${numSuppressed.toLocaleString()} SUPPRESSED)`: ''}`, hiddenNotices: [thisNotice] });
                 resultObject.numHiddenSevere++;
             } else if (thisPriority >= mediumPriorityLevel) {
                 const numHidden = allTotals[thisCombinedID] - maximumSimilarMessages;
                 logicAssert(numHidden !== 1, `Shouldn’t suppress just one medium error of priority ${thisPriority}`);
-                resultObject.mediumList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${numHidden.toLocaleString()} MORE SIMILAR ERROR${numHidden === 1 ? '' : 'S'} HIDDEN`, hiddenNotices: [thisNotice] });
+                const adjHidden = Math.min(numHidden, DEFAULT_MAXIMUM_HIDDEN_NOTICES);
+                const numSuppressed = numHidden - adjHidden;
+                resultObject.mediumList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${adjHidden.toLocaleString()} MORE SIMILAR ERROR${adjHidden === 1 ? '' : 'S'} HIDDEN${numSuppressed? ` (PLUS ${numSuppressed.toLocaleString()} SUPPRESSED)`: ''}`, hiddenNotices: [thisNotice] });
                 resultObject.numHiddenMedium++;
             } else {
                 const numHidden = allTotals[thisCombinedID] - maximumSimilarMessages;
                 logicAssert(numHidden !== 1, `Shouldn’t suppress just one low warning of priority ${thisPriority}`);
-                resultObject.lowList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${numHidden.toLocaleString()} MORE SIMILAR WARNING${numHidden === 1 ? '' : 'S'} HIDDEN`, hiddenNotices: [thisNotice] });
+                const adjHidden = Math.min(numHidden, DEFAULT_MAXIMUM_HIDDEN_NOTICES);
+                const numSuppressed = numHidden - adjHidden;
+                resultObject.lowList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${adjHidden.toLocaleString()} MORE SIMILAR WARNING${adjHidden === 1 ? '' : 'S'} HIDDEN${numSuppressed? ` (PLUS ${numSuppressed.toLocaleString()} SUPPRESSED)`: ''}`, hiddenNotices: [thisNotice] });
                 resultObject.numHiddenLow++;
             }
         } else if (maximumSimilarMessages > 0 && counter[thisCombinedID] > maximumSimilarMessages + 1) {
             if (thisPriority >= severePriorityLevel) {
-                resultObject.severeList[resultObject.severeList.length - 1].hiddenNotices.push(thisNotice);
-                resultObject.numHiddenSevere++;
+                const previousObject = resultObject.severeList[resultObject.severeList.length - 1];
+                if (previousObject.hiddenNotices.length < DEFAULT_MAXIMUM_HIDDEN_NOTICES) {
+                    previousObject.hiddenNotices.push(thisNotice);
+                    resultObject.numHiddenSevere++;
+                } else { // suppress these excess notices
+                    const lastHiddenNoticeObject = previousObject.hiddenNotices[previousObject.hiddenNotices.length - 1];
+                    if (lastHiddenNoticeObject.message !== DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE)
+                        previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE });
+                    resultObject.numSuppressedNotices++;
+                }
             } else if (thisPriority >= mediumPriorityLevel) {
-                resultObject.mediumList[resultObject.mediumList.length - 1].hiddenNotices.push(thisNotice);
-                resultObject.numHiddenMedium++;
+                const previousObject = resultObject.mediumList[resultObject.mediumList.length - 1];
+                if (previousObject.hiddenNotices.length < DEFAULT_MAXIMUM_HIDDEN_NOTICES) {
+                    previousObject.hiddenNotices.push(thisNotice);
+                    resultObject.numHiddenMedium++;
+                } else { // suppress these excess notices
+                    const lastHiddenNoticeObject = previousObject.hiddenNotices[previousObject.hiddenNotices.length - 1];
+                    if (lastHiddenNoticeObject.message !== DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE)
+                        previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE });
+                    resultObject.numSuppressedNotices++;
+                }
             } else {
-                resultObject.lowList[resultObject.lowList.length - 1].hiddenNotices.push(thisNotice);
-                resultObject.numHiddenLow++;
+                const previousObject = resultObject.lowList[resultObject.lowList.length - 1];
+                if (previousObject.hiddenNotices.length < DEFAULT_MAXIMUM_HIDDEN_NOTICES) {
+                    previousObject.hiddenNotices.push(thisNotice);
+                    resultObject.numHiddenLow++;
+                } else { // suppress these excess notices
+                    const lastHiddenNoticeObject = previousObject.hiddenNotices[previousObject.hiddenNotices.length - 1];
+                    if (lastHiddenNoticeObject.message !== DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE)
+                        previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE });
+                    resultObject.numSuppressedNotices++;
+                }
             }
         } else if (thisPriority >= severePriorityLevel)
             resultObject.severeList.push(thisNotice);
@@ -737,7 +791,7 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
         Returns an object with:
             successList: a list of strings describing what has been checked
             warningList
-            numIgnoredNotices, numDisabledNotices, numHiddenNotices
+            numIgnoredNotices, numDisabledNotices, numSuppressedNotices, numHiddenNotices
             processingOptions: just helpfully passes on what we were given (may be undefined)
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
@@ -771,11 +825,21 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
         if (maximumSimilarMessages > 0 && allTotals[thisCombinedID] > maximumSimilarMessages + 1 && counter[thisCombinedID] === maximumSimilarMessages + 1) {
             const numHidden = allTotals[thisCombinedID] - maximumSimilarMessages;
             logicAssert(numHidden !== 1, `Shouldn’t suppress just one notice of priority ${thisPriority}`);
-            resultObject.warningList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${numHidden.toLocaleString()} MORE SIMILAR NOTICE${numHidden === 1 ? '' : 'S'} HIDDEN`, hiddenNotices: [thisNotice] });
+            const adjHidden = Math.min(numHidden, DEFAULT_MAXIMUM_HIDDEN_NOTICES);
+            const numSuppressed = numHidden - adjHidden;
+            resultObject.warningList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${adjHidden.toLocaleString()} MORE SIMILAR NOTICE${adjHidden === 1 ? '' : 'S'} HIDDEN${numSuppressed? ` (PLUS ${numSuppressed.toLocaleString()} SUPPRESSED)`: ''}`, hiddenNotices: [thisNotice] });
             resultObject.numHiddenNotices++;
         } else if (maximumSimilarMessages > 0 && counter[thisCombinedID] > maximumSimilarMessages + 1) {
-            resultObject.warningList[resultObject.warningList.length - 1].hiddenNotices.push(thisNotice);
-            resultObject.numHiddenNotices++;
+            const previousObject = resultObject.warningList[resultObject.warningList.length - 1];
+            if (previousObject.hiddenNotices.length < DEFAULT_MAXIMUM_HIDDEN_NOTICES) {
+                previousObject.hiddenNotices.push(thisNotice);
+                resultObject.numHiddenNotices++;
+            } else { // suppress these excess notices
+                const lastHiddenNoticeObject = previousObject.hiddenNotices[previousObject.hiddenNotices.length - 1];
+                if (lastHiddenNoticeObject.message !== DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE)
+                    previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE });
+                resultObject.numSuppressedNotices++;
+            }
         } else
             resultObject.warningList.push(thisNotice);
     }
