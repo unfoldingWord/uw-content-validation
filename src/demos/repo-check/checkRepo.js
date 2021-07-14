@@ -157,7 +157,8 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
       else {
         // addNoticePartial({ ...cfcNoticeEntry, bookID: cfBookID, extra: bookOrFileCode.toUpperCase() });
         const newNoticeObject = { ...cfcNoticeEntry, bookID: cfBookID };
-        if (bookOrFileCode !== '01')
+        if (bookOrFileCode !== '01' // UGL (from content/G04230/01.md)
+        && (bookOrFileCode[0]!=='H' || bookOrFileCode.length!==5)) // UHAL, e.g., H0612 from content/H0612.md
           newNoticeObject.extra = bookOrFileCode.toUpperCase();
         addNoticePartial(newNoticeObject);
       }
@@ -166,7 +167,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
     // Anyway, not sure that the following code was working yet
     if (repoName.endsWith('_tn')) {
       // The following is needed coz we might be checking the linked TA and/or TW articles from TN2 TSV files
-      userLog("cfcResultObject", JSON.stringify({ ...cfcResultObject, noticeList: "deleted" }));
+      userLog(`cfcResultObject JSON.stringify({ ...cfcResultObject, noticeList: "deleted" })`);
       if (cfcResultObject.checkedFileCount && cfcResultObject.checkedFileCount > 0) {
         checkRepoResult.checkedFileCount += cfcResultObject.checkedFileCount;
         addSuccessMessage(`Checked ${cfcResultObject.checkedFileCount} linked TA/TW articles`);

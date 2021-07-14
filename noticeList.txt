@@ -1,7 +1,14 @@
-Last updated 2021-07-12 12:05:45.635024 by makeNoticeList.py
-Got 516 notices:
+Last updated 2021-07-14 19:54:46.991738 by makeNoticeList.py
+Got 527 notices:
+  previousObject.hiddenNotices.push( thisNotice.priority, maximumHiddenNoticesMessage	from notice-processing-functions.js line 616
+  previousObject.hiddenNotices.push( thisNotice.priority, maximumHiddenNoticesMessage	from notice-processing-functions.js line 627
+  previousObject.hiddenNotices.push( thisNotice.priority, maximumHiddenNoticesMessage	from notice-processing-functions.js line 744
+  previousObject.hiddenNotices.push( thisNotice.priority, maximumHiddenNoticesMessage	from notice-processing-functions.js line 755
+  previousObject.hiddenNotices.push( thisNotice.priority, maximumHiddenNoticesMessage	from notice-processing-functions.js line 766
+  previousObject.hiddenNotices.push( thisNotice.priority, maximumHiddenNoticesMessage	from notice-processing-functions.js line 850
   repoCode === 'SN' || repoCode === 'SQ' ? 196 : 996, "Unable to load", details, repoCode, repoName, filename, location: repoLocation, extra: repoCode	from checkBookPackage.js line 434
-  checkRepoResult.noticeList.push( 997, "Repository doesn’t exist", details, username, repoCode, repoName, location: givenLocation, extra: repoCode	from checkRepo.js line 284
+  newNoticeObject	from checkRepo.js line 162
+  checkRepoResult.noticeList.push( 997, "Repository doesn’t exist", details, username, repoCode, repoName, location: givenLocation, extra: repoCode	from checkRepo.js line 288
   expectedMarker === 'mt1' ? 921 : 519, "Missing expected USFM line", excerpt: `missing \\$expectedMarker`, location: fileLocation	from usfm-text-check.js line 621
   languageCode === 'en' || languageCode === 'fr' ? 490 : 190, "Expected header field to contain a mixed-case string", fieldName: `\\$marker`, excerpt: rest, C, V, location: lineLocation	from usfm-text-check.js line 1,028
   marker === 's5' ? 111 : 809, `$marker === 's5' ? 'Deprecated' : 'Unexpected' '\\$marker' marker at start of line`, C, V, lineNumber, characterIndex: 1, location: lineLocation	from usfm-text-check.js line 1,056
@@ -29,8 +36,8 @@ Got 516 notices:
   996, "Unable to load", details: `username=$username error=$cBPgfError`, username, repoName, filename, location: markdownLocation, extra: repoCode	from checkBookPackage.js line 263
   996, "Unable to load", details, bookID, location: generalLocation, extra: repoCode	from checkBookPackage.js line 648
   996, "Unable to load", details, bookID, C, V, filename: thisPath, location: `$generalLocation $thisPath`, extra: repoCode	from checkBookPackage.js line 676
-  996, "Unable to load", details: `username=$username error=$cRgfError`, bookID: ourBookID, filename: thisFilename, location: `$givenLocation $thisFilepath`, extra: repoName	from checkRepo.js line 288
-  995, "File extension is not recognized, so treated as plain text.", filename, location: filename	from checkFileContents.js line 107
+  996, "Unable to load", details: `username=$username error=$cRgfError`, bookID: ourBookID, filename: thisFilename, location: `$givenLocation $thisFilepath`, extra: repoName	from checkRepo.js line 292
+  995, "File extension is not recognized, so treated as plain text.", filename: filepath, location: ourCFLocation	from checkFileContents.js line 117
   994, "USFM file must start with a valid \\id line", lineNumber: 1, location: ourLocation	from usfm-text-check.js line 1,155
   993, "Unresolved GIT conflict", characterIndex, excerpt, location: ourLocation	from field-text-check.js line 127
   993, "Unresolved GIT conflict", characterIndex, excerpt, location: ourLocation	from plain-text-check.js line 145
@@ -55,6 +62,7 @@ Got 516 notices:
   983, `Wrong number of tabbed fields (expected $NUM_EXPECTED_TWL_TSV_FIELDS)`, excerpt: `Found $fields.length field$fields.length === 1 ? '' : 's'`, C, V, rowID, lineNumber: n + 1, location: ourLocation	from twl-tsv6-table-check.js line 246
   983, `Wrong number of tabbed fields (expected $NUM_EXPECTED_NOTES_TSV_FIELDS)`, excerpt: `Found $fields.length field$fields.length === 1 ? '' : 's'`, C, V, rowID, lineNumber: n + 1, location: ourLocation	from notes-tsv7-table-check.js line 246
   983, `Wrong number of tabbed fields (expected $NUM_EXPECTED_QUESTIONS_TSV_FIELDS)`, excerpt: `Found $fields.length field$fields.length === 1 ? '' : 's'`, C, V, rowID, lineNumber: n + 1, location: ourLocation	from questions-tsv7-table-check.js line 246
+  982, "File extension is not recognized, so treated as markdown.", filename: filepath, location: ourCFLocation	from checkFileContents.js line 114
   979, "Invalid book identifier passed to checkTWL_TSV6DataRow", location: ` '$bookID' in first parameter: $tlcNCerror`	from twl-tsv6-row-check.js line 264
   979, "Invalid book identifier passed to checkTN_TSV9DataRow", location: ` '$bookID' in first parameter: $tlcNCerror`	from tn-tsv9-row-check.js line 303
   979, "Invalid book identifier passed to checkQuestionsTSV7DataRow", location: ` '$bookID' in first parameter: $tlcNCerror`	from questions-tsv7-row-check.js line 272
@@ -74,8 +82,8 @@ Got 516 notices:
   956, "Got empty markdown file", repoName, filename, location: markdownLocation, extra: repoCode	from checkBookPackage.js line 293
   950, "tC cannot yet process '*' language code", characterIndex, excerpt, location: ourLocation	from notes-links-check.js line 377
   950, "tC cannot yet process '*' language code", characterIndex, excerpt, location: ourLocation	from notes-links-check.js line 547
-  947, "Missing manifest.yaml", location: ourLocation, extra: `$repoName MANIFEST`	from checkRepo.js line 313
-  946, "Missing LICENSE.md", location: ourLocation, extra: `$repoName LICENSE`	from checkRepo.js line 311
+  947, "Missing manifest.yaml", location: ourLocation, extra: `$repoName MANIFEST`	from checkRepo.js line 317
+  946, "Missing LICENSE.md", location: ourLocation, extra: `$repoName LICENSE`	from checkRepo.js line 315
   944, `USFM3 Grammar Check ($strictnessString mode) doesn’t pass`, filename, location: ourLocation	from BCS-usfm-grammar-check.js line 226
   943, `USFM3 toJSON Check doesn’t pass`, location: ourLocation	from usfm-js-check.js line 95
   939, "Key is missing for project", details: keyName, excerpt: JSON.stringify(projectEntry), location: ourLocation	from manifest-text-check.js line 743
@@ -172,7 +180,7 @@ Got 516 notices:
   835, "Seems too few original \\k-s attributes", details: `Expected one attribute but only found $attributeCounter`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation	from usfm-text-check.js line 963
   834, "Seems too few translation \\zaln-s attributes", details: `Expected six attributes but only found $attributeCounter`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation	from usfm-text-check.js line 995
   833, "Unexpected extra \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation	from usfm-text-check.js line 992
-  832, `Seems project file is missing from the manifest`, excerpt: repoFilepath, location: ourLocation	from manifest-text-check.js line 792
+  832, `Seems filename is missing from the manifest project list`, excerpt: repoFilepath, location: ourLocation	from manifest-text-check.js line 792
   831, C, V, `Duplicate '$rowID' ID`, fieldName: 'ID', rowID, lineNumber: n + 1, location: ourLocation	from tn-tsv9-table-check.js line 239
   831, C, V, `Duplicate '$rowID' ID`, fieldName: 'ID', rowID, lineNumber: n + 1, location: ourLocation	from twl-tsv6-table-check.js line 228
   831, C, V, `Duplicate '$rowID' ID`, fieldName: 'ID', rowID, lineNumber: n + 1, location: ourLocation	from notes-tsv7-table-check.js line 228
@@ -394,6 +402,8 @@ Got 516 notices:
   644, "USFM3 Grammar Check (relaxed mode) doesn’t pass either", location: fileLocation	from usfm-text-check.js line 271
   638, "Only found whitespace", location: ourLocation	from field-text-check.js line 118
   638, "Only found whitespace", location: ourLocation	from plain-text-check.js line 137
+  630, `Expected lexicon lemma on first line`, except: lines[0], location: ourLocation	from lexicon-file-contents-check.js line 167
+  620, `Expected lexicon lemma on first line`, except: lines[0], location: ourLocation	from lexicon-file-contents-check.js line 173
   619, "USFM \\ide field is recommended to be set to 'UTF-8'", lineNumber: ideIndex + 1, characterIndex: 5, excerpt: lines[ideIndex], location: ourLocation	from usfm-text-check.js line 1,161
   603, "USFM marker doesn’t end with space", C, V, lineNumber, characterIndex, excerpt, location: ourLocation	from usfm-text-check.js line 1,142
   601, "Unable to load", details: `username=$username error=$gcUHBerror`, OBSPathname, location: ourLocation, extra: OBSRepoName	from orig-quote-check.js line 125
@@ -444,6 +454,7 @@ Got 516 notices:
   373, "Field is only whitespace", fieldName: 'SupportReference', rowID, location: ourRowLocation	from notes-tsv7-row-check.js line 409
   373, "Field is only whitespace", fieldName: 'Note', rowID, location: ourRowLocation	from notes-tsv7-row-check.js line 476
   348, "Markdown image link has no title text", excerpt: totalLink, location: ourLocation	from notes-links-check.js line 280
+  330, `Expected lexicon entry status on third line`, except: lines[2], location: ourLocation	from lexicon-file-contents-check.js line 169
   312, 'Possible unclosed footnote', details, lineNumber, C, V, location: lineLocation	from usfm-text-check.js line 742
   301, `Unexpected whitespace after \\$marker marker`, C, V, lineNumber, characterIndex: marker.length, excerpt: rest, location: lineLocation	from usfm-text-check.js line 1,049
   287, `Not enough links (expected $linkOptions.expectedCount link$linkOptions.expectedCount === 1 ? "" : "s")`, location: ` (only found $regexResultsArray.length)$ourLocation`	from field-link-check.js line 173

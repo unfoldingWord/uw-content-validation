@@ -99,6 +99,7 @@ function RenderSuppressedCount({suppressedCount}) {
     if (suppressedCount === 0)
     return null;
     // else
+    // debugLog(`Have ${suppressedCount.toLocaleString()} suppressed notices`);
     return <>
     <p><small style={{ color: 'Gray' }}>{suppressedCount ? suppressedCount.toLocaleString() + " excess notice" + (suppressedCount === 1 ? '' : 's') + " suppressed." : ''}</small></p>
     </>;

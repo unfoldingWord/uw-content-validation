@@ -60,6 +60,7 @@ and then validates the content of one file selected from the repo.
   // filename= 'en_tn_67-REV.tsv' // for TSV9 TN
   // It's actually possible to put a filepath in the filename field
   // filename= 'bible/names/zilpah.md' // for TW
+   filename= 'content/H0612.md' // for UHAL
    filename= 'content/G14650/01.md' // for UGL
 
   // The location field appears in check messages to help the user locate the issue

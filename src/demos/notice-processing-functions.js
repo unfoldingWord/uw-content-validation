@@ -4,12 +4,15 @@ import { isDisabledNotice } from '../core/disabled-notices';
 
 
 // const NOTICE_PROCESSOR_VERSION_STRING = '0.10.1';
+// TODO: Hidden message code probably doesn't work for the other sort orders
 
 const DEFAULT_MAXIMUM_HIDDEN_NOTICES = 60; // Don't want to hide HUNDREDS/THOUSANDS of notices for each notice type
 const DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE = `Further hidden notices (beyond ${DEFAULT_MAXIMUM_HIDDEN_NOTICES}) were suppressed!`;
+let maximumHiddenNotices = DEFAULT_MAXIMUM_HIDDEN_NOTICES, maximumHiddenNoticesMessage = DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE;
 
 // All of the following can be overriden with optionalProcessingOptions
 const DEFAULT_MAXIMUM_SIMILAR_MESSAGES = 3; // Zero means no suppression of similar messages
+let maximumSimilarMessages = DEFAULT_MAXIMUM_SIMILAR_MESSAGES;
 const DEFAULT_CUTOFF_PRIORITY_LEVEL = 0; // This level or lower gets excluded from the lists
 const DEFAULT_IGNORE_PRIORITY_NUMBER_LIST = [];
 
@@ -100,17 +103,31 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     //   Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
 
 
-    const standardisedNoticeList = givenNoticeObject.noticeList;
+    const standardisedNoticeList = givenNoticeObject.noticeList; // TODO: Why did we need this???
 
+    maximumHiddenNotices = DEFAULT_MAXIMUM_HIDDEN_NOTICES; maximumHiddenNoticesMessage = DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE;
+    maximumSimilarMessages = DEFAULT_MAXIMUM_SIMILAR_MESSAGES;
+    try {
+        maximumSimilarMessages = optionalProcessingOptions.maximumSimilarMessages;
+    } catch (npfMSMerror) { }
+    if (typeof maximumSimilarMessages !== 'number' || isNaN(maximumSimilarMessages)) {
+        maximumSimilarMessages = DEFAULT_MAXIMUM_SIMILAR_MESSAGES;
+        // debugLog(`Using default maximumSimilarMessages=${maximumSimilarMessages}`);
+    }
+    // else userLog(`Using supplied maximumSimilarMessages=${maximumSimilarMessages} cf. default=${DEFAULT_MAXIMUM_SIMILAR_MESSAGES}`);
 
     // Check for duplicate notices in the noticeList
     // This might indicate that a function is being called twice unnecessarily
     // This entire section may be commented out of production code
     // It only really makes sense if the debugChain is enabled
     if (givenNoticeObject.noticeList && givenNoticeObject.noticeList.length)
-        if (givenNoticeObject.noticeList.length > 8000)
+        if (givenNoticeObject.noticeList.length > 8000) {
             userLog(`processNoticesCommon: ${givenNoticeObject.noticeList.length.toLocaleString()} notices is too many to search for duplicates!`);
-        else {
+            maximumHiddenNotices = Math.min(20, maximumHiddenNotices);
+            maximumHiddenNoticesMessage = `Further hidden notices (beyond ${maximumHiddenNotices}) were suppressed!`;
+            maximumSimilarMessages = Math.min(2,maximumSimilarMessages);
+            standardisedNoticeList.push({priority:1, message: `Reduced numbers of similar and hidden messages because of large list (${standardisedNoticeList.length.toLocaleString()})`, location:" during notice processing"});
+        } else {
             userLog(`processNoticesCommon: Checking ${givenNoticeObject.noticeList.length.toLocaleString()} notices for duplicates…`);
             const uniqueList = [];
             function uniqueListContains(item) { // returns -1 or the index of the first match
@@ -483,7 +500,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     const SORT_LIST = ['TN', 'TN2', 'LT', 'ST', 'UHB', 'UGNT', 'TWL', 'TW', 'TQ', 'TQ2', 'SN', 'SQ', 'TA', undefined, 'README', 'LICENSE'];
     if (sortBy === 'ByPriority' || sortBy === 'ByRepo')
         // NOTE: We do have some notices with the same priority but different actual messages, esp. 191 Unexpected xx character after space
-        remainingNoticeList.sort(function (a, b) { return (b.priority + b.message) > (a.priority + a.message); });
+        remainingNoticeList.sort(function (a, b) { return `${String(b.priority).padStart(3, '0')}${b.message}` > `${String(a.priority).padStart(3, '0')}${a.message}`; });
     else if (sortBy !== 'AsFound')
         console.error(`Sorting '${sortBy}' is not implemented yet!!!`);
     if (sortBy === 'ByRepo') // sort again by repoCode string
@@ -513,7 +530,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     //  ready for further processing
     const allTotals = {};
     for (const thisNotice of remainingNoticeList) {
-        const thisCombinedID = thisNotice.priority + thisNotice.message; // Could have identical worded messages but with different priorities
+        const thisCombinedID = `${String(thisNotice.priority).padStart(3, '0')}${thisNotice.message}`; // Could have identical worded messages but with different priorities
         if (isNaN(allTotals[thisCombinedID])) allTotals[thisCombinedID] = 1;
         else allTotals[thisCombinedID]++;
     }
@@ -554,15 +571,6 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
     resultObject.errorList = []; resultObject.warningList = [];
     resultObject.numHiddenErrors = 0; resultObject.numHiddenWarnings = 0;
 
-    let maximumSimilarMessages;
-    try {
-        maximumSimilarMessages = optionalProcessingOptions.maximumSimilarMessages;
-    } catch (npfMSMerror) { }
-    if (typeof maximumSimilarMessages !== 'number' || isNaN(maximumSimilarMessages)) {
-        maximumSimilarMessages = DEFAULT_MAXIMUM_SIMILAR_MESSAGES;
-        // debugLog(`Using default maximumSimilarMessages=${maximumSimilarMessages}`);
-    }
-    // else userLog(`Using supplied maximumSimilarMessages=${maximumSimilarMessages} cf. default=${DEFAULT_MAXIMUM_SIMILAR_MESSAGES}`);
     let errorPriorityLevel;
     try {
         errorPriorityLevel = optionalProcessingOptions.errorPriorityLevel;
@@ -578,46 +586,46 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
     let counter = {};
     for (const thisNotice of remainingNoticeList) {
         const thisPriority = thisNotice.priority, thisMsg = thisNotice.message;
-        const thisCombinedID = thisPriority + thisMsg; // Could have identical worded messages but with different priorities
+        const thisCombinedID = `${String(thisNotice.priority).padStart(3, '0')}${thisNotice.message}`; // Could have identical worded messages but with different priorities
         if (isNaN(counter[thisCombinedID])) counter[thisCombinedID] = 1;
         else counter[thisCombinedID]++;
         if (maximumSimilarMessages > 0 && allTotals[thisCombinedID] > maximumSimilarMessages + 1 && counter[thisCombinedID] === maximumSimilarMessages + 1) {
             if (thisPriority >= errorPriorityLevel) {
                 const numHidden = allTotals[thisCombinedID] - maximumSimilarMessages;
                 logicAssert(numHidden !== 1, `Shouldn’t suppress just one error of priority ${thisPriority}`);
-                const adjHidden = Math.min(numHidden, DEFAULT_MAXIMUM_HIDDEN_NOTICES);
+                const adjHidden = Math.min(numHidden, maximumHiddenNotices);
                 const numSuppressed = numHidden - adjHidden;
-                resultObject.errorList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${adjHidden.toLocaleString()} MORE SIMILAR ERROR${adjHidden === 1 ? '' : 'S'} HIDDEN${numSuppressed? ` (PLUS ${numSuppressed.toLocaleString()} SUPPRESSED)`: ''}`, hiddenNotices: [thisNotice] });
+                resultObject.errorList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${adjHidden.toLocaleString()} MORE SIMILAR ERROR${adjHidden === 1 ? '' : 'S'} HIDDEN${numSuppressed ? ` (PLUS ${numSuppressed.toLocaleString()} SUPPRESSED)` : ''}`, hiddenNotices: [thisNotice] });
                 resultObject.numHiddenErrors++;
             } else {
                 const numHidden = allTotals[thisCombinedID] - maximumSimilarMessages;
                 logicAssert(numHidden !== 1, `Shouldn’t suppress just one warning of priority ${thisPriority}`);
-                const adjHidden = Math.min(numHidden, DEFAULT_MAXIMUM_HIDDEN_NOTICES);
+                const adjHidden = Math.min(numHidden, maximumHiddenNotices);
                 const numSuppressed = numHidden - adjHidden;
-                resultObject.warningList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${adjHidden.toLocaleString()} MORE SIMILAR WARNING${adjHidden === 1 ? '' : 'S'} HIDDEN${numSuppressed? ` (PLUS ${numSuppressed.toLocaleString()} SUPPRESSED)`: ''}`, hiddenNotices: [thisNotice] });
+                resultObject.warningList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${adjHidden.toLocaleString()} MORE SIMILAR WARNING${adjHidden === 1 ? '' : 'S'} HIDDEN${numSuppressed ? ` (PLUS ${numSuppressed.toLocaleString()} SUPPRESSED)` : ''}`, hiddenNotices: [thisNotice] });
                 resultObject.numHiddenWarnings++;
             }
         } else if (maximumSimilarMessages > 0 && counter[thisCombinedID] > maximumSimilarMessages + 1) {
             if (thisPriority >= errorPriorityLevel) {
                 const previousObject = resultObject.errorList[resultObject.errorList.length - 1];
-                if (previousObject.hiddenNotices.length < DEFAULT_MAXIMUM_HIDDEN_NOTICES) {
+                if (previousObject.hiddenNotices.length < maximumHiddenNotices) {
                     previousObject.hiddenNotices.push(thisNotice);
                     resultObject.numHiddenErrors++;
                 } else { // suppress these excess notices
                     const lastHiddenNoticeObject = previousObject.hiddenNotices[previousObject.hiddenNotices.length - 1];
-                    if (lastHiddenNoticeObject.message !== DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE)
-                        previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE });
+                    if (lastHiddenNoticeObject.message !== maximumHiddenNoticesMessage)
+                        previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: maximumHiddenNoticesMessage });
                     resultObject.numSuppressedNotices++;
                 }
             } else {
                 const previousObject = resultObject.warningList[resultObject.warningList.length - 1];
-                if (previousObject.hiddenNotices.length < DEFAULT_MAXIMUM_HIDDEN_NOTICES) {
+                if (previousObject.hiddenNotices.length < maximumHiddenNotices) {
                     previousObject.hiddenNotices.push(thisNotice);
                     resultObject.numHiddenWarnings++;
                 } else { // suppress these excess notices
                     const lastHiddenNoticeObject = previousObject.hiddenNotices[previousObject.hiddenNotices.length - 1];
-                    if (lastHiddenNoticeObject.message !== DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE)
-                        previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE });
+                    if (lastHiddenNoticeObject.message !== maximumHiddenNoticesMessage)
+                        previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: maximumHiddenNoticesMessage });
                     resultObject.numSuppressedNotices++;
                 }
             }
@@ -666,15 +674,6 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
     resultObject.severeList = []; resultObject.mediumList = []; resultObject.lowList = [];
     resultObject.numHiddenSevere = 0; resultObject.numHiddenMedium = 0; resultObject.numHiddenLow = 0;
 
-    let maximumSimilarMessages;
-    try {
-        maximumSimilarMessages = optionalProcessingOptions.maximumSimilarMessages;
-    } catch (npfMSMerror) { }
-    if (typeof maximumSimilarMessages !== 'number' || isNaN(maximumSimilarMessages)) {
-        maximumSimilarMessages = DEFAULT_MAXIMUM_SIMILAR_MESSAGES;
-        // debugLog(`Using default maximumSimilarMessages=${maximumSimilarMessages}`);
-    }
-    // else userLog(`Using supplied maximumSimilarMessages=${maximumSimilarMessages} cf. default=${DEFAULT_MAXIMUM_SIMILAR_MESSAGES}`);
     let severePriorityLevel;
     try {
         severePriorityLevel = optionalProcessingOptions.severePriorityLevel;
@@ -699,64 +698,64 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
     let counter = {};
     for (const thisNotice of remainingNoticeList) {
         const thisPriority = thisNotice.priority, thisMsg = thisNotice.message;
-        const thisCombinedID = thisPriority + thisMsg; // Could have identical worded messages but with different priorities
+        const thisCombinedID = `${String(thisNotice.priority).padStart(3, '0')}${thisNotice.message}`; // Could have identical worded messages but with different priorities
         if (isNaN(counter[thisCombinedID])) counter[thisCombinedID] = 1;
         else counter[thisCombinedID]++;
         if (maximumSimilarMessages > 0 && allTotals[thisCombinedID] > maximumSimilarMessages + 1 && counter[thisCombinedID] === maximumSimilarMessages + 1) {
             if (thisPriority >= severePriorityLevel) {
                 const numHidden = allTotals[thisCombinedID] - maximumSimilarMessages;
                 logicAssert(numHidden !== 1, `Shouldn’t suppress just one severe error of priority ${thisPriority}`);
-                const adjHidden = Math.min(numHidden, DEFAULT_MAXIMUM_HIDDEN_NOTICES);
+                const adjHidden = Math.min(numHidden, maximumHiddenNotices);
                 const numSuppressed = numHidden - adjHidden;
-                resultObject.severeList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${adjHidden.toLocaleString()} MORE SIMILAR ERROR${adjHidden === 1 ? '' : 'S'} HIDDEN${numSuppressed? ` (PLUS ${numSuppressed.toLocaleString()} SUPPRESSED)`: ''}`, hiddenNotices: [thisNotice] });
+                resultObject.severeList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${adjHidden.toLocaleString()} MORE SIMILAR ERROR${adjHidden === 1 ? '' : 'S'} HIDDEN${numSuppressed ? ` (PLUS ${numSuppressed.toLocaleString()} SUPPRESSED)` : ''}`, hiddenNotices: [thisNotice] });
                 resultObject.numHiddenSevere++;
             } else if (thisPriority >= mediumPriorityLevel) {
                 const numHidden = allTotals[thisCombinedID] - maximumSimilarMessages;
                 logicAssert(numHidden !== 1, `Shouldn’t suppress just one medium error of priority ${thisPriority}`);
-                const adjHidden = Math.min(numHidden, DEFAULT_MAXIMUM_HIDDEN_NOTICES);
+                const adjHidden = Math.min(numHidden, maximumHiddenNotices);
                 const numSuppressed = numHidden - adjHidden;
-                resultObject.mediumList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${adjHidden.toLocaleString()} MORE SIMILAR ERROR${adjHidden === 1 ? '' : 'S'} HIDDEN${numSuppressed? ` (PLUS ${numSuppressed.toLocaleString()} SUPPRESSED)`: ''}`, hiddenNotices: [thisNotice] });
+                resultObject.mediumList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${adjHidden.toLocaleString()} MORE SIMILAR ERROR${adjHidden === 1 ? '' : 'S'} HIDDEN${numSuppressed ? ` (PLUS ${numSuppressed.toLocaleString()} SUPPRESSED)` : ''}`, hiddenNotices: [thisNotice] });
                 resultObject.numHiddenMedium++;
             } else {
                 const numHidden = allTotals[thisCombinedID] - maximumSimilarMessages;
                 logicAssert(numHidden !== 1, `Shouldn’t suppress just one low warning of priority ${thisPriority}`);
-                const adjHidden = Math.min(numHidden, DEFAULT_MAXIMUM_HIDDEN_NOTICES);
+                const adjHidden = Math.min(numHidden, maximumHiddenNotices);
                 const numSuppressed = numHidden - adjHidden;
-                resultObject.lowList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${adjHidden.toLocaleString()} MORE SIMILAR WARNING${adjHidden === 1 ? '' : 'S'} HIDDEN${numSuppressed? ` (PLUS ${numSuppressed.toLocaleString()} SUPPRESSED)`: ''}`, hiddenNotices: [thisNotice] });
+                resultObject.lowList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${adjHidden.toLocaleString()} MORE SIMILAR WARNING${adjHidden === 1 ? '' : 'S'} HIDDEN${numSuppressed ? ` (PLUS ${numSuppressed.toLocaleString()} SUPPRESSED)` : ''}`, hiddenNotices: [thisNotice] });
                 resultObject.numHiddenLow++;
             }
         } else if (maximumSimilarMessages > 0 && counter[thisCombinedID] > maximumSimilarMessages + 1) {
             if (thisPriority >= severePriorityLevel) {
                 const previousObject = resultObject.severeList[resultObject.severeList.length - 1];
-                if (previousObject.hiddenNotices.length < DEFAULT_MAXIMUM_HIDDEN_NOTICES) {
+                if (previousObject.hiddenNotices.length < maximumHiddenNotices) {
                     previousObject.hiddenNotices.push(thisNotice);
                     resultObject.numHiddenSevere++;
                 } else { // suppress these excess notices
                     const lastHiddenNoticeObject = previousObject.hiddenNotices[previousObject.hiddenNotices.length - 1];
-                    if (lastHiddenNoticeObject.message !== DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE)
-                        previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE });
+                    if (lastHiddenNoticeObject.message !== maximumHiddenNoticesMessage)
+                        previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: maximumHiddenNoticesMessage });
                     resultObject.numSuppressedNotices++;
                 }
             } else if (thisPriority >= mediumPriorityLevel) {
                 const previousObject = resultObject.mediumList[resultObject.mediumList.length - 1];
-                if (previousObject.hiddenNotices.length < DEFAULT_MAXIMUM_HIDDEN_NOTICES) {
+                if (previousObject.hiddenNotices.length < maximumHiddenNotices) {
                     previousObject.hiddenNotices.push(thisNotice);
                     resultObject.numHiddenMedium++;
                 } else { // suppress these excess notices
                     const lastHiddenNoticeObject = previousObject.hiddenNotices[previousObject.hiddenNotices.length - 1];
-                    if (lastHiddenNoticeObject.message !== DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE)
-                        previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE });
+                    if (lastHiddenNoticeObject.message !== maximumHiddenNoticesMessage)
+                        previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: maximumHiddenNoticesMessage });
                     resultObject.numSuppressedNotices++;
                 }
             } else {
                 const previousObject = resultObject.lowList[resultObject.lowList.length - 1];
-                if (previousObject.hiddenNotices.length < DEFAULT_MAXIMUM_HIDDEN_NOTICES) {
+                if (previousObject.hiddenNotices.length < maximumHiddenNotices) {
                     previousObject.hiddenNotices.push(thisNotice);
                     resultObject.numHiddenLow++;
                 } else { // suppress these excess notices
                     const lastHiddenNoticeObject = previousObject.hiddenNotices[previousObject.hiddenNotices.length - 1];
-                    if (lastHiddenNoticeObject.message !== DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE)
-                        previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE });
+                    if (lastHiddenNoticeObject.message !== maximumHiddenNoticesMessage)
+                        previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: maximumHiddenNoticesMessage });
                     resultObject.numSuppressedNotices++;
                 }
             }
@@ -804,40 +803,33 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
     // Add the fields that we need here to the existing resultObject
     resultObject.warningList = []; resultObject.numHiddenNotices = 0;
 
-    let maximumSimilarMessages;
-    try {
-        maximumSimilarMessages = optionalProcessingOptions.maximumSimilarMessages;
-    } catch (npfMSMerror) { }
-    if (typeof maximumSimilarMessages !== 'number' || isNaN(maximumSimilarMessages)) {
-        maximumSimilarMessages = DEFAULT_MAXIMUM_SIMILAR_MESSAGES;
-        // debugLog(`Using default maximumSimilarMessages=${maximumSimilarMessages}`);
-    }
-    // else userLog(`Using supplied maximumSimilarMessages=${maximumSimilarMessages} cf. default=${DEFAULT_MAXIMUM_SIMILAR_MESSAGES}`);
-
     // Check for repeated notices that should be compressed
     //  while simultaneously creating warning list
     let counter = {};
     for (const thisNotice of remainingNoticeList) {
         const thisPriority = thisNotice.priority, thisMsg = thisNotice.message;
-        const thisCombinedID = thisPriority + thisMsg; // Could have identical worded messages but with different priorities
+        const thisCombinedID = `${String(thisNotice.priority).padStart(3, '0')}${thisNotice.message}`; // Could have identical worded messages but with different priorities
         if (isNaN(counter[thisCombinedID])) counter[thisCombinedID] = 1;
         else counter[thisCombinedID]++;
         if (maximumSimilarMessages > 0 && allTotals[thisCombinedID] > maximumSimilarMessages + 1 && counter[thisCombinedID] === maximumSimilarMessages + 1) {
             const numHidden = allTotals[thisCombinedID] - maximumSimilarMessages;
             logicAssert(numHidden !== 1, `Shouldn’t suppress just one notice of priority ${thisPriority}`);
-            const adjHidden = Math.min(numHidden, DEFAULT_MAXIMUM_HIDDEN_NOTICES);
+            const adjHidden = Math.min(numHidden, maximumHiddenNotices);
             const numSuppressed = numHidden - adjHidden;
-            resultObject.warningList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${adjHidden.toLocaleString()} MORE SIMILAR NOTICE${adjHidden === 1 ? '' : 'S'} HIDDEN${numSuppressed? ` (PLUS ${numSuppressed.toLocaleString()} SUPPRESSED)`: ''}`, hiddenNotices: [thisNotice] });
+            resultObject.warningList.push({ priority: thisPriority, message: thisMsg, location: ` ↑ ${adjHidden.toLocaleString()} MORE SIMILAR NOTICE${adjHidden === 1 ? '' : 'S'} HIDDEN${numSuppressed ? ` (PLUS ${numSuppressed.toLocaleString()} SUPPRESSED)` : ''}`, hiddenNotices: [thisNotice] });
             resultObject.numHiddenNotices++;
         } else if (maximumSimilarMessages > 0 && counter[thisCombinedID] > maximumSimilarMessages + 1) {
+            // debugLog(`Have thisCombinedID='${thisCombinedID}' and ${counter[thisCombinedID]}`)
             const previousObject = resultObject.warningList[resultObject.warningList.length - 1];
-            if (previousObject.hiddenNotices.length < DEFAULT_MAXIMUM_HIDDEN_NOTICES) {
+            // console.assert(previousObject, `previousObject should be defined: ${resultObject.warningList.length}`);
+            // console.assert(previousObject.hiddenNotices, `resultObject.warningList[${resultObject.warningList.length-1}].hiddenNotices should be defined: now ${JSON.stringify(thisNotice, 2)} with ${JSON.stringify(previousObject, 2)} and before that ${JSON.stringify(resultObject.warningList[resultObject.warningList.length-2])}`);
+            if (previousObject.hiddenNotices.length < maximumHiddenNotices) {
                 previousObject.hiddenNotices.push(thisNotice);
                 resultObject.numHiddenNotices++;
             } else { // suppress these excess notices
                 const lastHiddenNoticeObject = previousObject.hiddenNotices[previousObject.hiddenNotices.length - 1];
-                if (lastHiddenNoticeObject.message !== DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE)
-                    previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE });
+                if (lastHiddenNoticeObject.message !== maximumHiddenNoticesMessage)
+                    previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: maximumHiddenNoticesMessage });
                 resultObject.numSuppressedNotices++;
             }
         } else

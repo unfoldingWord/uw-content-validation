@@ -1742,9 +1742,9 @@
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
 "@npmcli/arborist@^2.3.0", "@npmcli/arborist@^2.5.0", "@npmcli/arborist@^2.6.4":
-  version "2.6.4"
-  resolved "https://registry.yarnpkg.com/@npmcli/arborist/-/arborist-2.6.4.tgz#bc413ae61dd57e23b8775a77c1f3199eea60b223"
-  integrity sha512-A/pDQ/VZpdxaqsQS5XOWrhrPuC+ER7HLq+4ZkEmnO2yo/USFCWEsiUPYKhfY+sWXK3pgKjN7B7CEFmAnSoAt3g==
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/@npmcli/arborist/-/arborist-2.7.0.tgz#71e9eefcebbcd442f1e97775f53d1d0858fd8059"
+  integrity sha512-wWYXW3aGdLygc5b1MGEMliVZ1fEQb8zAtz7PuIwb0gHoc1u9X3RItpIomvA4zCQsVWrlFYnQHc87aAvlD08Ekg==
   dependencies:
     "@npmcli/installed-package-contents" "^1.0.7"
     "@npmcli/map-workspaces" "^1.0.2"
@@ -3073,9 +3073,9 @@ aws4@^1.8.0:
   integrity sha512-xh1Rl34h6Fi1DC2WWKfxUTVqRsNnr6LsKz2+hfwDxQJWmrx8+c7ylaqBMcHfl1U1r2dsifOvKX3LQuLNZ+XSvA==
 
 axe-core@^4.0.2:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.3.0.tgz#7ce5a7899d4fce08bc0d1d9603c41dc4b8b70ed4"
-  integrity sha512-99FZt8qS/xukgxU/8daV8WT7wAakqBzt6lF3XCweO6pwcf50/NgxxBj6ZC7/ejR+F4PWeFpkb9lAMH3y2quBXA==
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.3.1.tgz#0c6a076e4a1c3e0544ba6a9479158f9be7a7928e"
+  integrity sha512-3WVgVPs/7OnKU3s+lqMtkv3wQlg3WxK1YifmpJSDO0E1aPBrZWlrrTO6cxRqCXLuX2aYgCljqXIQd0VnRidV0g==
 
 axios-cache-adapter@^2.5.0:
   version "2.7.3"
@@ -3846,9 +3846,9 @@ caniuse-api@^3.0.0:
     lodash.uniq "^4.5.0"
 
 caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000981, caniuse-lite@^1.0.30000989, caniuse-lite@^1.0.30001035, caniuse-lite@^1.0.30001109, caniuse-lite@^1.0.30001219:
-  version "1.0.30001243"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001243.tgz#d9250155c91e872186671c523f3ae50cfc94a3aa"
-  integrity sha512-vNxw9mkTBtkmLFnJRv/2rhs1yufpDfCkBZexG3Y0xdOH2Z/eE/85E4Dl5j1YUN34nZVsSp6vVRFQRrez9wJMRA==
+  version "1.0.30001244"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001244.tgz#a6dc49ad5fa02d81d04373ec3f5ceabc3da06abf"
+  integrity sha512-Wb4UFZPkPoJoKKVfELPWytRzpemjP/s0pe22NriANru1NoI+5bGNxzKtk7edYL8rmCWTfQO8eRiF0pn1Dqzx7Q==
 
 canvg@^3.0.6:
   version "3.0.7"
@@ -5341,9 +5341,9 @@ ee-first@1.1.1:
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
 
 electron-to-chromium@^1.3.247, electron-to-chromium@^1.3.378, electron-to-chromium@^1.3.723:
-  version "1.3.772"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.772.tgz#fd1ed39f9f3149f62f581734e4f026e600369479"
-  integrity sha512-X/6VRCXWALzdX+RjCtBU6cyg8WZgoxm9YA02COmDOiNJEZ59WkQggDbWZ4t/giHi/3GS+cvdrP6gbLISANAGYA==
+  version "1.3.775"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.775.tgz#046517d1f2cea753e06fff549995b9dc45e20082"
+  integrity sha512-EGuiJW4yBPOTj2NtWGZcX93ZE8IGj33HJAx4d3ouE2zOfW2trbWU+t1e0yzLr1qQIw81++txbM3BH52QwSRE6Q==
 
 elliptic@^6.5.3:
   version "6.5.4"
@@ -6958,9 +6958,9 @@ html-webpack-plugin@4.0.0-beta.11:
     util.promisify "1.0.0"
 
 html2canvas@^1.0.0-rc.5:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/html2canvas/-/html2canvas-1.1.1.tgz#f36d85fca796a7871428a8d0546f4c4cf210aef3"
-  integrity sha512-e2AFvL3/rnq5YH0TMMda8MMpZkKBw04u8PxRQoUFToFTvGfjdUF+aYe887NaZjthiiclBXiSe/vWO/sCLYchPQ==
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/html2canvas/-/html2canvas-1.1.2.tgz#a0a93cb8289fb27291418bb2a88b6a2fe1fc5e47"
+  integrity sha512-rjtP4RbTTKbsbSs3cvska2K/V+cmiShY+9ADBb4JpLotREM3AjYdpF1SARCf3TQDqnuCFJeFZWyp/KTvpKZjAA==
   dependencies:
     css-line-break "1.1.1"
 
@@ -7504,9 +7504,9 @@ is-color-stop@^1.0.0:
     rgba-regex "^1.0.0"
 
 is-core-module@^2.2.0, is-core-module@^2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/is-core-module/-/is-core-module-2.4.0.tgz#8e9fc8e15027b011418026e98f0e6f4d86305cc1"
-  integrity sha512-6A2fkfq1rfeQZjxrZJGerpLCTHRNEBiSgnu0+obeJpEPZRUooHgsizvzv0ZjJwOz3iWIHdJtVWJ/tmPr3D21/A==
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/is-core-module/-/is-core-module-2.5.0.tgz#f754843617c70bfd29b7bd87327400cda5c18491"
+  integrity sha512-TXCMSDsEHMEEZ6eCA8rwRDbLu55MRGmrctljsBX/2v1d9/GzqHOxW5c5oPSgrUt2vBFXebu9rGqckXGPWOlYpg==
   dependencies:
     has "^1.0.3"
 
