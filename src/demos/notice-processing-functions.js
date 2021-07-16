@@ -3,7 +3,7 @@ import { userLog, parameterAssert, logicAssert, debugLog } from '../core/utiliti
 import { isDisabledNotice } from '../core/disabled-notices';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.10.1';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.10.2';
 // TODO: Hidden message code probably doesn't work for the other sort orders
 
 const DEFAULT_MAXIMUM_HIDDEN_NOTICES = 60; // Don't want to hide HUNDREDS/THOUSANDS of notices for each notice type
@@ -123,10 +123,6 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     if (givenNoticeObject.noticeList && givenNoticeObject.noticeList.length)
         if (givenNoticeObject.noticeList.length > 8000) {
             userLog(`processNoticesCommon: ${givenNoticeObject.noticeList.length.toLocaleString()} notices is too many to search for duplicates!`);
-            maximumHiddenNotices = Math.min(20, maximumHiddenNotices);
-            maximumHiddenNoticesMessage = `Further hidden notices (beyond ${maximumHiddenNotices}) were suppressed!`;
-            maximumSimilarMessages = Math.min(2,maximumSimilarMessages);
-            standardisedNoticeList.push({priority:1, message: `Reduced numbers of similar and hidden messages because of large list (${standardisedNoticeList.length.toLocaleString()})`, location:" during notice processing"});
         } else {
             userLog(`processNoticesCommon: Checking ${givenNoticeObject.noticeList.length.toLocaleString()} notices for duplicates…`);
             const uniqueList = [];
@@ -496,6 +492,16 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     // if (cutoffPriorityLevel > errorPriorityLevel)
     // resultObject.errorList.push({999, "Cutoff level must not be higher than error level", excerpt:`(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
 
+    // Ensure that our displayed message list doesn't end up too huge for the browser to handle
+    if (remainingNoticeList.length > 6000) {
+        maximumHiddenNotices = Math.min(20, maximumHiddenNotices);
+        maximumHiddenNoticesMessage = `Further hidden notices (beyond ${maximumHiddenNotices}) were suppressed!`;
+    }
+    if (remainingNoticeList.length > 10000) {
+        maximumSimilarMessages = Math.min(2, maximumSimilarMessages);
+        standardisedNoticeList.push({ priority: 1, message: `Reduced numbers of similar and hidden messages because of large list (${standardisedNoticeList.length.toLocaleString()})`, location: " during notice processing" });
+    }
+
     // Sort the remainingNoticeList as required
     const SORT_LIST = ['TN', 'TN2', 'LT', 'ST', 'UHB', 'UGNT', 'TWL', 'TW', 'TQ', 'TQ2', 'SN', 'SQ', 'TA', undefined, 'README', 'LICENSE'];
     if (sortBy === 'ByPriority' || sortBy === 'ByRepo')
@@ -608,24 +614,34 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
         } else if (maximumSimilarMessages > 0 && counter[thisCombinedID] > maximumSimilarMessages + 1) {
             if (thisPriority >= errorPriorityLevel) {
                 const previousObject = resultObject.errorList[resultObject.errorList.length - 1];
-                if (previousObject.hiddenNotices.length < maximumHiddenNotices) {
-                    previousObject.hiddenNotices.push(thisNotice);
-                    resultObject.numHiddenErrors++;
-                } else { // suppress these excess notices
-                    const lastHiddenNoticeObject = previousObject.hiddenNotices[previousObject.hiddenNotices.length - 1];
-                    if (lastHiddenNoticeObject.message !== maximumHiddenNoticesMessage)
-                        previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: maximumHiddenNoticesMessage });
+                try {
+                    if (previousObject.hiddenNotices.length < maximumHiddenNotices) {
+                        previousObject.hiddenNotices.push(thisNotice);
+                        resultObject.numHiddenErrors++;
+                    } else { // suppress these excess notices
+                        const lastHiddenNoticeObject = previousObject.hiddenNotices[previousObject.hiddenNotices.length - 1];
+                        if (lastHiddenNoticeObject.message !== maximumHiddenNoticesMessage)
+                            previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: maximumHiddenNoticesMessage });
+                        resultObject.numSuppressedNotices++;
+                    }
+                } catch (e) { // presumably no hidden Notices in previous Object
+                    console.assert(!previousObject.hiddenNotices, `Didn't expected hiddenNotices to be defined: ${JSON.stringify(previousObject)} error was: ${e.message}`);
                     resultObject.numSuppressedNotices++;
                 }
             } else {
                 const previousObject = resultObject.warningList[resultObject.warningList.length - 1];
-                if (previousObject.hiddenNotices.length < maximumHiddenNotices) {
-                    previousObject.hiddenNotices.push(thisNotice);
-                    resultObject.numHiddenWarnings++;
-                } else { // suppress these excess notices
-                    const lastHiddenNoticeObject = previousObject.hiddenNotices[previousObject.hiddenNotices.length - 1];
-                    if (lastHiddenNoticeObject.message !== maximumHiddenNoticesMessage)
-                        previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: maximumHiddenNoticesMessage });
+                try {
+                    if (previousObject.hiddenNotices.length < maximumHiddenNotices) {
+                        previousObject.hiddenNotices.push(thisNotice);
+                        resultObject.numHiddenWarnings++;
+                    } else { // suppress these excess notices
+                        const lastHiddenNoticeObject = previousObject.hiddenNotices[previousObject.hiddenNotices.length - 1];
+                        if (lastHiddenNoticeObject.message !== maximumHiddenNoticesMessage)
+                            previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: maximumHiddenNoticesMessage });
+                        resultObject.numSuppressedNotices++;
+                    }
+                } catch (e) { // presumably no hidden Notices in previous Object
+                    console.assert(!previousObject.hiddenNotices, `Didn't expected hiddenNotices to be defined: ${JSON.stringify(previousObject)} error was: ${e.message}`);
                     resultObject.numSuppressedNotices++;
                 }
             }
@@ -727,35 +743,50 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
         } else if (maximumSimilarMessages > 0 && counter[thisCombinedID] > maximumSimilarMessages + 1) {
             if (thisPriority >= severePriorityLevel) {
                 const previousObject = resultObject.severeList[resultObject.severeList.length - 1];
-                if (previousObject.hiddenNotices.length < maximumHiddenNotices) {
-                    previousObject.hiddenNotices.push(thisNotice);
-                    resultObject.numHiddenSevere++;
-                } else { // suppress these excess notices
-                    const lastHiddenNoticeObject = previousObject.hiddenNotices[previousObject.hiddenNotices.length - 1];
-                    if (lastHiddenNoticeObject.message !== maximumHiddenNoticesMessage)
-                        previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: maximumHiddenNoticesMessage });
+                try {
+                    if (previousObject.hiddenNotices.length < maximumHiddenNotices) {
+                        previousObject.hiddenNotices.push(thisNotice);
+                        resultObject.numHiddenSevere++;
+                    } else { // suppress these excess notices
+                        const lastHiddenNoticeObject = previousObject.hiddenNotices[previousObject.hiddenNotices.length - 1];
+                        if (lastHiddenNoticeObject.message !== maximumHiddenNoticesMessage)
+                            previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: maximumHiddenNoticesMessage });
+                        resultObject.numSuppressedNotices++;
+                    }
+                } catch (e) { // presumably no hidden Notices in previous Object
+                    console.assert(!previousObject.hiddenNotices, `Didn't expected hiddenNotices to be defined: ${JSON.stringify(previousObject)} error was: ${e.message}`);
                     resultObject.numSuppressedNotices++;
                 }
             } else if (thisPriority >= mediumPriorityLevel) {
                 const previousObject = resultObject.mediumList[resultObject.mediumList.length - 1];
-                if (previousObject.hiddenNotices.length < maximumHiddenNotices) {
-                    previousObject.hiddenNotices.push(thisNotice);
-                    resultObject.numHiddenMedium++;
-                } else { // suppress these excess notices
-                    const lastHiddenNoticeObject = previousObject.hiddenNotices[previousObject.hiddenNotices.length - 1];
-                    if (lastHiddenNoticeObject.message !== maximumHiddenNoticesMessage)
-                        previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: maximumHiddenNoticesMessage });
+                try {
+                    if (previousObject.hiddenNotices.length < maximumHiddenNotices) {
+                        previousObject.hiddenNotices.push(thisNotice);
+                        resultObject.numHiddenMedium++;
+                    } else { // suppress these excess notices
+                        const lastHiddenNoticeObject = previousObject.hiddenNotices[previousObject.hiddenNotices.length - 1];
+                        if (lastHiddenNoticeObject.message !== maximumHiddenNoticesMessage)
+                            previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: maximumHiddenNoticesMessage });
+                        resultObject.numSuppressedNotices++;
+                    }
+                } catch (e) { // presumably no hidden Notices in previous Object
+                    console.assert(!previousObject.hiddenNotices, `Didn't expected hiddenNotices to be defined: ${JSON.stringify(previousObject)} error was: ${e.message}`);
                     resultObject.numSuppressedNotices++;
                 }
             } else {
                 const previousObject = resultObject.lowList[resultObject.lowList.length - 1];
-                if (previousObject.hiddenNotices.length < maximumHiddenNotices) {
-                    previousObject.hiddenNotices.push(thisNotice);
-                    resultObject.numHiddenLow++;
-                } else { // suppress these excess notices
-                    const lastHiddenNoticeObject = previousObject.hiddenNotices[previousObject.hiddenNotices.length - 1];
-                    if (lastHiddenNoticeObject.message !== maximumHiddenNoticesMessage)
-                        previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: maximumHiddenNoticesMessage });
+                try {
+                    if (previousObject.hiddenNotices.length < maximumHiddenNotices) {
+                        previousObject.hiddenNotices.push(thisNotice);
+                        resultObject.numHiddenLow++;
+                    } else { // suppress these excess notices
+                        const lastHiddenNoticeObject = previousObject.hiddenNotices[previousObject.hiddenNotices.length - 1];
+                        if (lastHiddenNoticeObject.message !== maximumHiddenNoticesMessage)
+                            previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: maximumHiddenNoticesMessage });
+                        resultObject.numSuppressedNotices++;
+                    }
+                } catch (e) { // presumably no hidden Notices in previous Object
+                    console.assert(!previousObject.hiddenNotices, `Didn't expected hiddenNotices to be defined: ${JSON.stringify(previousObject)} error was: ${e.message}`);
                     resultObject.numSuppressedNotices++;
                 }
             }
@@ -821,15 +852,20 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
         } else if (maximumSimilarMessages > 0 && counter[thisCombinedID] > maximumSimilarMessages + 1) {
             // debugLog(`Have thisCombinedID='${thisCombinedID}' and ${counter[thisCombinedID]}`)
             const previousObject = resultObject.warningList[resultObject.warningList.length - 1];
-            // console.assert(previousObject, `previousObject should be defined: ${resultObject.warningList.length}`);
-            // console.assert(previousObject.hiddenNotices, `resultObject.warningList[${resultObject.warningList.length-1}].hiddenNotices should be defined: now ${JSON.stringify(thisNotice, 2)} with ${JSON.stringify(previousObject, 2)} and before that ${JSON.stringify(resultObject.warningList[resultObject.warningList.length-2])}`);
-            if (previousObject.hiddenNotices.length < maximumHiddenNotices) {
-                previousObject.hiddenNotices.push(thisNotice);
-                resultObject.numHiddenNotices++;
-            } else { // suppress these excess notices
-                const lastHiddenNoticeObject = previousObject.hiddenNotices[previousObject.hiddenNotices.length - 1];
-                if (lastHiddenNoticeObject.message !== maximumHiddenNoticesMessage)
-                    previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: maximumHiddenNoticesMessage });
+            try {
+                // console.assert(previousObject, `previousObject should be defined: ${resultObject.warningList.length}`);
+                // console.assert(previousObject.hiddenNotices, `resultObject.warningList[${resultObject.warningList.length-1}].hiddenNotices should be defined: now ${JSON.stringify(thisNotice, 2)} with ${JSON.stringify(previousObject, 2)} and before that ${JSON.stringify(resultObject.warningList[resultObject.warningList.length-2])}`);
+                if (previousObject.hiddenNotices.length < maximumHiddenNotices) {
+                    previousObject.hiddenNotices.push(thisNotice);
+                    resultObject.numHiddenNotices++;
+                } else { // suppress these excess notices
+                    const lastHiddenNoticeObject = previousObject.hiddenNotices[previousObject.hiddenNotices.length - 1];
+                    if (lastHiddenNoticeObject.message !== maximumHiddenNoticesMessage)
+                        previousObject.hiddenNotices.push({ priority: thisNotice.priority, message: maximumHiddenNoticesMessage });
+                    resultObject.numSuppressedNotices++;
+                }
+            } catch (e) { // presumably no hidden Notices in previous Object
+                console.assert(!previousObject.hiddenNotices, `Didn't expected hiddenNotices to be defined: ${JSON.stringify(previousObject)} error was: ${e.message}`);
                 resultObject.numSuppressedNotices++;
             }
         } else
