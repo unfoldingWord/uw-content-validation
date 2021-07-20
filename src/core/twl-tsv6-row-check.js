@@ -1,5 +1,5 @@
 import { DEFAULT_EXCERPT_LENGTH } from './defaults';
-import { isWhitespace, countOccurrences } from './text-handling-functions';
+import { isWhitespace, countOccurrencesInString } from './text-handling-functions';
 import * as books from './books/books';
 import { checkTextField } from './field-text-check';
 // import { checkMarkdownText } from './markdown-text-check';
@@ -397,7 +397,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         if (TWLink.length) {
             // debugLog(`checkTWL_TSV6DataRow checking ${bookID} ${rowID} TWLink='${TWLink}'`);
             if (TWLink.indexOf('\u200B') >= 0) {
-                const charCount = countOccurrences(TWLink, '\u200B');
+                const charCount = countOccurrencesInString(TWLink, '\u200B');
                 addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, fieldName: 'TWLink', rowID, location: ourRowLocation });
             }
             if (isWhitespace(TWLink))

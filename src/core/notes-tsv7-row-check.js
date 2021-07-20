@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults';
-import { isWhitespace, countOccurrences } from './text-handling-functions';
+import { isWhitespace, countOccurrencesInString } from './text-handling-functions';
 import * as books from './books/books';
 import { checkTextField } from './field-text-check';
 import { checkMarkdownText } from './markdown-text-check';
@@ -424,7 +424,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
             }
             let characterIndex;
             if ((characterIndex = supportReference.indexOf('\u200B') !== -1)) {
-                const charCount = countOccurrences(supportReference, '\u200B');
+                const charCount = countOccurrencesInString(supportReference, '\u200B');
                 addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, fieldName: 'SupportReference', characterIndex, rowID, location: ourRowLocation });
             }
         }
@@ -465,11 +465,11 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
 
         if (note.length) {
             if (note.indexOf('<br>') >= 0) {
-                const charCount = countOccurrences(note, '<br>');
+                const charCount = countOccurrencesInString(note, '<br>');
                 addNoticePartial({ priority: 674, message: "Field contains HTML <br> field(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found—should be '\\n' instead`, fieldName: 'Note', rowID, location: ourRowLocation });
             }
             if (note.indexOf('\u200B') >= 0) {
-                const charCount = countOccurrences(note, '\u200B');
+                const charCount = countOccurrencesInString(note, '\u200B');
                 addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, fieldName: 'Note', rowID, location: ourRowLocation });
             }
             if (isWhitespace(note))

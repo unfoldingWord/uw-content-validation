@@ -9,7 +9,7 @@ import { checkBookPackage } from './checkBookPackage';
 import { userLog, debugLog, parameterAssert, logicAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.5.5';
+// const BP_VALIDATOR_VERSION_STRING = '0.5.6';
 
 
 function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
@@ -82,6 +82,8 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             // Load whole repo zip files which is maybe faster than loading several individual files
             //  especially if we are going to also check the manifests, license, and ReadMe files as well as the book file.
             // Remember that the manifest check actually checks the existence of all the projects, i.e., all files in the repo
+            const whichTestament = books.testament(bookID); // returns 'old' or 'new'
+            logicAssert(whichTestament === 'old' || whichTestament === 'new', `BookPackageCheck() couldn't find testament for '${bookID}'`);
             let repoPreloadList;
             if (bookID === 'OBS') {
                 repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2']; // for DEFAULT
@@ -99,14 +101,14 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
                     repoPreloadList = ['TWL', 'LT', 'ST', 'TN2', 'TQ2', 'SN', 'SQ'];
                 else if (dataSet === 'BOTH')
                     repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TN2', 'TQ', 'TQ2', 'SN', 'SQ'];
-                const whichTestament = books.testament(bookID); // returns 'old' or 'new'
-                logicAssert(whichTestament === 'old' || whichTestament === 'new', `BookPackageCheck() couldn't find testament for '${bookID}'`);
                 const origLangRepo = whichTestament === 'old' ? 'UHB' : 'UGNT';
                 repoPreloadList.unshift(origLangRepo);
             }
-            if (!checkingOptions.disableAllLinkFetchingFlag) { // Both Bible books and OBS refer to TW and TA
-                repoPreloadList.push('TW');
+            if (!checkingOptions.disableAllLinkFetchingFlag) {
+                repoPreloadList.push('TW'); // Both Bible books and OBS refer to TW and TA
                 repoPreloadList.push('TA');
+                const lexiconRepo = whichTestament === 'old' ? 'UHAL' : 'UGL';
+                // repoPreloadList.push(lexiconRepo); // UHB/UGNT, ULT, UST, TW all have lexicon links
             }
             // debugLog(`BookPackageCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
 

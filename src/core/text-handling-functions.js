@@ -27,7 +27,10 @@ export function isWhitespace(myString) {
 }
 
 
-export function countOccurrences(mainString, subString, allowOverlapping = false) {
+export const countOccurrencesInList = (arr, val) => arr.reduce((a, v) => (v === val ? a + 1 : a), 0);
+    // Adapted from https://www.codegrepper.com/code-examples/javascript/javascript+count+number+of+occurrences+in+array
+
+export function countOccurrencesInString(mainString, subString, allowOverlapping = false) {
     // Adapted from https://stackoverflow.com/questions/4009756/how-to-count-string-occurrence-in-string
 
     mainString += '';

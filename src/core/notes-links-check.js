@@ -3,13 +3,13 @@ import Path from 'path';
 import * as books from '../core/books/books';
 // eslint-disable-next-line no-unused-vars
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
-import { countOccurrences } from './text-handling-functions'
+import { countOccurrencesInString } from './text-handling-functions'
 import { cachedGetFile, cachedGetFileUsingFullURL, checkMarkdownText } from '../core';
 // eslint-disable-next-line no-unused-vars
 import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 
 
-// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.7.29';
+// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.8.0';
 
 // const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -53,7 +53,7 @@ const TITLED_IMAGE_REGEX = new RegExp('!\\[([^\\]]*?)\\]\\(([^ \\)]+?) "([^"\\)]
 
 // Caches the path names of files which have been already checked
 //  Used for storing paths to TA and TW articles that have already been checked
-//      so that we don't needless check them again each time they're linked to
+//      so that we don't needlessly check them again each time they're linked to
 const checkedArticleStore = localforage.createInstance({
     driver: [localforage.INDEXEDDB],
     name: 'CV-checked-path-store',
@@ -1284,19 +1284,19 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
 
     // Check for badly formed links (not processed by the above code)
     // Check for badly formed [[ ]] links
-    let leftCount = countOccurrences(fieldText, '[[');
-    let rightCount = countOccurrences(fieldText, ']]');
+    let leftCount = countOccurrencesInString(fieldText, '[[');
+    let rightCount = countOccurrencesInString(fieldText, ']]');
     if (leftCount !== rightCount)
         addNoticePartial({ priority: 845, message: `Mismatched [[ ]] link characters`, details: `left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()}`, location: ourLocation });
     else {
-        leftCount = countOccurrences(fieldText, '[[rc://');
+        leftCount = countOccurrencesInString(fieldText, '[[rc://');
         if (leftCount !== rightCount)
             addNoticePartial({ priority: 844, message: `Mismatched [[rc:// ]] link characters`, details: `left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()}`, location: ourLocation });
     }
     // Check for badly formed [ ]( ) links
-    leftCount = countOccurrences(fieldText, '[');
-    const middleCount = countOccurrences(fieldText, '](');
-    rightCount = countOccurrences(fieldText, ')');
+    leftCount = countOccurrencesInString(fieldText, '[');
+    const middleCount = countOccurrencesInString(fieldText, '](');
+    rightCount = countOccurrencesInString(fieldText, ')');
     if (leftCount < middleCount || rightCount < middleCount)
         addNoticePartial({ priority: 843, message: `Mismatched [ ]( ) link characters`, details: `left=${leftCount.toLocaleString()}, middle=${middleCount.toLocaleString()}, right=${rightCount.toLocaleString()}`, location: ourLocation });
 

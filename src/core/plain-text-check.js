@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
-import { OPEN_CLOSE_PUNCTUATION_PAIRS, PAIRED_PUNCTUATION_OPENERS, PAIRED_PUNCTUATION_CLOSERS, isWhitespace, countOccurrences } from './text-handling-functions'
+import { OPEN_CLOSE_PUNCTUATION_PAIRS, PAIRED_PUNCTUATION_OPENERS, PAIRED_PUNCTUATION_CLOSERS, isWhitespace, countOccurrencesInString } from './text-handling-functions'
 import { checkTextField } from './field-text-check';
 import { removeDisabledNotices } from './disabled-notices';
 // eslint-disable-next-line no-unused-vars
@@ -239,8 +239,8 @@ export function checkPlainText(languageCode, repoCode, textType, textName, plain
     for (const punctSet of OPEN_CLOSE_PUNCTUATION_PAIRS) {
         // Can’t check '‘’' coz they might be used as apostrophe
         const leftChar = punctSet[0], rightChar = punctSet[1];
-        const leftCount = countOccurrences(plainText, leftChar),
-            rightCount = countOccurrences(plainText, rightChar);
+        const leftCount = countOccurrencesInString(plainText, leftChar),
+            rightCount = countOccurrencesInString(plainText, rightChar);
         if (leftCount !== rightCount
             && (rightChar !== '’' || leftCount > rightCount) // Closing single quote is also used as apostrophe in English
             && (textType !== 'markdown' || rightChar !== '>')) // markdown uses > as a block quote character

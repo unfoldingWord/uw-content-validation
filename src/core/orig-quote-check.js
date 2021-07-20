@@ -6,7 +6,7 @@ import { cachedGetFile } from '../core/getApi';
 import { functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 
 
-// const QUOTE_VALIDATOR_VERSION_STRING = '0.9.7';
+// const QUOTE_VALIDATOR_VERSION_STRING = '0.9.8';
 
 
 /**
@@ -97,7 +97,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
     async function getOriginalPassage(bookID, C, V, checkingOptions) {
         // TODO: Cache these ???
 
-        // functionLog(`getOriginalPassage(${bookID}, ${C}, ${V})…`);
+        // functionLog(`getOriginalPassage(${bookID}, ${C}:${V})…`);
         let username;
         try {
             username = checkingOptions?.originalLanguageRepoUsername;
@@ -173,8 +173,10 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
                     addNotice({ priority: 601, message: "Unable to load", details: `username=${username} error=${gcUGNTerror}`, filename, location: ourLocation, extra: originalLanguageRepoName });
                 }
             }
-            if (!originalUSFM) return '';
-
+            if (!originalUSFM) {
+                debugLog(`Oops: getOriginalPassage(${bookID}, ${C}:${V}, ) didn't find a file!!!`);
+                return '';
+            }
 
             // Do global fixes
             originalUSFM = originalUSFM.replace(/\\k-e\\\*/g, ''); // Remove \k-e self-closed milestones
