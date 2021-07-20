@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
-import { isWhitespace, countOccurrences } from './text-handling-functions'
+import { isWhitespace, countOccurrencesInString } from './text-handling-functions'
 import * as books from './books/books';
 import { checkTextField } from './field-text-check';
 import { checkMarkdownText } from './markdown-text-check';
@@ -344,7 +344,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
                 else
                     addNoticePartial({ priority: 811, message: "Bad verse number", rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
             } else { // it's a verse bridge
-                if (countOccurrences(V, '-') > 1)
+                if (countOccurrencesInString(V, '-') > 1)
                     addNoticePartial({ priority: 808, message: "Bad verse range", details: "Too many hyphens", rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
                 const [V1, V2] = V.split('-');
                 if (/^\d+$/.test(V1) && /^\d+$/.test(V2)) {
@@ -432,11 +432,11 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
 
         if (question.length) {
             if (question.indexOf('<br>') >= 0) {
-                const charCount = countOccurrences(question, '<br>');
+                const charCount = countOccurrencesInString(question, '<br>');
                 addNoticePartial({ priority: 674, message: "Field contains HTML <br> field(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found—should be '\\n' instead`, fieldName: 'Question', rowID, location: ourRowLocation });
             }
             if (question.indexOf('\u200B') >= 0) {
-                const charCount = countOccurrences(question, '\u200B');
+                const charCount = countOccurrencesInString(question, '\u200B');
                 addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, fieldName: 'Question', rowID, location: ourRowLocation });
             }
             if (isWhitespace(question))
@@ -461,11 +461,11 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
 
         if (response.length) {
             if (response.indexOf('<br>') >= 0) {
-                const charCount = countOccurrences(response, '<br>');
+                const charCount = countOccurrencesInString(response, '<br>');
                 addNoticePartial({ priority: 674, message: "Field contains HTML <br> field(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found—should be '\\n' instead`, fieldName: 'Response', rowID, location: ourRowLocation });
             }
             if (response.indexOf('\u200B') >= 0) {
-                const charCount = countOccurrences(response, '\u200B');
+                const charCount = countOccurrencesInString(response, '\u200B');
                 addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, fieldName: 'Response', rowID, location: ourRowLocation });
             }
             if (isWhitespace(response))
