@@ -107,7 +107,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             if (!checkingOptions.disableAllLinkFetchingFlag) {
                 repoPreloadList.push('TW'); // Both Bible books and OBS refer to TW and TA
                 repoPreloadList.push('TA');
-                const lexiconRepo = whichTestament === 'old' ? 'UHAL' : 'UGL';
+                // const lexiconRepo = whichTestament === 'old' ? 'UHAL' : 'UGL';
                 // repoPreloadList.push(lexiconRepo); // UHB/UGNT, ULT, UST, TW all have lexicon links
             }
             // debugLog(`BookPackageCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)

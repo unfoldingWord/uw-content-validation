@@ -396,9 +396,9 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     //     addNoticePartial({ priority: 849, message: "Unexpected \\[ or \\] characters", characterIndex, excerpt, location: ourLocation });
     // }
 
-    // if (countOccurrences(fieldText, '(') !== countOccurrences(fieldText, ')')) {
-    //     userLog(`checkTextField(${fieldType}, ${fieldName}, '${fieldText}', ${allowedLinks}, ${ourLocation}) found ${countOccurrences(fieldText, '(')} '(' but ${countOccurrences(fieldText, ')')} ')'`);
-    //     addNoticePartial({ priority: 1, message: `Mismatched ( ) characters`, details: `left=${countOccurrences(fieldText, '(').toLocaleString()}, right=${countOccurrences(fieldText, ')').toLocaleString()}`, location: ourLocation });
+    // if (countOccurrencesInString(fieldText, '(') !== countOccurrencesInString(fieldText, ')')) {
+    //     userLog(`checkTextField(${fieldType}, ${fieldName}, '${fieldText}', ${allowedLinks}, ${ourLocation}) found ${countOccurrencesInString(fieldText, '(')} '(' but ${countOccurrencesInString(fieldText, ')')} ')'`);
+    //     addNoticePartial({ priority: 1, message: `Mismatched ( ) characters`, details: `left=${countOccurrencesInString(fieldText, '(').toLocaleString()}, right=${countOccurrencesInString(fieldText, ')').toLocaleString()}`, location: ourLocation });
     // }
     // Check matched pairs in the field
     for (const punctSet of OPEN_CLOSE_PUNCTUATION_PAIRS) {

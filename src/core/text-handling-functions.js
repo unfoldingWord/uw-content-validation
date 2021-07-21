@@ -50,7 +50,7 @@ export function countOccurrencesInString(mainString, subString, allowOverlapping
     }
     return n;
 }
-// end of countOccurrences function
+// end of countOccurrencesInString function
 
 
 export function ourReplaceAll(givenString, findString, replaceString) {

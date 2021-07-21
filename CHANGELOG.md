@@ -2,14 +2,63 @@
 
 ## [Unreleased](https://github.com/unfoldingWord/uw-content-validation/tree/HEAD)
 
-[Full Changelog](https://github.com/unfoldingWord/uw-content-validation/compare/2.1.4...HEAD)
+[Full Changelog](https://github.com/unfoldingWord/uw-content-validation/compare/2.1.6...HEAD)
+
+**Implemented enhancements:**
+
+- Improve WARNINGS SUPPRESSED in demos [\#178](https://github.com/unfoldingWord/uw-content-validation/issues/178)
+
+**Fixed bugs:**
+
+- 3JN BP check seems to find extra SQ quote errors [\#188](https://github.com/unfoldingWord/uw-content-validation/issues/188)
 
 **Closed issues:**
 
+- Content Validation - July updates \(DO NOT INCORPORATE YET in tc-create\) [\#197](https://github.com/unfoldingWord/uw-content-validation/issues/197)
+
+## [2.1.6](https://github.com/unfoldingWord/uw-content-validation/tree/2.1.6) (2021-07-20)
+
+[Full Changelog](https://github.com/unfoldingWord/uw-content-validation/compare/2.1.5...2.1.6)
+
+**Implemented enhancements:**
+
+- Check that language code in manifest matches the one in the repo name [\#185](https://github.com/unfoldingWord/uw-content-validation/issues/185)
+- Check that USFM has a \mt field [\#184](https://github.com/unfoldingWord/uw-content-validation/issues/184)
+- Ensure that the new TWLs are now in the DEFAULT checks [\#181](https://github.com/unfoldingWord/uw-content-validation/issues/181)
+- Check OrigL relation entries in the manifest [\#180](https://github.com/unfoldingWord/uw-content-validation/issues/180)
+- Detect ugly leading zeroes in Scripture display links [\#161](https://github.com/unfoldingWord/uw-content-validation/issues/161)
+
+**Fixed bugs:**
+
+- Demo shows "No files checked" [\#182](https://github.com/unfoldingWord/uw-content-validation/issues/182)
+- OrigL checks don't seem to fail on extra space in x-tw field [\#165](https://github.com/unfoldingWord/uw-content-validation/issues/165)
+
+**Closed issues:**
+
+- Check for unwanted spaces before footnotes [\#168](https://github.com/unfoldingWord/uw-content-validation/issues/168)
+- Investigate out-of-memory issues in Firefox [\#153](https://github.com/unfoldingWord/uw-content-validation/issues/153)
+- Why does en\_tw repo check demo not detect double spaces, etc.? [\#134](https://github.com/unfoldingWord/uw-content-validation/issues/134)
+
+**Merged pull requests:**
+
+- v2.1.6 [\#189](https://github.com/unfoldingWord/uw-content-validation/pull/189) ([RobH123](https://github.com/RobH123))
+
+## [2.1.5](https://github.com/unfoldingWord/uw-content-validation/tree/2.1.5) (2021-07-07)
+
+[Full Changelog](https://github.com/unfoldingWord/uw-content-validation/compare/2.1.4...2.1.5)
+
+**Fixed bugs:**
+
+- Ensure that booknames can have a space in them [\#156](https://github.com/unfoldingWord/uw-content-validation/issues/156)
+
+**Closed issues:**
+
+- Handle out-of-memory error better [\#160](https://github.com/unfoldingWord/uw-content-validation/issues/160)
 - Check repos for files not in manifest [\#99](https://github.com/unfoldingWord/uw-content-validation/issues/99)
 
 **Merged pull requests:**
 
+- New.2.1.5 [\#177](https://github.com/unfoldingWord/uw-content-validation/pull/177) ([RobH123](https://github.com/RobH123))
 - Bump dns-packet from 1.3.1 to 1.3.4 [\#176](https://github.com/unfoldingWord/uw-content-validation/pull/176) ([dependabot[bot]](https://github.com/apps/dependabot))
 
 ## [2.1.4](https://github.com/unfoldingWord/uw-content-validation/tree/2.1.4) (2021-06-11)
