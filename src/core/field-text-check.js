@@ -305,7 +305,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     }
     if (!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 195) {
         // Check for punctuation chars following space and at start of line
-        //  Removed ©$€₱
+        //  Removed © and leading currency symbols $€₱
         let afterSpaceCheckList = ')}>⟩:,،、‒–—―!.›»‐-?’”;/⁄·@•^†‡°¡¿※#№÷×ºª%‰‱¶′″‴§‖¦℗®℠™¤₳฿₵¢₡₢₫₯֏₠ƒ₣₲₴₭₺₾ℳ₥₦₧₰£៛₽₹₨₪৳₸₮₩¥';
         if (fieldType !== 'markdown') afterSpaceCheckList += '_*~'; // These are used for markdown formatting
         if (fieldType !== 'USFM' || (fieldText.indexOf('x-lemma') < 0 && fieldText.indexOf('x-tw') < 0)) afterSpaceCheckList += '|';

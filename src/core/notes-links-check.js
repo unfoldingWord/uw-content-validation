@@ -9,7 +9,7 @@ import { cachedGetFile, cachedGetFileUsingFullURL, checkMarkdownText } from '../
 import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 
 
-// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.8.0';
+// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.8.1';
 
 // const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -32,9 +32,10 @@ const TW_INTERNAL_REGEX = new RegExp('\\[([-,\\w ()]+?)\\]\\(\\.{2}/([a-z]{2,5})
 // TODO: We need a decision on hyphen vs en-dash in verse references
 // TODO: Test to see if "[2:23](../02/03.md)" is found by more than one regex below
 const BIBLE_REGEX_OTHER_BOOK_ABSOLUTE = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(\\d{1,3}):(\\d{1,3})\\]\\(([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Revelation 3:11](rev/03/11.md)
-// TODO: Is this one with ../../ really valid? Where does it occur?
-const BIBLE_REGEX_OTHER_BOOK_RELATIVE = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(\\d{1,3}):(\\d{1,3})\\]\\((?:\\.{2}/)?\\.{2}/([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Revelation 3:11](../../rev/03/11.md) or (../rev/03/11.md)
+// TODO: Is this option with ../../ really valid? Where/Why does it occur?
+const BIBLE_REGEX_OTHER_BOOK_RELATIVE = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(\\d{1,3}):(\\d{1,3})\\]\\((?:\\.{2}/)?\\.{2}/([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Revelation 3:11](../../rev/03/11.md) or (../rev/03/11.md) NOTE: only one of these must theoretically be correct!!!
 const BIBLE_REGEX_THIS_BOOK_RELATIVE = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(\\d{1,3}):(\\d{1,3})\\]\\(\\.{2}/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Revelation 3:11](../03/11.md) or [Song of Solomon 3:11](../03/11.md)
+const BCV_V_TO_OTHER_BOOK_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(\\d{1,3}):(\\d{1,3})[–-](\\d{1,3})\\]\\((?:\\.{2})/([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Genesis 26:12-14](../gen/26/12.md) NOTE en-dash
 const BCV_V_TO_THIS_BOOK_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(\\d{1,3}):(\\d{1,3})[–-](\\d{1,3})\\]\\((\\.{2})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Genesis 26:12-14](../26/12.md) or [4:11–16](../04/11.md) NOTE en-dash
 const BIBLE_REGEX_THIS_CHAPTER_RELATIVE = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(?:(\\d{1,3}):)?(\\d{1,3})\\]\\(\\./(\\d{1,3})\\.md\\)', 'g'); // [Exodus 2:7](./07.md)
 const THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[(?:verse )?(\\d{1,3})\\]\\(\\.{2}/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');// [27](../11/27.md) or [verse 27](../11/27.md)
@@ -159,6 +160,16 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     //parameterAssert(typeof fieldText === 'string', `checkNotesLinksToOutside: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
     //parameterAssert(givenLocation !== undefined, "checkNotesLinksToOutside: 'fieldText' parameter should be defined");
     //parameterAssert(typeof givenLocation === 'string', `checkNotesLinksToOutside: 'fieldText' parameter should be a string not a '${typeof givenLocation}'`);
+
+    /* // Regex test
+    debugLog("Starting TextRegex…");
+    const testRegex = BCV_V_TO_OTHER_BOOK_BIBLE_REGEX;
+    const testText = 'See [Acts 15:13-21](../act/15/13.md).';
+    let regexTestResultArray;
+    while ((regexTestResultArray = testRegex.exec(testText))) {
+        debugLog(`TestRegex got regexTestResultArray(${regexTestResultArray.length})=${JSON.stringify(regexTestResultArray)} from '${testText}'`);
+    }
+    debugLog("Finished TextRegex."); */
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -309,7 +320,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = TW_INTERNAL_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside TW_INTERNAL_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
         twLinkCount1 += 1;
-        //parameterAssert(regexResultArray.length === 4, `TW_INTERNAL_REGEX expected 4 fields (not ${regexResultArray.length})`);
+        logicAssert(regexResultArray.length === 4, `TW_INTERNAL_REGEX expected 4 fields (not ${regexResultArray.length})`);
         // eslint-disable-next-line no-unused-vars
         let [totalLink, _displayName, category, article] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
@@ -361,7 +372,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = TA_FULL_DISPLAY_LINK_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside TA_FULL_DISPLAY_LINK_REGEX resultArray=${JSON.stringify(regexResultArray)}`);
         taLinkCount1 += 1;
-        //parameterAssert(regexResultArray.length === 5, `TA_FULL_DISPLAY_LINK_REGEX expected 5 fields (not ${regexResultArray.length})`)
+        logicAssert(regexResultArray.length === 5, `TA_FULL_DISPLAY_LINK_REGEX expected 5 fields (not ${regexResultArray.length})`)
         // eslint-disable-next-line no-unused-vars
         let [totalLink, _displayName, foundLanguageCode, part, article] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
@@ -424,7 +435,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
         while ((regexResultArray = TA_RELATIVE1_DISPLAY_LINK_REGEX.exec(fieldText))) {
             // debugLog(`  checkNotesLinksToOutside TA_RELATIVE1_DISPLAY_LINK_REGEX resultArray=${JSON.stringify(regexResultArray)}`);
             taLinkCount1 += 1;
-            //parameterAssert(regexResultArray.length === 3, `TA_RELATIVE1_DISPLAY_LINK_REGEX expected 3 fields (not ${regexResultArray.length})`)
+            logicAssert(regexResultArray.length === 3, `TA_RELATIVE1_DISPLAY_LINK_REGEX expected 3 fields (not ${regexResultArray.length})`)
             // eslint-disable-next-line no-unused-vars
             let [totalLink, _displayName, article] = regexResultArray;
             processedLinkList.push(totalLink); // Save the full link
@@ -479,7 +490,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
         while ((regexResultArray = TA_RELATIVE2_DISPLAY_LINK_REGEX.exec(fieldText))) {
             // debugLog(`  checkNotesLinksToOutside TA_RELATIVE2_DISPLAY_LINK_REGEX resultArray=${JSON.stringify(regexResultArray)}`);
             taLinkCount1 += 1;
-            //parameterAssert(regexResultArray.length === 4, `TA_RELATIVE2_DISPLAY_LINK_REGEX expected 4 fields (not ${regexResultArray.length})`)
+            logicAssert(regexResultArray.length === 4, `TA_RELATIVE2_DISPLAY_LINK_REGEX expected 4 fields (not ${regexResultArray.length})`)
             // eslint-disable-next-line no-unused-vars
             let [totalLink, _displayName, TAsection, article] = regexResultArray;
             processedLinkList.push(totalLink); // Save the full link
@@ -532,7 +543,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = TA_DOUBLE_BRACKETED_LINK_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside TA_DOUBLE_BRACKETED_LINK_REGEX resultArray=${JSON.stringify(regexResultArray)}`);
         taLinkCount2 += 1;
-        //parameterAssert(regexResultArray.length === 4, `TA_DOUBLE_BRACKETED_LINK_REGEX expected 4 fields (not ${regexResultArray.length})`)
+        logicAssert(regexResultArray.length === 4, `TA_DOUBLE_BRACKETED_LINK_REGEX expected 4 fields (not ${regexResultArray.length})`)
         let [totalLink, foundLanguageCode, part, article] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
 
@@ -596,7 +607,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = ourTWRegex.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside ${languageCode} ${repoCode} ${fieldName} ${givenC}:${givenV} found TW resultArray=${JSON.stringify(regexResultArray)}`);
         twLinkCount2 += 1;
-        //parameterAssert(regexResultArray.length === 4, `TW_REGEX expected 4 fields (not ${regexResultArray.length})`)
+        logicAssert(regexResultArray.length === 4, `TW_REGEX expected 4 fields (not ${regexResultArray.length})`)
         let [totalLink, foundLanguageCode, category, article] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
 
@@ -649,7 +660,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = BIBLE_FULL_HELP_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside BIBLE_FULL_HELP_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
         otherBookBibleLinkCount1 += 1;
-        //parameterAssert(regexResultArray.length === 9, `BIBLE_FULL_HELP_REGEX expected 9 fields (not ${regexResultArray.length})`);
+        logicAssert(regexResultArray.length === 9, `BIBLE_FULL_HELP_REGEX expected 9 fields (not ${regexResultArray.length})`);
         let [totalLink, optionalN1, optionalB1, C1, V1, Lg, B2, C2, V2] = regexResultArray;
         // debugLog(`Lg='${Lg}' B2='${B2}' C2='${C2}' V2='${V2}'`);
         processedLinkList.push(totalLink); // Save the full link
@@ -657,7 +668,8 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
         if (Lg !== '*' && Lg !== languageCode)
             addNoticePartial({ priority: 669, message: "Unexpected language code in link", details: `resource language code is '${languageCode}'`, excerpt: Lg, location: ourLocation });
 
-        if (optionalN1) { //parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}' in '${totalLink}'`);
+        if (optionalN1) {
+            logicAssert(optionalB1, `Should have book name as well as number '${optionalN1}' in '${totalLink}'`);
         }
         if (optionalB1) {
             optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
@@ -717,11 +729,12 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = BIBLE_REGEX_THIS_CHAPTER_RELATIVE.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside BIBLE_REGEX_THIS_CHAPTER_RELATIVE regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
         thisChapterBibleLinkCount1 += 1;
-        //parameterAssert(regexResultArray.length === 6, `BIBLE_REGEX_THIS_CHAPTER_RELATIVE expected 6 fields (not ${regexResultArray.length})`);
+        logicAssert(regexResultArray.length === 6, `BIBLE_REGEX_THIS_CHAPTER_RELATIVE expected 6 fields (not ${regexResultArray.length})`);
         let [totalLink, optionalN1, optionalB1, C1, V1, V2] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
 
-        if (optionalN1) { //parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+        if (optionalN1) {
+            logicAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
         }
         if (optionalB1) {
             optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
@@ -781,7 +794,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
         thisVerseBibleLinkCount1 += 1;
-        //parameterAssert(regexResultArray.length === 4, `THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX expected 4 fields (not ${regexResultArray.length})`);
+        logicAssert(regexResultArray.length === 4, `THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX expected 4 fields (not ${regexResultArray.length})`);
         let [totalLink, V1, C2, V2] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
 
@@ -821,7 +834,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = THIS_VERSE_RANGE_TO_THIS_CHAPTER_BIBLE_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside THIS_VERSE_RANGE_TO_THIS_CHAPTER_BIBLE_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
         thisVerseBibleLinkCount1 += 1;
-        //parameterAssert(regexResultArray.length === 5, `THIS_VERSE_RANGE_TO_THIS_CHAPTER_BIBLE_REGEX expected 5 fields (not ${regexResultArray.length})`);
+        logicAssert(regexResultArray.length === 5, `THIS_VERSE_RANGE_TO_THIS_CHAPTER_BIBLE_REGEX expected 5 fields (not ${regexResultArray.length})`);
         let [totalLink, V1a, V1b, C2, V2] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
 
@@ -865,11 +878,12 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = BIBLE_REGEX_THIS_BOOK_RELATIVE.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside BIBLE_REGEX_THIS_BOOK_RELATIVE regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
         thisBookBibleLinkCount1 += 1;
-        //parameterAssert(regexResultArray.length === 7, `BIBLE_REGEX_THIS_BOOK_RELATIVE expected 7 fields (not ${regexResultArray.length})`);
+        logicAssert(regexResultArray.length === 7, `BIBLE_REGEX_THIS_BOOK_RELATIVE expected 7 fields (not ${regexResultArray.length})`);
         let [totalLink, optionalN1, optionalB1, C1, V1, C2, V2] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
 
-        if (optionalN1) { //parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+        if (optionalN1) {
+            logicAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
         }
         if (optionalB1) {
             optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
@@ -878,7 +892,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
                     // NOTE: Our English bookname table has 'Song of Songs'
-                    addNoticePartial({ priority: optionalB1 === 'Song of Solomon' ? 43 : 143, message: `${optionalB1==='Song of Solomon'?'Unexpected' : 'Unknown'} Bible book name in relative Bible link`, details: totalLink, excerpt: optionalB1, location: ourLocation });
+                    addNoticePartial({ priority: optionalB1 === 'Song of Solomon' ? 43 : 143, message: `${optionalB1 === 'Song of Solomon' ? 'Unexpected' : 'Unknown'} Bible book name in relative Bible link`, details: totalLink, excerpt: optionalB1, location: ourLocation });
             }
         }
 
@@ -917,15 +931,79 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
         }
     }
 
+    // Check for other-book Bible links like [Revelation 3:11-12](../rev/03/11.md)
+    while ((regexResultArray = BCV_V_TO_OTHER_BOOK_BIBLE_REGEX.exec(fieldText))) {
+        // debugLog(`  checkNotesLinksToOutside BCV_V_TO_OTHER_BOOK_BIBLE_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
+        thisBookBibleLinkCount1 += 1;
+        logicAssert(regexResultArray.length === 9, `BCV_V_TO_OTHER_BOOK_BIBLE_REGEX expected 9 fields (not ${regexResultArray.length})`);
+        let [totalLink, optionalN1, B1, C1, V1a, V1b, B2, C2, V2] = regexResultArray;
+        processedLinkList.push(totalLink); // Save the full link
+
+        if (optionalN1) {
+            logicAssert(B1.length, `Should have book name as well as number '${optionalN1}'`);
+        }
+        B1 = `${optionalN1}${B1}`.trim(); // e.g., 1 Timothy
+        dataAssert(B1.length, `BCV_V_TO_OTHER_BOOK_BIBLE_REGEX should have B1 with '${totalLink}'`);
+        if (defaultLanguageCode === 'en') { // should be able to check the book name
+            const checkResult = books.isGoodEnglishBookName(B1);
+            // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
+            if (checkResult === undefined || checkResult === false)
+                // NOTE: Our English bookname table has 'Song of Songs'
+                addNoticePartial({ priority: B1 === 'Song of Solomon' ? 43 : 143, message: `${B1 === 'Song of Solomon' ? 'Unexpected' : 'Unknown'} Bible book name in Bible link`, details: totalLink, excerpt: B1, location: ourLocation });
+        }
+
+        let linkBookCode = B2 === '..' ? bookID : B2;
+
+        const linkChapterInt = ourParseInt(C2), linkVerseInt = ourParseInt(V2);
+        try {
+            if (ourParseInt(C1) !== linkChapterInt)
+                addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don’t match", details: `${C1} vs ${linkChapterInt}`, excerpt: totalLink, location: ourLocation });
+        } catch (ccError) {
+            console.error(`TN Link Check2b couldn’t compare chapter numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C2} from '${fieldText}': ${ccError}`);
+        }
+        try {
+            if (ourParseInt(V1a) !== linkVerseInt)
+                addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don’t match", details: `${V1a} vs ${linkVerseInt}`, excerpt: totalLink, location: ourLocation });
+        } catch (vvError) {
+            console.error(`TN Link Check2b couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C2}:${V2} from '${fieldText}': ${vvError}`);
+        }
+        try {
+            if (ourParseInt(V1b) <= ourParseInt(V1a))
+                addNoticePartial({ priority: 741, message: "Verse numbers of markdown Bible link range out of order", details: `${V1a} to ${V1b}`, excerpt: totalLink, location: ourLocation });
+        } catch (vvError) {
+            console.error(`TN Link Check2c couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C2}:${V2} from '${fieldText}': ${vvError}`);
+        }
+
+        if (linkBookCode.length) { // then we know which Bible book this link is to
+            // So we can check for valid C:V numbers
+            let numChaptersThisBook, numVersesThisChapter;
+            logicAssert(linkBookCode.toLowerCase() !== 'obs', `BCV_V_TO_OTHER_BOOK_BIBLE_REGEX linkBookCode shouldn’t be '${linkBookCode}' in notes-links-check`);
+            try {
+                numChaptersThisBook = books.chaptersInBook(linkBookCode);
+            } catch (tlcNCerror) {
+                debugLog(`checkNotesLinksToOutside6 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
+                numChaptersThisBook = 0;
+            }
+            try {
+                numVersesThisChapter = books.versesInChapter(linkBookCode, linkChapterInt);
+            } catch (tlcNVerror) { }
+            if (!linkChapterInt || linkChapterInt < 1 || linkChapterInt > numChaptersThisBook)
+                addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt} vs ${numChaptersThisBook} chapters`, excerpt: totalLink, location: ourLocation });
+            else if (!linkVerseInt || linkVerseInt < 0 || linkVerseInt > numVersesThisChapter)
+                addNoticePartial({ priority: 653, message: "Bad verse number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt}:${linkVerseInt} vs ${numVersesThisChapter} verses`, excerpt: totalLink, location: ourLocation });
+        }
+    }
+
     // Check for this-book Bible links like [Revelation 3:11-12](../03/11.md)
     while ((regexResultArray = BCV_V_TO_THIS_BOOK_BIBLE_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside BCV_V_TO_THIS_BOOK_BIBLE_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
         thisBookBibleLinkCount1 += 1;
-        //parameterAssert(regexResultArray.length === 9, `BCV_V_TO_THIS_BOOK_BIBLE_REGEX expected 9 fields (not ${regexResultArray.length})`);
+        logicAssert(regexResultArray.length === 9, `BCV_V_TO_THIS_BOOK_BIBLE_REGEX expected 9 fields (not ${regexResultArray.length})`);
         let [totalLink, optionalN1, optionalB1, C1, V1a, V1b, B2, C2, V2] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
 
-        if (optionalN1) { //parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+        if (optionalN1) {
+            logicAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
         }
         if (optionalB1) {
             optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
@@ -934,7 +1012,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
                     // NOTE: Our English bookname table has 'Song of Songs'
-                    addNoticePartial({ priority: optionalB1 === 'Song of Solomon' ? 43 : 143, message: `${optionalB1==='Song of Solomon'?'Unexpected' : 'Unknown'} Bible book name in Bible link`, details: totalLink, excerpt: optionalB1, location: ourLocation });
+                    addNoticePartial({ priority: optionalB1 === 'Song of Solomon' ? 43 : 143, message: `${optionalB1 === 'Song of Solomon' ? 'Unexpected' : 'Unknown'} Bible book name in Bible link`, details: totalLink, excerpt: optionalB1, location: ourLocation });
             }
         }
 
@@ -984,12 +1062,12 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = BCV_V_TO_THIS_CHAPTER_BIBLE_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside BCV_V_TO_THIS_CHAPTER_BIBLE_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
         thisChapterBibleLinkCount1 += 1;
-        //parameterAssert(regexResultArray.length === 7, `BCV_V_TO_THIS_CHAPTER_BIBLE_REGEX expected 7 fields (not ${regexResultArray.length})`);
+        logicAssert(regexResultArray.length === 7, `BCV_V_TO_THIS_CHAPTER_BIBLE_REGEX expected 7 fields (not ${regexResultArray.length})`);
         let [totalLink, optionalN1, optionalB1, C1, V1a, V1b, V2] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
 
         if (optionalN1) {
-            //parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+            logicAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
         }
         if (optionalB1) {
             optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
@@ -998,7 +1076,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
                     // NOTE: Our English bookname table has 'Song of Songs'
-                    addNoticePartial({ priority: optionalB1 === 'Song of Solomon' ? 43 : 143, message: `${optionalB1==='Song of Solomon'?'Unexpected' : 'Unknown'} Bible book name in Bible link`, details: totalLink, excerpt: optionalB1, location: ourLocation });
+                    addNoticePartial({ priority: optionalB1 === 'Song of Solomon' ? 43 : 143, message: `${optionalB1 === 'Song of Solomon' ? 'Unexpected' : 'Unknown'} Bible book name in Bible link`, details: totalLink, excerpt: optionalB1, location: ourLocation });
             }
         }
 
@@ -1037,22 +1115,21 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = BIBLE_REGEX_OTHER_BOOK_ABSOLUTE.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside BIBLE_REGEX_OTHER_BOOK_ABSOLUTE regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
         otherBookBibleLinkCount1 += 1;
-        //parameterAssert(regexResultArray.length === 8, `BIBLE_REGEX_OTHER_BOOK_ABSOLUTE expected 8 fields (not ${regexResultArray.length})`);
-        let [totalLink, optionalN1, optionalB1, C1, V1, B2, C2, V2] = regexResultArray;
+        logicAssert(regexResultArray.length === 8, `BIBLE_REGEX_OTHER_BOOK_ABSOLUTE expected 8 fields (not ${regexResultArray.length})`);
+        let [totalLink, optionalN1, B1, C1, V1, B2, C2, V2] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
 
         if (optionalN1) {
-            //parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+            logicAssert(B1.length, `Should have book name as well as number '${optionalN1}'`);
         }
-        if (optionalB1) {
-            optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
-            if (defaultLanguageCode === 'en') { // should be able to check the book name
-                const checkResult = books.isGoodEnglishBookName(optionalB1);
-                // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
-                if (checkResult === undefined || checkResult === false)
-                    // NOTE: Our English bookname table has 'Song of Songs'
-                    addNoticePartial({ priority: optionalB1 === 'Song of Solomon' ? 43 : 143, message: `${optionalB1==='Song of Solomon'?'Unexpected' : 'Unknown'} Bible book name in Bible link`, details: totalLink, excerpt: optionalB1, location: ourLocation });
-            }
+        B1 = `${optionalN1}${B1}`.trim(); // e.g., 1 Timothy
+        dataAssert(B1.length, `BIBLE_REGEX_OTHER_BOOK_ABSOLUTE should have B1 with '${totalLink}'`);
+        if (defaultLanguageCode === 'en') { // should be able to check the book name
+            const checkResult = books.isGoodEnglishBookName(B1);
+            // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
+            if (checkResult === undefined || checkResult === false)
+                // NOTE: Our English bookname table has 'Song of Songs'
+                addNoticePartial({ priority: B1 === 'Song of Solomon' ? 43 : 143, message: `${B1 === 'Song of Solomon' ? 'Unexpected' : 'Unknown'} Bible book name in Bible link`, details: totalLink, excerpt: B1, location: ourLocation });
         }
 
         let linkBookCode = B2 === '..' ? bookID : B2;
@@ -1095,22 +1172,21 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = BIBLE_REGEX_OTHER_BOOK_RELATIVE.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside BIBLE_REGEX_OTHER_BOOK_RELATIVE regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
         otherBookBibleLinkCount1 += 1;
-        //parameterAssert(regexResultArray.length === 8, `BIBLE_REGEX_OTHER_BOOK_RELATIVE expected 8 fields (not ${regexResultArray.length})`);
-        let [totalLink, optionalN1, optionalB1, C1, V1, B2, C2, V2] = regexResultArray;
+        logicAssert(regexResultArray.length === 8, `BIBLE_REGEX_OTHER_BOOK_RELATIVE expected 8 fields (not ${regexResultArray.length})`);
+        let [totalLink, optionalN1, B1, C1, V1, B2, C2, V2] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
 
         if (optionalN1) {
-            //parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+            logicAssert(B1.length, `Should have book name as well as number '${optionalN1}'`);
         }
-        if (optionalB1) {
-            optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
-            if (defaultLanguageCode === 'en') { // should be able to check the book name
-                const checkResult = books.isGoodEnglishBookName(optionalB1);
-                // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
-                if (checkResult === undefined || checkResult === false)
-                    // NOTE: Our English bookname table has 'Song of Songs'
-                    addNoticePartial({ priority: optionalB1 === 'Song of Solomon' ? 43 : 143, message: `${optionalB1==='Song of Solomon'?'Unexpected' : 'Unknown'} Bible book name in Bible link`, details: totalLink, excerpt: optionalB1, location: ourLocation });
-            }
+        B1 = `${optionalN1}${B1}`.trim(); // e.g., 1 Timothy
+        dataAssert(B1.length, `BIBLE_REGEX_OTHER_BOOK_RELATIVE should have B1 with '${totalLink}'`);
+        if (defaultLanguageCode === 'en') { // should be able to check the book name
+            const checkResult = books.isGoodEnglishBookName(B1);
+            // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
+            if (checkResult === undefined || checkResult === false)
+                // NOTE: Our English bookname table has 'Song of Songs'
+                addNoticePartial({ priority: B1 === 'Song of Solomon' ? 43 : 143, message: `${B1 === 'Song of Solomon' ? 'Unexpected' : 'Unknown'} Bible book name in Bible link`, details: totalLink, excerpt: B1, location: ourLocation });
         }
 
         let linkBookCode = B2 === '..' ? bookID : B2;
@@ -1153,12 +1229,13 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = TN_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside TN_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
         TNLinkCount1 += 1;
-        //parameterAssert(regexResultArray.length === 9, `TN_REGEX expected 9 fields (not ${regexResultArray.length})`);
+        logicAssert(regexResultArray.length === 9, `TN_REGEX expected 9 fields (not ${regexResultArray.length})`);
         // eslint-disable-next-line no-unused-vars
         let [totalLink, optionalN1, optionalB1, C1, V1, B2, C2, V2, _noteID2] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link
 
-        if (optionalN1) { //parameterAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
+        if (optionalN1) {
+            logicAssert(optionalB1, `Should have book name as well as number '${optionalN1}'`);
         }
         if (optionalB1) {
             optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
@@ -1213,7 +1290,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     while ((regexResultArray = SIMPLE_DISPLAY_LINK_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside SIMPLE_DISPLAY_LINK_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
         generalLinkCount1 += 1;
-        //parameterAssert(regexResultArray.length === 3, `SIMPLE_DISPLAY_LINK_REGEX expected 3 fields (not ${regexResultArray.length})`);
+        logicAssert(regexResultArray.length === 3, `SIMPLE_DISPLAY_LINK_REGEX expected 3 fields (not ${regexResultArray.length})`);
         // eslint-disable-next-line no-unused-vars
         let [totalLink, displayText, uri] = regexResultArray;
         processedLinkList.push(totalLink); // Save the full link

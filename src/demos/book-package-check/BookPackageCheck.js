@@ -9,7 +9,7 @@ import { checkBookPackage } from './checkBookPackage';
 import { userLog, debugLog, parameterAssert, logicAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.5.6';
+// const BP_VALIDATOR_VERSION_STRING = '0.5.7';
 
 
 function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
@@ -107,8 +107,8 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             if (!checkingOptions.disableAllLinkFetchingFlag) {
                 repoPreloadList.push('TW'); // Both Bible books and OBS refer to TW and TA
                 repoPreloadList.push('TA');
-                // const lexiconRepo = whichTestament === 'old' ? 'UHAL' : 'UGL';
-                // repoPreloadList.push(lexiconRepo); // UHB/UGNT, ULT, UST, TW all have lexicon links
+                const lexiconRepo = whichTestament === 'old' ? 'UHAL' : 'UGL';
+                repoPreloadList.push(lexiconRepo); // UHB/UGNT, ULT, UST, TW all have lexicon links
             }
             // debugLog(`BookPackageCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
 
