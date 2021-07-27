@@ -1,7 +1,7 @@
-import * as books from '../core/books/books';
+import * as books from './books/books';
 // eslint-disable-next-line no-unused-vars
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
-import { cachedGetFile } from '../core/getApi';
+import { cachedGetFile } from './getApi';
 // eslint-disable-next-line no-unused-vars
 import { functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 

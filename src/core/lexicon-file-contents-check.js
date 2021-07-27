@@ -5,7 +5,7 @@ import { checkTextfileContents } from './file-text-check';
 import { userLog, functionLog, debugLog, parameterAssert } from './utilities';
 
 
-const LEXICON_MARKDOWN_FILE_VALIDATOR_VERSION_STRING = '0.4.4';
+const LEXICON_MARKDOWN_FILE_VALIDATOR_VERSION_STRING = '0.1.0';
 
 
 /**
@@ -23,17 +23,19 @@ export async function checkLexiconFileContents(languageCode, repoCode, lexiconFi
      Returns a result object containing a successList and a noticeList
      */
     // functionLog(`checkLexiconFileContents(lC=${languageCode}, rC=${repoCode}, fn=${lexiconFilename}, ${lexiconMarkdownText.length}, ${givenLocation})…`);
-    //parameterAssert(languageCode !== undefined, "checkLexiconFileContents: 'languageCode' parameter should be defined");
-    //parameterAssert(typeof languageCode === 'string', `checkLexiconFileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
+    parameterAssert(languageCode !== undefined, "checkLexiconFileContents: 'languageCode' parameter should be defined");
+    parameterAssert(typeof languageCode === 'string', `checkLexiconFileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
     parameterAssert(repoCode === 'UHAL' || repoCode === 'UGL', `checkLexiconFileContents: 'repoCode' parameter should be 'UHAL' or 'UGL', not '${repoCode}'`);
-    //parameterAssert(lexiconFilename !== undefined, "checkLexiconFileContents: 'lexiconFilename' parameter should be defined");
-    //parameterAssert(typeof lexiconFilename === 'string', `checkLexiconFileContents: 'lexiconFilename' parameter should be a string not a '${typeof lexiconFilename}': ${lexiconFilename}`);
-    //parameterAssert(lexiconMarkdownText !== undefined, "checkLexiconFileContents: 'lexiconMarkdownText' parameter should be defined");
-    //parameterAssert(typeof lexiconMarkdownText === 'string', `checkLexiconFileContents: 'lexiconMarkdownText' parameter should be a string not a '${typeof lexiconMarkdownText}': ${lexiconMarkdownText}`);
-    //parameterAssert(givenLocation !== undefined, "checkLexiconFileContents: 'givenLocation' parameter should be defined");
-    //parameterAssert(typeof givenLocation === 'string', `checkLexiconFileContents: 'givenLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
-    //parameterAssert(givenLocation.indexOf('true') === -1, `checkLexiconFileContents: 'givenLocation' parameter should not be '${givenLocation}'`);
-    if (checkingOptions !== undefined) { //parameterAssert(typeof checkingOptions === 'object', `checkLexiconFileContents: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
+    parameterAssert(lexiconFilename !== undefined, "checkLexiconFileContents: 'lexiconFilename' parameter should be defined");
+    parameterAssert(typeof lexiconFilename === 'string', `checkLexiconFileContents: 'lexiconFilename' parameter should be a string not a '${typeof lexiconFilename}': ${lexiconFilename}`);
+    parameterAssert(lexiconMarkdownText !== undefined, "checkLexiconFileContents: 'lexiconMarkdownText' parameter should be defined");
+    parameterAssert(typeof lexiconMarkdownText === 'string', `checkLexiconFileContents: 'lexiconMarkdownText' parameter should be a string not a '${typeof lexiconMarkdownText}': ${lexiconMarkdownText}`);
+    parameterAssert(givenLocation !== undefined, "checkLexiconFileContents: 'givenLocation' parameter should be defined");
+    parameterAssert(typeof givenLocation === 'string', `checkLexiconFileContents: 'givenLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
+    parameterAssert(givenLocation.indexOf('true') === -1, `checkLexiconFileContents: 'givenLocation' parameter should not be '${givenLocation}'`);
+    parameterAssert(checkingOptions !== undefined, "checkLexiconFileContents: 'checkingOptions' parameter should be defined");
+    if (checkingOptions !== undefined) {
+        parameterAssert(typeof checkingOptions === 'object', `checkLexiconFileContents: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
     }
 
     let ourLocation = givenLocation;
@@ -61,18 +63,20 @@ export async function checkLexiconFileContents(languageCode, repoCode, lexiconFi
     }
     function addNoticePartial(noticeObject) {
         // functionLog(`checkLexiconFileContents addNoticePartial: (priority=${noticeObject.priority}) ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.excerpt ? " " + noticeObject.excerpt : ""}${noticeObject.location}`);
-        //parameterAssert(noticeObject.priority !== undefined, "cMdT addNoticePartial: 'priority' parameter should be defined");
-        //parameterAssert(typeof noticeObject.priority === 'number', `cMdT addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        //parameterAssert(noticeObject.message !== undefined, "cMdT addNoticePartial: 'message' parameter should be defined");
-        //parameterAssert(typeof noticeObject.message === 'string', `cMdT addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // //parameterAssert(characterIndex !== undefined, "cMdT addNoticePartial: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cMdT addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        parameterAssert(noticeObject.priority !== undefined, "cMdT addNoticePartial: 'priority' parameter should be defined");
+        parameterAssert(typeof noticeObject.priority === 'number', `cMdT addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
+        parameterAssert(noticeObject.message !== undefined, "cMdT addNoticePartial: 'message' parameter should be defined");
+        parameterAssert(typeof noticeObject.message === 'string', `cMdT addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
+        // parameterAssert(characterIndex !== undefined, "cMdT addNoticePartial: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex) {
+            parameterAssert(typeof noticeObject.characterIndex === 'number', `cMdT addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
         }
-        // //parameterAssert(excerpt !== undefined, "cMdT addNoticePartial: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cMdT addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        // parameterAssert(excerpt !== undefined, "cMdT addNoticePartial: 'excerpt' parameter should be defined");
+        if (noticeObject.excerpt) {
+            parameterAssert(typeof noticeObject.excerpt === 'string', `cMdT addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         }
-        //parameterAssert(noticeObject.location !== undefined, "cMdT addNoticePartial: 'location' parameter should be defined");
-        //parameterAssert(typeof noticeObject.location === 'string', `cMdT addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        parameterAssert(noticeObject.location !== undefined, "cMdT addNoticePartial: 'location' parameter should be defined");
+        parameterAssert(typeof noticeObject.location === 'string', `cMdT addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
         if (noticeObject.debugChain) noticeObject.debugChain = `checkLexiconFileContents ${noticeObject.debugChain}`; // Prepend our name
         result.noticeList.push({ ...noticeObject, filename: lexiconFilename });
@@ -93,10 +97,10 @@ export async function checkLexiconFileContents(languageCode, repoCode, lexiconFi
 
         // Updates the global list of notices
         // debugLog(`cMdT ourCheckMarkdownText(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${optionalFieldLocation}, …)`);
-        //parameterAssert(lexiconMarkdownText !== undefined, "cMdFC ourCheckMarkdownText: 'lexiconMarkdownText' parameter should be defined");
-        //parameterAssert(typeof lexiconMarkdownText === 'string', `cMdFC ourCheckMarkdownText: 'lexiconMarkdownText' parameter should be a string not a '${typeof lexiconMarkdownText}'`);
-        //parameterAssert(optionalFieldLocation !== undefined, "cMdFC ourCheckMarkdownText: 'optionalFieldLocation' parameter should be defined");
-        //parameterAssert(typeof optionalFieldLocation === 'string', `cMdFC ourCheckMarkdownText: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
+        parameterAssert(lexiconMarkdownText !== undefined, "cMdFC ourCheckMarkdownText: 'lexiconMarkdownText' parameter should be defined");
+        parameterAssert(typeof lexiconMarkdownText === 'string', `cMdFC ourCheckMarkdownText: 'lexiconMarkdownText' parameter should be a string not a '${typeof lexiconMarkdownText}'`);
+        parameterAssert(optionalFieldLocation !== undefined, "cMdFC ourCheckMarkdownText: 'optionalFieldLocation' parameter should be defined");
+        parameterAssert(typeof optionalFieldLocation === 'string', `cMdFC ourCheckMarkdownText: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
         const cmtResultObject = await checkMarkdownText(languageCode, repoCode, lexiconFilename, lexiconMarkdownText, optionalFieldLocation, checkingOptions);
         // debugLog(`cmtResultObject=${JSON.stringify(cmtResultObject)}`);
@@ -122,9 +126,9 @@ export async function checkLexiconFileContents(languageCode, repoCode, lexiconFi
 
         // Updates the global list of notices
         // debugLog(`cMdFC ourFileTextCheck(${lexiconMarkdownText}, (${lexiconMarkdownText.length}), ${optionalFieldLocation}, ${JSON.stringify(checkingOptions)})`);
-        //parameterAssert(lexiconMarkdownText !== undefined, "cMdFC ourFileTextCheck: 'lexiconMarkdownText' parameter should be defined");
-        //parameterAssert(typeof lexiconMarkdownText === 'string', `cMdFC ourFileTextCheck: 'lexiconMarkdownText' parameter should be a string not a '${typeof lexiconMarkdownText}'`);
-        //parameterAssert(checkingOptions !== undefined, "cMdFC ourFileTextCheck: 'checkingOptions' parameter should be defined");
+        parameterAssert(lexiconMarkdownText !== undefined, "cMdFC ourFileTextCheck: 'lexiconMarkdownText' parameter should be defined");
+        parameterAssert(typeof lexiconMarkdownText === 'string', `cMdFC ourFileTextCheck: 'lexiconMarkdownText' parameter should be a string not a '${typeof lexiconMarkdownText}'`);
+        parameterAssert(checkingOptions !== undefined, "cMdFC ourFileTextCheck: 'checkingOptions' parameter should be defined");
 
         const ctfcResultObject = checkTextfileContents(languageCode, repoCode, 'markdown', lexiconFilename, lexiconMarkdownText, optionalFieldLocation, checkingOptions);
         // debugLog(`ctfcResultObject=${JSON.stringify(ctfcResultObject)}`);
@@ -149,9 +153,9 @@ export async function checkLexiconFileContents(languageCode, repoCode, lexiconFi
             hierarchy.push({ level: currentLevel, sublevels: [] });
         }
         if (currentLevel && line.startsWith('* ')) {
-            let adjustedLine =line.substring(2);
+            let adjustedLine = line.substring(2);
             const colonIndex = adjustedLine.indexOf(':');
-            if (colonIndex !== -1) adjustedLine = adjustedLine.substring(0,colonIndex); // we don't want the actual data
+            if (colonIndex !== -1) adjustedLine = adjustedLine.substring(0, colonIndex); // we don't want the actual data
             hierarchy[hierarchy.length - 1].sublevels.push(adjustedLine);
         }
     }
@@ -175,7 +179,6 @@ export async function checkLexiconFileContents(languageCode, repoCode, lexiconFi
     // Now do the standard markdown checks
     await ourCheckMarkdownText(lexiconMarkdownText, givenLocation, checkingOptions);
     ourFileTextCheck(lexiconMarkdownText, givenLocation, checkingOptions);
-
 
     addSuccessMessage(`Checked lexicon file: ${lexiconFilename}`);
     if (result.noticeList.length)

@@ -1,10 +1,11 @@
 // eslint-disable-next-line no-unused-vars
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
 import { isWhitespace, countOccurrencesInString, ourDeleteAll } from './text-handling-functions'
-import * as books from '../core/books/books';
-import { cachedGetFile } from '../core/getApi';
+import * as books from './books/books';
+import { cachedGetFile } from './getApi';
 import { checkTextField } from './field-text-check';
 import { checkTextfileContents } from './file-text-check';
+import { checkStrongsField } from './strongs-field-check'; // and this may call checkLexiconFileContents()
 import { runUsfmJsCheck } from './usfm-js-check';
 import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
 import { checkNotesLinksToOutside } from './notes-links-check';
@@ -13,7 +14,7 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.9.0';
+// const USFM_VALIDATOR_VERSION_STRING = '0.9.1';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for STs
@@ -173,6 +174,9 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
     //parameterAssert(givenLocation !== undefined, "checkUSFMText: 'givenRowLocation' parameter should be defined");
     //parameterAssert(typeof givenLocation === 'string', `checkUSFMText: 'givenRowLocation' parameter should be a string not a '${typeof givenLocation}'`);
     //parameterAssert(checkingOptions !== undefined, "checkUSFMText: 'checkingOptions' parameter should be defined");
+    if (checkingOptions !== undefined) {
+        parameterAssert(typeof checkingOptions === 'object', `checkUSFMText: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
+    }
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -925,7 +929,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                         addNoticePartial({ priority: 852, message: "Unexpected original \\w x-morph language prefix", details: "Expected 'He,' 'Ar,' or 'Gr,'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
                     else if (attributeName === 'x-tw')
                         await ourCheckNotesLinksToOutside(lineNumber, C, V, marker, attributeValue, lineLocation, checkingOptions);
-                } else { // a translation -- not UHB or UGNT
+                } else { // a translation -- perhaps LT or ST, but not UHB or UGNT
                     if (attributeCounter === 1) {
                         if (attributeName !== 'x-occurrence')
                             addNoticePartial({ priority: 848, message: "Unexpected first translation \\w attribute", details: "expected 'x-occurrence'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
@@ -935,6 +939,8 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                     } else // #3 or more
                         addNoticePartial({ priority: 846, message: "Unexpected extra translation \\w attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
                 }
+                if (attributeName === 'strong' || attributeName === 'x-strong') // UHB/UGNT have strong, ULT/UST have x-strong
+                    await ourCheckStrongsField(lineNumber, C, V, marker, attributeName, attributeValue, lineLocation, checkingOptions);
             }
             if (repoCode === 'UHB' || repoCode === 'UGNT') {
                 if (attributeCounter < 3)
@@ -1121,11 +1127,11 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                             if (++gotCount === oOccurrenceInt) break;
                     }
                     if (gotCount !== oOccurrenceInt) // Can't do checks below coz ix is invalid
-                    if (gotCount===0)
-                        addNoticePartial({ priority: 803, message: "Word can’t be found in original text", details: `Found NO occurrences of '${oWord}' instead of ${oOccurrence} from ${verseWordList}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                        if (gotCount === 0)
+                            addNoticePartial({ priority: 803, message: "Word can’t be found in original text", details: `Found NO occurrences of '${oWord}' instead of ${oOccurrence} from ${verseWordList}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                         else
-                        addNoticePartial({ priority: 802, message: "Aligned x-occurrence for original word is too high", details: `Only found ${gotCount} occurrence${gotCount === 1 ? '' : 's'} of '${oWord}' instead of ${oOccurrence} from ${verseWordList}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
-                        else {
+                            addNoticePartial({ priority: 802, message: "Aligned x-occurrence for original word is too high", details: `Only found ${gotCount} occurrence${gotCount === 1 ? '' : 's'} of '${oWord}' instead of ${oOccurrence} from ${verseWordList}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                    else {
                         const vwolStrongs = verseWordObjectList[ix]?.strongs;
                         if (vwolStrongs !== oStrong)
                             addNoticePartial({ priority: 805, message: "Aligned x-strong number doesn’t match original", details: `${originalLanguageRepoCode} had '${vwolStrongs}'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
@@ -1278,6 +1284,57 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         // if (result.checkedFilenameExtensions) userLog("result", JSON.stringify(result));
     }
     // end of ourCheckNotesLinksToOutside function
+
+
+    async function ourCheckStrongsField(lineNumber, C, V, marker, fieldName, fieldText, location, checkingOptions) {
+        // Checks that the Strongs number field is valid
+
+        // Updates the global list of notices
+
+        // functionLog(`checkUSFMText ourCheckStrongsField(${lineNumber}, ${C}:${V}, ${marker}, ${fieldName}, (${fieldText.length}) '${fieldText}', ${location}, ${JSON.stringify(checkingOptions)})`);
+        parameterAssert(marker !== undefined, "checkUSFMText ourCheckStrongsField: 'marker' parameter should be defined");
+        parameterAssert(typeof marker === 'string', `checkUSFMText ourCheckStrongsField: 'marker' parameter should be a string not a '${typeof marker}': ${marker}`);
+        parameterAssert(fieldName !== undefined, "checkUSFMText ourCheckStrongsField: 'fieldName' parameter should be defined");
+        parameterAssert(typeof fieldName === 'string', `checkUSFMText ourCheckStrongsField: 'fieldName' parameter should be a string not a '${typeof fieldName}': ${fieldName}`);
+        parameterAssert(fieldText !== undefined, "checkUSFMText ourCheckStrongsField: 'fieldText' parameter should be defined");
+        parameterAssert(typeof fieldText === 'string', `checkUSFMText ourCheckStrongsField: 'fieldText' parameter should be a string not a '${typeof fieldText}': ${fieldText}`);
+        parameterAssert(checkingOptions !== undefined, "checkUSFMText ourCheckStrongsField: 'checkingOptions' parameter should be defined");
+        if (checkingOptions !== undefined) {
+            parameterAssert(typeof checkingOptions === 'object', `checkUSFMText ourCheckStrongsField: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
+        }
+
+        let adjustedLanguageCode = languageCode; // This is the language code of the resource with the link
+        if (languageCode === 'hbo' || languageCode === 'el-x-koine') adjustedLanguageCode = 'en' // This is a guess (and won't be needed for TWs when we switch to TWLs)
+        // const coTNlResultObject = await checkNotesLinksToOutside(languageCode, repoCode, bookID, C, V, 'TWLink', fieldText, location, { ...checkingOptions, defaultLanguageCode: adjustedLanguageCode });
+        const csfResultObject = await checkStrongsField(languageCode, repoCode, fieldName, fieldText, bookID, C, V, givenLocation, { ...checkingOptions, defaultLanguageCode: adjustedLanguageCode });
+        // debugLog(`coTNlResultObject=${JSON.stringify(coTNlResultObject)}`);
+
+        // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
+        //  process results line by line
+        for (const coqNoticeEntry of csfResultObject.noticeList) {
+            if (coqNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN2 check
+                result.noticeList.push(coqNoticeEntry); // Just copy the complete notice as is
+            else // For our direct checks, we add the repoCode as an extra value
+                addNoticePartial({ ...coqNoticeEntry, lineNumber, C, V, fieldName: marker });
+        }
+        // The following is needed coz we might be checking the linked TA and/or TW articles
+        if (csfResultObject.checkedFileCount && csfResultObject.checkedFileCount > 0)
+            if (typeof result.checkedFileCount === 'number') result.checkedFileCount += csfResultObject.checkedFileCount;
+            else result.checkedFileCount = csfResultObject.checkedFileCount;
+        if (csfResultObject.checkedFilesizes && csfResultObject.checkedFilesizes > 0)
+            if (typeof result.checkedFilesizes === 'number') result.checkedFilesizes += csfResultObject.checkedFilesizes;
+            else result.checkedFilesizes = csfResultObject.checkedFilesizes;
+        if (csfResultObject.checkedRepoNames && csfResultObject.checkedRepoNames.length > 0)
+            for (const checkedRepoName of csfResultObject.checkedRepoNames)
+                try { if (result.checkedRepoNames.indexOf(checkedRepoName) < 0) result.checkedRepoNames.push(checkedRepoName); }
+                catch { result.checkedRepoNames = [checkedRepoName]; }
+        if (csfResultObject.checkedFilenameExtensions && csfResultObject.checkedFilenameExtensions.length > 0)
+            for (const checkedFilenameExtension of csfResultObject.checkedFilenameExtensions)
+                try { if (result.checkedFilenameExtensions.indexOf(checkedFilenameExtension) < 0) result.checkedFilenameExtensions.push(checkedFilenameExtension); }
+                catch { result.checkedFilenameExtensions = [checkedFilenameExtension]; }
+        // if (result.checkedFilenameExtensions) userLog("result", JSON.stringify(result));
+    }
+    // end of ourCheckStrongsField function
 
 
     /**

@@ -1,4 +1,4 @@
-import { cachedGetFile } from '../core/getApi';
+import { cachedGetFile } from './getApi';
 // eslint-disable-next-line no-unused-vars
 import { parameterAssert } from './utilities';
 

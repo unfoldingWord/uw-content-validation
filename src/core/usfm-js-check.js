@@ -1,6 +1,6 @@
 import { toJSON } from 'usfm-js';
 // eslint-disable-next-line no-unused-vars
-import * as books from '../core/books/books';
+import * as books from './books/books';
 // eslint-disable-next-line no-unused-vars
 import { parameterAssert } from './utilities';
 

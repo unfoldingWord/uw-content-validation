@@ -1,6 +1,5 @@
-import localforage from 'localforage';
-import Path from 'path';
-import * as books from '../core/books/books';
+import * as books from './books/books';
+import { alreadyChecked, markAsChecked } from './getApi';
 // eslint-disable-next-line no-unused-vars
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
 import { countOccurrencesInString } from './text-handling-functions'
@@ -9,7 +8,7 @@ import { cachedGetFile, cachedGetFileUsingFullURL, checkMarkdownText } from '../
 import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 
 
-// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.8.1';
+// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.8.3';
 
 // const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -50,47 +49,6 @@ const SIMPLE_DISPLAY_LINK_REGEX = new RegExp('\\[([^\\]]+?)\\]\\((https?://[^\\)
 
 const SIMPLE_IMAGE_REGEX = new RegExp('!\\[([^\\]]*?)\\]\\(([^ "\\)]+?)\\)', 'g'); // ![alt](y)
 const TITLED_IMAGE_REGEX = new RegExp('!\\[([^\\]]*?)\\]\\(([^ \\)]+?) "([^"\\)]+?)"\\)', 'g'); // ![alt](link "title")
-
-
-// Caches the path names of files which have been already checked
-//  Used for storing paths to TA and TW articles that have already been checked
-//      so that we don't needlessly check them again each time they're linked to
-const checkedArticleStore = localforage.createInstance({
-    driver: [localforage.INDEXEDDB],
-    name: 'CV-checked-path-store',
-});
-
-// Sadly we have to clear this for each run, otherwise we wouldn't get any warnings that were from these checks
-export async function clearCheckedArticleCache() {
-    userLog("clearCheckedArticleCache()…");
-    await checkedArticleStore.clear();
-}
-
-/**
- *
- * @param {string} username
- * @param {string} repository name
- * @param {string} path
- * @param {string} branch
- */
-async function markAsChecked({ username, repository, path, branch }) {
-    // debugLog(`markAsChecked(${username}, ${repository}, ${path}, ${branch})…`);
-    const dummyPath = Path.join(username, repository, branch, path);
-    await checkedArticleStore.setItem(dummyPath, true);
-}
-
-/**
- *
- * @param {string} username
- * @param {string} repository name
- * @param {string} path
- * @param {string} branch
- */
-async function alreadyChecked({ username, repository, path, branch }) {
-    // debugLog(`alreadyChecked(${username}, ${repository}, ${path}, ${branch})…`);
-    const dummyPath = Path.join(username, repository, branch, path);
-    return await checkedArticleStore.getItem(dummyPath);
-}
 
 
 /**
@@ -349,7 +307,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 // THIS IS DISABLED COZ IT CAN GIVE AN INFINITE LOOP !!!
                 // else if (checkingOptions?.disableLinkedTWArticlesCheckFlag !== true) {
                 //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTWArticlesCheckFlag} so checking TW article: ${filepath}`);
-                //     if (await alreadyChecked(twPathParameters) !== true) {
+                //     if (!await alreadyChecked(twPathParameters)) {
                 //         // functionLog(`checkNotesLinksToOutside needs to check TW article: ${filepath}`);
                 //         const checkTWFileResult = await checkMarkdownText(languageCode, repoCode, `TW ${regexResultArray[3].trim()}.md`, twFileContent, ourLocation, checkingOptions);
                 //         for (const noticeObject of checkTWFileResult.noticeList)
@@ -359,7 +317,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 //         ctarResult.checkedFilesizes = twFileContent.length;
                 //         ctarResult.checkedFilenameExtensions = ['md'];
                 //         ctarResult.checkedRepoNames.push(twRepoName);
-                //         markAsChecked(twPathParameters); // don’t bother waiting for the result
+                //         markAsChecked(twPathParameters); // don’t bother waiting for the result of this async call
                 //     }
                 // }
                 // else debugLog("checkNotesLinksToOutside: disableLinkedTWArticlesCheckFlag is set to TRUE!");
@@ -412,7 +370,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     addNoticePartial({ priority: 884, message: `TA article seems empty`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                 else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
                     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
-                    if (await alreadyChecked(taPathParameters) !== true) {
+                    if (!await alreadyChecked(taPathParameters)) {
                         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
                         const checkTAFileResult = await checkMarkdownText(foundLanguageCode, repoCode, `TA ${regexResultArray[3].trim()}.md`, taFileContent, ourLocation, checkingOptions);
                         for (const noticeObject of checkTAFileResult.noticeList)
@@ -423,7 +381,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                         ctarResult.checkedFilesizes = taFileContent.length;
                         ctarResult.checkedFilenameExtensions = ['md'];
                         ctarResult.checkedRepoNames.push(taRepoName);
-                        markAsChecked(taPathParameters); // don’t bother waiting for the result
+                        markAsChecked(taPathParameters); // don’t bother waiting for the result of this async call
                     }
                 }
             }
@@ -470,7 +428,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     // Don't do this or it gets infinite recursion!!!
                     // else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
                     //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
-                    //     if (await alreadyChecked(taPathParameters) !== true) {
+                    //     if (!await alreadyChecked(taPathParameters)) {
                     //         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
                     //         const checkTAFileResult = await checkMarkdownText(languageCode, repoCode, `TA ${regexResultArray[3].trim()}.md`, taFileContent, ourLocation, checkingOptions);
                     //         for (const noticeObject of checkTAFileResult.noticeList)
@@ -480,7 +438,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     //         ctarResult.checkedFilesizes = taFileContent.length;
                     //         ctarResult.checkedFilenameExtensions = ['md'];
                     //         ctarResult.checkedRepoNames.push(taRepoName);
-                    //         markAsChecked(taPathParameters); // don’t bother waiting for the result
+                    //         markAsChecked(taPathParameters); // don’t bother waiting for the result of this async call
                     //     }
                     // }
                 }
@@ -520,7 +478,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     // Don't do this or it gets infinite recursion!!!
                     // else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
                     //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
-                    //     if (await alreadyChecked(taPathParameters) !== true) {
+                    //     if (!await alreadyChecked(taPathParameters)) {
                     //         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
                     //         const checkTAFileResult = await checkMarkdownText(languageCode, repoCode, `TA ${regexResultArray[3].trim()}.md`, taFileContent, ourLocation, checkingOptions);
                     //         for (const noticeObject of checkTAFileResult.noticeList)
@@ -530,7 +488,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     //         ctarResult.checkedFilesizes = taFileContent.length;
                     //         ctarResult.checkedFilenameExtensions = ['md'];
                     //         ctarResult.checkedRepoNames.push(taRepoName);
-                    //         markAsChecked(taPathParameters); // don’t bother waiting for the result
+                    //         markAsChecked(taPathParameters); // don’t bother waiting for the result of this async call
                     //     }
                     // }
                 }
@@ -582,7 +540,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     addNoticePartial({ priority: 884, message: `TA article seems empty`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                 else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
                     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
-                    if (await alreadyChecked(taPathParameters) !== true) {
+                    if (!await alreadyChecked(taPathParameters)) {
                         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
                         const checkTAFileResult = await checkMarkdownText(foundLanguageCode, repoCode, `TA ${regexResultArray[3].trim()}.md`, taFileContent, ourLocation, checkingOptions);
                         for (const noticeObject of checkTAFileResult.noticeList)
@@ -593,7 +551,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                         ctarResult.checkedFilesizes = taFileContent.length;
                         ctarResult.checkedFilenameExtensions = ['md'];
                         ctarResult.checkedRepoNames.push(taRepoName);
-                        markAsChecked(taPathParameters); // don’t bother waiting for the result
+                        markAsChecked(taPathParameters); // don’t bother waiting for the result of this async call
                     }
                 }
             }
@@ -635,7 +593,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     addNoticePartial({ priority: 881, message: `TW article seems empty`, details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                 else if (checkingOptions?.disableLinkedTWArticlesCheckFlag !== true) {
                     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTWArticlesCheckFlag} so checking TW article: ${filepath}`);
-                    if (await alreadyChecked(twPathParameters) !== true) {
+                    if (!await alreadyChecked(twPathParameters)) {
                         // functionLog(`checkNotesLinksToOutside needs to check TW article: ${filepath}`);
                         const checkTWFileResult = await checkMarkdownText(foundLanguageCode, repoCode, `TW ${regexResultArray[3].trim()}.md`, twFileContent, ourLocation, checkingOptions);
                         for (const noticeObject of checkTWFileResult.noticeList)
@@ -646,7 +604,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                         ctarResult.checkedFilesizes = twFileContent.length;
                         ctarResult.checkedFilenameExtensions = ['md'];
                         ctarResult.checkedRepoNames.push(twRepoName);
-                        markAsChecked(twPathParameters); // don’t bother waiting for the result
+                        markAsChecked(twPathParameters); // don’t bother waiting for the result of this async call
                     }
                 }
                 // else debugLog("checkNotesLinksToOutside: disableLinkedTWArticlesCheckFlag is set to TRUE!");
@@ -1297,7 +1255,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
 
         if (!checkingOptions?.disableAllLinkFetchingFlag) {
             const dummyPathParameters = { username: uri, repository: '', path: '', branch: '' };
-            if (await alreadyChecked(dummyPathParameters) !== true) {
+            if (!await alreadyChecked(dummyPathParameters)) {
                 // debugLog(`checkNotesLinksToOutside general link check needs to check: ${uri}`);
                 const serverString = uri.replace('://', '!!!').split('/')[0].replace('!!!', '://').toLowerCase(); // Get the bit before any forward slashes
 
@@ -1332,7 +1290,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                             addNoticePartial({ priority: 781, message: `Linked general article seems empty`, excerpt: totalLink, location: ourLocation });
                     }
                 }
-                await markAsChecked(dummyPathParameters); // don’t bother waiting for the result of this async call
+                markAsChecked(dummyPathParameters); // don’t bother waiting for the result of this async call
             }
             // else debugLog(`Had already checked '${displayText}' ${uri}`);
 

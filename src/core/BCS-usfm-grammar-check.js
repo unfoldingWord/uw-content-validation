@@ -1,5 +1,5 @@
 import grammar from 'usfm-grammar';
-import * as books from '../core/books/books';
+import * as books from './books/books';
 import { DEFAULT_EXCERPT_LENGTH } from './defaults'
 // eslint-disable-next-line no-unused-vars
 import { userLog, debugLog, functionLog, parameterAssert, ourParseInt } from './utilities';

@@ -2,7 +2,7 @@
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
 import { checkTextField } from './field-text-check';
 import { checkNotesLinksToOutside } from './notes-links-check';
-// import { cachedGetFileUsingFullURL } from '../core/getApi';
+// import { cachedGetFileUsingFullURL } from './getApi';
 import { removeDisabledNotices } from './disabled-notices';
 // eslint-disable-next-line no-unused-vars
 import { parameterAssert, dataAssert, debugLog } from './utilities';

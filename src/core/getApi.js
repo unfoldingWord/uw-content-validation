@@ -4,12 +4,11 @@ import localforage from 'localforage';
 import { setup } from 'axios-cache-adapter';
 import JSZip from 'jszip';
 import * as books from './books';
-import { clearCheckedArticleCache } from './notes-links-check';
 // eslint-disable-next-line no-unused-vars
 import { functionLog, debugLog, userLog, parameterAssert, logicAssert } from './utilities';
 
 
-// const GETAPI_VERSION_STRING = '0.8.1';
+// const GETAPI_VERSION_STRING = '0.9.0';
 
 const MAX_INDIVIDUAL_FILES_TO_DOWNLOAD = 5; // More than this and it downloads the zipfile for the entire repo
 
@@ -61,6 +60,51 @@ const Door43Api = setup({
     },
   },
 });
+
+
+// Caches the path names of files which have been already checked
+//  Used for storing paths to TA and TW articles and lexicon entries that have already been checked
+//      so that we don't needlessly check them again each time they're linked to
+const checkedArticleStore = localforage.createInstance({
+  driver: [localforage.INDEXEDDB],
+  name: 'CV-checked-path-store',
+});
+
+// Sadly we have to clear this for each run, otherwise we wouldn't get any warnings that were from these checks
+export async function clearCheckedArticleCache() {
+  userLog("clearCheckedArticleCache()…");
+  await checkedArticleStore.clear();
+}
+
+/**
+*
+* @param {string} username
+* @param {string} repository name
+* @param {string} path
+* @param {string} branch
+*/
+export async function markAsChecked({ username, repository, path, branch }) {
+  // debugLog(`markAsChecked(${username}, ${repository}, ${path}, ${branch})…`);
+  const dummyPath = Path.join(username, repository, branch, path);
+  await checkedArticleStore.setItem(dummyPath, true);
+}
+
+/**
+*
+* @param {string} username
+* @param {string} repository name
+* @param {string} path
+* @param {string} branch
+* @returns true or false
+*/
+export async function alreadyChecked({ username, repository, path, branch }) {
+  // const numCheckedArticles = await checkedArticleStore.length();
+  // debugLog(`alreadyChecked(${username}, ${repository}, ${path}, ${branch}) with ${numCheckedArticles} already checked articles…`);
+  const dummyPath = Path.join(username, repository, branch, path);
+  const alreadyCheckedResult = await checkedArticleStore.getItem(dummyPath);
+  // debugLog(`  got ${!!alreadyCheckedResult}`);
+  return !!alreadyCheckedResult;
+}
 
 
 /**
