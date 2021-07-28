@@ -200,13 +200,13 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
     let validLineStartCharacters = VALID_LINE_START_CHARACTERS;
     if (repoCode === 'ST') validLineStartCharacters += '{';
 
-    const result = { successList: [], noticeList: [] };
+    const usfmResultObject = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
         // functionLog(`checkUSFMText success: ${successString}`);
-        result.successList.push(successString);
+        usfmResultObject.successList.push(successString);
     }
-    function addNoticePartial(noticeObject) {
+    function addNoticePartial(incompleteNoticeObject) {
         // debugLog("checkUSFMText addNoticePartial:", JSON.stringify(noticeObject));
         // functionLog(`checkUSFMText addNoticePartial: (priority=${noticeObject.priority}) ${noticeObject.C}:${noticeObject.V} ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.excerpt ? ` ${noticeObject.excerpt}` : ""}${noticeObject.location}`);
         //parameterAssert(noticeObject.priority !== undefined, "cUSFM addNoticePartial: 'priority' parameter should be defined");
@@ -214,27 +214,27 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         //parameterAssert(noticeObject.message !== undefined, "cUSFM addNoticePartial: 'message' parameter should be defined");
         //parameterAssert(typeof noticeObject.message === 'string', `cUSFM addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
         // //parameterAssert(C !== undefined, "cUSFM addNoticePartial: 'C' parameter should be defined");
-        if (noticeObject.C) { //parameterAssert(typeof noticeObject.C === 'string', `cUSFM addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
+        if (incompleteNoticeObject.C) { //parameterAssert(typeof noticeObject.C === 'string', `cUSFM addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
         }
         // //parameterAssert(V !== undefined, "cUSFM addNoticePartial: 'V' parameter should be defined");
-        if (noticeObject.V) { //parameterAssert(typeof noticeObject.V === 'string', `cUSFM addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
+        if (incompleteNoticeObject.V) { //parameterAssert(typeof noticeObject.V === 'string', `cUSFM addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
         }
         // //parameterAssert(characterIndex !== undefined, "cUSFM addNoticePartial: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex !== undefined) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cUSFM addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        if (incompleteNoticeObject.characterIndex !== undefined) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cUSFM addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
         }
         // //parameterAssert(excerpt !== undefined, "cUSFM addNoticePartial: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cUSFM addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        if (incompleteNoticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cUSFM addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         }
         //parameterAssert(noticeObject.location !== undefined, "cUSFM addNoticePartial: 'location' parameter should be defined");
         //parameterAssert(typeof noticeObject.location === 'string', `cUSFM addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
         // Doublecheck -- we don’t want "Mismatched {}" per line, only per file
         // eslint-disable-next-line no-unused-vars
-        const noticeObjectString = JSON.stringify(noticeObject);
+        const noticeObjectString = JSON.stringify(incompleteNoticeObject);
         //parameterAssert(noticeObject.message.indexOf("Mismatched {}") === -1 || noticeObject.lineNumber === undefined, `checkUSFMText addNoticePartial: got bad notice: ${noticeObjectString}`);
         //parameterAssert(noticeObjectString.indexOf('NONE') === -1 && noticeObjectString.indexOf('SPECIAL') === -1, `checkUSFMText addNoticePartial: 'NONE' & 'SPECIAL' shouldn't make it thru to end user: ${noticeObjectString}`)
-        if (noticeObject.debugChain) noticeObject.debugChain = `checkUSFMText ${noticeObject.debugChain}`;
-        result.noticeList.push({ ...noticeObject, bookID, filename });
+        if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkUSFMText ${incompleteNoticeObject.debugChain}`;
+        usfmResultObject.noticeList.push({ ...incompleteNoticeObject, bookID, filename });
     }
 
 
@@ -884,6 +884,57 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         // dataAssert(countOccurrencesInString(adjustedRest, '\\zaln-s ') === countOccurrencesInString(adjustedRest, '\\zaln-s*'), `checkUSFMLineAttributes expected all \\zaln-s fields to be closed in ${adjustedRest}`);
         // dataAssert(countOccurrencesInString(adjustedRest, '\\k-s ') === countOccurrencesInString(adjustedRest, '\\k-s*'), `checkUSFMLineAttributes expected all \\k-s fields to be closed in ${adjustedRest}`);
 
+        async function ourCheckStrongsField(lineNumber, C, V, marker, fieldName, fieldText, location, checkingOptions) {
+            // Checks that the Strongs number field is valid
+
+            // Updates the global list of notices
+
+            // functionLog(`checkUSFMText ourCheckStrongsField(${lineNumber}, ${C}:${V}, ${marker}, ${fieldName}, (${fieldText.length}) '${fieldText}', ${location}, ${JSON.stringify(checkingOptions)})`);
+            parameterAssert(marker !== undefined, "checkUSFMText ourCheckStrongsField: 'marker' parameter should be defined");
+            parameterAssert(typeof marker === 'string', `checkUSFMText ourCheckStrongsField: 'marker' parameter should be a string not a '${typeof marker}': ${marker}`);
+            parameterAssert(fieldName !== undefined, "checkUSFMText ourCheckStrongsField: 'fieldName' parameter should be defined");
+            parameterAssert(typeof fieldName === 'string', `checkUSFMText ourCheckStrongsField: 'fieldName' parameter should be a string not a '${typeof fieldName}': ${fieldName}`);
+            parameterAssert(fieldText !== undefined, "checkUSFMText ourCheckStrongsField: 'fieldText' parameter should be defined");
+            parameterAssert(typeof fieldText === 'string', `checkUSFMText ourCheckStrongsField: 'fieldText' parameter should be a string not a '${typeof fieldText}': ${fieldText}`);
+            parameterAssert(checkingOptions !== undefined, "checkUSFMText ourCheckStrongsField: 'checkingOptions' parameter should be defined");
+            if (checkingOptions !== undefined) {
+                parameterAssert(typeof checkingOptions === 'object', `checkUSFMText ourCheckStrongsField: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
+            }
+
+            let adjustedLanguageCode = languageCode; // This is the language code of the resource with the link
+            if (languageCode === 'hbo' || languageCode === 'el-x-koine') adjustedLanguageCode = 'en' // This is a guess (and won't be needed for TWs when we switch to TWLs)
+            const csfResultObject = await checkStrongsField(languageCode, repoCode, fieldName, fieldText, bookID, C, V, givenLocation, { ...checkingOptions, defaultLanguageCode: adjustedLanguageCode });
+            // debugLog(`csfResultObject=${JSON.stringify(csfResultObject)}`);
+
+            // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
+            //  process results line by line
+            for (const coqNoticeEntry of csfResultObject.noticeList) {
+                // debugLog(`checkUSFMText ourCheckStrongsField got: ${JSON.stringify(coqNoticeEntry)}`);
+                logicAssert(coqNoticeEntry.extra ? coqNoticeEntry.extra !== 'UGNT' : true, `Expected extra to be a lexicon from ${JSON.stringify(coqNoticeEntry)}`);
+                if (coqNoticeEntry.extra) // it must be an indirect check on a UHAL or UGL article from a lexicon check
+                    usfmResultObject.noticeList.push(coqNoticeEntry); // Just copy the complete notice as is
+                else // For our direct checks, we add the repoCode as an extra value
+                    addNoticePartial({ ...coqNoticeEntry, lineNumber, C, V, fieldName: marker });
+            }
+            // The following is needed coz we might be checking the linked UHAL and/or UGL lexicon entries
+            if (csfResultObject.checkedFileCount && csfResultObject.checkedFileCount > 0)
+                if (typeof usfmResultObject.checkedFileCount === 'number') usfmResultObject.checkedFileCount += csfResultObject.checkedFileCount;
+                else usfmResultObject.checkedFileCount = csfResultObject.checkedFileCount;
+            if (csfResultObject.checkedFilesizes && csfResultObject.checkedFilesizes > 0)
+                if (typeof usfmResultObject.checkedFilesizes === 'number') usfmResultObject.checkedFilesizes += csfResultObject.checkedFilesizes;
+                else usfmResultObject.checkedFilesizes = csfResultObject.checkedFilesizes;
+            if (csfResultObject.checkedRepoNames && csfResultObject.checkedRepoNames.length > 0)
+                for (const checkedRepoName of csfResultObject.checkedRepoNames)
+                    try { if (usfmResultObject.checkedRepoNames.indexOf(checkedRepoName) < 0) usfmResultObject.checkedRepoNames.push(checkedRepoName); }
+                    catch { usfmResultObject.checkedRepoNames = [checkedRepoName]; }
+            if (csfResultObject.checkedFilenameExtensions && csfResultObject.checkedFilenameExtensions.length > 0)
+                for (const checkedFilenameExtension of csfResultObject.checkedFilenameExtensions)
+                    try { if (usfmResultObject.checkedFilenameExtensions.indexOf(checkedFilenameExtension) < 0) usfmResultObject.checkedFilenameExtensions.push(checkedFilenameExtension); }
+                    catch { usfmResultObject.checkedFilenameExtensions = [checkedFilenameExtension]; }
+            // if (result.checkedFilenameExtensions) debugLog(`ourCheckStrongsField result: ${JSON.stringify(result)}`);
+        }
+        // end of ourCheckStrongsField function
+
         /**
          *
          * @description Check USFM \w fields (which are quite different in UHB/UGNT vs translations)
@@ -1262,79 +1313,28 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         //  process results line by line
         for (const coqNoticeEntry of coTNlResultObject.noticeList) {
             if (coqNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN2 check
-                result.noticeList.push(coqNoticeEntry); // Just copy the complete notice as is
+                usfmResultObject.noticeList.push(coqNoticeEntry); // Just copy the complete notice as is
             else // For our direct checks, we add the repoCode as an extra value
                 addNoticePartial({ ...coqNoticeEntry, lineNumber, C, V, fieldName: marker });
         }
         // The following is needed coz we might be checking the linked TA and/or TW articles
         if (coTNlResultObject.checkedFileCount && coTNlResultObject.checkedFileCount > 0)
-            if (typeof result.checkedFileCount === 'number') result.checkedFileCount += coTNlResultObject.checkedFileCount;
-            else result.checkedFileCount = coTNlResultObject.checkedFileCount;
+            if (typeof usfmResultObject.checkedFileCount === 'number') usfmResultObject.checkedFileCount += coTNlResultObject.checkedFileCount;
+            else usfmResultObject.checkedFileCount = coTNlResultObject.checkedFileCount;
         if (coTNlResultObject.checkedFilesizes && coTNlResultObject.checkedFilesizes > 0)
-            if (typeof result.checkedFilesizes === 'number') result.checkedFilesizes += coTNlResultObject.checkedFilesizes;
-            else result.checkedFilesizes = coTNlResultObject.checkedFilesizes;
+            if (typeof usfmResultObject.checkedFilesizes === 'number') usfmResultObject.checkedFilesizes += coTNlResultObject.checkedFilesizes;
+            else usfmResultObject.checkedFilesizes = coTNlResultObject.checkedFilesizes;
         if (coTNlResultObject.checkedRepoNames && coTNlResultObject.checkedRepoNames.length > 0)
             for (const checkedRepoName of coTNlResultObject.checkedRepoNames)
-                try { if (result.checkedRepoNames.indexOf(checkedRepoName) < 0) result.checkedRepoNames.push(checkedRepoName); }
-                catch { result.checkedRepoNames = [checkedRepoName]; }
+                try { if (usfmResultObject.checkedRepoNames.indexOf(checkedRepoName) < 0) usfmResultObject.checkedRepoNames.push(checkedRepoName); }
+                catch { usfmResultObject.checkedRepoNames = [checkedRepoName]; }
         if (coTNlResultObject.checkedFilenameExtensions && coTNlResultObject.checkedFilenameExtensions.length > 0)
             for (const checkedFilenameExtension of coTNlResultObject.checkedFilenameExtensions)
-                try { if (result.checkedFilenameExtensions.indexOf(checkedFilenameExtension) < 0) result.checkedFilenameExtensions.push(checkedFilenameExtension); }
-                catch { result.checkedFilenameExtensions = [checkedFilenameExtension]; }
-        // if (result.checkedFilenameExtensions) userLog("result", JSON.stringify(result));
+                try { if (usfmResultObject.checkedFilenameExtensions.indexOf(checkedFilenameExtension) < 0) usfmResultObject.checkedFilenameExtensions.push(checkedFilenameExtension); }
+                catch { usfmResultObject.checkedFilenameExtensions = [checkedFilenameExtension]; }
+        // if (result.checkedFilenameExtensions) debugLog("result", JSON.stringify(result));
     }
     // end of ourCheckNotesLinksToOutside function
-
-
-    async function ourCheckStrongsField(lineNumber, C, V, marker, fieldName, fieldText, location, checkingOptions) {
-        // Checks that the Strongs number field is valid
-
-        // Updates the global list of notices
-
-        // functionLog(`checkUSFMText ourCheckStrongsField(${lineNumber}, ${C}:${V}, ${marker}, ${fieldName}, (${fieldText.length}) '${fieldText}', ${location}, ${JSON.stringify(checkingOptions)})`);
-        parameterAssert(marker !== undefined, "checkUSFMText ourCheckStrongsField: 'marker' parameter should be defined");
-        parameterAssert(typeof marker === 'string', `checkUSFMText ourCheckStrongsField: 'marker' parameter should be a string not a '${typeof marker}': ${marker}`);
-        parameterAssert(fieldName !== undefined, "checkUSFMText ourCheckStrongsField: 'fieldName' parameter should be defined");
-        parameterAssert(typeof fieldName === 'string', `checkUSFMText ourCheckStrongsField: 'fieldName' parameter should be a string not a '${typeof fieldName}': ${fieldName}`);
-        parameterAssert(fieldText !== undefined, "checkUSFMText ourCheckStrongsField: 'fieldText' parameter should be defined");
-        parameterAssert(typeof fieldText === 'string', `checkUSFMText ourCheckStrongsField: 'fieldText' parameter should be a string not a '${typeof fieldText}': ${fieldText}`);
-        parameterAssert(checkingOptions !== undefined, "checkUSFMText ourCheckStrongsField: 'checkingOptions' parameter should be defined");
-        if (checkingOptions !== undefined) {
-            parameterAssert(typeof checkingOptions === 'object', `checkUSFMText ourCheckStrongsField: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
-        }
-
-        let adjustedLanguageCode = languageCode; // This is the language code of the resource with the link
-        if (languageCode === 'hbo' || languageCode === 'el-x-koine') adjustedLanguageCode = 'en' // This is a guess (and won't be needed for TWs when we switch to TWLs)
-        // const coTNlResultObject = await checkNotesLinksToOutside(languageCode, repoCode, bookID, C, V, 'TWLink', fieldText, location, { ...checkingOptions, defaultLanguageCode: adjustedLanguageCode });
-        const csfResultObject = await checkStrongsField(languageCode, repoCode, fieldName, fieldText, bookID, C, V, givenLocation, { ...checkingOptions, defaultLanguageCode: adjustedLanguageCode });
-        // debugLog(`coTNlResultObject=${JSON.stringify(coTNlResultObject)}`);
-
-        // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
-        //  process results line by line
-        for (const coqNoticeEntry of csfResultObject.noticeList) {
-            if (coqNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN2 check
-                result.noticeList.push(coqNoticeEntry); // Just copy the complete notice as is
-            else // For our direct checks, we add the repoCode as an extra value
-                addNoticePartial({ ...coqNoticeEntry, lineNumber, C, V, fieldName: marker });
-        }
-        // The following is needed coz we might be checking the linked TA and/or TW articles
-        if (csfResultObject.checkedFileCount && csfResultObject.checkedFileCount > 0)
-            if (typeof result.checkedFileCount === 'number') result.checkedFileCount += csfResultObject.checkedFileCount;
-            else result.checkedFileCount = csfResultObject.checkedFileCount;
-        if (csfResultObject.checkedFilesizes && csfResultObject.checkedFilesizes > 0)
-            if (typeof result.checkedFilesizes === 'number') result.checkedFilesizes += csfResultObject.checkedFilesizes;
-            else result.checkedFilesizes = csfResultObject.checkedFilesizes;
-        if (csfResultObject.checkedRepoNames && csfResultObject.checkedRepoNames.length > 0)
-            for (const checkedRepoName of csfResultObject.checkedRepoNames)
-                try { if (result.checkedRepoNames.indexOf(checkedRepoName) < 0) result.checkedRepoNames.push(checkedRepoName); }
-                catch { result.checkedRepoNames = [checkedRepoName]; }
-        if (csfResultObject.checkedFilenameExtensions && csfResultObject.checkedFilenameExtensions.length > 0)
-            for (const checkedFilenameExtension of csfResultObject.checkedFilenameExtensions)
-                try { if (result.checkedFilenameExtensions.indexOf(checkedFilenameExtension) < 0) result.checkedFilenameExtensions.push(checkedFilenameExtension); }
-                catch { result.checkedFilenameExtensions = [checkedFilenameExtension]; }
-        // if (result.checkedFilenameExtensions) userLog("result", JSON.stringify(result));
-    }
-    // end of ourCheckStrongsField function
 
 
     /**
@@ -1589,11 +1589,11 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
         // functionLog(`checkUSFMText: calling removeDisabledNotices(${result.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
-        result.noticeList = removeDisabledNotices(result.noticeList);
+        usfmResultObject.noticeList = removeDisabledNotices(usfmResultObject.noticeList);
     }
 
     // debugLog(`  checkUSFMText returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
     // functionLog(`checkUSFMText result is ${JSON.stringify(result)}`);
-    return result;
+    return usfmResultObject;
 }
 // end of checkUSFMText function

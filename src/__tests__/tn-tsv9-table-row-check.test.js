@@ -9,6 +9,7 @@ const optionalCheckingOptions = {
   taRepoUsername: 'unfoldingWord',
   disableLinkedTAArticlesCheckFlag: true,
   disableLinkedTWArticlesCheckFlag: true,
+  disableLinkedLexiconEntriesFlag: true,
   getFile: params => {
     const { username, repository, path } = params;
     // console.log(`tn-table-row-check.test getFile(${username}, ${repository}, ${path})`)

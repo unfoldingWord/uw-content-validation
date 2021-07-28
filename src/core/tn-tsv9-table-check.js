@@ -60,33 +60,33 @@ export async function checkTN_TSV9Table(languageCode, repoCode, bookID, filename
     }
     /**
      *
-     * @param {Object} noticeObject
+     * @param {Object} incompleteNoticeObject
      */
-    function addNoticePartial(noticeObject) {
+    function addNoticePartial(incompleteNoticeObject) {
         // functionLog(`checkTN_TSV9Table notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
         //parameterAssert(noticeObject.priority !== undefined, "TSV addNoticePartial: 'priority' parameter should be defined");
         //parameterAssert(typeof noticeObject.priority === 'number', `TSV addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         //parameterAssert(noticeObject.message !== undefined, "TSV addNoticePartial: 'message' parameter should be defined");
         //parameterAssert(typeof noticeObject.message === 'string', `TSV addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
         // //parameterAssert(C !== undefined, "TSV addNoticePartial: 'C' parameter should be defined");
-        if (noticeObject.C) { //parameterAssert(typeof noticeObject.C === 'string', `TSV addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
+        if (incompleteNoticeObject.C) { //parameterAssert(typeof noticeObject.C === 'string', `TSV addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
         }
         // //parameterAssert(V !== undefined, "TSV addNoticePartial: 'V' parameter should be defined");
-        if (noticeObject.V) { //parameterAssert(typeof noticeObject.V === 'string', `TSV addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
+        if (incompleteNoticeObject.V) { //parameterAssert(typeof noticeObject.V === 'string', `TSV addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
         }
         // //parameterAssert(characterIndex !== undefined, "TSV addNoticePartial: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `TSV addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        if (incompleteNoticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `TSV addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
         }
         // //parameterAssert(excerpt !== undefined, "TSV addNoticePartial: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `TSV addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        if (incompleteNoticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `TSV addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         }
         //parameterAssert(noticeObject.location !== undefined, "TSV addNoticePartial: 'location' parameter should be defined");
         //parameterAssert(typeof noticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
-        if (noticeObject.debugChain) noticeObject.debugChain = `checkTN_TSV9Table ${noticeObject.debugChain}`;
+        if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkTN_TSV9Table ${incompleteNoticeObject.debugChain}`;
         // NOTE: We only add the repoCode here because this function is called directly by tC Create
         //          and notice disabling currently depends on knowing the repoCode
-        if (noticeObject.repoCode) debugLog(`checkTN_TSV9Table.addNoticePartial already had repoCode=${noticeObject.repoCode} (will be lost)`);
-        ttResult.noticeList.push({ ...noticeObject, bookID, filename, repoCode: 'TN' });
+        if (incompleteNoticeObject.repoCode) debugLog(`checkTN_TSV9Table.addNoticePartial already had repoCode=${incompleteNoticeObject.repoCode} (will be lost)`);
+        ttResult.noticeList.push({ ...incompleteNoticeObject, bookID, filename, repoCode: 'TN' });
     }
 
 
@@ -163,7 +163,7 @@ export async function checkTN_TSV9Table(languageCode, repoCode, bookID, filename
                     for (const checkedFilenameExtension of drResultObject.checkedFilenameExtensions)
                         try { if (ttResult.checkedFilenameExtensions.indexOf(checkedFilenameExtension) < 0) ttResult.checkedFilenameExtensions.push(checkedFilenameExtension); }
                         catch { ttResult.checkedFilenameExtensions = [checkedFilenameExtension]; }
-                // if (ttResult.checkedFilenameExtensions) userLog("ttResult", JSON.stringify(ttResult));
+                // if (ttResult.checkedFilenameExtensions) debugLog("ttResult", JSON.stringify(ttResult));
 
                 // So here we only have to check against the previous and next fields for out-of-order problems and duplicate problems
                 if (B !== lastB || C !== lastC || V !== lastV) {

@@ -58,7 +58,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
 
     let result = { noticeList: [] };
 
-    function addNoticePartial(noticeObject) {
+    function addNoticePartial(incompleteNoticeObject) {
         // We add the fieldName here
         // debugLog(`dBTC Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
         //parameterAssert(noticeObject.priority !== undefined, "dBTCs addNoticePartial: 'priority' parameter should be defined");
@@ -66,17 +66,17 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
         //parameterAssert(noticeObject.message !== undefined, "dBTCs addNoticePartial: 'message' parameter should be defined");
         //parameterAssert(typeof noticeObject.message === 'string', `dBTCs addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
         // //parameterAssert(characterIndex !== undefined, "dBTCs addNoticePartial: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `dBTCs addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        if (incompleteNoticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `dBTCs addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
         }
         // //parameterAssert(excerpt !== undefined, "dBTCs addNoticePartial: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `dBTCs addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        if (incompleteNoticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `dBTCs addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         }
         //parameterAssert(noticeObject.location !== undefined, "dBTCs addNoticePartial: 'location' parameter should be defined");
         //parameterAssert(typeof noticeObject.location === 'string', `dBTCs addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
         // noticeObject.debugChain = noticeObject.debugChain ? `checkTextField(${fieldType}, ${fieldName}, ${allowedLinks}) ${noticeObject.debugChain}` : `checkTextField(${fieldType}, ${fieldName}, ${allowedLinks})`;
-        if (fieldName.length) noticeObject.fieldName = fieldName; // Don’t add the field if it’s blank
-        result.noticeList.push(noticeObject);
+        if (fieldName.length) incompleteNoticeObject.fieldName = fieldName; // Don’t add the field if it’s blank
+        result.noticeList.push(incompleteNoticeObject);
     }
 
 

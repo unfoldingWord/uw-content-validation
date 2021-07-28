@@ -57,7 +57,7 @@ export async function checkFileContents(username, languageCode, repoCode, branch
   const filenameLower = filename.toLowerCase();
   const repoName = formRepoName(languageCode, repoCode);
 
-  let checkFileResult = { checkedFileCount: 0 };
+  let checkFileResultObject = { checkedFileCount: 0 };
   if (filenameLower.endsWith('.tsv')) {
     const filenameMain = filepath.substring(0, filepath.length - 4); // drop .tsv
     // functionLog(`checkFileContents have TSV filenameMain=${filenameMain}`);
@@ -66,7 +66,7 @@ export async function checkFileContents(username, languageCode, repoCode, branch
     //parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
     if (filepath.startsWith(`${languageCode}_`) || filenameMain.startsWith('en_')) {
       logicAssert(repoCode === 'TN', `These filenames ${filenameMain} are only for TN ${repoCode}`);
-      checkFileResult = await checkTN_TSV9Table(languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, checkingOptions);
+      checkFileResultObject = await checkTN_TSV9Table(languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, checkingOptions);
     } else {
       // let adjustedRepoCode = repoCode;
       // if (adjustedRepoCode.startsWith('OBS-'))
@@ -80,7 +80,7 @@ export async function checkFileContents(username, languageCode, repoCode, branch
         'SQ': checkQuestionsTSV7Table, 'OBS-SQ2': checkQuestionsTSV7Table,
       }[repoCode];
       // debugLog(`checkFileContents() got ${checkFunction} function for ${repoCode}`);
-      checkFileResult = await checkFunction(languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, checkingOptions);
+      checkFileResultObject = await checkFunction(languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, checkingOptions);
     }
   }
   else if (filenameLower.endsWith('.usfm')) {
@@ -89,54 +89,54 @@ export async function checkFileContents(username, languageCode, repoCode, branch
     const bookID = filenameMain.substring(filenameMain.length - 3);
     // debugLog(`Have USFM bookcode=${bookID}`);
     //parameterAssert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
-    checkFileResult = await checkUSFMText(languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, checkingOptions);
+    checkFileResultObject = await checkUSFMText(languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, checkingOptions);
   } else if (filenameLower.endsWith('.sfm')) {
     const filenameMain = filepath.substring(0, filepath.length - 4); // drop .sfm
     userLog(`checkFileContents have SFM filenameMain=${filenameMain}`);
     const bookID = filenameMain.substring(2, 5);
     userLog(`checkFileContents have SFM bookcode=${bookID}`);
     //parameterAssert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
-    checkFileResult = await checkUSFMText(languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, checkingOptions);
+    checkFileResultObject = await checkUSFMText(languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, checkingOptions);
   } else if (filenameLower.endsWith('.md'))
     if ((repoCode === 'UHAL' && filename[0] === 'H' && filename.length === 8)
       || (repoCode === 'UGL' && filename === '01.md'))
-      checkFileResult = await checkLexiconFileContents(languageCode, repoCode, filepath, fileContent, ourCFLocation, checkingOptions);
+      checkFileResultObject = await checkLexiconFileContents(languageCode, repoCode, filepath, fileContent, ourCFLocation, checkingOptions);
     else
-      checkFileResult = await checkMarkdownFileContents(languageCode, repoCode, filepath, fileContent, ourCFLocation, checkingOptions);
+      checkFileResultObject = await checkMarkdownFileContents(languageCode, repoCode, filepath, fileContent, ourCFLocation, checkingOptions);
   else if (filenameLower.endsWith('.txt'))
-    checkFileResult = checkPlainText(languageCode, repoCode, 'text', filepath, fileContent, ourCFLocation, checkingOptions);
+    checkFileResultObject = checkPlainText(languageCode, repoCode, 'text', filepath, fileContent, ourCFLocation, checkingOptions);
   else if (filenameLower === 'manifest.yaml')
-    checkFileResult = await checkManifestText(languageCode, repoCode, username, repoName, branch, fileContent, ourCFLocation, checkingOptions); // don’t know username or branch
+    checkFileResultObject = await checkManifestText(languageCode, repoCode, username, repoName, branch, fileContent, ourCFLocation, checkingOptions); // don’t know username or branch
   else if (filenameLower.endsWith('.yaml'))
-    checkFileResult = checkYAMLText(languageCode, repoCode, filepath, fileContent, ourCFLocation, checkingOptions);
+    checkFileResultObject = checkYAMLText(languageCode, repoCode, filepath, fileContent, ourCFLocation, checkingOptions);
   else if (filenameLower.startsWith('license')) {
-    checkFileResult = await checkMarkdownFileContents(languageCode, repoCode, filepath, fileContent, ourCFLocation, checkingOptions);
-    checkFileResult.noticeList.unshift({ priority: 982, message: "File extension is not recognized, so treated as markdown.", filename: filepath, location: ourCFLocation });
+    checkFileResultObject = await checkMarkdownFileContents(languageCode, repoCode, filepath, fileContent, ourCFLocation, checkingOptions);
+    checkFileResultObject.noticeList.unshift({ priority: 982, message: "File extension is not recognized, so treated as markdown.", filename: filepath, location: ourCFLocation });
   } else {
-    checkFileResult = checkPlainText(languageCode, repoCode, 'raw', filepath, fileContent, ourCFLocation, checkingOptions);
-    checkFileResult.noticeList.unshift({ priority: 995, message: "File extension is not recognized, so treated as plain text.", filename: filepath, location: ourCFLocation });
+    checkFileResultObject = checkPlainText(languageCode, repoCode, 'raw', filepath, fileContent, ourCFLocation, checkingOptions);
+    checkFileResultObject.noticeList.unshift({ priority: 995, message: "File extension is not recognized, so treated as plain text.", filename: filepath, location: ourCFLocation });
   }
   // debugLog(`checkFileContents got initial results: ${JSON.stringify(checkFileResult)}`);
   // debugLog(`checkFileContents got initial results with ${checkFileResult.successList.length} success message(s) and ${checkFileResult.noticeList.length} notice(s)`);
 
   // Make sure that we have the filename in all of our notices (in case other files are being checked as well)
-  function addFilenameField(noticeObject) {
-    if (noticeObject.debugChain) noticeObject.debugChain = `checkFileContents ${noticeObject.debugChain}`;
-    if (noticeObject.fieldName === filepath) delete noticeObject.fieldName;
+  function addFilenameField(noticeObjectParameter) {
+    if (noticeObjectParameter.debugChain) noticeObjectParameter.debugChain = `checkFileContents ${noticeObjectParameter.debugChain}`;
+    if (noticeObjectParameter.fieldName === filepath) delete noticeObjectParameter.fieldName;
     // TODO: Might we need to add username, repoName, or branch here ???
-    return noticeObject.extra ? noticeObject : { ...noticeObject, filename: filepath }; // NOTE: might be an indirect check on a TA or TW article
+    return noticeObjectParameter.extra ? noticeObjectParameter : { ...noticeObjectParameter, filename: filepath }; // NOTE: might be an indirect check on a TA/TW article or UHAL/UGL entry
   }
-  checkFileResult.noticeList = checkFileResult.noticeList.map(addFilenameField);
+  checkFileResultObject.noticeList = checkFileResultObject.noticeList.map(addFilenameField);
 
   // Add some extra fields to our checkFileResult object
   //  in case we need this information again later
-  checkFileResult.checkedFileCount += 1;
-  checkFileResult.checkedFilename = filepath;
-  checkFileResult.checkedFilesize = fileContent.length;
-  checkFileResult.checkedOptions = checkingOptions;
+  checkFileResultObject.checkedFileCount += 1;
+  checkFileResultObject.checkedFilename = filepath;
+  checkFileResultObject.checkedFilesize = fileContent.length;
+  checkFileResultObject.checkedOptions = checkingOptions;
 
-  checkFileResult.elapsedSeconds = (new Date() - startTime) / 1000; // seconds
+  checkFileResultObject.elapsedSeconds = (new Date() - startTime) / 1000; // seconds
   // debugLog(`checkFileContents() returning ${JSON.stringify(checkFileResult)}`);
-  return checkFileResult;
+  return checkFileResultObject;
 };
 // end of checkFileContents()

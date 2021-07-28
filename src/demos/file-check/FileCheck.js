@@ -8,7 +8,7 @@ import { checkFileContents } from './checkFileContents';
 import { debugLog, userLog } from '../../core/utilities';
 
 
-// const FILE_CHECK_VERSION_STRING = '0.3.2';
+// const FILE_CHECK_VERSION_STRING = '0.3.3';
 
 
 function FileCheck(props) {
@@ -218,6 +218,7 @@ function FileCheck(props) {
   if (props.disableAllLinkFetchingFlag) checkingOptions.disableAllLinkFetchingFlag = props.disableAllLinkFetchingFlag.toLowerCase() === 'true';
   if (props.disableLinkedTAArticlesCheckFlag) checkingOptions.disableLinkedTAArticlesCheckFlag = props.disableLinkedTAArticlesCheckFlag.toLowerCase() === 'true';
   if (props.disableLinkedTWArticlesCheckFlag) checkingOptions.disableLinkedTWArticlesCheckFlag = props.disableLinkedTWArticlesCheckFlag.toLowerCase() === 'true';
+  if (props.disableLinkedLexiconEntriesFlag) checkingOptions.disableLinkedLexiconEntriesFlag = props.disableLinkedLexiconEntriesFlag.toLowerCase() === 'true';
 
   // {/* <div className={classes.root}> */}
   return (

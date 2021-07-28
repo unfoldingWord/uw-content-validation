@@ -76,7 +76,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
 
     let drResult = { noticeList: [] };
 
-    function addNoticePartial(noticeObject) {
+    function addNoticePartial(incompleteNoticeObject) {
         /**
         * @description - adds a new notice entry, adding bookID,C,V to the given fields
         * @param {Number} priority - notice priority from 1 (lowest) to 999 (highest)
@@ -95,17 +95,17 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         // //parameterAssert(lineNumber !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'lineNumber' parameter should be defined");
         // //parameterAssert(typeof lineNumber === 'number', `checkTWL_TSV6DataRow addNoticePartial: 'lineNumber' parameter should be a number not a '${typeof lineNumber}': ${lineNumber}`);
         // //parameterAssert(characterIndex !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `checkTWL_TSV6DataRow addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        if (incompleteNoticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `checkTWL_TSV6DataRow addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
         }
         // //parameterAssert(excerpt !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `checkTWL_TSV6DataRow addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        if (incompleteNoticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `checkTWL_TSV6DataRow addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         }
         //parameterAssert(noticeObject.location !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'location' parameter should be defined");
         //parameterAssert(typeof noticeObject.location === 'string', `checkTWL_TSV6DataRow addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
         // Also uses the given bookID,C,V, parameters from the main function call
         // noticeObject.debugChain = noticeObject.debugChain ? `checkTWL_TSV6DataRow ${noticeObject.debugChain}` : `checkTWL_TSV6DataRow(${repoCode})`;
-        drResult.noticeList.push({ ...noticeObject, bookID, C: givenC, V: givenV });
+        drResult.noticeList.push({ ...incompleteNoticeObject, bookID, C: givenC, V: givenV });
     }
 
     function ourCheckTextField(rowID, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions) {
@@ -203,11 +203,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         const coTNlResultObject = await checkNotesLinksToOutside(languageCode, repoCode, bookID, givenC, givenV, fieldName, twLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: adjustedLanguageCode });
         // debugLog(`coTNlResultObject=${JSON.stringify(coTNlResultObject)}`);
 
-        // Choose only ONE of the following
-        // This is the fast way of append the results from this field
-        // result.noticeList = result.noticeList.concat(coTNlResultObject.noticeList);
-        // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
-        //  process results line by line
+        // Process results line by line
         for (const coqNoticeEntry of coTNlResultObject.noticeList) {
             if (coqNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN2 check
                 drResult.noticeList.push(coqNoticeEntry); // Just copy the complete notice as is
@@ -229,7 +225,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
             for (const checkedFilenameExtension of coTNlResultObject.checkedFilenameExtensions)
                 try { if (drResult.checkedFilenameExtensions.indexOf(checkedFilenameExtension) < 0) drResult.checkedFilenameExtensions.push(checkedFilenameExtension); }
                 catch { drResult.checkedFilenameExtensions = [checkedFilenameExtension]; }
-        // if (drResult.checkedFilenameExtensions) userLog("drResult", JSON.stringify(drResult));
+        // if (drResult.checkedFilenameExtensions) debugLog("drResult", JSON.stringify(drResult));
     }
     // end of ourCheckNotesLinksToOutside function
 

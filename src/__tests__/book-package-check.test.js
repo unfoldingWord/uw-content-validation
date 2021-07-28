@@ -1,7 +1,7 @@
 /* eslint-env jest */
 
 import { checkBookPackage } from '../demos/book-package-check/checkBookPackage';
-import Path from "path";
+import Path from 'path';
 import fs from 'fs-extra';
 
 let testFiles = {};
@@ -9,6 +9,7 @@ let testFiles = {};
 const optionalCheckingOptions = {
   disableLinkedTAArticlesCheckFlag: true,
   disableLinkedTWArticlesCheckFlag: true,
+  disableLinkedLexiconEntriesFlag: true,
   getFile: params => {
     const { username, repository, path } = params;
     // console.log(`book-package-check.test getFile(${username}, ${repository}, ${path})`)
@@ -43,11 +44,11 @@ describe('checkBookPackage() - ', () => {
     testFiles = {}; // reset test files
   });
 
-  it('TIT should fail on unsupported language', async() => {
+  it('TIT should fail on unsupported language', async () => {
     const username = 'unfoldingWord';
     const languageCode = 'zzz';
     const bookID = 'TIT';
-    const rawResults = await checkBookPackage(username, languageCode, bookID, () => {}, optionalCheckingOptions);
+    const rawResults = await checkBookPackage(username, languageCode, bookID, () => { }, optionalCheckingOptions);
     console.log(`TIT unsupported language BP test took ${rawResults.elapsedSeconds} seconds`);
     expect(rawResults.noticeList.length).toBeGreaterThan(0);
     const filteredResults = {
@@ -59,7 +60,7 @@ describe('checkBookPackage() - ', () => {
     expect(filteredResults).toMatchSnapshot();
   }, 6000); // Allow 6 seconds
 
-  it('TIT should fail on missing repo', async() => {
+  it('TIT should fail on missing repo', async () => {
     const username = 'unfoldingWord';
     const languageCode = 'en';
     const bookID = 'TIT';
@@ -67,7 +68,7 @@ describe('checkBookPackage() - ', () => {
       'src/__tests__/fixtures/unfoldingWord/en_ult/57-TIT.usfm': null,
     };
 
-    const rawResults = await checkBookPackage(username, languageCode, bookID, () => {}, optionalCheckingOptions);
+    const rawResults = await checkBookPackage(username, languageCode, bookID, () => { }, optionalCheckingOptions);
     console.log(`TIT missing repo BP test took ${rawResults.elapsedSeconds} seconds`);
     expect(rawResults.noticeList.length).toBeGreaterThan(0);
     const filteredResults = {
@@ -79,11 +80,11 @@ describe('checkBookPackage() - ', () => {
     expect(filteredResults).toMatchSnapshot();
   }, 12000); // Allow 12 seconds
 
-  it('TIT should pass', async() => {
+  it('TIT should pass', async () => {
     const username = 'unfoldingWord';
     const languageCode = 'en';
     const bookID = 'TIT';
-    const rawResults = await checkBookPackage(username, languageCode, bookID, () => {}, optionalCheckingOptions);
+    const rawResults = await checkBookPackage(username, languageCode, bookID, () => { }, optionalCheckingOptions);
     console.log(`TIT BP test took ${rawResults.elapsedSeconds} seconds`);
     expect(rawResults.noticeList.length).toBeGreaterThanOrEqual(0);
     const filteredResults = {
@@ -95,11 +96,11 @@ describe('checkBookPackage() - ', () => {
     expect(filteredResults).toMatchSnapshot();
   }, 15000); // Allow 15 seconds
 
-  it('RUT should pass', async() => {
+  it('RUT should pass', async () => {
     const username = 'unfoldingWord';
     const languageCode = 'en';
     const bookID = 'RUT';
-    const rawResults = await checkBookPackage(username, languageCode, bookID, () => {}, optionalCheckingOptions);
+    const rawResults = await checkBookPackage(username, languageCode, bookID, () => { }, optionalCheckingOptions);
     console.log(`RUT BP test took ${rawResults.elapsedSeconds} seconds`);
     expect(rawResults.noticeList.length).toBeGreaterThanOrEqual(4);
     const filteredResults = {
@@ -124,7 +125,7 @@ describe('checkBookPackage() - ', () => {
  * @param {Array} arrayOfFiles
  * @return {Array}
  */
-const getAllFiles = function(dirPath, subPath, arrayOfFiles) {
+const getAllFiles = function (dirPath, subPath, arrayOfFiles) {
   // console.log(`getAllFiles(${dirPath}, ${subPath}, ${arrayOfFiles}`);
   arrayOfFiles = arrayOfFiles || [];
   subPath = subPath || '.';

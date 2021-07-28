@@ -81,7 +81,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
 
     let drResult = { noticeList: [] };
 
-    function addNoticePartial(noticeObject) {
+    function addNoticePartial(incompleteNoticeObject) {
         /**
         * @description - adds a new notice entry, adding bookID,C,V to the given fields
         * @param {Number} priority - notice priority from 1 (lowest) to 999 (highest)
@@ -100,17 +100,17 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
         // //parameterAssert(lineNumber !== undefined, "checkQuestionsTSV7DataRow addNoticePartial: 'lineNumber' parameter should be defined");
         // //parameterAssert(typeof lineNumber === 'number', `checkQuestionsTSV7DataRow addNoticePartial: 'lineNumber' parameter should be a number not a '${typeof lineNumber}': ${lineNumber}`);
         // //parameterAssert(characterIndex !== undefined, "checkQuestionsTSV7DataRow addNoticePartial: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `checkQuestionsTSV7DataRow addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        if (incompleteNoticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `checkQuestionsTSV7DataRow addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
         }
         // //parameterAssert(excerpt !== undefined, "checkQuestionsTSV7DataRow addNoticePartial: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `checkQuestionsTSV7DataRow addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        if (incompleteNoticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `checkQuestionsTSV7DataRow addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         }
         //parameterAssert(noticeObject.location !== undefined, "checkQuestionsTSV7DataRow addNoticePartial: 'location' parameter should be defined");
         //parameterAssert(typeof noticeObject.location === 'string', `checkQuestionsTSV7DataRow addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
         // Also uses the given bookID,C,V, parameters from the main function call
         // noticeObject.debugChain = noticeObject.debugChain ? `checkQuestionsTSV7DataRow ${noticeObject.debugChain}` : `checkQuestionsTSV7DataRow(${repoCode})`;
-        drResult.noticeList.push({ ...noticeObject, bookID, C: givenC, V: givenV });
+        drResult.noticeList.push({ ...incompleteNoticeObject, bookID, C: givenC, V: givenV });
     }
 
     async function ourMarkdownTextChecks(rowID, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions) {

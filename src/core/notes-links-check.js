@@ -137,24 +137,24 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     /**
      *
      * @description - adds a new notice entry from the partial fields given -- adding bookID and fieldName to the given fields
-     * @param {Object} noticeObject expected to contain priority, message, characterIndex, exerpt, location
+     * @param {Object} incompleteNoticeObject expected to contain priority, message, characterIndex, exerpt, location
      */
-    function addNoticePartial(noticeObject) {
+    function addNoticePartial(incompleteNoticeObject) {
         // functionLog(`checkNotesLinksToOutside Notice: (priority = ${ priority }) ${ message } ${ characterIndex > 0 ? ` (at character ${characterIndex})` : "" } ${ excerpt ? ` ${excerpt}` : "" } ${ location } `);
         //parameterAssert(noticeObject.priority !== undefined, "cTNlnk addNoticePartial: 'priority' parameter should be defined");
         //parameterAssert(typeof noticeObject.priority === 'number', `cTNlnk addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority} `);
         //parameterAssert(noticeObject.message !== undefined, "cTNlnk addNoticePartial: 'message' parameter should be defined");
         //parameterAssert(typeof noticeObject.message === 'string', `cTNlnk addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message} `);
         // //parameterAssert(characterIndex !== undefined, "cTNlnk addNoticePartial: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cTNlnk addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex} `);
+        if (incompleteNoticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cTNlnk addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex} `);
         }
         // //parameterAssert(excerpt !== undefined, "cTNlnk addNoticePartial: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cTNlnk addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt} `);
+        if (incompleteNoticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cTNlnk addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt} `);
         }
         //parameterAssert(noticeObject.location !== undefined, "cTNlnk addNoticePartial: 'location' parameter should be defined");
         //parameterAssert(typeof noticeObject.location === 'string', `cTNlnk addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location} `);
         // noticeObject.debugChain = noticeObject.debugChain ? `checkNotesLinksToOutside ${ noticeObject.debugChain } ` : `checkNotesLinksToOutside(${ fieldName })`;
-        ctarResult.noticeList.push({ ...noticeObject, bookID, fieldName });
+        ctarResult.noticeList.push({ ...incompleteNoticeObject, bookID, fieldName });
     }
 
 

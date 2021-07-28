@@ -81,7 +81,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
     * @param {string} excerpt - short excerpt from the line centred on the problem (if available)
     * @param {string} location - description of where the issue is located
     */
-    function addNoticePartial(noticeObject) {
+    function addNoticePartial(incompleteNoticeObject) {
         // functionLog(`checkTN_TSV9DataRow addNoticePartial(priority=${noticeObject.priority}) ${noticeObject.message}, ${noticeObject.characterIndex}, ${noticeObject.excerpt}, ${noticeObject.location}`);
         //parameterAssert(noticeObject.priority !== undefined, "checkTN_TSV9DataRow addNoticePartial: 'priority' parameter should be defined");
         //parameterAssert(typeof noticeObject.priority === 'number', `checkTN_TSV9DataRow addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
@@ -90,16 +90,16 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
         // //parameterAssert(lineNumber !== undefined, "checkTN_TSV9DataRow addNoticePartial: 'lineNumber' parameter should be defined");
         // //parameterAssert(typeof lineNumber === 'number', `checkTN_TSV9DataRow addNoticePartial: 'lineNumber' parameter should be a number not a '${typeof lineNumber}': ${lineNumber}`);
         // //parameterAssert(characterIndex !== undefined, "checkTN_TSV9DataRow addNoticePartial: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `checkTN_TSV9DataRow addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        if (incompleteNoticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `checkTN_TSV9DataRow addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
         }
         // //parameterAssert(excerpt !== undefined, "checkTN_TSV9DataRow addNoticePartial: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `checkTN_TSV9DataRow addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        if (incompleteNoticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `checkTN_TSV9DataRow addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         }
         //parameterAssert(noticeObject.location !== undefined, "checkTN_TSV9DataRow addNoticePartial: 'location' parameter should be defined");
         //parameterAssert(typeof noticeObject.location === 'string', `checkTN_TSV9DataRow addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
         // noticeObject.debugChain = noticeObject.debugChain ? `checkTN_TSV9DataRow ${noticeObject.debugChain}` : 'checkTN_TSV9DataRow';
         // Also uses the given bookID,C,V, parameters from the main function call
-        drResult.noticeList.push({ ...noticeObject, bookID, C: givenC, V: givenV });
+        drResult.noticeList.push({ ...incompleteNoticeObject, bookID, C: givenC, V: givenV });
     }
 
     /**

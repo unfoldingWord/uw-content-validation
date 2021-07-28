@@ -9,7 +9,7 @@ import { checkRepo } from '../repo-check/checkRepo';
 import { userLog, functionLog, debugLog, parameterAssert, logicAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.7.8';
+// const BP_VALIDATOR_VERSION_STRING = '0.7.9';
 
 const STANDARD_MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -75,7 +75,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   }
 
 
-  function addNoticePartial(noticeObject) {
+  function addNoticePartial(incompleteNoticeObject) {
     // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
     // functionLog(`checkBookPackage addNoticePartial: (priority=${noticeObject.priority}) ${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
     //parameterAssert(noticeObject.priority !== undefined, "cBP addNoticePartial: 'priority' parameter should be defined");
@@ -83,29 +83,29 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     //parameterAssert(noticeObject.message !== undefined, "cBP addNoticePartial: 'message' parameter should be defined");
     //parameterAssert(typeof noticeObject.message === 'string', `cBP addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
     // //parameterAssert(bookID !== undefined, "cBP addNoticePartial: 'bookID' parameter should be defined");
-    if (noticeObject.bookID) {
+    if (incompleteNoticeObject.bookID) {
       //parameterAssert(typeof noticeObject.bookID === 'string', `cBP addNoticePartial: 'bookID' parameter should be a string not a '${typeof noticeObject.bookID}': ${noticeObject.bookID}`);
       //parameterAssert(noticeObject.bookID.length === 3, `cBP addNoticePartial: 'bookID' parameter should be three characters long not ${noticeObject.bookID.length}`);
       //parameterAssert(bookID === 'OBS' || books.isValidBookID(noticeObject.bookID), `cBP addNoticePartial: '${noticeObject.bookID}' is not a valid USFM book identifier`);
     }
     // //parameterAssert(C !== undefined, "cBP addNoticePartial: 'C' parameter should be defined");
-    if (noticeObject.C) { //parameterAssert(typeof noticeObject.C === 'string', `cBP addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
+    if (incompleteNoticeObject.C) { //parameterAssert(typeof noticeObject.C === 'string', `cBP addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
     }
     // //parameterAssert(V !== undefined, "cBP addNoticePartial: 'V' parameter should be defined");
-    if (noticeObject.V) { //parameterAssert(typeof noticeObject.V === 'string', `cBP addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
+    if (incompleteNoticeObject.V) { //parameterAssert(typeof noticeObject.V === 'string', `cBP addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
     }
     // //parameterAssert(characterIndex !== undefined, "cBP addNoticePartial: 'characterIndex' parameter should be defined");
-    if (noticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cBP addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+    if (incompleteNoticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cBP addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
     }
     // //parameterAssert(excerpt !== undefined, "cBP addNoticePartial: 'excerpt' parameter should be defined");
-    if (noticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cBP addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+    if (incompleteNoticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cBP addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
     }
     //parameterAssert(noticeObject.location !== undefined, "cBP addNoticePartial: 'location' parameter should be defined");
     //parameterAssert(typeof noticeObject.location === 'string', `cBP addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
     //parameterAssert(noticeObject.extra !== undefined, "cBP addNoticePartial: 'extra' parameter should be defined");
     //parameterAssert(typeof noticeObject.extra === 'string', `cBP addNoticePartial: 'extra' parameter should be a string not a '${typeof noticeObject.extra}': ${noticeObject.extra}`);
-    if (noticeObject.debugChain) noticeObject.debugChain = `checkBookPackage ${noticeObject.debugChain}`;
-    checkBookPackageResult.noticeList.push({ ...noticeObject, bookID, username });
+    if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkBookPackage ${incompleteNoticeObject.debugChain}`;
+    checkBookPackageResult.noticeList.push({ ...incompleteNoticeObject, bookID, username });
   }
 
 
@@ -133,19 +133,21 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     // else if (repoCode === 'UGNT') adjustedLanguageCode = 'el-x-koine';
     const cfcResultObject = await checkFileContents(username, adjustedLanguageCode, repoCode, repoBranch, cfFilename, fileContent, fileLocation, checkingOptions);
     // debugLog("checkFileContents() returned", cfResultObject.successList.length, "success message(s) and", cfResultObject.noticeList.length, "notice(s)");
-    // for (const successEntry of cfResultObject.successList) userLog("  ourCheckBPFileContents:", successEntry);
+    // for (const successEntry of cfResultObject.successList) debugLog("  ourCheckBPFileContents:", successEntry);
     // debugLog("cfcResultObject", JSON.stringify(cfcResultObject));
 
     // Process noticeList line by line,  appending the repoCode as an extra field as we go
     for (const cfcNoticeEntry of cfcResultObject.noticeList) // noticeEntry is an object
-      if (cfcNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN2 check
+      if (cfcNoticeEntry.extra) // it must be an indirect check on a TA/TW article from a TN2 check or UHAL/UGL lexicon check
         checkBookPackageResult.noticeList.push(cfcNoticeEntry); // Just copy the complete notice as is
       else // For our direct checks, we add the repoCode as an extra value (unless it’s already there from a TA or TW check)
         addNoticePartial({ ...cfcNoticeEntry, repoCode, repoName, branch: repoBranch, filename: cfFilename, extra: cfcNoticeEntry.extra ? cfcNoticeEntry.extra : repoCode });
-    // The following is needed coz we might be checking the linked TA and/or TW articles from TN2 TSV files
+
+    // The following is needed coz we might be checking the linked TA/TW articles from TN2 TSV files or UHAL/UGL entries
     if (cfcResultObject.checkedFileCount && cfcResultObject.checkedFileCount > 0) {
       checkedFileCount += cfcResultObject.checkedFileCount;
-      addSuccessMessage(`Checked ${cfcResultObject.checkedFileCount} linked TA/TW articles`);
+      // TODO: How could we distinguish these different sources below???
+      addSuccessMessage(`Checked ${cfcResultObject.checkedFileCount} linked TA/TW articles or HALx/GkLx entries`);
     }
     if (cfcResultObject.checkedFilesizes && cfcResultObject.checkedFilesizes > 0) totalCheckedSize += cfcResultObject.checkedFilesizes;
     if (cfcResultObject.checkedRepoNames && cfcResultObject.checkedRepoNames.length > 0)
@@ -203,7 +205,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       // debugLog(`ourCheckManifestFile checkManifestText(${repoName}) returned ${cmtResultObject.successList.length} success message(s) and ${cmtResultObject.noticeList.length} notice(s)`);
       // debugLog(`ourCheckManifestFile checkManifestText(${repoName}) returned ${JSON.stringify(cmtResultObject)}`);
       // NOTE: We ignore the returned success messages here
-      // for (const successEntry of cfResultObject.successList) userLog("  ourCheckBPFileContents:", successEntry);
+      // for (const successEntry of cfResultObject.successList) debugLog("  ourCheckBPFileContents:", successEntry);
       // debugLog("cfcResultObject", JSON.stringify(cfcResultObject));
 
       // Process noticeList line by line,  appending the repoCode as an extra field as we go
@@ -268,7 +270,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       // debugLog(`ourCheckMarkdownFile checkMarkdownText(${repoName}) returned ${cmtResultObject.successList.length} success message(s) and ${cmtResultObject.noticeList.length} notice(s)`);
       // debugLog(`ourCheckMarkdownFile checkMarkdownText(${repoName}) returned ${JSON.stringify(cmtResultObject)}`);
       // NOTE: We ignore the returned success messages here
-      // for (const successEntry of cfResultObject.successList) userLog("  ourCheckBPFileContents:", successEntry);
+      // for (const successEntry of cfResultObject.successList) debugLog("  ourCheckBPFileContents:", successEntry);
       // debugLog("cfcResultObject", JSON.stringify(cfcResultObject));
 
       // Process noticeList line by line,  appending the repoCode as an extra field as we go
@@ -344,6 +346,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   let numCheckedRepos = 0;
   for (const repoCode of repoCodeList) {
     // debugLog(`checkBookPackage for ${bookID} got repoCode=${repoCode} abortFlag=${abortFlag} from ${repoCodeList}`);
+    // if (repoCode !== 'UGNT') continue;
     if (abortFlag) break;
     let adjustedRepoCode = repoCode, adjustedBranch = originalBranch;
     if (adjustedRepoCode.endsWith('2')) {
@@ -399,7 +402,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         checkedRepoNames.add(repoName);
       }
       addSuccessMessage(`Checked ${languageCode} OBS repo from ${username}`);
-    } else if (repoCode === 'TQ' || repoCode === 'OBS-TN'|| repoCode === 'OBS-TQ') { // These are still markdown for now
+    } else if (repoCode === 'TQ' || repoCode === 'OBS-TN' || repoCode === 'OBS-TQ') { // These are still markdown for now
       // This is the old markdown resource with hundreds/thousands of files
       const tqResultObject = await checkTQMarkdownBook(username, languageCode, repoCode, repoName, originalBranch, bookID, newCheckingOptions);
       checkBookPackageResult.successList = checkBookPackageResult.successList.concat(tqResultObject.successList);
@@ -562,7 +565,7 @@ async function checkTQMarkdownBook(username, languageCode, repoCode, repoName, b
     ctqResult.successList.push(successString);
   }
 
-  function addNoticePartial(noticeObject) {
+  function addNoticePartial(incompleteNoticeObject) {
     // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
     // functionLog(`checkTQMarkdownBook addNoticePartial: ${noticeObject.priority}:${noticeObject.message} ${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.filename}:${noticeObject.lineNumber} ${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.excerpt ? ` ${noticeObject.excerpt}` : ""}${noticeObject.location}`);
     //parameterAssert(noticeObject.priority !== undefined, "cTQ addNoticePartial: 'priority' parameter should be defined");
@@ -574,22 +577,22 @@ async function checkTQMarkdownBook(username, languageCode, repoCode, repoName, b
     //parameterAssert(noticeObject.bookID.length === 3, `cTQ addNoticePartial: 'bookID' parameter should be three characters long not ${noticeObject.bookID.length}`);
     //parameterAssert(noticeObject.bookID === 'OBS' || books.isValidBookID(noticeObject.bookID), `cTQ addNoticePartial: '${noticeObject.bookID}' is not a valid USFM book identifier`);
     // //parameterAssert(C !== undefined, "cTQ addNoticePartial: 'C' parameter should be defined");
-    if (noticeObject.C) { //parameterAssert(typeof noticeObject.C === 'string', `cTQ addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}'`);
+    if (incompleteNoticeObject.C) { //parameterAssert(typeof noticeObject.C === 'string', `cTQ addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}'`);
     }
     // //parameterAssert(V !== undefined, "cTQ addNoticePartial: 'V' parameter should be defined");
-    if (noticeObject.V) { //parameterAssert(typeof noticeObject.V === 'string', `cTQ addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}'`);
+    if (incompleteNoticeObject.V) { //parameterAssert(typeof noticeObject.V === 'string', `cTQ addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}'`);
     }
     // //parameterAssert(characterIndex !== undefined, "cTQ addNoticePartial: 'characterIndex' parameter should be defined");
-    if (noticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cTQ addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}'`);
+    if (incompleteNoticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cTQ addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}'`);
     }
     // //parameterAssert(excerpt !== undefined, "cTQ addNoticePartial: 'excerpt' parameter should be defined");
-    if (noticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cTQ addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}'`);
+    if (incompleteNoticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cTQ addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}'`);
     }
     //parameterAssert(noticeObject.location !== undefined, "cTQ addNoticePartial: 'location' parameter should be defined");
     //parameterAssert(typeof noticeObject.location === 'string', `cTQ addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}'`);
     //parameterAssert(noticeObject.extra !== undefined, "cTQ addNoticePartial: 'extra' parameter should be defined");
     //parameterAssert(typeof noticeObject.extra === 'string', `cTQ addNoticePartial: 'extra' parameter should be a string not a '${typeof noticeObject.extra}'`);
-    ctqResult.noticeList.push({ ...noticeObject, username, repoCode, repoName, bookID });
+    ctqResult.noticeList.push({ ...incompleteNoticeObject, username, repoCode, repoName, bookID });
   }
 
 
@@ -621,7 +624,7 @@ async function checkTQMarkdownBook(username, languageCode, repoCode, repoName, b
 
     const cfResultObject = await checkFileContents(username, languageCode, repoCode, branch, cfFilename, fileContent, fileLocation, checkingOptions);
     // debugLog("checkFileContents() returned", cfResultObject.successList.length, "success message(s) and", cfResultObject.noticeList.length, "notice(s)");
-    // for (const successEntry of cfResultObject.successList) userLog("  ourCheckTQFileContents:", successEntry);
+    // for (const successEntry of cfResultObject.successList) debugLog("  ourCheckTQFileContents:", successEntry);
 
     // Process noticeList line by line,  appending the repoCode as an extra field as we go
     for (const noticeEntry of cfResultObject.noticeList) {

@@ -72,7 +72,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
     // functionLog(`checkRepo success: ${successString}`);
     checkRepoResult.successList.push(successString);
   }
-  function addNoticePartial(noticeObject) {
+  function addNoticePartial(incompleteNoticeObject) {
     // Adds the notices to the result that we will later return
     // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
     // Note that bookID,C,V might all be empty strings (as some repos don’t have BCV)
@@ -82,30 +82,30 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
     //parameterAssert(noticeObject.message !== undefined, "cR addNoticePartial: 'message' parameter should be defined");
     //parameterAssert(typeof noticeObject.message === 'string', `cR addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}'`);
     // //parameterAssert(bookID !== undefined, "cR addNoticePartial: 'bookID' parameter should be defined");
-    if (noticeObject.bookID) {
+    if (incompleteNoticeObject.bookID) {
       //parameterAssert(typeof noticeObject.bookID === 'string', `cR addNoticePartial: 'bookID' parameter should be a string not a '${typeof noticeObject.bookID}'`);
       //parameterAssert(noticeObject.bookID.length === 3, `cR addNoticePartial: 'bookID' parameter should be three characters long not ${noticeObject.bookID.length}`);
       //parameterAssert(noticeObject.bookID === 'OBS' || books.isOptionalValidBookID(noticeObject.bookID), `cR addNoticePartial: '${noticeObject.bookID}' is not a valid USFM book identifier`);
     }
     // //parameterAssert(C !== undefined, "cR addNoticePartial: 'C' parameter should be defined");
-    if (noticeObject.C) { //parameterAssert(typeof noticeObject.C === 'string', `cR addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}'`);
+    if (incompleteNoticeObject.C) { //parameterAssert(typeof noticeObject.C === 'string', `cR addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}'`);
     }
     // //parameterAssert(V !== undefined, "cR addNoticePartial: 'V' parameter should be defined");
-    if (noticeObject.V) { //parameterAssert(typeof noticeObject.V === 'string', `cR addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}'`);
+    if (incompleteNoticeObject.V) { //parameterAssert(typeof noticeObject.V === 'string', `cR addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}'`);
     }
     // //parameterAssert(characterIndex !== undefined, "cR addNoticePartial: 'characterIndex' parameter should be defined");
-    if (noticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cR addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}'`);
+    if (incompleteNoticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cR addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}'`);
     }
     // //parameterAssert(excerpt !== undefined, "cR addNoticePartial: 'excerpt' parameter should be defined");
-    if (noticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cR addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}'`);
+    if (incompleteNoticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cR addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}'`);
     }
     //parameterAssert(noticeObject.location !== undefined, "cR addNoticePartial: 'location' parameter should be defined");
     //parameterAssert(typeof noticeObject.location === 'string', `cR addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}'`);
     // //parameterAssert(noticeObject.extra !== undefined, "cR addNoticePartial: 'extra' parameter should be defined");
     //parameterAssert(typeof noticeObject.extra === 'string', `cR addNoticePartial: 'extra' parameter should be a string not a '${typeof noticeObject.extra}'`);
-    if (noticeObject.debugChain) noticeObject.debugChain = `checkRepo ${noticeObject.debugChain}`;
+    if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkRepo ${incompleteNoticeObject.debugChain}`;
     // Add in the repoName from the outer scope
-    checkRepoResult.noticeList.push({ ...noticeObject, username, repoCode, repoName });
+    checkRepoResult.noticeList.push({ ...incompleteNoticeObject, username, repoCode, repoName });
   }
 
 

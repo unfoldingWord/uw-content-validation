@@ -9,7 +9,7 @@ import { RenderCheckedFilesList, RenderSuccessesErrorsWarnings, RenderSuccessesS
 import { userLog, debugLog, logicAssert } from '../../core/utilities';
 
 
-// const BPS_VALIDATOR_VERSION_STRING = '0.2.7';
+// const BPS_VALIDATOR_VERSION_STRING = '0.2.8';
 
 
 /**
@@ -64,8 +64,10 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
   if (props.disableAllLinkFetchingFlag) checkingOptions.disableAllLinkFetchingFlag = props.disableAllLinkFetchingFlag.toLowerCase() === 'true';
   if (props.disableLinkedTAArticlesCheckFlag) checkingOptions.disableLinkedTAArticlesCheckFlag = props.disableLinkedTAArticlesCheckFlag.toLowerCase() === 'true';
   if (props.disableLinkedTWArticlesCheckFlag) checkingOptions.disableLinkedTWArticlesCheckFlag = props.disableLinkedTWArticlesCheckFlag.toLowerCase() === 'true';
+  if (props.disableLinkedLexiconEntriesFlag) checkingOptions.disableLinkedLexiconEntriesFlag = props.disableLinkedLexiconEntriesFlag.toLowerCase() === 'true';
   // functionLog(`checkingOptions.disableLinkedTAArticlesCheckFlag ${checkingOptions.disableLinkedTAArticlesCheckFlag} from '${props.disableLinkedTAArticlesCheckFlag}'`);
   // functionLog(`checkingOptions.disableLinkedTWArticlesCheckFlag ${checkingOptions.disableLinkedTWArticlesCheckFlag} from '${props.disableLinkedTWArticlesCheckFlag}'`);
+  // functionLog(`checkingOptions.disableLinkedLexiconEntriesFlag ${checkingOptions.disableLinkedLexiconEntriesFlag} from '${props.disableLinkedLexiconEntriesFlag}'`);
 
   useEffect(() => {
     // debugLog("BookPackagesCheck.useEffect() called with ", JSON.stringify(props));

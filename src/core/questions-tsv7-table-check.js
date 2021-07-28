@@ -52,29 +52,29 @@ export async function checkQuestionsTSV7Table(languageCode, repoCode, bookID, fi
         // functionLog(`checkQuestionsTSV7Table success: ${successString}`);
         carResult.successList.push(successString);
     }
-    function addNoticePartial(noticeObject) {
+    function addNoticePartial(incompleteNoticeObject) {
         // functionLog(`checkQuestionsTSV7Table notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
         //parameterAssert(noticeObject.priority !== undefined, "ATSV addNoticePartial: 'priority' parameter should be defined");
         //parameterAssert(typeof noticeObject.priority === 'number', `TSV addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         //parameterAssert(noticeObject.message !== undefined, "ATSV addNoticePartial: 'message' parameter should be defined");
         //parameterAssert(typeof noticeObject.message === 'string', `TSV addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
         // //parameterAssert(C !== undefined, "ATSV addNoticePartial: 'C' parameter should be defined");
-        if (noticeObject.C) { //parameterAssert(typeof noticeObject.C === 'string', `TSV addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
+        if (incompleteNoticeObject.C) { //parameterAssert(typeof noticeObject.C === 'string', `TSV addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
         }
         // //parameterAssert(V !== undefined, "ATSV addNoticePartial: 'V' parameter should be defined");
-        if (noticeObject.V) { //parameterAssert(typeof noticeObject.V === 'string', `TSV addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
+        if (incompleteNoticeObject.V) { //parameterAssert(typeof noticeObject.V === 'string', `TSV addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
         }
         // //parameterAssert(characterIndex !== undefined, "ATSV addNoticePartial: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `TSV addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        if (incompleteNoticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `TSV addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
         }
         // //parameterAssert(excerpt !== undefined, "ATSV addNoticePartial: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `TSV addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        if (incompleteNoticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `TSV addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         }
         //parameterAssert(noticeObject.location !== undefined, "ATSV addNoticePartial: 'location' parameter should be defined");
         //parameterAssert(typeof noticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
-        if (noticeObject.debugChain) noticeObject.debugChain = `checkQuestionsTSV7Table ${noticeObject.debugChain}`;
-        carResult.noticeList.push({ ...noticeObject, bookID, filename, repoCode });
+        if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkQuestionsTSV7Table ${incompleteNoticeObject.debugChain}`;
+        carResult.noticeList.push({ ...incompleteNoticeObject, bookID, filename, repoCode });
     }
 
 
@@ -156,7 +156,7 @@ export async function checkQuestionsTSV7Table(languageCode, repoCode, bookID, fi
                     for (const checkedFilenameExtension of drResultObject.checkedFilenameExtensions)
                         try { if (carResult.checkedFilenameExtensions.indexOf(checkedFilenameExtension) < 0) carResult.checkedFilenameExtensions.push(checkedFilenameExtension); }
                         catch { carResult.checkedFilenameExtensions = [checkedFilenameExtension]; }
-                // if (ttResult.checkedFilenameExtensions) userLog("ttResult", JSON.stringify(ttResult));
+                // if (ttResult.checkedFilenameExtensions) debugLog("ttResult", JSON.stringify(ttResult));
 
                 // So here we only have to check against the previous and next fields for out-of-order problems and duplicate problems
                 if (C !== lastC || V !== lastV) {

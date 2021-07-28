@@ -173,7 +173,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
             for (const checkedFilenameExtension of coTNlResultObject.checkedFilenameExtensions)
                 try { if (result.checkedFilenameExtensions.indexOf(checkedFilenameExtension) < 0) result.checkedFilenameExtensions.push(checkedFilenameExtension); }
                 catch { result.checkedFilenameExtensions = [checkedFilenameExtension]; }
-        // if (result.checkedFilenameExtensions) userLog("result", JSON.stringify(result));
+        // if (result.checkedFilenameExtensions) debugLog("result", JSON.stringify(result));
     }
     // end of ourCheckNotesLinksToOutside function
 

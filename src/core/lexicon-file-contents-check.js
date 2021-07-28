@@ -1,4 +1,4 @@
-import { DEFAULT_EXCERPT_LENGTH } from './defaults'
+// import { DEFAULT_EXCERPT_LENGTH } from './defaults'
 import { checkMarkdownText } from './markdown-text-check';
 import { checkTextfileContents } from './file-text-check';
 // eslint-disable-next-line no-unused-vars
@@ -41,45 +41,45 @@ export async function checkLexiconFileContents(languageCode, repoCode, lexiconFi
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
-    let excerptLength;
-    try {
-        excerptLength = checkingOptions?.excerptLength;
-    } catch (mdtcError) { }
-    if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
-        excerptLength = DEFAULT_EXCERPT_LENGTH;
-        // debugLog("Using default excerptLength=" + excerptLength);
-    }
+    // let excerptLength;
+    // try {
+    //     excerptLength = checkingOptions?.excerptLength;
+    // } catch (mdtcError) { }
+    // if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
+    //     excerptLength = DEFAULT_EXCERPT_LENGTH;
+    //     // debugLog("Using default excerptLength=" + excerptLength);
+    // }
     // else
     // debugLog("Using supplied excerptLength=" + excerptLength, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
     // const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
     // const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
     // debugLog("Using excerptHalfLength=" + excerptHalfLength, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
-    const result = { successList: [], noticeList: [] };
+    const lexiconResultObject = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
         // debugLog("checkLexiconFileContents success: " + successString);
-        result.successList.push(successString);
+        lexiconResultObject.successList.push(successString);
     }
-    function addNoticePartial(noticeObject) {
+    function addNoticePartial(incompleteNoticeObject) {
         // functionLog(`checkLexiconFileContents addNoticePartial: (priority=${noticeObject.priority}) ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.excerpt ? " " + noticeObject.excerpt : ""}${noticeObject.location}`);
-        parameterAssert(noticeObject.priority !== undefined, "cMdT addNoticePartial: 'priority' parameter should be defined");
-        parameterAssert(typeof noticeObject.priority === 'number', `cMdT addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        parameterAssert(noticeObject.message !== undefined, "cMdT addNoticePartial: 'message' parameter should be defined");
-        parameterAssert(typeof noticeObject.message === 'string', `cMdT addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // parameterAssert(characterIndex !== undefined, "cMdT addNoticePartial: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) {
-            parameterAssert(typeof noticeObject.characterIndex === 'number', `cMdT addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        parameterAssert(incompleteNoticeObject.priority !== undefined, "checkLexiconFileContents addNoticePartial: 'priority' parameter should be defined");
+        parameterAssert(typeof incompleteNoticeObject.priority === 'number', `checkLexiconFileContents addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}': ${incompleteNoticeObject.priority}`);
+        parameterAssert(incompleteNoticeObject.message !== undefined, "checkLexiconFileContents addNoticePartial: 'message' parameter should be defined");
+        parameterAssert(typeof incompleteNoticeObject.message === 'string', `checkLexiconFileContents addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}': ${incompleteNoticeObject.message}`);
+        // parameterAssert(characterIndex !== undefined, "checkLexiconFileContents addNoticePartial: 'characterIndex' parameter should be defined");
+        if (incompleteNoticeObject.characterIndex) {
+            parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `checkLexiconFileContents addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
         }
-        // parameterAssert(excerpt !== undefined, "cMdT addNoticePartial: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) {
-            parameterAssert(typeof noticeObject.excerpt === 'string', `cMdT addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        // parameterAssert(excerpt !== undefined, "checkLexiconFileContents addNoticePartial: 'excerpt' parameter should be defined");
+        if (incompleteNoticeObject.excerpt) {
+            parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `checkLexiconFileContents addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt}`);
         }
-        parameterAssert(noticeObject.location !== undefined, "cMdT addNoticePartial: 'location' parameter should be defined");
-        parameterAssert(typeof noticeObject.location === 'string', `cMdT addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        parameterAssert(incompleteNoticeObject.location !== undefined, "checkLexiconFileContents addNoticePartial: 'location' parameter should be defined");
+        parameterAssert(typeof incompleteNoticeObject.location === 'string', `checkLexiconFileContents addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
 
-        if (noticeObject.debugChain) noticeObject.debugChain = `checkLexiconFileContents ${noticeObject.debugChain}`; // Prepend our name
-        result.noticeList.push({ ...noticeObject, filename: lexiconFilename });
+        if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkLexiconFileContents ${incompleteNoticeObject.debugChain}`; // Prepend our name
+        lexiconResultObject.noticeList.push({ ...incompleteNoticeObject, filename: lexiconFilename });
     }
     // end of addNoticePartial function
 
@@ -96,7 +96,7 @@ export async function checkLexiconFileContents(languageCode, repoCode, lexiconFi
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global list of notices
-        // debugLog(`cMdT ourCheckMarkdownText(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${optionalFieldLocation}, …)`);
+        // debugLog(`checkLexiconFileContents ourCheckMarkdownText(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${optionalFieldLocation}, …)`);
         parameterAssert(lexiconMarkdownText !== undefined, "cMdFC ourCheckMarkdownText: 'lexiconMarkdownText' parameter should be defined");
         parameterAssert(typeof lexiconMarkdownText === 'string', `cMdFC ourCheckMarkdownText: 'lexiconMarkdownText' parameter should be a string not a '${typeof lexiconMarkdownText}'`);
         parameterAssert(optionalFieldLocation !== undefined, "cMdFC ourCheckMarkdownText: 'optionalFieldLocation' parameter should be defined");
@@ -181,12 +181,12 @@ export async function checkLexiconFileContents(languageCode, repoCode, lexiconFi
     ourFileTextCheck(lexiconMarkdownText, givenLocation, checkingOptions);
 
     addSuccessMessage(`Checked lexicon file: ${lexiconFilename}`);
-    if (result.noticeList.length)
-        addSuccessMessage(`checkLexiconFileContents v${LEXICON_MARKDOWN_FILE_VALIDATOR_VERSION_STRING} finished with ${result.noticeList.length ? result.noticeList.length.toLocaleString() : "zero"} notice${result.noticeList.length === 1 ? '' : 's'}`);
+    if (lexiconResultObject.noticeList.length)
+        addSuccessMessage(`checkLexiconFileContents v${LEXICON_MARKDOWN_FILE_VALIDATOR_VERSION_STRING} finished with ${lexiconResultObject.noticeList.length ? lexiconResultObject.noticeList.length.toLocaleString() : "zero"} notice${lexiconResultObject.noticeList.length === 1 ? '' : 's'}`);
     else
         addSuccessMessage(`No errors or warnings found by checkLexiconFileContents v${LEXICON_MARKDOWN_FILE_VALIDATOR_VERSION_STRING}`)
     // debugLog(`  checkLexiconFileContents returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
     // userLog(`checkLexiconFileContents result is ${JSON.stringify(result)}`);
-    return result;
+    return lexiconResultObject;
 }
 // end of checkLexiconFileContents function
