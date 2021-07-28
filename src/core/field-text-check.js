@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
-import { OPEN_CLOSE_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, LEADING_ZERO_COMBINATIONS, isWhitespace, countOccurrences } from './text-handling-functions'
+import { OPEN_CLOSE_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, LEADING_ZERO_COMBINATIONS, isWhitespace, countOccurrencesInString } from './text-handling-functions'
 // eslint-disable-next-line no-unused-vars
 import { parameterAssert } from './utilities';
 
@@ -107,7 +107,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     let characterIndex;
     if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 895)
         && (characterIndex = fieldText.indexOf('\u200B')) >= 0) {
-        const charCount = countOccurrences(fieldText, '\u200B');
+        const charCount = countOccurrencesInString(fieldText, '\u200B');
         const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/\u200B/g, '‼') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
         addNoticePartial({ priority: 895, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, characterIndex, excerpt, location: ourLocation });
         suggestion = suggestion.replace(/\u200B/g, ''); // Or should it be space ???
@@ -228,7 +228,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
         && (characterIndex = fieldText.indexOf('  ')) >= 0
         && (fieldType !== 'markdown' || characterIndex !== fieldText.length - 2)) {
         const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
-        const doubleCount = countOccurrences(fieldText, '  ');
+        const doubleCount = countOccurrencesInString(fieldText, '  ');
         let notice;
         if (doubleCount === 1)
             notice = { priority: 124, message: "Unexpected double spaces", excerpt, location: ourLocation };
@@ -396,9 +396,9 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     //     addNoticePartial({ priority: 849, message: "Unexpected \\[ or \\] characters", characterIndex, excerpt, location: ourLocation });
     // }
 
-    // if (countOccurrences(fieldText, '(') !== countOccurrences(fieldText, ')')) {
-    //     userLog(`checkTextField(${fieldType}, ${fieldName}, '${fieldText}', ${allowedLinks}, ${ourLocation}) found ${countOccurrences(fieldText, '(')} '(' but ${countOccurrences(fieldText, ')')} ')'`);
-    //     addNoticePartial({ priority: 1, message: `Mismatched ( ) characters`, details: `left=${countOccurrences(fieldText, '(').toLocaleString()}, right=${countOccurrences(fieldText, ')').toLocaleString()}`, location: ourLocation });
+    // if (countOccurrencesInString(fieldText, '(') !== countOccurrencesInString(fieldText, ')')) {
+    //     userLog(`checkTextField(${fieldType}, ${fieldName}, '${fieldText}', ${allowedLinks}, ${ourLocation}) found ${countOccurrencesInString(fieldText, '(')} '(' but ${countOccurrencesInString(fieldText, ')')} ')'`);
+    //     addNoticePartial({ priority: 1, message: `Mismatched ( ) characters`, details: `left=${countOccurrencesInString(fieldText, '(').toLocaleString()}, right=${countOccurrencesInString(fieldText, ')').toLocaleString()}`, location: ourLocation });
     // }
     // Check matched pairs in the field
     for (const punctSet of OPEN_CLOSE_PUNCTUATION_PAIRS) {
@@ -409,8 +409,8 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
         if ((fieldType === 'USFM' || fieldName.startsWith('from \\') || (fieldType === 'markdown' && fieldName === ''))
             && '([{“‘«'.indexOf(leftChar) >= 0) continue; // Start/end can be on different lines
         if (fieldType !== 'markdown' || leftChar !== '<') { // > is a markdown block marker and also used for HTML, e.g., <br>
-            const leftCount = countOccurrences(fieldText, leftChar),
-                rightCount = countOccurrences(fieldText, rightChar);
+            const leftCount = countOccurrencesInString(fieldText, leftChar),
+                rightCount = countOccurrencesInString(fieldText, rightChar);
             if (leftCount !== rightCount
                 && (rightChar !== '’' || leftCount > rightCount)) { // Closing single quote is also used as apostrophe in English
                 // NOTE: These are higher priority than similar checks in a whole file which is less specific

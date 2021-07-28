@@ -1,6 +1,6 @@
 /* eslint-env jest */
 
-import { isWhitespace, countOccurrences, ourReplaceAll, ourDeleteAll } from '../core/text-handling-functions';
+import { isWhitespace, countOccurrencesInString, countOccurrencesInList, ourReplaceAll, ourDeleteAll } from '../core/text-handling-functions';
 
 describe('isWhitespace() - ', () => {
 
@@ -24,15 +24,37 @@ describe('isWhitespace() - ', () => {
   })
 })
 
-describe('countOccurrences() - ', () => {
+describe('countOccurrencesInString() - ', () => {
 
-  describe('countOccurrences tests - ', () => {
+  describe('countOccurrencesInString tests - ', () => {
+    it('count non-match single character', () => {
+      const returnedValue = countOccurrencesInString('abc', 'z');
+      expect(returnedValue).toEqual(0);
+    });
     it('count single character', () => {
-      const returnedValue = countOccurrences('abc', 'b');
+      const returnedValue = countOccurrencesInString('abc', 'b');
       expect(returnedValue).toEqual(1);
     });
     it('count multiple single characters', () => {
-      const returnedValue = countOccurrences('babcb', 'b');
+      const returnedValue = countOccurrencesInString('babcb', 'b');
+      expect(returnedValue).toEqual(3);
+    });
+  })
+})
+
+describe('countOccurrencesInList() - ', () => {
+
+  describe('countOccurrencesInList tests - ', () => {
+    it('count non-match single character', () => {
+      const returnedValue = countOccurrencesInList(['abc', 'a','b','c'], 'z');
+      expect(returnedValue).toEqual(0);
+    });
+    it('count single character', () => {
+      const returnedValue = countOccurrencesInList(['abc', 'a','b','c'], 'b');
+      expect(returnedValue).toEqual(1);
+    });
+    it('count multiple single characters', () => {
+      const returnedValue = countOccurrencesInList(['babcb','b','a','b', 'zdfsdb','b'], 'b');
       expect(returnedValue).toEqual(3);
     });
   })
@@ -65,4 +87,3 @@ describe('ourDeleteAll() - ', () => {
     });
   })
 })
-

@@ -1,5 +1,5 @@
 import { DEFAULT_EXCERPT_LENGTH } from './defaults';
-import { isWhitespace, countOccurrences } from './text-handling-functions';
+import { isWhitespace, countOccurrencesInString } from './text-handling-functions';
 import * as books from './books/books';
 import { checkTextField } from './field-text-check';
 import { checkMarkdownText } from './markdown-text-check';
@@ -409,7 +409,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
                     addNoticePartial({ priority: 787, message: "Link to TA should also be in OccurrenceNote", fieldName: 'SupportReference', excerpt: supportReference, rowID, location: ourRowLocation });
             }
             if (supportReference.indexOf('\u200B') >= 0) {
-                const charCount = countOccurrences(supportReference, '\u200B');
+                const charCount = countOccurrencesInString(supportReference, '\u200B');
                 addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, fieldName: 'SupportReference', rowID, location: ourRowLocation });
             }
         }
@@ -450,7 +450,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
 
         if (GLQuote.length) { // TODO: need to check UTN against ULT
             if (GLQuote.indexOf('\u200B') >= 0) {
-                const charCount = countOccurrences(GLQuote, '\u200B');
+                const charCount = countOccurrencesInString(GLQuote, '\u200B');
                 addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, fieldName: 'GLQuote', rowID, location: ourRowLocation });
             }
             if (isWhitespace(GLQuote))
@@ -465,7 +465,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
 
         if (occurrenceNote.length) {
             if (occurrenceNote.indexOf('\u200B') >= 0) {
-                const charCount = countOccurrences(occurrenceNote, '\u200B');
+                const charCount = countOccurrencesInString(occurrenceNote, '\u200B');
                 addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, fieldName: 'OccurrenceNote', rowID, location: ourRowLocation });
             }
             if (isWhitespace(occurrenceNote))

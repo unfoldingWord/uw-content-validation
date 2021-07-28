@@ -1,7 +1,8 @@
 // eslint-disable-next-line no-unused-vars
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
-import { isWhitespace, countOccurrences, ourDeleteAll } from './text-handling-functions'
+import { isWhitespace, countOccurrencesInString, ourDeleteAll } from './text-handling-functions'
 import * as books from '../core/books/books';
+import { cachedGetFile } from '../core/getApi';
 import { checkTextField } from './field-text-check';
 import { checkTextfileContents } from './file-text-check';
 import { runUsfmJsCheck } from './usfm-js-check';
@@ -12,7 +13,7 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.8.15';
+// const USFM_VALIDATOR_VERSION_STRING = '0.9.0';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for STs
@@ -124,7 +125,9 @@ const MATCHED_CHARACTER_FORMATTING_PAIRS = [
 ];
 
 const W_REGEX = new RegExp('\\\\\\+?w ([^\\\\]+?)\\\\\\+?w\\*', 'g'); // \w ...\w* or \+w ...\+w*
-const ZALNS_REGEX = new RegExp('\\\\zaln-s (.+?)\\\\\\*', 'g');
+// Note: lemma field can be blank in UHB
+const W_FIELDS_REGEX = new RegExp('\\\\\\+?w ([^|]+?)\\|lemma="([^"]*?)" strong="([^"]+?)" x-morph="([^"]+?)"', 'g'); // in \w or \+w
+const ZALN_S_REGEX = new RegExp('\\\\zaln-s (.+?)\\\\\\*', 'g');
 const KS_REGEX = new RegExp('\\\\k-s (.+?)\\\\\\*', 'g');
 const ATTRIBUTE_REGEX = new RegExp('[ |]([^ |]+?)="([^"]*?)"', 'g');
 const HEBREW_CANTILLATION_REGEX = new RegExp('[֑֖֛֢֣֤֥֦֧֪֚֭֮֒֓֔֕֗֘֙֜֝֞֟֠֡֨֩֫֬֯]', 'g'); // There's 31 accent marks in there
@@ -578,8 +581,8 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         // Check matched pairs
         for (const punctSet of MATCHED_CHARACTER_FORMATTING_PAIRS) {
             const opener = punctSet[0], closer = punctSet[1];
-            const lCount = countOccurrences(fileText, opener);
-            const rCount = countOccurrences(fileText, closer);
+            const lCount = countOccurrencesInString(fileText, opener);
+            const rCount = countOccurrencesInString(fileText, closer);
             if (lCount !== rCount)
                 addNoticePartial({ priority: 873, message: `Mismatched ${opener}${closer} fields`, excerpt: `(left=${lCount.toLocaleString()}, right=${rCount.toLocaleString()})`, location: fileLocation });
         }
@@ -648,6 +651,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         // Removes character formatting within the line contents and checks the remaining text
         // functionLog(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
         // functionLog(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}=${rest.length} chars, ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
+        //if (C !== '0' && C !== '1') { parameterAssert(bookID !== '2JN' && bookID !== '3JN' && bookID !== 'JUD', `checkUSFMLineText() can't have ${C}:${V} for ${bookID}`); }
 
         const details = `line marker='\\${marker}'`
 
@@ -659,7 +663,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                 // debugLog(`Got bad dagesh after vowel character order match: ${typeof match} ${match.length} '${JSON.stringify(match)}'`);
                 const characterIndex = rest.indexOf(match[0][0]);
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-                addNoticePartial({ priority: 805, message: "Unexpected Hebrew dagesh after vowel", details: `Found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+                addNoticePartial({ priority: 807, message: "Unexpected Hebrew dagesh after vowel", details: `Found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
 
         }
@@ -670,7 +674,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             // NOTE: There's one example of this in ULT 1 Kings 6:1 "480th"
             //  \w 480|x-occurrence="1" x-occurrences="1"\w*\w th|x-occurrence="1" x-occurrences="1"\w*
             // Also UST Ezra 6:19 "14th" and Ezra 10:9 "20th"
-            const badCount = countOccurrences(rest, '\\w*\\w');
+            const badCount = countOccurrencesInString(rest, '\\w*\\w');
             if (badCount > 1 || rest.indexOf('\\w*\\w th|') === -1) { // there's multiple cases or it's not an ordinal
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
                 addNoticePartial({ priority: 444, message: "Shouldn’t have consecutive word fields without a space", details: badCount > 1 ? details + `${badCount} occurrences found in line` : details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
@@ -679,12 +683,12 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
 
         // Check that no \f or \x markers follow a space
         if ((characterIndex = rest.indexOf(' \\f ')) !== -1) {
-            const badCount = countOccurrences(rest, ' \\f ');
+            const badCount = countOccurrencesInString(rest, ' \\f ');
             const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
             addNoticePartial({ priority: 443, message: "Shouldn’t have a footnote after a space", details: badCount > 1 ? details + `${badCount} occurrences found in line` : details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
         }
         if ((characterIndex = rest.indexOf(' \\x ')) !== -1) {
-            const badCount = countOccurrences(rest, ' \\x ');
+            const badCount = countOccurrencesInString(rest, ' \\x ');
             const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
             addNoticePartial({ priority: 442, message: "Shouldn’t have a cross-reference after a space", details: badCount > 1 ? details + `${badCount} occurrences found in line` : details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
         }
@@ -871,13 +875,14 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         if (adjustedRest.indexOf('="') !== -1)
             dataAssert(adjustedRest.indexOf('\\w ') !== -1 || adjustedRest.indexOf('\\+w ') !== -1 || adjustedRest.indexOf('\\zaln-s ') !== -1 || adjustedRest.indexOf('\\k-s ') !== -1,
                 `Something wrong in USFM line ${lineNumber} ${C}:${V}'${adjustedRest}' \\w=${adjustedRest.indexOf('\\w ')} \\+w=${adjustedRest.indexOf('\\+w ')} \\zaln-s=${adjustedRest.indexOf('\\zaln-s ')} \\k-s=${adjustedRest.indexOf('\\k-s ')}`);
-        dataAssert(countOccurrences(adjustedRest, '\\w ') === countOccurrences(adjustedRest, '\\w*'), `checkUSFMLineAttributes expected all \\w fields to be closed in ${adjustedRest}`);
-        dataAssert(countOccurrences(adjustedRest, '\\+w ') === countOccurrences(adjustedRest, '\\+w*'), `checkUSFMLineAttributes expected all \\+w fields to be closed in ${adjustedRest}`);
-        // dataAssert(countOccurrences(adjustedRest, '\\zaln-s ') === countOccurrences(adjustedRest, '\\zaln-s*'), `checkUSFMLineAttributes expected all \\zaln-s fields to be closed in ${adjustedRest}`);
-        // dataAssert(countOccurrences(adjustedRest, '\\k-s ') === countOccurrences(adjustedRest, '\\k-s*'), `checkUSFMLineAttributes expected all \\k-s fields to be closed in ${adjustedRest}`);
+        dataAssert(countOccurrencesInString(adjustedRest, '\\w ') === countOccurrencesInString(adjustedRest, '\\w*'), `checkUSFMLineAttributes expected all \\w fields to be closed in ${adjustedRest}`);
+        dataAssert(countOccurrencesInString(adjustedRest, '\\+w ') === countOccurrencesInString(adjustedRest, '\\+w*'), `checkUSFMLineAttributes expected all \\+w fields to be closed in ${adjustedRest}`);
+        // dataAssert(countOccurrencesInString(adjustedRest, '\\zaln-s ') === countOccurrencesInString(adjustedRest, '\\zaln-s*'), `checkUSFMLineAttributes expected all \\zaln-s fields to be closed in ${adjustedRest}`);
+        // dataAssert(countOccurrencesInString(adjustedRest, '\\k-s ') === countOccurrencesInString(adjustedRest, '\\k-s*'), `checkUSFMLineAttributes expected all \\k-s fields to be closed in ${adjustedRest}`);
 
         /**
          *
+         * @description Check USFM \w fields (which are quite different in UHB/UGNT vs translations)
          * @param {string} wContents
          */
         async function checkWAttributes(wContents) {
@@ -939,10 +944,209 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         }
         // end of checkWAttributes function
 
+        /**
+         *
+         * @param {string} bookID -- USFM book ID or 'OBS'
+         * @param {string} C -- chapter or story number
+         * @param {string} V -- verse or frame number
+         * @param {Object} checkingOptions
+         */
+        async function getOriginalWordLists(bookID, C, V, checkingOptions) {
+            // TODO: Cache these ???
+            // functionLog(`getOriginalWordLists(${bookID}, ${C}:${V}, )…`);
+
+            let username;
+            try {
+                username = checkingOptions?.originalLanguageRepoUsername;
+            } catch (qcoError) { }
+            if (!username) username = languageCode === 'en' ? 'unfoldingWord' : 'Door43-Catalog'; // ??? !!!
+            let branch;
+            try {
+                branch = checkingOptions?.originalLanguageRepoBranch;
+            } catch (qcunError) { }
+            if (!branch) branch = 'master';
+            const getFile_ = (checkingOptions && checkingOptions?.getFile) ? checkingOptions?.getFile : cachedGetFile;
+
+            const verseWordList = [], verseWordObjectList = [];
+            const bookNumberAndName = books.usfmNumberName(bookID);
+            let whichTestament;
+            try {
+                whichTestament = books.testament(bookID); // returns 'old' or 'new'
+            } catch (bNNerror) {
+                if (books.isValidBookID(bookID)) // must be in FRT, BAK, etc.
+                    whichTestament = 'other';
+            }
+            logicAssert(whichTestament === 'old' || whichTestament === 'new', `getOriginalPassage() couldn't find testament for '${bookID}'`);
+            const originalLanguageRepoLanguageCode = whichTestament === 'old' ? 'hbo' : 'el-x-koine';
+            const originalLanguageRepoCode = whichTestament === 'old' ? 'UHB' : 'UGNT';
+            const originalLanguageRepoName = `${originalLanguageRepoLanguageCode}_${originalLanguageRepoCode.toLowerCase()}`;
+            const filename = `${bookNumberAndName}.usfm`;
+
+            let originalUSFM;
+            // debugLog(`Need to check against ${originalLanguageRepoCode}`);
+            if (originalLanguageRepoCode === 'UHB') {
+                try {
+                    originalUSFM = await getFile_({ username, repository: originalLanguageRepoName, path: filename, branch });
+                    // debugLog("Fetched fileContent for", repoName, filename, typeof originalUSFM, originalUSFM.length);
+                } catch (gcUHBerror) {
+                    console.error(`getOriginalPassage(${bookID}, ${C}:${V}, ${JSON.stringify(checkingOptions)}) failed to load UHB`, username, originalLanguageRepoCode, filename, branch, gcUHBerror.message);
+                    addNoticePartial({ priority: 601, message: "Unable to load", details: `username=${username} error=${gcUHBerror}`, filename, location: ourLocation, extra: originalLanguageRepoName });
+                }
+            } else if (originalLanguageRepoCode === 'UGNT') {
+                try {
+                    originalUSFM = await getFile_({ username, repository: originalLanguageRepoName, path: filename, branch });
+                    // debugLog("Fetched fileContent for", repoName, filename, typeof originalUSFM, originalUSFM.length);
+                } catch (gcUGNTerror) {
+                    console.error(`getOriginalPassage(${bookID}, ${C}:${V}, ${JSON.stringify(checkingOptions)}) failed to load UGNT`, username, originalLanguageRepoCode, filename, branch, gcUGNTerror.message);
+                    addNoticePartial({ priority: 601, message: "Unable to load", details: `username=${username} error=${gcUGNTerror}`, filename, location: ourLocation, extra: originalLanguageRepoName });
+                }
+            }
+            if (!originalUSFM) {
+                debugLog(`Oops: getOriginalWordLists(${bookID}, ${C}:${V}, ) didn't find a file!!!`);
+                return null;
+            }
+
+
+            // Do global fixes
+            // originalUSFM = originalUSFM.replace(/\\k-e\\\*/g, ''); // Remove \k-e self-closed milestones
+            // originalUSFM = originalUSFM.replace(/\\k-s.+?\\\*/g, ''); // Remove \k-s self-closed milestones
+
+
+            // Now find the desired C:V
+            let foundChapter = false, foundVerse = false;
+            let wLinesVerseText = '';
+            for (let bookLine of originalUSFM.split('\n')) {
+                // debugLog("bookLine", bookLine);
+                if (!foundChapter && bookLine === `\\c ${C}`) {
+                    foundChapter = true;
+                    continue;
+                }
+                if (foundChapter && !foundVerse && bookLine.startsWith(`\\v ${V}`)) {
+                    foundVerse = true;
+                    bookLine = bookLine.substring(3 + V.length); // Delete verse number so below bit doesn’t fail
+                }
+                if (foundVerse) {
+                    if (bookLine.startsWith('\\v ') || bookLine.startsWith('\\c '))
+                        break; // Don’t go into the next verse or chapter
+                    if (bookLine.indexOf('\\w ') !== -1 || bookLine.indexOf('\\+w ') !== -1)
+                        wLinesVerseText += bookLine;
+                }
+            }
+            // debugLog(`getOriginalWordLists: Got verse words: '${wLinesVerseText}'`);
+
+            // Get each \w field out
+            let regexResultArray1;
+            while ((regexResultArray1 = W_FIELDS_REGEX.exec(wLinesVerseText))) {
+                // debugLog(`Got ${repoCode} wFields Regex in ${bookID} ${C}:${V}: (${regexResultArray1.length}) ${JSON.stringify(regexResultArray1)}`);
+                // eslint-disable-next-line no-unused-vars
+                const [_totalLink, word, lemma, strongs, morph] = regexResultArray1;
+                verseWordList.push(word);
+                verseWordObjectList.push({ lemma, strongs, morph });
+            }
+
+            // debugLog(`  getOriginalWordLists(${bookID} ${C}:${V}) is returning (${verseWordList.length}) ${verseWordList} (${verseWordObjectList.length}) ${JSON.stringify(verseWordObjectList)}`);
+            return { originalLanguageRepoCode, verseWordList, verseWordObjectList };
+        }
+        // end of getOriginalWordLists function
+
+
+        /**
+         *
+         * @description Check USFM \zaln-s fields (only found in translations)
+         * @param {string} zalnContents
+         */
+        async function checkZALNAttributes(zalnContents) {
+            // functionLog(`checkWAttributes(${zalnContents})…`);
+            // The parameter normally starts with a |
+            dataAssert(repoCode !== 'UHB' && repoCode !== 'UGNT', `checkZALNAttributes did not expect an original language repo: '${repoCode}'`);
+            let regexResultArray, attributeCounter = 0;
+            const attributes = {};
+            while ((regexResultArray = ATTRIBUTE_REGEX.exec(zalnContents))) {
+                attributeCounter += 1;
+                // debugLog(`  Got attribute Regex in \\zaln-s: ${attributeCounter} '${JSON.stringify(regexResultArray2)}`);
+                const attributeName = regexResultArray[1], attributeValue = regexResultArray[2];
+                attributes[attributeName] = attributeValue;
+                if (attributeCounter === 1) {
+                    if (attributeName !== 'x-strong')
+                        addNoticePartial({ priority: 830, message: "Unexpected first \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                } else if (attributeCounter === 2) {
+                    if (attributeName !== 'x-lemma')
+                        addNoticePartial({ priority: 829, message: "Unexpected second \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                } else if (attributeCounter === 3) {
+                    if (attributeName !== 'x-morph')
+                        addNoticePartial({ priority: 828, message: "Unexpected third \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                } else if (attributeCounter === 4) {
+                    if (attributeName !== 'x-occurrence')
+                        addNoticePartial({ priority: 827, message: "Unexpected fourth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                } else if (attributeCounter === 5) {
+                    if (attributeName !== 'x-occurrences')
+                        addNoticePartial({ priority: 826, message: "Unexpected fifth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                } else if (attributeCounter === 6) {
+                    if (attributeName !== 'x-content')
+                        addNoticePartial({ priority: 825, message: "Unexpected sixth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                } else // #7 or more
+                    addNoticePartial({ priority: 833, message: "Unexpected extra \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+            }
+            if (attributeCounter < 6)
+                addNoticePartial({ priority: 834, message: "Seems too few translation \\zaln-s attributes", details: `Expected six attributes but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation });
+            // debugLog(`checkZALNAttributes has ${bookID} ${C}:${V} attributes: ${JSON.stringify(attributes)}`);
+
+            // The Strongs, lemma and morph fields are copied from the original UHB/UGNT files
+            //  during alignment by tC
+            //  so we need to check them as it's possible for them to get out of sync
+            if (checkingOptions?.disableAllLinkFetchingFlag !== true) {
+                const wordListResult = await getOriginalWordLists(bookID, C, V, checkingOptions);
+                const { originalLanguageRepoCode, verseWordList, verseWordObjectList } = wordListResult;
+                // debugLog(`checkZALNAttributes has '${originalLanguageRepoCode}' ${bookID} ${C}:${V} ${verseWordList} ${JSON.stringify(verseWordObjectList)}`);
+
+                let oWord, oOccurrence, oOccurrences, oStrong, oLemma, oMorph;
+                try { // Could fail here if any of those attributes were missing (already notified, so don't worry here)
+                    oWord = attributes['x-content'];
+                    oOccurrence = attributes['x-occurrence']; oOccurrences = attributes['x-occurrences'];
+                    oStrong = attributes['x-strong']; oLemma = attributes['x-lemma']; oMorph = attributes['x-morph'];
+                    // debugLog(`checkZALNAttributes has ${bookID} ${C}:${V} '${oWord}' ${oOccurrence}/${oOccurrences} ${oStrong} '${oLemma}' ${oMorph}`);
+                    const oOccurrenceInt = parseInt(oOccurrence), oOccurrencesInt = parseInt(oOccurrences);
+                    // debugLog(`checkZALNAttributes has ${bookID} ${C}:${V} ${oOccurrenceInt}/${oOccurrencesInt}`);
+                    if (oOccurrenceInt > oOccurrencesInt)
+                        addNoticePartial({ priority: 801, message: "Aligned x-occurrence for original word is higher than Occurrences", details: `${oOccurrence} > ${oOccurrences}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                    /* Now checked below
+                    const oWordCount = countOccurrencesInList(verseWordList, oWord);
+                    if (oWordCount < oOccurrenceInt)
+                        addNoticePartial({ priority: 802, message: "AAA Aligned x-occurrence for original word is too high", details: `Only found ${oWordCount} occurrences of '${oWord}' instead of ${oOccurrence}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                    */
+                    // Find the index of the correct occurrence of the word (index into the original language verse words list)
+                    let ix, gotCount = 0;
+                    for (ix = 0; ix < verseWordList.length; ix++) {
+                        if (verseWordList[ix] === oWord)
+                            if (++gotCount === oOccurrenceInt) break;
+                    }
+                    if (gotCount !== oOccurrenceInt) // Can't do checks below coz ix is invalid
+                    if (gotCount===0)
+                        addNoticePartial({ priority: 803, message: "Word can’t be found in original text", details: `Found NO occurrences of '${oWord}' instead of ${oOccurrence} from ${verseWordList}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                        else
+                        addNoticePartial({ priority: 802, message: "Aligned x-occurrence for original word is too high", details: `Only found ${gotCount} occurrence${gotCount === 1 ? '' : 's'} of '${oWord}' instead of ${oOccurrence} from ${verseWordList}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                        else {
+                        const vwolStrongs = verseWordObjectList[ix]?.strongs;
+                        if (vwolStrongs !== oStrong)
+                            addNoticePartial({ priority: 805, message: "Aligned x-strong number doesn’t match original", details: `${originalLanguageRepoCode} had '${vwolStrongs}'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                        const vwolLemma = verseWordObjectList[ix]?.lemma;
+                        if (vwolLemma !== oLemma)
+                            addNoticePartial({ priority: 806, message: "Aligned x-lemma doesn’t match original", details: `${originalLanguageRepoCode} had '${vwolLemma}'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                        const vwolMorph = verseWordObjectList[ix]?.morph;
+                        if (vwolMorph !== oMorph)
+                            addNoticePartial({ priority: 804, message: "Aligned x-morph doesn’t match original", details: `${originalLanguageRepoCode} had '${vwolMorph}'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                    }
+                } catch (e) {
+                    debugLog(`checkZALNAttributes1: why couldn't we get word attributes out of ${JSON.stringify(attributes)}: ${e.message} `);
+                }
+            }
+        }
+        // end of checkZALNAttributes function
+
         let regexResultArray1;
         while ((regexResultArray1 = W_REGEX.exec(adjustedRest))) {
-            // debugLog(`Got ${repoCode} \\w Regex in ${C}:${V} line: '${JSON.stringify(regexResultArray1)}`);
-            await checkWAttributes(regexResultArray1[1]);
+            // debugLog(`Got ${ repoCode } \\w Regex in ${ C }: ${ V } line: '${JSON.stringify(regexResultArray1)}`);
+            await checkWAttributes(regexResultArray1[1]); // The only call of this function
         }
         let regexResultArray2;
         while ((regexResultArray1 = KS_REGEX.exec(adjustedRest))) {
@@ -962,37 +1166,10 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             if (attributeCounter < 1)
                 addNoticePartial({ priority: 835, message: "Seems too few original \\k-s attributes", details: `Expected one attribute but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation });
         }
-        while ((regexResultArray1 = ZALNS_REGEX.exec(adjustedRest))) {
+        while ((regexResultArray1 = ZALN_S_REGEX.exec(adjustedRest))) {
             // debugLog(`Got ${repoCode} \\zaln-s Regex in ${C}:${V} line: '${JSON.stringify(regexResultArray1)}`);
-            dataAssert(repoCode !== 'UHB' && repoCode !== 'UGNT', `checkUSFMLineAttributes eExpected not an original language repo not '${repoCode}'`);
-            let attributeCounter = 0;
-            while ((regexResultArray2 = ATTRIBUTE_REGEX.exec(regexResultArray1[1]))) {
-                attributeCounter += 1;
-                // debugLog(`  Got attribute Regex in \\zaln-s: ${attributeCounter} '${JSON.stringify(regexResultArray2)}`);
-                const attributeName = regexResultArray2[1]; //, attributeValue = regexResultArray2[2];
-                if (attributeCounter === 1) {
-                    if (attributeName !== 'x-strong')
-                        addNoticePartial({ priority: 830, message: "Unexpected first \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
-                } else if (attributeCounter === 2) {
-                    if (attributeName !== 'x-lemma')
-                        addNoticePartial({ priority: 829, message: "Unexpected second \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
-                } else if (attributeCounter === 3) {
-                    if (attributeName !== 'x-morph')
-                        addNoticePartial({ priority: 828, message: "Unexpected third \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
-                } else if (attributeCounter === 4) {
-                    if (attributeName !== 'x-occurrence')
-                        addNoticePartial({ priority: 827, message: "Unexpected fourth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
-                } else if (attributeCounter === 5) {
-                    if (attributeName !== 'x-occurrences')
-                        addNoticePartial({ priority: 826, message: "Unexpected fifth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
-                } else if (attributeCounter === 6) {
-                    if (attributeName !== 'x-content')
-                        addNoticePartial({ priority: 825, message: "Unexpected sixth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
-                } else // #7 or more
-                    addNoticePartial({ priority: 833, message: "Unexpected extra \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
-            }
-            if (attributeCounter < 6)
-                addNoticePartial({ priority: 834, message: "Seems too few translation \\zaln-s attributes", details: `Expected six attributes but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation });
+            // The found string normally starts with a |
+            await checkZALNAttributes(regexResultArray1[1]); // The only call of this function
         }
     }
     // end of checkUSFMLineAttributes function
