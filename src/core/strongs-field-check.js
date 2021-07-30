@@ -1,4 +1,5 @@
-import * as books from './books/books';
+// eslint-disable-next-line no-unused-vars
+import { isValidBookID, testament } from './books/books'
 // eslint-disable-next-line no-unused-vars
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults';
 import { cachedGetFile } from './getApi';
@@ -8,7 +9,7 @@ import { checkLexiconFileContents } from './lexicon-file-contents-check';
 import { functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 
 
-// const STRONGS_FIELD_VALIDATOR_VERSION_STRING = '0.1.1';
+// const STRONGS_FIELD_VALIDATOR_VERSION_STRING = '0.1.2';
 
 
 /**
@@ -50,7 +51,7 @@ export async function checkStrongsField(languageCode, repoCode, fieldName, field
     parameterAssert(typeof bookID === 'string', `checkStrongsField: 'bookID' parameter should be a string not a '${typeof bookID}'`);
     parameterAssert(bookID.length === 3, `checkStrongsField: 'bookID' parameter should be three characters long not ${bookID.length}`);
     parameterAssert(bookID.toUpperCase() === bookID, `checkStrongsField: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-    parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkStrongsField: '${bookID}' is not a valid USFM book identifier`);
+    parameterAssert(bookID === 'OBS' || isValidBookID(bookID), `checkStrongsField: '${bookID}' is not a valid USFM book identifier`);
     parameterAssert(C !== undefined, "checkStrongsField: 'C' parameter should be defined");
     parameterAssert(typeof C === 'string', `checkStrongsField: 'C' parameter should be a string not a '${typeof C}'`);
     parameterAssert(V !== undefined, "checkStrongsField: 'V' parameter should be defined");
@@ -168,16 +169,41 @@ export async function checkStrongsField(languageCode, repoCode, fieldName, field
     //     addNoticePartial({priority:0, message:`Unexpected whitespace at end of ${TNid} '${fieldText}'")
     // fieldText = fieldText.strip() # so we don’t get consequential errors
 
-    if (!fieldText.length)
+    const whichTestament = testament(bookID); // returns 'old' or 'new'
+    let adjustedFieldText = fieldText;
+
+    let haveError = false;
+    if (!fieldText.length) {
         addNoticePartial({ priority: 842, message: "No text in Strongs field", location: ourLocation });
-    else if ((fieldText[0] !== 'H' && fieldText[0] !== 'G')
-        || (repoCode === 'UHB' && fieldText[0] !== 'H')
-        || (repoCode === 'UGNT' && fieldText[0] !== 'G'))
-        addNoticePartial({ priority: 841, message: "Strongs field must start with 'H' or 'G'", location: ourLocation });
-    else if ((fieldText[0] === 'H' && fieldText.length !== 5)
-        || (fieldText[0] === 'G' && fieldText.length !== 6))
-        addNoticePartial({ priority: 818, message: "Strongs field has wrong number of digits", details: `Expected ${fieldText[0] === 'H' ? 5 : 6} digits`, location: ourLocation });
-    else { // all seems good
+        haveError = true;
+    } else {
+        if (whichTestament === 'old') {
+            while (adjustedFieldText.startsWith('b:') || adjustedFieldText.startsWith('c:') || adjustedFieldText.startsWith('d:') || adjustedFieldText.startsWith('i:') || adjustedFieldText.startsWith('k:') || adjustedFieldText.startsWith('l:') || adjustedFieldText.startsWith('m:') || adjustedFieldText.startsWith('s:'))
+                adjustedFieldText = adjustedFieldText.substring(2); // Delete the prefix bit
+            while (adjustedFieldText.length > 1
+                && (adjustedFieldText.endsWith('a') || adjustedFieldText.endsWith('b') || adjustedFieldText.endsWith('c') || adjustedFieldText.endsWith('d')))
+                adjustedFieldText = adjustedFieldText.substring(0, adjustedFieldText.length - 1); // Delete the suffix bit
+            if (adjustedFieldText[0] !== 'H')
+                if (adjustedFieldText !== 'b' && adjustedFieldText !== 'k' && adjustedFieldText !== 'l') {
+                    // Suppress the message in those cases, but still pretend it's an error so don't try to fetch lexicon article below
+                    addNoticePartial({ priority: 841, message: "Strongs field must start with 'H'", location: ourLocation });
+                    haveError = true; // May not be an actual error -- see comment just above
+                }
+                else if (adjustedFieldText[0] === 'H' && adjustedFieldText.length !== 5) {
+                    addNoticePartial({ priority: 818, message: "Strongs field has wrong number of digits", details: `Expected five digits`, location: ourLocation });
+                    haveError = true;
+                }
+        } else if (whichTestament === 'new') {
+            if (fieldText[0] !== 'G') {
+                addNoticePartial({ priority: 841, message: "Strongs field must start with 'G'", location: ourLocation });
+                haveError = true;
+            } else if (fieldText.length !== 6) {
+                addNoticePartial({ priority: 818, message: "Strongs field has wrong number of digits", details: `Expected six digits`, location: ourLocation });
+                haveError = true;
+            }
+        } else debugLog(`checkStrongsField doesn't have a testament for '${bookID}'!`);
+    }
+    if (!haveError) {
         if (checkingOptions?.disableAllLinkFetchingFlag !== true) {
             // debugLog(`checkStrongsField wants to check lexicon entry for ${fieldText}`);
             let username;
@@ -191,10 +217,10 @@ export async function checkStrongsField(languageCode, repoCode, fieldName, field
             } catch (qcunError) { }
             if (!repoBranch) repoBranch = 'master';
             let lexiconRepoCode, repoName, lexiconFilename, lexiconPathname;
-            if (fieldText[0] === 'H') {
+            if (adjustedFieldText[0] === 'H') {
                 lexiconRepoCode = 'UHAL';
                 repoName = `${languageCode}_uhal`;
-                lexiconFilename = `${fieldText}.md`;
+                lexiconFilename = `${adjustedFieldText}.md`;
                 lexiconPathname = `content/${lexiconFilename}`;
             } else if (fieldText[0] === 'G') {
                 lexiconRepoCode = 'UGL';
@@ -203,7 +229,7 @@ export async function checkStrongsField(languageCode, repoCode, fieldName, field
                 lexiconPathname = `content/${fieldText}/${lexiconFilename}`;
             }
             const fetchLexiconFileParameters = { username, repository: repoName, path: lexiconPathname, branch: repoBranch };
-            if (checkingOptions?.disableLinkedLexiconEntriesFlag !== true && !await alreadyChecked(fetchLexiconFileParameters)) {
+            if (checkingOptions?.disableLinkedLexiconEntriesCheckFlag !== true && !await alreadyChecked(fetchLexiconFileParameters)) {
                 // debugLog(`checkStrongsField wants to check lexicon entry for ${JSON.stringify(fetchLexiconFileParameters)}`);
                 const fetchLinkDescription = `${username} ${repoName} ${repoBranch} ${lexiconPathname}`;
                 const getFile_ = (checkingOptions && checkingOptions?.getFile) ? checkingOptions?.getFile : cachedGetFile;
@@ -215,13 +241,13 @@ export async function checkStrongsField(languageCode, repoCode, fieldName, field
                     dataAssert(lexiconMarkdownTextContents.length > 10, `checkStrongsField expected ${fetchLinkDescription} lexicon file to be longer: ${lexiconMarkdownTextContents.length}`);
                     // debugLog(`checkStrongsField lexicon link fetch got text: ${lexiconMarkdownTextContents.length}`);
                 } catch (flError) {
-                    console.error(`checkStrongsField lexicon link fetch had an error fetching ${fetchLinkDescription}: ${flError}`);
+                    // console.error(`checkStrongsField lexicon link fetch had an error fetching ${fetchLinkDescription}: ${flError}`);
                     addNoticePartial({ priority: 748, message: "Error fetching lexicon link", excerpt: fetchLinkDescription, location: ourLocation });
                 }
                 if (lexiconMarkdownTextContents?.length) {
                     await ourCheckLexiconFileContents(languageCode, lexiconRepoCode, username, repoName, repoBranch, lexiconPathname, lexiconMarkdownTextContents, givenLocation, checkingOptions);
                     csfResult.checkedFileCount += 1;
-                    csfResult.checkedFilenames.push(fieldText[0] === 'H' ? lexiconFilename : `${fieldText}/${lexiconFilename}`);
+                    csfResult.checkedFilenames.push(adjustedFieldText[0] === 'H' ? lexiconFilename : `${adjustedFieldText}/${lexiconFilename}`);
                     csfResult.checkedRepoNames.push(repoName);
                     csfResult.checkedFilenameExtensions.push('md');
                 }

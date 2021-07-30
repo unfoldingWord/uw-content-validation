@@ -1,11 +1,12 @@
 # Changelog
 
-## [Unreleased](https://github.com/unfoldingWord/uw-content-validation/tree/HEAD)
+## [2.1.7](https://github.com/unfoldingWord/uw-content-validation/tree/2.1.7) (2021-07-28)
 
-[Full Changelog](https://github.com/unfoldingWord/uw-content-validation/compare/2.1.6...HEAD)
+[Full Changelog](https://github.com/unfoldingWord/uw-content-validation/compare/2.1.6...2.1.7)
 
 **Implemented enhancements:**
 
+- Check alignment data against original [\#194](https://github.com/unfoldingWord/uw-content-validation/issues/194)
 - Improve WARNINGS SUPPRESSED in demos [\#178](https://github.com/unfoldingWord/uw-content-validation/issues/178)
 
 **Fixed bugs:**
@@ -15,6 +16,10 @@
 **Closed issues:**
 
 - Content Validation - July updates \(DO NOT INCORPORATE YET in tc-create\) [\#197](https://github.com/unfoldingWord/uw-content-validation/issues/197)
+
+**Merged pull requests:**
+
+- v2.1.7 checking consistency of alignment details copied into ULT/UST from UHB/UGNT [\#198](https://github.com/unfoldingWord/uw-content-validation/pull/198) ([RobH123](https://github.com/RobH123))
 
 ## [2.1.6](https://github.com/unfoldingWord/uw-content-validation/tree/2.1.6) (2021-07-20)
 

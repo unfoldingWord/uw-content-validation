@@ -32,7 +32,7 @@ import BookPackageCheck from './BookPackageCheck';
   languageCode='en'
   // bookID can be a USFM bookID, e.g., 'GEN', 'MAT', '3JN'
   //  and can also be 'OBS' (for Open Bible Stories)
-  bookID='JAS'
+  bookID='EZR'
 
   // We can choose the forthcoming new TSV formats or the existing formats
   // dataSet='BOTH' // 'OLD' (Markdown TQ, TSV9 TN, etc.), 'NEW' (TSV7 TQ2, TSV7 TN2, etc.), 'DEFAULT', or 'BOTH'
@@ -47,7 +47,7 @@ import BookPackageCheck from './BookPackageCheck';
   // They control whether the linked articles themselves are also checked or not
   disableLinkedTAArticlesCheckFlag='false' // 'true' or 'false'
   disableLinkedTWArticlesCheckFlag='false' // 'true' or 'false'
-  disableLinkedLexiconEntriesFlag='false' // 'true' or 'false'
+  disableLinkedLexiconEntriesCheckFlag='false' // 'true' or 'false'
 
   // Lines starting with // are ignored -- you can add or remove // as desired
   // Specifying excerptLength and maximumSimilarMessages is just to show off options

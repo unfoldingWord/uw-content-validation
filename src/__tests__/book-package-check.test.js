@@ -9,7 +9,7 @@ let testFiles = {};
 const optionalCheckingOptions = {
   disableLinkedTAArticlesCheckFlag: true,
   disableLinkedTWArticlesCheckFlag: true,
-  disableLinkedLexiconEntriesFlag: true,
+  disableLinkedLexiconEntriesCheckFlag: true,
   getFile: params => {
     const { username, repository, path } = params;
     // console.log(`book-package-check.test getFile(${username}, ${repository}, ${path})`)

@@ -50,13 +50,13 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, chec
     // if (filename) ourLocation = ` in ${filename}${ourLocation}`;
 
 
-    const result = { successList: [], noticeList: [] };
+    const cutjResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
         // functionLog(`checkUSFMToJSON success: ${successString}`);
-        result.successList.push(successString);
+        cutjResult.successList.push(successString);
     }
-    function addNotice6to7({ priority, message, lineNumber, characterIndex, excerpt, location }) {
+    function addNoticePartial({ priority, message, lineNumber, characterIndex, excerpt, location }) {
         /**
         * @description - adds a new notice entry, adding bookID,C,V to the given fields
         * @param {Number} priority - notice priority from 1 (lowest) to 999 (highest)
@@ -66,19 +66,19 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, chec
         * @param {string} location - description of where the issue is located
         */
         // functionLog(`checkUSFMToJSON notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
-        //parameterAssert(priority !== undefined, "cUSFMjs addNotice6to7: 'priority' parameter should be defined");
-        //parameterAssert(typeof priority === 'number', `cUSFMjs addNotice6to7: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        //parameterAssert(message !== undefined, "cUSFMjs addNotice6to7: 'message' parameter should be defined");
-        //parameterAssert(typeof message === 'string', `cUSFMjs addNotice6to7: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        // //parameterAssert(characterIndex !== undefined, "cUSFMjs addNotice6to7: 'characterIndex' parameter should be defined");
-        if (characterIndex) { //parameterAssert(typeof characterIndex === 'number', `cUSFMjs addNotice6to7: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
+        //parameterAssert(priority !== undefined, "cUSFMjs addNoticePartial: 'priority' parameter should be defined");
+        //parameterAssert(typeof priority === 'number', `cUSFMjs addNoticePartial: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
+        //parameterAssert(message !== undefined, "cUSFMjs addNoticePartial: 'message' parameter should be defined");
+        //parameterAssert(typeof message === 'string', `cUSFMjs addNoticePartial: 'message' parameter should be a string not a '${typeof message}': ${message}`);
+        // //parameterAssert(characterIndex !== undefined, "cUSFMjs addNoticePartial: 'characterIndex' parameter should be defined");
+        if (characterIndex) { //parameterAssert(typeof characterIndex === 'number', `cUSFMjs addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
         }
-        // //parameterAssert(excerpt !== undefined, "cUSFMjs addNotice6to7: 'excerpt' parameter should be defined");
-        if (excerpt) { //parameterAssert(typeof excerpt === 'string', `cUSFMjs addNotice6to7: 'excerpt' parameter should be a string not a '${typeof excerpt}': ${excerpt}`);
+        // //parameterAssert(excerpt !== undefined, "cUSFMjs addNoticePartial: 'excerpt' parameter should be defined");
+        if (excerpt) { //parameterAssert(typeof excerpt === 'string', `cUSFMjs addNoticePartial: 'excerpt' parameter should be a string not a '${typeof excerpt}': ${excerpt}`);
         }
-        //parameterAssert(location !== undefined, "cUSFMjs addNotice6to7: 'location' parameter should be defined");
-        //parameterAssert(typeof location === 'string', `cUSFMjs addNotice6to7: 'location' parameter should be a string not a '${typeof location}': ${location}`);
-        result.noticeList.push({ priority, message, bookID, lineNumber, characterIndex, excerpt, location });
+        //parameterAssert(location !== undefined, "cUSFMjs addNoticePartial: 'location' parameter should be defined");
+        //parameterAssert(typeof location === 'string', `cUSFMjs addNoticePartial: 'location' parameter should be a string not a '${typeof location}': ${location}`);
+        cutjResult.noticeList.push({ priority, message, bookID, lineNumber, characterIndex, excerpt, location });
     }
 
 
@@ -92,11 +92,11 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, chec
     // NOTE: We haven’t figured out how to get ERRORS out of this parser yet
 
     if (!convertCheckResult.isValidUSFM)
-        addNotice6to7({ priority: 943, message: `USFM3 toJSON Check doesn’t pass`, location: ourLocation });
+        addNoticePartial({ priority: 943, message: `USFM3 toJSON Check doesn’t pass`, location: ourLocation });
 
     addSuccessMessage(`Checked USFM-JS`);
     // debugLog(`  checkUSFMToJSON returning with ${result.successList.length.toLocaleString()} success(es) and ${result.noticeList.length.toLocaleString()} notice(s).`);
     // functionLog(`checkUSFMToJSON result is ${JSON.stringify(result)}`);
-    return result;
+    return cutjResult;
 }
 // end of checkUSFMToJSON function
