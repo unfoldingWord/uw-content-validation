@@ -9,7 +9,7 @@ import { checkBookPackage } from './checkBookPackage';
 import { userLog, debugLog, parameterAssert, logicAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.5.8';
+// const BP_VALIDATOR_VERSION_STRING = '0.5.9';
 
 
 function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
@@ -84,8 +84,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             // Load whole repo zip files which is maybe faster than loading several individual files
             //  especially if we are going to also check the manifests, license, and ReadMe files as well as the book file.
             // Remember that the manifest check actually checks the existence of all the projects, i.e., all files in the repo
-            const whichTestament = books.testament(bookID); // returns 'old' or 'new'
-            logicAssert(whichTestament === 'old' || whichTestament === 'new', `BookPackageCheck() couldn’t find testament for '${bookID}'`);
+            const whichTestament = bookID === 'OBS' ? 'none' : books.testament(bookID); // returns 'old' or 'new'
             let repoPreloadList;
             if (bookID === 'OBS') {
                 repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2']; // for DEFAULT
@@ -104,13 +103,14 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
                 else if (dataSet === 'BOTH')
                     repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TN2', 'TQ', 'TQ2', 'SN', 'SQ'];
                 const origLangRepo = whichTestament === 'old' ? 'UHB' : 'UGNT';
-                repoPreloadList.unshift(origLangRepo);
+                repoPreloadList.unshift(origLangRepo); // This one goes on the front, so gets fetched first
             }
             if (!checkingOptions.disableAllLinkFetchingFlag) {
                 repoPreloadList.push('TW'); // Both Bible books and OBS refer to TW and TA
                 repoPreloadList.push('TA');
-                const lexiconRepo = whichTestament === 'old' ? 'UHAL' : 'UGL';
-                repoPreloadList.push(lexiconRepo); // UHB/UGNT, ULT, UST, TW all have lexicon links
+                // TODO: What if it's OBS (whichTestament === 'none' ???)
+                // const lexiconRepo = whichTestament === 'old' ? 'UHAL' : 'UGL';
+                repoPreloadList.push(whichTestament === 'old' ? 'UHAL' : 'UGL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
             }
             // debugLog(`BookPackageCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
 

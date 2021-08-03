@@ -9,7 +9,7 @@ import { RenderCheckedFilesList, RenderSuccessesErrorsWarnings, RenderSuccessesS
 import { logicAssert, userLog, debugLog } from '../../core/utilities';
 
 
-// const ALL_BPS_VALIDATOR_VERSION_STRING = '0.3.8';
+// const ALL_BPS_VALIDATOR_VERSION_STRING = '0.3.9';
 
 const OLD_TESTAMENT_BOOK_CODES = 'GEN,EXO,LEV,NUM,DEU,JOS,JDG,RUT,1SA,2SA,1KI,2KI,1CH,2CH,EZR,NEH,EST,JOB,PSA,PRO,ECC,SNG,ISA,JER,LAM,EZK,DAN,HOS,JOL,AMO,OBA,JON,MIC,NAM,HAB,ZEP,HAG,ZEC,MAL';
 const NEW_TESTAMENT_BOOK_CODES = 'MAT,MRK,LUK,JHN,ACT,ROM,1CO,2CO,GAL,EPH,PHP,COL,1TH,2TH,1TI,2TI,TIT,PHM,HEB,JAS,1PE,2PE,1JN,2JN,3JN,JUD,REV';
@@ -104,11 +104,13 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         repoPreloadList = ['TWL', 'LT', 'ST', 'TN2', 'TA', 'TW', 'TQ2'];
       else if (dataSet === 'BOTH')
         repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TN2', 'TA', 'TW', 'TQ', 'TQ2'];
-      if (haveNT) repoPreloadList.unshift('UGNT');
+      if (haveNT) repoPreloadList.unshift('UGNT'); // These go on the front, so do in reverse order
       if (haveOT) repoPreloadList.unshift('UHB');
       if (!checkingOptions.disableAllLinkFetchingFlag) {
         repoPreloadList.push('TW');
         repoPreloadList.push('TA');
+        if (haveOT) repoPreloadList.push('UHAL'); // UHB, ULT, UST, TW all have lexicon links
+        if (haveOT) repoPreloadList.push('UGL'); // UGNT, ULT, UST, TW all have lexicon links
       }
       if (bookIDList.includes('OBS')) {
         let obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2']; // for DEFAULT

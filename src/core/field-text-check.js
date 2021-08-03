@@ -5,7 +5,7 @@ import { OPEN_CLOSE_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, LEADING_ZERO_
 import { parameterAssert } from './utilities';
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.6';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.7';
 
 
 /**

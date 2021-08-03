@@ -9,7 +9,7 @@ import { RenderCheckedFilesList, RenderSuccessesErrorsWarnings, RenderSuccessesS
 import { userLog, debugLog, logicAssert } from '../../core/utilities';
 
 
-// const BPS_VALIDATOR_VERSION_STRING = '0.2.8';
+// const BPS_VALIDATOR_VERSION_STRING = '0.2.9';
 
 
 /**
@@ -99,11 +99,13 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         repoPreloadList = ['TWL', 'LT', 'ST', 'TN2', 'TQ2', 'SN', 'SQ'];
       else if (dataSet === 'BOTH')
         repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TN2', 'TQ', 'TQ2', 'SN', 'SQ'];
-      if (haveNT) repoPreloadList.unshift('UGNT');
-      if (haveOT) repoPreloadList.unshift('UHB');
+        if (haveNT) repoPreloadList.unshift('UGNT'); // These go on the front, so do in reverse order
+        if (haveOT) repoPreloadList.unshift('UHB');
       if (!checkingOptions.disableAllLinkFetchingFlag) {
         repoPreloadList.push('TW');
         repoPreloadList.push('TA');
+        if (haveOT) repoPreloadList.push('UHAL'); // UHB, ULT, UST, TW all have lexicon links
+        if (haveOT) repoPreloadList.push('UGL'); // UGNT, ULT, UST, TW all have lexicon links
       }
       if (bookIDList.includes('OBS')) {
         let obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2']; // for DEFAULT

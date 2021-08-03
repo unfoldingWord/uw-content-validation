@@ -33,6 +33,14 @@ import AllBookPackagesCheck from './AllBookPackagesCheck';
   //  Alternatives are `SevereMediumLow', 'SingleList'
   displayType='SingleList'
 
+  // Normally links in files are downloaded to check that they really exist
+  disableAllLinkFetchingFlag='false' // 'true' or 'false'
+  // The next two are only relevant if the above is 'false'
+  // They control whether the linked articles themselves are also checked or not
+  disableLinkedTAArticlesCheckFlag='false' // 'true' or 'false'
+  disableLinkedTWArticlesCheckFlag='false' // 'true' or 'false'
+  disableLinkedLexiconEntriesCheckFlag='true' // 'true' or 'false' -- lexicon entries still have many inconsistencies
+
   // Lines starting with // are ignored -- you can add or remove // as desired
   // Specifying maximumSimilarMessages and excerptLength is just to show off options
   // —those fields are not necessary (or normal) here
