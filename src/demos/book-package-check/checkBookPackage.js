@@ -64,7 +64,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   //  coz if it’s not 'master', it’s unlikely to be common for all the repos
   let originalBranch = 'master';
 
-  // If it's a big book, drop this location string to reduce memory use in case of thousands of errors
+  // If it’s a big book, drop this location string to reduce memory use in case of thousands of errors
   let generalLocation = bookID === 'OBS' ? ` in ${languageCode} ${bookID} from ${username} ${originalBranch} branch` :
     books.chaptersInBook(bookID) > 10 ? '' : ` in ${languageCode} ${bookID} book package from ${username} ${originalBranch} branch`;
 
@@ -189,7 +189,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       manifestFileContent = await getFile_({ username, repository: repoName, path: STANDARD_MANIFEST_FILENAME, branch: repoBranch });
       // debugLog("checkBookPackage ourCheckManifestFile fetched content for manifest", username, repoName, repoBranch, typeof manifestFileContent, manifestFileContent.length);
       // debugLog(manifestFileContent);
-    } catch (cBPgfError) {
+    } catch (cBPgfError) { // NOTE: The error can depend on whether the zipped repo is cached or not
       console.error(`checkBookPackage ourCheckManifestFile(${username}, ${languageCode}, ${bookID}, (fn), ${JSON.stringify(checkingOptions)}) failed to load manifest`, username, repoName, repoBranch, cBPgfError + '');
       let details = `username=${username}`;
       if (! await repositoryExistsOnDoor43({ username, repository: repoName }))
@@ -197,7 +197,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       else {
         // eslint-disable-next-line eqeqeq
         if (cBPgfError != 'TypeError: repoFileContent is null') details += ` error=${cBPgfError}`;
-        addNoticePartial({ priority: 996, message: "Unable to load", details: `username=${username} error=${cBPgfError}`, repoName, filename: STANDARD_MANIFEST_FILENAME, location: manifestLocation, extra: repoCode });
+        addNoticePartial({ priority: 996, message: "Unable to load file", details: `username=${username} error=${cBPgfError}`, repoName, filename: STANDARD_MANIFEST_FILENAME, location: manifestLocation, extra: repoCode });
       }
     }
     if (manifestFileContent) {
@@ -254,7 +254,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       markdownFileContent = await getFile_({ username, repository: repoName, path: filename, branch: repoBranch });
       // debugLog("checkBookPackage ourCheckMarkdownFile fetched markdown content", username, repoName, repoBranch, filename, typeof markdownFileContent, markdownFileContent.length);
       // debugLog(markdownFileContent);
-    } catch (cBPgfError) {
+    } catch (cBPgfError) { // NOTE: The error can depend on whether the zipped repo is cached or not
       console.error(`checkBookPackage ourCheckMarkdownFile(${username}, ${languageCode}, ${bookID}, (fn), ${JSON.stringify(checkingOptions)}) failed to load markdown`, username, repoName, filename, originalBranch, cBPgfError + '');
       let details = `username=${username}`;
       if (! await repositoryExistsOnDoor43({ username, repository: repoName }))
@@ -262,7 +262,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       else {
         // eslint-disable-next-line eqeqeq
         if (cBPgfError != 'TypeError: repoFileContent is null') details += ` error=${cBPgfError}`;
-        addNoticePartial({ priority: 996, message: "Unable to load", details: `username=${username} error=${cBPgfError}`, username, repoName, filename, location: markdownLocation, extra: repoCode });
+        addNoticePartial({ priority: 996, message: "Unable to load file", details: `username=${username} error=${cBPgfError}`, username, repoName, filename, location: markdownLocation, extra: repoCode });
       }
     }
     if (markdownFileContent) {
@@ -283,7 +283,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       if (filename === 'LICENSE.md') {
         const fullYearString = `${(new Date()).getFullYear()}`;
         // debugLog(`Year ${fullYearString} is ${typeof fullYearString}`);
-        if (markdownFileContent.indexOf(fullYearString) === -1) // Can't find this year string in file
+        if (markdownFileContent.indexOf(fullYearString) === -1) // Can’t find this year string in file
           // NOTE: We don’t use addNoticePartial, because it adds a misleading BookID
           checkBookPackageResult.noticeList.push({ priority: 256, message: "Possibly missing current copyright year", details: `possibly expecting '${fullYearString}'`, username, repoName, filename, location: markdownLocation, extra: repoCode });
       }
@@ -353,7 +353,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       adjustedRepoCode = adjustedRepoCode.substring(0, adjustedRepoCode.length - 1); // Remove the '2' from the end
       adjustedBranch = 'newFormat';
       generalLocation = generalLocation.replace(originalBranch, adjustedBranch);
-    } else // doesn't end with 2
+    } else // doesn’t end with 2
       generalLocation = generalLocation.replace(adjustedBranch, originalBranch);
     let repoName = formRepoName(languageCode, adjustedRepoCode);
     const repoLocation = ` in ${repoCode}${generalLocation}`;
@@ -424,17 +424,17 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         checkedFilenames.push(filename);
         totalCheckedSize += repoFileContent.length;
         checkedRepoNames.add(repoName);
-      } catch (cBPgfError) {
+      } catch (cBPgfError) { // NOTE: The error can depend on whether the zipped repo is cached or not
         // debugLog(`checkBookPackage(${username}, ${languageCode}, ${bookID}, (fn), ${JSON.stringify(checkingOptions)}) failed to load ${repoName}, ${filename}, ${adjustedBranch}, ${cBPgfError}`);
         // debugLog(`cBPgfError=${cBPgfError} or ${JSON.stringify(cBPgfError)} or2 ${cBPgfError === 'TypeError: repoFileContent is null'} or3 ${cBPgfError.message === 'TypeError: repoFileContent is null'} or4 ${cBPgfError.message === 'TypeError: repoFileContent is null'}`);
         let details = `username=${username}`;
-        // Next line has special code to handle book-package-check.test.js tests [so we don't call repositoryExistsOnDoor43()]
+        // Next line has special code to handle book-package-check.test.js tests [so we don’t call repositoryExistsOnDoor43()]
         if ((cBPgfError + '').startsWith('Tests could not find') || ! await repositoryExistsOnDoor43({ username, repository: repoName }))
           checkBookPackageResult.noticeList.push({ priority: 997, message: "Repository doesn’t exist", details, username, repoCode, repoName, location: repoLocation, extra: repoCode });
         else {
           // eslint-disable-next-line eqeqeq
           if (cBPgfError != 'TypeError: repoFileContent is null') details += ` error=${cBPgfError}`;
-          addNoticePartial({ priority: repoCode === 'SN' || repoCode === 'SQ' ? 196 : 996, message: "Unable to load", details, repoCode, repoName, filename, location: repoLocation, extra: repoCode });
+          addNoticePartial({ priority: repoCode === 'SN' || repoCode === 'SQ' ? 196 : 996, message: "Unable to load linked file", details, repoCode, repoName, filename, location: repoLocation, extra: repoCode });
         }
       }
       if (repoFileContent) {
@@ -648,7 +648,7 @@ async function checkTQMarkdownBook(username, languageCode, repoCode, repoName, b
     if (! await repositoryExistsOnDoor43({ username, repository: repoName }))
       ctqResult.noticeList.push({ priority: 997, message: "Repository doesn’t exist", details, username, repoCode, repoName, location: generalLocation, extra: repoCode });
     else
-      addNoticePartial({ priority: 996, message: "Unable to load", details, bookID, location: generalLocation, extra: repoCode });
+      addNoticePartial({ priority: 996, message: "Unable to load file", details, bookID, location: generalLocation, extra: repoCode });
   } else {
 
     // debugLog(`  Got ${pathList.length} pathList entries`)
@@ -668,7 +668,7 @@ async function checkTQMarkdownBook(username, languageCode, repoCode, repoName, b
         // debugLog("Fetched fileContent for", repoName, thisPath, typeof tqFileContent, tqFileContent.length);
         checkedFilenames.push(thisPath);
         totalCheckedSize += tqFileContent.length;
-      } catch (tQerror) {
+      } catch (tQerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
         console.error("checkTQMarkdownBook failed to load", username, repoName, thisPath, branch, tQerror + '');
         let details = `username=${username}`;
         if (! await repositoryExistsOnDoor43({ username, repository: repoName }))
@@ -676,7 +676,7 @@ async function checkTQMarkdownBook(username, languageCode, repoCode, repoName, b
         else {
           // eslint-disable-next-line eqeqeq
           if (tQerror != 'TypeError: repoFileContent is null') details += ` error=${tQerror}`;
-          addNoticePartial({ priority: 996, message: "Unable to load", details, bookID, C, V, filename: thisPath, location: `${generalLocation} ${thisPath}`, extra: repoCode });
+          addNoticePartial({ priority: 996, message: "Unable to load file", details, bookID, C, V, filename: thisPath, location: `${generalLocation} ${thisPath}`, extra: repoCode });
         }
       }
       if (tqFileContent) {

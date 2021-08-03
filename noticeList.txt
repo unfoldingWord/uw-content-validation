@@ -1,5 +1,5 @@
-Last updated 2021-07-30 08:38:42.236616 by makeNoticeList.py
-Got 547 notices:
+Last updated 2021-08-03 12:07:18.361635 by makeNoticeList.py
+Got 555 notices:
   standardisedNoticeList.push( 1, `Reduced numbers of similar and hidden messages because of large list ($standardisedNoticeList.length.toLocaleString())`, location: " during notice processing"	from notice-processing-functions.js line 502
   previousObject.hiddenNotices.push( thisNotice.priority, maximumHiddenNoticesMessage	from notice-processing-functions.js line 624
   previousObject.hiddenNotices.push( thisNotice.priority, maximumHiddenNoticesMessage	from notice-processing-functions.js line 640
@@ -9,18 +9,18 @@ Got 547 notices:
   previousObject.hiddenNotices.push( thisNotice.priority, maximumHiddenNoticesMessage	from notice-processing-functions.js line 864
   checkFileResultObject.noticeList.unshift( 982, "File extension is not recognized, so treated as markdown.", filename: filepath, location: ourCFLocation	from checkFileContents.js line 114
   checkFileResultObject.noticeList.unshift( 995, "File extension is not recognized, so treated as plain text.", filename: filepath, location: ourCFLocation	from checkFileContents.js line 117
-  repoCode === 'SN' || repoCode === 'SQ' ? 196 : 996, "Unable to load", details, repoCode, repoName, filename, location: repoLocation, extra: repoCode	from checkBookPackage.js line 437
+  repoCode === 'SN' || repoCode === 'SQ' ? 196 : 996, "Unable to load linked file", details, repoCode, repoName, filename, location: repoLocation, extra: repoCode	from checkBookPackage.js line 437
   newNoticeObject	from checkRepo.js line 163
   checkRepoResult.noticeList.push( 997, "Repository doesn’t exist", details, username, repoCode, repoName, location: givenLocation, extra: repoCode	from checkRepo.js line 289
-  expectedMarker === 'mt1' ? 921 : 519, "Missing expected USFM line", excerpt: `missing \\$expectedMarker`, location: fileLocation	from usfm-text-check.js line 628
-  languageCode === 'en' || languageCode === 'fr' ? 490 : 190, "Expected header field to contain a mixed-case string", fieldName: `\\$marker`, excerpt: rest, C, V, location: lineLocation	from usfm-text-check.js line 1,262
-  marker === 's5' ? 111 : 809, `$marker === 's5' ? 'Deprecated' : 'Unexpected' '\\$marker' marker at start of line`, C, V, lineNumber, characterIndex: 1, location: lineLocation	from usfm-text-check.js line 1,290
-  line[0] === ' ' || line[0] === '"' ? 180 : 880, C, V, "Expected line to start with backslash", lineNumber: n, characterIndex: 0, excerpt: line[0], location: ourLocation	from usfm-text-check.js line 1,430
-  C === '1' ? 657 : 457, C, V, "Paragraph marker expected before first verse", lineNumber: n, characterIndex: 1, details: `'\\$marker' after '\\$lastMarker'`, location: ourLocation	from usfm-text-check.js line 1,523
+  expectedMarker === 'mt1' ? 921 : 519, "Missing expected USFM line", excerpt: `missing \\$expectedMarker`, location: fileLocation	from usfm-text-check.js line 627
+  languageCode === 'en' || languageCode === 'fr' ? 490 : 190, "Expected header field to contain a mixed-case string", fieldName: `\\$marker`, excerpt: rest, C, V, location: lineLocation	from usfm-text-check.js line 1,261
+  marker === 's5' ? 111 : 809, `$marker === 's5' ? 'Deprecated' : 'Unexpected' '\\$marker' marker at start of line`, C, V, lineNumber, characterIndex: 1, location: lineLocation	from usfm-text-check.js line 1,289
+  line[0] === ' ' || line[0] === '"' ? 180 : 880, C, V, "Expected line to start with backslash", lineNumber: n, characterIndex: 0, excerpt: line[0], location: ourLocation	from usfm-text-check.js line 1,429
+  C === '1' ? 657 : 457, C, V, "Paragraph marker expected before first verse", lineNumber: n, characterIndex: 1, details: `'\\$marker' after '\\$lastMarker'`, location: ourLocation	from usfm-text-check.js line 1,522
   thisPriority, `Mismatched $leftChar$rightChar characters`, details: `left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString()`, location: ourLocation	from field-text-check.js line 419
   thisPriority, thisMessage, excerpt: regexResultArray[0], location: ourLocation	from field-text-check.js line 434
-  foundQuoteSegment.indexOf(' ') !== -1 || fullVerseText.search(` $foundQuoteSegment`) === -1 ? 909 : 389, "Seems original language quote might not start at the beginning of a word", details, characterIndex: 0, excerpt, location	from orig-quote-check.js line 298
-  foundQuoteSegment.indexOf(' ') !== -1 || fullVerseText.search(followingRegex) === -1 ? 908 : 388, "Seems original language quote might not finish at the end of a word", details, characterIndex: foundQuoteSegment.length, excerpt, location	from orig-quote-check.js line 318
+  foundQuoteSegment.indexOf(' ') !== -1 || fullVerseText.search(` $foundQuoteSegment`) === -1 ? 909 : 389, "Seems original language quote might not start at the beginning of a word", details, characterIndex: 0, excerpt, location	from orig-quote-check.js line 300
+  foundQuoteSegment.indexOf(' ') !== -1 || fullVerseText.search(followingRegex) === -1 ? 908 : 388, "Seems original language quote might not finish at the end of a word", details, characterIndex: foundQuoteSegment.length, excerpt, location	from orig-quote-check.js line 320
   leftChar === '“' ? 162 : 462, `Mismatched $leftChar$rightChar characters`, details: `left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString()`, location: ourLocation	from plain-text-check.js line 249
   optionalB1 === 'Song of Solomon' ? 43 : 143, `$optionalB1 === 'Song of Solomon' ? 'Unexpected' : 'Unknown' Bible book name in TN RC link`, details: totalLink, excerpt: optionalB1, location: ourLocation	from notes-links-check.js line 639
   optionalB1 === 'Song of Solomon' ? 43 : 143, `$optionalB1 === 'Song of Solomon' ? 'Unexpected' : 'Unknown' Bible book name in Bible link`, details: totalLink, excerpt: optionalB1, location: ourLocation	from notes-links-check.js line 704
@@ -36,12 +36,12 @@ Got 547 notices:
   997, "Repository doesn’t exist", details, username, repoCode, repoName, location: repoLocation, extra: repoCode	from checkBookPackage.js line 433
   997, "Repository doesn’t exist", details, username, repoCode, repoName, location: generalLocation, extra: repoCode	from checkBookPackage.js line 649
   997, "Repository doesn’t exist", details, username, repoCode, repoName, location: generalLocation, extra: repoCode	from checkBookPackage.js line 675
-  996, "Unable to load", details: `username=$username error=$cBPgfError`, repoName, filename: STANDARD_MANIFEST_FILENAME, location: manifestLocation, extra: repoCode	from checkBookPackage.js line 200
-  996, "Unable to load", details: `username=$username error=$cBPgfError`, username, repoName, filename, location: markdownLocation, extra: repoCode	from checkBookPackage.js line 265
-  996, "Unable to load", details, bookID, location: generalLocation, extra: repoCode	from checkBookPackage.js line 651
-  996, "Unable to load", details, bookID, C, V, filename: thisPath, location: `$generalLocation $thisPath`, extra: repoCode	from checkBookPackage.js line 679
-  996, "Unable to load", details: `username=$username error=$cRgfError`, bookID: ourBookID, filename: thisFilename, location: `$givenLocation $thisFilepath`, extra: repoName	from checkRepo.js line 293
-  994, "USFM file must start with a valid \\id line", lineNumber: 1, location: ourLocation	from usfm-text-check.js line 1,389
+  996, "Unable to load file", details: `username=$username error=$cBPgfError`, repoName, filename: STANDARD_MANIFEST_FILENAME, location: manifestLocation, extra: repoCode	from checkBookPackage.js line 200
+  996, "Unable to load file", details: `username=$username error=$cBPgfError`, username, repoName, filename, location: markdownLocation, extra: repoCode	from checkBookPackage.js line 265
+  996, "Unable to load file", details, bookID, location: generalLocation, extra: repoCode	from checkBookPackage.js line 651
+  996, "Unable to load file", details, bookID, C, V, filename: thisPath, location: `$generalLocation $thisPath`, extra: repoCode	from checkBookPackage.js line 679
+  996, "Unable to load file", details, bookID: ourBookID, filename: thisFilename, location: `$givenLocation $thisFilepath`, extra: repoName	from checkRepo.js line 293
+  994, "USFM file must start with a valid \\id line", lineNumber: 1, location: ourLocation	from usfm-text-check.js line 1,388
   993, "Unresolved GIT conflict", characterIndex, excerpt, location: ourLocation	from field-text-check.js line 127
   993, "Unresolved GIT conflict", characterIndex, excerpt, location: ourLocation	from plain-text-check.js line 145
   992, "Unresolved GIT conflict", characterIndex, excerpt, location: ourLocation	from field-text-check.js line 133
@@ -54,13 +54,13 @@ Got 547 notices:
   988, "Bad TSV header", details: `expected '$EXPECTED_TWL_HEADING_LINE'`, excerpt: lines[0], lineNumber: 1, location: ourLocation	from twl-tsv6-table-check.js line 122
   988, "Bad TSV header", details: `expected '$EXPECTED_NOTES_HEADING_LINE'`, excerpt: lines[0], lineNumber: 1, location: ourLocation	from notes-tsv7-table-check.js line 122
   988, "Bad TSV header", details: `expected '$EXPECTED_QUESTIONS_HEADING_LINE'`, excerpt: lines[0], lineNumber: 1, location: ourLocation	from questions-tsv7-table-check.js line 122
-  987, C, V, "Expected \\id line to start with book identifier", lineNumber: n, characterIndex: 4, excerpt, location: ourLocation	from usfm-text-check.js line 1,507
+  987, C, V, "Expected \\id line to start with book identifier", lineNumber: n, characterIndex: 4, excerpt, location: ourLocation	from usfm-text-check.js line 1,506
   986, "Repository doesn’t seem to exist", details: `username=$username`, location: givenLocation, extra: repoName	from checkRepo.js line 193
   985, `Field does not match schema $errorObject.keyword`, details: errorObject.message, fieldName: errorObject.dataPath, location: ourLocation	from manifest-text-check.js line 728
-  984, `Found wrong number of TSV fields (expected $NUM_EXPECTED_TWL_TSV_FIELDS)`, details: `Found $fields.length field$fields.length === 1 ? '' : 's'`, rowID, location: ourRowLocation	from twl-tsv6-row-check.js line 431
-  984, `Found wrong number of TSV fields (expected $NUM_EXPECTED_TN_TSV_FIELDS)`, details: `Found $fields.length field$fields.length === 1 ? '' : 's'`, rowID, location: ourRowLocation	from tn-tsv9-row-check.js line 510
-  984, `Found wrong number of TSV fields (expected $NUM_EXPECTED_QUESTIONS_TSV_FIELDS)`, details: `Found $fields.length field$fields.length === 1 ? '' : 's'`, rowID, location: ourRowLocation	from questions-tsv7-row-check.js line 503
-  984, `Found wrong number of TSV fields (expected $NUM_EXPECTED_NOTES_TSV_FIELDS)`, details: `Found $fields.length field$fields.length === 1 ? '' : 's'`, rowID, location: ourRowLocation	from notes-tsv7-row-check.js line 516
+  984, `Found wrong number of TSV fields (expected $NUM_EXPECTED_TWL_TSV_FIELDS)`, details: `found $fields.length field$fields.length === 1 ? '' : 's'`, rowID, location: ourRowLocation	from twl-tsv6-row-check.js line 431
+  984, `Found wrong number of TSV fields (expected $NUM_EXPECTED_TN_TSV_FIELDS)`, details: `found $fields.length field$fields.length === 1 ? '' : 's'`, rowID, location: ourRowLocation	from tn-tsv9-row-check.js line 510
+  984, `Found wrong number of TSV fields (expected $NUM_EXPECTED_QUESTIONS_TSV_FIELDS)`, details: `found $fields.length field$fields.length === 1 ? '' : 's'`, rowID, location: ourRowLocation	from questions-tsv7-row-check.js line 503
+  984, `Found wrong number of TSV fields (expected $NUM_EXPECTED_NOTES_TSV_FIELDS)`, details: `found $fields.length field$fields.length === 1 ? '' : 's'`, rowID, location: ourRowLocation	from notes-tsv7-row-check.js line 516
   983, `Wrong number of tabbed fields (expected $NUM_EXPECTED_TN_TSV_FIELDS)`, excerpt: `Found $fields.length field$fields.length === 1 ? '' : 's'`, C, V, rowID, lineNumber: n + 1, location: ourLocation	from tn-tsv9-table-check.js line 257
   983, `Wrong number of tabbed fields (expected $NUM_EXPECTED_TWL_TSV_FIELDS)`, excerpt: `Found $fields.length field$fields.length === 1 ? '' : 's'`, C, V, rowID, lineNumber: n + 1, location: ourLocation	from twl-tsv6-table-check.js line 246
   983, `Wrong number of tabbed fields (expected $NUM_EXPECTED_NOTES_TSV_FIELDS)`, excerpt: `Found $fields.length field$fields.length === 1 ? '' : 's'`, C, V, rowID, lineNumber: n + 1, location: ourLocation	from notes-tsv7-table-check.js line 246
@@ -110,91 +110,97 @@ Got 547 notices:
   919, "Missing OrigQuote field", fieldName: 'OrigQuote', rowID, location: ourRowLocation	from tn-tsv9-row-check.js line 429
   919, "Missing Quote field", fieldName: 'Quote', rowID, location: ourRowLocation	from questions-tsv7-row-check.js line 411
   919, "Missing Quote field", fieldName: 'Quote', rowID, location: ourRowLocation	from notes-tsv7-row-check.js line 444
-  918, `Seems like the wrong divider for discontiguous quote segments`, details: `expected ◗$discontiguousDivider◖`, characterIndex, excerpt, location: ourLocation	from orig-quote-check.js line 410
-  917, "Unable to find duplicate original language quote in verse text", details: `occurrence=$occurrenceString but $actualOccurrencesText occurrence$actualNumOccurrences === 1 ? '' : 's' found, passage ◗$verseText◖`, excerpt, location: ourLocation	from orig-quote-check.js line 507
-  916, "Unable to find original language quote in verse text", details: "quote which starts with a space" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: ourLocation	from orig-quote-check.js line 352
-  916, "Unable to find original language quote in verse text", details: "quote which ends with a space" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: ourLocation	from orig-quote-check.js line 355
-  916, "Unable to find original language quote in verse text", details: "quote which starts with 'word joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: ourLocation	from orig-quote-check.js line 358
-  916, "Unable to find original language quote in verse text", details: "quote which ends with 'word joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: ourLocation	from orig-quote-check.js line 361
-  916, "Unable to find original language quote in verse text", details: "quote which starts with 'zero-width space'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: ourLocation	from orig-quote-check.js line 364
-  916, "Unable to find original language quote in verse text", details: "quote which ends with 'zero-width space'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: ourLocation	from orig-quote-check.js line 367
-  916, "Unable to find original language quote in verse text", details: "quote which starts with 'zero-width joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: ourLocation	from orig-quote-check.js line 370
-  916, "Unable to find original language quote in verse text", details: "quote which ends with 'zero-width joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: ourLocation	from orig-quote-check.js line 373
-  916, "Unable to find original language quote in verse text", details: noBreakSpaceText ? noBreakSpaceText : `verse text ◗$fullVerseText◖`, excerpt, location: ourLocation	from orig-quote-check.js line 376
-  914, "Unable to find original language quote portion in the right place in the verse text", details: `verse text ◗$verseText◖`, excerpt, location: ourLocation	from orig-quote-check.js line 484
-  912, 'Missing | character in \\w line', lineNumber, C, V, characterIndex, excerpt, location: lineLocation	from usfm-text-check.js line 726
-  911, 'Missing | character in \\w field', details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation	from usfm-text-check.js line 782
-  911, 'Missing | character in \\+w field', details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation	from usfm-text-check.js line 803
-  905, "Unexpected Hebrew cantillation mark in lemma field", details: `Found $match.length '$match'`, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 975
-  903, "Bad function call: should be given a valid book abbreviation", excerpt: bookID, location: ourLocation	from usfm-text-check.js line 1,362
+  918, `Seems like the wrong divider for discontiguous quote segments`, details: `expected ◗$discontiguousDivider◖`, characterIndex, excerpt, location: ourLocation	from orig-quote-check.js line 420
+  917, "Unable to find duplicate original language quote in verse text", details: `occurrence=$occurrenceString but $actualOccurrencesText occurrence$actualNumOccurrences === 1 ? '' : 's' found, passage ◗$verseText◖`, excerpt, location: ourLocation	from orig-quote-check.js line 520
+  917, "Unable to find duplicate original language quote in verse text", details: `occurrence=$occurrenceString but $actualOccurrencesText occurrence$actualNumOccurrences === 1 ? '' : 's' found, passage ◗$verseText◖`, excerpt, location: ourLocation	from orig-quote-check.js line 658
+  916, "Unable to find original language quote in verse text", details: "quote which starts with a space" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: ourLocation	from orig-quote-check.js line 354
+  916, "Unable to find original language quote in verse text", details: "quote which ends with a space" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: ourLocation	from orig-quote-check.js line 357
+  916, "Unable to find original language quote in verse text", details: "quote which starts with 'word joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: ourLocation	from orig-quote-check.js line 360
+  916, "Unable to find original language quote in verse text", details: "quote which ends with 'word joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: ourLocation	from orig-quote-check.js line 363
+  916, "Unable to find original language quote in verse text", details: "quote which starts with 'zero-width space'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: ourLocation	from orig-quote-check.js line 366
+  916, "Unable to find original language quote in verse text", details: "quote which ends with 'zero-width space'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: ourLocation	from orig-quote-check.js line 369
+  916, "Unable to find original language quote in verse text", details: "quote which starts with 'zero-width joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: ourLocation	from orig-quote-check.js line 372
+  916, "Unable to find original language quote in verse text", details: "quote which ends with 'zero-width joiner'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: ourLocation	from orig-quote-check.js line 375
+  916, "Unable to find original language quote in verse text", details: noBreakSpaceText ? noBreakSpaceText : `verse text ◗$fullVerseText◖`, excerpt, location: ourLocation	from orig-quote-check.js line 378
+  914, "Unable to find original language quote portion in the right place in the verse text", details: `verse text ◗$verseText◖`, excerpt, location: ourLocation	from orig-quote-check.js line 497
+  914, "Unable to find original language quote portion in the right place in the verse text", details: `verse text ◗$verseText◖`, excerpt, location: ourLocation	from orig-quote-check.js line 635
+  912, 'Missing | character in \\w line', lineNumber, C, V, characterIndex, excerpt, location: lineLocation	from usfm-text-check.js line 725
+  911, 'Missing | character in \\w field', details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation	from usfm-text-check.js line 781
+  911, 'Missing | character in \\+w field', details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation	from usfm-text-check.js line 802
+  905, "Unexpected Hebrew cantillation mark in lemma field", details: `found $match.length '$match'`, lineNumber, C, V, excerpt: attributeValue, location: lineLocation	from usfm-text-check.js line 974
+  904, "Unexpected Hebrew cantillation mark in original language field", details: `found $match.length '$match'`, C, V, excerpt: fieldText, location: ourLocation	from orig-quote-check.js line 407
+  903, "Bad function call: should be given a valid book abbreviation", excerpt: bookID, location: ourLocation	from usfm-text-check.js line 1,361
   902, "Bad function call: should be given a valid book abbreviation", excerpt: bookID, location: ` (not '$bookID')$generalLocation` ); return checkBookPackageResult;	from checkBookPackage.js line 326
   901, "Unexpected reference field", details: "expected C:V", fieldName: 'Reference', rowID, excerpt: reference, location: ourRowLocation	from questions-tsv7-row-check.js line 288
   900, "Bad parameter: should be given a valid book abbreviation", excerpt: bookIDList, location: ` (not '$bookIDList')`	from checkBookPackages.js line 79
   895, "Field contains zero-width space(s)", details: `$charCount occurrence$charCount === 1 ? '' : 's' found`, characterIndex, excerpt, location: ourLocation	from field-text-check.js line 112
-  889, `Unable to find/load TA article`, details: `linked from TN $fieldName`, excerpt: fieldText, location: `$ourLocation $filepath`	from ta-reference-check.js line 111
-  888, `Error loading TA article`, details: `linked from TN $fieldName`, excerpt: fieldText, location: `$ourLocation $filepath: $trcGCerror`	from ta-reference-check.js line 116
-  887, `TA article seems empty`, details: `linked from TN $fieldName`, excerpt: fieldText, location: `$ourLocation $filepath`	from ta-reference-check.js line 113
-  886, `Unable to find/load TA article`, details: `$taRepoUsername $taRepoName $taRepoBranch $filepath`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 368
-  886, `Unable to find/load TA article`, details: `$taRepoUsername $taRepoName $taRepoBranch $filepath`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 425
-  886, `Unable to find/load TA article`, details: `$taRepoUsername $taRepoName $taRepoBranch $filepath`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 475
-  886, `Unable to find/load TA article`, details: `$taRepoUsername $taRepoName $taRepoBranch $filepath`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 538
+  889, "Unable to find/load linked TA article", details: `linked from TN $fieldName`, excerpt: fieldText, location: `$ourLocation $filepath`	from ta-reference-check.js line 111
+  888, "Error loading linked TA article", details: `linked from TN $fieldName`, excerpt: fieldText, location: `$ourLocation $filepath: $trcGCerror`	from ta-reference-check.js line 116
+  887, "Linked TA article seems empty", details: `linked from TN $fieldName`, excerpt: fieldText, location: `$ourLocation $filepath`	from ta-reference-check.js line 113
+  886, "Unable to find/load linked TA article", details: `$taRepoUsername $taRepoName $taRepoBranch $filepath`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 368
+  886, "Unable to find/load linked TA article", details: `$taRepoUsername $taRepoName $taRepoBranch $filepath`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 425
+  886, "Unable to find/load linked TA article", details: `$taRepoUsername $taRepoName $taRepoBranch $filepath`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 475
+  886, "Unable to find/load linked TA article", details: `$taRepoUsername $taRepoName $taRepoBranch $filepath`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 538
   885, `Error loading TA article`, details: `$taRepoUsername $taRepoName $taRepoBranch $filepath`, excerpt: totalLink, location: `$ourLocation $filepath: $trcGCerror`	from notes-links-check.js line 363
   885, `Error loading TA article`, details: `$taRepoUsername $taRepoName $taRepoBranch $filepath`, excerpt: totalLink, location: `$ourLocation $filepath: $trcGCerror`	from notes-links-check.js line 420
   885, `Error loading TA article`, details: `$taRepoUsername $taRepoName $taRepoBranch $filepath`, excerpt: totalLink, location: `$ourLocation $filepath: $trcGCerror`	from notes-links-check.js line 470
   885, `Error loading TA article`, details: `$taRepoUsername $taRepoName $taRepoBranch $filepath`, excerpt: totalLink, location: `$ourLocation $filepath: $trcGCerror`	from notes-links-check.js line 533
   884, `TA article seems empty`, details: `$taRepoUsername $taRepoName $taRepoBranch $filepath`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 370
-  884, `TA article seems empty`, details: `$taRepoUsername $taRepoName $taRepoBranch $filepath`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 427
-  884, `TA article seems empty`, details: `$taRepoUsername $taRepoName $taRepoBranch $filepath`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 477
-  884, `TA article seems empty`, details: `$taRepoUsername $taRepoName $taRepoBranch $filepath`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 540
-  883, `Unable to find/load TW article`, details: `$twRepoUsername $twRepoName $twRepoBranch $filepath`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 303
-  883, `Unable to find/load TW article`, details: `$twRepoUsername $twRepoName $twRepoBranch $filepath`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 590
+  884, "Linked TA article seems empty", details: `$taRepoUsername $taRepoName $taRepoBranch $filepath`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 427
+  884, "Linked TA article seems empty", details: `$taRepoUsername $taRepoName $taRepoBranch $filepath`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 477
+  884, "Linked TA article seems empty", details: `$taRepoUsername $taRepoName $taRepoBranch $filepath`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 540
+  883, "Unable to find/load linked TW article", details: `$twRepoUsername $twRepoName $twRepoBranch $filepath`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 303
+  883, "Unable to find/load linked TW article", details: `$twRepoUsername $twRepoName $twRepoBranch $filepath`, excerpt: totalLink, location: ourLocation	from notes-links-check.js line 590
   882, `Error loading TW article`, details: `$twRepoUsername $twRepoName $twRepoBranch $filepath`, excerpt: totalLink, location: `$ourLocation $filepath: $trcGCerror`	from notes-links-check.js line 300
-  882, `Error loading TW article`, details: `$twRepoUsername $twRepoName $twRepoBranch $filepath`, excerpt: totalLink, location: `$ourLocation $filepath: $trcGCerror`	from notes-links-check.js line 587
+  882, `Error loading TW article`, details: `$twRepoUsername $twRepoName $twRepoBranch $filepath: $trcGCerror`, excerpt: totalLink, location: ourLocation	from notes-links-check.js line 587
   881, `TW article seems empty`, details: `$twRepoUsername $twRepoName $twRepoBranch $filepath`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 306
-  881, `TW article seems empty`, details: `$twRepoUsername $twRepoName $twRepoBranch $filepath`, excerpt: totalLink, location: `$ourLocation $filepath`	from notes-links-check.js line 593
+  881, `TW article seems empty`, details: `$twRepoUsername $twRepoName $twRepoBranch $filepath`, excerpt: totalLink, location: ourLocation	from notes-links-check.js line 593
   879, `Badly formatted Resource Container link`, excerpt: fieldText, location: `$ourLocation $filepath`	from ta-reference-check.js line 98
-  875, "Unexpected USFM field", details, lineNumber, C, V, excerpt, location: lineLocation	from usfm-text-check.js line 850
-  873, `Mismatched $opener$closer fields`, excerpt: `(left=$lCount.toLocaleString(), right=$rCount.toLocaleString())`, location: fileLocation	from usfm-text-check.js line 591
-  869, "Chapter number out of range", C: chapterNumberString, excerpt: `$bookID $chapterNumberString`, location: CVlocation	from usfm-text-check.js line 441
-  868, "Verse number out of range", C: chapterNumberString, V: verseNumberString, excerpt: `$bookID $chapterNumberString:$verseNumberString`, location: CVlocation	from usfm-text-check.js line 480
-  867, C: chapterNumberString, V: `$v`, "Verse appears to be missing", location: CVlocation	from usfm-text-check.js line 494
-  866, C: chapterNumberString, V: `$v`, "Verse seems to have no text", location: CVlocation	from usfm-text-check.js line 499
-  857, "Unexpected first original \\w attribute", details: "expected 'lemma'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 953
-  856, "Unexpected second original \\w attribute", details: "expected 'strong'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 956
-  855, "Unexpected third original \\w attribute", details: "expected 'x-morph'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 959
-  854, "Unexpected fourth original \\w attribute", details: "expected 'x-tw'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 962
-  854, "Unexpected fifth original \\w attribute", details: "expected second 'x-tw'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 965
-  854, "Unexpected sixth original \\w attribute", details: "expected third 'x-tw'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 968
-  853, "Unexpected extra original \\w attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 970
-  852, "Unexpected original \\w x-morph language prefix", details: "Expected 'He,' 'Ar,' or 'Gr,'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 980
-  851, bookID === 'OBS' ? "Unable to load OBS story text" : "Unable to load original language verse text", location: ourLocation	from orig-quote-check.js line 455
+  878, `Lexicon entry seems empty`, details: `$username $repoName $repoBranch $lexiconPathname`, excerpt: fieldText, location: ourLocation	from strongs-field-check.js line 253
+  875, "Unexpected USFM field", details, lineNumber, C, V, excerpt, location: lineLocation	from usfm-text-check.js line 849
+  873, `Mismatched $opener$closer fields`, excerpt: `(left=$lCount.toLocaleString(), right=$rCount.toLocaleString())`, location: fileLocation	from usfm-text-check.js line 590
+  869, "Chapter number out of range", C: chapterNumberString, excerpt: `$bookID $chapterNumberString`, location: CVlocation	from usfm-text-check.js line 440
+  868, "Verse number out of range", C: chapterNumberString, V: verseNumberString, excerpt: `$bookID $chapterNumberString:$verseNumberString`, location: CVlocation	from usfm-text-check.js line 479
+  867, C: chapterNumberString, V: `$v`, "Verse appears to be missing", location: CVlocation	from usfm-text-check.js line 493
+  866, C: chapterNumberString, V: `$v`, "Verse seems to have no text", location: CVlocation	from usfm-text-check.js line 498
+  857, "Unexpected first original \\w attribute", details: "expected 'lemma'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 952
+  856, "Unexpected second original \\w attribute", details: "expected 'strong'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 955
+  855, "Unexpected third original \\w attribute", details: "expected 'x-morph'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 958
+  854, "Unexpected fourth original \\w attribute", details: "expected 'x-tw'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 961
+  854, "Unexpected fifth original \\w attribute", details: "expected second 'x-tw'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 964
+  854, "Unexpected sixth original \\w attribute", details: "expected third 'x-tw'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 967
+  853, "Unexpected extra original \\w attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 969
+  852, "Unexpected original \\w x-morph language prefix", details: "Expected 'He,' 'Ar,' or 'Gr,'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 979
+  851, bookID === 'OBS' ? "Unable to load OBS story text" : "Unable to load original language verse text", location: ourLocation	from orig-quote-check.js line 466
+  850, "Unable to find/load lexicon entry", details, excerpt: fetchLinkDescription, location: ourLocation	from strongs-field-check.js line 249
   849, `Unexpected '$badCharCombination' character combination`, characterIndex, excerpt, location: ourLocation	from field-text-check.js line 378
-  848, "Unexpected first translation \\w attribute", details: "expected 'x-occurrence'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 986
-  847, "Unexpected second translation \\w attribute", details: "expected 'x-occurrences'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 989
-  846, "Unexpected extra translation \\w attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 991
+  848, "Unexpected first translation \\w attribute", details: "expected 'x-occurrence'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 985
+  847, "Unexpected second translation \\w attribute", details: "expected 'x-occurrences'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 988
+  846, "Unexpected extra translation \\w attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 990
   845, `Mismatched [[ ]] link characters`, details: `left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString()`, location: ourLocation	from notes-links-check.js line 1,325
   844, `Mismatched [[rc:// ]] link characters`, details: `left=$leftCount.toLocaleString(), right=$rightCount.toLocaleString()`, location: ourLocation	from notes-links-check.js line 1,329
   843, `Mismatched [ ]( ) link characters`, details: `left=$leftCount.toLocaleString(), middle=$middleCount.toLocaleString(), right=$rightCount.toLocaleString()`, location: ourLocation	from notes-links-check.js line 1,336
-  842, "No text in Strongs field", location: ourLocation	from strongs-field-check.js line 172
-  841, "Strongs field must start with 'H' or 'G'", location: ourLocation	from strongs-field-check.js line 176
-  839, "Unexpected first \\k-s attribute", details: "expected 'x-tw'", lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation	from usfm-text-check.js line 1,219
-  838, "Unexpected extra \\k-s attribute", details, lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation	from usfm-text-check.js line 1,221
-  837, "Seems too few original \\w attributes", details: `Expected 3-4 attributes but only found $attributeCounter`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation	from usfm-text-check.js line 998
-  836, "Seems too few translation \\w attributes", details: `Expected two attributes but only found $attributeCounter`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation	from usfm-text-check.js line 1,000
-  835, "Seems too few original \\k-s attributes", details: `Expected one attribute but only found $attributeCounter`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation	from usfm-text-check.js line 1,224
-  834, "Seems too few translation \\zaln-s attributes", details: `Expected six attributes but only found $attributeCounter`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation	from usfm-text-check.js line 1,148
-  833, "Unexpected extra \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 1,145
+  842, "No text in Strongs field", location: ourLocation	from strongs-field-check.js line 177
+  841, "Strongs field must start with 'H'", location: ourLocation	from strongs-field-check.js line 189
+  841, "Strongs field must start with 'G'", location: ourLocation	from strongs-field-check.js line 198
+  839, "Unexpected first \\k-s attribute", details: "expected 'x-tw'", lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation	from usfm-text-check.js line 1,218
+  838, "Unexpected extra \\k-s attribute", details, lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation	from usfm-text-check.js line 1,220
+  837, "Seems too few original \\w attributes", details: `expected 3-4 attributes but only found $attributeCounter`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation	from usfm-text-check.js line 997
+  836, "Seems too few translation \\w attributes", details: `expected two attributes but only found $attributeCounter`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation	from usfm-text-check.js line 999
+  835, "Seems too few original \\k-s attributes", details: `expected one attribute but only found $attributeCounter`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation	from usfm-text-check.js line 1,223
+  834, "Seems too few translation \\zaln-s attributes", details: `expected six attributes but only found $attributeCounter`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation	from usfm-text-check.js line 1,147
+  833, "Unexpected extra \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 1,144
   832, `Seems filename is missing from the manifest project list`, excerpt: repoFilepath, location: ourLocation	from manifest-text-check.js line 792
   831, C, V, `Duplicate '$rowID' ID`, fieldName: 'ID', rowID, lineNumber: n + 1, location: ourLocation	from tn-tsv9-table-check.js line 239
   831, C, V, `Duplicate '$rowID' ID`, fieldName: 'ID', rowID, lineNumber: n + 1, location: ourLocation	from twl-tsv6-table-check.js line 228
   831, C, V, `Duplicate '$rowID' ID`, fieldName: 'ID', rowID, lineNumber: n + 1, location: ourLocation	from notes-tsv7-table-check.js line 228
   831, C, V, `Duplicate '$rowID' ID`, fieldName: 'ID', rowID, lineNumber: n + 1, location: ourLocation	from questions-tsv7-table-check.js line 228
-  830, "Unexpected first \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 1,128
-  829, "Unexpected second \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 1,131
-  828, "Unexpected third \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 1,134
-  827, "Unexpected fourth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 1,137
-  826, "Unexpected fifth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 1,140
-  825, "Unexpected sixth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 1,143
+  830, "Unexpected first \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 1,127
+  829, "Unexpected second \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 1,130
+  828, "Unexpected third \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 1,133
+  827, "Unexpected fourth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 1,136
+  826, "Unexpected fifth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 1,139
+  825, "Unexpected sixth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation	from usfm-text-check.js line 1,142
   824, `Invalid zero chapter number`, excerpt: C, rowID, fieldName: 'Reference', location: ourRowLocation	from twl-tsv6-row-check.js line 283
   824, `Invalid zero chapter number`, excerpt: C, rowID, fieldName: 'Chapter', location: ourRowLocation	from tn-tsv9-row-check.js line 328
   824, `Invalid zero chapter number`, excerpt: C, rowID, fieldName: 'Reference', location: ourRowLocation	from questions-tsv7-row-check.js line 298
@@ -204,8 +210,8 @@ Got 547 notices:
   823, `Invalid large chapter number`, excerpt: C, rowID, fieldName: 'Reference', location: ourRowLocation	from questions-tsv7-row-check.js line 303
   823, `Invalid large chapter number`, excerpt: C, rowID, fieldName: 'Reference', location: ourRowLocation	from notes-tsv7-row-check.js line 332
   822, "Unable to check chapter number", excerpt: C, rowID, fieldName: 'Reference', location: ourRowLocation	from twl-tsv6-row-check.js line 301
-  822, "Expected field to contain an integer", lineNumber, characterIndex: 3, excerpt: `\\c $rest`, C, V, location: lineLocation	from usfm-text-check.js line 1,254
-  822, "Expected field to contain an integer", characterIndex: 3, excerpt: `\\v $rest`, C, V, location: lineLocation	from usfm-text-check.js line 1,258
+  822, "Expected field to contain an integer", lineNumber, characterIndex: 3, excerpt: `\\c $rest`, C, V, location: lineLocation	from usfm-text-check.js line 1,253
+  822, "Expected field to contain an integer", characterIndex: 3, excerpt: `\\v $rest`, C, V, location: lineLocation	from usfm-text-check.js line 1,257
   822, "Unable to check chapter number", excerpt: C, rowID, fieldName: 'Chapter', location: ourRowLocation	from tn-tsv9-row-check.js line 343
   822, "Unable to check chapter number", excerpt: C, rowID, fieldName: 'Reference', location: ourRowLocation	from questions-tsv7-row-check.js line 316
   822, "Unable to check chapter number", excerpt: C, rowID, fieldName: 'Reference', location: ourRowLocation	from notes-tsv7-row-check.js line 345
@@ -217,10 +223,12 @@ Got 547 notices:
   820, "Missing chapter number", rowID, fieldName: 'Chapter', location: ` ?:$V$ourRowLocation`	from tn-tsv9-row-check.js line 351
   820, "Missing chapter number", rowID, fieldName: 'Reference', excerpt: `?:$V`, location: ourRowLocation	from questions-tsv7-row-check.js line 325
   820, "Missing chapter number", rowID, fieldName: 'Reference', location: ` ?:$V$ourRowLocation`	from notes-tsv7-row-check.js line 354
-  818, "Strongs field has wrong number of digits", details: `Expected $fieldText[0] === 'H' ? 5 : 6 digits`, location: ourLocation	from strongs-field-check.js line 179
+  818, "Strongs field has wrong number of digits", details: `expected five digits`, location: ourLocation	from strongs-field-check.js line 193
+  818, "Strongs field has wrong number of digits", details: `expected six digits`, location: ourLocation	from strongs-field-check.js line 201
   817, `UHB 'relation' is missing`, details: JSON.stringify(relationList), location: ourLocation	from manifest-text-check.js line 812
   816, `UGNT 'relation' is missing`, details: JSON.stringify(relationList), location: ourLocation	from manifest-text-check.js line 814
-  815, "Divider without surrounding snippet", location: ourLocation	from orig-quote-check.js line 497
+  815, "Divider without surrounding snippet", location: ourLocation	from orig-quote-check.js line 510
+  815, "Divider without surrounding snippet", location: ourLocation	from orig-quote-check.js line 648
   814, "Invalid zero verse number", rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation	from twl-tsv6-row-check.js line 319
   814, "Invalid zero verse number", rowID, fieldName: 'Verse', excerpt: V, location: ourRowLocation	from tn-tsv9-row-check.js line 360
   814, "Invalid zero verse number", rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation	from questions-tsv7-row-check.js line 335
@@ -247,14 +255,14 @@ Got 547 notices:
   808, "Bad verse range", details: "Too many hyphens", rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation	from questions-tsv7-row-check.js line 348
   808, "Bad verse range", details: "Second digits should be greater", rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation	from questions-tsv7-row-check.js line 355
   808, "Bad verse range", details: "Should be digits", rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation	from questions-tsv7-row-check.js line 366
-  807, "Unexpected Hebrew dagesh after vowel", details: `Found $match.length '$match'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation	from usfm-text-check.js line 670
-  806, "Aligned x-lemma doesn’t match original", details: `$originalLanguageRepoCode had '$vwolLemma'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation	from usfm-text-check.js line 1,191
-  805, "Aligned x-strong number doesn’t match original", details: `$originalLanguageRepoCode had '$vwolStrongs'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation	from usfm-text-check.js line 1,188
-  804, "Aligned x-morph doesn’t match original", details: `$originalLanguageRepoCode had '$vwolMorph'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation	from usfm-text-check.js line 1,194
-  803, "Word can’t be found in original text", details: `Found NO occurrences of '$oWord' instead of $oOccurrence from $verseWordList`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation	from usfm-text-check.js line 1,182
-  802, "AAA Aligned x-occurrence for original word is too high", details: `Only found $oWordCount occurrences of '$oWord' instead of $oOccurrence`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation	from usfm-text-check.js line 1,172
-  802, "Aligned x-occurrence for original word is too high", details: `Only found $gotCount occurrence$gotCount === 1 ? '' : 's' of '$oWord' instead of $oOccurrence from $verseWordList`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation	from usfm-text-check.js line 1,184
-  801, "Aligned x-occurrence for original word is higher than Occurrences", details: `$oOccurrence > $oOccurrences`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation	from usfm-text-check.js line 1,168
+  807, "Unexpected Hebrew dagesh after vowel", details: `found $match.length '$match'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation	from usfm-text-check.js line 669
+  806, "Aligned x-lemma doesn’t match original", details: `$originalLanguageRepoCode had '$vwolLemma'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation	from usfm-text-check.js line 1,190
+  805, "Aligned x-strong number doesn’t match original", details: `$originalLanguageRepoCode had '$vwolStrongs'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation	from usfm-text-check.js line 1,187
+  804, "Aligned x-morph doesn’t match original", details: `$originalLanguageRepoCode had '$vwolMorph'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation	from usfm-text-check.js line 1,193
+  803, "Word can’t be found in original text", details: `found NO occurrences of '$oWord' instead of $oOccurrence from $verseWordList`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation	from usfm-text-check.js line 1,181
+  802, "AAA Aligned x-occurrence for original word is too high", details: `only found $oWordCount occurrences of '$oWord' instead of $oOccurrence`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation	from usfm-text-check.js line 1,171
+  802, "Aligned x-occurrence for original word is too high", details: `only found $gotCount occurrence$gotCount === 1 ? '' : 's' of '$oWord' instead of $oOccurrence from $verseWordList`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation	from usfm-text-check.js line 1,183
+  801, "Aligned x-occurrence for original word is higher than Occurrences", details: `$oOccurrence > $oOccurrences`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation	from usfm-text-check.js line 1,167
   799, "Missing TWLink field", fieldName: 'TWLink', rowID, location: ourRowLocation	from twl-tsv6-row-check.js line 419
   798, "Field doesn’t contain expected TW link", details: `should start with 'rc://*/tw/dict/bible/'`, fieldName: 'TWLink', rowID, location: ourRowLocation	from twl-tsv6-row-check.js line 403
   797, "Field doesn’t contain proper TW link", details: `should be 'kt', 'names', or 'other'`, fieldName: 'TWLink', rowID, characterIndex, excerpt, location: ourRowLocation	from twl-tsv6-row-check.js line 410
@@ -281,29 +289,29 @@ Got 547 notices:
   786, "Shouldn’t have multiple TA links in Note", details, rowID, fieldName: 'OccurrenceNote', excerpt, location: ourRowLocation	from notes-tsv7-row-check.js line 494
   785, "Unexpected trailing whitespace in link field", excerpt, characterIndex: fieldText.length - 1, location: ourLocation	from notes-links-check.js line 216
   784, "Unexpected leading whitespace in link field", excerpt, characterIndex: 0, location: ourLocation	from notes-links-check.js line 212
-  783, `Unable to find/load general link`, excerpt: totalLink, location: ourLocation	from notes-links-check.js line 1,287
-  781, `Linked general article seems empty`, excerpt: totalLink, location: ourLocation	from notes-links-check.js line 1,290
+  783, "Unable to find/load general link", excerpt: totalLink, location: ourLocation	from notes-links-check.js line 1,287
+  781, "Linked general article seems empty", excerpt: totalLink, location: ourLocation	from notes-links-check.js line 1,290
   778, "Row ID should be exactly 4 characters", details: `not $rowID.length`, rowID, fieldName: 'ID', excerpt: rowID, location: ourRowLocation	from twl-tsv6-row-check.js line 338
   778, "Row ID should be exactly 4 characters", details: `not $rowID.length`, rowID, fieldName: 'ID', excerpt: rowID, location: ourRowLocation	from tn-tsv9-row-check.js line 379
   778, "Row ID should be exactly 4 characters", details: `not $rowID.length`, rowID, fieldName: 'ID', excerpt: rowID, location: ourRowLocation	from questions-tsv7-row-check.js line 377
   778, "Row ID should be exactly 4 characters", details: `not $rowID.length`, rowID, fieldName: 'ID', excerpt: rowID, location: ourRowLocation	from notes-tsv7-row-check.js line 382
   777, `Bad punctuation nesting: $char closing character doesn’t match`, details, lineNumber: n, characterIndex, excerpt, location: ourLocation	from plain-text-check.js line 209
-  776, 'Unexpected " straight quote character', details, lineNumber, C, V, excerpt, location: lineLocation	from usfm-text-check.js line 837
-  775, "Unexpected ' straight quote character", details, lineNumber, C, V, excerpt, location: lineLocation	from usfm-text-check.js line 842
+  776, 'Unexpected " straight quote character', details, lineNumber, C, V, excerpt, location: lineLocation	from usfm-text-check.js line 836
+  775, "Unexpected ' straight quote character", details, lineNumber, C, V, excerpt, location: lineLocation	from usfm-text-check.js line 841
   774, `Unexpected $char closing character (no matching opener)`, lineNumber: n, characterIndex, excerpt, location: ourLocation	from plain-text-check.js line 216
   773, `Unexpected trailing zero-width joiner`, characterIndex: 0, excerpt, location: ourLocation	from field-text-check.js line 178
   772, `Unexpected trailing word-joiner`, characterIndex: 0, excerpt, location: ourLocation	from field-text-check.js line 173
   771, `Unexpected leading zero-width joiner`, characterIndex: 0, excerpt, location: ourLocation	from field-text-check.js line 156
   770, `Unexpected leading word-joiner`, characterIndex: 0, excerpt, location: ourLocation	from field-text-check.js line 152
-  769, C, V, "Verse bridge numbers not in ascending order", lineNumber: n, characterIndex: 3, excerpt: `$rest.substring(0, Math.max(9, excerptLength))$rest.length > excerptLength ? '…' : '' ($firstV → $secondV)`, location: ourLocation	from usfm-text-check.js line 1,483
+  769, C, V, "Verse bridge numbers not in ascending order", lineNumber: n, characterIndex: 3, excerpt: `$rest.substring(0, Math.max(9, excerptLength))$rest.length > excerptLength ? '…' : '' ($firstV → $secondV)`, location: ourLocation	from usfm-text-check.js line 1,482
   768, `At end of text with unclosed $char opening character`, details, lineNumber: n, characterIndex: x, excerpt, location: ourLocation	from plain-text-check.js line 234
-  766, C, V, "Bridged verse numbers didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `$rest.substring(0, Math.max(9, excerptLength))$rest.length > excerptLength ? '…' : '' ($lastV → $firstV)`, location: ourLocation	from usfm-text-check.js line 1,485
+  766, C, V, "Bridged verse numbers didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `$rest.substring(0, Math.max(9, excerptLength))$rest.length > excerptLength ? '…' : '' ($lastV → $firstV)`, location: ourLocation	from usfm-text-check.js line 1,484
   765, "Unexpected link", characterIndex, excerpt, location: ourLocation	from field-text-check.js line 461
-  764, C, V, "Chapter number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `$rest.substring(0, excerptHalfLength)$rest.length > excerptHalfLength ? '…' : '' ($lastC ? lastC : '0' → $C)`, location: ourLocation	from usfm-text-check.js line 1,456
-  763, C, V, "Verse number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `$rest.substring(0, excerptHalfLength)$rest.length > excerptHalfLength ? '…' : '' ($lastV ? lastV : '0' → $V)`, location: ourLocation	from usfm-text-check.js line 1,469
-  762, "Unable to convert verse bridge numbers to integers", C: chapterNumberString, V: verseNumberString, characterIndex: 3, excerpt: verseNumberString, location: `$CVlocation with $usfmVIerror`	from usfm-text-check.js line 468
-  762, C, V, "Unable to convert verse bridge numbers to integers", lineNumber: n, characterIndex: 3, excerpt: `$rest.substring(0, Math.max(9, excerptLength))$rest.length > excerptLength ? '…' : ''`, location: ourLocation	from usfm-text-check.js line 1,479
-  761, C, V, "Verse number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `$restRest.substring(0, excerptHalfLength)$restRest.length > excerptHalfLength ? '…' : '' ($lastV ? lastV : '0' → $V)`, location: ourLocation	from usfm-text-check.js line 1,500
+  764, C, V, "Chapter number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `$rest.substring(0, excerptHalfLength)$rest.length > excerptHalfLength ? '…' : '' ($lastC ? lastC : '0' → $C)`, location: ourLocation	from usfm-text-check.js line 1,455
+  763, C, V, "Verse number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `$rest.substring(0, excerptHalfLength)$rest.length > excerptHalfLength ? '…' : '' ($lastV ? lastV : '0' → $V)`, location: ourLocation	from usfm-text-check.js line 1,468
+  762, "Unable to convert verse bridge numbers to integers", C: chapterNumberString, V: verseNumberString, characterIndex: 3, excerpt: verseNumberString, location: `$CVlocation with $usfmVIerror`	from usfm-text-check.js line 467
+  762, C, V, "Unable to convert verse bridge numbers to integers", lineNumber: n, characterIndex: 3, excerpt: `$rest.substring(0, Math.max(9, excerptLength))$rest.length > excerptLength ? '…' : ''`, location: ourLocation	from usfm-text-check.js line 1,478
+  761, C, V, "Verse number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `$restRest.substring(0, excerptHalfLength)$restRest.length > excerptHalfLength ? '…' : '' ($lastV ? lastV : '0' → $V)`, location: ourLocation	from usfm-text-check.js line 1,499
   752, "Verse numbers of markdown TN link don’t match", details: `$V1 vs $linkVerseInt`, excerpt: totalLink, location: ourLocation	from notes-links-check.js line 1,219
   751, "Invalid zero occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, excerpt: occurrence, location: ourRowLocation	from twl-tsv6-row-check.js line 376
   751, "Invalid zero occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, excerpt: occurrence, location: ourRowLocation	from tn-tsv9-row-check.js line 434
@@ -315,7 +323,6 @@ Got 547 notices:
   750, "Missing occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, location: ourRowLocation	from notes-tsv7-row-check.js line 440
   749, "Markdown image link seems faulty", excerpt: fetchLink, location: ourLocation	from notes-links-check.js line 230
   749, "Markdown image link seems faulty", excerpt: fetchLink, location: ourLocation	from notes-links-check.js line 251
-  748, "Error fetching lexicon link", excerpt: fetchLinkDescription, location: ourLocation	from strongs-field-check.js line 219
   748, "Error fetching markdown image link", excerpt: fetchLink, location: ourLocation	from notes-links-check.js line 239
   748, "Error fetching markdown image link", excerpt: fetchLink, location: ourLocation	from notes-links-check.js line 260
   747, "Bad function call: should be given a valid book abbreviation", excerpt: bookID, location: ` (not '$bookID')$ourLocation`	from tn-tsv9-table-check.js line 115
@@ -381,13 +388,13 @@ Got 547 notices:
   733, C, V, "Receding verse number", details: `'$V' after '$lastV for chapter $C`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation	from twl-tsv6-table-check.js line 214
   733, C, V, "Receding verse number", details: `'$V' after '$lastV for chapter $C`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation	from notes-tsv7-table-check.js line 214
   733, C, V, "Receding verse number", details: `'$V' after '$lastV for chapter $C`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation	from questions-tsv7-table-check.js line 214
-  724, C, V, "Unable to convert chapter number to integer", lineNumber: n, characterIndex: 3, excerpt: `$rest.substring(0, excerptHalfLength)$rest.length > excerptHalfLength ? '…' : ''`, location: ourLocation	from usfm-text-check.js line 1,452
-  723, C, V, "Unable to convert verse number to integer", lineNumber: n, characterIndex: 3, excerpt: `$rest.substring(0, excerptHalfLength)$rest.length > excerptHalfLength ? '…' : ''`, location: ourLocation	from usfm-text-check.js line 1,465
-  720, C, V, "Unable to convert internal verse number to integer", lineNumber: n, characterIndex: 3, excerpt: `$restRest.substring(0, excerptHalfLength)$restRest.length > excerptHalfLength ? '…' : ''`, location: ourLocation	from usfm-text-check.js line 1,496
-  719, "USFM file is recommended to have \\ide line", lineNumber: ideIndex + 1, location: ourLocation	from usfm-text-check.js line 1,393
+  724, C, V, "Unable to convert chapter number to integer", lineNumber: n, characterIndex: 3, excerpt: `$rest.substring(0, excerptHalfLength)$rest.length > excerptHalfLength ? '…' : ''`, location: ourLocation	from usfm-text-check.js line 1,451
+  723, C, V, "Unable to convert verse number to integer", lineNumber: n, characterIndex: 3, excerpt: `$rest.substring(0, excerptHalfLength)$rest.length > excerptHalfLength ? '…' : ''`, location: ourLocation	from usfm-text-check.js line 1,464
+  720, C, V, "Unable to convert internal verse number to integer", lineNumber: n, characterIndex: 3, excerpt: `$restRest.substring(0, excerptHalfLength)$restRest.length > excerptHalfLength ? '…' : ''`, location: ourLocation	from usfm-text-check.js line 1,495
+  719, "USFM file is recommended to have \\ide line", lineNumber: ideIndex + 1, location: ourLocation	from usfm-text-check.js line 1,392
   716, `Misplaced $rightChar character`, excerpt: regexResultArray[0], location: ourLocation	from field-text-check.js line 442
-  711, "Expected compulsory content", C, V, lineNumber, characterIndex: marker.length, location: ` after \\$marker marker$lineLocation`	from usfm-text-check.js line 1,287
-  703, C, V, "Unexpected CarriageReturn character", lineNumber: n, characterIndex, excerpt, location: ourLocation	from usfm-text-check.js line 1,416
+  711, "Expected compulsory content", C, V, lineNumber, characterIndex: marker.length, location: ` after \\$marker marker$lineLocation`	from usfm-text-check.js line 1,286
+  703, C, V, "Unexpected CarriageReturn character", lineNumber: n, characterIndex, excerpt, location: ourLocation	from usfm-text-check.js line 1,415
   674, "Field contains HTML <br> field(s)", details: `$charCount occurrence$charCount === 1 ? '' : 's' found—should be '\\n' instead`, fieldName: 'Question', rowID, location: ourRowLocation	from questions-tsv7-row-check.js line 436
   674, "Field contains HTML <br> field(s)", details: `$charCount occurrence$charCount === 1 ? '' : 's' found—should be '\\n' instead`, fieldName: 'Response', rowID, location: ourRowLocation	from questions-tsv7-row-check.js line 465
   674, "Field contains HTML <br> field(s)", details: `$charCount occurrence$charCount === 1 ? '' : 's' found—should be '\\n' instead`, fieldName: 'Note', rowID, location: ourRowLocation	from notes-tsv7-row-check.js line 469
@@ -417,18 +424,18 @@ Got 547 notices:
   653, "Bad verse number in markdown Bible link", details: `$linkBookCode $linkChapterInt:$linkVerseInt vs $numVersesThisChapter verses`, excerpt: totalLink, location: ourLocation	from notes-links-check.js line 1,182
   649, "Unusual [[ ]] link(s)—not a recognized TA or TW link", details: `need to carefully check $leftoverLinksList2.length === 1 ? '"' + leftoverLinksList2[0] + '"' : JSON.stringify(leftoverLinksList2)`, location: ourLocation	from notes-links-check.js line 1,317
   648, "Unusual [ ]( ) link(s)—not a recognized Bible or TA, TN, or TW link", details: `need to carefully check $leftoverLinksList1.length === 1 ? '"' + leftoverLinksList1[0] + '"' : JSON.stringify(leftoverLinksList1)`, location: ourLocation	from notes-links-check.js line 1,309
-  644, "USFM3 Grammar Check (relaxed mode) doesn’t pass either", location: fileLocation	from usfm-text-check.js line 278
+  644, "USFM3 Grammar Check (relaxed mode) doesn’t pass either", location: fileLocation	from usfm-text-check.js line 277
   638, "Only found whitespace", location: ourLocation	from field-text-check.js line 118
   638, "Only found whitespace", location: ourLocation	from plain-text-check.js line 137
   630, `Expected lexicon lemma on first line`, except: lines[0], location: ourLocation	from lexicon-file-contents-check.js line 171
   620, `Expected lexicon lemma on first line`, except: lines[0], location: ourLocation	from lexicon-file-contents-check.js line 177
-  619, "USFM \\ide field is recommended to be set to 'UTF-8'", lineNumber: ideIndex + 1, characterIndex: 5, excerpt: lines[ideIndex], location: ourLocation	from usfm-text-check.js line 1,395
-  603, "USFM marker doesn’t end with space", C, V, lineNumber, characterIndex, excerpt, location: ourLocation	from usfm-text-check.js line 1,376
-  601, "Unable to load", details: `username=$username error=$gcUHBerror`, filename, location: ourLocation, extra: originalLanguageRepoName	from usfm-text-check.js line 1,050
-  601, "Unable to load", details: `username=$username error=$gcUGNTerror`, filename, location: ourLocation, extra: originalLanguageRepoName	from usfm-text-check.js line 1,058
-  601, "Unable to load", details: `username=$username error=$gcUHBerror`, OBSPathname, location: ourLocation, extra: OBSRepoName	from orig-quote-check.js line 125
-  601, "Unable to load", details: `username=$username error=$gcUHBerror`, filename, location: ourLocation, extra: originalLanguageRepoName	from orig-quote-check.js line 165
-  601, "Unable to load", details: `username=$username error=$gcUGNTerror`, filename, location: ourLocation, extra: originalLanguageRepoName	from orig-quote-check.js line 173
+  619, "USFM \\ide field is recommended to be set to 'UTF-8'", lineNumber: ideIndex + 1, characterIndex: 5, excerpt: lines[ideIndex], location: ourLocation	from usfm-text-check.js line 1,394
+  603, "USFM marker doesn’t end with space", C, V, lineNumber, characterIndex, excerpt, location: ourLocation	from usfm-text-check.js line 1,375
+  601, "Unable to load file", details: `username=$username error=$gcUHBerror`, filename, location: ourLocation, extra: originalLanguageRepoName	from usfm-text-check.js line 1,049
+  601, "Unable to load file", details: `username=$username error=$gcUGNTerror`, filename, location: ourLocation, extra: originalLanguageRepoName	from usfm-text-check.js line 1,057
+  601, "Unable to load file", details: `username=$username error=$gcUHBerror`, OBSPathname, location: ourLocation, extra: OBSRepoName	from orig-quote-check.js line 127
+  601, "Unable to load file", details: `username=$username error=$gcUHBerror`, filename, location: ourLocation, extra: originalLanguageRepoName	from orig-quote-check.js line 167
+  601, "Unable to load file", details: `username=$username error=$gcUGNTerror`, filename, location: ourLocation, extra: originalLanguageRepoName	from orig-quote-check.js line 175
   600, `$regexResultsArray.length link target$regexResultsArray.length === 1 ? ' is' : 's are' still being checked…`, location: ourLocation	from field-link-check.js line 177
   583, "Unexpected newLine character", characterIndex, excerpt, location: ourLocation	from field-text-check.js line 246
   582, "Unexpected carriageReturn character", characterIndex, excerpt, location: ourLocation	from field-text-check.js line 252
@@ -445,18 +452,18 @@ Got 547 notices:
   551, C, V, `Invalid zero chapter number`, rowID, lineNumber: n + 1, excerpt: C, location: ourLocation	from questions-tsv7-table-check.js line 186
   539, "File starts with empty line", characterIndex, excerpt, location: ourLocation	from plain-text-check.js line 159
   538, "File ends without newline character", characterIndex, excerpt, location: ourLocation	from plain-text-check.js line 164
-  518, "Missing expected USFM line", excerpt: `missing \\$expectedMarker`, location: fileLocation	from usfm-text-check.js line 636
-  517, "Missing expected USFM line", excerpt: `missing \\$expectedMarker`, location: fileLocation	from usfm-text-check.js line 632
+  518, "Missing expected USFM line", excerpt: `missing \\$expectedMarker`, location: fileLocation	from usfm-text-check.js line 635
+  517, "Missing expected USFM line", excerpt: `missing \\$expectedMarker`, location: fileLocation	from usfm-text-check.js line 631
   450, "Resource container link should have '*' language code", details: `not '$foundLanguageCode'`, characterIndex, excerpt, location: ourLocation	from notes-links-check.js line 341
   450, "Resource container link should have '*' language code", details: `not '$foundLanguageCode'`, characterIndex, excerpt, location: ourLocation	from notes-links-check.js line 511
-  444, "Shouldn’t have consecutive word fields without a space", details: badCount > 1 ? details + `$badCount occurrences found in line` : details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation	from usfm-text-check.js line 684
-  443, "Shouldn’t have a footnote after a space", details: badCount > 1 ? details + `$badCount occurrences found in line` : details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation	from usfm-text-check.js line 692
-  442, "Shouldn’t have a cross-reference after a space", details: badCount > 1 ? details + `$badCount occurrences found in line` : details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation	from usfm-text-check.js line 697
+  444, "Shouldn’t have consecutive word fields without a space", details: badCount > 1 ? details + `$badCount occurrences found in line` : details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation	from usfm-text-check.js line 683
+  443, "Shouldn’t have a footnote after a space", details: badCount > 1 ? details + `$badCount occurrences found in line` : details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation	from usfm-text-check.js line 691
+  442, "Shouldn’t have a cross-reference after a space", details: badCount > 1 ? details + `$badCount occurrences found in line` : details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation	from usfm-text-check.js line 696
   441, `Unknown linkType parameter`, excerpt: linkType	from field-link-check.js line 159
   439, "Error fetching link", location: ` $fetchLink`	from field-link-check.js line 49
   438, `Blank field / missing link (expected $linkOptions.expectedCount link$linkOptions.expectedCount === 1 ? "" : "s")`, location: ourLocation	from field-link-check.js line 131
-  401, `Unexpected content after \\$marker marker`, C, V, lineNumber, characterIndex: marker.length, excerpt: rest, location: lineLocation	from usfm-text-check.js line 1,285
-  399, C, V, "Useless paragraph marker", lineNumber: n, characterIndex: 1, details: `'\\$lastMarker' before '\\$marker'`, location: ourLocation	from usfm-text-check.js line 1,520
+  401, `Unexpected content after \\$marker marker`, C, V, lineNumber, characterIndex: marker.length, excerpt: rest, location: lineLocation	from usfm-text-check.js line 1,284
+  399, C, V, "Useless paragraph marker", lineNumber: n, characterIndex: 1, details: `'\\$lastMarker' before '\\$marker'`, location: ourLocation	from usfm-text-check.js line 1,519
   378, `Possible mismatched '$thisField' markdown formatting pairs`, details: `$count.toLocaleString() total occurrence$count === 1 ? '' : 's'`, characterIndex, excerpt, location: ourLocation	from markdown-text-check.js line 390
   374, "Field contains zero-width space(s)", details: `$charCount occurrence$charCount === 1 ? '' : 's' found`, fieldName: 'TWLink', rowID, location: ourRowLocation	from twl-tsv6-row-check.js line 397
   374, "Field contains zero-width space(s)", details: `$charCount occurrence$charCount === 1 ? '' : 's' found`, fieldName: 'SupportReference', rowID, location: ourRowLocation	from tn-tsv9-row-check.js line 413
@@ -475,8 +482,8 @@ Got 547 notices:
   373, "Field is only whitespace", fieldName: 'Note', rowID, location: ourRowLocation	from notes-tsv7-row-check.js line 476
   348, "Markdown image link has no title text", excerpt: totalLink, location: ourLocation	from notes-links-check.js line 249
   330, `Expected lexicon entry status on third line`, except: lines[2], location: ourLocation	from lexicon-file-contents-check.js line 173
-  312, 'Possible unclosed footnote', details, lineNumber, C, V, location: lineLocation	from usfm-text-check.js line 750
-  301, `Unexpected whitespace after \\$marker marker`, C, V, lineNumber, characterIndex: marker.length, excerpt: rest, location: lineLocation	from usfm-text-check.js line 1,283
+  312, 'Possible unclosed footnote', details, lineNumber, C, V, location: lineLocation	from usfm-text-check.js line 749
+  301, `Unexpected whitespace after \\$marker marker`, C, V, lineNumber, characterIndex: marker.length, excerpt: rest, location: lineLocation	from usfm-text-check.js line 1,282
   287, `Not enough links (expected $linkOptions.expectedCount link$linkOptions.expectedCount === 1 ? "" : "s")`, location: ` (only found $regexResultsArray.length)$ourLocation`	from field-link-check.js line 173
   282, "Nesting of header levels seems confused", details: `recent indent levels=$JSON.stringify(indentLevels) but now $numLeadingSpaces`, lineNumber: n, characterIndex: 0, location: ourLocation ;	from markdown-text-check.js line 342
   274, "Missing OccurrenceNote field", fieldName: 'OccurrenceNote', rowID, location: ourRowLocation	from tn-tsv9-row-check.js line 496
@@ -488,7 +495,7 @@ Got 547 notices:
   251, "Markdown headers should be followed by a blank line", lineNumber: n, location: ourLocation ;	from markdown-text-check.js line 298
   250, "Multiple blank lines are not expected in markdown", lineNumber: n, location: ourLocation ;	from markdown-text-check.js line 359
   224, "Multiple unexpected double spaces", details: `$doubleCount occurrences—only first is displayed`, excerpt, location: ourLocation ;	from field-text-check.js line 236
-  218, "Using deprecated USFM marker", excerpt: `\\$deprecatedMarker`, location: fileLocation	from usfm-text-check.js line 639
+  218, "Using deprecated USFM marker", excerpt: `\\$deprecatedMarker`, location: fileLocation	from usfm-text-check.js line 638
   199, "Markdown image link has no alternative text", excerpt: totalLink, location: ourLocation	from notes-links-check.js line 228
   199, "Markdown image link has no alternative text", excerpt: totalLink, location: ourLocation	from notes-links-check.js line 247
   195, `Unexpected $punctChar character at start of line`, characterIndex, excerpt, location: ourLocation	from field-text-check.js line 329
@@ -515,9 +522,9 @@ Got 547 notices:
   173, "Row ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 2, rowID, excerpt: rowID, location: ourRowLocation	from questions-tsv7-row-check.js line 390
   173, "Row ID characters should only be lowercase letters, digits, or hypen", fieldName: 'ID', characterIndex: 2, rowID, excerpt: rowID, location: ourRowLocation	from notes-tsv7-row-check.js line 395
   172, "Header levels should only increment by one", lineNumber: n, characterIndex: 0, location: ourLocation ;	from markdown-text-check.js line 311
-  159, "Should use proper ellipse character (not periods)", characterIndex, excerpt, location: ourLocation	from orig-quote-check.js line 416
-  158, `Unexpected space(s) beside divider $discontiguousDivider`, characterIndex, excerpt, location: ourLocation	from orig-quote-check.js line 425
-  156, "Unexpected space(s) beside ellipse characters", characterIndex, excerpt, location: ourLocation	from orig-quote-check.js line 439
+  159, "Should use proper ellipse character (not periods)", characterIndex, excerpt, location: ourLocation	from orig-quote-check.js line 426
+  158, `Unexpected space(s) beside divider $discontiguousDivider`, characterIndex, excerpt, location: ourLocation	from orig-quote-check.js line 436
+  156, "Unexpected space(s) beside ellipse characters", characterIndex, excerpt, location: ourLocation	from orig-quote-check.js line 450
   152, "Should http link be https", excerpt: totalLink, location: ourLocation	from notes-links-check.js line 1,298
   148, "'checking' key is missing", location: ourLocation	from manifest-text-check.js line 683
   144, "Unknown Bible book name in TN link", details: totalLink, excerpt: optionalB1, location: ourLocation	from notes-links-check.js line 1,204
@@ -528,21 +535,22 @@ Got 547 notices:
   109, `Unexpected leading space`, characterIndex: 0, excerpt, location: ourLocation	from field-text-check.js line 149
   107, "Unexpected leading line break", characterIndex: 0, excerpt, location: ourLocation	from field-text-check.js line 188
   104, "Unexpected trailing line break", characterIndex: fieldText.length - 1, excerpt, location: ourLocation	from field-text-check.js line 221
-  102, `USFMGrammar: $warningString`, location: fileLocation	from usfm-text-check.js line 272
+  102, `USFMGrammar: $warningString`, location: fileLocation	from usfm-text-check.js line 271
   101, `USFMGrammar: $warningString`, filename, location: ourLocation	from BCS-usfm-grammar-check.js line 234
   95, "Unexpected trailing space(s)", excerpt, location: ourLocation ;	from field-text-check.js line 200
   94, "Unexpected trailing space(s) before break", characterIndex, excerpt, location: ourLocation	from field-text-check.js line 208
   93, "Unexpected trailing space(s) before line break", characterIndex, excerpt, location: ourLocation	from field-text-check.js line 213
   92, `Unexpected leading zero`, characterIndex, excerpt, location: ourLocation	from field-text-check.js line 388
-  87, C, V, "Expected \\toc2 line to follow \\toc1", lineNumber: n, characterIndex: 1, details: `not '\\$lastMarker'`, location: ourLocation	from usfm-text-check.js line 1,513
-  87, C, V, "Expected \\toc3 line to follow \\toc2", lineNumber: n, characterIndex: 1, details: `not '\\$lastMarker'`, location: ourLocation	from usfm-text-check.js line 1,515
+  87, C, V, "Expected \\toc2 line to follow \\toc1", lineNumber: n, characterIndex: 1, details: `not '\\$lastMarker'`, location: ourLocation	from usfm-text-check.js line 1,512
+  87, C, V, "Expected \\toc3 line to follow \\toc2", lineNumber: n, characterIndex: 1, details: `not '\\$lastMarker'`, location: ourLocation	from usfm-text-check.js line 1,514
   82, `Error loading general link`, details: "please double-check link—there may be no problem", excerpt: totalLink, location: `$ourLocation: $trcGCerror`	from notes-links-check.js line 1,283
-  67, C: chapterNumberString, V: `$v`, "Verse appears to be left out", location: CVlocation	from usfm-text-check.js line 492
+  67, C: chapterNumberString, V: `$v`, "Verse appears to be left out", location: CVlocation	from usfm-text-check.js line 491
   64, "Unexpected leading space(s) after break", characterIndex, excerpt, location: ourLocation	from field-text-check.js line 162
   63, "Unexpected leading space(s) after line break", characterIndex, excerpt, location: ourLocation	from field-text-check.js line 167
-  50, "Is this quote/occurrence correct???", details: `Occurrence=$occurrence`, excerpt: fieldText, location: ourLocation	from orig-quote-check.js line 465
+  50, "Is this quote/occurrence correct???", details: `occurrence=$occurrence`, excerpt: fieldText, location: ourLocation	from orig-quote-check.js line 478
+  50, "Is this quote/occurrence correct???", details: `occurrence=$occurrence`, excerpt: fieldText, location: ourLocation	from orig-quote-check.js line 617
   32, `Untested general/outside link`, details: "please manually double-check link—probably no problem", excerpt: totalLink, location: ourLocation	from notes-links-check.js line 1,264
-  25, "Note: skipped running BCS USFMGrammar checker for large book", details: `$numChapters chapters ($kB.toLocaleString() KB)`, location: ourLocation	from usfm-text-check.js line 1,578
+  25, "Note: skipped running BCS USFMGrammar checker for large book", details: `$numChapters chapters ($kB.toLocaleString() KB)`, location: ourLocation	from usfm-text-check.js line 1,577
   20, "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked", location: ourLocation	from tn-tsv9-table-check.js line 269
   20, "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked", location: ourLocation	from twl-tsv6-table-check.js line 258
   20, "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked", location: ourLocation	from notes-tsv7-table-check.js line 258

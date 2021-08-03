@@ -46,7 +46,7 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     bookIDList.push(bookID);
     if (books.isValidBookID(bookID)) {
       const whichTestament = books.testament(bookID);
-      logicAssert(whichTestament === 'old' || whichTestament === 'new', `BookPackagesCheck() couldn't find testament for '${bookID}'`);
+      logicAssert(whichTestament === 'old' || whichTestament === 'new', `BookPackagesCheck() couldn’t find testament for '${bookID}'`);
       if (whichTestament === 'old') haveOT = true;
       if (whichTestament === 'new') haveNT = true;
     }
@@ -89,7 +89,7 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running book packages check…</p>);
         await clearCaches();
       }
-      else await clearCheckedArticleCache(); // otherwise we wouldn't see any of the warnings again from checking these
+      else await clearCheckedArticleCache(); // otherwise we wouldn’t see any of the warnings again from checking these
 
       // Load whole repos, especially if we are going to check files in manifests
       let repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TQ', 'SN', 'SQ']; // for DEFAULT

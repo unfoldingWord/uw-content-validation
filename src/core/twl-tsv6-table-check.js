@@ -95,7 +95,7 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
     let lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook = 0;
     if (bookID === 'OBS')
-        numChaptersThisBook = 50; // There's 50 Open Bible Stories
+        numChaptersThisBook = 50; // There’s 50 Open Bible Stories
     else {
         //parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in checkTWL_TSV6Table");
         try {

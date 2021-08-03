@@ -12,6 +12,11 @@ export const OPEN_CLOSE_PUNCTUATION_PAIRS = [
     ['⸢', '⸣'], ['⸤', '⸥'],
     ['**_', '_**'] // TODO: Does this markdown belong here???
 ];
+export const CLOSING_PUNCTUATION_CHARACTERS = ',.;:)־׃'; // NOTE: Some Hebrew characters included there
+
+export const HEBREW_CANTILLATION_MARKS = '[֑֖֛֢֣֤֥֦֧֪֚֭֮֒֓֔֕֗֘֙֜֝֞֟֠֡֨֩֫֬֯]'; // There’s 31 accent marks in there
+export const HEBREW_CANTILLATION_REGEX = new RegExp(HEBREW_CANTILLATION_MARKS, 'g');
+
 export const BAD_CHARACTER_COMBINATIONS = [
     '\\[\\[', '\\]\\]', // These were introduced by a tC Create bug (NOTE: \[ or \] is quite legal)
     '] (http', '] (.', // Bad markdown links (with a space between the parts)
@@ -28,7 +33,7 @@ export function isWhitespace(myString) {
 
 
 export const countOccurrencesInList = (arr, val) => arr.reduce((a, v) => (v === val ? a + 1 : a), 0);
-    // Adapted from https://www.codegrepper.com/code-examples/javascript/javascript+count+number+of+occurrences+in+array
+// Adapted from https://www.codegrepper.com/code-examples/javascript/javascript+count+number+of+occurrences+in+array
 
 export function countOccurrencesInString(mainString, subString, allowOverlapping = false) {
     // Adapted from https://stackoverflow.com/questions/4009756/how-to-count-string-occurrence-in-string

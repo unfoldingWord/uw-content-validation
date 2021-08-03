@@ -13,7 +13,7 @@ const MANIFEST_VALIDATOR_VERSION_STRING = '0.4.6';
 
 // Pasted in 2020-10-02 from https://raw.githubusercontent.com/unfoldingWord/dcs/master/options/schema/rc.schema.json
 // Updated 2021-02-19
-// Now March 2021 it's moved to https://github.com/unfoldingWord/rc-schema/blob/master/rc.schema.json
+// Now March 2021 it’s moved to https://github.com/unfoldingWord/rc-schema/blob/master/rc.schema.json
 // TODO: Load the latest one dynamically
 const MANIFEST_SCHEMA = {
     "$schema": "http://json-schema.org/draft-07/schema",
@@ -716,7 +716,7 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
         const valid = validate(formData);
         if (!valid) {
             // debugLog("checkManifestText validationResult", valid, JSON.stringify(validate.errors));
-            // Here's a typical error entry:
+            // Here’s a typical error entry:
             //  {"keyword":"pattern",
             //   "dataPath":".dublin_core.source[0].identifier",
             //   "schemaPath":"#/properties/dublin_core/properties/source/items/properties/identifier/pattern",
@@ -768,7 +768,7 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
                                 addNotice({ priority: 938, message: `Unable to find project file mentioned in manifest`, excerpt: projectFilepath, location: ourLocation });
                             else if (projectFileContent.length < 10)
                                 addNotice({ priority: 937, message: `Linked project file seems empty`, excerpt: projectFilepath, location: ourLocation });
-                        } catch (trcGCerror) {
+                        } catch (trcGCerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
                             addNotice({ priority: 936, message: `Error loading manifest project link`, details: trcGCerror, excerpt: projectFilepath, location: ourLocation });
                         }
                     }
@@ -788,7 +788,7 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
                 const adjRepoFilepath = `./${repoFilepath.split('/')[0]}`; // TQ manifest only lists folders so change '1co/01/02.md' to './1co'
                 // debugLog(`  Checking ${adjRepoFilepath} from repoFileList`);
                 if (ourProjectPathList.indexOf(repoFilepath) === -1 && ourProjectPathList.indexOf(adjRepoFilepath) === -1) {
-                    // debugLog(`    Seems we couldn't find ${repoFilepath} in the manifest`);
+                    // debugLog(`    Seems we couldn’t find ${repoFilepath} in the manifest`);
                     addNotice({ priority: 832, message: `Seems filename is missing from the manifest project list`, excerpt: repoFilepath, location: ourLocation });
                 }
             }

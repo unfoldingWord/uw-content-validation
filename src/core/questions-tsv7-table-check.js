@@ -95,7 +95,7 @@ export async function checkQuestionsTSV7Table(languageCode, repoCode, bookID, fi
     let lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook = 0;
     if (bookID === 'OBS')
-        numChaptersThisBook = 50; // There's 50 Open Bible Stories
+        numChaptersThisBook = 50; // There’s 50 Open Bible Stories
     else {
         //parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in checkQuestionsTSV7Table");
         try {

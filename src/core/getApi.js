@@ -64,13 +64,13 @@ const Door43Api = setup({
 
 // Caches the path names of files which have been already checked
 //  Used for storing paths to TA and TW articles and lexicon entries that have already been checked
-//      so that we don't needlessly check them again each time they're linked to
+//      so that we don’t needlessly check them again each time they're linked to
 const checkedArticleStore = localforage.createInstance({
   driver: [localforage.INDEXEDDB],
   name: 'CV-checked-path-store',
 });
 
-// Sadly we have to clear this for each run, otherwise we wouldn't get any warnings that were from these checks
+// Sadly we have to clear this for each run, otherwise we wouldn’t get any warnings that were from these checks
 export async function clearCheckedArticleCache() {
   userLog("clearCheckedArticleCache()…");
   await checkedArticleStore.clear();
@@ -98,8 +98,9 @@ export async function markAsChecked({ username, repository, path, branch }) {
 * @returns true or false
 */
 export async function alreadyChecked({ username, repository, path, branch }) {
+  // functionLog(`alreadyChecked(${username}, ${repository}, ${path}, ${branch})…`);
   // const numCheckedArticles = await checkedArticleStore.length();
-  // debugLog(`alreadyChecked(${username}, ${repository}, ${path}, ${branch}) with ${numCheckedArticles} already checked articles…`);
+  // functionLog(`alreadyChecked(${username}, ${repository}, ${path}, ${branch}) with ${numCheckedArticles} already checked articles…`);
   const dummyPath = Path.join(username, repository, branch, path);
   const alreadyCheckedResult = await checkedArticleStore.getItem(dummyPath);
   // debugLog(`  got ${!!alreadyCheckedResult}`);
@@ -308,7 +309,7 @@ export async function preloadReposIfNecessary(username, languageCode, bookIDList
     for (const bookID of bookIDList) {
       if (bookID !== 'OBS') {
         const whichTestament = books.testament(bookID); // returns 'old' or 'new'
-        logicAssert(whichTestament === 'old' || whichTestament === 'new', `preloadReposIfNecessary() couldn't find testament for '${bookID}'`);
+        logicAssert(whichTestament === 'old' || whichTestament === 'new', `preloadReposIfNecessary() couldn’t find testament for '${bookID}'`);
         const origLangRepo = whichTestament === 'old' ? 'UHB' : 'UGNT';
         if (!repos_.includes(origLangRepo))
           repos_.unshift(origLangRepo);
@@ -561,7 +562,7 @@ export async function cachedGetFileUsingFullURL({ uri, params }) {
         // debugLog(`  Got zipBlob for ${OBS_PICTURE_ZIP_FILENAME}`);
         const zip = await JSZip.loadAsync(zipBlob);
         // zip.forEach(function (relativePath) {
-          // debugLog(`relPath=${relativePath}`); // Displays 'relPath=360px/obs-en-17-09.jpg'
+        // debugLog(`relPath=${relativePath}`); // Displays 'relPath=360px/obs-en-17-09.jpg'
         // })
         const zipPath = uri.substring(31); // Drop https://cdn.door43.org/obs/jpg/ to get 360px/obs-en-01-05.jpg
         // debugLog(`  zipPath=${zipPath}`);

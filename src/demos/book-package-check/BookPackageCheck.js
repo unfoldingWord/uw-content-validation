@@ -79,13 +79,13 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
                 setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running book package check…</p>);
                 await clearCaches();
             }
-            else await clearCheckedArticleCache(); // otherwise we wouldn't see any of the warnings again from checking these
+            else await clearCheckedArticleCache(); // otherwise we wouldn’t see any of the warnings again from checking these
 
             // Load whole repo zip files which is maybe faster than loading several individual files
             //  especially if we are going to also check the manifests, license, and ReadMe files as well as the book file.
             // Remember that the manifest check actually checks the existence of all the projects, i.e., all files in the repo
             const whichTestament = books.testament(bookID); // returns 'old' or 'new'
-            logicAssert(whichTestament === 'old' || whichTestament === 'new', `BookPackageCheck() couldn't find testament for '${bookID}'`);
+            logicAssert(whichTestament === 'old' || whichTestament === 'new', `BookPackageCheck() couldn’t find testament for '${bookID}'`);
             let repoPreloadList;
             if (bookID === 'OBS') {
                 repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2']; // for DEFAULT

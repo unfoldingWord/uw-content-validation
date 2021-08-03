@@ -81,7 +81,7 @@ and then validates the content of one file selected from the repo.
   // They control whether the linked articles themselves are also checked or not
   disableLinkedTAArticlesCheckFlag='false' // 'true' or 'false'
   disableLinkedTWArticlesCheckFlag='false' // 'true' or 'false'
-  disableLinkedLexiconEntriesCheckFlag='false' // 'true' or 'false'
+  disableLinkedLexiconEntriesCheckFlag='true' // 'true' or 'false' -- lexicon entries still have many inconsistencies
 
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'

@@ -73,7 +73,7 @@ export function runBCSGrammarCheck(strictnessString, bookID, fileText, filename,
             ourErrorObject.characterIndex = ourParseInt(columnNumberString) - 1;
             const errorLineText = fileText.split('\n')[ourErrorObject.lineNumber - 1];
             ourErrorObject.excerpt = (ourErrorObject.characterIndex > excerptHalfLength ? '…' : '') + errorLineText.substring(ourErrorObject.characterIndex - excerptHalfLength, ourErrorObject.characterIndex + excerptHalfLengthPlus) + (ourErrorObject.characterIndex + excerptHalfLengthPlus < errorLineText.length ? '…' : '');
-            // NOTE: Not 100% sure that it's more helpful to the user if we do this next line ???
+            // NOTE: Not 100% sure that it’s more helpful to the user if we do this next line ???
             ourErrorObject.details = ourErrorObject.details.substring(totalLink.length); // Delete the line and column numbers that we found
         } catch (secondError) {
             debugLog(`USFMGrammar second error: ${secondError}`);

@@ -59,9 +59,9 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, chec
     function addNoticePartial({ priority, message, lineNumber, characterIndex, excerpt, location }) {
         /**
         * @description - adds a new notice entry, adding bookID,C,V to the given fields
-        * @param {Number} priority - notice priority from 1 (lowest) to 999 (highest)
+        * @param {number} priority - notice priority from 1 (lowest) to 999 (highest)
         * @param {string} message - the text of the notice message
-        * @param {Number} characterIndex - where the issue occurs in the line
+        * @param {number} characterIndex - where the issue occurs in the line
         * @param {string} excerpt - short excerpt from the line centred on the problem (if available)
         * @param {string} location - description of where the issue is located
         */

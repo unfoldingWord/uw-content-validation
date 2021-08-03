@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
-import { isWhitespace, countOccurrencesInString, ourDeleteAll } from './text-handling-functions'
+import { isWhitespace, countOccurrencesInString, ourDeleteAll, HEBREW_CANTILLATION_REGEX } from './text-handling-functions'
 import * as books from './books/books';
 import { cachedGetFile } from './getApi';
 import { checkTextField } from './field-text-check';
@@ -14,7 +14,7 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.9.1';
+// const USFM_VALIDATOR_VERSION_STRING = '0.9.2';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for STs
@@ -131,7 +131,6 @@ const W_FIELDS_REGEX = new RegExp('\\\\\\+?w ([^|]+?)\\|lemma="([^"]*?)" strong=
 const ZALN_S_REGEX = new RegExp('\\\\zaln-s (.+?)\\\\\\*', 'g');
 const KS_REGEX = new RegExp('\\\\k-s (.+?)\\\\\\*', 'g');
 const ATTRIBUTE_REGEX = new RegExp('[ |]([^ |]+?)="([^"]*?)"', 'g');
-const HEBREW_CANTILLATION_REGEX = new RegExp('[֑֖֛֢֣֤֥֦֧֪֚֭֮֒֓֔֕֗֘֙֜֝֞֟֠֡֨֩֫֬֯]', 'g'); // There's 31 accent marks in there
 
 const BAD_HEBREW_VOWEL_DAGESH_REGEX = new RegExp('[\\u05b4\\u05b5\\u05b6\\u05b7\\u05b8\\u05b9\\u05ba\\05bb]\\u05bc', 'g');
 
@@ -232,7 +231,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         // eslint-disable-next-line no-unused-vars
         const noticeObjectString = JSON.stringify(incompleteNoticeObject);
         //parameterAssert(noticeObject.message.indexOf("Mismatched {}") === -1 || noticeObject.lineNumber === undefined, `checkUSFMText addNoticePartial: got bad notice: ${noticeObjectString}`);
-        //parameterAssert(noticeObjectString.indexOf('NONE') === -1 && noticeObjectString.indexOf('SPECIAL') === -1, `checkUSFMText addNoticePartial: 'NONE' & 'SPECIAL' shouldn't make it thru to end user: ${noticeObjectString}`)
+        //parameterAssert(noticeObjectString.indexOf('NONE') === -1 && noticeObjectString.indexOf('SPECIAL') === -1, `checkUSFMText addNoticePartial: 'NONE' & 'SPECIAL' shouldn’t make it thru to end user: ${noticeObjectString}`)
         if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkUSFMText ${incompleteNoticeObject.debugChain}`;
         usfmResultObject.noticeList.push({ ...incompleteNoticeObject, bookID, filename });
     }
@@ -655,7 +654,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         // Removes character formatting within the line contents and checks the remaining text
         // functionLog(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
         // functionLog(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}=${rest.length} chars, ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
-        //if (C !== '0' && C !== '1') { parameterAssert(bookID !== '2JN' && bookID !== '3JN' && bookID !== 'JUD', `checkUSFMLineText() can't have ${C}:${V} for ${bookID}`); }
+        //if (C !== '0' && C !== '1') { parameterAssert(bookID !== '2JN' && bookID !== '3JN' && bookID !== 'JUD', `checkUSFMLineText() can’t have ${C}:${V} for ${bookID}`); }
 
         const details = `line marker='\\${marker}'`
 
@@ -663,23 +662,23 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         if (languageCode === 'hbo') {
             // TODO: How should we check other potential bad combinations
             const match = BAD_HEBREW_VOWEL_DAGESH_REGEX.exec(rest);
-            if (match) { // it's null if no matches
+            if (match) { // it’s null if no matches
                 // debugLog(`Got bad dagesh after vowel character order match: ${typeof match} ${match.length} '${JSON.stringify(match)}'`);
                 const characterIndex = rest.indexOf(match[0][0]);
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-                addNoticePartial({ priority: 807, message: "Unexpected Hebrew dagesh after vowel", details: `Found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+                addNoticePartial({ priority: 807, message: "Unexpected Hebrew dagesh after vowel", details: `found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
 
         }
 
-        // Check that no \w markers touch, i.e., shouldn't have '\w*\w' in file
+        // Check that no \w markers touch, i.e., shouldn’t have '\w*\w' in file
         let characterIndex;
         if ((characterIndex = rest.indexOf('\\w*\\w')) !== -1) {
-            // NOTE: There's one example of this in ULT 1 Kings 6:1 "480th"
+            // NOTE: There’s one example of this in ULT 1 Kings 6:1 "480th"
             //  \w 480|x-occurrence="1" x-occurrences="1"\w*\w th|x-occurrence="1" x-occurrences="1"\w*
             // Also UST Ezra 6:19 "14th" and Ezra 10:9 "20th"
             const badCount = countOccurrencesInString(rest, '\\w*\\w');
-            if (badCount > 1 || rest.indexOf('\\w*\\w th|') === -1) { // there's multiple cases or it's not an ordinal
+            if (badCount > 1 || rest.indexOf('\\w*\\w th|') === -1) { // there’s multiple cases or it’s not an ordinal
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
                 addNoticePartial({ priority: 444, message: "Shouldn’t have consecutive word fields without a space", details: badCount > 1 ? details + `${badCount} occurrences found in line` : details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
@@ -902,7 +901,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             }
 
             let adjustedLanguageCode = languageCode; // This is the language code of the resource with the link
-            if (languageCode === 'hbo' || languageCode === 'el-x-koine') adjustedLanguageCode = 'en' // This is a guess (and won't be needed for TWs when we switch to TWLs)
+            if (languageCode === 'hbo' || languageCode === 'el-x-koine') adjustedLanguageCode = 'en' // This is a guess (and won’t be needed for TWs when we switch to TWLs)
             const csfResultObject = await checkStrongsField(languageCode, repoCode, fieldName, fieldText, bookID, C, V, givenLocation, { ...checkingOptions, defaultLanguageCode: adjustedLanguageCode });
             // debugLog(`csfResultObject=${JSON.stringify(csfResultObject)}`);
 
@@ -970,9 +969,9 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                         addNoticePartial({ priority: 853, message: "Unexpected extra original \\w attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
                     if (attributeName === 'lemma' && repoCode === 'UHB') {
                         const match = HEBREW_CANTILLATION_REGEX.exec(attributeValue);
-                        if (match) { // it's null if no matches
+                        if (match) { // it’s null if no matches
                             // debugLog(`Got cantillation match: ${typeof match} ${match.length} '${JSON.stringify(match)}'`);
-                            addNoticePartial({ priority: 905, message: "Unexpected Hebrew cantillation mark in lemma field", details: `Found ${match.length} '${match}'`, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                            addNoticePartial({ priority: 905, message: "Unexpected Hebrew cantillation mark in lemma field", details: `found ${match.length} '${match}'`, lineNumber, C, V, excerpt: attributeValue, location: lineLocation });
                         }
                     } else if (attributeName === 'x-morph'
                         && ((repoCode === 'UHB' && !attributeValue.startsWith('He,') && !attributeValue.startsWith('Ar,'))
@@ -995,9 +994,9 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             }
             if (repoCode === 'UHB' || repoCode === 'UGNT') {
                 if (attributeCounter < 3)
-                    addNoticePartial({ priority: 837, message: "Seems too few original \\w attributes", details: `Expected 3-4 attributes but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation });
+                    addNoticePartial({ priority: 837, message: "Seems too few original \\w attributes", details: `expected 3-4 attributes but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation });
             } else if (attributeCounter < 2)
-                addNoticePartial({ priority: 836, message: "Seems too few translation \\w attributes", details: `Expected two attributes but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation });
+                addNoticePartial({ priority: 836, message: "Seems too few translation \\w attributes", details: `expected two attributes but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation });
         }
         // end of checkWAttributes function
 
@@ -1033,7 +1032,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                 if (books.isValidBookID(bookID)) // must be in FRT, BAK, etc.
                     whichTestament = 'other';
             }
-            logicAssert(whichTestament === 'old' || whichTestament === 'new', `getOriginalPassage() couldn't find testament for '${bookID}'`);
+            logicAssert(whichTestament === 'old' || whichTestament === 'new', `getOriginalPassage() couldn’t find testament for '${bookID}'`);
             const originalLanguageRepoLanguageCode = whichTestament === 'old' ? 'hbo' : 'el-x-koine';
             const originalLanguageRepoCode = whichTestament === 'old' ? 'UHB' : 'UGNT';
             const originalLanguageRepoName = `${originalLanguageRepoLanguageCode}_${originalLanguageRepoCode.toLowerCase()}`;
@@ -1045,21 +1044,21 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                 try {
                     originalUSFM = await getFile_({ username, repository: originalLanguageRepoName, path: filename, branch });
                     // debugLog("Fetched fileContent for", repoName, filename, typeof originalUSFM, originalUSFM.length);
-                } catch (gcUHBerror) {
+                } catch (gcUHBerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
                     console.error(`getOriginalPassage(${bookID}, ${C}:${V}, ${JSON.stringify(checkingOptions)}) failed to load UHB`, username, originalLanguageRepoCode, filename, branch, gcUHBerror.message);
-                    addNoticePartial({ priority: 601, message: "Unable to load", details: `username=${username} error=${gcUHBerror}`, filename, location: ourLocation, extra: originalLanguageRepoName });
+                    addNoticePartial({ priority: 601, message: "Unable to load file", details: `username=${username} error=${gcUHBerror}`, filename, location: ourLocation, extra: originalLanguageRepoName });
                 }
             } else if (originalLanguageRepoCode === 'UGNT') {
                 try {
                     originalUSFM = await getFile_({ username, repository: originalLanguageRepoName, path: filename, branch });
                     // debugLog("Fetched fileContent for", repoName, filename, typeof originalUSFM, originalUSFM.length);
-                } catch (gcUGNTerror) {
+                } catch (gcUGNTerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
                     console.error(`getOriginalPassage(${bookID}, ${C}:${V}, ${JSON.stringify(checkingOptions)}) failed to load UGNT`, username, originalLanguageRepoCode, filename, branch, gcUGNTerror.message);
-                    addNoticePartial({ priority: 601, message: "Unable to load", details: `username=${username} error=${gcUGNTerror}`, filename, location: ourLocation, extra: originalLanguageRepoName });
+                    addNoticePartial({ priority: 601, message: "Unable to load file", details: `username=${username} error=${gcUGNTerror}`, filename, location: ourLocation, extra: originalLanguageRepoName });
                 }
             }
             if (!originalUSFM) {
-                debugLog(`Oops: getOriginalWordLists(${bookID}, ${C}:${V}, ) didn't find a file!!!`);
+                debugLog(`Oops: getOriginalWordLists(${bookID}, ${C}:${V}, ) didn’t find a file!!!`);
                 return null;
             }
 
@@ -1145,19 +1144,19 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                     addNoticePartial({ priority: 833, message: "Unexpected extra \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
             }
             if (attributeCounter < 6)
-                addNoticePartial({ priority: 834, message: "Seems too few translation \\zaln-s attributes", details: `Expected six attributes but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation });
+                addNoticePartial({ priority: 834, message: "Seems too few translation \\zaln-s attributes", details: `expected six attributes but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation });
             // debugLog(`checkZALNAttributes has ${bookID} ${C}:${V} attributes: ${JSON.stringify(attributes)}`);
 
             // The Strongs, lemma and morph fields are copied from the original UHB/UGNT files
             //  during alignment by tC
-            //  so we need to check them as it's possible for them to get out of sync
+            //  so we need to check them as it’s possible for them to get out of sync
             if (checkingOptions?.disableAllLinkFetchingFlag !== true) {
                 const wordListResult = await getOriginalWordLists(bookID, C, V, checkingOptions);
                 const { originalLanguageRepoCode, verseWordList, verseWordObjectList } = wordListResult;
                 // debugLog(`checkZALNAttributes has '${originalLanguageRepoCode}' ${bookID} ${C}:${V} ${verseWordList} ${JSON.stringify(verseWordObjectList)}`);
 
                 let oWord, oOccurrence, oOccurrences, oStrong, oLemma, oMorph;
-                try { // Could fail here if any of those attributes were missing (already notified, so don't worry here)
+                try { // Could fail here if any of those attributes were missing (already notified, so don’t worry here)
                     oWord = attributes['x-content'];
                     oOccurrence = attributes['x-occurrence']; oOccurrences = attributes['x-occurrences'];
                     oStrong = attributes['x-strong']; oLemma = attributes['x-lemma']; oMorph = attributes['x-morph'];
@@ -1169,7 +1168,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                     /* Now checked below
                     const oWordCount = countOccurrencesInList(verseWordList, oWord);
                     if (oWordCount < oOccurrenceInt)
-                        addNoticePartial({ priority: 802, message: "AAA Aligned x-occurrence for original word is too high", details: `Only found ${oWordCount} occurrences of '${oWord}' instead of ${oOccurrence}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                        addNoticePartial({ priority: 802, message: "AAA Aligned x-occurrence for original word is too high", details: `only found ${oWordCount} occurrences of '${oWord}' instead of ${oOccurrence}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                     */
                     // Find the index of the correct occurrence of the word (index into the original language verse words list)
                     let ix, gotCount = 0;
@@ -1177,11 +1176,11 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                         if (verseWordList[ix] === oWord)
                             if (++gotCount === oOccurrenceInt) break;
                     }
-                    if (gotCount !== oOccurrenceInt) // Can't do checks below coz ix is invalid
+                    if (gotCount !== oOccurrenceInt) // Can’t do checks below coz ix is invalid
                         if (gotCount === 0)
-                            addNoticePartial({ priority: 803, message: "Word can’t be found in original text", details: `Found NO occurrences of '${oWord}' instead of ${oOccurrence} from ${verseWordList}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                            addNoticePartial({ priority: 803, message: "Word can’t be found in original text", details: `found NO occurrences of '${oWord}' instead of ${oOccurrence} from ${verseWordList}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                         else
-                            addNoticePartial({ priority: 802, message: "Aligned x-occurrence for original word is too high", details: `Only found ${gotCount} occurrence${gotCount === 1 ? '' : 's'} of '${oWord}' instead of ${oOccurrence} from ${verseWordList}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                            addNoticePartial({ priority: 802, message: "Aligned x-occurrence for original word is too high", details: `only found ${gotCount} occurrence${gotCount === 1 ? '' : 's'} of '${oWord}' instead of ${oOccurrence} from ${verseWordList}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                     else {
                         const vwolStrongs = verseWordObjectList[ix]?.strongs;
                         if (vwolStrongs !== oStrong)
@@ -1194,7 +1193,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                             addNoticePartial({ priority: 804, message: "Aligned x-morph doesn’t match original", details: `${originalLanguageRepoCode} had '${vwolMorph}'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                     }
                 } catch (e) {
-                    debugLog(`checkZALNAttributes1: why couldn't we get word attributes out of ${JSON.stringify(attributes)}: ${e.message} `);
+                    debugLog(`checkZALNAttributes1: why couldn’t we get word attributes out of ${JSON.stringify(attributes)}: ${e.message} `);
                 }
             }
         }
@@ -1221,7 +1220,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                     addNoticePartial({ priority: 838, message: "Unexpected extra \\k-s attribute", details, lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
             }
             if (attributeCounter < 1)
-                addNoticePartial({ priority: 835, message: "Seems too few original \\k-s attributes", details: `Expected one attribute but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation });
+                addNoticePartial({ priority: 835, message: "Seems too few original \\k-s attributes", details: `expected one attribute but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation });
         }
         while ((regexResultArray1 = ZALN_S_REGEX.exec(adjustedRest))) {
             // debugLog(`Got ${repoCode} \\zaln-s Regex in ${C}:${V} line: '${JSON.stringify(regexResultArray1)}`);
@@ -1305,7 +1304,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         //parameterAssert(typeof twLinkText === 'string', `checkUSFMText ourCheckNotesLinksToOutside: 'twLinkText' parameter should be a string not a '${typeof twLinkText}': ${twLinkText}`);
 
         let adjustedLanguageCode = languageCode; // This is the language code of the resource with the link
-        if (languageCode === 'hbo' || languageCode === 'el-x-koine') adjustedLanguageCode = 'en' // This is a guess (and won't be needed for TWs when we switch to TWLs)
+        if (languageCode === 'hbo' || languageCode === 'el-x-koine') adjustedLanguageCode = 'en' // This is a guess (and won’t be needed for TWs when we switch to TWLs)
         const coTNlResultObject = await checkNotesLinksToOutside(languageCode, repoCode, bookID, C, V, 'TWLink', twLinkText, location, { ...checkingOptions, defaultLanguageCode: adjustedLanguageCode });
         // debugLog(`coTNlResultObject=${JSON.stringify(coTNlResultObject)}`);
 

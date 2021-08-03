@@ -4,9 +4,9 @@ import { isDisabledNotice } from '../core/disabled-notices';
 
 
 // const NOTICE_PROCESSOR_VERSION_STRING = '0.10.2';
-// TODO: Hidden message code probably doesn't work for the other sort orders
+// TODO: Hidden message code probably doesn’t work for the other sort orders
 
-const DEFAULT_MAXIMUM_HIDDEN_NOTICES = 60; // Don't want to hide HUNDREDS/THOUSANDS of notices for each notice type
+const DEFAULT_MAXIMUM_HIDDEN_NOTICES = 60; // Don’t want to hide HUNDREDS/THOUSANDS of notices for each notice type
 const DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE = `Further hidden notices (beyond ${DEFAULT_MAXIMUM_HIDDEN_NOTICES}) were suppressed!`;
 let maximumHiddenNotices = DEFAULT_MAXIMUM_HIDDEN_NOTICES, maximumHiddenNoticesMessage = DEFAULT_MAXIMUM_HIDDEN_NOTICES_MESSAGE;
 
@@ -219,7 +219,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             }
             if (thisC)
                 logicAssert(thisC === 'front' || !isNaN(thisC * 1), `C '${thisC}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
-            if (thisV) { // NOTE: We don't allow for a en-dash in verse ranges -- should we?
+            if (thisV) { // NOTE: We don’t allow for a en-dash in verse ranges -- should we?
                 if (thisV.indexOf('-') !== -1) { // it contains a hyphen, i.e., a verse range
                     const vBits = thisV.split('-');
                     logicAssert(vBits.length === 2 && !isNaN(vBits[0] * 1) && !isNaN(vBits[1] * 1), `V '${thisV}' verse range contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
@@ -492,7 +492,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     // if (cutoffPriorityLevel > errorPriorityLevel)
     // resultObject.errorList.push({999, "Cutoff level must not be higher than error level", excerpt:`(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
 
-    // Ensure that our displayed message list doesn't end up too huge for the browser to handle
+    // Ensure that our displayed message list doesn’t end up too huge for the browser to handle
     if (remainingNoticeList.length > 6000) {
         maximumHiddenNotices = Math.min(20, maximumHiddenNotices);
         maximumHiddenNoticesMessage = `Further hidden notices (beyond ${maximumHiddenNotices}) were suppressed!`;
@@ -625,7 +625,7 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
                         resultObject.numSuppressedNotices++;
                     }
                 } catch (e) { // presumably no hidden Notices in previous Object
-                    console.assert(!previousObject.hiddenNotices, `Didn't expected hiddenNotices to be defined: ${JSON.stringify(previousObject)} error was: ${e.message}`);
+                    console.assert(!previousObject.hiddenNotices, `Didn’t expected hiddenNotices to be defined: ${JSON.stringify(previousObject)} error was: ${e.message}`);
                     resultObject.numSuppressedNotices++;
                 }
             } else {
@@ -641,7 +641,7 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
                         resultObject.numSuppressedNotices++;
                     }
                 } catch (e) { // presumably no hidden Notices in previous Object
-                    console.assert(!previousObject.hiddenNotices, `Didn't expected hiddenNotices to be defined: ${JSON.stringify(previousObject)} error was: ${e.message}`);
+                    console.assert(!previousObject.hiddenNotices, `Didn’t expected hiddenNotices to be defined: ${JSON.stringify(previousObject)} error was: ${e.message}`);
                     resultObject.numSuppressedNotices++;
                 }
             }
@@ -754,7 +754,7 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
                         resultObject.numSuppressedNotices++;
                     }
                 } catch (e) { // presumably no hidden Notices in previous Object
-                    console.assert(!previousObject.hiddenNotices, `Didn't expected hiddenNotices to be defined: ${JSON.stringify(previousObject)} error was: ${e.message}`);
+                    console.assert(!previousObject.hiddenNotices, `Didn’t expected hiddenNotices to be defined: ${JSON.stringify(previousObject)} error was: ${e.message}`);
                     resultObject.numSuppressedNotices++;
                 }
             } else if (thisPriority >= mediumPriorityLevel) {
@@ -770,7 +770,7 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
                         resultObject.numSuppressedNotices++;
                     }
                 } catch (e) { // presumably no hidden Notices in previous Object
-                    console.assert(!previousObject.hiddenNotices, `Didn't expected hiddenNotices to be defined: ${JSON.stringify(previousObject)} error was: ${e.message}`);
+                    console.assert(!previousObject.hiddenNotices, `Didn’t expected hiddenNotices to be defined: ${JSON.stringify(previousObject)} error was: ${e.message}`);
                     resultObject.numSuppressedNotices++;
                 }
             } else {
@@ -786,7 +786,7 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
                         resultObject.numSuppressedNotices++;
                     }
                 } catch (e) { // presumably no hidden Notices in previous Object
-                    console.assert(!previousObject.hiddenNotices, `Didn't expected hiddenNotices to be defined: ${JSON.stringify(previousObject)} error was: ${e.message}`);
+                    console.assert(!previousObject.hiddenNotices, `Didn’t expected hiddenNotices to be defined: ${JSON.stringify(previousObject)} error was: ${e.message}`);
                     resultObject.numSuppressedNotices++;
                 }
             }
@@ -865,7 +865,7 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
                     resultObject.numSuppressedNotices++;
                 }
             } catch (e) { // presumably no hidden Notices in previous Object
-                console.assert(!previousObject.hiddenNotices, `Didn't expected hiddenNotices to be defined: ${JSON.stringify(previousObject)} error was: ${e.message}`);
+                console.assert(!previousObject.hiddenNotices, `Didn’t expected hiddenNotices to be defined: ${JSON.stringify(previousObject)} error was: ${e.message}`);
                 resultObject.numSuppressedNotices++;
             }
         } else

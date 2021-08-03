@@ -27,7 +27,7 @@ const TW_INTERNAL_REGEX = new RegExp('\\[([-,\\w ()]+?)\\]\\(\\.{2}/([a-z]{2,5})
 
 // NOTE: Bible link format is archaic, presumably from pre-USFM days!
 // TODO: Do we need to normalise Bible links, i.e., make sure that the link itself
-//          (we don't care about the displayed text) doesn't specify superfluous levels/information
+//          (we don’t care about the displayed text) doesn’t specify superfluous levels/information
 // TODO: We need a decision on hyphen vs en-dash in verse references
 // TODO: Test to see if "[2:23](../02/03.md)" is found by more than one regex below
 const BIBLE_REGEX_OTHER_BOOK_ABSOLUTE = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(\\d{1,3}):(\\d{1,3})\\]\\(([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Revelation 3:11](rev/03/11.md)
@@ -173,7 +173,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     let defaultLanguageCode = checkingOptions?.defaultLanguageCode;
     // if (!defaultLanguageCode) defaultLanguageCode = DEFAULT_LANGUAGE_CODE;
     let adjustedLanguageCode = languageCode; // This is the language code of the resource with the link
-    if (languageCode === 'hbo' || languageCode === 'el-x-koine') adjustedLanguageCode = 'en' // This is a guess (and won't be needed for TWs when we switch to TWLs)
+    if (languageCode === 'hbo' || languageCode === 'el-x-koine') adjustedLanguageCode = 'en' // This is a guess (and won’t be needed for TWs when we switch to TWLs)
     if (!defaultLanguageCode) defaultLanguageCode = adjustedLanguageCode;
     // debugLog(`checkNotesLinksToOutside defaultLanguageCode=${defaultLanguageCode}`);
 
@@ -295,12 +295,12 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             try {
                 twFileContent = await getFile_(twPathParameters);
                 // if (regexResultArray[3] === 'brother') debugLog(`Fetched fileContent for ${JSON.stringify(twPathParameters)}: ${typeof twFileContent} ${twFileContent.length}`);
-            } catch (trcGCerror) {
+            } catch (trcGCerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
                 console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TW ${twRepoUsername} ${twRepoName}, ${filepath}, ${twRepoBranch}: ${trcGCerror.message}`);
                 addNoticePartial({ priority: 882, message: `Error loading TW article`, details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
             }
             if (!twFileContent)
-                addNoticePartial({ priority: 883, message: `Unable to find/load TW article`, details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                addNoticePartial({ priority: 883, message: "Unable to find/load linked TW article", details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
             else { // we got the content of the TW article
                 if (twFileContent.length < 10)
                     addNoticePartial({ priority: 881, message: `TW article seems empty`, details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
@@ -358,14 +358,14 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             try {
                 taFileContent = await getFile_(taPathParameters);
                 // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
-            } catch (trcGCerror) {
+            } catch (trcGCerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
                 // console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
                 addNoticePartial({ priority: 885, message: `Error loading TA article`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
                 alreadyGaveError = true;
             }
             if (!alreadyGaveError) {
                 if (!taFileContent)
-                    addNoticePartial({ priority: 886, message: `Unable to find/load TA article`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                    addNoticePartial({ priority: 886, message: "Unable to find/load linked TA article", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                 else if (taFileContent.length < 10)
                     addNoticePartial({ priority: 884, message: `TA article seems empty`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                 else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
@@ -374,7 +374,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
                         const checkTAFileResult = await checkMarkdownText(foundLanguageCode, repoCode, `TA ${regexResultArray[3].trim()}.md`, taFileContent, ourLocation, checkingOptions);
                         for (const noticeObject of checkTAFileResult.noticeList)
-                            // Why don't we use addNoticePartial() here? (It adds bookID and fieldName.) Maybe it would be misleading???
+                            // Why don’t we use addNoticePartial() here? (It adds bookID and fieldName.) Maybe it would be misleading???
                             ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
                         ctarResult.checkedFileCount += 1;
                         ctarResult.checkedFilenames.push(`${regexResultArray[3].trim()}.md`);
@@ -415,17 +415,17 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 try {
                     taFileContent = await getFile_(taPathParameters);
                     // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
-                } catch (trcGCerror) {
+                } catch (trcGCerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
                     // console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
                     addNoticePartial({ priority: 885, message: `Error loading TA article`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
                     alreadyGaveError = true;
                 }
                 if (!alreadyGaveError) {
                     if (!taFileContent)
-                        addNoticePartial({ priority: 886, message: `Unable to find/load TA article`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                        addNoticePartial({ priority: 886, message: "Unable to find/load linked TA article", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                     else if (taFileContent.length < 10)
-                        addNoticePartial({ priority: 884, message: `TA article seems empty`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
-                    // Don't do this or it gets infinite recursion!!!
+                        addNoticePartial({ priority: 884, message: "Linked TA article seems empty", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                    // Don’t do this or it gets infinite recursion!!!
                     // else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
                     //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
                     //     if (!await alreadyChecked(taPathParameters)) {
@@ -465,17 +465,17 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 try {
                     taFileContent = await getFile_(taPathParameters);
                     // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
-                } catch (trcGCerror) {
+                } catch (trcGCerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
                     // console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
                     addNoticePartial({ priority: 885, message: `Error loading TA article`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
                     alreadyGaveError = true;
                 }
                 if (!alreadyGaveError) {
                     if (!taFileContent)
-                        addNoticePartial({ priority: 886, message: `Unable to find/load TA article`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                        addNoticePartial({ priority: 886, message: "Unable to find/load linked TA article", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                     else if (taFileContent.length < 10)
-                        addNoticePartial({ priority: 884, message: `TA article seems empty`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
-                    // Don't do this or it gets infinite recursion!!!
+                        addNoticePartial({ priority: 884, message: "Linked TA article seems empty", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                    // Don’t do this or it gets infinite recursion!!!
                     // else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
                     //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
                     //     if (!await alreadyChecked(taPathParameters)) {
@@ -528,23 +528,23 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             try {
                 taFileContent = await getFile_(taPathParameters);
                 // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
-            } catch (trcGCerror) {
+            } catch (trcGCerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
                 // console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
                 addNoticePartial({ priority: 885, message: `Error loading TA article`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
                 alreadyGaveError = true;
             }
             if (!alreadyGaveError) {
                 if (!taFileContent)
-                    addNoticePartial({ priority: 886, message: `Unable to find/load TA article`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                    addNoticePartial({ priority: 886, message: "Unable to find/load linked TA article", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                 else if (taFileContent.length < 10)
-                    addNoticePartial({ priority: 884, message: `TA article seems empty`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                    addNoticePartial({ priority: 884, message: "Linked TA article seems empty", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
                 else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
                     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
                     if (!await alreadyChecked(taPathParameters)) {
                         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
                         const checkTAFileResult = await checkMarkdownText(foundLanguageCode, repoCode, `TA ${regexResultArray[3].trim()}.md`, taFileContent, ourLocation, checkingOptions);
                         for (const noticeObject of checkTAFileResult.noticeList)
-                            // Why don't we use addNoticePartial() here? (It adds bookID and fieldName.) Maybe it would be misleading???
+                            // Why don’t we use addNoticePartial() here? (It adds bookID and fieldName.) Maybe it would be misleading???
                             ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
                         ctarResult.checkedFileCount += 1;
                         ctarResult.checkedFilenames.push(`${regexResultArray[3].trim()}.md`);
@@ -582,22 +582,22 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             try {
                 twFileContent = await getFile_(twPathParameters);
                 // if (article === 'brother') debugLog(`Fetched fileContent for ${JSON.stringify(twPathParameters)}: ${typeof twFileContent} ${twFileContent.length}`);
-            } catch (trcGCerror) {
+            } catch (trcGCerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
                 console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TW ${twRepoUsername} ${twRepoName}, ${filepath}, ${twRepoBranch}: ${trcGCerror.message}`);
-                addNoticePartial({ priority: 882, message: `Error loading TW article`, details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+                addNoticePartial({ priority: 882, message: `Error loading TW article`, details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}: ${trcGCerror}`, excerpt: totalLink, location: ourLocation });
             }
             if (!twFileContent)
-                addNoticePartial({ priority: 883, message: `Unable to find/load TW article`, details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                addNoticePartial({ priority: 883, message: "Unable to find/load linked TW article", details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: ourLocation });
             else { // we got the content of the TW article
                 if (twFileContent.length < 10)
-                    addNoticePartial({ priority: 881, message: `TW article seems empty`, details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                    addNoticePartial({ priority: 881, message: `TW article seems empty`, details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: ourLocation });
                 else if (checkingOptions?.disableLinkedTWArticlesCheckFlag !== true) {
                     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTWArticlesCheckFlag} so checking TW article: ${filepath}`);
                     if (!await alreadyChecked(twPathParameters)) {
                         // functionLog(`checkNotesLinksToOutside needs to check TW article: ${filepath}`);
                         const checkTWFileResult = await checkMarkdownText(foundLanguageCode, repoCode, `TW ${regexResultArray[3].trim()}.md`, twFileContent, ourLocation, checkingOptions);
                         for (const noticeObject of checkTWFileResult.noticeList)
-                            // Why don't we use addNoticePartial() here? (It adds bookID and fieldName.) Maybe it would be misleading???
+                            // Why don’t we use addNoticePartial() here? (It adds bookID and fieldName.) Maybe it would be misleading???
                             ctarResult.noticeList.push({ ...noticeObject, username: twRepoUsername, repoCode: 'TW', repoName: twRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TW' });
                         ctarResult.checkedFileCount += 1;
                         ctarResult.checkedFilenames.push(`${regexResultArray[3].trim()}.md`);
@@ -680,7 +680,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             else if (!linkVerseInt || linkVerseInt < 0 || linkVerseInt > numVersesThisChapter)
                 addNoticePartial({ priority: 653, message: "Bad verse number in markdown Bible help link", details: `${linkBookCode} ${linkChapterInt}:${linkVerseInt} vs ${numVersesThisChapter} verses`, excerpt: totalLink, location: ourLocation });
         } else
-            debugLog(`Seems BIBLE_FULL_HELP_REGEX '${totalLink}' didn't have a link book code!`);
+            debugLog(`Seems BIBLE_FULL_HELP_REGEX '${totalLink}' didn’t have a link book code!`);
     }
 
     // Check for this-chapter Bible links like [Revelation 3:11](./11.md)
@@ -1260,7 +1260,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 const serverString = uri.replace('://', '!!!').split('/')[0].replace('!!!', '://').toLowerCase(); // Get the bit before any forward slashes
 
                 // NOTE: These message strings must match RenderProcessedResults.js
-                if (!serverString.endsWith('door43.org') && !serverString.endsWith('unfoldingword.org') && !serverString.endsWith('ufw.io')) // don't try to fetch general links
+                if (!serverString.endsWith('door43.org') && !serverString.endsWith('unfoldingword.org') && !serverString.endsWith('ufw.io')) // don’t try to fetch general links
                     addNoticePartial({ priority: 32, message: `Untested general/outside link`, details: "please manually double-check link—probably no problem", excerpt: totalLink, location: ourLocation });
                 else { // Try to fetch general links
                     let generalFileContent, hadError = false;
@@ -1268,7 +1268,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                         // generalFileContent = await cachedGetFileUsingFullURL({ uri });
                         // debugLog(`${displayText} ${uri} got: (${generalFileContent.length}) ${generalFileContent.substring(0, 10)}...`);
                         // debugLog(`uri='${uri}', serverString='${serverString}'`);
-                        // NOTE: The following line (with or without the mode) doesn't help -- actually makes things slightly worse
+                        // NOTE: The following line (with or without the mode) doesn’t help -- actually makes things slightly worse
                         // const response = await fetch(uri, {headers:{'Access-Control-Allow-Origin': serverString}});
                         // const response = await fetch(uri, {mode: 'cors'});
                         // const response = await fetch(uri, {mode: 'cors', headers:{'Access-Control-Allow-Origin': serverString}});
@@ -1284,10 +1284,10 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                         hadError = true;
                     }
                     if (!hadError && !generalFileContent)
-                        addNoticePartial({ priority: 783, message: `Unable to find/load general link`, excerpt: totalLink, location: ourLocation });
+                        addNoticePartial({ priority: 783, message: "Unable to find/load general link", excerpt: totalLink, location: ourLocation });
                     else if (generalFileContent) { // we got the content of the general article
                         if (generalFileContent.length < 10)
-                            addNoticePartial({ priority: 781, message: `Linked general article seems empty`, excerpt: totalLink, location: ourLocation });
+                            addNoticePartial({ priority: 781, message: "Linked general article seems empty", excerpt: totalLink, location: ourLocation });
                     }
                 }
                 markAsChecked(dummyPathParameters); // don’t bother waiting for the result of this async call

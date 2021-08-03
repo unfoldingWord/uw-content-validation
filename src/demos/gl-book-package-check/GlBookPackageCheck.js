@@ -70,7 +70,7 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
                 setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running GL book packages check…</p>);
                 await clearCaches();
             }
-            else await clearCheckedArticleCache(); // otherwise we wouldn't see any of the warnings again from checking these
+            else await clearCheckedArticleCache(); // otherwise we wouldn’t see any of the warnings again from checking these
 
             // Load whole repo zip files which is maybe faster than loading several individual files
             //  especially if we are going to also check the manifests, license, and ReadMe files as well as the book file.
@@ -93,7 +93,7 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
                 else if (dataSet === 'BOTH')
                     repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TN2', 'TQ', 'TQ2', 'SN', 'SQ'];
                 const whichTestament = books.testament(bookID); // returns 'old' or 'new'
-                logicAssert(whichTestament === 'old' || whichTestament === 'new', `BookPackageCheck() couldn't find testament for '${bookID}'`);
+                logicAssert(whichTestament === 'old' || whichTestament === 'new', `BookPackageCheck() couldn’t find testament for '${bookID}'`);
                 const origLangRepo = whichTestament === 'old' ? 'UHB' : 'UGNT';
                 repoPreloadList.unshift(origLangRepo);
             }

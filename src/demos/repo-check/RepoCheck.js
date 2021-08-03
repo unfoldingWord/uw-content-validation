@@ -77,7 +77,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running repository check…</p>);
                 await clearCaches();
             }
-            else await clearCheckedArticleCache(); // otherwise we wouldn't see any of the warnings again from checking these
+            else await clearCheckedArticleCache(); // otherwise we wouldn’t see any of the warnings again from checking these
 
             let [languageCode, repoCode] = repoName.split('_');
             repoCode = repoCode.toUpperCase();

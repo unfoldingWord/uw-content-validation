@@ -47,7 +47,7 @@ import BookPackageCheck from './BookPackageCheck';
   // They control whether the linked articles themselves are also checked or not
   disableLinkedTAArticlesCheckFlag='false' // 'true' or 'false'
   disableLinkedTWArticlesCheckFlag='false' // 'true' or 'false'
-  disableLinkedLexiconEntriesCheckFlag='false' // 'true' or 'false'
+  disableLinkedLexiconEntriesCheckFlag='true' // 'true' or 'false' -- lexicon entries still have many inconsistencies
 
   // Lines starting with // are ignored -- you can add or remove // as desired
   // Specifying excerptLength and maximumSimilarMessages is just to show off options

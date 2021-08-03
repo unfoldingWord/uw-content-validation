@@ -282,7 +282,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
         try {
           repoFileContent = await getFile_({ username, repository: repoName, path: thisFilepath, branch: repoBranch });
           // debugLog("Fetched fileContent for", repoName, thisPath, typeof repoFileContent, repoFileContent.length);
-        } catch (cRgfError) {
+        } catch (cRgfError) { // NOTE: The error can depend on whether the zipped repo is cached or not
           console.error(`checkRepo(${username}, ${repoName}, ${repoBranch}, ${givenLocation}, (fn), ${JSON.stringify(checkingOptions)})) failed to load`, thisFilepath, repoBranch, `${cRgfError}`);
           let details = `username=${username}`;
           if (! await repositoryExistsOnDoor43({ username, repository: repoName }))
@@ -290,7 +290,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
           else {
             // eslint-disable-next-line eqeqeq
             if (cRgfError != 'TypeError: repoFileContent is null') details += ` error=${cRgfError}`;
-            addNoticePartial({ priority: 996, message: "Unable to load", details: `username=${username} error=${cRgfError}`, bookID: ourBookID, filename: thisFilename, location: `${givenLocation} ${thisFilepath}`, extra: repoName });
+            addNoticePartial({ priority: 996, message: "Unable to load file", details, bookID: ourBookID, filename: thisFilename, location: `${givenLocation} ${thisFilepath}`, extra: repoName });
           }
           return;
         }
@@ -306,7 +306,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
           checkedFilenameExtensions.add(thisFilenameExtension);
           totalCheckedSize += repoFileContent.length;
           // functionLog(`checkRepo checked ${thisFilename}`);
-          if (thisFilenameExtension !== 'md') // There's often far, far too many of these
+          if (thisFilenameExtension !== 'md') // There’s often far, far too many of these
             addSuccessMessage(`Checked ${repoName} ${bookOrFileCode.toUpperCase()} file: ${thisFilename}`);
         }
       }

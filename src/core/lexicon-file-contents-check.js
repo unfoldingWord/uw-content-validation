@@ -155,7 +155,7 @@ export async function checkLexiconFileContents(languageCode, repoCode, lexiconFi
         if (currentLevel && line.startsWith('* ')) {
             let adjustedLine = line.substring(2);
             const colonIndex = adjustedLine.indexOf(':');
-            if (colonIndex !== -1) adjustedLine = adjustedLine.substring(0, colonIndex); // we don't want the actual data
+            if (colonIndex !== -1) adjustedLine = adjustedLine.substring(0, colonIndex); // we don’t want the actual data
             hierarchy[hierarchy.length - 1].sublevels.push(adjustedLine);
         }
     }

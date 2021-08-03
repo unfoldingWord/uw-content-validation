@@ -139,11 +139,11 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
         //parameterAssert(location !== undefined, "checkUSFMText ourCheckNotesLinksToOutside: 'location' parameter should be defined");
         //parameterAssert(typeof location === 'string', `checkUSFMText ourCheckNotesLinksToOutside: 'location' parameter should be a string not a '${typeof location}': ${location}`);
 
-        // Empty fields on the next line are bookID, C, V (as we don't have that information here)
+        // Empty fields on the next line are bookID, C, V (as we don’t have that information here)
         let adjustedTextOrFileName = textOrFileName;
         if (textOrFileName === 'README.md' || textOrFileName === 'LICENSE.md') adjustedTextOrFileName = textOrFileName.substring(0, textOrFileName.length - 3);
         let adjustedLanguageCode = languageCode; // This is the language code of the resource with the link
-        if (languageCode === 'hbo' || languageCode === 'el-x-koine') adjustedLanguageCode = 'en' // This is a guess (and won't be needed for TWs when we switch to TWLs)
+        if (languageCode === 'hbo' || languageCode === 'el-x-koine') adjustedLanguageCode = 'en' // This is a guess (and won’t be needed for TWs when we switch to TWLs)
         const coTNlResultObject = await checkNotesLinksToOutside(languageCode, repoCode, '', '', '', adjustedTextOrFileName, lineText, location, { ...checkingOptions, defaultLanguageCode: adjustedLanguageCode });
         // debugLog(`coTNlResultObject=${JSON.stringify(coTNlResultObject)}`);
 
@@ -328,7 +328,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
                 if (indentLevels.length > 1 && indentLevels[indentLevels.length - 2] === numLeadingSpaces)
                     // We went back to the previous level
                     indentLevels.pop();
-                else { // seems we didn't go back to the previous level ???
+                else { // seems we didn’t go back to the previous level ???
                     let foundPreviousLevel = false;
                     for (let z = indentLevels.length - 1; z >= 0; z--) {
                         if (indentLevels[z] === numLeadingSpaces) {
@@ -371,7 +371,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
 
     // Check for an uneven number of sets of symmetrical (i.e., opener == closer) multicharacter markdown formatting sequences
     for (const thisSet of [ // Put longest ones first
-        // Seems that the fancy ones (commented out) don't find occurrences at the start (or end?) of the text
+        // Seems that the fancy ones (commented out) don’t find occurrences at the start (or end?) of the text
         ['___', /___/g],
         // ['___', r'[^_]___[^_]'], // three underlines
         ['***', /\*\*\*/g],

@@ -108,12 +108,12 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
         taFileContent = await getFile_({ username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch });
         // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
         if (!taFileContent)
-            addNoticePartial({ priority: 889, message: `Unable to find/load TA article`, details: `linked from TN ${fieldName}`, excerpt: fieldText, location: `${ourLocation} ${filepath}` });
+            addNoticePartial({ priority: 889, message: "Unable to find/load linked TA article", details: `linked from TN ${fieldName}`, excerpt: fieldText, location: `${ourLocation} ${filepath}` });
         else if (taFileContent.length < 10)
-            addNoticePartial({ priority: 887, message: `TA article seems empty`, details: `linked from TN ${fieldName}`, excerpt: fieldText, location: `${ourLocation} ${filepath}` });
-    } catch (trcGCerror) {
+            addNoticePartial({ priority: 887, message: "Linked TA article seems empty", details: `linked from TN ${fieldName}`, excerpt: fieldText, location: `${ourLocation} ${filepath}` });
+    } catch (trcGCerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
         // console.error("checkSupportReferenceInTA() failed to load", taRepoUsername, taRepoName, filepath, taRepoBranch, trcGCerror.message);
-        addNoticePartial({ priority: 888, message: `Error loading TA article`, details: `linked from TN ${fieldName}`, excerpt: fieldText, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+        addNoticePartial({ priority: 888, message: "Error loading linked TA article", details: `linked from TN ${fieldName}`, excerpt: fieldText, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
     }
 
     // functionLog(`checkSupportReferenceInTA is returning ${JSON.stringify(ctarResult)}`);

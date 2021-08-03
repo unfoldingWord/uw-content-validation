@@ -79,11 +79,11 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
     function addNoticePartial(incompleteNoticeObject) {
         /**
         * @description - adds a new notice entry, adding bookID,C,V to the given fields
-        * @param {Number} priority - notice priority from 1 (lowest) to 999 (highest)
+        * @param {number} priority - notice priority from 1 (lowest) to 999 (highest)
         * @param {string} message - the text of the notice message
         * @param {string} rowID - 4-character row ID field
-        * @param {Number} lineNumber - one-based line number
-        * @param {Number} characterIndex - zero-based index of where the issue occurs in the line
+        * @param {number} lineNumber - one-based line number
+        * @param {number} characterIndex - zero-based index of where the issue occurs in the line
         * @param {string} excerpt - short excerpt from the line centred on the problem (if available)
         * @param {string} location - description of where the issue is located
         */
@@ -199,7 +199,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         //parameterAssert(typeof twLinkText === 'string', `checkTWL_TSV6DataRow ourCheckNotesLinksToOutside: 'twLinkText' parameter should be a string not a '${typeof twLinkText}'`);
 
         let adjustedLanguageCode = languageCode; // This is the language code of the resource with the link
-        if (languageCode === 'hbo' || languageCode === 'el-x-koine') adjustedLanguageCode = 'en' // This is a guess (and won't be needed for TWs when we switch to TWLs)
+        if (languageCode === 'hbo' || languageCode === 'el-x-koine') adjustedLanguageCode = 'en' // This is a guess (and won’t be needed for TWs when we switch to TWLs)
         const coTNlResultObject = await checkNotesLinksToOutside(languageCode, repoCode, bookID, givenC, givenV, fieldName, twLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: adjustedLanguageCode });
         // debugLog(`coTNlResultObject=${JSON.stringify(coTNlResultObject)}`);
 
@@ -251,7 +251,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
     const lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook;
     if (bookID === 'OBS')
-        numChaptersThisBook = 50; // There's 50 Open Bible Stories
+        numChaptersThisBook = 50; // There’s 50 Open Bible Stories
     else {
         //parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in checkTWL_TSV6DataRow");
         try {
@@ -428,7 +428,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         // Have a go at getting some of the first fields out of the row
         let rowID = '????';
         try { rowID = fields[1]; } catch { }
-        addNoticePartial({ priority: 984, message: `Found wrong number of TSV fields (expected ${NUM_EXPECTED_TWL_TSV_FIELDS})`, details: `Found ${fields.length} field${fields.length === 1 ? '' : 's'}`, rowID, location: ourRowLocation });
+        addNoticePartial({ priority: 984, message: `Found wrong number of TSV fields (expected ${NUM_EXPECTED_TWL_TSV_FIELDS})`, details: `found ${fields.length} field${fields.length === 1 ? '' : 's'}`, rowID, location: ourRowLocation });
     }
 
     // debugLog(`  checkTWL_TSV6DataRow returning with ${drResult.noticeList.length.toLocaleString()} notice(s).`);

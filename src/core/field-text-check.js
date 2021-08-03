@@ -149,11 +149,11 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
             addNoticePartial({ priority: 109, message: `Unexpected leading space`, characterIndex: 0, excerpt, location: ourLocation });
     } else if (fieldText[0] === '\u2060') {
         const excerpt = fieldText.substring(0, excerptLength).replace(/\u2060/g, '‼') + (fieldText.length > excerptLength ? '…' : '');
-        addNoticePartial({ priority: 770, message: `Unexpected leading word-joiner`, characterIndex: 0, excerpt, location: ourLocation });
+        addNoticePartial({ priority: 770, message: `Unexpected leading word-joiner (u2060) character`, characterIndex: 0, excerpt, location: ourLocation });
         if (suggestion[0] === '\u2060') suggestion = suggestion.substring(1);
     } else if (fieldText[0] === '\u200D') {
         const excerpt = fieldText.substring(0, excerptLength).replace(/\u200D/g, '‼') + (fieldText.length > excerptLength ? '…' : '');
-        addNoticePartial({ priority: 771, message: `Unexpected leading zero-width joiner`, characterIndex: 0, excerpt, location: ourLocation });
+        addNoticePartial({ priority: 771, message: `Unexpected leading zero-width joiner (u200D) character`, characterIndex: 0, excerpt, location: ourLocation });
         if (suggestion[0] === '\u200D') suggestion = suggestion.substring(1);
     }
     if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 64)
@@ -170,12 +170,12 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 772)
         && fieldText[fieldText.length - 1] === '\u2060') {
         const excerpt = fieldText.substring(0, excerptLength).replace(/\u2060/g, '‼') + (fieldText.length > excerptLength ? '…' : '');
-        addNoticePartial({ priority: 772, message: `Unexpected trailing word-joiner`, characterIndex: 0, excerpt, location: ourLocation });
+        addNoticePartial({ priority: 772, message: `Unexpected trailing word-joiner (u2060) character`, characterIndex: 0, excerpt, location: ourLocation });
         if (suggestion[suggestion.length - 1] === '\u2060') suggestion = suggestion.substring(0, suggestion.length - 1);
     } else if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 773)
         && fieldText[fieldText.length - 1] === '\u200D') {
         const excerpt = fieldText.substring(0, excerptLength).replace(/\u200D/g, '‼') + (fieldText.length > excerptLength ? '…' : '');
-        addNoticePartial({ priority: 773, message: `Unexpected trailing zero-width joiner`, characterIndex: 0, excerpt, location: ourLocation });
+        addNoticePartial({ priority: 773, message: `Unexpected trailing zero-width joiner (u200D) character`, characterIndex: 0, excerpt, location: ourLocation });
         if (suggestion[suggestion.length - 1] === '\u200D') suggestion = suggestion.substring(0, suggestion.length - 1);
     }
 
@@ -255,7 +255,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 581)
         && (characterIndex = fieldText.indexOf('\xA0')) >= 0) { // non-break space
         const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/\xA0/g, '⍽') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
-        addNoticePartial({ priority: 581, message: "Unexpected non-break space (uA0) character", characterIndex, excerpt, location: ourLocation });
+        addNoticePartial({ priority: 581, message: "Unexpected non-break space (u00A0) character", characterIndex, excerpt, location: ourLocation });
         suggestion = suggestion.replace(/\xA0/g, ' ');
     }
     if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 580)

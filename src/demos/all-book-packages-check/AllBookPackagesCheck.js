@@ -63,7 +63,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     }
     bookIDList.push(bookID);
   }
-  // TODO: I don't understand why this command gets executed multiple times!!!
+  // TODO: I don’t understand why this command gets executed multiple times!!!
   userLog(`AllBookPackagesCheck bookIDList (${bookIDList.length}) = ${bookIDList.join(', ')}`);
 
   const checkingOptions = { // Uncomment any of these to test them
@@ -94,7 +94,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running all book packages check…</p>);
         await clearCaches();
       }
-      else await clearCheckedArticleCache(); // otherwise we wouldn't see any of the warnings again from checking these
+      else await clearCheckedArticleCache(); // otherwise we wouldn’t see any of the warnings again from checking these
 
       // Load whole repos, especially if we are going to check files in manifests
       let repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
