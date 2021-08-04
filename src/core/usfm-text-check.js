@@ -14,7 +14,7 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.9.2';
+// const USFM_VALIDATOR_VERSION_STRING = '0.10.0';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for STs
@@ -132,8 +132,20 @@ const ZALN_S_REGEX = new RegExp('\\\\zaln-s (.+?)\\\\\\*', 'g');
 const KS_REGEX = new RegExp('\\\\k-s (.+?)\\\\\\*', 'g');
 const ATTRIBUTE_REGEX = new RegExp('[ |]([^ |]+?)="([^"]*?)"', 'g');
 
-const BAD_HEBREW_VOWEL_DAGESH_REGEX = new RegExp('[\\u05b4\\u05b5\\u05b6\\u05b7\\u05b8\\u05b9\\u05ba\\05bb]\\u05bc', 'g');
-
+// TODO: Are one or two of these checks superfluous ???
+// See https://codepoints.net/hebrew for a list of the Unicode chars in this block
+// Only shin/sin consonant should come before a sin/shin dot
+const BAD_HEBREW_SIN_SHIN_DOT_REGEX = new RegExp('[^\\u05E9][\\u05C1\\u05C2]', 'g');
+// Only certain consonants should come before a dagesh dot -- Unicode char is also used for mapiq
+const BAD_HEBREW_DAGESH_MAPIQ_REGEX = new RegExp('[^\\u05C1\\u05C2אבגדהוזטיךכלמנספצקרת]\\u05BC', 'g'); // includes shin/sin dots and some final consonants
+// Hebrew vowels should never come before a dagesh
+const BAD_HEBREW_VOWEL_DAGESH_REGEX = new RegExp('[\\u05B4-\\u05BB]\\u05BC', 'g');
+// Hebrew cantillation marks should never come before a dagesh
+const BAD_HEBREW_CANTILLATION_DAGESH_REGEX = new RegExp('[\\u0591-\\u05AF]\\u05BC', 'g');
+// Hebrew cantillation marks should never come before a vowel
+const BAD_HEBREW_CANTILLATION_VOWEL_REGEX = new RegExp('[\\u0591-\\u05AF][\\u05B4-\\u05BB]', 'g');
+// Hebrew final consonants should only come near the end of the word
+const BAD_HEBREW_FINAL_CONSONANT_REGEX = new RegExp('[ךםןףץ][^ |"־\\u0592\\u0599\\u05A9\\u05AE\\u05B0\\u05B8\\u05BC]', 'g'); // Includes maqaf, sheva, dagesh, and just a few vowels and accents
 
 /**
  *
@@ -156,7 +168,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
      */
     // functionLog(`checkUSFMText(${languageCode}, ${repoCode}, ${bookID}, ${filename}, ${givenText.length.toLocaleString()} chars, '${givenLocation}', ${JSON.stringify(checkingOptions)})…`);
     // const match = HEBREW_CANTILLATION_REGEX.exec('\\f + \\ft Q \\+w הִנֵּ֤ה|lemma="הִנֵּ֤ה" strong="H2009" x-morph="He,Tm"\\+w*\\f*');
-    // console.log(`Got test cantillation match: ${typeof match} ${match.length} '${JSON.stringify(match)}'`);
+    // console.log(`Got test cantillation match: ${match.length} ${JSON.stringify(match)}`);
 
     //parameterAssert(languageCode !== undefined, "checkUSFMText: 'languageCode' parameter should be defined");
     //parameterAssert(typeof languageCode === 'string', `checkUSFMText: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
@@ -660,15 +672,44 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
 
         // Check for invalid character combinations
         if (languageCode === 'hbo') {
-            // TODO: How should we check other potential bad combinations
-            const match = BAD_HEBREW_VOWEL_DAGESH_REGEX.exec(rest);
-            if (match) { // it’s null if no matches
-                // debugLog(`Got bad dagesh after vowel character order match: ${typeof match} ${match.length} '${JSON.stringify(match)}'`);
+            let match;
+            // NOTE: Use else statements so we only get ONE of these errors
+            if ((match = BAD_HEBREW_SIN_SHIN_DOT_REGEX.exec(rest))) { // it’s null if no matches
+                debugLog(`checkUSFMLineText: ${bookID} ${C}:${V} line ${lineNumber} got BAD character before shin/sin dot match: ${match.length} ${JSON.stringify(match)}`);
                 const characterIndex = rest.indexOf(match[0][0]);
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-                addNoticePartial({ priority: 807, message: "Unexpected Hebrew dagesh after vowel", details: `found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+                addNoticePartial({ priority: 865, message: "Unexpected Hebrew character before shin/sin dot", details: `found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
-
+            else if ((match = BAD_HEBREW_VOWEL_DAGESH_REGEX.exec(rest))) { // it’s null if no matches
+                debugLog(`checkUSFMLineText: ${bookID} ${C}:${V} line ${lineNumber} got BAD dagesh after vowel character order match: ${match.length} ${JSON.stringify(match)}`);
+                const characterIndex = rest.indexOf(match[0][0]);
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
+                addNoticePartial({ priority: 864, message: "Unexpected Hebrew dagesh after vowel", details: `found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+            }
+            else if ((match = BAD_HEBREW_DAGESH_MAPIQ_REGEX.exec(rest))) { // it’s null if no matches
+                debugLog(`checkUSFMLineText: ${bookID} ${C}:${V} line ${lineNumber} got BAD character before dagesh match: ${match.length} ${JSON.stringify(match)}`);
+                const characterIndex = rest.indexOf(match[0][0]);
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
+                addNoticePartial({ priority: 863, message: "Unexpected Hebrew character before dagesh", details: `found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+            }
+            else if ((match = BAD_HEBREW_CANTILLATION_DAGESH_REGEX.exec(rest))) { // it’s null if no matches
+                debugLog(`checkUSFMLineText: ${bookID} ${C}:${V} line ${lineNumber} got BAD cantillation mark character before dagesh match: ${match.length} ${JSON.stringify(match)}`);
+                const characterIndex = rest.indexOf(match[0][0]);
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
+                addNoticePartial({ priority: 862, message: "Unexpected Hebrew cantillation mark before vowel", details: `found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+            }
+            else if ((match = BAD_HEBREW_CANTILLATION_VOWEL_REGEX.exec(rest))) { // it’s null if no matches
+                debugLog(`checkUSFMLineText: ${bookID} ${C}:${V} line ${lineNumber} got BAD vowel after cantillation mark character order match: ${match.length} ${JSON.stringify(match)}`);
+                const characterIndex = rest.indexOf(match[0][0]);
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
+                addNoticePartial({ priority: 861, message: "Unexpected Hebrew vowel after cantillation mark", details: `found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+            }
+            else if ((match = BAD_HEBREW_FINAL_CONSONANT_REGEX.exec(rest))) { // it’s null if no matches
+                debugLog(`checkUSFMLineText: ${bookID} ${C}:${V} line ${lineNumber} got BAD final consonant match: ${match.length} ${JSON.stringify(match)}`);
+                const characterIndex = rest.indexOf(match[0][0]);
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
+                addNoticePartial({ priority: 860, message: "Unexpected Hebrew final consonant not at word end", details: `found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+            }
         }
 
         // Check that no \w markers touch, i.e., shouldn’t have '\w*\w' in file
@@ -970,7 +1011,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                     if (attributeName === 'lemma' && repoCode === 'UHB') {
                         const match = HEBREW_CANTILLATION_REGEX.exec(attributeValue);
                         if (match) { // it’s null if no matches
-                            // debugLog(`Got cantillation match: ${typeof match} ${match.length} '${JSON.stringify(match)}'`);
+                            // debugLog(`Got cantillation match: ${match.length} ${JSON.stringify(match)}`);
                             addNoticePartial({ priority: 905, message: "Unexpected Hebrew cantillation mark in lemma field", details: `found ${match.length} '${match}'`, lineNumber, C, V, excerpt: attributeValue, location: lineLocation });
                         }
                     } else if (attributeName === 'x-morph'

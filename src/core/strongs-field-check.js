@@ -241,7 +241,7 @@ export async function checkStrongsField(languageCode, repoCode, fieldName, field
                 dataAssert(lexiconMarkdownTextContents.length > 10, `checkStrongsField expected ${fetchLinkDescription} lexicon file to be longer: ${lexiconMarkdownTextContents.length}`);
                 // debugLog(`checkStrongsField lexicon link fetch got text: ${lexiconMarkdownTextContents.length}`);
             } catch (flError) { // NOTE: The error can depend on whether the zipped repo is cached or not
-                console.error(`checkStrongsField lexicon link fetch had an error fetching ${fetchLinkDescription}: ${flError}`);
+                // console.error(`checkStrongsField lexicon link fetch had an error fetching ${fetchLinkDescription}: ${flError}`);
                 let details = `${lexiconRepoCode} username=${username}`;
                 // eslint-disable-next-line eqeqeq
                 if (flError != 'TypeError: lexiconMarkdownTextContents is null') details += ` error=${flError}`;
