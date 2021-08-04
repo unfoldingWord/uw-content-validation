@@ -14,7 +14,7 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.10.0';
+// const USFM_VALIDATOR_VERSION_STRING = '0.10.1';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for STs
@@ -681,7 +681,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                 addNoticePartial({ priority: 865, message: "Unexpected Hebrew character before shin/sin dot", details: `found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
             else if ((match = BAD_HEBREW_VOWEL_DAGESH_REGEX.exec(rest))) { // it’s null if no matches
-                debugLog(`checkUSFMLineText: ${bookID} ${C}:${V} line ${lineNumber} got BAD dagesh after vowel character order match: ${match.length} ${JSON.stringify(match)}`);
+                // debugLog(`checkUSFMLineText: ${bookID} ${C}:${V} line ${lineNumber} got BAD dagesh after vowel character order match: ${match.length} ${JSON.stringify(match)}`);
                 const characterIndex = rest.indexOf(match[0][0]);
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
                 addNoticePartial({ priority: 864, message: "Unexpected Hebrew dagesh after vowel", details: `found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
@@ -696,10 +696,10 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                 debugLog(`checkUSFMLineText: ${bookID} ${C}:${V} line ${lineNumber} got BAD cantillation mark character before dagesh match: ${match.length} ${JSON.stringify(match)}`);
                 const characterIndex = rest.indexOf(match[0][0]);
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-                addNoticePartial({ priority: 862, message: "Unexpected Hebrew cantillation mark before vowel", details: `found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+                addNoticePartial({ priority: 862, message: "Unexpected Hebrew cantillation mark before dagesh", details: `found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
             else if ((match = BAD_HEBREW_CANTILLATION_VOWEL_REGEX.exec(rest))) { // it’s null if no matches
-                debugLog(`checkUSFMLineText: ${bookID} ${C}:${V} line ${lineNumber} got BAD vowel after cantillation mark character order match: ${match.length} ${JSON.stringify(match)}`);
+                // debugLog(`checkUSFMLineText: ${bookID} ${C}:${V} line ${lineNumber} got BAD vowel after cantillation mark character order match: ${match.length} ${JSON.stringify(match)}`);
                 const characterIndex = rest.indexOf(match[0][0]);
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
                 addNoticePartial({ priority: 861, message: "Unexpected Hebrew vowel after cantillation mark", details: `found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
