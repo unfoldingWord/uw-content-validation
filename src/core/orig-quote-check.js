@@ -132,15 +132,17 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
             const searchString = `-${adjC}-${adjV}.`;
             // NOTE: Bible references get appended to the last frame text (but I don’t think it does any harm)
             for (const line of originalMarkdown.split('\n')) {
-                if (!line) continue;
+                if (!line) continue; // Skip empty line
                 if (line.indexOf(searchString) > 0) { gotIt = true; continue; }
                 if (gotIt)
                     if (line.indexOf('[OBS Image]') > 0) // This is the next frame
                         break;
+                    else if (line[0] === '_') // e.g., _A Bible story from...
+                        verseText += ` ${line.replace(/_/, '')}`; // NOTE: remove underlines (markdown format codes)
                     else
                         verseText += line; // NOTE: works coz all text on one line, otherwise would need to insert spaces here
             }
-            // debugLog(`Got OBS ${V}:${C} '${verseText}'`);
+            // debugLog(`getOriginalPassage got OBS ${V}:${C} '${verseText}'`);
         } else { // not OBS, so a USFM Bible book
             const bookNumberAndName = books.usfmNumberName(bookID);
             let whichTestament;
@@ -428,10 +430,10 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
         addNoticePartial({ priority: 159, message: "Should use proper ellipse character (not periods)", characterIndex, excerpt, location: ourLocation });
     }
 
-    const noMaqafFieldText = fieldText.replace(/־/g, ' ');
+    const noDashFieldText = fieldText.replace(/[—־]/g, ' '); // em-dash and then maqaf
     let quoteBits;
     if (fieldText.indexOf(discontiguousDivider) >= 0) {
-        quoteBits = noMaqafFieldText.split(discontiguousDivider);
+        quoteBits = noDashFieldText.split(discontiguousDivider);
         if ((characterIndex = fieldText.indexOf(` ${discontiguousDivider}`)) >= 0 || (characterIndex = fieldText.indexOf(`${discontiguousDivider} `)) >= 0) {
             // debugLog(`Unexpected space(s) beside ellipse in '${fieldText}'`);
             const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
@@ -445,7 +447,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
         //         addNotice({ priority: 157, message: `Unexpected space(s) beside divider ${discontiguousDivider}`, characterIndex, excerpt, location: ourLocation });
         //     }
     } else if (discontiguousDivider === '…' && fieldText.indexOf('...') >= 0) { // Yes, we still actually allow this
-        quoteBits = noMaqafFieldText.split('...');
+        quoteBits = noDashFieldText.split('...');
         if ((characterIndex = fieldText.indexOf(' ...')) >= 0 || (characterIndex = fieldText.indexOf('... ')) >= 0) {
             // debugLog(`Unexpected space(s) beside ellipse characters in '${fieldText}'`);
             const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
@@ -454,8 +456,8 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
     }
     // debugLog(`Got quoteBits=${quoteBits}`);
 
-    // Find the verse text in the original language
-    let verseText, noMaqafVerseText;
+    // Find the verse text in the original language (HEB, GRK, or ENG for OBS)
+    let verseText, noDashVerseText;
     try {
         verseText = checkingOptions?.originalLanguageVerseText;
     } catch (gcVTerror) { }
@@ -468,7 +470,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
                 addNoticePartial({ priority: 851, message: bookID === 'OBS' ? "Unable to load OBS story text" : "Unable to load original language verse text", location: ourLocation });
                 return colqResult; // nothing else we can do here
             }
-            noMaqafVerseText = verseText.replace(/־/g, ' '); // Treat Hebrew maqaf as a space
+            noDashVerseText = verseText.replace(/[—־]/g, ' '); // em-dash and then maqaf
         }
     }
 
@@ -568,7 +570,14 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
             logicAssert(origWord.indexOf(' ') === -1, `getWordsIndex: origWords shouldn’t have spaces in them: '${origWord}'`);
             ++tryCount;
 
-            if (searchWord === origWord) {
+            if (searchWord === origWord
+                || (bookID === 'OBS' && matchWordCount === 0 && '“‘('.indexOf(origWord[0]) !== -1
+                    && (searchWord === origWord.substring(1)
+                        || (searchWord === origWord.substring(1, origWord.length - 1) && ',.'.indexOf(origWord.slice(-1)) !== -1)
+                        || (searchWord === origWord.substring(1, origWord.length - 2) && [',”', ',’', '.”', '.’', '!”'].indexOf(origWord.slice(-2)) !== -1)
+                    )
+                )
+            ) {
                 if (matchWordCount === 0) matchStartIndex = startAt + tryCount - 1;
                 if (++matchWordCount === searchWords.length) {
                     if (occurrence === 1) {
@@ -584,15 +593,19 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
                 const lastWordRemainder = origWord.slice(searchWord.length);
                 // debugLog(`  getWordsIndex got lastWordRemainder=${lastWordRemainder}`);
                 let remainderIsAllPunct = true;
-                for (const lastWordRemainderChar of lastWordRemainder) {
-                    // debugLog(`  getWordsIndex checking lastWordRemainderChar=${lastWordRemainderChar}`);
-                    if (CLOSING_PUNCTUATION_CHARACTERS.indexOf(lastWordRemainderChar) === -1
-                        && ('ספ'.indexOf(lastWordRemainderChar) === -1)) {
-                        // debugLog(`  getWordsIndex failed at ${bookID} ${C}:${V} on lastWordRemainderChar=${lastWordRemainderChar}`);
-                        matchWordCount = 0; matchStartIndex = -1;// Back to square one
-                        remainderIsAllPunct = false; break;
+                const regex = new RegExp('[,.?!”]?’”?');
+                const specialMatch = regex.test(lastWordRemainder);
+                // if (specialMatch) debugLog(`  getWordsIndex checking special match on '${origWord}' lastWordRemainder=${lastWordRemainder} got ${specialMatch}`);
+                if (!specialMatch)
+                    for (const lastWordRemainderChar of lastWordRemainder) {
+                        // debugLog(`  getWordsIndex checking lastWordRemainderChar=${lastWordRemainderChar} from '${origWord}'`);
+                        if (CLOSING_PUNCTUATION_CHARACTERS.indexOf(lastWordRemainderChar) === -1
+                            && ('ספ'.indexOf(lastWordRemainderChar) === -1)) {
+                            // debugLog(`  getWordsIndex failed at ${bookID} ${C}:${V} on '${origWord}' with lastWordRemainderChar=${lastWordRemainderChar}`);
+                            matchWordCount = 0; matchStartIndex = -1;// Back to square one
+                            remainderIsAllPunct = false; break;
+                        }
                     }
-                }
                 if (remainderIsAllPunct) {
                     if (matchWordCount === 0) matchStartIndex = startAt + tryCount - 1;
                     // debugLog(`  getWordsIndex returning2 ${matchStartIndex}`);
@@ -611,9 +624,9 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
     // end of getWordsIndex function
 
     // Now check if the quote can be found in the verse text
-    const verseWords = noMaqafVerseText.split(' ');
+    const verseWords = noDashVerseText.split(' ');
     // debugLog(`checkOriginalLanguageQuoteAndOccurrence got ${bookID} ${C}:${V} verseWords (${verseWords.length}) = ${verseWords}`);
-    if (quoteBits) { // it had an ellipsis
+    if (quoteBits) { // it had multiple discontiguous parts
         // //parameterAssert(occurrence === 1, `Oh -- can get '${fieldText}' with occurrence=${occurrence} in ${bookID} ${C}:${V}`);
         if (occurrence !== 1) {
             addNoticePartial({ priority: 50, message: "Is this quote/occurrence correct???", details: `occurrence=${occurrence}`, excerpt: fieldText, location: ourLocation });
@@ -649,7 +662,9 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
         } else // < 2
             addNoticePartial({ priority: 815, message: "Divider without surrounding snippet", location: ourLocation });
     } else { // Only a single quote (no discontiguousDivider)
-        if (getWordsIndex(verseWords, noMaqafFieldText.split(' '), occurrence) >= 0) {
+        if (repoCode==='OBS-TN2' && (fieldText === "General Information"||fieldText === "Connecting Statement"))
+        ; // Just ignore these fixed strings
+        else if (getWordsIndex(verseWords, noDashFieldText.split(' '), occurrence) >= 0) {
             if (occurrence > 1) {
                 // functionLog(`checkOriginalLanguageQuoteAndOccurrence is checking for ${occurrence} occurrences of ${fieldText}`);
                 const verseTextBits = verseText.split(fieldText); // NOTE: can split (badly) on short strings (like δὲ or εἰ) mid-word
