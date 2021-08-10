@@ -2,14 +2,14 @@ import React from 'react';
 // eslint-disable-next-line no-unused-vars
 import { REPO_CODES_LIST } from '../../core/defaults';
 import * as books from '../../core/books/books';
-import { formRepoName, repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetBookFilenameFromManifest, checkManifestText, checkMarkdownText } from '../../core';
+import { formRepoName, repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetBookFilenameFromManifest, checkManifestText, checkMarkdownFileContents } from '../../core';
 import { checkFileContents } from '../file-check/checkFileContents';
 import { checkRepo } from '../repo-check/checkRepo';
 // eslint-disable-next-line no-unused-vars
 import { userLog, functionLog, debugLog, parameterAssert, logicAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.7.9';
+// const BP_VALIDATOR_VERSION_STRING = '0.8.0';
 
 const STANDARD_MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -266,9 +266,9 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       }
     }
     if (markdownFileContent) {
-      const cmtResultObject = await checkMarkdownText(languageCode, repoCode, filename.substring(0, filename.length - 3), markdownFileContent, markdownLocation, checkingOptions);
-      // debugLog(`ourCheckMarkdownFile checkMarkdownText(${repoName}) returned ${cmtResultObject.successList.length} success message(s) and ${cmtResultObject.noticeList.length} notice(s)`);
-      // debugLog(`ourCheckMarkdownFile checkMarkdownText(${repoName}) returned ${JSON.stringify(cmtResultObject)}`);
+      const cmtResultObject = await checkMarkdownFileContents(languageCode, repoCode, filename.substring(0, filename.length - 3), markdownFileContent, markdownLocation, checkingOptions);
+      // debugLog(`ourCheckMarkdownFile checkMarkdownFileContents(${repoName}) returned ${cmtResultObject.successList.length} success message(s) and ${cmtResultObject.noticeList.length} notice(s)`);
+      // debugLog(`ourCheckMarkdownFile checkMarkdownFileContents(${repoName}) returned ${JSON.stringify(cmtResultObject)}`);
       // NOTE: We ignore the returned success messages here
       // for (const successEntry of cfResultObject.successList) debugLog("  ourCheckBPFileContents:", successEntry);
       // debugLog("cfcResultObject", JSON.stringify(cfcResultObject));

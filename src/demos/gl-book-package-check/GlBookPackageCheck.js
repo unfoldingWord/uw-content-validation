@@ -8,7 +8,7 @@ import { checkBookPackage } from '../book-package-check/checkBookPackage';
 import { userLog, logicAssert } from '../../core/utilities';
 
 
-// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.14';
+// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.15';
 
 
 function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
@@ -102,7 +102,9 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
                 repoPreloadList.push('TA');
                 // TODO: What if it's OBS (whichTestament === 'none' ???)
                 // const lexiconRepo = whichTestament === 'old' ? 'UHAL' : 'UGL';
-                repoPreloadList.push(whichTestament === 'old' ? 'UHAL' : 'UGL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
+                // repoPreloadList.push(whichTestament === 'old' ? 'UHAL' : 'UGL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
+                repoPreloadList.push('UHAL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
+                repoPreloadList.push('UGL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
             }
             // debugLog(`GlBookPackageCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
 

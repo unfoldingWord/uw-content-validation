@@ -1,11 +1,10 @@
 // import { DEFAULT_EXCERPT_LENGTH } from './defaults'
-import { checkMarkdownText } from './markdown-text-check';
-import { checkTextfileContents } from './file-text-check';
+import { checkMarkdownFileContents } from './markdown-file-contents-check';
 // eslint-disable-next-line no-unused-vars
 import { userLog, functionLog, debugLog, parameterAssert } from './utilities';
 
 
-const LEXICON_MARKDOWN_FILE_VALIDATOR_VERSION_STRING = '0.1.0';
+const LEXICON_MARKDOWN_FILE_VALIDATOR_VERSION_STRING = '0.2.0';
 
 
 /**
@@ -90,19 +89,19 @@ export async function checkLexiconFileContents(languageCode, repoCode, lexiconFi
     * @param {string} optionalFieldLocation - description of where the field is located
     * @param {Object} checkingOptions - parameters that might affect the check
     */
-    async function ourCheckMarkdownText(lexiconMarkdownText, optionalFieldLocation, checkingOptions) {
+    async function ourCheckMarkdownFileContents(lexiconMarkdownText, optionalFieldLocation, checkingOptions) {
         // Does basic checks for small errors like leading/trailing spaces, etc.
 
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global list of notices
-        // debugLog(`checkLexiconFileContents ourCheckMarkdownText(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${optionalFieldLocation}, …)`);
-        parameterAssert(lexiconMarkdownText !== undefined, "cMdFC ourCheckMarkdownText: 'lexiconMarkdownText' parameter should be defined");
-        parameterAssert(typeof lexiconMarkdownText === 'string', `cMdFC ourCheckMarkdownText: 'lexiconMarkdownText' parameter should be a string not a '${typeof lexiconMarkdownText}'`);
-        parameterAssert(optionalFieldLocation !== undefined, "cMdFC ourCheckMarkdownText: 'optionalFieldLocation' parameter should be defined");
-        parameterAssert(typeof optionalFieldLocation === 'string', `cMdFC ourCheckMarkdownText: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
+        // debugLog(`checkLexiconFileContents ourCheckMarkdownFileContents(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${optionalFieldLocation}, …)`);
+        parameterAssert(lexiconMarkdownText !== undefined, "cMdFC ourCheckMarkdownFileContents: 'lexiconMarkdownText' parameter should be defined");
+        parameterAssert(typeof lexiconMarkdownText === 'string', `cMdFC ourCheckMarkdownFileContents: 'lexiconMarkdownText' parameter should be a string not a '${typeof lexiconMarkdownText}'`);
+        parameterAssert(optionalFieldLocation !== undefined, "cMdFC ourCheckMarkdownFileContents: 'optionalFieldLocation' parameter should be defined");
+        parameterAssert(typeof optionalFieldLocation === 'string', `cMdFC ourCheckMarkdownFileContents: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
-        const cmtResultObject = await checkMarkdownText(languageCode, repoCode, lexiconFilename, lexiconMarkdownText, optionalFieldLocation, checkingOptions);
+        const cmtResultObject = await checkMarkdownFileContents(languageCode, repoCode, lexiconFilename, lexiconMarkdownText, optionalFieldLocation, checkingOptions);
         // debugLog(`cmtResultObject=${JSON.stringify(cmtResultObject)}`);
 
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
@@ -110,35 +109,7 @@ export async function checkLexiconFileContents(languageCode, repoCode, lexiconFi
         for (const noticeEntry of cmtResultObject.noticeList)
             addNoticePartial(noticeEntry);
     }
-    // end of ourCheckMarkdownText function
-
-
-    /**
-    * @description - checks the given text field and processes the returned results
-    * @param {string} lexiconMarkdownText - the actual text of the file being checked
-    * @param {string} optionalFieldLocation - description of where the field is located
-    * @param {Object} checkingOptions - parameters that might affect the check
-    */
-    function ourFileTextCheck(lexiconMarkdownText, optionalFieldLocation, checkingOptions) {
-        // Does basic checks for small errors like leading/trailing spaces, etc.
-
-        // We assume that checking for compulsory fields is done elsewhere
-
-        // Updates the global list of notices
-        // debugLog(`cMdFC ourFileTextCheck(${lexiconMarkdownText}, (${lexiconMarkdownText.length}), ${optionalFieldLocation}, ${JSON.stringify(checkingOptions)})`);
-        parameterAssert(lexiconMarkdownText !== undefined, "cMdFC ourFileTextCheck: 'lexiconMarkdownText' parameter should be defined");
-        parameterAssert(typeof lexiconMarkdownText === 'string', `cMdFC ourFileTextCheck: 'lexiconMarkdownText' parameter should be a string not a '${typeof lexiconMarkdownText}'`);
-        parameterAssert(checkingOptions !== undefined, "cMdFC ourFileTextCheck: 'checkingOptions' parameter should be defined");
-
-        const ctfcResultObject = checkTextfileContents(languageCode, repoCode, 'markdown', lexiconFilename, lexiconMarkdownText, optionalFieldLocation, checkingOptions);
-        // debugLog(`ctfcResultObject=${JSON.stringify(ctfcResultObject)}`);
-
-        // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
-        //  process results line by line
-        for (const noticeEntry of ctfcResultObject.noticeList)
-            addNoticePartial(noticeEntry);
-    }
-    // end of ourFileTextCheck function
+    // end of ourCheckMarkdownFileContents function
 
 
     // Main code for checkLexiconFileContents function
@@ -177,8 +148,7 @@ export async function checkLexiconFileContents(languageCode, repoCode, lexiconFi
             addNoticePartial({ priority: 620, message: `Expected lexicon lemma on first line`, except: lines[0], location: ourLocation });
 
     // Now do the standard markdown checks
-    await ourCheckMarkdownText(lexiconMarkdownText, givenLocation, checkingOptions);
-    ourFileTextCheck(lexiconMarkdownText, givenLocation, checkingOptions);
+    await ourCheckMarkdownFileContents(lexiconMarkdownText, givenLocation, checkingOptions);
 
     addSuccessMessage(`Checked lexicon file: ${lexiconFilename}`);
     if (lexiconResultObject.noticeList.length)

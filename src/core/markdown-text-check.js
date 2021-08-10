@@ -5,7 +5,7 @@ import { checkNotesLinksToOutside } from './notes-links-check';
 // import { cachedGetFileUsingFullURL } from './getApi';
 import { removeDisabledNotices } from './disabled-notices';
 // eslint-disable-next-line no-unused-vars
-import { parameterAssert, dataAssert, debugLog } from './utilities';
+import { parameterAssert, dataAssert, debugLog, functionLog } from './utilities';
 
 
 const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.7.3';
@@ -21,7 +21,8 @@ const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.7.3';
  * @param {Object} checkingOptions
  */
 export async function checkMarkdownText(languageCode, repoCode, textOrFileName, markdownText, givenLocation, checkingOptions) {
-    /* This function is optimised for checking the entire markdown text, i.e., all lines.
+    /* This function is optimised for doing general markdown format checks of the entire markdown text, i.e., all lines.
+        It should not be called directly for checking an entire file -- use checkMarkdownFileContents() for that
 
     This text may not necessarily be from a file -- it may be from a (multiline) field within a file
 
@@ -33,7 +34,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
     //parameterAssert(languageCode !== 'unfoldingWord', `checkMarkdownText: 'languageCode' ${languageCode} parameter should be not be 'unfoldingWord'`);
     //parameterAssert(repoCode !== undefined, "checkMarkdownText: 'repoCode' parameter should be defined");
     //parameterAssert(typeof repoCode === 'string', `checkMarkdownText: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
-    //parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkMarkdownText: 'repoCode' parameter should not be '${repoCode}'`);
+    parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkMarkdownText: 'repoCode' parameter should not be '${repoCode}'`);
     //parameterAssert(textOrFileName !== undefined, "checkMarkdownText: 'textOrFileName' parameter should be defined");
     //parameterAssert(typeof textOrFileName === 'string', `checkMarkdownText: 'textOrFileName' parameter should be a string not a '${typeof textOrFileName}': ${textOrFileName}`);
     //parameterAssert(textOrFileName !== `${languageCode}_${repoCode.toLowerCase()}`, `checkMarkdownText: 'textOrFileName' parameter should not be the repoName: '${textOrFileName}'`);

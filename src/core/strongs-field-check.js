@@ -9,7 +9,7 @@ import { checkLexiconFileContents } from './lexicon-file-contents-check';
 import { functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 
 
-// const STRONGS_FIELD_VALIDATOR_VERSION_STRING = '0.1.4';
+// const STRONGS_FIELD_VALIDATOR_VERSION_STRING = '0.2.0';
 
 
 /**
@@ -18,9 +18,9 @@ import { functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourPar
  * @param {string} repoCode
  * @param {string} fieldName
  * @param {string} fieldText
- * @param {string} bookID
- * @param {string} C
- * @param {string} V
+ * @param {string} bookID (if known / optional)
+ * @param {string} C (if known / optional)
+ * @param {string} V (if known / optional)
  * @param {string} givenLocation
  * @param {Object} checkingOptions
  */
@@ -49,9 +49,9 @@ export async function checkStrongsField(languageCode, repoCode, fieldName, field
     parameterAssert(fieldText.length >= 1, `checkStrongsField: 'fieldText' parameter should have text not ${fieldText.length} characters`);
     parameterAssert(bookID !== undefined, "checkStrongsField: 'bookID' parameter should be defined");
     parameterAssert(typeof bookID === 'string', `checkStrongsField: 'bookID' parameter should be a string not a '${typeof bookID}'`);
-    parameterAssert(bookID.length === 3, `checkStrongsField: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    // parameterAssert(bookID.length === 3, `checkStrongsField: 'bookID' parameter should be three characters long not ${bookID.length}`);
     parameterAssert(bookID.toUpperCase() === bookID, `checkStrongsField: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-    parameterAssert(bookID === 'OBS' || isValidBookID(bookID), `checkStrongsField: '${bookID}' is not a valid USFM book identifier`);
+    parameterAssert(bookID === '' || bookID === 'OBS' || isValidBookID(bookID), `checkStrongsField: '${bookID}' is not a valid USFM book identifier`);
     parameterAssert(C !== undefined, "checkStrongsField: 'C' parameter should be defined");
     parameterAssert(typeof C === 'string', `checkStrongsField: 'C' parameter should be a string not a '${typeof C}'`);
     parameterAssert(V !== undefined, "checkStrongsField: 'V' parameter should be defined");
@@ -85,7 +85,10 @@ export async function checkStrongsField(languageCode, repoCode, fieldName, field
         }
         parameterAssert(incompleteNoticeObject.location !== undefined, "checkStrongsField addNoticePartial: 'location' parameter should be defined");
         parameterAssert(typeof incompleteNoticeObject.location === 'string', `checkStrongsField addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
-        csfResult.noticeList.push({ ...incompleteNoticeObject, excerpt: fieldText, fieldName, repoCode, bookID, C, V });
+        const newObject = { ...incompleteNoticeObject, excerpt: fieldText, fieldName, repoCode };
+        if (bookID.length) newObject.bookID = bookID;
+        if (C.length && V.length) { newObject.C = C; newObject.V = V; }
+        csfResult.noticeList.push(newObject);
     }
 
 
@@ -169,7 +172,9 @@ export async function checkStrongsField(languageCode, repoCode, fieldName, field
     //     addNoticePartial({priority:0, message:`Unexpected whitespace at end of ${TNid} '${fieldText}'")
     // fieldText = fieldText.strip() # so we don’t get consequential errors
 
-    const whichTestament = testament(bookID); // returns 'old' or 'new'
+    let whichTestament;
+     if (bookID.length)whichTestament= testament(bookID); // returns 'old' or 'new'
+     else whichTestament = fieldText[0]==='G'? 'new' : 'old';
     let adjustedFieldText = fieldText;
 
     let haveError = false;

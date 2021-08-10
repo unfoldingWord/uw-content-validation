@@ -9,7 +9,7 @@ import { checkBookPackage } from './checkBookPackage';
 import { userLog, debugLog, parameterAssert, logicAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.5.9';
+// const BP_VALIDATOR_VERSION_STRING = '0.5.10';
 
 
 function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
@@ -110,7 +110,9 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
                 repoPreloadList.push('TA');
                 // TODO: What if it's OBS (whichTestament === 'none' ???)
                 // const lexiconRepo = whichTestament === 'old' ? 'UHAL' : 'UGL';
-                repoPreloadList.push(whichTestament === 'old' ? 'UHAL' : 'UGL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
+                // repoPreloadList.push(whichTestament === 'old' ? 'UHAL' : 'UGL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
+                repoPreloadList.push('UHAL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
+                repoPreloadList.push('UGL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
             }
             // debugLog(`BookPackageCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
 

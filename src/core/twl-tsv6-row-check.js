@@ -3,14 +3,13 @@ import { isWhitespace, countOccurrencesInString } from './text-handling-function
 import * as books from './books/books';
 import { checkTextField } from './field-text-check';
 // import { checkMarkdownText } from './markdown-text-check';
-// import { checkSupportReferenceInTA } from './ta-reference-check';
 import { checkNotesLinksToOutside } from './notes-links-check';
 import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
 // eslint-disable-next-line no-unused-vars
 import { parameterAssert } from './utilities';
 
 
-// const TWL_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.1.8';
+// const TWL_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.1.9';
 
 const NUM_EXPECTED_TWL_TSV_FIELDS = 6; // so expects 5 tabs per line
 const EXPECTED_TWL_HEADING_LINE = 'Reference\tID\tTags\tOrigWords\tOccurrence\tTWLink';

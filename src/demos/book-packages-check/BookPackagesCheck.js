@@ -9,7 +9,7 @@ import { RenderCheckedFilesList, RenderSuccessesErrorsWarnings, RenderSuccessesS
 import { userLog, debugLog, logicAssert } from '../../core/utilities';
 
 
-// const BPS_VALIDATOR_VERSION_STRING = '0.2.9';
+// const BPS_VALIDATOR_VERSION_STRING = '0.2.10';
 
 
 /**
@@ -104,9 +104,11 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
       if (!checkingOptions.disableAllLinkFetchingFlag) {
         repoPreloadList.push('TW');
         repoPreloadList.push('TA');
-        if (haveOT) repoPreloadList.push('UHAL'); // UHB, ULT, UST, TW all have lexicon links
-        if (haveOT) repoPreloadList.push('UGL'); // UGNT, ULT, UST, TW all have lexicon links
-      }
+        // if (haveOT) repoPreloadList.push('UHAL'); // UHB, ULT, UST, TW all have lexicon links
+        // if (haveNT) repoPreloadList.push('UGL'); // UGNT, ULT, UST, TW all have lexicon links
+        repoPreloadList.push('UHAL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
+        repoPreloadList.push('UGL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
+}
       if (bookIDList.includes('OBS')) {
         let obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2']; // for DEFAULT
         if (dataSet === 'OLD')

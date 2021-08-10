@@ -32,7 +32,7 @@ import BookPackageCheck from './BookPackageCheck';
   languageCode='en'
   // bookID can be a USFM bookID, e.g., 'GEN', 'MAT', '3JN'
   //  and can also be 'OBS' (for Open Bible Stories)
-  bookID='EZR'
+  bookID='3JN'
 
   // We can choose the forthcoming new TSV formats or the existing formats
   // dataSet='BOTH' // 'OLD' (Markdown TQ, TSV9 TN, etc.), 'NEW' (TSV7 TQ2, TSV7 TN2, etc.), 'DEFAULT', or 'BOTH'

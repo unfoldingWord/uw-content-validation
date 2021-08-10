@@ -3,12 +3,12 @@ import { alreadyChecked, markAsChecked } from './getApi';
 // eslint-disable-next-line no-unused-vars
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
 import { countOccurrencesInString } from './text-handling-functions'
-import { cachedGetFile, cachedGetFileUsingFullURL, checkMarkdownText } from '../core';
+import { cachedGetFile, cachedGetFileUsingFullURL, checkMarkdownFileContents } from '../core';
 // eslint-disable-next-line no-unused-vars
 import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 
 
-// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.8.3';
+// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.9.0';
 
 // const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -309,7 +309,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTWArticlesCheckFlag} so checking TW article: ${filepath}`);
                 //     if (!await alreadyChecked(twPathParameters)) {
                 //         // functionLog(`checkNotesLinksToOutside needs to check TW article: ${filepath}`);
-                //         const checkTWFileResult = await checkMarkdownText(languageCode, repoCode, `TW ${regexResultArray[3].trim()}.md`, twFileContent, ourLocation, checkingOptions);
+                //         const checkTWFileResult = await checkMarkdownFileContents(languageCode, repoCode, `TW ${regexResultArray[3].trim()}.md`, twFileContent, ourLocation, checkingOptions);
                 //         for (const noticeObject of checkTWFileResult.noticeList)
                 //             ctarResult.noticeList.push({ ...noticeObject, username: twRepoUsername, repoCode: 'TW', repoName: twRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TW' });
                 //         ctarResult.checkedFileCount += 1;
@@ -372,7 +372,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
                     if (!await alreadyChecked(taPathParameters)) {
                         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
-                        const checkTAFileResult = await checkMarkdownText(foundLanguageCode, repoCode, `TA ${regexResultArray[3].trim()}.md`, taFileContent, ourLocation, checkingOptions);
+                        const checkTAFileResult = await checkMarkdownFileContents(foundLanguageCode, 'TA', `${regexResultArray[3].trim()}.md`, taFileContent, ourLocation, checkingOptions);
                         for (const noticeObject of checkTAFileResult.noticeList)
                             // Why don’t we use addNoticePartial() here? (It adds bookID and fieldName.) Maybe it would be misleading???
                             ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
@@ -430,7 +430,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
                     //     if (!await alreadyChecked(taPathParameters)) {
                     //         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
-                    //         const checkTAFileResult = await checkMarkdownText(languageCode, repoCode, `TA ${regexResultArray[3].trim()}.md`, taFileContent, ourLocation, checkingOptions);
+                    //         const checkTAFileResult = await checkMarkdownFileContents(languageCode, repoCode, `TA ${regexResultArray[3].trim()}.md`, taFileContent, ourLocation, checkingOptions);
                     //         for (const noticeObject of checkTAFileResult.noticeList)
                     //             ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
                     //         ctarResult.checkedFileCount += 1;
@@ -480,7 +480,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
                     //     if (!await alreadyChecked(taPathParameters)) {
                     //         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
-                    //         const checkTAFileResult = await checkMarkdownText(languageCode, repoCode, `TA ${regexResultArray[3].trim()}.md`, taFileContent, ourLocation, checkingOptions);
+                    //         const checkTAFileResult = await checkMarkdownFileContents(languageCode, repoCode, `TA ${regexResultArray[3].trim()}.md`, taFileContent, ourLocation, checkingOptions);
                     //         for (const noticeObject of checkTAFileResult.noticeList)
                     //             ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
                     //         ctarResult.checkedFileCount += 1;
@@ -542,7 +542,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
                     if (!await alreadyChecked(taPathParameters)) {
                         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
-                        const checkTAFileResult = await checkMarkdownText(foundLanguageCode, repoCode, `TA ${regexResultArray[3].trim()}.md`, taFileContent, ourLocation, checkingOptions);
+                        const checkTAFileResult = await checkMarkdownFileContents(foundLanguageCode, 'TA', `${regexResultArray[3].trim()}.md`, taFileContent, ourLocation, checkingOptions);
                         for (const noticeObject of checkTAFileResult.noticeList)
                             // Why don’t we use addNoticePartial() here? (It adds bookID and fieldName.) Maybe it would be misleading???
                             ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
@@ -595,7 +595,8 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTWArticlesCheckFlag} so checking TW article: ${filepath}`);
                     if (!await alreadyChecked(twPathParameters)) {
                         // functionLog(`checkNotesLinksToOutside needs to check TW article: ${filepath}`);
-                        const checkTWFileResult = await checkMarkdownText(foundLanguageCode, repoCode, `TW ${regexResultArray[3].trim()}.md`, twFileContent, ourLocation, checkingOptions);
+                        // NOTE: repoCode is the caller's repo code in the line below
+                        const checkTWFileResult = await checkMarkdownFileContents(foundLanguageCode, 'TW', `${regexResultArray[3].trim()}.md`, twFileContent, ourLocation, checkingOptions);
                         for (const noticeObject of checkTWFileResult.noticeList)
                             // Why don’t we use addNoticePartial() here? (It adds bookID and fieldName.) Maybe it would be misleading???
                             ctarResult.noticeList.push({ ...noticeObject, username: twRepoUsername, repoCode: 'TW', repoName: twRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TW' });

@@ -14,7 +14,7 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.10.1';
+// const USFM_VALIDATOR_VERSION_STRING = '0.10.2';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for STs
@@ -943,7 +943,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
 
             let adjustedLanguageCode = languageCode; // This is the language code of the resource with the link
             if (languageCode === 'hbo' || languageCode === 'el-x-koine') adjustedLanguageCode = 'en' // This is a guess (and won’t be needed for TWs when we switch to TWLs)
-            const csfResultObject = await checkStrongsField(languageCode, repoCode, fieldName, fieldText, bookID, C, V, givenLocation, { ...checkingOptions, defaultLanguageCode: adjustedLanguageCode });
+            const csfResultObject = await checkStrongsField(languageCode, repoCode, fieldName, fieldText, bookID, C, V, location, { ...checkingOptions, defaultLanguageCode: adjustedLanguageCode });
             // debugLog(`csfResultObject=${JSON.stringify(csfResultObject)}`);
 
             // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
