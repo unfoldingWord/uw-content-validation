@@ -40,6 +40,15 @@ import BookPackagesCheck from './BookPackagesCheck';
   // We can choose the forthcoming new TSV formats or the existing formats
   // dataSet='OLD' // 'OLD' (Markdown TQ, TSV TN, etc.), 'NEW' (TSV TQ2, TN2, etc.), 'DEFAULT', or 'BOTH'
 
+  // Normally links in files are downloaded to check that they really exist
+  disableAllLinkFetchingFlag='false' // 'true' or 'false'
+  // The next group are only relevant if the above is 'false'
+  // They control whether the linked articles themselves are also checked or not
+  disableLinkedTAArticlesCheckFlag='false' // 'true' or 'false'
+  disableLinkedTWArticlesCheckFlag='false' // 'true' or 'false'
+  disableLexiconLinkFetchingFlag='true' // 'true' or 'false' -- there's many thousands of these!
+  disableLinkedLexiconEntriesCheckFlag='true' // 'true' or 'false' -- lexicon entries still have many inconsistencies
+
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'
   displayType='SingleList'

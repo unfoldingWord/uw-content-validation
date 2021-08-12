@@ -32,21 +32,23 @@ import BookPackageCheck from './BookPackageCheck';
   languageCode='en'
   // bookID can be a USFM bookID, e.g., 'GEN', 'MAT', '3JN'
   //  and can also be 'OBS' (for Open Bible Stories)
-  bookID='JAS'
+  bookID='3JN'
 
   // We can choose the forthcoming new TSV formats or the existing formats
   // dataSet='BOTH' // 'OLD' (Markdown TQ, TSV9 TN, etc.), 'NEW' (TSV7 TQ2, TSV7 TN2, etc.), 'DEFAULT', or 'BOTH'
 
-  // Default displayType is 'ErrorsWarnings'
-  //  Alternatives are `SevereMediumLow', 'SingleList'
-  displayType='SingleList'
-
   // Normally links in files are downloaded to check that they really exist
   disableAllLinkFetchingFlag='false' // 'true' or 'false'
-  // The next two are only relevant if the above is 'false'
+  // The next group are only relevant if the above is 'false'
   // They control whether the linked articles themselves are also checked or not
   disableLinkedTAArticlesCheckFlag='false' // 'true' or 'false'
   disableLinkedTWArticlesCheckFlag='false' // 'true' or 'false'
+  disableLexiconLinkFetchingFlag='true' // 'true' or 'false' -- there's many thousands of these!
+  disableLinkedLexiconEntriesCheckFlag='true' // 'true' or 'false' -- lexicon entries still have many inconsistencies
+
+  // Default displayType is 'ErrorsWarnings'
+  //  Alternatives are `SevereMediumLow', 'SingleList'
+  displayType='SingleList'
 
   // Lines starting with // are ignored -- you can add or remove // as desired
   // Specifying excerptLength and maximumSimilarMessages is just to show off options

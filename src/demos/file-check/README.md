@@ -25,11 +25,14 @@ and then validates the content of one file selected from the repo.
   // Lines starting with // are ignored -- you can add or remove // as desired
   // repoName='hbo_uhb' // OT books only
   // repoName='el-x-koine_ugnt' // NT books only
-  // repoName='en_ult' // Can use ult or ust here
-  repoName='en_ugl' // Can use ta, tw, tn, tq, sn, sq, uhal, or ugl here
+  // Of course, other language codes (other than en) can be used in the following lines
+  // repoName='en_ult' // Can use en_ult or en_ust here
+  repoName='en_tn' // Can use en_ta, en_tw, en_tn, en_tq, en_sn, en_sq, en_uhal, or en_ugl here
+  // NOTE: The filename below must be adjusted depending on the repository selected above
 
   // If we don’t put the branch or release version here, the default branch is used
   // branchOrRelease='master'
+  // branchOrRelease='new Format' // for unreleased new TSV files
 
   // Of course, the filename must be correct for the chosen repository
   // filename= '01-GEN.usfm' // e.g., for UHB, LT, or ST
@@ -53,36 +56,37 @@ and then validates the content of one file selected from the repo.
   // filename= 'en_tn_41-MAT.tsv' // for TSV9 TN
   // filename= 'en_tn_43-LUK.tsv' // for TSV9 TN
   // filename= 'en_tn_50-EPH.tsv' // for TSV9 TN
- // filename= 'en_tn_57-TIT.tsv' // for TSV9 TN
+ filename= 'en_tn_57-TIT.tsv' // for TSV9 TN
   // filename= 'en_tn_58-PHM.tsv' // for TSV9 TN
   // filename= 'en_tn_61-1PE.tsv' // for TSV9 TN
   // filename= 'en_tn_65-3JN.tsv' // for TSV9 TN
   // filename= 'en_tn_67-REV.tsv' // for TSV9 TN
   // It's actually possible to put a filepath in the filename field
   // filename= 'bible/names/zilpah.md' // for TW
-   filename= 'content/H0612.md' // for UHAL
-   filename= 'content/G14650/01.md' // for UGL
+  //  filename= 'content/H0612.md' // for UHAL
+  //  filename= 'content/G14650/01.md' // for UGL
 
   // The location field appears in check messages to help the user locate the issue
   location="as specified in FileCheck demo"
 
-  // Specifying excerptLength and cutoffPriorityLevel is just to show off options
-  // —those fields are not necessary (or normal) here
-  excerptLength='25' // Default is 20 characters
-  // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
-
   // Normally links in files are downloaded to check that they really exist
   // disableAllLinkFetchingFlag='false' // 'true' or 'false'
   disableAllLinkFetchingFlag='false' // 'true' or 'false'
-  // The next two are only relevant if the above is 'false'
+  // The next group are only relevant if the above is 'false'
   // They control whether the linked articles themselves are also checked or not
   disableLinkedTAArticlesCheckFlag='false' // 'true' or 'false'
   disableLinkedTWArticlesCheckFlag='false' // 'true' or 'false'
+  disableLexiconLinkFetchingFlag='true' // 'true' or 'false' -- there's many thousands of these!
+  disableLinkedLexiconEntriesCheckFlag='true' // 'true' or 'false' -- lexicon entries still have many inconsistencies
 
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'
   displayType='SingleList'
 
+  // Specifying excerptLength and cutoffPriorityLevel is just to show off options
+  // —those fields are not necessary (or normal) here
+  excerptLength='25' // Default is 20 characters
+  // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
   // Specifying maximumSimilarMessages is just to show off options
   // —those fields are not necessary (or normal) here
   //maximumSimilarMessages='0' // Default is 3 (0 means don’t suppress any)

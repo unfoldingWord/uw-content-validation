@@ -50,7 +50,7 @@ The top-level checking demonstrations return:
 1. A list of things that were checked (successList)
 1. Typically a list of (higher-priority) errors and a list of (lower-priority) warnings, but other formats for display of messages are also demonstrated.
 
-Note that it's quite possible for the package to give multiple different notices for a single mistake. For example, a punctuation abnormality in a quoted text might advise about the bad punctuation as well as advising about not being able to match the quote. The package errs on the side that having additional warnings is better than missing a warning (and then later being confused about why a data file won't load). These consequential warnings mean that, if possible, it's good to rerun the checks from time to time on your latest files as you're fixing multiple errors.
+Note that it’s quite possible for the package to give multiple different notices for a single mistake. For example, a punctuation abnormality in a quoted text might advise about the bad punctuation as well as advising about not being able to match the quote. The package errs on the side that having additional warnings is better than missing a warning (and then later being confused about why a data file won’t load). These consequential warnings mean that, if possible, it’s good to rerun the checks from time to time on your latest files as you're fixing multiple errors.
 
 ### Notice Objects (in noticeList)
 
@@ -59,11 +59,11 @@ However, the lower-level checking functions provide only the list of success mes
 There are two compulsory fields in all of these notice objects:
 
 1. `priority`: A notice priority number in the range 1-1,000. Each different type of warning/error has a unique number (but not each instance of those warnings/errors). By default, notice priority numbers 700 and over are considered `errors` and 0-699 are considered `warnings`, but in truth, that’s rather arbitrary.
-1. `message`: The actual general descriptive text of the notice
+1. `message`: The actual general descriptive text of the notice (starts with a capital letter)
 
 All of the following fields may be missing or undefined, i.e., they’re all optional:
 
-1. `details`: More helpful details about the notice (if applicable)
+1. `details`: More helpful details about the notice (if applicable; doesn’t start with a capital letter)
 1. `repoCode`: brief repository code (if available), e.g., 'UHB', 'LT', 'ST', 'TN', 'TQ', 'TN2', 'TQ2', etc.
 1. `repoName`: Door43 repository name (if available), e.g., 'en_ta', 'hi_tw'
 1. `filename`: filename string (if available)

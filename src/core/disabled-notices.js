@@ -80,7 +80,7 @@ export function isDisabledNotice(givenNotice) {
   for (const disabledNotice of disabledNotices) {
     let matchedAllSpecifiedFields = true;
     for (const propertyName in disabledNotice)
-      // if ((propertyName !== 'repoCode' || givenNotice.repoCode !== undefined) // Some individual checks don't set repoCode
+      // if ((propertyName !== 'repoCode' || givenNotice.repoCode !== undefined) // Some individual checks don’t set repoCode
       // && (givenNotice[propertyName] !== disabledNotice[propertyName])) {
       if (givenNotice[propertyName] !== disabledNotice[propertyName]) {
         matchedAllSpecifiedFields = false;

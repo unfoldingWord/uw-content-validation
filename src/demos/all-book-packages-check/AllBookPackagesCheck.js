@@ -9,7 +9,7 @@ import { RenderCheckedFilesList, RenderSuccessesErrorsWarnings, RenderSuccessesS
 import { logicAssert, userLog, debugLog } from '../../core/utilities';
 
 
-// const ALL_BPS_VALIDATOR_VERSION_STRING = '0.3.8';
+// const ALL_BPS_VALIDATOR_VERSION_STRING = '0.3.11';
 
 const OLD_TESTAMENT_BOOK_CODES = 'GEN,EXO,LEV,NUM,DEU,JOS,JDG,RUT,1SA,2SA,1KI,2KI,1CH,2CH,EZR,NEH,EST,JOB,PSA,PRO,ECC,SNG,ISA,JER,LAM,EZK,DAN,HOS,JOL,AMO,OBA,JON,MIC,NAM,HAB,ZEP,HAG,ZEC,MAL';
 const NEW_TESTAMENT_BOOK_CODES = 'MAT,MRK,LUK,JHN,ACT,ROM,1CO,2CO,GAL,EPH,PHP,COL,1TH,2TH,1TI,2TI,TIT,PHM,HEB,JAS,1PE,2PE,1JN,2JN,3JN,JUD,REV';
@@ -43,13 +43,13 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
   if (testament.toUpperCase() === 'OT' || testament.toUpperCase() === 'OLD') {
     bookIDsString = OLD_TESTAMENT_BOOK_CODES;
     haveOT = true;
-  }  else if (testament.toUpperCase() === 'NT' || testament.toUpperCase() === 'NEW') {
+  } else if (testament.toUpperCase() === 'NT' || testament.toUpperCase() === 'NEW') {
     bookIDsString = NEW_TESTAMENT_BOOK_CODES;
     haveNT = true;
   } else if (testament.toUpperCase() === 'ALL' || testament.toUpperCase() === 'BOTH') {
     bookIDsString = `${OLD_TESTAMENT_BOOK_CODES},${NEW_TESTAMENT_BOOK_CODES}`;
     haveOT = true; haveNT = true;
-  }else
+  } else
     setResultValue(<p style={{ color: 'red' }}>No testament selected</p>);
   if (includeOBS.toUpperCase() === 'Y' || includeOBS.toUpperCase() === 'YES')
     bookIDsString += ',OBS';
@@ -63,16 +63,22 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     }
     bookIDList.push(bookID);
   }
-  // TODO: I don't understand why this command gets executed multiple times!!!
+  // TODO: I don’t understand why this command gets executed multiple times!!!
   userLog(`AllBookPackagesCheck bookIDList (${bookIDList.length}) = ${bookIDList.join(', ')}`);
 
   const checkingOptions = { // Uncomment any of these to test them
     // excerptLength: 25,
     suppressNoticeDisablingFlag: true, // Leave this one as true (otherwise demo checks are less efficient)
   };
-  // Or this allows the parameters to be specified as a BookPackagesCheck property
+  // Or this allows the parameters to be specified as a AllBookPackagesCheck property
   if (props.excerptLength) checkingOptions.excerptLength = ourParseInt(props.excerptLength);
   if (props.cutoffPriorityLevel) checkingOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
+  if (props.disableAllLinkFetchingFlag) checkingOptions.disableAllLinkFetchingFlag = props.disableAllLinkFetchingFlag.toLowerCase() === 'true';
+  if (props.disableLinkedTAArticlesCheckFlag) checkingOptions.disableLinkedTAArticlesCheckFlag = props.disableLinkedTAArticlesCheckFlag.toLowerCase() === 'true';
+  if (props.disableLinkedTWArticlesCheckFlag) checkingOptions.disableLinkedTWArticlesCheckFlag = props.disableLinkedTWArticlesCheckFlag.toLowerCase() === 'true';
+  if (props.disableLexiconLinkFetchingFlag) checkingOptions.disableLexiconLinkFetchingFlag = props.disableLexiconLinkFetchingFlag.toLowerCase() === 'true';
+  if (props.disableLinkedLexiconEntriesCheckFlag) checkingOptions.disableLinkedLexiconEntriesCheckFlag = props.disableLinkedLexiconEntriesCheckFlag.toLowerCase() === 'true';
+
 
   useEffect(() => {
     // debugLog("BookPackagesCheck.useEffect() called with ", JSON.stringify(props));
@@ -94,7 +100,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running all book packages check…</p>);
         await clearCaches();
       }
-      else await clearCheckedArticleCache(); // otherwise we wouldn't see any of the warnings again from checking these
+      else await clearCheckedArticleCache(); // otherwise we wouldn’t see any of the warnings again from checking these
 
       // Load whole repos, especially if we are going to check files in manifests
       let repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
@@ -104,11 +110,15 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         repoPreloadList = ['TWL', 'LT', 'ST', 'TN2', 'TA', 'TW', 'TQ2'];
       else if (dataSet === 'BOTH')
         repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TN2', 'TA', 'TW', 'TQ', 'TQ2'];
-      if (haveNT) repoPreloadList.unshift('UGNT');
+      if (haveNT) repoPreloadList.unshift('UGNT'); // These go on the front, so do in reverse order
       if (haveOT) repoPreloadList.unshift('UHB');
       if (!checkingOptions.disableAllLinkFetchingFlag) {
         repoPreloadList.push('TW');
         repoPreloadList.push('TA');
+        // if (haveOT) repoPreloadList.push('UHAL'); // UHB, ULT, UST, TW all have lexicon links
+        // if (haveNT) repoPreloadList.push('UGL'); // UGNT, ULT, UST, TW all have lexicon links
+        repoPreloadList.push('UHAL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
+        repoPreloadList.push('UGL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
       }
       if (bookIDList.includes('OBS')) {
         let obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2']; // for DEFAULT

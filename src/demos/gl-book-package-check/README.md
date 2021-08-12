@@ -43,11 +43,20 @@ clearCheckedArticleCache();
   //  and can also be 'OBS' (for Open Bible Stories)
   bookID='TIT'
 
+  // Normally links in files are downloaded to check that they really exist
+  disableAllLinkFetchingFlag='false' // 'true' or 'false'
+  // The next group are only relevant if the above is 'false'
+  // They control whether the linked articles themselves are also checked or not
+  disableLinkedTAArticlesCheckFlag='false' // 'true' or 'false'
+  disableLinkedTWArticlesCheckFlag='false' // 'true' or 'false'
+  disableLexiconLinkFetchingFlag='true' // 'true' or 'false' -- there's many thousands of these!
+  disableLinkedLexiconEntriesCheckFlag='true' // 'true' or 'false' -- lexicon entries still have many inconsistencies
+
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'
   displayType='SingleList'
 
-  // Lines starting with // are ignored -- you can add or remove // as desired
+// Lines starting with // are ignored -- you can add or remove // as desired
   // Specifying maximumSimilarMessages and excerptLength is just to show off options
   // —those fields are not necessary (or normal) here
   //maximumSimilarMessages='4' // Default is 3 (0 means don’t suppress any)

@@ -8,7 +8,7 @@ import { checkFileContents } from './checkFileContents';
 import { debugLog, userLog } from '../../core/utilities';
 
 
-// const FILE_CHECK_VERSION_STRING = '0.3.2';
+// const FILE_CHECK_VERSION_STRING = '0.3.5';
 
 
 function FileCheck(props) {
@@ -49,7 +49,7 @@ function FileCheck(props) {
         setResultValue(<p style={{ color: 'orange' }}>Clearing cache before running file check…</p>);
         await clearCaches();
       }
-      else await clearCheckedArticleCache(); // otherwise we wouldn't see any of the warnings again from checking these
+      else await clearCheckedArticleCache(); // otherwise we wouldn’t see any of the warnings again from checking these
 
       // Display our "waiting" message
       setResultValue(<p style={{ color: 'magenta' }}>Fetching <i>{username}</i> {repoName} <b>{filename}</b>…</p>);
@@ -126,7 +126,7 @@ function FileCheck(props) {
 
       function renderSummary(processedResults) {
         let cutoffString = '';
-        // NOTE: Couldn't figure out why ?. was not allowed in the statement below
+        // NOTE: Couldn’t figure out why ?. was not allowed in the statement below
         if (rawCFResults && rawCFResults.checkedOptions && rawCFResults.checkedOptions.cutoffPriorityLevel)
           cutoffString = ` Priority level ${rawCFResults.checkedOptions.cutoffPriorityLevel} or lower were not included.`;
         return (<div>
@@ -218,6 +218,8 @@ function FileCheck(props) {
   if (props.disableAllLinkFetchingFlag) checkingOptions.disableAllLinkFetchingFlag = props.disableAllLinkFetchingFlag.toLowerCase() === 'true';
   if (props.disableLinkedTAArticlesCheckFlag) checkingOptions.disableLinkedTAArticlesCheckFlag = props.disableLinkedTAArticlesCheckFlag.toLowerCase() === 'true';
   if (props.disableLinkedTWArticlesCheckFlag) checkingOptions.disableLinkedTWArticlesCheckFlag = props.disableLinkedTWArticlesCheckFlag.toLowerCase() === 'true';
+  if (props.disableLexiconLinkFetchingFlag) checkingOptions.disableLexiconLinkFetchingFlag = props.disableLexiconLinkFetchingFlag.toLowerCase() === 'true';
+  if (props.disableLinkedLexiconEntriesCheckFlag) checkingOptions.disableLinkedLexiconEntriesCheckFlag = props.disableLinkedLexiconEntriesCheckFlag.toLowerCase() === 'true';
 
   // {/* <div className={classes.root}> */}
   return (

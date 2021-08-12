@@ -2,10 +2,10 @@
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
 import { checkTextField } from './field-text-check';
 import { checkNotesLinksToOutside } from './notes-links-check';
-// import { cachedGetFileUsingFullURL } from '../core/getApi';
+// import { cachedGetFileUsingFullURL } from './getApi';
 import { removeDisabledNotices } from './disabled-notices';
 // eslint-disable-next-line no-unused-vars
-import { parameterAssert, dataAssert, debugLog } from './utilities';
+import { parameterAssert, dataAssert, debugLog, functionLog } from './utilities';
 
 
 const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.7.3';
@@ -21,7 +21,8 @@ const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.7.3';
  * @param {Object} checkingOptions
  */
 export async function checkMarkdownText(languageCode, repoCode, textOrFileName, markdownText, givenLocation, checkingOptions) {
-    /* This function is optimised for checking the entire markdown text, i.e., all lines.
+    /* This function is optimised for doing general markdown format checks of the entire markdown text, i.e., all lines.
+        It should not be called directly for checking an entire file -- use checkMarkdownFileContents() for that
 
     This text may not necessarily be from a file -- it may be from a (multiline) field within a file
 
@@ -33,7 +34,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
     //parameterAssert(languageCode !== 'unfoldingWord', `checkMarkdownText: 'languageCode' ${languageCode} parameter should be not be 'unfoldingWord'`);
     //parameterAssert(repoCode !== undefined, "checkMarkdownText: 'repoCode' parameter should be defined");
     //parameterAssert(typeof repoCode === 'string', `checkMarkdownText: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
-    //parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkMarkdownText: 'repoCode' parameter should not be '${repoCode}'`);
+    parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkMarkdownText: 'repoCode' parameter should not be '${repoCode}'`);
     //parameterAssert(textOrFileName !== undefined, "checkMarkdownText: 'textOrFileName' parameter should be defined");
     //parameterAssert(typeof textOrFileName === 'string', `checkMarkdownText: 'textOrFileName' parameter should be a string not a '${typeof textOrFileName}': ${textOrFileName}`);
     //parameterAssert(textOrFileName !== `${languageCode}_${repoCode.toLowerCase()}`, `checkMarkdownText: 'textOrFileName' parameter should not be the repoName: '${textOrFileName}'`);
@@ -139,11 +140,11 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
         //parameterAssert(location !== undefined, "checkUSFMText ourCheckNotesLinksToOutside: 'location' parameter should be defined");
         //parameterAssert(typeof location === 'string', `checkUSFMText ourCheckNotesLinksToOutside: 'location' parameter should be a string not a '${typeof location}': ${location}`);
 
-        // Empty fields on the next line are bookID, C, V (as we don't have that information here)
+        // Empty fields on the next line are bookID, C, V (as we don’t have that information here)
         let adjustedTextOrFileName = textOrFileName;
         if (textOrFileName === 'README.md' || textOrFileName === 'LICENSE.md') adjustedTextOrFileName = textOrFileName.substring(0, textOrFileName.length - 3);
         let adjustedLanguageCode = languageCode; // This is the language code of the resource with the link
-        if (languageCode === 'hbo' || languageCode === 'el-x-koine') adjustedLanguageCode = 'en' // This is a guess (and won't be needed for TWs when we switch to TWLs)
+        if (languageCode === 'hbo' || languageCode === 'el-x-koine') adjustedLanguageCode = 'en' // This is a guess (and won’t be needed for TWs when we switch to TWLs)
         const coTNlResultObject = await checkNotesLinksToOutside(languageCode, repoCode, '', '', '', adjustedTextOrFileName, lineText, location, { ...checkingOptions, defaultLanguageCode: adjustedLanguageCode });
         // debugLog(`coTNlResultObject=${JSON.stringify(coTNlResultObject)}`);
 
@@ -173,7 +174,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
             for (const checkedFilenameExtension of coTNlResultObject.checkedFilenameExtensions)
                 try { if (result.checkedFilenameExtensions.indexOf(checkedFilenameExtension) < 0) result.checkedFilenameExtensions.push(checkedFilenameExtension); }
                 catch { result.checkedFilenameExtensions = [checkedFilenameExtension]; }
-        // if (result.checkedFilenameExtensions) userLog("result", JSON.stringify(result));
+        // if (result.checkedFilenameExtensions) debugLog("result", JSON.stringify(result));
     }
     // end of ourCheckNotesLinksToOutside function
 
@@ -328,7 +329,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
                 if (indentLevels.length > 1 && indentLevels[indentLevels.length - 2] === numLeadingSpaces)
                     // We went back to the previous level
                     indentLevels.pop();
-                else { // seems we didn't go back to the previous level ???
+                else { // seems we didn’t go back to the previous level ???
                     let foundPreviousLevel = false;
                     for (let z = indentLevels.length - 1; z >= 0; z--) {
                         if (indentLevels[z] === numLeadingSpaces) {
@@ -371,7 +372,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
 
     // Check for an uneven number of sets of symmetrical (i.e., opener == closer) multicharacter markdown formatting sequences
     for (const thisSet of [ // Put longest ones first
-        // Seems that the fancy ones (commented out) don't find occurrences at the start (or end?) of the text
+        // Seems that the fancy ones (commented out) don’t find occurrences at the start (or end?) of the text
         ['___', /___/g],
         // ['___', r'[^_]___[^_]'], // three underlines
         ['***', /\*\*\*/g],

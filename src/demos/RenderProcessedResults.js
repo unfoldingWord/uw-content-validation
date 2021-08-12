@@ -310,7 +310,7 @@ function RenderBCV({ bookID, C, V }) {
 * @param {string} username - (optional) username/orgName string
 * @param {string} repoName - (optional) repo name string
 * @param {string} filename - (optional) filename string
-* @param {Number} lineNumber - (optional) line number integer (1-based)
+* @param {number} lineNumber - (optional) line number integer (1-based)
 * @param {string} rowID - (optional) 4-character ID field
 * @param {string} fieldName - (optional) name of field
 * @return {String} - rendered HTML for the given reference
@@ -330,7 +330,7 @@ function RenderFileDetails({ givenEntry }) {
     const firstMsgWord = givenEntry.message.split(' ')[0]; // This might be the former 'extra' field
     if (['TA', 'TW'].indexOf(firstMsgWord) >= 0) {
         let adjustedLanguageCode = givenEntry.repoName.split('_')[0];
-        if (adjustedLanguageCode === 'hbo' || adjustedLanguageCode === 'el-x-koine') adjustedLanguageCode = 'en'; // This is a guess (and won't be needed for TWs when we switch to TWLs)
+        if (adjustedLanguageCode === 'hbo' || adjustedLanguageCode === 'el-x-koine') adjustedLanguageCode = 'en'; // This is a guess (and won’t be needed for TWs when we switch to TWLs)
         adjustedRepoName = `${adjustedLanguageCode}_${firstMsgWord.toLowerCase()}`;
         if (adjustedRepoName !== givenEntry.repoName) debugLog(`RenderFileDetails: trying adjusting repoName from '${givenEntry.repoName}' to '${adjustedRepoName}' for ${JSON.stringify(givenEntry)}`);
     }
@@ -390,7 +390,7 @@ function RenderExcerpt({ excerpt, message }) {
             // debugLog(`Here2 RenderExcerpt(${excerpt}, ${message})`);
             const ix = excerpt.indexOf('](');
             const displayPart = excerpt.substring(1, ix); // Start after the [ until before the ](
-            const linkPart = excerpt.substring(ix + 2, excerpt.length - 1); // Step past the ]( but don't include the final )
+            const linkPart = excerpt.substring(ix + 2, excerpt.length - 1); // Step past the ]( but don’t include the final )
             const adjLinkPart = message === "Should http link be https" ? linkPart.replace('http:', 'https:') : linkPart;
             // debugLog(`RenderExcerpt from '${excerpt}' got ix=${ix}, displayPart='${displayPart}', linkPart='${linkPart}', adjLinkPart='${adjLinkPart}'`);
             return <><span style={{ color: 'DimGray' }}>` around ◗[{displayPart}](<a rel="noopener noreferrer" target="_blank" href={adjLinkPart}>{linkPart}</a>)◖`</span></>

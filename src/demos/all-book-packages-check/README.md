@@ -29,6 +29,15 @@ import AllBookPackagesCheck from './AllBookPackagesCheck';
   includeOBS='N' // 'Y' or 'N' for adding Open Bible Stories (OBS) to check
   testament='NT' // 'OT' (~3 hrs) or 'NT' (1+ hrs) or 'ALL' (~4 hrs)
 
+  // Normally links in files are downloaded to check that they really exist
+  disableAllLinkFetchingFlag='false' // 'true' or 'false'
+  // The next group are only relevant if the above is 'false'
+  // They control whether the linked articles themselves are also checked or not
+  disableLinkedTAArticlesCheckFlag='false' // 'true' or 'false'
+  disableLinkedTWArticlesCheckFlag='false' // 'true' or 'false'
+  disableLexiconLinkFetchingFlag='true' // 'true' or 'false' -- there's many thousands of these!
+  disableLinkedLexiconEntriesCheckFlag='true' // 'true' or 'false' -- lexicon entries still have many inconsistencies
+
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'
   displayType='SingleList'
