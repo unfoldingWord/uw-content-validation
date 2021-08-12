@@ -9,7 +9,7 @@ import { RenderCheckedFilesList, RenderSuccessesErrorsWarnings, RenderSuccessesS
 import { userLog, debugLog, logicAssert } from '../../core/utilities';
 
 
-// const BPS_VALIDATOR_VERSION_STRING = '0.2.10';
+// const BPS_VALIDATOR_VERSION_STRING = '0.2.12';
 
 
 /**
@@ -64,10 +64,12 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
   if (props.disableAllLinkFetchingFlag) checkingOptions.disableAllLinkFetchingFlag = props.disableAllLinkFetchingFlag.toLowerCase() === 'true';
   if (props.disableLinkedTAArticlesCheckFlag) checkingOptions.disableLinkedTAArticlesCheckFlag = props.disableLinkedTAArticlesCheckFlag.toLowerCase() === 'true';
   if (props.disableLinkedTWArticlesCheckFlag) checkingOptions.disableLinkedTWArticlesCheckFlag = props.disableLinkedTWArticlesCheckFlag.toLowerCase() === 'true';
+  if (props.disableLexiconLinkFetchingFlag) checkingOptions.disableLexiconLinkFetchingFlag = props.disableLexiconLinkFetchingFlag.toLowerCase() === 'true';
   if (props.disableLinkedLexiconEntriesCheckFlag) checkingOptions.disableLinkedLexiconEntriesCheckFlag = props.disableLinkedLexiconEntriesCheckFlag.toLowerCase() === 'true';
   // functionLog(`checkingOptions.disableLinkedTAArticlesCheckFlag ${checkingOptions.disableLinkedTAArticlesCheckFlag} from '${props.disableLinkedTAArticlesCheckFlag}'`);
   // functionLog(`checkingOptions.disableLinkedTWArticlesCheckFlag ${checkingOptions.disableLinkedTWArticlesCheckFlag} from '${props.disableLinkedTWArticlesCheckFlag}'`);
   // functionLog(`checkingOptions.disableLinkedLexiconEntriesCheckFlag ${checkingOptions.disableLinkedLexiconEntriesCheckFlag} from '${props.disableLinkedLexiconEntriesCheckFlag}'`);
+
 
   useEffect(() => {
     // debugLog("BookPackagesCheck.useEffect() called with ", JSON.stringify(props));
@@ -99,8 +101,8 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         repoPreloadList = ['TWL', 'LT', 'ST', 'TN2', 'TQ2', 'SN', 'SQ'];
       else if (dataSet === 'BOTH')
         repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TN2', 'TQ', 'TQ2', 'SN', 'SQ'];
-        if (haveNT) repoPreloadList.unshift('UGNT'); // These go on the front, so do in reverse order
-        if (haveOT) repoPreloadList.unshift('UHB');
+      if (haveNT) repoPreloadList.unshift('UGNT'); // These go on the front, so do in reverse order
+      if (haveOT) repoPreloadList.unshift('UHB');
       if (!checkingOptions.disableAllLinkFetchingFlag) {
         repoPreloadList.push('TW');
         repoPreloadList.push('TA');
@@ -108,7 +110,7 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         // if (haveNT) repoPreloadList.push('UGL'); // UGNT, ULT, UST, TW all have lexicon links
         repoPreloadList.push('UHAL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
         repoPreloadList.push('UGL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
-}
+      }
       if (bookIDList.includes('OBS')) {
         let obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2']; // for DEFAULT
         if (dataSet === 'OLD')

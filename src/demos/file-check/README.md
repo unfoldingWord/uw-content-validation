@@ -69,24 +69,24 @@ and then validates the content of one file selected from the repo.
   // The location field appears in check messages to help the user locate the issue
   location="as specified in FileCheck demo"
 
-  // Specifying excerptLength and cutoffPriorityLevel is just to show off options
-  // —those fields are not necessary (or normal) here
-  excerptLength='25' // Default is 20 characters
-  // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
-
   // Normally links in files are downloaded to check that they really exist
   // disableAllLinkFetchingFlag='false' // 'true' or 'false'
   disableAllLinkFetchingFlag='false' // 'true' or 'false'
-  // The next two are only relevant if the above is 'false'
+  // The next group are only relevant if the above is 'false'
   // They control whether the linked articles themselves are also checked or not
   disableLinkedTAArticlesCheckFlag='false' // 'true' or 'false'
   disableLinkedTWArticlesCheckFlag='false' // 'true' or 'false'
+  disableLexiconLinkFetchingFlag='true' // 'true' or 'false' -- there's many thousands of these!
   disableLinkedLexiconEntriesCheckFlag='true' // 'true' or 'false' -- lexicon entries still have many inconsistencies
 
   // Default displayType is 'ErrorsWarnings'
   //  Alternatives are `SevereMediumLow', 'SingleList'
   displayType='SingleList'
 
+  // Specifying excerptLength and cutoffPriorityLevel is just to show off options
+  // —those fields are not necessary (or normal) here
+  excerptLength='25' // Default is 20 characters
+  // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
   // Specifying maximumSimilarMessages is just to show off options
   // —those fields are not necessary (or normal) here
   //maximumSimilarMessages='0' // Default is 3 (0 means don’t suppress any)

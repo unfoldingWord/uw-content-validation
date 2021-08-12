@@ -9,7 +9,7 @@ import { checkLexiconFileContents } from './lexicon-file-contents-check';
 import { functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 
 
-// const STRONGS_FIELD_VALIDATOR_VERSION_STRING = '0.2.1';
+// const STRONGS_FIELD_VALIDATOR_VERSION_STRING = '0.2.2';
 
 
 /**
@@ -209,7 +209,7 @@ export async function checkStrongsField(languageCode, repoCode, fieldName, field
         } else debugLog(`checkStrongsField doesn’t have a testament for '${bookID}'!`);
     }
     if (!haveError) {
-        if (checkingOptions?.disableAllLinkFetchingFlag !== true) {
+        if (checkingOptions?.disableAllLinkFetchingFlag !== true && checkingOptions?.disableLexiconLinkFetchingFlag !== true) {
             // debugLog(`checkStrongsField wants to fetch lexicon entry for ${fieldText}`);
             let username;
             try {

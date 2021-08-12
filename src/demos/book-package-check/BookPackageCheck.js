@@ -9,7 +9,7 @@ import { checkBookPackage } from './checkBookPackage';
 import { userLog, debugLog, parameterAssert, logicAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.5.10';
+// const BP_VALIDATOR_VERSION_STRING = '0.5.12';
 
 
 function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
@@ -45,10 +45,12 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
     if (props.disableAllLinkFetchingFlag) checkingOptions.disableAllLinkFetchingFlag = props.disableAllLinkFetchingFlag.toLowerCase() === 'true';
     if (props.disableLinkedTAArticlesCheckFlag) checkingOptions.disableLinkedTAArticlesCheckFlag = props.disableLinkedTAArticlesCheckFlag.toLowerCase() === 'true';
     if (props.disableLinkedTWArticlesCheckFlag) checkingOptions.disableLinkedTWArticlesCheckFlag = props.disableLinkedTWArticlesCheckFlag.toLowerCase() === 'true';
+    if (props.disableLexiconLinkFetchingFlag) checkingOptions.disableLexiconLinkFetchingFlag = props.disableLexiconLinkFetchingFlag.toLowerCase() === 'true';
     if (props.disableLinkedLexiconEntriesCheckFlag) checkingOptions.disableLinkedLexiconEntriesCheckFlag = props.disableLinkedLexiconEntriesCheckFlag.toLowerCase() === 'true';
     // functionLog(`checkingOptions.disableLinkedTAArticlesCheckFlag ${checkingOptions.disableLinkedTAArticlesCheckFlag} from '${props.disableLinkedTAArticlesCheckFlag}'`);
     // functionLog(`checkingOptions.disableLinkedTWArticlesCheckFlag ${checkingOptions.disableLinkedTWArticlesCheckFlag} from '${props.disableLinkedTWArticlesCheckFlag}'`);
     // functionLog(`checkingOptions.disableLinkedLexiconEntriesCheckFlag ${checkingOptions.disableLinkedLexiconEntriesCheckFlag} from '${props.disableLinkedLexiconEntriesCheckFlag}'`);
+
 
     useEffect(() => {
         // const newProps = { bookID, branch, checkingOptions, languageCode, cutoffPriorityLevel: props.cutoffPriorityLevel, displayType: props.displayType, errorPriorityLevel: props.errorPriorityLevel, maximumSimilarMessages: props.maximumSimilarMessages, sortBy: props.sortBy, username};

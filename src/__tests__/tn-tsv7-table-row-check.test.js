@@ -10,6 +10,7 @@ const optionalCheckingOptions = {
   disableAllLinkFetchingFlag: true, // until we can solve localforage error: No available storage method found
   // disableLinkedTAArticlesCheckFlag: true,
   // disableLinkedTWArticlesCheckFlag: true,
+  // disableLexiconLinkFetchingFlag: true,
   // disableLinkedLexiconEntriesCheckFlag: true,
   getFile: params => {
     const { username, repository, path } = params;

@@ -8,7 +8,7 @@ import { checkRepo } from './checkRepo';
 import { logicAssert, userLog, debugLog } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.2.5';
+// const REPO_VALIDATOR_VERSION_STRING = '0.2.6';
 
 
 function RepoCheck(/*username, languageCode,*/ props) {
@@ -45,6 +45,11 @@ function RepoCheck(/*username, languageCode,*/ props) {
     // Or this allows the parameters to be specified as a RepoCheck property
     if (props.excerptLength) checkingOptions.excerptLength = ourParseInt(props.excerptLength);
     if (props.cutoffPriorityLevel) checkingOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
+    if (props.disableAllLinkFetchingFlag) checkingOptions.disableAllLinkFetchingFlag = props.disableAllLinkFetchingFlag.toLowerCase() === 'true';
+    if (props.disableLinkedTAArticlesCheckFlag) checkingOptions.disableLinkedTAArticlesCheckFlag = props.disableLinkedTAArticlesCheckFlag.toLowerCase() === 'true';
+    if (props.disableLinkedTWArticlesCheckFlag) checkingOptions.disableLinkedTWArticlesCheckFlag = props.disableLinkedTWArticlesCheckFlag.toLowerCase() === 'true';
+    if (props.disableLexiconLinkFetchingFlag) checkingOptions.disableLexiconLinkFetchingFlag = props.disableLexiconLinkFetchingFlag.toLowerCase() === 'true';
+    if (props.disableLinkedLexiconEntriesCheckFlag) checkingOptions.disableLinkedLexiconEntriesCheckFlag = props.disableLinkedLexiconEntriesCheckFlag.toLowerCase() === 'true';
 
 
     const [result, setResultValue] = useState("Waiting-checkRepo");
