@@ -7,9 +7,10 @@ import fs from 'fs-extra';
 let testFiles = {};
 
 const optionalCheckingOptions = {
-  disableLinkedTAArticlesCheckFlag: true,
-  disableLinkedTWArticlesCheckFlag: true,
-  disableLinkedLexiconEntriesCheckFlag: true,
+  disableAllLinkFetchingFlag: true, // until we can solve localforage error: No available storage method found
+  // disableLinkedTAArticlesCheckFlag: true,
+  // disableLinkedTWArticlesCheckFlag: true,
+  // disableLinkedLexiconEntriesCheckFlag: true,
   getFile: params => {
     const { username, repository, path } = params;
     // console.log(`book-package-check.test getFile(${username}, ${repository}, ${path})`)
