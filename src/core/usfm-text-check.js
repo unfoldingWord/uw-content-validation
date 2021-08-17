@@ -1156,7 +1156,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             // functionLog(`checkWAttributes(${zalnContents})…`);
             // The parameter normally starts with a |
             dataAssert(repoCode !== 'UHB' && repoCode !== 'UGNT', `checkZALNAttributes did not expect an original language repo: '${repoCode}'`);
-            let regexResultArray, attributeCounter = 0;
+            let zalnSuggestion, regexResultArray, attributeCounter = 0;
             const attributes = {};
             while ((regexResultArray = ATTRIBUTE_REGEX.exec(zalnContents))) {
                 attributeCounter += 1;
@@ -1224,23 +1224,30 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                             addNoticePartial({ priority: 802, message: "Aligned x-occurrence for original word is too high", details: `only found ${gotCount} occurrence${gotCount === 1 ? '' : 's'} of '${oWord}' instead of ${oOccurrence} from ${verseWordList}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                     else {
                         const vwolStrongs = verseWordObjectList[ix]?.strongs;
-                        if (vwolStrongs !== oStrong)
+                        if (vwolStrongs !== oStrong) {
                             addNoticePartial({ priority: 805, message: "Aligned x-strong number doesn’t match original", details: `${originalLanguageRepoCode} had '${vwolStrongs}'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                            zalnSuggestion = zalnContents.replace(`"${oStrong}"`, `"${vwolStrongs}"`);
+                        }
                         const vwolLemma = verseWordObjectList[ix]?.lemma;
-                        if (vwolLemma !== oLemma)
+                        if (vwolLemma !== oLemma){
                             addNoticePartial({ priority: 806, message: "Aligned x-lemma doesn’t match original", details: `${originalLanguageRepoCode} had '${vwolLemma}'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                            zalnSuggestion = zalnContents.replace(`"${oLemma}"`, `"${vwolLemma}"`);
+                        }
                         const vwolMorph = verseWordObjectList[ix]?.morph;
-                        if (vwolMorph !== oMorph)
+                        if (vwolMorph !== oMorph) {
                             addNoticePartial({ priority: 804, message: "Aligned x-morph doesn’t match original", details: `${originalLanguageRepoCode} had '${vwolMorph}'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                            zalnSuggestion = zalnContents.replace(`"${oMorph}"`, `"${vwolMorph}"`);
+                        }
                     }
                 } catch (e) {
                     debugLog(`checkZALNAttributes1: why couldn’t we get word attributes out of ${JSON.stringify(attributes)}: ${e.message} `);
                 }
             }
+            return zalnSuggestion;
         }
         // end of checkZALNAttributes function
 
-        let regexResultArray1;
+        let suggestion, regexResultArray1;
         while ((regexResultArray1 = W_REGEX.exec(adjustedRest))) {
             // debugLog(`Got ${ repoCode } \\w Regex in ${ C }: ${ V } line: '${JSON.stringify(regexResultArray1)}`);
             await checkWAttributes(regexResultArray1[1]); // The only call of this function
@@ -1266,8 +1273,10 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         while ((regexResultArray1 = ZALN_S_REGEX.exec(adjustedRest))) {
             // debugLog(`Got ${repoCode} \\zaln-s Regex in ${C}:${V} line: '${JSON.stringify(regexResultArray1)}`);
             // The found string normally starts with a |
-            await checkZALNAttributes(regexResultArray1[1]); // The only call of this function
+            const zalnSuggestion = await checkZALNAttributes(regexResultArray1[1]); // The only call of this function
+            if (zalnSuggestion) suggestion = rest.replace(regexResultArray1[1], zalnSuggestion);
         }
+        return suggestion;
     }
     // end of checkUSFMLineAttributes function
 
