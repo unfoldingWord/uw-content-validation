@@ -1219,9 +1219,9 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                     }
                     if (gotCount !== oOccurrenceInt) // Can’t do checks below coz ix is invalid
                         if (gotCount === 0)
-                            addNoticePartial({ priority: 803, message: "Word can’t be found in original text", details: `found NO occurrences of '${oWord}' instead of ${oOccurrence} from ${verseWordList}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                            addNoticePartial({ priority: 803, message: "Word can’t be found in original text", details: `found NO occurrences of '${oWord}' instead of ${oOccurrence} from ${verseWordList.join(', ')}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                         else
-                            addNoticePartial({ priority: 802, message: "Aligned x-occurrence for original word is too high", details: `only found ${gotCount} occurrence${gotCount === 1 ? '' : 's'} of '${oWord}' instead of ${oOccurrence} from ${verseWordList}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                            addNoticePartial({ priority: 802, message: "Aligned x-occurrence for original word is too high", details: `only found ${gotCount} occurrence${gotCount === 1 ? '' : 's'} of '${oWord}' instead of ${oOccurrence} from ${verseWordList.join(', ')}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                     else {
                         const vwolStrongs = verseWordObjectList[ix]?.strongs;
                         if (vwolStrongs !== oStrong) {

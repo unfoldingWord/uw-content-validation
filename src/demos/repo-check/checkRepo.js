@@ -8,7 +8,7 @@ import { repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetR
 import { functionLog, debugLog, logicAssert, parameterAssert } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.4.11';
+// const REPO_VALIDATOR_VERSION_STRING = '0.4.12';
 
 
 /**
@@ -48,11 +48,14 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
   } else if (repoCode === 'TQ2') {
     repoCode = 'TQ';
     if (repoBranch === undefined) repoBranch = 'newFormat';
-  } else if (repoCode === 'SN2') {
-    repoCode = 'SN';
+  } else if (repoCode === 'OBS-TN2') {
+    repoCode = 'OBS-TN';
     if (repoBranch === undefined) repoBranch = 'newFormat';
-  } else if (repoCode === 'SQ2') {
-    repoCode = 'SQ';
+  } else if (repoCode === 'OBS-SN2') {
+    repoCode = 'OBS-SN';
+    if (repoBranch === undefined) repoBranch = 'newFormat';
+  } else if (repoCode === 'OBS-SQ2') {
+    repoCode = 'OBS-SQ';
     if (repoBranch === undefined) repoBranch = 'newFormat';
   } else if (repoCode.endsWith('LT')) repoCode = 'LT';
   else if (repoCode.endsWith('ST')) repoCode = 'ST';
@@ -158,7 +161,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
         // addNoticePartial({ ...cfcNoticeEntry, bookID: cfBookID, extra: bookOrFileCode.toUpperCase() });
         const newNoticeObject = { ...cfcNoticeEntry, bookID: cfBookID };
         if (bookOrFileCode !== '01' // UGL (from content/G04230/01.md)
-        && (bookOrFileCode[0]!=='H' || bookOrFileCode.length!==5)) // UHAL, e.g., H0612 from content/H0612.md
+          && (bookOrFileCode[0] !== 'H' || bookOrFileCode.length !== 5)) // UHAL, e.g., H0612 from content/H0612.md
           newNoticeObject.extra = bookOrFileCode.toUpperCase();
         addNoticePartial(newNoticeObject);
       }

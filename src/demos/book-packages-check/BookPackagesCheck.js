@@ -9,7 +9,7 @@ import { RenderCheckedFilesList, RenderSuccessesErrorsWarnings, RenderSuccessesS
 import { userLog, debugLog, logicAssert } from '../../core/utilities';
 
 
-// const BPS_VALIDATOR_VERSION_STRING = '0.2.12';
+// const BPS_VALIDATOR_VERSION_STRING = '0.2.13';
 
 
 /**
@@ -118,7 +118,7 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         else if (dataSet === 'NEW')
           obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2'];
         else if (dataSet === 'BOTH')
-          obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SN', 'OBS-SN2', 'OBS-SQ2'];
+          obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SN2', 'OBS-SQ', 'OBS-SQ2'];
         repoPreloadList.push.apply(repoPreloadList, obsRepoPreloadList);
       }
       // debugLog(`BookPackagesCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)

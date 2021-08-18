@@ -8,7 +8,7 @@ import { checkBookPackage } from '../book-package-check/checkBookPackage';
 import { userLog, logicAssert } from '../../core/utilities';
 
 
-// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.16';
+// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.17';
 
 
 function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
@@ -88,9 +88,9 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
                 if (dataSet === 'OLD')
                     repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
                 else if (dataSet === 'NEW')
-                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN', 'OBS-SQ'];
+                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ'];
                 else if (dataSet === 'BOTH')
-                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SN', 'OBS-SN2', 'OBS-SQ2'];
+                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SN2', 'OBS-SQ', 'OBS-SQ2'];
             } else { // not OBS
                 repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TQ', 'SN', 'SQ']; // for DEFAULT
                 if (dataSet === 'OLD')

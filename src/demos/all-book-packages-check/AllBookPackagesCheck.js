@@ -9,7 +9,7 @@ import { RenderCheckedFilesList, RenderSuccessesErrorsWarnings, RenderSuccessesS
 import { logicAssert, userLog, debugLog } from '../../core/utilities';
 
 
-// const ALL_BPS_VALIDATOR_VERSION_STRING = '0.3.11';
+// const ALL_BPS_VALIDATOR_VERSION_STRING = '0.3.12';
 
 const OLD_TESTAMENT_BOOK_CODES = 'GEN,EXO,LEV,NUM,DEU,JOS,JDG,RUT,1SA,2SA,1KI,2KI,1CH,2CH,EZR,NEH,EST,JOB,PSA,PRO,ECC,SNG,ISA,JER,LAM,EZK,DAN,HOS,JOL,AMO,OBA,JON,MIC,NAM,HAB,ZEP,HAG,ZEC,MAL';
 const NEW_TESTAMENT_BOOK_CODES = 'MAT,MRK,LUK,JHN,ACT,ROM,1CO,2CO,GAL,EPH,PHP,COL,1TH,2TH,1TI,2TI,TIT,PHM,HEB,JAS,1PE,2PE,1JN,2JN,3JN,JUD,REV';
@@ -125,9 +125,9 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         if (dataSet === 'OLD')
           obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
         else if (dataSet === 'NEW')
-          obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN', 'OBS-SQ'];
+          obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ'];
         else if (dataSet === 'BOTH')
-          obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SN', 'OBS-SN2', 'OBS-SQ2'];
+          obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SN2', 'OBS-SQ', 'OBS-SQ2'];
         repoPreloadList.push.apply(repoPreloadList, obsRepoPreloadList);
       }
 

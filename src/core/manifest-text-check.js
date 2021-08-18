@@ -563,7 +563,7 @@ const validate = ajv.compile(MANIFEST_SCHEMA);
 /**
  *
  * @param {string} languageCode -- language of main thing being checked -- normally the same as the first part of the repoName, e.g., 'en', but may differ for original language repos
- * @param {string} repoCode -- e.g., 'UHB', 'LT', 'TN', 'SQ2'
+ * @param {string} repoCode -- e.g., 'UHB', 'LT', 'TN', 'OBS-SQ2'
  * @param {string} username -- or orgname -- owner of DCS repo
  * @param {string} repoName -- e.g., 'en_tn'
  * @param {string} repoBranch -- e.g., 'master'

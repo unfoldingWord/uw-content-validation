@@ -52,7 +52,7 @@ export async function checkFileContents(username, languageCode, repoCode, branch
   if (ourCFLocation[0] !== ' ') ourCFLocation = ' ' + ourCFLocation;
 
   const filebits = filepath.split('/');
-  const filename = filebits[filebits.length-1];
+  const filename = filebits[filebits.length - 1];
   // debugLog(`checkFileContents from filepath='${filepath}' got (${filebits.length}) ${filebits} and then '${filename}'`);
   const filenameLower = filename.toLowerCase();
   const repoName = formRepoName(languageCode, repoCode);

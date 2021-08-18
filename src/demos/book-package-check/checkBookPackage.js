@@ -9,7 +9,7 @@ import { checkRepo } from '../repo-check/checkRepo';
 import { userLog, functionLog, debugLog, parameterAssert, logicAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.8.1';
+// const BP_VALIDATOR_VERSION_STRING = '0.8.2';
 
 const STANDARD_MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -313,7 +313,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     else if (dataSet === 'NEW')
       repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2'];
     else if (dataSet === 'BOTH')
-      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SN', 'OBS-SN2', 'OBS-SQ2'];
+      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SN2', 'OBS-SQ', 'OBS-SQ2'];
   } else { // not OBS
     // We also need to know the number for USFM books
     try {
