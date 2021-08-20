@@ -9,7 +9,7 @@ import { RenderCheckedFilesList, RenderSuccessesErrorsWarnings, RenderSuccessesS
 import { userLog, debugLog, logicAssert } from '../../core/utilities';
 
 
-// const BPS_VALIDATOR_VERSION_STRING = '0.2.13';
+// const BPS_VALIDATOR_VERSION_STRING = '0.2.14';
 
 
 /**
@@ -123,7 +123,7 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
       }
       // debugLog(`BookPackagesCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
 
-      setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for book packages check…</p>);
+      setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for check of ${bookIDList.length} book package${bookIDList.length === 1 ? '' : 's'}…</p>);
       const successFlag = await preloadReposIfNecessary(username, languageCode, bookIDList, branch, repoPreloadList);
       if (!successFlag)
         console.error(`BookPackagesCheck error: Failed to pre-load all repos`)

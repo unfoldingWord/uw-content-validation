@@ -8,7 +8,7 @@ import { cachedGetFile } from './getApi';
 import { functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 
 
-// const OL_QUOTE_VALIDATOR_VERSION_STRING = '0.10.4';
+// const OL_QUOTE_VALIDATOR_VERSION_STRING = '0.10.5';
 
 
 /**
@@ -70,7 +70,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
-    let whichTestament = 'none'; // for OBS
+    let whichTestament = 'both'; // for OBS
     if (bookID !== 'OBS') {
         try {
             whichTestament = books.testament(bookID); // returns 'old' or 'new'
@@ -447,59 +447,73 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
 
     /**
      *
-     * @param {string} notFoundQuoteSegment -- an origQuote, or a segment of an origQuote, that exists in the verseText
-     * @param {string} partDescription -- empty string if first parameter is the entire origQuote else a descriptive word (like "beginning")
-     * @param {string} fullVerseText -- origL verse text
-     * @param {Object} warnLocation
+     * @param {string} notFoundQuoteStringSegment -- an origQuote, or a segment of an origQuote, that exists in the verseText
+     * @param {string} partDescriptionString -- empty string if first parameter is the entire origQuote else a descriptive word (like "beginning")
+     * @param {string} fullVerseTextString -- origL verse text
+     * @param {Object} warnLocationString
      * @description Checks the segment that was not found (so it’s not in the verse) for special characters when we create the warning
      */
-    function warnForANotFoundQuoteSegment(notFoundQuoteSegment, partDescription, occurrenceString, fullVerseText, warnLocation) {
-        // functionLog(`warnForNotFoundQuoteSegment('${notFoundQuoteSegment}', '${partDescription}', '${occurrenceString}', '${fullVerseText}', ${location}) ${C}:${V}…`);
-        //parameterAssert(notFoundQuoteSegment !== undefined, "warnForNotFoundQuoteSegment: 'notFoundQuoteSegment' parameter should be defined");
-        //parameterAssert(typeof notFoundQuoteSegment === 'string', `warnForNotFoundQuoteSegment: 'notFoundQuoteSegment' parameter should be a string not a '${typeof notFoundQuoteSegment}'`);
-        //parameterAssert(notFoundQuoteSegment.indexOf(discontiguousDivider) === -1, `warnForNotFoundQuoteSegment: 'notFoundQuoteSegment' parameter should not contain '${discontiguousDivider}' divider: '${notFoundQuoteSegment}'`);
-        //parameterAssert(partDescription !== undefined, "warnForNotFoundQuoteSegment: 'partDescription' parameter should be defined");
-        //parameterAssert(typeof partDescription === 'string', `warnForNotFoundQuoteSegment: 'partDescription' parameter should be a string not a '${typeof partDescription}'`);
-        //parameterAssert(fullVerseText !== undefined, "warnForNotFoundQuoteSegment: 'fullVerseText' parameter should be defined");
-        //parameterAssert(typeof fullVerseText === 'string', `warnForNotFoundQuoteSegment: 'fullVerseText' parameter should be a string not a '${typeof fullVerseText}'`);
-        //parameterAssert(location !== undefined, "warnForNotFoundQuoteSegment: 'location' parameter should be defined");
-        //parameterAssert(typeof location === 'string', `warnForNotFoundQuoteSegment: 'location' parameter should be a string not a '${typeof location}'`);
+    function warnForANotFoundQuoteSegment(notFoundQuoteStringSegment, partDescriptionString, occurrenceString, fullVerseTextString, warnLocationString) {
+        // functionLog(`warnForNotFoundQuoteSegment('${notFoundQuoteStringSegment}', '${partDescriptionString}', '${occurrenceString}', '${fullVerseTextString}', ${warnLocationString}) ${C}:${V}…`);
+        //parameterAssert(notFoundQuoteStringSegment !== undefined, "warnForNotFoundQuoteSegment: 'notFoundQuoteSegment' parameter should be defined");
+        //parameterAssert(typeof notFoundQuoteStringSegment === 'string', `warnForNotFoundQuoteSegment: 'notFoundQuoteSegment' parameter should be a string not a '${typeof notFoundQuoteStringSegment}'`);
+        //parameterAssert(notFoundQuoteStringSegment.indexOf(discontiguousDivider) === -1, `warnForNotFoundQuoteSegment: 'notFoundQuoteSegment' parameter should not contain '${discontiguousDivider}' divider: '${notFoundQuoteStringSegment}'`);
+        //parameterAssert(partDescriptionString !== undefined, "warnForNotFoundQuoteSegment: 'partDescription' parameter should be defined");
+        //parameterAssert(typeof partDescriptionString === 'string', `warnForNotFoundQuoteSegment: 'partDescription' parameter should be a string not a '${typeof partDescriptionString}'`);
+        //parameterAssert(fullVerseTextString !== undefined, "warnForNotFoundQuoteSegment: 'fullVerseText' parameter should be defined");
+        //parameterAssert(typeof fullVerseTextString === 'string', `warnForNotFoundQuoteSegment: 'fullVerseText' parameter should be a string not a '${typeof fullVerseTextString}'`);
+        //parameterAssert(warnLocationString !== undefined, "warnForNotFoundQuoteSegment: 'location' parameter should be defined");
+        //parameterAssert(typeof warnLocationString === 'string', `warnForNotFoundQuoteSegment: 'location' parameter should be a string not a '${typeof warnLocationString}'`);
 
-        let excerpt = partDescription ? `${partDescription ? '(' + partDescription + ' quote portion)' : ''} '${notFoundQuoteSegment}'` : notFoundQuoteSegment;
+        let excerpt = partDescriptionString ? `${partDescriptionString ? '(' + partDescriptionString + ' quote portion)' : ''} '${notFoundQuoteStringSegment}'` : notFoundQuoteStringSegment;
         if (occurrenceString && occurrenceString !== '1') excerpt = `'${excerpt}' (occurrence=${occurrenceString})`;
         if (occurrenceString === '-1') excerpt = `(looking for two or more instances) ${excerpt}`;
 
-        const noBreakSpaceText = notFoundQuoteSegment.indexOf('\u00A0') >= 0 ? "quote which contains No-Break Space (u00A0) character shown as '⍽'" : "";
-        if (noBreakSpaceText) notFoundQuoteSegment = notFoundQuoteSegment.replace(/\u00A0/g, '⍽');
+        const noBreakSpaceText = notFoundQuoteStringSegment.indexOf('\u00A0') >= 0 ? "quote which contains No-Break Space (u00A0) character shown as '⍽'" : "";
+        if (noBreakSpaceText) notFoundQuoteStringSegment = notFoundQuoteStringSegment.replace(/\u00A0/g, '⍽');
         // debugLog(`722 fieldText='${fieldText}'${extraText}`);
         // debugLog(`722 verseText='${verseText}'`);
-        if (notFoundQuoteSegment[0] === ' ') {
-            if (!excerpt) excerpt = notFoundQuoteSegment.substring(0, excerptLength) + (notFoundQuoteSegment.length > excerptLength ? '…' : '');
-            addNoticePartial({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which starts with a space" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: warnLocation });
-        } else if (notFoundQuoteSegment.endsWith(' ')) {
-            if (!excerpt) excerpt = (notFoundQuoteSegment.length > excerptLength ? '…' : '') + notFoundQuoteSegment.substring(notFoundQuoteSegment.length - excerptLength, notFoundQuoteSegment.length);
-            addNoticePartial({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which ends with a space" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: warnLocation });
-        } else if (notFoundQuoteSegment[0] === '\u2060') { // Word joiner
-            if (!excerpt) excerpt = notFoundQuoteSegment.substring(0, excerptLength) + (notFoundQuoteSegment.length > excerptLength ? '…' : '');
-            addNoticePartial({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which starts with word joiner (u2060) character'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: warnLocation });
-        } else if (notFoundQuoteSegment.endsWith('\u2060')) { // Word joiner
-            if (!excerpt) excerpt = (notFoundQuoteSegment.length > excerptLength ? '…' : '') + notFoundQuoteSegment.substring(notFoundQuoteSegment.length - excerptLength, notFoundQuoteSegment.length);
-            addNoticePartial({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which ends with word joiner  (u2060) character" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: warnLocation });
-        } else if (notFoundQuoteSegment[0] === '\u200B') { // Zero-width space
-            if (!excerpt) excerpt = notFoundQuoteSegment.substring(0, excerptLength) + (notFoundQuoteSegment.length > excerptLength ? '…' : '');
-            addNoticePartial({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which starts with zero-width space (u200B) character" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: warnLocation });
-        } else if (notFoundQuoteSegment.endsWith('\u200B')) { // Zero-width space
-            if (!excerpt) excerpt = (notFoundQuoteSegment.length > excerptLength ? '…' : '') + notFoundQuoteSegment.substring(notFoundQuoteSegment.length - excerptLength, notFoundQuoteSegment.length);
-            addNoticePartial({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which ends with zero-width space (u200B) character" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: warnLocation });
-        } else if (notFoundQuoteSegment[0] === '\u200D') { // Zero-width joiner
-            if (!excerpt) excerpt = notFoundQuoteSegment.substring(0, excerptLength) + (notFoundQuoteSegment.length > excerptLength ? '…' : '');
-            addNoticePartial({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which starts with zero-width joiner (u200D) character" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: warnLocation });
-        } else if (notFoundQuoteSegment.endsWith('\u200D')) { // Zero-width joiner
-            if (!excerpt) excerpt = (notFoundQuoteSegment.length > excerptLength ? '…' : '') + notFoundQuoteSegment.substring(notFoundQuoteSegment.length - excerptLength, notFoundQuoteSegment.length);
-            addNoticePartial({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which ends with zero-width joiner (u200D) character" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: warnLocation });
+
+        let quoteIndex = fullVerseTextString.indexOf(notFoundQuoteStringSegment); // See if the quote string actually exists in the verse!!! (This will automatically fail if the quote contains a discontiguous divider)
+        // if (occurrenceString === '1' && quoteIndex !== -1) {
+        //     debugLog(`Found quote at ${quoteIndex}: (${notFoundQuoteStringSegment.length}) ${notFoundQuoteStringSegment}`);
+        //     if (quoteIndex > 0) debugLog(`  Prev char='${fullVerseTextString.substring(quoteIndex - 1, quoteIndex)}'`);
+        //     if (quoteIndex !== -1 && quoteIndex + notFoundQuoteStringSegment.length < fullVerseTextString.length - 1) debugLog(`  Next char='${fullVerseTextString.substring(quoteIndex + notFoundQuoteStringSegment.length, quoteIndex + notFoundQuoteStringSegment.length + 1)}'`);
+        // }
+        let possibleOffendingChar;
+        if (notFoundQuoteStringSegment[0] === ' ') {
+            if (!excerpt) excerpt = notFoundQuoteStringSegment.substring(0, excerptLength) + (notFoundQuoteStringSegment.length > excerptLength ? '…' : '');
+            addNoticePartial({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which starts with a space" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: warnLocationString });
+        } else if (notFoundQuoteStringSegment.endsWith(' ')) {
+            if (!excerpt) excerpt = (notFoundQuoteStringSegment.length > excerptLength ? '…' : '') + notFoundQuoteStringSegment.substring(notFoundQuoteStringSegment.length - excerptLength, notFoundQuoteStringSegment.length);
+            addNoticePartial({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which ends with a space" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: warnLocationString });
+        } else if (notFoundQuoteStringSegment[0] === '\u2060') { // Word joiner
+            if (!excerpt) excerpt = notFoundQuoteStringSegment.substring(0, excerptLength) + (notFoundQuoteStringSegment.length > excerptLength ? '…' : '');
+            addNoticePartial({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which starts with word joiner (u2060) character'" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: warnLocationString });
+        } else if (notFoundQuoteStringSegment.endsWith('\u2060')) { // Word joiner
+            if (!excerpt) excerpt = (notFoundQuoteStringSegment.length > excerptLength ? '…' : '') + notFoundQuoteStringSegment.substring(notFoundQuoteStringSegment.length - excerptLength, notFoundQuoteStringSegment.length);
+            addNoticePartial({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which ends with word joiner  (u2060) character" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: warnLocationString });
+        } else if (notFoundQuoteStringSegment[0] === '\u200B') { // Zero-width space
+            if (!excerpt) excerpt = notFoundQuoteStringSegment.substring(0, excerptLength) + (notFoundQuoteStringSegment.length > excerptLength ? '…' : '');
+            addNoticePartial({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which starts with zero-width space (u200B) character" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: warnLocationString });
+        } else if (notFoundQuoteStringSegment.endsWith('\u200B')) { // Zero-width space
+            if (!excerpt) excerpt = (notFoundQuoteStringSegment.length > excerptLength ? '…' : '') + notFoundQuoteStringSegment.substring(notFoundQuoteStringSegment.length - excerptLength, notFoundQuoteStringSegment.length);
+            addNoticePartial({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which ends with zero-width space (u200B) character" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: warnLocationString });
+        } else if (notFoundQuoteStringSegment[0] === '\u200D') { // Zero-width joiner
+            if (!excerpt) excerpt = notFoundQuoteStringSegment.substring(0, excerptLength) + (notFoundQuoteStringSegment.length > excerptLength ? '…' : '');
+            addNoticePartial({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which starts with zero-width joiner (u200D) character" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: warnLocationString });
+        } else if (notFoundQuoteStringSegment.endsWith('\u200D')) { // Zero-width joiner
+            if (!excerpt) excerpt = (notFoundQuoteStringSegment.length > excerptLength ? '…' : '') + notFoundQuoteStringSegment.substring(notFoundQuoteStringSegment.length - excerptLength, notFoundQuoteStringSegment.length);
+            addNoticePartial({ priority: 916, message: "Unable to find original language quote in verse text", details: "quote which ends with zero-width joiner (u200D) character" + (noBreakSpaceText ? ' ' + noBreakSpaceText : ''), excerpt, location: warnLocationString });
+        } else if (occurrenceString === '1' && quoteIndex > 0 && ' “‘[('.indexOf(possibleOffendingChar = fullVerseTextString.substring(quoteIndex - 1, quoteIndex)) === -1) {
+            // The problem with the contiguous quote must presumably be at the beginning of the quote
+            addNoticePartial({ priority: 909, message: "Seems original language quote might not start at the beginning of a word", details: `It seems to follow '${possibleOffendingChar}' in verse text ◗${fullVerseTextString}◖`, characterIndex: 0, excerpt, location: warnLocationString });
+        } else if (occurrenceString === '1' && quoteIndex !== -1 && quoteIndex + notFoundQuoteStringSegment.length < fullVerseTextString.length - 1 && ' .,?!;:”’])'.indexOf(possibleOffendingChar = fullVerseTextString.substring(quoteIndex + notFoundQuoteStringSegment.length, quoteIndex + notFoundQuoteStringSegment.length + 1)) === -1) {
+            // The problem with the contiguous quote must presumably be at the end of the quote
+            addNoticePartial({ priority: 908, message: "Seems original language quote might not finish at the end of a word", details: `It seems to precede '${possibleOffendingChar}' in verse text ◗${fullVerseTextString}◖`, characterIndex: 0, excerpt, location: warnLocationString });
         } else {
-            if (!excerpt) excerpt = notFoundQuoteSegment.length <= excerptLength ? notFoundQuoteSegment : (notFoundQuoteSegment.substring(0, excerptHalfLength) + (notFoundQuoteSegment.length > 2 * excerptHalfLength ? '…' : '') + notFoundQuoteSegment.substring(notFoundQuoteSegment.length - excerptHalfLength, notFoundQuoteSegment.length));
-            addNoticePartial({ priority: 916, message: "Unable to find original language quote in verse text", details: noBreakSpaceText ? noBreakSpaceText : `verse text ◗${fullVerseText}◖`, excerpt, location: warnLocation });
+            if (!excerpt) excerpt = notFoundQuoteStringSegment.length <= excerptLength ? notFoundQuoteStringSegment : (notFoundQuoteStringSegment.substring(0, excerptHalfLength) + (notFoundQuoteStringSegment.length > 2 * excerptHalfLength ? '…' : '') + notFoundQuoteStringSegment.substring(notFoundQuoteStringSegment.length - excerptHalfLength, notFoundQuoteStringSegment.length));
+            addNoticePartial({ priority: 916, message: "Unable to find original language quote in verse text", details: noBreakSpaceText ? noBreakSpaceText : `verse text ◗${fullVerseTextString}◖`, excerpt, location: warnLocationString });
         }
     }
     // end of warnForNotFoundQuoteSegment function
@@ -552,18 +566,18 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
 
     // NOTE: The following code only looks for matching paired punctuation at the very beginning or end of the quote, i.e., it won't complain about a single ( or ] in the middle of a quote
     let opener_index, expected_closing_char;
-    if (fieldText.length > 1 && (opener_index = PAIRED_PUNCTUATION_OPENERS.indexOf(fieldText[0])) !== -1)
-        if (fieldText.indexOf(expected_closing_char = PAIRED_PUNCTUATION_CLOSERS[opener_index]) === -1) {
-            const excerpt = fieldText.length <= excerptLength ? fieldText : `${fieldText.substring(0, excerptHalfLength)}…${fieldText.substring(fieldText.length - excerptHalfLength)}`;
-            addNoticePartial({ priority: 859, message: `Unexpected unclosed paired punctuation at beginning of quote`, details: `Found '${fieldText[0]}' at start, but no matching '${expected_closing_char}'`, characterIndex: 0, excerpt, location: ourLocation });
-        }
+    if (fieldText.length > 1 && (opener_index = PAIRED_PUNCTUATION_OPENERS.indexOf(fieldText[0])) !== -1
+        && fieldText.indexOf(expected_closing_char = PAIRED_PUNCTUATION_CLOSERS[opener_index]) === -1) {
+        const excerpt = fieldText.length <= excerptLength ? fieldText : `${fieldText.substring(0, excerptHalfLength)}…${fieldText.substring(fieldText.length - excerptHalfLength)}`;
+        addNoticePartial({ priority: 859, message: `Unexpected unclosed paired punctuation at beginning of quote`, details: `Found '${fieldText[0]}' at start, but no matching '${expected_closing_char}'`, characterIndex: 0, excerpt, location: ourLocation });
+    }
     let closer_index, expected_opening_char
-    if (fieldText.length > 1 && (closer_index = PAIRED_PUNCTUATION_CLOSERS.indexOf(fieldText.slice(-1))) !== -1)
-        if ((whichTestament !== 'new' || fieldText.slice(-1) !== '’') // Allow final apostrophe for UGNT
-            && fieldText.indexOf(expected_opening_char = PAIRED_PUNCTUATION_OPENERS[closer_index]) === -1) {
-            const excerpt = fieldText.length <= excerptLength ? fieldText : `${fieldText.substring(0, excerptHalfLength)}…${fieldText.substring(fieldText.length - excerptHalfLength)}`;
-            addNoticePartial({ priority: 858, message: `Unexpected unopened paired punctuation at end of quote`, details: `Found '${fieldText.slice(-1)}' at end, but no matching '${expected_opening_char}'`, characterIndex: fieldText.length - 1, excerpt, location: ourLocation });
-        }
+    if (fieldText.length > 1 && (closer_index = PAIRED_PUNCTUATION_CLOSERS.indexOf(fieldText.slice(-1))) !== -1
+        && ((whichTestament !== 'new' && whichTestament !== 'both') || fieldText.slice(-1) !== '’') // Allow final apostrophe for UGNT and OBS
+        && fieldText.indexOf(expected_opening_char = PAIRED_PUNCTUATION_OPENERS[closer_index]) === -1) {
+        const excerpt = fieldText.length <= excerptLength ? fieldText : `${fieldText.substring(0, excerptHalfLength)}…${fieldText.substring(fieldText.length - excerptHalfLength)}`;
+        addNoticePartial({ priority: 858, message: `Unexpected unopened paired punctuation at end of quote`, details: `Found '${fieldText.slice(-1)}' at end, but no matching '${expected_opening_char}'`, characterIndex: fieldText.length - 1, excerpt, location: ourLocation });
+    }
 
     const noDashFieldText = fieldText.replace(/[—־]/g, ' '); // em-dash and then maqaf
     let quoteBits;

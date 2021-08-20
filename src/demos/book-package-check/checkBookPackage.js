@@ -9,7 +9,7 @@ import { checkRepo } from '../repo-check/checkRepo';
 import { userLog, functionLog, debugLog, parameterAssert, logicAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.8.2';
+// const BP_VALIDATOR_VERSION_STRING = '0.8.3';
 
 const STANDARD_MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -307,7 +307,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   if (bookID === 'OBS') {
     // NOTE: No code below to handle OBS TN and TQ which are markdown repos
     if (dataSet === 'DEFAULT')
-      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2'];
+      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
     else if (dataSet === 'OLD')
       repoCodeList = ['OBS', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
     else if (dataSet === 'NEW')
