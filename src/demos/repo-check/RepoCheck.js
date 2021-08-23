@@ -8,7 +8,7 @@ import { checkRepo } from './checkRepo';
 import { logicAssert, userLog, debugLog } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.2.6';
+// const REPO_VALIDATOR_VERSION_STRING = '0.3.0';
 
 
 function RepoCheck(/*username, languageCode,*/ props) {
@@ -43,6 +43,8 @@ function RepoCheck(/*username, languageCode,*/ props) {
     //     checkingOptions.disableLinkedTWArticlesCheckFlag = false;
     // }
     // Or this allows the parameters to be specified as a RepoCheck property
+    if (props.skipOTBooks) checkingOptions.skipOTBooks = props.skipOTBooks.toLowerCase() === 'true';
+    if (props.skipNTBooks) checkingOptions.skipNTBooks = props.skipNTBooks.toLowerCase() === 'true';
     if (props.excerptLength) checkingOptions.excerptLength = ourParseInt(props.excerptLength);
     if (props.cutoffPriorityLevel) checkingOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
     if (props.disableAllLinkFetchingFlag) checkingOptions.disableAllLinkFetchingFlag = props.disableAllLinkFetchingFlag.toLowerCase() === 'true';
@@ -94,17 +96,28 @@ function RepoCheck(/*username, languageCode,*/ props) {
             // NOTE: We make TWO calls to preloadReposIfNecessary()
             //          because the branchOrRelease only applies to the repo being checked
             //          for all other repos, we just use `master`
-            const repoPreloadList = repoCode === 'TW' ? [] : ['TW'];
-            if (repoCode !== 'UHB' && repoCode !== 'UGNT' && repoCode !== 'TA')
-                repoPreloadList.push('TA'); // Original languages only have TW links
-            // if (repoCode !== 'TA' && repoCode !== 'TW') repoPreloadList.push(repoCode);
-            if (repoCode.startsWith('OBS-') || repoCode === 'TWL') { repoPreloadList.unshift('UGNT'); repoPreloadList.unshift('UHB'); repoPreloadList.push('OBS'); }
+            const repoPreloadList = []; // The repo being checked doesn't need to be added here as done separately below
+            if (!checkingOptions.disableAllLinkFetchingFlag) {
+                if (repoCode !== 'TW')
+                    repoPreloadList.push('TW');
+                if (repoCode !== 'UHB' && repoCode !== 'UGNT' && repoCode !== 'TA')
+                    repoPreloadList.push('TA'); // Original languages only have TW links
+                // if (repoCode !== 'TA' && repoCode !== 'TW') repoPreloadList.push(repoCode);
+                if (repoCode === 'TWL' || repoCode.endsWith('LT') || repoCode.endsWith('ST')) {
+                    // These all refer to the original languages
+                    repoPreloadList.unshift('UGNT');
+                    repoPreloadList.unshift('UHB');
+                }
+                if (repoCode.startsWith('OBS-'))
+                    repoPreloadList.push('OBS');
+            }
             setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoCode} and {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for {repoName} repo check…</p>);
-            logicAssert(repoPreloadList.indexOf(repoCode) === -1);
+            logicAssert(repoPreloadList.indexOf(repoCode) === -1, `Shouldn't have our repoCode ${repoCode} in repoPreloadList: ${repoPreloadList}`);
             const successFlag = await preloadReposIfNecessary(username, languageCode, [], branchOrRelease, [repoCode])
-                && preloadReposIfNecessary(username, languageCode, [], 'master', repoPreloadList);
+                && await preloadReposIfNecessary(username, languageCode, [], 'master', repoPreloadList);
             if (!successFlag)
                 console.error(`RepoCheck error: Failed to pre-load all repos`)
+            // else debugLog(`RepoCheck preloaded repos ${repoCode} and ${repoPreloadList}`)
 
             // Display our "waiting" message
             setResultValue(<p style={{ color: 'magenta' }}>Checking <b>{repoName}</b> repo…</p>);

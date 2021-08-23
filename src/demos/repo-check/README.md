@@ -53,6 +53,11 @@ import RepoCheck from './RepoCheck';
   // The location field appears in check messages to help the user locate the issue
   location="as specified in repo-check/README.md"
 
+  // Normally all books/files are checked for the repo
+  // NOTE: Setting these for repos not containing Bible books makes no difference
+  skipOTBooks='false' // 'true' or 'false'
+  skipNTBooks='false' // 'true' or 'false'
+
   // Normally links in files are downloaded to check that they really exist
   // disableAllLinkFetchingFlag='false' // 'true' or 'false'
   disableAllLinkFetchingFlag='false' // 'true' or 'false'

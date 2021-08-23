@@ -5,10 +5,10 @@ import * as books from '../../core/books/books';
 import { checkFileContents } from '../file-check/checkFileContents';
 import { repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetRepositoryZipFile } from '../../core/getApi';
 // eslint-disable-next-line no-unused-vars
-import { functionLog, debugLog, logicAssert, parameterAssert } from '../../core/utilities';
+import { userLog, functionLog, debugLog, logicAssert, parameterAssert } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.4.12';
+// const REPO_VALIDATOR_VERSION_STRING = '0.5.0';
 
 
 /**
@@ -227,7 +227,8 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
 
       // So now we want to work through checking all the files in this repo
       // Main loop for checkRepo()
-      const countString = `${pathList.length.toLocaleString()} file${pathList.length === 1 ? '' : 's'}`;
+      // const countString = `${pathList.length.toLocaleString()} file${pathList.length === 1 ? '' : 's'}`;
+      let filesToCheckCount = pathList.length;
       let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0;
       for (const thisFilepath of pathList) {
         // debugLog(`checkRepo: at top of loop: thisFilepath='${thisFilepath}'`);
@@ -238,7 +239,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
         if (abortFlag) break;
 
         // Update our "waiting" message
-        setResultValue(<p style={{ color: 'magenta' }}>Checking <b>{username}/{repoName}</b> repo: checked {checkedFileCount.toLocaleString()}/{countString}…</p>);
+        setResultValue(<p style={{ color: 'magenta' }}>Checking <b>{username}/{repoName}</b> repo: checked {checkedFileCount.toLocaleString()}/{filesToCheckCount.toLocaleString()} file{filesToCheckCount === 1 ? '' : 's'}…</p>);
 
         const thisFilename = thisFilepath.split('/').pop();
         // debugLog(`thisFilename=${thisFilename}`);
@@ -279,6 +280,26 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
         else if (repoName.endsWith('_tq') && thisFilepath.indexOf('/') > 0)
           bookOrFileCode = thisFilepath.split('/')[0];
 
+        let whichTestament = 'none';
+        if (bookOrFileCode === 'OBS')
+          whichTestament = 'both';
+        else if (bookOrFileCode.length === 3) { // but not OBS
+          try {
+            whichTestament = books.testament(bookOrFileCode); // returns 'old' or 'new'
+          } catch (bNNerror) {
+            if (books.isValidBookID(bookOrFileCode)) // must be in FRT, BAK, etc.
+              whichTestament = 'other';
+          }
+          logicAssert(whichTestament === 'old' || whichTestament === 'new', `checkRepo() couldn’t find testament for '${bookOrFileCode}'`);
+        }
+        // debugLog(`checkRepo: Found testament '${whichTestament}' for '${bookOrFileCode}'`);
+        if ((checkingOptions.skipOTBooks && whichTestament === 'old')
+          || (checkingOptions.skipNTBooks && whichTestament === 'new')) {
+          userLog(`checkRepo: Skipping '${bookOrFileCode}' (${whichTestament}) because skipOTBooks=${checkingOptions.skipOTBooks} and skipNTBooks=${checkingOptions.skipNTBooks}`);
+          --filesToCheckCount;
+          continue;
+        }
+
         // debugLog("checkRepo: Try to load", username, repoName, thisFilepath, branch);
         const getFile_ = (checkingOptions && checkingOptions.getFile) ? checkingOptions.getFile : cachedGetFile;
         let repoFileContent;
@@ -298,7 +319,8 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
           return;
         }
         if (repoFileContent) {
-          // functionLog(`checkRepo for ${repoName} checking ${thisFilename}`);
+          if (pathList.length < 100) // assume they might be lots of very small files if >= 100
+            userLog(`checkRepo for ${repoName} checking ${thisFilename}…`);
           await ourCheckRepoFileContents(bookOrFileCode, ourBookID,
             // OBS has many files with the same name, so we have to give some of the path as well
             // repoName.endsWith('_obs') ? thisFilepath.replace('content/', '') : thisFilename,
