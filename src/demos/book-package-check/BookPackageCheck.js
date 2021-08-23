@@ -9,7 +9,7 @@ import { checkBookPackage } from './checkBookPackage';
 import { userLog, debugLog, parameterAssert, logicAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.5.13';
+// const BP_VALIDATOR_VERSION_STRING = '0.5.14';
 
 
 function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
@@ -89,11 +89,11 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             const whichTestament = bookID === 'OBS' ? 'none' : books.testament(bookID); // returns 'old' or 'new'
             let repoPreloadList;
             if (bookID === 'OBS') {
-                repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2']; // for DEFAULT
+                repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ']; // for DEFAULT
                 if (dataSet === 'OLD')
                     repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
                 else if (dataSet === 'NEW')
-                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ'];
+                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2'];
                 else if (dataSet === 'BOTH')
                     repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SN2', 'OBS-SQ', 'OBS-SQ2'];
             } else { // not OBS

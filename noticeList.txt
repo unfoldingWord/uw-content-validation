@@ -1,4 +1,4 @@
-Last updated 2021-08-20 16:21:16.713117 by makeNoticeList.py
+Last updated 2021-08-23 13:17:06.696383 by makeNoticeList.py
 Got 566 notices:
   standardisedNoticeList.push( 1, `Reduced numbers of similar and hidden messages because of large list ($standardisedNoticeList.length.toLocaleString())`, location: " during notice processing"	from notice-processing-functions.js line 502
   previousObject.hiddenNotices.push( thisNotice.priority, maximumHiddenNoticesMessage	from notice-processing-functions.js line 624
@@ -9,9 +9,9 @@ Got 566 notices:
   previousObject.hiddenNotices.push( thisNotice.priority, maximumHiddenNoticesMessage	from notice-processing-functions.js line 864
   checkFileResultObject.noticeList.unshift( 982, "File extension is not recognized, so treated as markdown.", filename: filepath, location: ourCFLocation	from checkFileContents.js line 114
   checkFileResultObject.noticeList.unshift( 995, "File extension is not recognized, so treated as plain text.", filename: filepath, location: ourCFLocation	from checkFileContents.js line 117
-  repoCode === 'SN' || repoCode === 'SQ' ? 196 : 996, "Unable to load book package file", details, repoCode, repoName, filename, location: repoLocation, extra: repoCode	from checkBookPackage.js line 437
+  repoCode === 'SN' || repoCode === 'SQ' ? 196 : 996, "Unable to load book package file", details, repoCode, repoName, filename, location: repoLocation, extra: repoCode	from checkBookPackage.js line 438
   newNoticeObject	from checkRepo.js line 166
-  checkRepoResult.noticeList.push( 997, "Repository doesn’t exist", details, username, repoCode, repoName, location: givenLocation, extra: repoCode	from checkRepo.js line 292
+  checkRepoResult.noticeList.push( 997, "Repository doesn’t exist", details, username, repoCode, repoName, location: givenLocation, extra: repoCode	from checkRepo.js line 313
   expectedMarker === 'mt1' ? 921 : 519, "Missing expected USFM line", excerpt: `missing \\$expectedMarker`, location: fileLocation	from usfm-text-check.js line 639
   languageCode === 'en' || languageCode === 'fr' ? 490 : 190, "Expected header field to contain a mixed-case string", fieldName: `\\$marker`, excerpt: rest, C, V, location: lineLocation	from usfm-text-check.js line 1,311
   marker === 's5' ? 111 : 809, `$marker === 's5' ? 'Deprecated' : 'Unexpected' '\\$marker' marker at start of line`, C, V, lineNumber, characterIndex: 1, location: lineLocation	from usfm-text-check.js line 1,339
@@ -31,17 +31,17 @@ Got 566 notices:
   optionalB1 === 'Song of Solomon' ? 43 : 143, `$optionalB1 === 'Song of Solomon' ? 'Unexpected' : 'Unknown' Bible book name in Bible link`, details: totalLink, excerpt: optionalB1, location: ourLocation	from notes-links-check.js line 1,038
   B1 === 'Song of Solomon' ? 43 : 143, `$B1 === 'Song of Solomon' ? 'Unexpected' : 'Unknown' Bible book name in Bible link`, details: totalLink, excerpt: B1, location: ourLocation	from notes-links-check.js line 1,091
   B1 === 'Song of Solomon' ? 43 : 143, `$B1 === 'Song of Solomon' ? 'Unexpected' : 'Unknown' Bible book name in Bible link`, details: totalLink, excerpt: B1, location: ourLocation	from notes-links-check.js line 1,148
-  999, "checkRepo function FAILED", repoName, excerpt: checkRepoError, location: repoName	from RepoCheck.js line 123
+  999, "checkRepo function FAILED", repoName, excerpt: checkRepoError, location: repoName	from RepoCheck.js line 136
   997, "Repository doesn’t exist", details, username, repoCode, repoName, location: manifestLocation, extra: repoCode	from checkBookPackage.js line 196
   997, "Repository doesn’t exist", details, username, repoCode, repoName, location: markdownLocation, extra: repoCode	from checkBookPackage.js line 261
-  997, "Repository doesn’t exist", details, username, repoCode, repoName, location: repoLocation, extra: repoCode	from checkBookPackage.js line 433
-  997, "Repository doesn’t exist", details, username, repoCode, repoName, location: generalLocation, extra: repoCode	from checkBookPackage.js line 649
-  997, "Repository doesn’t exist", details, username, repoCode, repoName, location: generalLocation, extra: repoCode	from checkBookPackage.js line 675
+  997, "Repository doesn’t exist", details, username, repoCode, repoName, location: repoLocation, extra: repoCode	from checkBookPackage.js line 434
+  997, "Repository doesn’t exist", details, username, repoCode, repoName, location: generalLocation, extra: repoCode	from checkBookPackage.js line 651
+  997, "Repository doesn’t exist", details, username, repoCode, repoName, location: generalLocation, extra: repoCode	from checkBookPackage.js line 677
   996, "Unable to load file", details: `username=$username error=$cBPgfError`, repoName, filename: STANDARD_MANIFEST_FILENAME, location: manifestLocation, extra: repoCode	from checkBookPackage.js line 200
   996, "Unable to load file", details: `username=$username error=$cBPgfError`, username, repoName, filename, location: markdownLocation, extra: repoCode	from checkBookPackage.js line 265
-  996, "Unable to load file", details, bookID, location: generalLocation, extra: repoCode	from checkBookPackage.js line 651
-  996, "Unable to load file", details, bookID, C, V, filename: thisPath, location: `$generalLocation $thisPath`, extra: repoCode	from checkBookPackage.js line 679
-  996, "Unable to load file", details, bookID: ourBookID, filename: thisFilename, location: `$givenLocation $thisFilepath`, extra: repoName	from checkRepo.js line 296
+  996, "Unable to load file", details, bookID, location: generalLocation, extra: repoCode	from checkBookPackage.js line 653
+  996, "Unable to load file", details, bookID, C, V, filename: thisPath, location: `$generalLocation $thisPath `, extra: repoCode	from checkBookPackage.js line 681
+  996, "Unable to load file", details, bookID: ourBookID, filename: thisFilename, location: `$givenLocation $thisFilepath`, extra: repoName	from checkRepo.js line 317
   994, "USFM file must start with a valid \\id line", lineNumber: 1, location: ourLocation	from usfm-text-check.js line 1,438
   993, "Unresolved GIT conflict", characterIndex, excerpt, location: ourLocation	from field-text-check.js line 127
   993, "Unresolved GIT conflict", characterIndex, excerpt, location: ourLocation	from plain-text-check.js line 145
@@ -85,8 +85,8 @@ Got 566 notices:
   956, "Got empty markdown file", repoName, filename, location: markdownLocation, extra: repoCode	from checkBookPackage.js line 295
   950, "tC cannot yet process '*' language code", characterIndex, excerpt, location: ourLocation	from notes-links-check.js line 346
   950, "tC cannot yet process '*' language code", characterIndex, excerpt, location: ourLocation	from notes-links-check.js line 516
-  947, "Missing manifest.yaml", location: ourLocation, extra: `$repoName MANIFEST`	from checkRepo.js line 321
-  946, "Missing LICENSE.md", location: ourLocation, extra: `$repoName LICENSE`	from checkRepo.js line 319
+  947, "Missing manifest.yaml", location: ourLocation, extra: `$repoName MANIFEST`	from checkRepo.js line 343
+  946, "Missing LICENSE.md", location: ourLocation, extra: `$repoName LICENSE`	from checkRepo.js line 341
   944, `USFM3 Grammar Check ($strictnessString mode) doesn’t pass`, filename, location: ourLocation	from BCS-usfm-grammar-check.js line 226
   943, `USFM3 toJSON Check doesn’t pass`, location: ourLocation	from usfm-js-check.js line 95
   939, "Key is missing for project", details: keyName, excerpt: JSON.stringify(projectEntry), location: ourLocation	from manifest-text-check.js line 743

@@ -6,13 +6,13 @@ import { checkStrongsField } from './strongs-field-check'; // and this may call 
 import { userLog, functionLog, debugLog, logicAssert, parameterAssert } from './utilities';
 
 
-const MARKDOWN_FILE_VALIDATOR_VERSION_STRING = '0.5.0';
+const MARKDOWN_FILE_VALIDATOR_VERSION_STRING = '0.5.1';
 
 
 /**
  *
  * @param {string} languageCode
- * @param {string} repoCode -- e.g., 'TW', 'TA', 'TQ', or 'OBS', etc.
+ * @param {string} repoCode -- e.g., 'TW', 'TA', 'TQ', or 'OBS', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ', etc.
  * @param {string} markdownFilename -- used for identification
  * @param {string} markdownText -- the actual text to be checked
  * @param {string} givenLocation
@@ -32,7 +32,7 @@ export async function checkMarkdownFileContents(languageCode, repoCode, markdown
   //parameterAssert(typeof languageCode === 'string', `checkMarkdownFileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
   // TODO: Check if/why we have both forms below
   if (markdownFilename !== 'LICENSE.md' && markdownFilename !== 'README.md' && markdownFilename !== 'LICENSE' && markdownFilename !== 'README') {
-    parameterAssert(['TW', 'TA', 'TQ', 'UHAL', 'UGL', 'OBS', 'OBS-TQ'].indexOf(repoCode) !== -1, `checkMarkdownFileContents: 'repoCode' parameter with '${markdownFilename}' should be 'TW', 'TA', 'TQ', 'UHAL', 'UGL', 'OBS', or 'OBS-TQ' not '${repoCode}'`);
+    parameterAssert(['TW', 'TA', 'TQ', 'UHAL', 'UGL', 'OBS', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'].indexOf(repoCode) !== -1, `checkMarkdownFileContents: 'repoCode' parameter with '${markdownFilename}' should be 'TW', 'TA', 'TQ', 'UHAL', 'UGL', 'OBS', or 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ' not '${repoCode}'`);
   }
   //parameterAssert(markdownFilename !== undefined, "checkMarkdownFileContents: 'markdownFilename' parameter should be defined");
   //parameterAssert(typeof markdownFilename === 'string', `checkMarkdownFileContents: 'markdownFilename' parameter should be a string not a '${typeof markdownFilename}': ${markdownFilename}`);
