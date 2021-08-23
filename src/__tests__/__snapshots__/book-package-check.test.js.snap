@@ -5267,7 +5267,7 @@ Object {
       "username": "unfoldingWord",
     },
     Object {
-      "details": "username=unfoldingWord",
+      "details": "username=unfoldingWord, folder=tit/",
       "extra": "TQ",
       "location": " in unfoldingWord (master)",
       "message": "Repository doesn’t exist",

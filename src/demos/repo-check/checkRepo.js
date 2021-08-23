@@ -8,7 +8,7 @@ import { repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetR
 import { userLog, functionLog, debugLog, logicAssert, parameterAssert } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.5.0';
+// const REPO_VALIDATOR_VERSION_STRING = '0.5.1';
 
 
 /**

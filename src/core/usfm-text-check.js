@@ -14,7 +14,7 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.10.2';
+// const USFM_VALIDATOR_VERSION_STRING = '0.10.3';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for STs
@@ -1229,7 +1229,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                             zalnSuggestion = zalnContents.replace(`"${oStrong}"`, `"${vwolStrongs}"`);
                         }
                         const vwolLemma = verseWordObjectList[ix]?.lemma;
-                        if (vwolLemma !== oLemma){
+                        if (vwolLemma !== oLemma) {
                             addNoticePartial({ priority: 806, message: "Aligned x-lemma doesn’t match original", details: `${originalLanguageRepoCode} had '${vwolLemma}'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                             zalnSuggestion = zalnContents.replace(`"${oLemma}"`, `"${vwolLemma}"`);
                         }
@@ -1240,7 +1240,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                         }
                     }
                 } catch (e) {
-                    debugLog(`checkZALNAttributes1: why couldn’t we get word attributes out of ${JSON.stringify(attributes)}: ${e.message} `);
+                    debugLog(`checkZALNAttributes1: why couldn’t we get word attributes out of ${JSON.stringify(attributes)}: ${e.message}`);
                 }
             }
             return zalnSuggestion;

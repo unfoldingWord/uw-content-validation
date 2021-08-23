@@ -1,4 +1,4 @@
-Last updated 2021-08-23 13:17:06.696383 by makeNoticeList.py
+Last updated 2021-08-23 21:40:15.486882 by makeNoticeList.py
 Got 566 notices:
   standardisedNoticeList.push( 1, `Reduced numbers of similar and hidden messages because of large list ($standardisedNoticeList.length.toLocaleString())`, location: " during notice processing"	from notice-processing-functions.js line 502
   previousObject.hiddenNotices.push( thisNotice.priority, maximumHiddenNoticesMessage	from notice-processing-functions.js line 624

@@ -9,7 +9,7 @@ import { checkRepo } from '../repo-check/checkRepo';
 import { userLog, functionLog, debugLog, parameterAssert, logicAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.9.0';
+// const BP_VALIDATOR_VERSION_STRING = '0.9.1';
 
 const STANDARD_MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -646,7 +646,7 @@ async function checkMarkdownBook(username, languageCode, repoCode, repoName, bra
   const pathList = await getFileListFromZip_({ username, repository: repoName, branchOrRelease: branch, optionalPrefix: folderpath });
   if (!Array.isArray(pathList) || !pathList.length) {
     // debugLog(`checkMarkdownBook for ${repoCode} failed to find ${username} ${repoName} ${branch} ${folderpath}`);
-    const details = `username = ${username}, folder = ${folderpath}`;
+    const details = `username=${username}, folder=${folderpath}`;
     if (! await repositoryExistsOnDoor43({ username, repository: repoName }))
       ctqResult.noticeList.push({ priority: 997, message: "Repository doesn’t exist", details, username, repoCode, repoName, location: generalLocation, extra: repoCode });
     else
@@ -655,7 +655,7 @@ async function checkMarkdownBook(username, languageCode, repoCode, repoName, bra
 
     // debugLog(`  checkMarkdownBook: Got ${pathList.length} pathList entries`)
     for (const thisPath of pathList) {
-      // debugLog(`checkMarkdownBook for ${repoCode}: Try to load ${username}, ${repoName}, ${thisPath}, ${branch} `);
+      // debugLog(`checkMarkdownBook for ${repoCode}: Try to load ${username}, ${repoName}, ${thisPath}, ${branch}`);
 
       //parameterAssert(thisPath.endsWith('.md'), `Expected ${ thisPath } to end with .md`);
       // const filename = thisPath.split('/').pop();
@@ -667,7 +667,7 @@ async function checkMarkdownBook(username, languageCode, repoCode, repoName, bra
       let tqFileContent;
       try {
         tqFileContent = await getFile_({ username, repository: repoName, path: thisPath, branch });
-        // debugLog(`checkMarkdownBook for ${repoCode}: Fetched fileContent for ${repoName} ${thisPath} ${typeof tqFileContent} ${tqFileContent.length} `);
+        // debugLog(`checkMarkdownBook for ${repoCode}: Fetched fileContent for ${repoName} ${thisPath} ${typeof tqFileContent} ${tqFileContent.length}`);
         checkedFilenames.push(thisPath);
         totalCheckedSize += tqFileContent.length;
       } catch (tQerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
@@ -688,17 +688,17 @@ async function checkMarkdownBook(username, languageCode, repoCode, repoName, bra
         await ourCheckFileContents(repoCode, bookID, C, V, thisPath, tqFileContent, generalLocation, checkingOptions); // Adds the notices to checkBookPackageResult
         checkedFileCount += 1;
         checkedFilenameExtensions.add('md');
-        // addSuccessMessage(`Checked ${ repoCode.toUpperCase() } file: ${ thisPath } `);
+        // addSuccessMessage(`Checked ${ repoCode.toUpperCase() } file: ${ thisPath }`);
       }
     }
-    addSuccessMessage(`Checked ${checkedFileCount.toLocaleString()} ${repoCode.toUpperCase()} file${checkedFileCount === 1 ? '' : 's'} `);
+    addSuccessMessage(`Checked ${checkedFileCount.toLocaleString()} ${repoCode.toUpperCase()} file${checkedFileCount === 1 ? '' : 's'}`);
   }
 
   ctqResult.checkedFileCount = checkedFileCount;
   ctqResult.checkedFilenames = checkedFilenames;
   ctqResult.checkedFilenameExtensions = [...checkedFilenameExtensions]; // convert Set to Array
   ctqResult.checkedFilesizes = totalCheckedSize;
-  // debugLog(`  checkMarkdownBook returning ${ JSON.stringify(ctqResult) } `);
+  // debugLog(`  checkMarkdownBook returning ${ JSON.stringify(ctqResult) }`);
   return ctqResult;
 }
 // end of checkMarkdownBook function

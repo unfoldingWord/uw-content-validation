@@ -8,7 +8,7 @@ import { cachedGetFile, cachedGetFileUsingFullURL, checkMarkdownFileContents } f
 import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 
 
-// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.9.1';
+// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.9.2';
 
 // const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -140,19 +140,19 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
      * @param {Object} incompleteNoticeObject expected to contain priority, message, characterIndex, exerpt, location
      */
     function addNoticePartial(incompleteNoticeObject) {
-        // functionLog(`checkNotesLinksToOutside Notice: (priority = ${ priority }) ${ message } ${ characterIndex > 0 ? ` (at character ${characterIndex})` : "" } ${ excerpt ? ` ${excerpt}` : "" } ${ location } `);
+        // functionLog(`checkNotesLinksToOutside Notice: (priority = ${ priority }) ${ message } ${ characterIndex > 0 ? ` (at character ${characterIndex})` : "" } ${ excerpt ? ` ${excerpt}` : "" } ${ location }`);
         //parameterAssert(noticeObject.priority !== undefined, "cTNlnk addNoticePartial: 'priority' parameter should be defined");
-        //parameterAssert(typeof noticeObject.priority === 'number', `cTNlnk addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority} `);
+        //parameterAssert(typeof noticeObject.priority === 'number', `cTNlnk addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         //parameterAssert(noticeObject.message !== undefined, "cTNlnk addNoticePartial: 'message' parameter should be defined");
-        //parameterAssert(typeof noticeObject.message === 'string', `cTNlnk addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message} `);
+        //parameterAssert(typeof noticeObject.message === 'string', `cTNlnk addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}');
         // //parameterAssert(characterIndex !== undefined, "cTNlnk addNoticePartial: 'characterIndex' parameter should be defined");
-        if (incompleteNoticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cTNlnk addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex} `);
+        if (incompleteNoticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cTNlnk addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
         }
         // //parameterAssert(excerpt !== undefined, "cTNlnk addNoticePartial: 'excerpt' parameter should be defined");
-        if (incompleteNoticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cTNlnk addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt} `);
+        if (incompleteNoticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cTNlnk addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         }
         //parameterAssert(noticeObject.location !== undefined, "cTNlnk addNoticePartial: 'location' parameter should be defined");
-        //parameterAssert(typeof noticeObject.location === 'string', `cTNlnk addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location} `);
+        //parameterAssert(typeof noticeObject.location === 'string', `cTNlnk addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
         // noticeObject.debugChain = noticeObject.debugChain ? `checkNotesLinksToOutside ${ noticeObject.debugChain } ` : `checkNotesLinksToOutside(${ fieldName })`;
         ctarResult.noticeList.push({ ...incompleteNoticeObject, bookID, fieldName });
     }
@@ -163,11 +163,11 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     let excerptLength = checkingOptions?.excerptLength;
     if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
         excerptLength = DEFAULT_EXCERPT_LENGTH;
-        // debugLog(`Using default excerptLength = ${ excerptLength } `);
-    } // else debugLog(`Using supplied excerptLength = ${ excerptLength } `, `cf.default = ${ DEFAULT_EXCERPT_LENGTH } `);
+        // debugLog(`Using default excerptLength = ${ excerptLength }`);
+    } // else debugLog(`Using supplied excerptLength = ${ excerptLength } `, `cf.default = ${ DEFAULT_EXCERPT_LENGTH }`);
     const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
     const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
-    // debugLog(`Using excerptHalfLength = ${ excerptHalfLength } `, `excerptHalfLengthPlus = ${ excerptHalfLengthPlus } `);
+    // debugLog(`Using excerptHalfLength = ${ excerptHalfLength } `, `excerptHalfLengthPlus = ${ excerptHalfLengthPlus }`);
 
     const getFile_ = (checkingOptions && checkingOptions?.getFile) ? checkingOptions?.getFile : cachedGetFile;
     let defaultLanguageCode = checkingOptions?.defaultLanguageCode;
@@ -198,7 +198,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
         try {
             givenCint = (givenC === 'front') ? 0 : ourParseInt(givenC);
             givenVint = (givenV === 'intro') ? 0 : ourParseInt(givenVfirstPart);
-            if (givenVfirstPart !== givenV && givenV !== 'intro') debugLog(`From '${givenC}': '${givenV}' got '${givenC}': '${givenVfirstPart}' then integers ${givenCint}: ${givenVint} `);
+            if (givenVfirstPart !== givenV && givenV !== 'intro') debugLog(`From '${givenC}': '${givenV}' got '${givenC}': '${givenVfirstPart}' then integers ${givenCint}: ${givenVint}`);
         } catch (cvError) {
             console.error(`TN Link Check couldn’t parse given chapter and verse numbers for ${bookID} ${givenC}: ${givenV} ${fieldName} ' via ${givenC}:${givenVfirstPart} got ${givenCint}:${givenVint} with ${cvError}`);
         }
