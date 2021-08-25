@@ -63,8 +63,8 @@ import RepoCheck from './RepoCheck';
   disableAllLinkFetchingFlag='false' // 'true' or 'false'
   // The next group are only relevant if the above is 'false'
   // They control whether the linked articles themselves are also checked or not
-  disableLinkedTAArticlesCheckFlag='false' // 'true' or 'false'
-  disableLinkedTWArticlesCheckFlag='false' // 'true' or 'false'
+  disableLinkedTAArticlesCheckFlag='true' // 'true' or 'false'
+  disableLinkedTWArticlesCheckFlag='true' // 'true' or 'false'
   disableLexiconLinkFetchingFlag='true' // 'true' or 'false' -- there's many thousands of these!
   disableLinkedLexiconEntriesCheckFlag='true' // 'true' or 'false' -- lexicon entries still have many inconsistencies
 
