@@ -8,7 +8,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert, dataAssert, debugLog, functionLog } from './utilities';
 
 
-const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.7.3';
+const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.7.5';
 
 
 /**
@@ -265,7 +265,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
 
         let suggestion;
         if (thisText && lineText[0] !== '|') // Doesn’t really make sense to check table line entries
-            suggestion = ourCheckTextField(textOrFileName, lineNumber, thisText, true, lineLocation, checkingOptions);
+            suggestion = ourCheckTextField(`${textOrFileName} line`, lineNumber, thisText, true, lineLocation, checkingOptions);
 
         if (thisText === lineText) // i.e., we didn’t premodify the field being checked (otherwise suggestion could be wrong)
             return suggestion;
@@ -277,7 +277,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
     const lines = markdownText.split('\n');
     // debugLog(`  '${location}' has ${lines.length.toLocaleString()} total lines`);
 
-    let headerLevel = 0;
+    let currentHeaderLevel = 0;
     let lastLine;
     let indentLevels = [];
     const suggestedLines = [];
@@ -306,16 +306,18 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
         let numLeadingSpaces;
         if (line) {
             const thisHeaderLevel = line.match(/^#*/)[0].length;
-            // debugLog(`Got thisHeaderLevel=${thisHeaderLevel} for ${line}${atString}`);
-            if (thisHeaderLevel > headerLevel + 1
+            // if (thisHeaderLevel) debugLog(`checkMarkdownText: Got1 thisHeaderLevel=${thisHeaderLevel} after ${currentHeaderLevel} for line ${n}: ${line}`);
+            if (thisHeaderLevel > currentHeaderLevel + 1
                 && !textOrFileName.startsWith('TA ')) { // Suppress this notice for translationAcademy subsections
-                const notice = { priority: 172, message: "Header levels should only increment by one", lineNumber: n, characterIndex: 0, location: ourLocation };
+                // debugLog(`checkMarkdownText: Got2 thisHeaderLevel=${thisHeaderLevel} after ${currentHeaderLevel} for line ${n}: ${line}`);
+                const excerpt = line.substring(0, excerptLength) + (line.length > excerptLength ? '…' : '');
+                const notice = { priority: 172, message: "Header levels should only increment by one", details: `Going from level ${currentHeaderLevel} to level ${thisHeaderLevel}`, lineNumber: n, characterIndex: 0, excerpt, location: ourLocation };
                 if (textOrFileName === 'Note' || textOrFileName === 'OccurrenceNote')
                     notice.details = `markdown line ${n}`;
                 addNotice(notice);
             }
             if (thisHeaderLevel > 0) {
-                headerLevel = thisHeaderLevel;
+                currentHeaderLevel = thisHeaderLevel;
                 indentLevels = []; // reset
             }
 

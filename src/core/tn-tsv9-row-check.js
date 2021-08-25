@@ -32,7 +32,7 @@ const TA_REGEX = new RegExp('\\[\\[rc://[^ /]+?/ta/man/[^ /]+?/([^ \\]]+?)\\]\\]
  * @param {string} givenC - chapter number or (for OBS) story number string
  * @param {string} givenV - verse number or (for OBS) frame number string
  * @param {string} givenRowLocation - description of where the line is located
- * @param {Object} checkingOptions - may contain excerptLength, twRepoUsername, twRepoBranch (or tag), disableLinkedTWArticlesCheckFlag parameters
+ * @param {Object} checkingOptions - may contain excerptLength, taRepoUsername, twRepoUsername, twRepoBranch (or tag), disableLinkedTWArticlesCheckFlag parameters
  * @return {Object} - containing noticeList
  */
 export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, givenC, givenV, givenRowLocation, checkingOptions) {

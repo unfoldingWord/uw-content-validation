@@ -9,7 +9,7 @@ import { checkRepo } from '../repo-check/checkRepo';
 import { userLog, functionLog, debugLog, parameterAssert, logicAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.9.1';
+// const BP_VALIDATOR_VERSION_STRING = '0.9.2';
 
 const STANDARD_MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -640,7 +640,7 @@ async function checkMarkdownBook(username, languageCode, repoCode, repoName, bra
 
   // Main code for checkMarkdownBook
   // We need to find and check all the markdown folders/files for this book
-  const getFileListFromZip_ = checkingOptions && checkingOptions.getFileListFromZip ? checkingOptions.getFileListFromZip : getFileListFromZip;
+  const getFileListFromZip_ = checkingOptions?.getFileListFromZip ? checkingOptions.getFileListFromZip : getFileListFromZip;
   let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0;
   const folderpath = bookID === 'OBS' ? 'content/' : `${bookID.toLowerCase()}/`;
   const pathList = await getFileListFromZip_({ username, repository: repoName, branchOrRelease: branch, optionalPrefix: folderpath });
@@ -663,7 +663,7 @@ async function checkMarkdownBook(username, languageCode, repoCode, repoName, bra
       const C = pathParts[pathParts.length - 2].replace(/^0+(?=\d)/, ''); // Remove leading zeroes
       const V = pathParts[pathParts.length - 1].replace(/^0+(?=\d)/, ''); // Remove leading zeroes
 
-      const getFile_ = (checkingOptions && checkingOptions.getFile) ? checkingOptions.getFile : cachedGetFile;
+      const getFile_ = checkingOptions?.getFile ? checkingOptions.getFile : cachedGetFile;
       let tqFileContent;
       try {
         tqFileContent = await getFile_({ username, repository: repoName, path: thisPath, branch });

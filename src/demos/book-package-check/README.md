@@ -54,7 +54,7 @@ import BookPackageCheck from './BookPackageCheck';
   // Specifying excerptLength and maximumSimilarMessages is just to show off options
   // —those fields are not necessary (or normal) here
   excerptLength='25' // Default is 20 characters
-  // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
+  cutoffPriorityLevel='90' // Default is to detect all errors/warnings
   //maximumSimilarMessages='5' // Default is 3 (0 means don’t suppress any)
   // ignorePriorityNumberList='[]'
   // sortBy='ByRepo' // Default is 'ByPriority'; also have 'ByRepo' and 'AsFound'

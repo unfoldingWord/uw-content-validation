@@ -9,7 +9,7 @@ import { checkBookPackage } from './checkBookPackage';
 import { userLog, debugLog, parameterAssert, logicAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.5.14';
+// const BP_VALIDATOR_VERSION_STRING = '0.5.16';
 
 
 function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
@@ -110,11 +110,13 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             if (!checkingOptions.disableAllLinkFetchingFlag) {
                 repoPreloadList.push('TW'); // Both Bible books and OBS refer to TW and TA
                 repoPreloadList.push('TA');
-                // TODO: What if it's OBS (whichTestament === 'none' ???)
-                // const lexiconRepo = whichTestament === 'old' ? 'UHAL' : 'UGL';
-                // repoPreloadList.push(whichTestament === 'old' ? 'UHAL' : 'UGL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
-                repoPreloadList.push('UHAL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
-                repoPreloadList.push('UGL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
+                if (!checkingOptions.disableLexiconLinkFetchingFlag) {
+                    // TODO: What if it's OBS (whichTestament === 'none' ???)
+                    // const lexiconRepo = whichTestament === 'old' ? 'UHAL' : 'UGL';
+                    // repoPreloadList.push(whichTestament === 'old' ? 'UHAL' : 'UGL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
+                    repoPreloadList.push('UHAL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
+                    repoPreloadList.push('UGL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
+                }
             }
             // debugLog(`BookPackageCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
 
@@ -149,7 +151,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             // Or this allows the parameters to be specified as a BookPackageCheck property
             if (props.maximumSimilarMessages) processOptions.maximumSimilarMessages = ourParseInt(props.maximumSimilarMessages);
             if (props.errorPriorityLevel) processOptions.errorPriorityLevel = ourParseInt(props.errorPriorityLevel);
-            // if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
+            if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
             if (props.sortBy) processOptions.sortBy = props.sortBy;
             if (props.ignorePriorityNumberList) { // We need to convert from string to Array
                 //parameterAssert(props.ignorePriorityNumberList[0] === '[' && props.ignorePriorityNumberList[props.ignorePriorityNumberList.length - 1] === ']', `Format of props.ignorePriorityNumberList '${props.ignorePriorityNumberList}' is wrong should be enclosed in []`)

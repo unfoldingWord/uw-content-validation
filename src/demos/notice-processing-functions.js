@@ -1,9 +1,9 @@
 // eslint-disable-next-line no-unused-vars
-import { userLog, parameterAssert, logicAssert, debugLog } from '../core/utilities';
+import { userLog, parameterAssert, logicAssert, debugLog, functionLog } from '../core/utilities';
 import { isDisabledNotice } from '../core/disabled-notices';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.10.2';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.10.3';
 // TODO: Hidden message code probably doesn’t work for the other sort orders
 
 const DEFAULT_MAXIMUM_HIDDEN_NOTICES = 60; // Don’t want to hide HUNDREDS/THOUSANDS of notices for each notice type
@@ -97,10 +97,11 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                         checkedRepos -- list of strings
                     depending on the type of check that was made.
     */
-    // debugLog(`processNoticesCommon v${NOTICE_PROCESSOR_VERSION_STRING}
-    //     with ${JSON.stringify(givenNoticeObject)}
-    //     with options=${JSON.stringify(optionalProcessingOptions)}
-    //   Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
+//     functionLog(`processNoticesCommon v${NOTICE_PROCESSOR_VERSION_STRING}
+//    with (${Object.keys(givenNoticeObject).length})
+//    with options=${JSON.stringify(optionalProcessingOptions)}
+//    Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
+//     //    containing ${JSON.stringify(givenNoticeObject)}
 
 
     const standardisedNoticeList = givenNoticeObject.noticeList; // TODO: Why did we need this???
@@ -122,9 +123,9 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     // It only really makes sense if the debugChain is enabled
     if (givenNoticeObject.noticeList && givenNoticeObject.noticeList.length)
         if (givenNoticeObject.noticeList.length > 8000) {
-            userLog(`processNoticesCommon: ${givenNoticeObject.noticeList.length.toLocaleString()} notices is too many to search for duplicates!`);
+            userLog(`processNoticesCommon with ${givenNoticeObject.noticeList.length.toLocaleString()} notices is too many to search for duplicates!`);
         } else {
-            userLog(`processNoticesCommon: Checking ${givenNoticeObject.noticeList.length.toLocaleString()} notices for duplicates…`);
+            userLog(`processNoticesCommon checking ${givenNoticeObject.noticeList.length.toLocaleString()} notices for duplicates…`);
             const uniqueList = [];
             function uniqueListContains(item) { // returns -1 or the index of the first match
                 for (let ix = 0; ix < uniqueList.length; ix++) {
@@ -254,7 +255,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     const resultObject = { // inititalise with our new fields
         numIgnoredNotices: 0, // Ignored by unique priority number
         numDisabledNotices: 0, // Individually disabled
-        numSuppressedNotices: 0, // Low priority notices dropped completely
+        numSuppressedNotices: 0, // Similar notices dropped completely
+        numCutoffNotices: 0, // Low priority notices dropped completely
         processingOptions: optionalProcessingOptions, // Just helpfully includes what we were given (may be undefined)
     };
     // Copy across all the other properties that we aren’t interested in
@@ -271,32 +273,32 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
         ignorePriorityNumberList = DEFAULT_IGNORE_PRIORITY_NUMBER_LIST;
         // debugLog(`Using default ignorePriorityNumberList=${JSON.stringify(ignorePriorityNumberList)}`);
     }
-    else userLog(`processNoticesCommon: Using supplied ignorePriorityNumberList=${JSON.stringify(ignorePriorityNumberList)} cf. default=${JSON.stringify(DEFAULT_IGNORE_PRIORITY_NUMBER_LIST)}`);
+    else userLog(`processNoticesCommon using supplied ignorePriorityNumberList=${JSON.stringify(ignorePriorityNumberList)} cf. default=${JSON.stringify(DEFAULT_IGNORE_PRIORITY_NUMBER_LIST)}`);
     //parameterAssert(Array.isArray(ignorePriorityNumberList), `ignorePriorityNumberList should be an Array, not ${typeof ignorePriorityNumberList}=${ignorePriorityNumberList}`);
     let sortBy;
     try {
         sortBy = optionalProcessingOptions.sortBy;
-        // debugLog(`processNoticesCommon: Setting sortBy='${sortBy}' from optionalProcessingOptions`);
+        // debugLog(`processNoticesCommon setting sortBy='${sortBy}' from optionalProcessingOptions`);
     } catch (npfSBerror) { }
     if (sortBy === undefined) {
         sortBy = 'ByPriority';
-        // debugLog(`processNoticesCommon: Using default sortBy='${sortBy}'`);
+        // debugLog(`processNoticesCommon using default sortBy='${sortBy}'`);
     }
-    // else userLog(`processNoticesCommon: Using supplied sortBy='${sortBy}' cf. default='ByPriority'`);
+    // else userLog(`processNoticesCommon using supplied sortBy='${sortBy}' cf. default='ByPriority'`);
     let cutoffPriorityLevel;
     try {
         cutoffPriorityLevel = optionalProcessingOptions.cutoffPriorityLevel;
     } catch (npfCPLerror) { }
     if (cutoffPriorityLevel === undefined) {
         cutoffPriorityLevel = DEFAULT_CUTOFF_PRIORITY_LEVEL;
-        // debugLog(`Using default cutoffPriorityLevel=${cutoffPriorityLevel}`);
+        // debugLog(`processNoticesCommon using default cutoffPriorityLevel=${cutoffPriorityLevel}`);
     }
-    else userLog(`Using supplied cutoffPriorityLevel=${cutoffPriorityLevel} cf. default=${DEFAULT_CUTOFF_PRIORITY_LEVEL}`);
+    // else userLog(`processNoticesCommon using supplied cutoffPriorityLevel=${cutoffPriorityLevel} cf. default=${DEFAULT_CUTOFF_PRIORITY_LEVEL}`);
     // if (cutoffPriorityLevel > errorPriorityLevel)
     // resultObject.errorList.push({999, "Cutoff level must not be higher than error level", excerpt:`(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
 
     let showDisabledNoticesFlag = optionalProcessingOptions.showDisabledNoticesFlag === true;
-    if (showDisabledNoticesFlag) userLog(`showDisabledNoticesFlag=${showDisabledNoticesFlag}`);
+    if (showDisabledNoticesFlag) userLog(`processNoticesCommon has showDisabledNoticesFlag=${showDisabledNoticesFlag}`);
 
     // Adjust the list of success notices to combine multiple similar messages, e.g., Checked this book, Checked that book
     //  into one summary message, e.g., Checked this and that books.
@@ -476,19 +478,20 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             remainingNoticeList.push(thisNotice);
     }
     if (resultObject.numIgnoredNotices)
-        userLog(`processNoticesCommon: Ignored ${resultObject.numIgnoredNotices.toLocaleString()} generic notice(s) out of ${givenNoticeObject.noticeList.length.toLocaleString()}`);
+        userLog(`processNoticesCommon ignored ${resultObject.numIgnoredNotices.toLocaleString()} generic notice(s) out of ${givenNoticeObject.noticeList.length.toLocaleString()}`);
     if (resultObject.numDisabledNotices)
-        userLog(`processNoticesCommon: Disabled ${resultObject.numDisabledNotices.toLocaleString()} specific notice(s) out of ${givenNoticeObject.noticeList.length.toLocaleString()}`);
+        userLog(`processNoticesCommon disabled ${resultObject.numDisabledNotices.toLocaleString()} specific notice(s) out of ${givenNoticeObject.noticeList.length.toLocaleString()}`);
 
     // Cut off the lowest priority notices if requested
     if (cutoffPriorityLevel > 0) {
         const newNoticeList = [];
         for (const thisNotice of remainingNoticeList)
             if (thisNotice.priority < cutoffPriorityLevel)
-                resultObject.numSuppressedNotices++;
+                resultObject.numCutoffNotices++;
             else newNoticeList.push(thisNotice);
         remainingNoticeList = newNoticeList;
     }
+    if (resultObject.numCutoffNotices) userLog(`processNoticesCommon dropped ${resultObject.numCutoffNotices} notices below cutoffPriorityLevel of ${cutoffPriorityLevel}`);
     // if (cutoffPriorityLevel > errorPriorityLevel)
     // resultObject.errorList.push({999, "Cutoff level must not be higher than error level", excerpt:`(${cutoffPriorityLevel} vs ${errorPriorityLevel})`, " in processNoticesCommon options"]);
 
@@ -568,7 +571,9 @@ export function processNoticesToErrorsWarnings(givenNoticeObject, optionalProces
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
     */
-    //     userLog(`processNoticesToErrorsWarnings v${NOTICE_PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
+    // functionLog(`processNoticesToErrorsWarnings v${NOTICE_PROCESSOR_VERSION_STRING}
+    //   with ${Object.keys(optionalProcessingOptions).length} resultObject entries
+    //   and options=${JSON.stringify(optionalProcessingOptions)}
     //    Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
 
     const [remainingNoticeList, allTotals, resultObject] = processNoticesCommon(givenNoticeObject, optionalProcessingOptions);
@@ -676,12 +681,14 @@ export function processNoticesToSevereMediumLow(givenNoticeObject, optionalProce
             severeList
             mediumList
             lowList
-            numIgnoredNotices, numDisabledNotices, numSuppressedNotices, numHiddenSevere, numHiddenMedium, numHiddenLow
+            numIgnoredNotices, numDisabledNotices, numSuppressedNotices, numCutoffNotices, umHiddenSevere, numHiddenMedium, numHiddenLow
             processingOptions: just helpfully passes on what we were given (may be undefined)
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
     */
-    //     userLog(`processNoticesToSevereMediumLow v${NOTICE_PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
+    //     functionLog(`processNoticesToSevereMediumLow v${NOTICE_PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
+    //   with ${Object.keys(optionalProcessingOptions).length} resultObject entries
+    //   and options=${JSON.stringify(optionalProcessingOptions)}
     //    Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
 
     const [remainingNoticeList, allTotals, resultObject] = processNoticesCommon(givenNoticeObject, optionalProcessingOptions);
@@ -821,13 +828,15 @@ export function processNoticesToSingleList(givenNoticeObject, optionalProcessing
         Returns an object with:
             successList: a list of strings describing what has been checked
             warningList
-            numIgnoredNotices, numDisabledNotices, numSuppressedNotices, numHiddenNotices
+            numIgnoredNotices, numDisabledNotices, numSuppressedNotices, numCutoffNotices, numHiddenNotices
             processingOptions: just helpfully passes on what we were given (may be undefined)
         Also, any other parameters are just passed through,
             although filenameList might be abbreviated, e.g. for 100s of .md files.
     */
-    //     userLog(`processNoticesToSingleList v${NOTICE_PROCESSOR_VERSION_STRING} with options=${JSON.stringify(optionalProcessingOptions)}
-    //    Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
+    // functionLog(`processNoticesToSingleList v${NOTICE_PROCESSOR_VERSION_STRING}
+    //     with ${Object.keys(optionalProcessingOptions).length} resultObject entries
+    //     and options=${JSON.stringify(optionalProcessingOptions)}
+    //     Given ${givenNoticeObject.successList.length.toLocaleString()} success string(s) plus ${givenNoticeObject.noticeList.length.toLocaleString()} notice(s)`);
 
     const [remainingNoticeList, allTotals, resultObject] = processNoticesCommon(givenNoticeObject, optionalProcessingOptions);
 

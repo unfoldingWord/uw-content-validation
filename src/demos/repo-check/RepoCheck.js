@@ -8,7 +8,7 @@ import { checkRepo } from './checkRepo';
 import { logicAssert, userLog, debugLog } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.3.0';
+// const REPO_VALIDATOR_VERSION_STRING = '0.3.2';
 
 
 function RepoCheck(/*username, languageCode,*/ props) {
@@ -103,10 +103,10 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 if (repoCode !== 'UHB' && repoCode !== 'UGNT' && repoCode !== 'TA')
                     repoPreloadList.push('TA'); // Original languages only have TW links
                 // if (repoCode !== 'TA' && repoCode !== 'TW') repoPreloadList.push(repoCode);
-                if (repoCode === 'TWL' || repoCode.endsWith('LT') || repoCode.endsWith('ST')) {
+                if (repoCode === 'TWL' || repoCode === 'TN' || repoCode.endsWith('LT') || repoCode.endsWith('ST')) {
                     // These all refer to the original languages
-                    repoPreloadList.unshift('UGNT');
-                    repoPreloadList.unshift('UHB');
+                    if (!checkingOptions.skipNTBooks) repoPreloadList.unshift('UGNT');
+                    if (!checkingOptions.skipOTBooks) repoPreloadList.unshift('UHB');
                 }
                 if (repoCode.startsWith('OBS-'))
                     repoPreloadList.push('OBS');
@@ -156,7 +156,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 // Or this allows the parameters to be specified as a RepoCheck property
                 if (props.maximumSimilarMessages) processOptions.maximumSimilarMessages = ourParseInt(props.maximumSimilarMessages);
                 if (props.errorPriorityLevel) processOptions.errorPriorityLevel = ourParseInt(props.errorPriorityLevel);
-                // if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
+                if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
                 if (props.sortBy) processOptions.sortBy = props.sortBy;
                 // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
                 if (props.showDisabledNoticesFlag) processOptions.showDisabledNoticesFlag = props.showDisabledNoticesFlag.toLowerCase() === 'true';

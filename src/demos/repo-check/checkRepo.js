@@ -8,7 +8,7 @@ import { repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetR
 import { userLog, functionLog, debugLog, logicAssert, parameterAssert } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.5.1';
+// const REPO_VALIDATOR_VERSION_STRING = '0.6.0';
 
 
 /**
@@ -18,15 +18,15 @@ import { userLog, functionLog, debugLog, logicAssert, parameterAssert } from '..
  * @param {string} repoBranch
  * @param {string} givenLocation
  * @param {Function} setResultValue
- * @param {Object} checkingOptions
+ * @param {Object} givenCheckingOptions
  */
-export async function checkRepo(username, repoName, repoBranch, givenLocation, setResultValue, checkingOptions) {
+export async function checkRepo(username, repoName, repoBranch, givenLocation, setResultValue, givenCheckingOptions) {
   /*
   It returns an object containing:
       successList: an array of strings to tell the use exactly what has been checked
       noticeList: an array of 9 (i.e., with extra bookOrFileCode parameter at end) notice components
   */
-  // functionLog(`checkRepo(un='${username}', rN='${repoName}', rBr='${repoBranch}', ${givenLocation}, (fn), ${JSON.stringify(checkingOptions)})…`);
+  // functionLog(`checkRepo(un='${username}', rN='${repoName}', rBr='${repoBranch}', ${givenLocation}, (fn), ${JSON.stringify(givenCheckingOptions)})…`);
   //parameterAssert(username !== undefined, "checkRepo: 'username' parameter should be defined");
   //parameterAssert(typeof username === 'string', `checkRepo: 'username' parameter should be a string not a '${typeof username}'`);
   //parameterAssert(repoName !== undefined, "checkRepo: 'repoName' parameter should be defined");
@@ -63,6 +63,13 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
   logicAssert(REPO_CODES_LIST.includes(repoCode), `checkRepo: 'repoCode' parameter should not be '${repoCode}'`);
 
   if (repoBranch === undefined) repoBranch = 'master'; // Ideally we should ask what the default branch is
+
+  const newCheckingOptions = givenCheckingOptions ? { ...givenCheckingOptions } : {}; // clone before modify
+  const getFile_ = newCheckingOptions.getFile ? newCheckingOptions.getFile : cachedGetFile; // default to using caching of files
+  newCheckingOptions.getFile = getFile_; // use same getFile_ when we call core functions
+  if (!newCheckingOptions.originalLanguageRepoUsername) newCheckingOptions.originalLanguageRepoUsername = username;
+  if (!newCheckingOptions.taRepoUsername) newCheckingOptions.taRepoUsername = username;
+  if (!newCheckingOptions.twRepoUsername) newCheckingOptions.twRepoUsername = username;
 
   let checkRepoResult = {
     successList: [], noticeList: [],
@@ -208,7 +215,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
 
       // Let’s fetch the zipped repo since it should be much more efficient than individual fetches
       // functionLog(`checkRepo: fetch zip file for ${repoName}…`);
-      const fetchRepositoryZipFile_ = (checkingOptions && checkingOptions.fetchRepositoryZipFile) ? checkingOptions.fetchRepositoryZipFile : cachedGetRepositoryZipFile;
+      const fetchRepositoryZipFile_ = givenCheckingOptions?.fetchRepositoryZipFile ? givenCheckingOptions.fetchRepositoryZipFile : cachedGetRepositoryZipFile;
       const zipFetchSucceeded = await fetchRepositoryZipFile_({ username, repository: repoName, branch: repoBranch, branchOrRelease: repoBranch });
       if (!zipFetchSucceeded) {
         console.error(`checkRepo: misfetched zip file for repo with ${zipFetchSucceeded}`);
@@ -220,7 +227,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
       // Now we need to fetch the list of files from the repo
       setResultValue(<p style={{ color: 'magenta' }}>Preprocessing file list from <b>{username}/{repoName}</b> repository…</p>);
       // const pathList = await getFileListFromFetchedTreemaps(username, repoName, branch);
-      const getFileListFromZip_ = checkingOptions && checkingOptions.getFileListFromZip ? checkingOptions.getFileListFromZip : getFileListFromZip;
+      const getFileListFromZip_ = givenCheckingOptions?.getFileListFromZip ? givenCheckingOptions.getFileListFromZip : getFileListFromZip;
       const pathList = await getFileListFromZip_({ username, repository: repoName, branchOrRelease: repoBranch });
       // debugLog(`Got pathlist (${pathList.length}) = ${pathList}`);
 
@@ -293,21 +300,21 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
           logicAssert(whichTestament === 'old' || whichTestament === 'new', `checkRepo() couldn’t find testament for '${bookOrFileCode}'`);
         }
         // debugLog(`checkRepo: Found testament '${whichTestament}' for '${bookOrFileCode}'`);
-        if ((checkingOptions.skipOTBooks && whichTestament === 'old')
-          || (checkingOptions.skipNTBooks && whichTestament === 'new')) {
-          userLog(`checkRepo: Skipping '${bookOrFileCode}' (${whichTestament}) because skipOTBooks=${checkingOptions.skipOTBooks} and skipNTBooks=${checkingOptions.skipNTBooks}`);
+        if ((givenCheckingOptions?.skipOTBooks && whichTestament === 'old')
+          || (givenCheckingOptions?.skipNTBooks && whichTestament === 'new')) {
+          // debugLog(`checkRepo skipping ${repoName} '${bookOrFileCode}' (${whichTestament}) because skipOTBooks=${givenCheckingOptions.skipOTBooks} and skipNTBooks=${givenCheckingOptions.skipNTBooks}`);
           --filesToCheckCount;
           continue;
         }
 
         // debugLog("checkRepo: Try to load", username, repoName, thisFilepath, branch);
-        const getFile_ = (checkingOptions && checkingOptions.getFile) ? checkingOptions.getFile : cachedGetFile;
+        const getFile_ = givenCheckingOptions?.getFile ? givenCheckingOptions.getFile : cachedGetFile;
         let repoFileContent;
         try {
           repoFileContent = await getFile_({ username, repository: repoName, path: thisFilepath, branch: repoBranch });
           // debugLog("Fetched fileContent for", repoName, thisPath, typeof repoFileContent, repoFileContent.length);
         } catch (cRgfError) { // NOTE: The error can depend on whether the zipped repo is cached or not
-          console.error(`checkRepo(${username}, ${repoName}, ${repoBranch}, ${givenLocation}, (fn), ${JSON.stringify(checkingOptions)})) failed to load`, thisFilepath, repoBranch, `${cRgfError}`);
+          console.error(`checkRepo(${username}, ${repoName}, ${repoBranch}, ${givenLocation}, (fn), ${JSON.stringify(givenCheckingOptions)})) failed to load`, thisFilepath, repoBranch, `${cRgfError}`);
           let details = `username=${username}`;
           if (! await repositoryExistsOnDoor43({ username, repository: repoName }))
             checkRepoResult.noticeList.push({ priority: 997, message: "Repository doesn’t exist", details, username, repoCode, repoName, location: givenLocation, extra: repoCode });
@@ -325,7 +332,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
             // OBS has many files with the same name, so we have to give some of the path as well
             // repoName.endsWith('_obs') ? thisFilepath.replace('content/', '') : thisFilename,
             thisFilenameExtension === 'md' ? thisFilepath.replace('content/', '').replace('bible/', '') : thisFilename,
-            repoFileContent, ourLocation, checkingOptions);
+            repoFileContent, ourLocation, newCheckingOptions);
           checkedFileCount += 1;
           checkedFilenames.push(thisFilename);
           checkedFilenameExtensions.add(thisFilenameExtension);

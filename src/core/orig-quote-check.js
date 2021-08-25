@@ -8,7 +8,7 @@ import { cachedGetFile } from './getApi';
 import { functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 
 
-// const OL_QUOTE_VALIDATOR_VERSION_STRING = '0.10.5';
+// const OL_QUOTE_VALIDATOR_VERSION_STRING = '0.10.6';
 
 
 /**
@@ -399,7 +399,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
                 const lastWordRemainder = adjustedOrigWord.startsWith(searchWord) ? adjustedOrigWord.slice(searchWord.length) : origWord.slice(searchWord.length);
                 // debugLog(`  getWordsIndex got lastWordRemainder=${lastWordRemainder}`);
                 let remainderIsAllPunct = true;
-                const regex = new RegExp('[,.?!”]?’”?'); // Matches one or two final punctuation characters
+                const regex = new RegExp('[,.?!”]?’?”?'); // Matches one, two, or three final punctuation characters
                 const specialMatch = regex.test(lastWordRemainder);
                 // if (specialMatch) debugLog(`  getWordsIndex checking special match on '${origWord}' lastWordRemainder=${lastWordRemainder} got ${specialMatch}`);
                 if (!specialMatch)

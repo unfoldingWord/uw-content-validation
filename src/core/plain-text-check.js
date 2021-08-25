@@ -7,7 +7,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert } from './utilities';
 
 
-const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.4.0';
+const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.4.1';
 
 
 /**
@@ -108,7 +108,7 @@ export function checkPlainText(languageCode, repoCode, textType, textName, plain
         //parameterAssert(optionalFieldLocation !== undefined, "cPT ourCheckTextField: 'optionalFieldLocation' parameter should be defined");
         //parameterAssert(typeof optionalFieldLocation === 'string', `cPT ourCheckTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
-        const resultObject = checkTextField(languageCode, repoCode, textType, '', fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
+        const resultObject = checkTextField(languageCode, repoCode, textType, `${textName} line`, fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field

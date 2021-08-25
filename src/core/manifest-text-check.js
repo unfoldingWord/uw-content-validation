@@ -9,7 +9,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { debugLog, functionLog, parameterAssert, logicAssert } from './utilities';
 
 
-const MANIFEST_VALIDATOR_VERSION_STRING = '0.4.6';
+const MANIFEST_VALIDATOR_VERSION_STRING = '0.4.7';
 
 // Pasted in 2020-10-02 from https://raw.githubusercontent.com/unfoldingWord/dcs/master/options/schema/rc.schema.json
 // Updated 2021-02-19
@@ -669,7 +669,7 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
 
 
     // Main code for checkManifestText function
-    const formData = ourYAMLTextChecks(repoName, manifestText, ourLocation, checkingOptions);
+    const formData = ourYAMLTextChecks(`${repoName} manifest`, manifestText, ourLocation, checkingOptions);
     if (formData) {
         // debugLog("formData", JSON.stringify(formData));
         const formDataKeys = Object.keys(formData);

@@ -46,6 +46,22 @@ export async function checkQuestionsTSV7Table(languageCode, repoCode, bookID, fi
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
+    const cutoffPriorityLevel = checkingOptions?.cutoffPriorityLevel ? checkingOptions?.cutoffPriorityLevel : 0;
+
+    let excerptLength;
+    try {
+        excerptLength = checkingOptions?.excerptLength;
+    } catch (ttcError) { }
+    if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
+        excerptLength = DEFAULT_EXCERPT_LENGTH;
+        // debugLog(`Using default excerptLength=${excerptLength}`);
+    }
+    // else
+    // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
+    // const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    // const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+    // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
+
     const carResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
@@ -78,20 +94,7 @@ export async function checkQuestionsTSV7Table(languageCode, repoCode, bookID, fi
     }
 
 
-    let excerptLength;
-    try {
-        excerptLength = checkingOptions?.excerptLength;
-    } catch (ttcError) { }
-    if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
-        excerptLength = DEFAULT_EXCERPT_LENGTH;
-        // debugLog(`Using default excerptLength=${excerptLength}`);
-    }
-    // else
-    // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
-    // const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
-    // const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
-    // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
-
+    // Main code for checkQuestionsTSV7Table
     let lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook = 0;
     if (bookID === 'OBS')
@@ -253,8 +256,7 @@ export async function checkQuestionsTSV7Table(languageCode, repoCode, bookID, fi
         carResult.noticeList = removeDisabledNotices(carResult.noticeList);
     }
 
-    if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 20)
-        && checkingOptions?.disableAllLinkFetchingFlag)
+    if (cutoffPriorityLevel < 20 && checkingOptions?.disableAllLinkFetchingFlag)
         addNoticePartial({ priority: 20, message: "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked", location: ourLocation });
 
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}.`);

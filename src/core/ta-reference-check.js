@@ -1,6 +1,6 @@
 import { cachedGetFile } from './getApi';
 // eslint-disable-next-line no-unused-vars
-import { parameterAssert } from './utilities';
+import { functionLog, parameterAssert } from './utilities';
 
 
 // const TA_REFERENCE_VALIDATOR_VERSION_STRING = '0.3.2';
@@ -18,7 +18,7 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
     //      checkingOptions?.taRepoSectionName
     //      checkingOptions?.expectFullLink (bool)
 
-    // functionLog(`checkSupportReferenceInTA v${TA_REFERENCE_VALIDATOR_VERSION_STRING} (${fieldName}, (${fieldText.length}) '${fieldText}', ${givenLocation}, …)`);
+    // functionLog(`checkSupportReferenceInTA v${TA_REFERENCE_VALIDATOR_VERSION_STRING} (${fieldName}, (${fieldText.length}) '${fieldText}', ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
     //parameterAssert(fieldName !== undefined, "checkSupportReferenceInTA: 'fieldText' parameter should be defined");
     //parameterAssert(typeof fieldName === 'string', `checkSupportReferenceInTA: 'fieldText' parameter should be a string not a '${typeof fieldName}'`);
     //parameterAssert(fieldText !== undefined, "checkSupportReferenceInTA: 'fieldText' parameter should be defined");

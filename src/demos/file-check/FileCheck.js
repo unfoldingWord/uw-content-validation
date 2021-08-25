@@ -8,7 +8,7 @@ import { checkFileContents } from './checkFileContents';
 import { debugLog, userLog } from '../../core/utilities';
 
 
-// const FILE_CHECK_VERSION_STRING = '0.3.5';
+// const FILE_CHECK_VERSION_STRING = '0.3.6';
 
 
 function FileCheck(props) {
@@ -117,7 +117,7 @@ function FileCheck(props) {
       // Or this allows the parameters to be specified as a FileCheck property
       if (props.maximumSimilarMessages) processOptions.maximumSimilarMessages = ourParseInt(props.maximumSimilarMessages);
       if (props.errorPriorityLevel) processOptions.errorPriorityLevel = ourParseInt(props.errorPriorityLevel);
-      // if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
+      if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
       if (props.sortBy) processOptions.sortBy = props.sortBy;
       // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
 
