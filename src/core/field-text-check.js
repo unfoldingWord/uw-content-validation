@@ -5,7 +5,7 @@ import { OPEN_CLOSE_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, BAD_CHARACTER
 import { debugLog, parameterAssert } from './utilities';
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.8';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.9';
 
 
 /**
@@ -305,7 +305,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
                 addNoticePartial(notice);
             }
             if (cutoffPriorityLevel < 195
-                && (punctChar !== '-' || !fieldType.startsWith('YAML'))
+                && (punctChar !== '-' || !(fieldType.startsWith('YAML') || fieldType.startsWith('markdown')))
                 && (punctChar !== '!' || !fieldType.startsWith('markdown')) // image tag
                 && fieldText[0] === punctChar) {
                 characterIndex = 0;
