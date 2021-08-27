@@ -5,7 +5,7 @@ import { OPEN_CLOSE_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, BAD_CHARACTER
 import { debugLog, parameterAssert } from './utilities';
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.9';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.10';
 
 
 /**
@@ -296,21 +296,22 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
         if (!fieldType.startsWith('USFM') || (fieldText.indexOf('x-lemma') < 0 && fieldText.indexOf('x-tw') < 0)) afterSpaceCheckList += '|';
         if (!fieldType.startsWith('YAML')) afterSpaceCheckList += '\'"'; // These are used for YAML strings, e.g., version: '0.15'
         // if (fieldName === 'OrigQuote' || fieldName === 'Quote') afterSpaceCheckList += '…'; // NOT NEEDED -- this is specifically checked elsewhere
-        for (const punctChar of afterSpaceCheckList) {
-            if (cutoffPriorityLevel < 191 && (characterIndex = fieldText.indexOf(' ' + punctChar)) >= 0) {
+        for (const punctCharBeingChecked of afterSpaceCheckList) {
+            if (cutoffPriorityLevel < 191 && (characterIndex = fieldText.indexOf(' ' + punctCharBeingChecked)) >= 0) {
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
-                const notice = { priority: 191, message: `Unexpected ${punctChar} character after space`, excerpt, location: ourLocation };
+                // Lower priority for em-dash in markdown and for forward slash (used to list alternatives, e.g., "yes / no")
+                const notice = { priority: (punctCharBeingChecked === '—' || punctCharBeingChecked === '/') && fieldType.startsWith('markdown') ? 71 : 191, message: `Unexpected ${punctCharBeingChecked} character after space`, excerpt, location: ourLocation };
                 if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.substring(0, 6) !== 'from \\')
                     notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
                 addNoticePartial(notice);
             }
             if (cutoffPriorityLevel < 195
-                && (punctChar !== '-' || !(fieldType.startsWith('YAML') || fieldType.startsWith('markdown')))
-                && (punctChar !== '!' || !fieldType.startsWith('markdown')) // image tag
-                && fieldText[0] === punctChar) {
+                && (punctCharBeingChecked !== '-' || !(fieldType.startsWith('YAML') || fieldType.startsWith('markdown')))
+                && (punctCharBeingChecked !== '!' || !fieldType.startsWith('markdown')) // image tag
+                && fieldText[0] === punctCharBeingChecked) {
                 characterIndex = 0;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
-                addNoticePartial({ priority: 195, message: `Unexpected ${punctChar} character at start of line`, characterIndex, excerpt, location: ourLocation });
+                addNoticePartial({ priority: 195, message: `Unexpected ${punctCharBeingChecked} character at start of line`, characterIndex, excerpt, location: ourLocation });
             }
         }
         if (fieldType.startsWith('USFM'))
@@ -325,10 +326,12 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
         if (!fieldType.startsWith('markdown')) beforeSpaceCheckList += '_~'; // These are used for markdown formatting
         if (!fieldType.startsWith('markdown') && !fieldType.startsWith('USFM')) beforeSpaceCheckList += '*'; // There are used for markdown formatting and USFM closing markers
         if (!fieldType.startsWith('YAML')) beforeSpaceCheckList += '[';
-        for (const punctChar of beforeSpaceCheckList) {
-            if ((characterIndex = fieldText.indexOf(punctChar + ' ')) >= 0) {
+        for (const punctCharBeingChecked of beforeSpaceCheckList) {
+            if ((characterIndex = fieldText.indexOf(punctCharBeingChecked + ' ')) >= 0) {
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
-                const notice = { priority: 192, message: `Unexpected space after ${punctChar} character`, excerpt, location: ourLocation };
+                // Lower priority for em-dash in markdown and for forward slash (used to list alternatives, e.g., "yes / no")
+                // debugLog(`Got space after ${punctCharBeingChecked} in ${fieldType} around ${excerpt}: priority ${punctCharBeingChecked === '—' && fieldType.startsWith('markdown') ? 72 : 192}`);
+                const notice = { priority: (punctCharBeingChecked === '—' || punctCharBeingChecked === '/') && fieldType.startsWith('markdown') ? 72 : 192, message: `Unexpected space after ${punctCharBeingChecked} character`, excerpt, location: ourLocation };
                 if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.substring(0, 6) !== 'from \\')
                     notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
                 addNoticePartial(notice);
@@ -371,6 +374,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
                 const nextChar = fieldText.substring(characterIndex + 1, characterIndex + 2);
                 const nextChars = fieldText.substring(characterIndex + 1);
                 // NOTE: The hard part here is getting rid of false alarms
+                //  Is it really worth it when this many exceptions need to be defined -- yes, it does find some genuine errors
                 if (nextChars.startsWith('<br>') && (repoCode === 'TN' || repoCode === 'TA')) // allow <br>
                     continue;
                 if (nextChars.startsWith('\\n') && (repoCode === 'TN2' || repoCode === 'SN')) // allow \n (2 chars)
@@ -384,7 +388,8 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
                 if ((fieldName.startsWith('README') || fieldName.endsWith('.md line'))
                     && (nextChar === '*' || badTwoChars === '![')) // allow markdown formatting
                     continue;
-                if (badChars.startsWith('.md') || badChars.startsWith('.usfm') || badChars.startsWith('.tsv')
+                if (badChars.startsWith('.md') || badChars.startsWith('.usfm') || badChars.startsWith('.tsv') || badChars.startsWith('.yaml')
+                    || badChars.startsWith('.org')
                     || (badChar === '.' && (fieldText.indexOf('http') !== -1 || fieldText.indexOf('rc:') !== -1 || fieldName.endsWith('manifest line'))))
                     continue; // Skip these known cases
                 if (badTwoChars === ':H' && repoCode === 'UHB') // e.g., strong="c:H1162"
@@ -394,13 +399,16 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
                     continue;
                 if (badChar === '.' && fieldText.indexOf('etc.') !== -1)
                     continue;
+                if ((badTwoChars === '.C' && fieldText.toLowerCase().indexOf('B.C.') !== -1)
+                    || (badTwoChars === '.D' && fieldText.toLowerCase().indexOf('A.D.') !== -1))
+                    continue;
                 if (badTwoChars === '?v' && fieldName.endsWith('manifest line')) // presumably a relation version number
                     continue;
                 if (badChar === '?' && fieldText.indexOf('http') !== -1) // ? can be part of a URL
                     continue;
                 if (['\\w', '\\zaln-s', '\\v', '\\p', '\\q', '\\q1', '\\SPECIAL', '\\NONE'].indexOf(fieldName) === -1 || badChar !== ',') { // suppress x-morph formatting false alarms
                     const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
-                    debugLog(`checkTextField for ${repoCode} '${fieldType}' '${fieldName}' got ${details} badTwoChars='${badTwoChars}' with '${excerpt}'`);
+                    // debugLog(`checkTextField for ${repoCode} '${fieldType}' '${fieldName}' got ${details} badTwoChars='${badTwoChars}' with '${excerpt}' priority 629`);
                     addNoticePartial({ priority: 629, message: `Unexpected bad character combination`, details, characterIndex, excerpt, location: ourLocation });
                 }
             }
@@ -411,8 +419,11 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
             if ((characterIndex = fieldText.indexOf(badZeroCharCombination)) >= 0
                 // but not an error perhaps if followed by period, e.g., 0.32.
                 && (fieldText.substring(characterIndex + badZeroCharCombination.length, characterIndex + badZeroCharCombination.length + 1) !== '.')) {
-                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
-                addNoticePartial({ priority: 92, message: `Unexpected leading zero`, characterIndex, excerpt, location: ourLocation });
+                const nextChar = fieldText.substring(characterIndex + 1, characterIndex + 2);
+                if (nextChar !== '”') { // e.g., “0” is ok
+                    const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
+                    addNoticePartial({ priority: 92, message: `Unexpected leading zero`, characterIndex, excerpt, location: ourLocation });
+                }
             }
 
     // // Check for problems created by tC Create or something

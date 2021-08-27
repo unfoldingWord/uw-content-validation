@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { clearCaches, clearCheckedArticleCache, ourParseInt, cachedGetFile, cachedFetchFileFromServerWithTag } from '../../core';
+import { clearCaches, clearCheckedArticleCache, ourParseInt, preloadReposIfNecessary, cachedGetFile, cachedFetchFileFromServerWithTag } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesNoticesGradient, RenderElapsedTime } from '../RenderProcessedResults';
 import { checkFileContents } from './checkFileContents';
@@ -8,7 +8,7 @@ import { checkFileContents } from './checkFileContents';
 import { debugLog, userLog } from '../../core/utilities';
 
 
-// const FILE_CHECK_VERSION_STRING = '0.3.6';
+// const FILE_CHECK_VERSION_STRING = '0.4.0';
 
 
 function FileCheck(props) {
@@ -79,6 +79,24 @@ function FileCheck(props) {
         else if (repoName.endsWith('_sq')) repoCodeGuess = 'SQ'
         else if (repoName.endsWith('lt')) repoCodeGuess = 'LT'
         else if (repoName.endsWith('st')) repoCodeGuess = 'ST'
+
+        // Even though we're only checking one file,
+        //  sometimes it pays to preload another repo if the file has many links to that repo
+        const repoPreloadList = []; // The repo being checked doesn't need to be added here as done separately below
+        if (!checkingOptions.disableAllLinkFetchingFlag) {
+          if (repoCodeGuess === 'TN') {
+            repoPreloadList.push('TA');
+            repoPreloadList.push('TW');
+          }
+          // TODO: There's sure to be others we need to put in here
+        }
+        if (repoPreloadList.length) {
+          setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repo{repoPreloadList.length === 1 ? '' : 's'} for <i>{username}</i> {languageCode} ready for {repoName} repo check…</p>);
+          const successFlag = await preloadReposIfNecessary(username, languageCode, [], 'master', repoPreloadList);
+          if (!successFlag)
+            console.error(`RepoCheck error: Failed to pre-load all repos`)
+          // else debugLog(`RepoCheck preloaded repos ${repoCode} and ${repoPreloadList}`)
+        }
 
         rawCFResults = await checkFileContents(username, languageCode, repoCodeGuess, branchOrRelease, filename, fileContent, givenLocation, checkingOptions);
         // debugLog(`rawCFResults=${JSON.stringify(rawCFResults)}`);

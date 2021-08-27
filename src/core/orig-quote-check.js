@@ -8,7 +8,7 @@ import { cachedGetFile } from './getApi';
 import { functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 
 
-// const OL_QUOTE_VALIDATOR_VERSION_STRING = '0.10.6';
+// const OL_QUOTE_VALIDATOR_VERSION_STRING = '0.10.7';
 
 
 /**
@@ -694,9 +694,9 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
     // debugLog(`checkOriginalLanguageQuoteAndOccurrence got ${bookID} ${C}:${V} verseWords (${verseWords.length}) = ${verseWords}`);
     if (quoteBits) { // it had multiple discontiguous parts
         // //parameterAssert(occurrence === 1, `Oh -- can get '${fieldText}' with occurrence=${occurrence} in ${bookID} ${C}:${V}`);
-        if (occurrence !== 1) {
-            addNoticePartial({ priority: 50, message: "Is this quote/occurrence correct???", details: `occurrence=${occurrence}`, excerpt: fieldText, location: ourLocation });
-        }
+        // if (occurrence !== 1) {
+        //     addNoticePartial({ priority: 50, message: "Is this quote/occurrence correct???", details: `occurrence=${occurrence} verse text ◗${verseText}◖`, excerpt: fieldText, location: ourLocation });
+        // }
         const numQuoteBits = quoteBits.length;
         if (numQuoteBits >= 2) {
             let quoteIndex = -1; // These parts have to be in order, i.e., found in the verse one AFTER the other

@@ -224,7 +224,7 @@ export async function checkMarkdownFileContents(languageCode, repoCode, markdown
             }
           }
         } else
-          addNoticePartial({ priority: 71, message: "Possible unusual TW Strong's line", details: "expected line to start with '* Strong’s: '", excerpt: line.substring(0, excerptLength - 1), location: ourLocation });
+          addNoticePartial({ priority: 70, message: "Possible unusual TW Strong's line", details: "expected line to start with '* Strong’s: '", excerpt: line.substring(0, excerptLength - 1), location: ourLocation });
       }
     }
   }

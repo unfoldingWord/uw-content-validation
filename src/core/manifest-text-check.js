@@ -820,7 +820,7 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
         cmtResult.noticeList = removeDisabledNotices(cmtResult.noticeList);
     }
 
-    // addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'}${ourLocation}.`);
+    // addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length==1?'':'s'}${ourLocation}`);
     if (cmtResult.noticeList.length)
         addSuccessMessage(`checkManifestText v${MANIFEST_VALIDATOR_VERSION_STRING} finished with ${cmtResult.noticeList.length ? cmtResult.noticeList.length.toLocaleString() : "zero"} notice${cmtResult.noticeList.length === 1 ? '' : 's'}`);
     else

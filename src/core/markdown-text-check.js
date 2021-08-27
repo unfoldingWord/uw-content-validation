@@ -407,7 +407,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
         result.noticeList = removeDisabledNotices(result.noticeList);
     }
 
-    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length === 1 ? '' : 's'}${ourLocation}.`);
+    addSuccessMessage(`Checked all ${lines.length.toLocaleString()} line${lines.length === 1 ? '' : 's'}${ourLocation}`);
     if (result.noticeList.length)
         addSuccessMessage(`checkMarkdownText v${MARKDOWN_TEXT_VALIDATOR_VERSION_STRING} finished with ${result.noticeList.length ? result.noticeList.length.toLocaleString() : "zero"} notice${result.noticeList.length === 1 ? '' : 's'}`);
     else

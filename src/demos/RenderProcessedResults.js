@@ -42,7 +42,7 @@ const tableIcons = {
 };
 
 
-// const RENDER_PROCESSED_RESULTS_VERSION = '0.7.0';
+// const RENDER_PROCESSED_RESULTS_VERSION = '0.7.1';
 
 
 /**
@@ -560,7 +560,7 @@ function RenderGivenArray({ color, array }) {
 
     return <ul>
         {array.map(function (listEntry, index) {
-            debugLog(`RenderGivenArray ${index} ${JSON.stringify(listEntry)}`);
+            // debugLog(`RenderGivenArray ${index} ${JSON.stringify(listEntry)}`);
             if (listEntry.location.indexOf(' HIDDEN') >= 0 && listEntry.hiddenNotices)
                 // This is a "MORE SIMILAR ERRORS/WARNINGS/NOTICES SUPRESSED" message with other notices embedded
                 //  so we allow it to be expanded using HTML5 "details" feature.

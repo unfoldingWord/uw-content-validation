@@ -6,7 +6,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert } from './utilities';
 
 
-const NOTES_TABLE_VALIDATOR_VERSION_STRING = '0.3.5';
+const NOTES_TABLE_VALIDATOR_VERSION_STRING = '0.3.6';
 
 const NUM_EXPECTED_NOTES_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_NOTES_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tNote';
@@ -205,7 +205,7 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
 
                 if (V) {
                     if (V === 'intro') { }
-                    else if (/^\d+$/.test(V)) {
+                    else if (/^\d+$/.test(V)) { // all digits
                         let intV = Number(V);
                         if (intV === 0 && bookID !== 'PSA') // Psalms have \d titles
                             addNoticePartial({ priority: 552, C, V, message: "Invalid zero verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
@@ -214,6 +214,21 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
                         if (/^\d+$/.test(lastV)) {
                             let lastintV = Number(lastV);
                             if (C === lastC && intV < lastintV)
+                                addNoticePartial({ priority: 733, C, V, message: "Receding verse number", details: `'${V}' after '${lastV} for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
+                            // else if (intV > lastintV + 1)
+                            //   addNoticePartial({priority:556, `Skipped verses with '${V}' verse number after '${lastV}'${withString}`);
+                        }
+                    }
+                    else if (/^[-\d]+$/.test(V)) { // all digits and hyphen, i.e., a verse range
+                        const [V1, V2] = V.split('-')
+                        let intV1 = Number(V1), intV2 = Number(V2);
+                        if (intV1 >= intV2) // in the wrong order
+                            addNoticePartial({ priority: 732, C, V, message: "Verse range in wrong order", details: `detected ${intV1} before ${intV2}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
+                        if (intV2 > numVersesThisChapter)
+                            addNoticePartial({ priority: 734, C, V, message: "Invalid large verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
+                        if (/^\d+$/.test(lastV)) {
+                            let lastintV = Number(lastV);
+                            if (C === lastC && intV1 < lastintV)
                                 addNoticePartial({ priority: 733, C, V, message: "Receding verse number", details: `'${V}' after '${lastV} for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
                             // else if (intV > lastintV + 1)
                             //   addNoticePartial({priority:556, `Skipped verses with '${V}' verse number after '${lastV}'${withString}`);
@@ -259,7 +274,7 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
     if (cutoffPriorityLevel < 20 && checkingOptions?.disableAllLinkFetchingFlag)
         addNoticePartial({ priority: 20, message: "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked", location: ourLocation });
 
-    addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}.`);
+    addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}`);
     if (carResult.noticeList.length)
         addSuccessMessage(`checkNotesTSV7Table v${NOTES_TABLE_VALIDATOR_VERSION_STRING} finished with ${carResult.noticeList.length ? carResult.noticeList.length.toLocaleString() : "zero"} notice${carResult.noticeList.length === 1 ? '' : 's'}`);
     else
