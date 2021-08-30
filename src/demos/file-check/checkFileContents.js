@@ -35,7 +35,7 @@ export async function checkFileContents(username, languageCode, repoCode, branch
   //parameterAssert(typeof languageCode === 'string', `checkFileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
   //parameterAssert(repoCode !== undefined, "checkFileContents: 'repoCode' parameter should be defined");
   //parameterAssert(typeof repoCode === 'string', `checkFileContents: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
-  //parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkFileContents: 'repoCode' parameter should not be '${repoCode}'`);
+  parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkFileContents: 'repoCode' parameter should not be '${repoCode}'`);
   //parameterAssert(branch !== undefined, "checkFileContents: 'branch' parameter should be defined");
   //parameterAssert(typeof branch === 'string', `checkFileContents: 'branch' parameter should be a string not a '${typeof branch}': ${branch}`);
   //parameterAssert(filepath !== undefined, "checkFileContents: 'filepath' parameter should be defined");

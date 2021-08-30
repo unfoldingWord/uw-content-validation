@@ -1,5 +1,27 @@
 # Changelog
 
+## [Unreleased](https://github.com/unfoldingWord/uw-content-validation/tree/HEAD)
+
+[Full Changelog](https://github.com/unfoldingWord/uw-content-validation/compare/2.2.0...HEAD)
+
+**Implemented enhancements:**
+
+- Check strong and x-strong fields in BP check, etc. [\#192](https://github.com/unfoldingWord/uw-content-validation/issues/192)
+- Add check for en\_uhal [\#191](https://github.com/unfoldingWord/uw-content-validation/issues/191)
+- Add check for en\_ugl [\#190](https://github.com/unfoldingWord/uw-content-validation/issues/190)
+
+## [2.2.0](https://github.com/unfoldingWord/uw-content-validation/tree/2.2.0) (2021-08-12)
+
+[Full Changelog](https://github.com/unfoldingWord/uw-content-validation/compare/2.1.7...2.2.0)
+
+**Closed issues:**
+
+- Investigate EST 2:13 occurrence note issue [\#179](https://github.com/unfoldingWord/uw-content-validation/issues/179)
+
+**Merged pull requests:**
+
+- Version 2.2 [\#200](https://github.com/unfoldingWord/uw-content-validation/pull/200) ([RobH123](https://github.com/RobH123))
+
 ## [2.1.7](https://github.com/unfoldingWord/uw-content-validation/tree/2.1.7) (2021-07-28)
 
 [Full Changelog](https://github.com/unfoldingWord/uw-content-validation/compare/2.1.6...2.1.7)

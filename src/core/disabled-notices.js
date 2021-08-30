@@ -11,7 +11,7 @@ import { debugLog, userLog, functionLog } from './utilities';
 */
 
 
-// const DISABLED_NOTICES_VERSION_STRING = '0.3.6';
+// const DISABLED_NOTICES_VERSION_STRING = '0.3.7';
 
 
 const disabledNotices = [
@@ -113,6 +113,8 @@ export function removeDisabledNotices(givenNoticeList) {
       remainingNoticeList.push(thisNotice);
     // else userLog(`  Removing disabled ${JSON.stringify(thisNotice)}`);
   }
-  if (remainingNoticeList.length !== givenNoticeList.length) userLog(`removeDisabledNotices() returning ${remainingNoticeList.length} out of ${givenNoticeList.length} notices`);
+  if (givenNoticeList.length > 2 // This stops the msg from being displayed for lots of tests
+    && remainingNoticeList.length !== givenNoticeList.length)
+    userLog(`removeDisabledNotices() returning ${remainingNoticeList.length} out of ${givenNoticeList.length} notices`);
   return remainingNoticeList;
 }

@@ -8,7 +8,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert, dataAssert, debugLog, functionLog } from './utilities';
 
 
-const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.7.5';
+const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.8.0';
 
 
 /**
@@ -71,25 +71,25 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
         // debugLog("checkMarkdownText success: " + successString);
         result.successList.push(successString);
     }
-    function addNotice(noticeObject) {
-        // functionLog(`checkMarkdownText addNotice: (priority=${noticeObject.priority}) ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.excerpt ? " " + excerpt : ""}${noticeObject.location}`);
-        //parameterAssert(noticeObject.priority !== undefined, "cMdT addNotice: 'priority' parameter should be defined");
-        //parameterAssert(typeof noticeObject.priority === 'number', `cMdT addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        //parameterAssert(noticeObject.message !== undefined, "cMdT addNotice: 'message' parameter should be defined");
-        //parameterAssert(typeof noticeObject.message === 'string', `cMdT addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // //parameterAssert(characterIndex !== undefined, "cMdT addNotice: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cMdT addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+    function addNoticePartial(incompleteNoticeObject) {
+        // functionLog(`checkMarkdownText addNoticePartial: (priority=${incompleteNoticeObject.priority}) ${incompleteNoticeObject.message}${incompleteNoticeObject.characterIndex > 0 ? ` (at character ${incompleteNoticeObject.characterIndex})` : ""}${incompleteNoticeObject.excerpt ? " " + excerpt : ""}${incompleteNoticeObject.location}`);
+        //parameterAssert(incompleteNoticeObject.priority !== undefined, "cMdT addNoticePartial: 'priority' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.priority === 'number', `cMdT addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}': ${incompleteNoticeObject.priority}`);
+        //parameterAssert(incompleteNoticeObject.message !== undefined, "cMdT addNoticePartial: 'message' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.message === 'string', `cMdT addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}': ${incompleteNoticeObject.message}`);
+        // //parameterAssert(characterIndex !== undefined, "cMdT addNoticePartial: 'characterIndex' parameter should be defined");
+        if (incompleteNoticeObject.characterIndex) { //parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `cMdT addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
         }
-        // //parameterAssert(excerpt !== undefined, "cMdT addNotice: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cMdT addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        // //parameterAssert(excerpt !== undefined, "cMdT addNoticePartial: 'excerpt' parameter should be defined");
+        if (incompleteNoticeObject.excerpt) { //parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `cMdT addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt}`);
         }
-        //parameterAssert(noticeObject.location !== undefined, "cMdT addNotice: 'location' parameter should be defined");
-        //parameterAssert(typeof noticeObject.location === 'string', `cMdT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        //parameterAssert(incompleteNoticeObject.location !== undefined, "cMdT addNoticePartial: 'location' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.location === 'string', `cMdT addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
 
-        // noticeObject.debugChain = noticeObject.debugChain ? `checkMarkdownText(${languageCode}, ${textOrFileName}) ${noticeObject.debugChain}` : `checkMarkdownText(${languageCode}, ${textOrFileName})`;
-        result.noticeList.push(noticeObject); // Used to have filename: textName, but that isn’t always a filename !!!
+        // incompleteNoticeObject.debugChain = incompleteNoticeObject.debugChain ? `checkMarkdownText(${languageCode}, ${textOrFileName}) ${incompleteNoticeObject.debugChain}` : `checkMarkdownText(${languageCode}, ${textOrFileName})`;
+        result.noticeList.push({ ...incompleteNoticeObject, repoCode }); // Used to have filename: textName, but that isn’t always a filename !!!
     }
-    // end of addNotice function
+    // end of addNoticePartial function
 
     function ourCheckTextField(fieldName, lineNumber, fieldText, allowedLinks, optionalFieldLocation, checkingOptions) {
         /**
@@ -118,10 +118,10 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
 
         const dbtcResultObject = checkTextField(languageCode, repoCode, 'markdown', fieldName, fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
 
-        // If we need to put everything through addNotice, e.g., for debugging or filtering
+        // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of dbtcResultObject.noticeList)
-            addNotice({ ...noticeEntry, lineNumber });
+            addNoticePartial({ ...noticeEntry, lineNumber });
         return dbtcResultObject.suggestion; // There may or may not be one!
     }
     // end of ourCheckTextField function
@@ -151,13 +151,13 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
         // result.noticeList = result.noticeList.concat(coTNlResultObject.noticeList);
-        // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
+        // If we need to put everything through addNoticePartialPartial, e.g., for debugging or filtering
         //  process results line by line
         for (const coqNoticeEntry of coTNlResultObject.noticeList) {
             if (coqNoticeEntry.extra) // it must be an indirect check on a TA or TW article from a TN2 check
                 result.noticeList.push(coqNoticeEntry); // Just copy the complete notice as is -- would be confusing to have this lineNumber
             else // For our direct checks, we add the repoCode as an extra value
-                addNotice({ ...coqNoticeEntry, lineNumber });
+                addNoticePartial({ ...coqNoticeEntry, lineNumber });
         }
         // The following is needed coz we might be checking the linked TA and/or TW articles
         if (coTNlResultObject.checkedFileCount && coTNlResultObject.checkedFileCount > 0)
@@ -197,9 +197,9 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
         //     const [totalLink, altText, fetchLink] = regexResultArray;
         //     // if (altText !== 'OBS Image') userLog("This code was only checked for 'OBS Image' links");
         //     if (!altText)
-        //         addNotice({ priority: 199, message: "Markdown image link has no alternative text", lineNumber, excerpt: totalLink, location: lineLocation });
+        //         addNoticePartial({ priority: 199, message: "Markdown image link has no alternative text", lineNumber, excerpt: totalLink, location: lineLocation });
         //     if (!fetchLink.startsWith('https://'))
-        //         addNotice({ priority: 749, message: "Markdown image link seems faulty", lineNumber, excerpt: fetchLink, location: lineLocation });
+        //         addNoticePartial({ priority: 749, message: "Markdown image link seems faulty", lineNumber, excerpt: fetchLink, location: lineLocation });
         //     else if (checkingOptions?.disableAllLinkFetchingFlag !== true) {
         //         // debugLog(`Need to check existence of ${fetchLink}`);
         //         try {
@@ -208,7 +208,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
         //             // debugLog("Markdown link fetch got response: ", responseData.length);
         //         } catch (flError) {
         //             console.error(`Markdown image link fetch had an error fetching '${fetchLink}': ${flError}`);
-        //             addNotice({ priority: 748, message: "Error fetching markdown image link", lineNumber, excerpt: fetchLink, location: lineLocation });
+        //             addNoticePartial({ priority: 748, message: "Error fetching markdown image link", lineNumber, excerpt: fetchLink, location: lineLocation });
         //         }
         //     }
         // }
@@ -216,11 +216,11 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
         //     // debugLog(`Got markdown image in line ${lineNumber}:`, JSON.stringify(regexResultArray));
         //     const [totalLink, alt, fetchLink, title] = regexResultArray;
         //     if (!alt)
-        //         addNotice({ priority: 199, message: "Markdown image link has no alternative text", lineNumber, excerpt: totalLink, location: lineLocation });
+        //         addNoticePartial({ priority: 199, message: "Markdown image link has no alternative text", lineNumber, excerpt: totalLink, location: lineLocation });
         //     if (!title)
-        //         addNotice({ priority: 348, message: "Markdown image link has no title text", lineNumber, excerpt: totalLink, location: lineLocation });
+        //         addNoticePartial({ priority: 348, message: "Markdown image link has no title text", lineNumber, excerpt: totalLink, location: lineLocation });
         //     if (!fetchLink.startsWith('https://'))
-        //         addNotice({ priority: 749, message: "Markdown image link seems faulty", lineNumber, excerpt: fetchLink, location: lineLocation });
+        //         addNoticePartial({ priority: 749, message: "Markdown image link seems faulty", lineNumber, excerpt: fetchLink, location: lineLocation });
         //     else if (checkingOptions?.disableAllLinkFetchingFlag !== true) {
         //         // debugLog(`Need to check existence of ${fetchLink}`);
         //         try {
@@ -229,7 +229,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
         //             // debugLog("Markdown link fetch got response: ", responseData.length);
         //         } catch (flError) {
         //             console.error(`Markdown image link fetch had an error fetching '${fetchLink}': ${flError}`);
-        //             addNotice({ priority: 748, message: "Error fetching markdown image link", lineNumber, excerpt: fetchLink, location: lineLocation });
+        //             addNoticePartial({ priority: 748, message: "Error fetching markdown image link", lineNumber, excerpt: fetchLink, location: lineLocation });
         //         }
         //     }
         // }
@@ -293,13 +293,13 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
                 const notice = { priority: 252, message: "Markdown headers should be preceded by a blank line", lineNumber: n, location: ourLocation };
                 if (textOrFileName === 'Note' || textOrFileName === 'OccurrenceNote')
                     notice.details = `markdown line ${n}`;
-                addNotice(notice);
+                addNoticePartial(notice);
             }
             if (nextLine?.length !== 0) {
                 const notice = { priority: 251, message: "Markdown headers should be followed by a blank line", lineNumber: n, location: ourLocation };
                 if (textOrFileName === 'Note' || textOrFileName === 'OccurrenceNote')
                     notice.details = `markdown line ${n}`;
-                addNotice(notice);
+                addNoticePartial(notice);
             }
         }
 
@@ -314,7 +314,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
                 const notice = { priority: 172, message: "Header levels should only increment by one", details: `Going from level ${currentHeaderLevel} to level ${thisHeaderLevel}`, lineNumber: n, characterIndex: 0, excerpt, location: ourLocation };
                 if (textOrFileName === 'Note' || textOrFileName === 'OccurrenceNote')
                     notice.details = `markdown line ${n}`;
-                addNotice(notice);
+                addNoticePartial(notice);
             }
             if (thisHeaderLevel > 0) {
                 currentHeaderLevel = thisHeaderLevel;
@@ -345,7 +345,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
                         const notice = { priority: 282, message: "Nesting of header levels seems confused", details: `recent indent levels=${JSON.stringify(indentLevels)} but now ${numLeadingSpaces}`, lineNumber: n, characterIndex: 0, location: ourLocation };
                         if (textOrFileName === 'Note' || textOrFileName === 'OccurrenceNote')
                             notice.details = `markdown line ${n}`;
-                        addNotice(notice);
+                        addNoticePartial(notice);
                     }
                 }
             }
@@ -362,7 +362,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
                 const notice = { priority: 250, message: "Multiple blank lines are not expected in markdown", lineNumber: n, location: ourLocation };
                 if (textOrFileName === 'Note' || textOrFileName === 'OccurrenceNote')
                     notice.details = `markdown line ${n}`;
-                addNotice(notice);
+                addNoticePartial(notice);
                 notifiedBlankLines = true;
             }
         }
@@ -390,7 +390,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
             const characterIndex = markdownText.indexOf(thisField);
             const iy = characterIndex + excerptHalfLength; // Want excerpt to focus more on what follows
             const excerpt = /*(iy > excerptHalfLength ? '…' : '') +*/ markdownText.substring(iy - excerptHalfLength, iy + excerptHalfLengthPlus) + (iy + excerptHalfLengthPlus < markdownText.length ? '…' : '')
-            addNotice({ priority: 378, message: `Possible mismatched '${thisField}' markdown formatting pairs`, details: `${count.toLocaleString()} total occurrence${count === 1 ? '' : 's'}`, characterIndex, excerpt, location: ourLocation });
+            addNoticePartial({ priority: 378, message: `Possible mismatched '${thisField}' markdown formatting pairs`, details: `${count.toLocaleString()} total occurrence${count === 1 ? '' : 's'}`, characterIndex, excerpt, location: ourLocation });
             break; // Only want one warning per text
         }
     }

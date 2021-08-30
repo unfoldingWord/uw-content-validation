@@ -70,7 +70,6 @@ and then validates the content of one file selected from the repo.
   location="as specified in FileCheck demo"
 
   // Normally links in files are downloaded to check that they really exist
-  // disableAllLinkFetchingFlag='false' // 'true' or 'false'
   disableAllLinkFetchingFlag='false' // 'true' or 'false'
   // The next group are only relevant if the above is 'false'
   // They control whether the linked articles themselves are also checked or not

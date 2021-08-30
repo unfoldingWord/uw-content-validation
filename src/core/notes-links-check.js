@@ -8,7 +8,7 @@ import { cachedGetFile, cachedGetFileUsingFullURL, checkMarkdownFileContents } f
 import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 
 
-// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.9.2';
+// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.9.3';
 
 // const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -23,7 +23,7 @@ const TA_RELATIVE2_DISPLAY_LINK_REGEX = new RegExp('\\[([^\\]]+?)\\]\\(\\.{2}/\\
 
 const TW_DOUBLE_BRACKETED_LINK_REGEX = new RegExp('\\[\\[rc://([^ /]+?)/tw/dict/bible/([^ /]+?)/([^ /\\]]+?)\\]\\]', 'g'); // Enclosed in [[  ]]
 const TWL_RAW_LINK_REGEX = new RegExp('rc://([^ /]+?)/tw/dict/bible/([^ /]+?)/(.+)', 'g'); // Just a raw link
-const TW_INTERNAL_REGEX = new RegExp('\\[([-,\\w ()]+?)\\]\\(\\.{2}/([a-z]{2,5})/([-A-Za-z\\d]{2,20})\\.md\\)', 'g');// [Asher](../names/asher.md)
+const TW_INTERNAL_REGEX = new RegExp('\\[([-,\\w ()]+?)\\]\\(\\.{2}/([a-z]{2,5})/([-A-Za-z12]{2,20})\\.md\\)', 'g');// [Asher](../names/asher.md)
 
 // NOTE: Bible link format is archaic, presumably from pre-USFM days!
 // TODO: Do we need to normalise Bible links, i.e., make sure that the link itself
@@ -267,11 +267,10 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     // if (linksList1.length) debugLog(`linksList1 (${linksList1.length}) = ${JSON.stringify(linksList1)}`);
     const linksList2 = fieldText.match(GENERAL_MARKDOWN_LINK2_REGEX) || []; // [display](link)
     // if (linksList2.length) debugLog(`linksList2 (${linksList2.length}) = ${JSON.stringify(linksList2)}`);
-    const totalLinks1 = linksList1.length;
-    const totalLinks2 = linksList2.length;
-    let taLinkCount1 = 0, taLinkCount2 = 0, twLinkCount1 = 0, twLinkCount2 = 0, TNLinkCount1 = 0,
-        thisChapterBibleLinkCount1 = 0, thisVerseBibleLinkCount1 = 0, thisBookBibleLinkCount1 = 0, otherBookBibleLinkCount1 = 0,
-        generalLinkCount1 = 0;
+    // const totalLinks1 = linksList1.length;
+    // const totalLinks2 = linksList2.length;
+    // eslint-disable-next-line no-unused-vars
+    let taLinkCount1 = 0, taLinkCount2 = 0, twLinkCount1 = 0, twLinkCount2 = 0, TNLinkCount1 = 0,         thisChapterBibleLinkCount1 = 0, thisVerseBibleLinkCount1 = 0, thisBookBibleLinkCount1 = 0, otherBookBibleLinkCount1 = 0,         generalLinkCount1 = 0;
     const processedLinkList = [];
 
     // Check for internal TW links like [Asher](../names/asher.md)
@@ -406,17 +405,17 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             if (fieldName.startsWith('intro/')) TAsection = 'intro';
             dataAssert(TAsection === 'translate' || TAsection === 'checking' || TAsection === 'process' || TAsection === 'intro', `Unexpected TA section name = '${TAsection}'`);
             const filepath = `${TAsection}/${article}/01.md`; // Other files are title.md, sub-title.md
-            // debugLog(`Got tA filepath=${filepath}`);
+            // debugLog(`checkNotesLinksToOutside TA_RELATIVE1_DISPLAY_LINK_REGEX got tA filepath=${filepath}`);
 
             if (!checkingOptions?.disableAllLinkFetchingFlag) {
-                // functionLog(`checkNotesLinksToOutside: need to check against ${taRepoName}`);
+                // debugLog(`checkNotesLinksToOutside TA_RELATIVE1_DISPLAY_LINK_REGEX need to check ${filepath} against ${taRepoName}`);
                 const taPathParameters = { username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch };
                 let taFileContent, alreadyGaveError = false;
                 try {
                     taFileContent = await getFile_(taPathParameters);
                     // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
                 } catch (trcGCerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
-                    // console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
+                    console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
                     addNoticePartial({ priority: 885, message: `Error loading TA article`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
                     alreadyGaveError = true;
                 }
@@ -1301,22 +1300,35 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     }
 
     // Check for additional links that we can’t explain
-    // if (processedLinkList.length) debugLog(`processedLinkList (${processedLinkList.length}) = ${JSON.stringify(processedLinkList)}`);
-    const linkCount1 = thisChapterBibleLinkCount1 + thisVerseBibleLinkCount1 + thisBookBibleLinkCount1 + otherBookBibleLinkCount1 + TNLinkCount1 + twLinkCount1 + taLinkCount1 + generalLinkCount1;
-    if (totalLinks1 > linkCount1) {
-        const leftoverLinksList1 = linksList1.filter(x => !processedLinkList.includes(x)); // Delete links that we processed above
+    // if (processedLinkList.length || linksList1.length || linksList2.length) {
+    //     debugLog(`processedLinkList (${processedLinkList.length}) = ${JSON.stringify(processedLinkList)}`);
+    //     if (linksList1.length) {
+    //         debugLog(`   ${thisChapterBibleLinkCount1? 'thisChapterBibleLinkCount1='+thisChapterBibleLinkCount1:''} ${thisVerseBibleLinkCount1?'thisVerseBibleLinkCount1='+thisVerseBibleLinkCount1:''} ${thisBookBibleLinkCount1?'thisBookBibleLinkCount1='+thisBookBibleLinkCount1:''} ${otherBookBibleLinkCount1?'otherBookBibleLinkCount1='+otherBookBibleLinkCount1:''} ${TNLinkCount1?'TNLinkCount1='+TNLinkCount1:''} ${twLinkCount1?'twLinkCount1='+twLinkCount1:''} ${taLinkCount1?'taLinkCount1='+taLinkCount1:''} ${generalLinkCount1?'generalLinkCount1='+generalLinkCount1:''}`);
+    //         debugLog(`   linksList1 (${linksList1.length}) = ${JSON.stringify(linksList1)}`);
+    //     }
+    //     if (linksList2.length) {
+    //         debugLog(`   ${twLinkCount2?'twLinkCount2='+twLinkCount2:''} ${taLinkCount2?'taLinkCount2='+taLinkCount2:''}`);
+    //         debugLog(`   linksList2 (${linksList2.length}) = ${JSON.stringify(linksList2)}`);
+    //     }
+    // }
+    // NOTE: This additional check using counts would fail if a link was found by more than one RegEx
+    // const linkCount1 = thisChapterBibleLinkCount1 + thisVerseBibleLinkCount1 + thisBookBibleLinkCount1 + otherBookBibleLinkCount1 + TNLinkCount1 + twLinkCount1 + taLinkCount1 + generalLinkCount1;
+    // if (totalLinks1 > linkCount1) {
+    const leftoverLinksList1 = linksList1.filter(x => !processedLinkList.includes(x)); // Delete links that we processed above
+    if (leftoverLinksList1.length)
         // if (leftoverLinksList1.length) debugLog(`'${languageCode}', ${repoCode}, '${bookID}', '${fieldName}' processedLinkList (${processedLinkList.length}) = ${JSON.stringify(processedLinkList)}\n        linksList1(${linksList1.length})=${JSON.stringify(linksList1)}\nleftoverLinksList1(${leftoverLinksList1.length})=${JSON.stringify(leftoverLinksList1)}`);
         // if (leftoverLinksList1.length) debugLog(`'${languageCode}', ${repoCode}, '${bookID}', '${fieldName}' leftoverLinksList1 (${leftoverLinksList1.length}) = ${JSON.stringify(leftoverLinksList1)}`);
         addNoticePartial({ priority: 648, message: "Unusual [ ]( ) link(s)—not a recognized Bible or TA, TN, or TW link", details: `need to carefully check ${leftoverLinksList1.length === 1 ? '"' + leftoverLinksList1[0] + '"' : JSON.stringify(leftoverLinksList1)}`, location: ourLocation });
-    }
-    const linkCount2 = twLinkCount2 + taLinkCount2; // These are double-bracketed links, e.g., [[something]]
+    // }
+    // const linkCount2 = twLinkCount2 + taLinkCount2; // These are double-bracketed links, e.g., [[something]]
     // debugLog(`twLinkCount2 ${twLinkCount2} + taLinkCount2 ${taLinkCount2} = linkCount2 ${linkCount2}`);
-    if (totalLinks2 > linkCount2) {
-        const leftoverLinksList2 = linksList2.filter(x => !processedLinkList.includes(x)); // Delete links that we processed above
+    // if (totalLinks2 > linkCount2) {
+    const leftoverLinksList2 = linksList2.filter(x => !processedLinkList.includes(x)); // Delete links that we processed above
+    if (leftoverLinksList2.length)
         // if (leftoverLinksList2.length) debugLog(`'${languageCode}', ${repoCode}, '${bookID}', '${fieldName}' processedLinkList (${processedLinkList.length}) = ${JSON.stringify(processedLinkList)}\n        linksList2(${linksList2.length})=${JSON.stringify(linksList2)}\nleftoverLinksList2(${leftoverLinksList2.length})=${JSON.stringify(leftoverLinksList2)}`);
         // if (leftoverLinksList2.length) debugLog(`'${languageCode}', ${repoCode}, '${bookID}', '${fieldName}' leftoverLinksList2 (${leftoverLinksList2.length}) = ${JSON.stringify(leftoverLinksList2)}`);
         addNoticePartial({ priority: 649, message: "Unusual [[ ]] link(s)—not a recognized TA or TW link", details: `need to carefully check ${leftoverLinksList2.length === 1 ? '"' + leftoverLinksList2[0] + '"' : JSON.stringify(leftoverLinksList2)}`, location: ourLocation });
-    }
+    // }
 
     // Check for badly formed links (not processed by the above code)
     // Check for badly formed [[ ]] links

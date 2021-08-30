@@ -5,7 +5,7 @@ import { OPEN_CLOSE_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, BAD_CHARACTER
 import { debugLog, parameterAssert } from './utilities';
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.10';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.11';
 
 
 /**
@@ -381,11 +381,13 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
                     continue;
                 if (nextChar === '\\' && fieldType === 'USFM line') // probably another USFM marker
                     continue;
+                if (nextChar === '}' && repoCode === 'ST') // UST uses these
+                    continue;
                 if (nextChar === '…' && fieldName === 'OrigQuote') // discontiguous quote
                     continue;
                 if (nextChars.startsWith('<sup>') && fieldType === 'markdown' && repoCode === 'TA')
                     continue;
-                if ((fieldName.startsWith('README') || fieldName.endsWith('.md line'))
+                if ((fieldName.startsWith('README') || fieldName.endsWith('.md line') || fieldName.endsWith('Note line'))
                     && (nextChar === '*' || badTwoChars === '![')) // allow markdown formatting
                     continue;
                 if (badChars.startsWith('.md') || badChars.startsWith('.usfm') || badChars.startsWith('.tsv') || badChars.startsWith('.yaml')
@@ -399,6 +401,9 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
                     continue;
                 if (badChar === '.' && fieldText.indexOf('etc.') !== -1)
                     continue;
+                if (badTwoChars === '.m'
+                    && (fieldText.toLowerCase().indexOf('a.m.') !== -1 || fieldText.toLowerCase().indexOf('p.m.') !== -1))
+                    continue;
                 if ((badTwoChars === '.C' && fieldText.toLowerCase().indexOf('B.C.') !== -1)
                     || (badTwoChars === '.D' && fieldText.toLowerCase().indexOf('A.D.') !== -1))
                     continue;
@@ -406,11 +411,12 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
                     continue;
                 if (badChar === '?' && fieldText.indexOf('http') !== -1) // ? can be part of a URL
                     continue;
-                if (['\\w', '\\zaln-s', '\\v', '\\p', '\\q', '\\q1', '\\SPECIAL', '\\NONE'].indexOf(fieldName) === -1 || badChar !== ',') { // suppress x-morph formatting false alarms
-                    const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
-                    // debugLog(`checkTextField for ${repoCode} '${fieldType}' '${fieldName}' got ${details} badTwoChars='${badTwoChars}' with '${excerpt}' priority 629`);
-                    addNoticePartial({ priority: 629, message: `Unexpected bad character combination`, details, characterIndex, excerpt, location: ourLocation });
-                }
+                if (['\\w', '\\zaln-s', '\\v', '\\p', '\\q', '\\q1', '\\SPECIAL', '\\NONE', '\\f'].indexOf(fieldName) !== -1 && (badChar === ',' || badChar === ':')) // suppress x-morph formatting false alarms
+                    continue;
+                // debugLog(`checkTextField 329 at the bottom with ${badChar} in '${fieldName}' preceding ${nextChars}`);
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
+                // debugLog(`checkTextField for ${repoCode} '${fieldType}' '${fieldName}' got ${details} badTwoChars='${badTwoChars}' with '${excerpt}' priority 329`);
+                addNoticePartial({ priority: 329, message: `Unexpected bad character combination`, details, characterIndex, excerpt, location: ourLocation });
             }
 
     if (cutoffPriorityLevel < 92)

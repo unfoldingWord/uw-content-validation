@@ -59,7 +59,6 @@ import RepoCheck from './RepoCheck';
   skipNTBooks='false' // 'true' or 'false'
 
   // Normally links in files are downloaded to check that they really exist
-  // disableAllLinkFetchingFlag='false' // 'true' or 'false'
   disableAllLinkFetchingFlag='false' // 'true' or 'false'
   // The next group are only relevant if the above is 'false'
   // They control whether the linked articles themselves are also checked or not

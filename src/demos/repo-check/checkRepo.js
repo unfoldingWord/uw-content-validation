@@ -8,7 +8,7 @@ import { repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetR
 import { userLog, functionLog, debugLog, logicAssert, parameterAssert } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.6.0';
+// const REPO_VALIDATOR_VERSION_STRING = '0.6.2';
 
 
 /**
@@ -287,7 +287,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
         else if (repoName.endsWith('_tq') && thisFilepath.indexOf('/') > 0)
           bookOrFileCode = thisFilepath.split('/')[0];
 
-        let whichTestament = 'none';
+        let whichTestament = 'none'; // For non-book repos, e.g., TW, TA
         if (bookOrFileCode === 'OBS')
           whichTestament = 'both';
         else if (bookOrFileCode.length === 3) { // but not OBS
@@ -297,7 +297,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
             if (books.isValidBookID(bookOrFileCode)) // must be in FRT, BAK, etc.
               whichTestament = 'other';
           }
-          logicAssert(whichTestament === 'old' || whichTestament === 'new', `checkRepo() couldn’t find testament for '${bookOrFileCode}'`);
+          // logicAssert(whichTestament === 'old' || whichTestament === 'new', `checkRepo() couldn’t find testament for '${bookOrFileCode}': got ${whichTestament}`);
         }
         // debugLog(`checkRepo: Found testament '${whichTestament}' for '${bookOrFileCode}'`);
         if ((givenCheckingOptions?.skipOTBooks && whichTestament === 'old')

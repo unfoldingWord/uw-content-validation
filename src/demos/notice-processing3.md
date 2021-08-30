@@ -27,7 +27,7 @@ Although this demonstration here formats and colour the warning list, it’s exp
 
 import { checkTextField } from '../core/field-text-check';
 import { processNoticesToSingleList } from './notice-processing-functions';
-import { RenderRawResults, RenderObject, RenderSuccessesWarningsGradient } from '../demos/RenderProcessedResults';
+import { RenderRawResults, RenderObject, RenderSuccessesNoticesGradient } from '../demos/RenderProcessedResults';
 
 // Empty, space, good, and bad, link, and RC text samples
 const textE = "";
@@ -59,6 +59,6 @@ const processedResults = processNoticesToSingleList(rawResults, processOptions);
 <b>Check</b> "{chosenText}"<br/><br/>
 <RenderRawResults results={rawResults} />
 <br/>Which after processing{Object.keys(processOptions).length? <> using <b>processOptions</b><RenderObject thisObject={processOptions} /></>:''} then becomes:<br/><br/>
-<RenderSuccessesWarningsGradient results={processedResults} />
+<RenderSuccessesNoticesGradient results={processedResults} />
 </>
 ```
