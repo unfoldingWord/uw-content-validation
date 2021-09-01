@@ -8,7 +8,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert, dataAssert, debugLog, functionLog } from './utilities';
 
 
-const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.8.0';
+const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.8.1';
 
 
 /**
@@ -87,7 +87,13 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
         //parameterAssert(typeof incompleteNoticeObject.location === 'string', `cMdT addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
 
         // incompleteNoticeObject.debugChain = incompleteNoticeObject.debugChain ? `checkMarkdownText(${languageCode}, ${textOrFileName}) ${incompleteNoticeObject.debugChain}` : `checkMarkdownText(${languageCode}, ${textOrFileName})`;
-        result.noticeList.push({ ...incompleteNoticeObject, repoCode }); // Used to have filename: textName, but that isn’t always a filename !!!
+        if (incompleteNoticeObject.repoCode === undefined) {
+            // debugLog(`checkMarkdownText addNoticePartial added rC=${repoCode} to ${JSON.stringify(incompleteNoticeObject)}`);
+            incompleteNoticeObject.repoCode = repoCode;
+        }
+        else debugLog(`checkMarkdownText addNoticePartial DIDN'T ADD rC=${repoCode} to ${JSON.stringify(incompleteNoticeObject)}`);
+
+        result.noticeList.push(incompleteNoticeObject); // Used to have filename: textName, but that isn’t always a filename !!!
     }
     // end of addNoticePartial function
 

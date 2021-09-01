@@ -270,7 +270,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     // const totalLinks1 = linksList1.length;
     // const totalLinks2 = linksList2.length;
     // eslint-disable-next-line no-unused-vars
-    let taLinkCount1 = 0, taLinkCount2 = 0, twLinkCount1 = 0, twLinkCount2 = 0, TNLinkCount1 = 0,         thisChapterBibleLinkCount1 = 0, thisVerseBibleLinkCount1 = 0, thisBookBibleLinkCount1 = 0, otherBookBibleLinkCount1 = 0,         generalLinkCount1 = 0;
+    let taLinkCount1 = 0, taLinkCount2 = 0, twLinkCount1 = 0, twLinkCount2 = 0, TNLinkCount1 = 0, thisChapterBibleLinkCount1 = 0, thisVerseBibleLinkCount1 = 0, thisBookBibleLinkCount1 = 0, otherBookBibleLinkCount1 = 0, generalLinkCount1 = 0;
     const processedLinkList = [];
 
     // Check for internal TW links like [Asher](../names/asher.md)
@@ -372,9 +372,15 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                         // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
                         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
                         const checkTAFileResult = await checkMarkdownFileContents(foundLanguageCode, 'TA', `${regexResultArray[3].trim()}.md`, taFileContent, ourLocation, checkingOptions);
-                        for (const noticeObject of checkTAFileResult.noticeList)
+                        for (const noticeObject of checkTAFileResult.noticeList) {
                             // Why don’t we use addNoticePartial() here? (It adds bookID and fieldName.) Maybe it would be misleading???
-                            ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
+                            if (noticeObject.repoCode === undefined) {
+                                debugLog(`checkMarkdownText 378 added rC=TA to ${JSON.stringify(noticeObject)}`);
+                                noticeObject.repoCode = 'TA';
+                            }
+                            else if (noticeObject.repoCode !== 'TA') debugLog(`checkMarkdownText 378 DIDN'T ADD rC=TA to ${JSON.stringify(noticeObject)}`);
+                            ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
+                        }
                         ctarResult.checkedFileCount += 1;
                         ctarResult.checkedFilenames.push(`${regexResultArray[3].trim()}.md`);
                         ctarResult.checkedFilesizes = taFileContent.length;
@@ -542,9 +548,15 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                         // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
                         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
                         const checkTAFileResult = await checkMarkdownFileContents(foundLanguageCode, 'TA', `${regexResultArray[3].trim()}.md`, taFileContent, ourLocation, checkingOptions);
-                        for (const noticeObject of checkTAFileResult.noticeList)
+                        for (const noticeObject of checkTAFileResult.noticeList) {
                             // Why don’t we use addNoticePartial() here? (It adds bookID and fieldName.) Maybe it would be misleading???
-                            ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
+                            if (noticeObject.repoCode === undefined) {
+                                debugLog(`checkMarkdownText 554 added rC=TA to ${JSON.stringify(noticeObject)}`);
+                                noticeObject.repoCode = 'TA';
+                            }
+                            else if (noticeObject.repoCode !== 'TA') debugLog(`checkMarkdownText 554 DIDN'T ADD rC=TA to ${JSON.stringify(noticeObject)}`);
+                            ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
+                        }
                         ctarResult.checkedFileCount += 1;
                         ctarResult.checkedFilenames.push(`${regexResultArray[3].trim()}.md`);
                         ctarResult.checkedFilesizes = taFileContent.length;
@@ -596,9 +608,15 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                         // functionLog(`checkNotesLinksToOutside needs to check TW article: ${filepath}`);
                         // NOTE: repoCode is the caller's repo code in the line below
                         const checkTWFileResult = await checkMarkdownFileContents(foundLanguageCode, 'TW', `${regexResultArray[3].trim()}.md`, twFileContent, ourLocation, checkingOptions);
-                        for (const noticeObject of checkTWFileResult.noticeList)
+                        for (const noticeObject of checkTWFileResult.noticeList) {
                             // Why don’t we use addNoticePartial() here? (It adds bookID and fieldName.) Maybe it would be misleading???
-                            ctarResult.noticeList.push({ ...noticeObject, username: twRepoUsername, repoCode: 'TW', repoName: twRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TW' });
+                            if (noticeObject.repoCode === undefined) {
+                                debugLog(`checkMarkdownText 600 added rC=TW to ${JSON.stringify(noticeObject)}`);
+                                noticeObject.repoCode = 'TW';
+                            }
+                            else if (noticeObject.repoCode !== 'TW') debugLog(`checkMarkdownText 600 DIDN'T ADD rC=TW to ${JSON.stringify(noticeObject)}`);
+                            ctarResult.noticeList.push({ ...noticeObject, username: twRepoUsername, repoName: twRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TW' });
+                        }
                         ctarResult.checkedFileCount += 1;
                         ctarResult.checkedFilenames.push(`${regexResultArray[3].trim()}.md`);
                         ctarResult.checkedFilesizes = twFileContent.length;
