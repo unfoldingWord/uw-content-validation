@@ -10,5 +10,5 @@ export const REPO_CODES_LIST = [
   'UGL', 'UHAL',
   'OBS', 'OBS-TWL',
   'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2',
-  'OBS-SN', 'OBS-SQ',
+  'OBS-SN', 'OBS-SN2', 'OBS-SQ', 'OBS-SQ2',
 ];

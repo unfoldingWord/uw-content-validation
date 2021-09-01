@@ -32,7 +32,7 @@ import BookPackageCheck from './BookPackageCheck';
   languageCode='en'
   // bookID can be a USFM bookID, e.g., 'GEN', 'MAT', '3JN'
   //  and can also be 'OBS' (for Open Bible Stories)
-  bookID='3JN'
+  bookID='1PE'
 
   // We can choose the forthcoming new TSV formats or the existing formats
   // dataSet='BOTH' // 'OLD' (Markdown TQ, TSV9 TN, etc.), 'NEW' (TSV7 TQ2, TSV7 TN2, etc.), 'DEFAULT', or 'BOTH'
@@ -54,7 +54,7 @@ import BookPackageCheck from './BookPackageCheck';
   // Specifying excerptLength and maximumSimilarMessages is just to show off options
   // —those fields are not necessary (or normal) here
   excerptLength='25' // Default is 20 characters
-  // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
+  cutoffPriorityLevel='90' // Default is to detect all errors/warnings
   //maximumSimilarMessages='5' // Default is 3 (0 means don’t suppress any)
   // ignorePriorityNumberList='[]'
   // sortBy='ByRepo' // Default is 'ByPriority'; also have 'ByRepo' and 'AsFound'

@@ -26,6 +26,13 @@ export const BAD_CHARACTER_COMBINATIONS = [
 export const LEADING_ZERO_COMBINATIONS = [
     ' 0', ':0', '<br>0', '“0', '‘0',
 ];
+export const BAD_CHARACTER_REGEXES = [ // Note: (?! denotes negative lookahead
+    ["punctuation not followed by space or closing quote", new RegExp('[?!](?! |”|’|\\)|\\]|$)', 'g')],
+    ["comma not followed by space or digit", new RegExp('[,](?! |\\d|”|’|$)', 'g')],
+    ["colon not followed by space or digit", new RegExp('[:](?! |/|\\d|”|$)', 'g')],
+    ["semicolon not followed by space or closing quote", new RegExp('[;](?! |”|’|$)', 'g')],
+    ["period not followed by space or digit or closing quote", new RegExp('[.](?! |\\.|/|\\d|”|’|\\)|\\]|}|”|$)', 'g')],
+];
 
 export function isWhitespace(myString) {
     // includes zero-width space

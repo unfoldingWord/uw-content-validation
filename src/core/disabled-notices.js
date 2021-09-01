@@ -11,7 +11,7 @@ import { debugLog, userLog, functionLog } from './utilities';
 */
 
 
-// const DISABLED_NOTICES_VERSION_STRING = '0.3.5';
+// const DISABLED_NOTICES_VERSION_STRING = '0.3.7';
 
 
 const disabledNotices = [
@@ -47,6 +47,9 @@ const disabledNotices = [
   { repoCode: 'TA', filename: 'translate/translate-formatsignals/01.md', message: "Unexpected space after ( character", }, // 192
 
   { repoCode: 'TN', excerpt: ' brackets [ ] to ind', message: "Unexpected space after [ character", }, // 192
+
+  // This file explains how to use markdown headings
+  { repoCode: 'TA', filename: 'translate/file-formats/01.md', message: "Unexpected # character at start of line", }, // 195
 
   // This file has a space-separated list of typical quotation symbols
   { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected space after “ character", lineNumber: 3, }, // 192
@@ -110,6 +113,8 @@ export function removeDisabledNotices(givenNoticeList) {
       remainingNoticeList.push(thisNotice);
     // else userLog(`  Removing disabled ${JSON.stringify(thisNotice)}`);
   }
-  if (remainingNoticeList.length !== givenNoticeList.length) userLog(`removeDisabledNotices() returning ${remainingNoticeList.length} out of ${givenNoticeList.length} notices`);
+  if (givenNoticeList.length > 2 // This stops the msg from being displayed for lots of tests
+    && remainingNoticeList.length !== givenNoticeList.length)
+    userLog(`removeDisabledNotices() returning ${remainingNoticeList.length} out of ${givenNoticeList.length} notices`);
   return remainingNoticeList;
 }

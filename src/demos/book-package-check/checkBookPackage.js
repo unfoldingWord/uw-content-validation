@@ -9,7 +9,7 @@ import { checkRepo } from '../repo-check/checkRepo';
 import { userLog, functionLog, debugLog, parameterAssert, logicAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.8.1';
+// const BP_VALIDATOR_VERSION_STRING = '0.9.2';
 
 const STANDARD_MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -307,13 +307,13 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   if (bookID === 'OBS') {
     // NOTE: No code below to handle OBS TN and TQ which are markdown repos
     if (dataSet === 'DEFAULT')
-      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2'];
+      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
     else if (dataSet === 'OLD')
       repoCodeList = ['OBS', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
     else if (dataSet === 'NEW')
       repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2'];
     else if (dataSet === 'BOTH')
-      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SN', 'OBS-SN2', 'OBS-SQ2'];
+      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SN2', 'OBS-SQ', 'OBS-SQ2'];
   } else { // not OBS
     // We also need to know the number for USFM books
     try {
@@ -373,7 +373,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       filename = `${bookNumberAndName}.usfm`;
     else if (adjustedRepoCode === 'TWL' || repoCode.endsWith('TN2') || repoCode.endsWith('TQ2'))
       filename = `${adjustedRepoCode.toLowerCase()}_${bookID}.tsv`
-    else if (adjustedRepoCode === 'SN' || adjustedRepoCode === 'SQ')
+    else if ((adjustedRepoCode === 'SN' || adjustedRepoCode === 'SQ') && bookID !== 'OBS')
       filename = `${adjustedRepoCode.toLowerCase()}_${bookID}.tsv`
     else if (adjustedRepoCode === 'TN' && !repoCode.startsWith('OBS-')) {
       try {
@@ -402,9 +402,10 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         checkedRepoNames.add(repoName);
       }
       addSuccessMessage(`Checked ${languageCode} OBS repo from ${username}`);
-    } else if (repoCode === 'TQ' || repoCode === 'OBS-TN' || repoCode === 'OBS-TQ') { // These are still markdown for now
+    } else if (repoCode === 'TQ'
+      || repoCode === 'OBS-TN' || repoCode === 'OBS-TQ' || repoCode === 'OBS-SN' || repoCode === 'OBS-SQ') { // These are still markdown for now
       // This is the old markdown resource with hundreds/thousands of files
-      const tqResultObject = await checkTQMarkdownBook(username, languageCode, repoCode, repoName, originalBranch, bookID, newCheckingOptions);
+      const tqResultObject = await checkMarkdownBook(username, languageCode, repoCode, repoName, originalBranch, bookID, newCheckingOptions);
       checkBookPackageResult.successList = checkBookPackageResult.successList.concat(tqResultObject.successList);
       checkBookPackageResult.noticeList = checkBookPackageResult.noticeList.concat(tqResultObject.noticeList);
       if (tqResultObject.checkedFileCount > 0) {
@@ -524,37 +525,37 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
 
 
 /*
-    checkTQMarkdownBook
+    checkMarkdownBook
 */
 /**
  *
  * @param {string} username
  * @param {string} languageCode
- * @param {string} repoCode -- 'TQ' or 'OBS-TQ'
+ * @param {string} repoCode -- 'TQ' or 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'
  * @param {string} repoName
  * @param {string} branch
  * @param {string} bookID -- 3-character USFM book ID or 'OBS'
  * @param {Object} checkingOptions
  * @return {Object} - containing successList and noticeList
  */
-async function checkTQMarkdownBook(username, languageCode, repoCode, repoName, branch, bookID, checkingOptions) {
-  // functionLog(`checkBookPackage checkTQMarkdownBook(${username}, ${languageCode}, ${repoCode} ${repoName}, ${branch}, ${bookID}, ${JSON.stringify(checkingOptions)})…`)
-  //parameterAssert(username !== undefined, "checkTQMarkdownBook: 'username' parameter should be defined");
-  //parameterAssert(typeof username === 'string', `checkTQMarkdownBook: 'username' parameter should be a string not a '${typeof username}': '${username}'`);
-  //parameterAssert(languageCode !== undefined, "checkTQMarkdownBook: 'languageCode' parameter should be defined");
-  //parameterAssert(typeof languageCode === 'string', `checkTQMarkdownBook: 'languageCode' parameter should be a string not a '${typeof languageCode}': '${languageCode}'`);
-  //parameterAssert(repoCode !== undefined, "checkTQMarkdownBook: 'repoCode' parameter should be defined");
-  //parameterAssert(typeof repoCode === 'string', `checkTQMarkdownBook: 'repoCode' parameter should be a string not a '${typeof repoCode}': '${repoCode}'`);
-  //parameterAssert(repoCode === 'TQ' || repoCode === 'OBS-TQ', `checkTQMarkdownBook: 'repoCode' parameter should be 'TQ' or 'OBS-TQ' not '${repoCode}'`);
-  //parameterAssert(repoName !== undefined, "checkTQMarkdownBook: 'repoName' parameter should be defined");
-  //parameterAssert(typeof repoName === 'string', `checkTQMarkdownBook: 'repoName' parameter should be a string not a '${typeof repoName}': ${repoName}`);
-  //parameterAssert(branch !== undefined, "checkTQMarkdownBook: 'branch' parameter should be defined");
-  //parameterAssert(typeof branch === 'string', `checkTQMarkdownBook: 'branch' parameter should be a string not a '${typeof branch}': '${branch}'`);
-  //parameterAssert(bookID !== undefined, "checkTQMarkdownBook: 'bookID' parameter should be defined");
-  //parameterAssert(typeof bookID === 'string', `checkTQMarkdownBook: 'bookID' parameter should be a string not a '${typeof bookID}': ${bookID}`);
-  //parameterAssert(bookID.length === 3, `checkTQMarkdownBook: 'bookID' parameter should be three characters long not ${bookID.length}`);
-  //parameterAssert(bookID.toUpperCase() === bookID, `checkTQMarkdownBook: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-  //parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkTQMarkdownBook: '${bookID}' is not a valid USFM book identifier`);
+async function checkMarkdownBook(username, languageCode, repoCode, repoName, branch, bookID, checkingOptions) {
+  // functionLog(`checkBookPackage checkMarkdownBook(${username}, ${languageCode}, rC=${repoCode} rN=${repoName}, ${branch}, ${bookID}, ${JSON.stringify(checkingOptions)})…`)
+  //parameterAssert(username !== undefined, "checkMarkdownBook: 'username' parameter should be defined");
+  //parameterAssert(typeof username === 'string', `checkMarkdownBook: 'username' parameter should be a string not a '${typeof username}': '${username}'`);
+  //parameterAssert(languageCode !== undefined, "checkMarkdownBook: 'languageCode' parameter should be defined");
+  //parameterAssert(typeof languageCode === 'string', `checkMarkdownBook: 'languageCode' parameter should be a string not a '${typeof languageCode}': '${languageCode}'`);
+  //parameterAssert(repoCode !== undefined, "checkMarkdownBook: 'repoCode' parameter should be defined");
+  //parameterAssert(typeof repoCode === 'string', `checkMarkdownBook: 'repoCode' parameter should be a string not a '${typeof repoCode}': '${repoCode}'`);
+  parameterAssert(repoCode === 'TQ' || repoCode === 'OBS-TN' || repoCode === 'OBS-TQ' || repoCode === 'OBS-SN' || repoCode === 'OBS-SQ', `checkMarkdownBook: 'repoCode' parameter should be 'TQ' or 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ' not '${repoCode}'`);
+  //parameterAssert(repoName !== undefined, "checkMarkdownBook: 'repoName' parameter should be defined");
+  //parameterAssert(typeof repoName === 'string', `checkMarkdownBook: 'repoName' parameter should be a string not a '${typeof repoName}': ${repoName}`);
+  //parameterAssert(branch !== undefined, "checkMarkdownBook: 'branch' parameter should be defined");
+  //parameterAssert(typeof branch === 'string', `checkMarkdownBook: 'branch' parameter should be a string not a '${typeof branch}': '${branch}'`);
+  //parameterAssert(bookID !== undefined, "checkMarkdownBook: 'bookID' parameter should be defined");
+  //parameterAssert(typeof bookID === 'string', `checkMarkdownBook: 'bookID' parameter should be a string not a '${typeof bookID}': ${bookID}`);
+  //parameterAssert(bookID.length === 3, `checkMarkdownBook: 'bookID' parameter should be three characters long not ${bookID.length}`);
+  //parameterAssert(bookID.toUpperCase() === bookID, `checkMarkdownBook: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+  //parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkMarkdownBook: '${bookID}' is not a valid USFM book identifier`);
 
   const generalLocation = ` in ${username} (${branch})`;
 
@@ -567,7 +568,7 @@ async function checkTQMarkdownBook(username, languageCode, repoCode, repoName, b
 
   function addNoticePartial(incompleteNoticeObject) {
     // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
-    // functionLog(`checkTQMarkdownBook addNoticePartial: ${noticeObject.priority}:${noticeObject.message} ${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.filename}:${noticeObject.lineNumber} ${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.excerpt ? ` ${noticeObject.excerpt}` : ""}${noticeObject.location}`);
+    // functionLog(`checkMarkdownBook addNoticePartial: ${incompleteNoticeObject.priority}:${incompleteNoticeObject.message} ${incompleteNoticeObject.bookID} ${incompleteNoticeObject.C}:${incompleteNoticeObject.V} ${incompleteNoticeObject.filename}:${incompleteNoticeObject.lineNumber} ${incompleteNoticeObject.characterIndex > 0 ? ` (at character ${incompleteNoticeObject.characterIndex})` : ""}${incompleteNoticeObject.excerpt ? ` ${incompleteNoticeObject.excerpt}` : ""}${incompleteNoticeObject.location}`);
     //parameterAssert(noticeObject.priority !== undefined, "cTQ addNoticePartial: 'priority' parameter should be defined");
     //parameterAssert(typeof noticeObject.priority === 'number', `cTQ addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}'`);
     //parameterAssert(noticeObject.message !== undefined, "cTQ addNoticePartial: 'message' parameter should be defined");
@@ -607,86 +608,87 @@ async function checkTQMarkdownBook(username, languageCode, repoCode, repoName, b
    * @param {string} fileLocation
    * @param {Object} checkingOptions
    */
-  async function ourCheckTQFileContents(repoCode, bookID, C, V, cfFilename, fileContent, fileLocation, checkingOptions) {
-    // functionLog(`checkBookPackage ourCheckTQFileContents(${repoCode}, ${bookID} ${C}:${V} ${cfFilename}…)…`);
+  async function ourCheckFileContents(repoCode, bookID, C, V, cfFilename, fileContent, fileLocation, checkingOptions) {
+    // functionLog(`checkBookPackage ourCheckFileContents(${repoCode}, ${bookID} ${C}:${V} ${cfFilename}…)…`);
 
     // Updates the global list of notices
-    //parameterAssert(repoCode !== undefined, "cTQ ourCheckTQFileContents: 'repoCode' parameter should be defined");
-    //parameterAssert(typeof repoCode === 'string', `cTQ ourCheckTQFileContents: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
-    //parameterAssert(REPO_CODES_LIST.includes(repoCode), `cTQ ourCheckTQFileContents: 'repoCode' parameter should not be '${repoCode}'`);
-    //parameterAssert(cfFilename !== undefined, "cTQ ourCheckTQFileContents: 'cfFilename' parameter should be defined");
-    //parameterAssert(typeof cfFilename === 'string', `cTQ ourCheckTQFileContents: 'cfFilename' parameter should be a string not a '${typeof cfFilename}'`);
-    //parameterAssert(fileContent !== undefined, "cTQ ourCheckTQFileContents: 'fileContent' parameter should be defined");
-    //parameterAssert(typeof fileContent === 'string', `cTQ ourCheckTQFileContents: 'fileContent' parameter should be a string not a '${typeof fileContent}'`);
-    //parameterAssert(fileLocation !== undefined, "cTQ ourCheckTQFileContents: 'fileLocation' parameter should be defined");
-    //parameterAssert(typeof fileLocation === 'string', `cTQ ourCheckTQFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
-    //parameterAssert(checkingOptions !== undefined, "cTQ ourCheckTQFileContents: 'checkingOptions' parameter should be defined");
+    //parameterAssert(repoCode !== undefined, "cTQ ourCheckFileContents: 'repoCode' parameter should be defined");
+    //parameterAssert(typeof repoCode === 'string', `cTQ ourCheckFileContents: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
+    //parameterAssert(REPO_CODES_LIST.includes(repoCode), `cTQ ourCheckFileContents: 'repoCode' parameter should not be '${repoCode}'`);
+    //parameterAssert(cfFilename !== undefined, "cTQ ourCheckFileContents: 'cfFilename' parameter should be defined");
+    //parameterAssert(typeof cfFilename === 'string', `cTQ ourCheckFileContents: 'cfFilename' parameter should be a string not a '${typeof cfFilename}'`);
+    //parameterAssert(fileContent !== undefined, "cTQ ourCheckFileContents: 'fileContent' parameter should be defined");
+    //parameterAssert(typeof fileContent === 'string', `cTQ ourCheckFileContents: 'fileContent' parameter should be a string not a '${typeof fileContent}'`);
+    //parameterAssert(fileLocation !== undefined, "cTQ ourCheckFileContents: 'fileLocation' parameter should be defined");
+    //parameterAssert(typeof fileLocation === 'string', `cTQ ourCheckFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
+    //parameterAssert(checkingOptions !== undefined, "cTQ ourCheckFileContents: 'checkingOptions' parameter should be defined");
 
     const cfResultObject = await checkFileContents(username, languageCode, repoCode, branch, cfFilename, fileContent, fileLocation, checkingOptions);
     // debugLog("checkFileContents() returned", cfResultObject.successList.length, "success message(s) and", cfResultObject.noticeList.length, "notice(s)");
-    // for (const successEntry of cfResultObject.successList) debugLog("  ourCheckTQFileContents:", successEntry);
+    // for (const successEntry of cfResultObject.successList) debugLog("  ourCheckFileContents:", successEntry);
 
     // Process noticeList line by line,  appending the repoCode as an extra field as we go
     for (const noticeEntry of cfResultObject.noticeList) {
       // noticeEntry is an array of eight fields: 1=priority, 2=bookID, 3=C, 4=V, 5=msg, 6=characterIndex, 7=excerpt, 8=location
-      // //parameterAssert(Object.keys(noticeEntry).length === 5, `cTQ ourCheckTQFileContents notice length=${Object.keys(noticeEntry).length}`);
+      // //parameterAssert(Object.keys(noticeEntry).length === 5, `cTQ ourCheckFileContents notice length=${Object.keys(noticeEntry).length}`);
       // We add the repoCode as an extra value
       addNoticePartial({ ...noticeEntry, bookID, C, V, extra: repoCode });
     }
   }
-  // end of ourCheckTQFileContents function
+  // end of ourCheckFileContents function
 
 
-  // Main code for checkTQMarkdownBook
+  // Main code for checkMarkdownBook
   // We need to find and check all the markdown folders/files for this book
-  const getFileListFromZip_ = checkingOptions && checkingOptions.getFileListFromZip ? checkingOptions.getFileListFromZip : getFileListFromZip;
+  const getFileListFromZip_ = checkingOptions?.getFileListFromZip ? checkingOptions.getFileListFromZip : getFileListFromZip;
   let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0;
-  const pathList = await getFileListFromZip_({ username, repository: repoName, branchOrRelease: branch, optionalPrefix: `${bookID.toLowerCase()}/` });
+  const folderpath = bookID === 'OBS' ? 'content/' : `${bookID.toLowerCase()}/`;
+  const pathList = await getFileListFromZip_({ username, repository: repoName, branchOrRelease: branch, optionalPrefix: folderpath });
   if (!Array.isArray(pathList) || !pathList.length) {
-    // console.error("checkTQrepo failed to load", username, repoName, branch);
-    const details = `username=${username}`;
+    // debugLog(`checkMarkdownBook for ${repoCode} failed to find ${username} ${repoName} ${branch} ${folderpath}`);
+    const details = `username=${username}, folder=${folderpath}`;
     if (! await repositoryExistsOnDoor43({ username, repository: repoName }))
       ctqResult.noticeList.push({ priority: 997, message: "Repository doesn’t exist", details, username, repoCode, repoName, location: generalLocation, extra: repoCode });
     else
       addNoticePartial({ priority: 996, message: "Unable to load file", details, bookID, location: generalLocation, extra: repoCode });
   } else {
 
-    // debugLog(`  Got ${pathList.length} pathList entries`)
+    // debugLog(`  checkMarkdownBook: Got ${pathList.length} pathList entries`)
     for (const thisPath of pathList) {
-      // debugLog("checkTQMarkdownBook: Try to load", username, repoName, thisPath, branch);
+      // debugLog(`checkMarkdownBook for ${repoCode}: Try to load ${username}, ${repoName}, ${thisPath}, ${branch}`);
 
-      //parameterAssert(thisPath.endsWith('.md'), `Expected ${thisPath} to end with .md`);
+      //parameterAssert(thisPath.endsWith('.md'), `Expected ${ thisPath } to end with .md`);
       // const filename = thisPath.split('/').pop();
       const pathParts = thisPath.slice(0, -3).split('/');
       const C = pathParts[pathParts.length - 2].replace(/^0+(?=\d)/, ''); // Remove leading zeroes
       const V = pathParts[pathParts.length - 1].replace(/^0+(?=\d)/, ''); // Remove leading zeroes
 
-      const getFile_ = (checkingOptions && checkingOptions.getFile) ? checkingOptions.getFile : cachedGetFile;
+      const getFile_ = checkingOptions?.getFile ? checkingOptions.getFile : cachedGetFile;
       let tqFileContent;
       try {
         tqFileContent = await getFile_({ username, repository: repoName, path: thisPath, branch });
-        // debugLog("Fetched fileContent for", repoName, thisPath, typeof tqFileContent, tqFileContent.length);
+        // debugLog(`checkMarkdownBook for ${repoCode}: Fetched fileContent for ${repoName} ${thisPath} ${typeof tqFileContent} ${tqFileContent.length}`);
         checkedFilenames.push(thisPath);
         totalCheckedSize += tqFileContent.length;
       } catch (tQerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
-        console.error("checkTQMarkdownBook failed to load", username, repoName, thisPath, branch, tQerror + '');
-        let details = `username=${username}`;
+        console.error(`checkMarkdownBook failed to load ${username} ${repoName} ${branch} ${thisPath} ${tQerror + ''}`);
+        let details = `username = ${username} `;
         if (! await repositoryExistsOnDoor43({ username, repository: repoName }))
           ctqResult.noticeList.push({ priority: 997, message: "Repository doesn’t exist", details, username, repoCode, repoName, location: generalLocation, extra: repoCode });
         else {
           // eslint-disable-next-line eqeqeq
-          if (tQerror != 'TypeError: repoFileContent is null') details += ` error=${tQerror}`;
-          addNoticePartial({ priority: 996, message: "Unable to load file", details, bookID, C, V, filename: thisPath, location: `${generalLocation} ${thisPath}`, extra: repoCode });
+          if (tQerror != 'TypeError: repoFileContent is null') details += ` error = ${tQerror} `;
+          addNoticePartial({ priority: 996, message: "Unable to load file", details, bookID, C, V, filename: thisPath, location: `${generalLocation} ${thisPath} `, extra: repoCode });
         }
       }
       if (tqFileContent) {
         // We use the generalLocation here (does not include repo name)
         //  so that we can adjust the returned strings ourselves
         // NOTE: We pass thisPath here coz the actual filename by itself is useless (so many '01.md')
-        await ourCheckTQFileContents(repoCode, bookID, C, V, thisPath, tqFileContent, generalLocation, checkingOptions); // Adds the notices to checkBookPackageResult
+        await ourCheckFileContents(repoCode, bookID, C, V, thisPath, tqFileContent, generalLocation, checkingOptions); // Adds the notices to checkBookPackageResult
         checkedFileCount += 1;
         checkedFilenameExtensions.add('md');
-        // addSuccessMessage(`Checked ${repoCode.toUpperCase()} file: ${thisPath}`);
+        // addSuccessMessage(`Checked ${ repoCode.toUpperCase() } file: ${ thisPath }`);
       }
     }
     addSuccessMessage(`Checked ${checkedFileCount.toLocaleString()} ${repoCode.toUpperCase()} file${checkedFileCount === 1 ? '' : 's'}`);
@@ -696,7 +698,7 @@ async function checkTQMarkdownBook(username, languageCode, repoCode, repoName, b
   ctqResult.checkedFilenames = checkedFilenames;
   ctqResult.checkedFilenameExtensions = [...checkedFilenameExtensions]; // convert Set to Array
   ctqResult.checkedFilesizes = totalCheckedSize;
-  // debugLog(`  checkTQMarkdownBook returning ${JSON.stringify(ctqResult)}`);
+  // debugLog(`  checkMarkdownBook returning ${ JSON.stringify(ctqResult) }`);
   return ctqResult;
 }
-// end of checkTQMarkdownBook function
+// end of checkMarkdownBook function

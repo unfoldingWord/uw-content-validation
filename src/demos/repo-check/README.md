@@ -53,13 +53,17 @@ import RepoCheck from './RepoCheck';
   // The location field appears in check messages to help the user locate the issue
   location="as specified in repo-check/README.md"
 
+  // Normally all books/files are checked for the repo
+  // NOTE: Setting these for repos not containing Bible books makes no difference
+  skipOTBooks='false' // 'true' or 'false'
+  skipNTBooks='false' // 'true' or 'false'
+
   // Normally links in files are downloaded to check that they really exist
-  // disableAllLinkFetchingFlag='false' // 'true' or 'false'
   disableAllLinkFetchingFlag='false' // 'true' or 'false'
   // The next group are only relevant if the above is 'false'
   // They control whether the linked articles themselves are also checked or not
-  disableLinkedTAArticlesCheckFlag='false' // 'true' or 'false'
-  disableLinkedTWArticlesCheckFlag='false' // 'true' or 'false'
+  disableLinkedTAArticlesCheckFlag='true' // 'true' or 'false'
+  disableLinkedTWArticlesCheckFlag='true' // 'true' or 'false'
   disableLexiconLinkFetchingFlag='true' // 'true' or 'false' -- there's many thousands of these!
   disableLinkedLexiconEntriesCheckFlag='true' // 'true' or 'false' -- lexicon entries still have many inconsistencies
 
@@ -71,7 +75,7 @@ import RepoCheck from './RepoCheck';
   // —those fields are not necessary (or normal) here
   //maximumSimilarMessages='4' // Default is 3 (0 means don’t suppress any)
   // excerptLength='25' // Default is 20 characters
-  // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
+  cutoffPriorityLevel='90' // Default is to detect all errors/warnings
   // sortBy='AsFound' // Default is 'ByPriority'; also have 'AsFound' and 'ByRepo' (not relevant here)
   showDisabledNoticesFlag='false' // Display known specific non-issues: 'true' or 'false'
 />

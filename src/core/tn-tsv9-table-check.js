@@ -6,7 +6,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { debugLog, parameterAssert } from './utilities';
 
 
-const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.4.2';
+const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.4.3';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -48,6 +48,22 @@ export async function checkTN_TSV9Table(languageCode, repoCode, bookID, filename
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
+    const cutoffPriorityLevel = checkingOptions?.cutoffPriorityLevel ? checkingOptions?.cutoffPriorityLevel : 0;
+
+    let excerptLength;
+    try {
+        excerptLength = checkingOptions?.excerptLength;
+    } catch (ttcError) { }
+    if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
+        excerptLength = DEFAULT_EXCERPT_LENGTH;
+        // debugLog(`Using default excerptLength=${excerptLength}`);
+    }
+    // else
+    // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
+    // const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    // const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+    // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
+
     const ttResult = { successList: [], noticeList: [] };
 
     /**
@@ -85,25 +101,12 @@ export async function checkTN_TSV9Table(languageCode, repoCode, bookID, filename
         if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkTN_TSV9Table ${incompleteNoticeObject.debugChain}`;
         // NOTE: We only add the repoCode here because this function is called directly by tC Create
         //          and notice disabling currently depends on knowing the repoCode
-        if (incompleteNoticeObject.repoCode) debugLog(`checkTN_TSV9Table.addNoticePartial already had repoCode=${incompleteNoticeObject.repoCode} (will be lost)`);
+        if (incompleteNoticeObject.repoCode && incompleteNoticeObject.repoCode !== 'TN') debugLog(`checkTN_TSV9Table.addNoticePartial already had repoCode=${incompleteNoticeObject.repoCode} (will be lost)`);
         ttResult.noticeList.push({ ...incompleteNoticeObject, bookID, filename, repoCode: 'TN' });
     }
 
 
-    let excerptLength;
-    try {
-        excerptLength = checkingOptions?.excerptLength;
-    } catch (ttcError) { }
-    if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
-        excerptLength = DEFAULT_EXCERPT_LENGTH;
-        // debugLog(`Using default excerptLength=${excerptLength}`);
-    }
-    // else
-    // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
-    // const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
-    // const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
-    // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
-
+    // Main code for checkTN_TSV9Table
     let lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook = 0;
     try {
@@ -264,11 +267,10 @@ export async function checkTN_TSV9Table(languageCode, repoCode, bookID, filename
         ttResult.noticeList = removeDisabledNotices(ttResult.noticeList);
     }
 
-    if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 20)
-        && checkingOptions?.disableAllLinkFetchingFlag)
+    if (cutoffPriorityLevel < 20 && checkingOptions?.disableAllLinkFetchingFlag)
         addNoticePartial({ priority: 20, message: "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked", location: ourLocation });
 
-    addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}.`);
+    addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}`);
     if (ttResult.noticeList.length)
         addSuccessMessage(`checkTN_TSV9Table v${TN_TABLE_TEXT_VALIDATOR_VERSION_STRING} finished with ${ttResult.noticeList.length ? ttResult.noticeList.length.toLocaleString() : "zero"} notice${ttResult.noticeList.length === 1 ? '' : 's'}`);
     else

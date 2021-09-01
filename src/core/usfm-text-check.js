@@ -14,7 +14,7 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.10.2';
+// const USFM_VALIDATOR_VERSION_STRING = '0.10.3';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for STs
@@ -628,10 +628,6 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         // Now do the general global checks (e.g., for general punctuation)
         ourBasicFileChecks(filename, fileText, fileLocation, checkingOptions);
 
-        // Handled elsewhere
-        // for (const compulsoryMarker of COMPULSORY_MARKERS)
-        //     if (!markerSet.has(compulsoryMarker))
-        //         addNoticePartial({ priority: 819, message: "Missing compulsory USFM line", excerpt: `missing \\${compulsoryMarker}`, location: fileLocation });
         for (const expectedMarker of EXPECTED_MARKERS)
             if (!markerSet.has(expectedMarker)
                 && (!expectedMarker.endsWith('1') || !markerSet.has(expectedMarker.substring(0, expectedMarker.length - 1))))
@@ -861,7 +857,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             const ixFEnd = adjustedRest.indexOf('\\f*');
             if (ixFEnd >= 0) {
                 dataAssert(ixFEnd > nextWIndex, `Expected closure at ${ixFEnd} to be AFTER \\w (${nextFIndex})`);
-                adjustedRest = adjustedRest.substring(0, nextFIndex) + adjustedRest.substring(nextFIndex + 5, ixFEnd) + adjustedRest.substring(ixFEnd + 3, adjustedRest.length);
+                adjustedRest = `${adjustedRest.substring(0, nextFIndex)} ${adjustedRest.substring(nextFIndex + 5, ixFEnd)}${adjustedRest.substring(ixFEnd + 3, adjustedRest.length)}`;
                 // functionLog(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
                 // debugLog(`After removing footnote: '${adjustedRest}'`);
             } else {
@@ -891,7 +887,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             }
             if (adjustedRest !== rest) // Only re-check if line has changed (because original is checked in checkUSFMLineInternals())
                 // Note: false (below) is for allowedLinks flag
-                ourCheckTextField(lineNumber, C, V, 'raw', `from \\${marker}`, adjustedRest, false, lineLocation, checkingOptions);
+                ourCheckTextField(lineNumber, C, V, 'raw USFM line', `from \\${marker}`, adjustedRest, false, lineLocation, checkingOptions);
         }
     }
     // end of checkUSFMLineText function
@@ -1156,7 +1152,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             // functionLog(`checkWAttributes(${zalnContents})…`);
             // The parameter normally starts with a |
             dataAssert(repoCode !== 'UHB' && repoCode !== 'UGNT', `checkZALNAttributes did not expect an original language repo: '${repoCode}'`);
-            let regexResultArray, attributeCounter = 0;
+            let zalnSuggestion, regexResultArray, attributeCounter = 0;
             const attributes = {};
             while ((regexResultArray = ATTRIBUTE_REGEX.exec(zalnContents))) {
                 attributeCounter += 1;
@@ -1219,28 +1215,35 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                     }
                     if (gotCount !== oOccurrenceInt) // Can’t do checks below coz ix is invalid
                         if (gotCount === 0)
-                            addNoticePartial({ priority: 803, message: "Word can’t be found in original text", details: `found NO occurrences of '${oWord}' instead of ${oOccurrence} from ${verseWordList}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                            addNoticePartial({ priority: 803, message: "Word can’t be found in original text", details: `found NO occurrences of '${oWord}' instead of ${oOccurrence} from ${verseWordList.join(', ')}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                         else
-                            addNoticePartial({ priority: 802, message: "Aligned x-occurrence for original word is too high", details: `only found ${gotCount} occurrence${gotCount === 1 ? '' : 's'} of '${oWord}' instead of ${oOccurrence} from ${verseWordList}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                            addNoticePartial({ priority: 802, message: "Aligned x-occurrence for original word is too high", details: `only found ${gotCount} occurrence${gotCount === 1 ? '' : 's'} of '${oWord}' instead of ${oOccurrence} from ${verseWordList.join(', ')}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                     else {
                         const vwolStrongs = verseWordObjectList[ix]?.strongs;
-                        if (vwolStrongs !== oStrong)
+                        if (vwolStrongs !== oStrong) {
                             addNoticePartial({ priority: 805, message: "Aligned x-strong number doesn’t match original", details: `${originalLanguageRepoCode} had '${vwolStrongs}'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                            zalnSuggestion = zalnContents.replace(`"${oStrong}"`, `"${vwolStrongs}"`);
+                        }
                         const vwolLemma = verseWordObjectList[ix]?.lemma;
-                        if (vwolLemma !== oLemma)
+                        if (vwolLemma !== oLemma) {
                             addNoticePartial({ priority: 806, message: "Aligned x-lemma doesn’t match original", details: `${originalLanguageRepoCode} had '${vwolLemma}'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                            zalnSuggestion = zalnContents.replace(`"${oLemma}"`, `"${vwolLemma}"`);
+                        }
                         const vwolMorph = verseWordObjectList[ix]?.morph;
-                        if (vwolMorph !== oMorph)
+                        if (vwolMorph !== oMorph) {
                             addNoticePartial({ priority: 804, message: "Aligned x-morph doesn’t match original", details: `${originalLanguageRepoCode} had '${vwolMorph}'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                            zalnSuggestion = zalnContents.replace(`"${oMorph}"`, `"${vwolMorph}"`);
+                        }
                     }
                 } catch (e) {
-                    debugLog(`checkZALNAttributes1: why couldn’t we get word attributes out of ${JSON.stringify(attributes)}: ${e.message} `);
+                    debugLog(`checkZALNAttributes1: why couldn’t we get word attributes out of ${JSON.stringify(attributes)}: ${e.message}`);
                 }
             }
+            return zalnSuggestion;
         }
         // end of checkZALNAttributes function
 
-        let regexResultArray1;
+        let suggestion, regexResultArray1;
         while ((regexResultArray1 = W_REGEX.exec(adjustedRest))) {
             // debugLog(`Got ${ repoCode } \\w Regex in ${ C }: ${ V } line: '${JSON.stringify(regexResultArray1)}`);
             await checkWAttributes(regexResultArray1[1]); // The only call of this function
@@ -1266,8 +1269,10 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         while ((regexResultArray1 = ZALN_S_REGEX.exec(adjustedRest))) {
             // debugLog(`Got ${repoCode} \\zaln-s Regex in ${C}:${V} line: '${JSON.stringify(regexResultArray1)}`);
             // The found string normally starts with a |
-            await checkZALNAttributes(regexResultArray1[1]); // The only call of this function
+            const zalnSuggestion = await checkZALNAttributes(regexResultArray1[1]); // The only call of this function
+            if (zalnSuggestion) suggestion = rest.replace(regexResultArray1[1], zalnSuggestion);
         }
+        return suggestion;
     }
     // end of checkUSFMLineAttributes function
 
@@ -1310,7 +1315,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                 const allowedLinks = (marker === 'w' || marker === 'k-s' || marker === 'f' || marker === 'SPECIAL')
                     // (because we don’t know what marker SPECIAL is, so default to "no false alarms")
                     && rest.indexOf('x-tw') >= 0;
-                ourCheckTextField(lineNumber, C, V, 'USFM', `\\${marker}`, rest, allowedLinks, lineLocation, checkingOptions);
+                ourCheckTextField(lineNumber, C, V, 'USFM line', `\\${marker}`, rest, allowedLinks, lineLocation, checkingOptions);
             }
         }
         // end of checkUSFMLineInternals function

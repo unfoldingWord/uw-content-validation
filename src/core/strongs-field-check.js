@@ -9,7 +9,7 @@ import { checkLexiconFileContents } from './lexicon-file-contents-check';
 import { functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 
 
-// const STRONGS_FIELD_VALIDATOR_VERSION_STRING = '0.2.2';
+// const STRONGS_FIELD_VALIDATOR_VERSION_STRING = '0.2.3';
 
 
 /**
@@ -185,8 +185,7 @@ export async function checkStrongsField(languageCode, repoCode, fieldName, field
         if (whichTestament === 'old') {
             while (adjustedFieldText.startsWith('b:') || adjustedFieldText.startsWith('c:') || adjustedFieldText.startsWith('d:') || adjustedFieldText.startsWith('i:') || adjustedFieldText.startsWith('k:') || adjustedFieldText.startsWith('l:') || adjustedFieldText.startsWith('m:') || adjustedFieldText.startsWith('s:'))
                 adjustedFieldText = adjustedFieldText.substring(2); // Delete the prefix bit
-            while (adjustedFieldText.length > 1
-                && (adjustedFieldText.endsWith('a') || adjustedFieldText.endsWith('b') || adjustedFieldText.endsWith('c') || adjustedFieldText.endsWith('d')))
+            while (adjustedFieldText.length > 1 && 'abcde'.indexOf(adjustedFieldText.slice(-1)) !== -1)
                 adjustedFieldText = adjustedFieldText.substring(0, adjustedFieldText.length - 1); // Delete the suffix bit
             if (adjustedFieldText[0] !== 'H') {
                 if (adjustedFieldText !== 'b' && adjustedFieldText !== 'k' && adjustedFieldText !== 'l' && adjustedFieldText !== 'm')

@@ -9,7 +9,7 @@ import { RenderCheckedFilesList, RenderSuccessesErrorsWarnings, RenderSuccessesS
 import { userLog, debugLog, logicAssert } from '../../core/utilities';
 
 
-// const BPS_VALIDATOR_VERSION_STRING = '0.2.12';
+// const BPS_VALIDATOR_VERSION_STRING = '0.2.16';
 
 
 /**
@@ -106,24 +106,26 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
       if (!checkingOptions.disableAllLinkFetchingFlag) {
         repoPreloadList.push('TW');
         repoPreloadList.push('TA');
-        // if (haveOT) repoPreloadList.push('UHAL'); // UHB, ULT, UST, TW all have lexicon links
-        // if (haveNT) repoPreloadList.push('UGL'); // UGNT, ULT, UST, TW all have lexicon links
-        repoPreloadList.push('UHAL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
-        repoPreloadList.push('UGL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
+        if (!checkingOptions.disableLexiconLinkFetchingFlag) {
+          // if (haveOT) repoPreloadList.push('UHAL'); // UHB, ULT, UST, TW all have lexicon links
+          // if (haveNT) repoPreloadList.push('UGL'); // UGNT, ULT, UST, TW all have lexicon links
+          repoPreloadList.push('UHAL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
+          repoPreloadList.push('UGL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
+        }
       }
       if (bookIDList.includes('OBS')) {
-        let obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2']; // for DEFAULT
+        let obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ']; // for DEFAULT
         if (dataSet === 'OLD')
           obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
         else if (dataSet === 'NEW')
           obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2'];
         else if (dataSet === 'BOTH')
-          obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SN', 'OBS-SN2', 'OBS-SQ2'];
+          obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SN2', 'OBS-SQ', 'OBS-SQ2'];
         repoPreloadList.push.apply(repoPreloadList, obsRepoPreloadList);
       }
       // debugLog(`BookPackagesCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)
 
-      setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for book packages check…</p>);
+      setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for check of {bookIDList.length} book package{bookIDList.length === 1 ? '' : 's'}…</p>);
       const successFlag = await preloadReposIfNecessary(username, languageCode, bookIDList, branch, repoPreloadList);
       if (!successFlag)
         console.error(`BookPackagesCheck error: Failed to pre-load all repos`)
@@ -153,7 +155,7 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
       // Or this allows the parameters to be specified as a BookPackagesCheck property
       if (props.maximumSimilarMessages) processOptions.maximumSimilarMessages = ourParseInt(props.maximumSimilarMessages);
       if (props.errorPriorityLevel) processOptions.errorPriorityLevel = ourParseInt(props.errorPriorityLevel);
-      // if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
+      if (props.cutoffPriorityLevel) processOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
       if (props.sortBy) processOptions.sortBy = props.sortBy;
       // if (props.ignorePriorityNumberList) processOptions.ignorePriorityNumberList = props.ignorePriorityNumberList;
       if (props.showDisabledNoticesFlag) processOptions.showDisabledNoticesFlag = props.showDisabledNoticesFlag.toLowerCase() === 'true';

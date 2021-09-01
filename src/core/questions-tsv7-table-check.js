@@ -6,7 +6,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert } from './utilities';
 
 
-const QUESTIONS_TABLE_VALIDATOR_VERSION_STRING = '0.2.3';
+const QUESTIONS_TABLE_VALIDATOR_VERSION_STRING = '0.2.4';
 
 const NUM_EXPECTED_QUESTIONS_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_QUESTIONS_HEADING_LINE = 'Reference\tID\tTags\tQuote\tOccurrence\tQuestion\tResponse';
@@ -46,6 +46,22 @@ export async function checkQuestionsTSV7Table(languageCode, repoCode, bookID, fi
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
+    const cutoffPriorityLevel = checkingOptions?.cutoffPriorityLevel ? checkingOptions?.cutoffPriorityLevel : 0;
+
+    let excerptLength;
+    try {
+        excerptLength = checkingOptions?.excerptLength;
+    } catch (ttcError) { }
+    if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
+        excerptLength = DEFAULT_EXCERPT_LENGTH;
+        // debugLog(`Using default excerptLength=${excerptLength}`);
+    }
+    // else
+    // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
+    // const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    // const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+    // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
+
     const carResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
@@ -78,20 +94,7 @@ export async function checkQuestionsTSV7Table(languageCode, repoCode, bookID, fi
     }
 
 
-    let excerptLength;
-    try {
-        excerptLength = checkingOptions?.excerptLength;
-    } catch (ttcError) { }
-    if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
-        excerptLength = DEFAULT_EXCERPT_LENGTH;
-        // debugLog(`Using default excerptLength=${excerptLength}`);
-    }
-    // else
-    // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
-    // const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
-    // const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
-    // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
-
+    // Main code for checkQuestionsTSV7Table
     let lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook = 0;
     if (bookID === 'OBS')
@@ -216,6 +219,21 @@ export async function checkQuestionsTSV7Table(languageCode, repoCode, bookID, fi
                             //   addNoticePartial({priority:556, `Skipped verses with '${V}' verse number after '${lastV}'${withString}`);
                         }
                     }
+                    else if (/^[-\d]+$/.test(V)) { // all digits and hyphen, i.e., a verse range
+                        const [V1, V2] = V.split('-')
+                        let intV1 = Number(V1), intV2 = Number(V2);
+                        if (intV1 >= intV2) // in the wrong order
+                            addNoticePartial({ priority: 732, C, V, message: "Verse range in wrong order", details: `detected ${intV1} before ${intV2}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
+                        if (intV2 > numVersesThisChapter)
+                            addNoticePartial({ priority: 734, C, V, message: "Invalid large verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
+                        if (/^\d+$/.test(lastV)) {
+                            let lastintV = Number(lastV);
+                            if (C === lastC && intV1 < lastintV)
+                                addNoticePartial({ priority: 733, C, V, message: "Receding verse number", details: `'${V}' after '${lastV} for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
+                            // else if (intV > lastintV + 1)
+                            //   addNoticePartial({priority:556, `Skipped verses with '${V}' verse number after '${lastV}'${withString}`);
+                        }
+                    }
                     else
                         addNoticePartial({ priority: 738, C, V, message: "Bad verse number", rowID, lineNumber: n + 1, location: ourLocation });
 
@@ -253,11 +271,10 @@ export async function checkQuestionsTSV7Table(languageCode, repoCode, bookID, fi
         carResult.noticeList = removeDisabledNotices(carResult.noticeList);
     }
 
-    if ((!checkingOptions?.cutoffPriorityLevel || checkingOptions?.cutoffPriorityLevel < 20)
-        && checkingOptions?.disableAllLinkFetchingFlag)
+    if (cutoffPriorityLevel < 20 && checkingOptions?.disableAllLinkFetchingFlag)
         addNoticePartial({ priority: 20, message: "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked", location: ourLocation });
 
-    addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}.`);
+    addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}`);
     if (carResult.noticeList.length)
         addSuccessMessage(`checkQuestionsTSV7Table v${QUESTIONS_TABLE_VALIDATOR_VERSION_STRING} finished with ${carResult.noticeList.length ? carResult.noticeList.length.toLocaleString() : "zero"} notice${carResult.noticeList.length === 1 ? '' : 's'}`);
     else
