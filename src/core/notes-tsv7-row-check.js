@@ -11,7 +11,7 @@ import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const NOTES_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.14';
+// const NOTES_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.15';
 
 const NUM_EXPECTED_NOTES_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_NOTES_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tNote';
@@ -85,17 +85,12 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
 
     let drResult = { noticeList: [] };
 
+    /**
+     *
+     * @description - adds a new notice entry, adding bookID,C,V to the given fields
+     * @param {*} incompleteNoticeObject
+     */
     function addNoticePartial(incompleteNoticeObject) {
-        /**
-        * @description - adds a new notice entry, adding bookID,C,V to the given fields
-        * @param {number} priority - notice priority from 1 (lowest) to 999 (highest)
-        * @param {string} message - the text of the notice message
-        * @param {string} rowID - 4-character row ID field
-        * @param {number} lineNumber - one-based line number
-        * @param {number} characterIndex - zero-based index of where the issue occurs in the line
-        * @param {string} excerpt - short excerpt from the line centred on the problem (if available)
-        * @param {string} location - description of where the issue is located
-        */
         // functionLog(`checkNotesTSV7DataRow addNoticePartial(priority=${noticeObject.priority}) ${noticeObject.message}, ${noticeObject.characterIndex}, ${noticeObject.excerpt}, ${noticeObject.location}`);
         //parameterAssert(noticeObject.priority !== undefined, "checkNotesTSV7DataRow addNoticePartial: 'priority' parameter should be defined");
         //parameterAssert(typeof noticeObject.priority === 'number', `checkNotesTSV7DataRow addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
@@ -288,8 +283,8 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
     }
     // else
     // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
-    // const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
-    // const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+    const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
     // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
     const lowercaseBookID = bookID.toLowerCase();
@@ -313,6 +308,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
         // let withString = ` with '${rowID}'${inString}`;
         // let CV_withString = ` ${C}:${V}${withString}`;
         // let atString = ` at ${B} ${C}:${V} (${rowID})${inString}`;
+        let characterIndex;
 
         // Check the fields one-by-one
         const [C, V] = reference.split(':');
@@ -396,6 +392,10 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
         }
 
         if (tags.length) {
+            if ((characterIndex = tags.indexOf('\\n')) !== -1) {
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + tags.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < tags.length ? '…' : '');
+                addNoticePartial({ priority: 971, message: "Unexpected line break in single-line field", fieldName: 'GLQuote', rowID, characterIndex: characterIndex, excerpt, location: ourRowLocation });
+            }
             let tagsList = tags.split('; ');
             for (const thisTag of tagsList) {
                 // No tags are yet defined for TNs or SNs
@@ -407,7 +407,10 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
         if (supportReference.length) { // need to check TN2 against TA
             if (isWhitespace(supportReference))
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'SupportReference', rowID, location: ourRowLocation });
-            else if (repoCode === 'TN2') { // More than just whitespace
+            else if ((characterIndex = supportReference.indexOf('\\n')) !== -1) {
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + supportReference.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < supportReference.length ? '…' : '');
+                addNoticePartial({ priority: 971, message: "Unexpected line break in single-line field", fieldName: 'GLQuote', rowID, characterIndex, excerpt, location: ourRowLocation });
+            } else if (repoCode === 'TN2') { // More than just whitespace
                 const supportReferenceArticlePart = supportReference.replace('rc://*/ta/man/translate/', '');
                 // debugLog("supportReferenceArticlePart", supportReferenceArticlePart);
                 if (!supportReferenceArticlePart.startsWith('figs-')
@@ -422,7 +425,6 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
                 if (note.indexOf(supportReference) < 0)
                     addNoticePartial({ priority: 787, message: "Link to TA should also be in Note", fieldName: 'SupportReference', excerpt: supportReference, rowID, location: ourRowLocation });
             }
-            let characterIndex;
             if ((characterIndex = supportReference.indexOf('\u200B') !== -1)) {
                 const charCount = countOccurrencesInString(supportReference, '\u200B');
                 addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, fieldName: 'SupportReference', characterIndex, rowID, location: ourRowLocation });
@@ -433,6 +435,10 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
         //     addNoticePartial({ priority: 877, message: "Missing SupportReference field", fieldName: 'SupportReference', rowID, location: ourRowLocation });
 
         if (quote.length) { // need to check UTN against UHB and UGNT
+            if ((characterIndex = quote.indexOf('\\n')) !== -1) {
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + quote.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < quote.length ? '…' : '');
+                addNoticePartial({ priority: 971, message: "Unexpected line break in single-line field", fieldName: 'GLQuote', rowID, characterIndex: characterIndex, excerpt, location: ourRowLocation });
+            }
             QSuggestion = ourCheckTextField(rowID, 'Quote', quote, false, ourRowLocation, checkingOptions);
             if (occurrence.length)
                 await ourCheckTNOriginalLanguageQuoteAndOccurrence(rowID, 'Quote', quote, occurrence, ourRowLocation, checkingOptions);
@@ -444,6 +450,10 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
                 addNoticePartial({ priority: 919, message: "Missing Quote field", fieldName: 'Quote', rowID, location: ourRowLocation });
 
         if (occurrence.length) { // This should usually be a digit
+            if ((characterIndex = occurrence.indexOf('\\n')) !== -1) {
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + occurrence.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < occurrence.length ? '…' : '');
+                addNoticePartial({ priority: 971, message: "Unexpected line break in single-line field", fieldName: 'GLQuote', rowID, characterIndex: characterIndex, excerpt, location: ourRowLocation });
+            }
             if (occurrence === '0') { // zero means that it doesn’t occur
                 if (quote.length) {
                     addNoticePartial({ priority: 751, message: "Invalid zero occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, excerpt: occurrence, location: ourRowLocation });

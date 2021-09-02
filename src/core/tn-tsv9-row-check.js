@@ -10,7 +10,7 @@ import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.7.2';
+// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.7.3';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -290,8 +290,8 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
     }
     // else
     // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
-    // const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
-    // const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+    const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
     // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
     const lowercaseBookID = bookID.toLowerCase();
@@ -308,6 +308,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
     let RIDSuggestion, SRSuggestion, GLQSuggestion, OQSuggestion, OSuggestion, ONSuggestion;
     if (fields.length === NUM_EXPECTED_TN_TSV_FIELDS) {
         const [B, C, V, rowID, supportReference, quote, occurrence, GLQuote, occurrenceNote] = fields;
+        let characterIndex;
 
         // Check the fields one-by-one
         if (B.length) {
@@ -395,7 +396,10 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
         if (supportReference.length) { // need to check TN against TA
             if (isWhitespace(supportReference))
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'SupportReference', rowID, location: ourRowLocation });
-            else { // More than just whitespace
+            else if ((characterIndex = supportReference.indexOf('<br>')) !== -1) {
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + supportReference.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < supportReference.length ? '…' : '');
+                addNoticePartial({ priority: 971, message: "Unexpected line break in single-line field", fieldName: 'SupportReference', rowID, characterIndex, excerpt, location: ourRowLocation });
+            } else { // More than just whitespace
                 if (!supportReference.startsWith('figs-')
                     && !supportReference.startsWith('grammar-')
                     && !supportReference.startsWith('translate-')
@@ -418,13 +422,17 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
         //     addNoticePartial({ priority: 877, message: "Missing SupportReference field", fieldName: 'SupportReference', rowID, location: ourRowLocation });
 
         if (quote.length) { // need to check UTN against UHB and UGNT
-            OQSuggestion = ourCheckTextField(rowID, 'OrigQuote', quote, false, ourRowLocation, checkingOptions);
-            if (occurrence.length)
-                await ourCheckTNOriginalLanguageQuoteAndOccurrence(rowID, 'OrigQuote', quote, occurrence, ourRowLocation, checkingOptions);
-            else
-                addNoticePartial({ priority: 750, message: "Missing occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, location: ourRowLocation });
-        }
-        else // TODO: Find more details about when these fields are really compulsory (and when they're not, e.g., for 'intro') ???
+            if ((characterIndex = quote.indexOf('<br>')) !== -1) {
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + quote.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < quote.length ? '…' : '');
+                addNoticePartial({ priority: 971, message: "Unexpected line break in single-line field", fieldName: 'OrigQuote', rowID, characterIndex, excerpt, location: ourRowLocation });
+            } else {
+                OQSuggestion = ourCheckTextField(rowID, 'OrigQuote', quote, false, ourRowLocation, checkingOptions);
+                if (occurrence.length)
+                    await ourCheckTNOriginalLanguageQuoteAndOccurrence(rowID, 'OrigQuote', quote, occurrence, ourRowLocation, checkingOptions);
+                else
+                    addNoticePartial({ priority: 750, message: "Missing occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, location: ourRowLocation });
+            }
+        } else // TODO: Find more details about when these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             if (V !== 'intro' && occurrence !== '0')
                 addNoticePartial({ priority: 919, message: "Missing OrigQuote field", fieldName: 'OrigQuote', rowID, location: ourRowLocation });
 
@@ -449,7 +457,10 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
         }
 
         if (GLQuote.length) { // TODO: need to check UTN against ULT
-            if (GLQuote.indexOf('\u200B') >= 0) {
+            if ((characterIndex = GLQuote.indexOf('<br>')) !== -1) {
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + GLQuote.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < GLQuote.length ? '…' : '');
+                addNoticePartial({ priority: 971, message: "Unexpected line break in single-line field", fieldName: 'GLQuote', rowID, characterIndex, excerpt, location: ourRowLocation });
+            } else if (GLQuote.indexOf('\u200B') >= 0) {
                 const charCount = countOccurrencesInString(GLQuote, '\u200B');
                 addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, fieldName: 'GLQuote', rowID, location: ourRowLocation });
             }
