@@ -926,6 +926,37 @@ Object {
 }
 `;
 
+exports[`checkNotesTSV7DataRow() -  should find invalid newline in single-line field 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": 15,
+      "excerpt": "…imperative\\\\n",
+      "fieldName": "GLQuote",
+      "location": " from test line",
+      "message": "Unexpected line break in single-line field",
+      "priority": 971,
+      "rowID": "v7qw",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "details": "SR='figs-imperative\\\\n'",
+      "excerpt": "figs-imperative",
+      "fieldName": "OccurrenceNote",
+      "location": " from test line",
+      "message": "Should have a SupportReference when Note has a TA link",
+      "priority": 789,
+      "rowID": "v7qw",
+    },
+  ],
+}
+`;
+
 exports[`checkNotesTSV7DataRow() -  should find language code instead of asterisk 1`] = `
 Object {
   "noticeList": Array [

@@ -28,7 +28,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
 
      Returns a result object containing a successList and a noticeList
      */
-    // functionLog(`checkMarkdownText(${languageCode}, ${repoCode}, ${textOrFileName}, ${markdownText.length}, ${givenLocation}, …)…`);
+    // functionLog(`checkMarkdownText(${languageCode}, ${repoCode}, ${textOrFileName}, (${markdownText.length}), ${givenLocation}, …)…`);
     //parameterAssert(languageCode !== undefined, "checkMarkdownText: 'languageCode' parameter should be defined");
     //parameterAssert(typeof languageCode === 'string', `checkMarkdownText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
     //parameterAssert(languageCode !== 'unfoldingWord', `checkMarkdownText: 'languageCode' ${languageCode} parameter should be not be 'unfoldingWord'`);
@@ -91,7 +91,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
             // debugLog(`checkMarkdownText addNoticePartial added rC=${repoCode} to ${JSON.stringify(incompleteNoticeObject)}`);
             incompleteNoticeObject.repoCode = repoCode;
         }
-        else debugLog(`checkMarkdownText addNoticePartial DIDN'T ADD rC=${repoCode} to ${JSON.stringify(incompleteNoticeObject)}`);
+        // else if (repoCode !== incompleteNoticeObject.repoCode) debugLog(`checkMarkdownText addNoticePartial DIDN'T ADD rC=${repoCode} to ${JSON.stringify(incompleteNoticeObject)}`);
 
         result.noticeList.push(incompleteNoticeObject); // Used to have filename: textName, but that isn’t always a filename !!!
     }

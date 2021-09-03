@@ -1222,6 +1222,51 @@ Object {
 }
 `;
 
+exports[`checkTN_TSV9DataRow() -  should find invalid newline in single-line field 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": 15,
+      "excerpt": "…imperative<br>",
+      "fieldName": "SupportReference",
+      "location": " from test line",
+      "message": "Unexpected line break in single-line field",
+      "priority": 971,
+      "rowID": "v7qw",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "characterIndex": 90,
+      "excerpt": "…e: [[rc://*/ta/man/t…",
+      "fieldName": "OccurrenceNote",
+      "lineNumber": 1,
+      "location": " from test line",
+      "message": "tC cannot yet process '*' language code",
+      "priority": 950,
+      "repoCode": "TN",
+      "rowID": "v7qw",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "GEN",
+      "details": "SR='figs-imperative<br>'",
+      "excerpt": "figs-imperative",
+      "fieldName": "OccurrenceNote",
+      "location": " from test line",
+      "message": "Should have a SupportReference when OccurrenceNote has a TA link",
+      "priority": 789,
+      "rowID": "v7qw",
+    },
+  ],
+}
+`;
+
 exports[`checkTN_TSV9DataRow() -  should find language code instead of asterisk -- disabled 1`] = `
 Object {
   "noticeList": Array [],
