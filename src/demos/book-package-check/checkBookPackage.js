@@ -115,7 +115,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     // Updates the global list of notices
     //parameterAssert(repoCode !== undefined, "cBP ourCheckBPFileContents: 'repoCode' parameter should be defined");
     //parameterAssert(typeof repoCode === 'string', `cBP ourCheckBPFileContents: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
-    //parameterAssert(REPO_CODES_LIST.includes(repoCode), `cBP ourCheckBPFileContents: 'repoCode' parameter should not be '${repoCode}'`);
+    parameterAssert(REPO_CODES_LIST.includes(repoCode), `cBP ourCheckBPFileContents: 'repoCode' parameter should not be '${repoCode}'`);
     //parameterAssert(repoName !== undefined, "cBP ourCheckBPFileContents: 'repoName' parameter should be defined");
     //parameterAssert(typeof repoName === 'string', `cBP ourCheckBPFileContents: 'repoName' parameter should be a string not a '${typeof repoName}': ${repoName}`);
     //parameterAssert(repoBranch !== undefined, "cBP ourCheckBPFileContents: 'repoBranch' parameter should be defined");

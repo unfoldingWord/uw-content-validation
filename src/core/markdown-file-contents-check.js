@@ -27,7 +27,7 @@ export async function checkMarkdownFileContents(languageCode, repoCode, markdown
 
    Returns a result object containing a successList and a noticeList
    */
-  // functionLog(`checkMarkdownFileContents(lC=${languageCode}, rC=${repoCode}, fn=${markdownFilename}, ${markdownText.length}, ${givenLocation})…`);
+  // functionLog(`checkMarkdownFileContents(lC=${languageCode}, rC=${repoCode}, fn=${markdownFilename}, (${markdownText.length}), ${givenLocation})…`);
   //parameterAssert(languageCode !== undefined, "checkMarkdownFileContents: 'languageCode' parameter should be defined");
   //parameterAssert(typeof languageCode === 'string', `checkMarkdownFileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
   // TODO: Check if/why we have both forms below
@@ -82,8 +82,14 @@ export async function checkMarkdownFileContents(languageCode, repoCode, markdown
     //parameterAssert(noticeObject.location !== undefined, "cMdT addNoticePartial: 'location' parameter should be defined");
     //parameterAssert(typeof noticeObject.location === 'string', `cMdT addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
 
+    if (incompleteNoticeObject.repoCode === undefined) {
+      // debugLog(`checkMarkdownFileContents addNoticePartial added rC=${repoCode} to ${JSON.stringify(incompleteNoticeObject)}`);
+      incompleteNoticeObject.repoCode = repoCode;
+    }
+    // else if (repoCode !== incompleteNoticeObject.repoCode) debugLog(`checkMarkdownFileContents addNoticePartial DIDN'T ADD rC=${repoCode} to ${JSON.stringify(incompleteNoticeObject)}`);
+
     if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkMarkdownFileContents ${incompleteNoticeObject.debugChain}`; // Prepend our name
-    mfccResult.noticeList.push({ ...incompleteNoticeObject, repoCode, filename: markdownFilename });
+    mfccResult.noticeList.push({ ...incompleteNoticeObject, filename: markdownFilename });
   }
   // end of addNoticePartial function
 

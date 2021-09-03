@@ -9,7 +9,7 @@ import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
 import { debugLog, parameterAssert } from './utilities';
 
 
-// const QUESTIONS_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.2.7';
+// const QUESTIONS_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.2.8';
 
 const NUM_EXPECTED_QUESTIONS_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_QUESTIONS_HEADING_LINE = 'Reference\tID\tTags\tQuote\tOccurrence\tQuestion\tResponse';
@@ -256,8 +256,8 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
     }
     // else
     // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
-    // const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
-    // const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
+    const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
     // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
     const lowercaseBookID = bookID.toLowerCase();
@@ -278,6 +278,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
     let RIDSuggestion, OQSuggestion, OSuggestion, QuSuggestion, RSuggestion;
     if (fields.length === NUM_EXPECTED_QUESTIONS_TSV_FIELDS) {
         const [reference, rowID, tags, quote, occurrence, question, response] = fields;
+        let characterIndex;
         // let withString = ` with '${rowID}'${inString}`;
         // let CV_withString = ` ${C}:${V}${withString}`;
         // let atString = ` at ${B} ${C}:${V} (${rowID})${inString}`;
@@ -391,6 +392,10 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
         }
 
         if (tags.length) {
+            if ((characterIndex = tags.indexOf('\\n')) !== -1) {
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + tags.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < tags.length ? '…' : '');
+                addNoticePartial({ priority: 971, message: "Unexpected line break in single-line field", fieldName: 'GLQuote', rowID, characterIndex: characterIndex, excerpt, location: ourRowLocation });
+            }
             let tagsList = tags.split('; ');
             for (const thisTag of tagsList) {
                 // No tags are yet defined for TQs or SQs
@@ -400,6 +405,10 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
         }
 
         if (quote.length) { // need to check UTN against UHB and UGNT
+            if ((characterIndex = quote.indexOf('\\n')) !== -1) {
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + quote.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < quote.length ? '…' : '');
+                addNoticePartial({ priority: 971, message: "Unexpected line break in single-line field", fieldName: 'GLQuote', rowID, characterIndex: characterIndex, excerpt, location: ourRowLocation });
+            }
             OQSuggestion = ourCheckTextField(rowID, 'Quote', quote, false, ourRowLocation, checkingOptions);
             if (occurrence.length)
                 await ourCheckQOriginalLanguageQuote(rowID, 'Quote', quote, occurrence, ourRowLocation, checkingOptions);
@@ -411,6 +420,10 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
                 addNoticePartial({ priority: repoCode === 'SQ' ? 919 : 119, message: "Missing Quote field", fieldName: 'Quote', rowID, location: ourRowLocation });
 
         if (occurrence.length) { // This should usually be a digit
+            if ((characterIndex = occurrence.indexOf('\\n')) !== -1) {
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + occurrence.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < occurrence.length ? '…' : '');
+                addNoticePartial({ priority: 971, message: "Unexpected line break in single-line field", fieldName: 'GLQuote', rowID, characterIndex: characterIndex, excerpt, location: ourRowLocation });
+            }
             if (occurrence === '0') { // zero means that it doesn’t occur
                 if (quote.length) {
                     addNoticePartial({ priority: 751, message: "Invalid zero occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, excerpt: occurrence, location: ourRowLocation });

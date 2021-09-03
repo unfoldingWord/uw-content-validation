@@ -9,7 +9,7 @@ import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const TWL_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.1.9';
+// const TWL_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.1.10';
 
 const NUM_EXPECTED_TWL_TSV_FIELDS = 6; // so expects 5 tabs per line
 const EXPECTED_TWL_HEADING_LINE = 'Reference\tID\tTags\tOrigWords\tOccurrence\tTWLink';
@@ -265,6 +265,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
     let RIDSuggestion, QSuggestion, OSuggestion, LSuggestion;
     if (fields.length === NUM_EXPECTED_TWL_TSV_FIELDS) {
         const [reference, rowID, tags, origWords, occurrence, TWLink] = fields;
+        let characterIndex;
         // let withString = ` with '${rowID}'${inString}`;
         // let CV_withString = ` ${C}:${V}${withString}`;
         // let atString = ` at ${B} ${C}:${V} (${rowID})${inString}`;
@@ -351,6 +352,10 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         }
 
         if (tags.length) {
+            if ((characterIndex = tags.indexOf('\\n')) !== -1) {
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + tags.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < tags.length ? '…' : '');
+                addNoticePartial({ priority: 971, message: "Unexpected line break in single-line field", fieldName: 'GLQuote', rowID, characterIndex: characterIndex, excerpt, location: ourRowLocation });
+            }
             let tagsList = tags.split('; ');
             for (const thisTag of tagsList) {
                 if (thisTag !== 'keyterm' && thisTag !== 'name')
@@ -359,6 +364,10 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         }
 
         if (origWords.length) { // need to check UTN against UHB and UGNT
+            if ((characterIndex = origWords.indexOf('\\n')) !== -1) {
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + origWords.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < origWords.length ? '…' : '');
+                addNoticePartial({ priority: 971, message: "Unexpected line break in single-line field", fieldName: 'GLQuote', rowID, characterIndex: characterIndex, excerpt, location: ourRowLocation });
+            }
             QSuggestion = ourCheckTextField(rowID, 'OrigWords', origWords, false, ourRowLocation, checkingOptions);
             if (occurrence.length)
                 await ourCheckTNOriginalLanguageQuoteAndOccurrence(rowID, 'OrigWords', origWords, occurrence, ourRowLocation, checkingOptions);
@@ -370,6 +379,10 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
                 addNoticePartial({ priority: 919, message: "Missing OrigWords field", fieldName: 'OrigWords', rowID, location: ourRowLocation });
 
         if (occurrence.length) { // This should usually be a digit
+            if ((characterIndex = occurrence.indexOf('\\n')) !== -1) {
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + occurrence.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < occurrence.length ? '…' : '');
+                addNoticePartial({ priority: 971, message: "Unexpected line break in single-line field", fieldName: 'GLQuote', rowID, characterIndex: characterIndex, excerpt, location: ourRowLocation });
+            }
             if (occurrence === '0') { // zero means that it doesn’t occur
                 if (origWords.length) {
                     addNoticePartial({ priority: 751, message: "Invalid zero occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, excerpt: occurrence, location: ourRowLocation });
@@ -391,6 +404,10 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
 
         if (TWLink.length) {
             // debugLog(`checkTWL_TSV6DataRow checking ${bookID} ${rowID} TWLink='${TWLink}'`);
+            if ((characterIndex = TWLink.indexOf('\\n')) !== -1) {
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + TWLink.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < TWLink.length ? '…' : '');
+                addNoticePartial({ priority: 971, message: "Unexpected line break in single-line field", fieldName: 'GLQuote', rowID, characterIndex: characterIndex, excerpt, location: ourRowLocation });
+            }
             if (TWLink.indexOf('\u200B') >= 0) {
                 const charCount = countOccurrencesInString(TWLink, '\u200B');
                 addNoticePartial({ priority: 374, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, fieldName: 'TWLink', rowID, location: ourRowLocation });
@@ -404,7 +421,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
                     const bits = TWLink.substring('rc://*/tw/dict/bible/'.length).split('/'); // Get the last two bits of the link path
                     // debugLog(`checkTWL_TSV6DataRow checking ${bookID} ${rowID} TWLink='${TWLink}' got bits=${JSON.stringify(bits)}`);
                     if (bits[0] !== 'kt' && bits[0] !== 'names' && bits[0] !== 'other') {
-                        const characterIndex = 'rc://*/tw/dict/bible/'.length;
+                        characterIndex = 'rc://*/tw/dict/bible/'.length;
                         const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + TWLink.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < TWLink.length ? '…' : '')
                         addNoticePartial({ priority: 797, message: "Field doesn’t contain proper TW link", details: `should be 'kt', 'names', or 'other'`, fieldName: 'TWLink', rowID, characterIndex, excerpt, location: ourRowLocation });
                     } else { // all good so far
