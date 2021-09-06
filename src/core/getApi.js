@@ -9,7 +9,7 @@ import { CATALOG_NEXT_ONLY_REPO_CODES_LIST } from './defaults';
 import { functionLog, debugLog, userLog, parameterAssert, logicAssert } from './utilities';
 
 
-// const GETAPI_VERSION_STRING = '0.10.0';
+// const GETAPI_VERSION_STRING = '0.10.1';
 
 const MAX_INDIVIDUAL_FILES_TO_DOWNLOAD = 5; // More than this and it downloads the zipfile for the entire repo
 
@@ -367,8 +367,20 @@ export async function preloadReposIfNecessary(givenUsername, givenLanguageCode, 
     // debugLog(`preloadReposIfNecessary: preloading zip file for ${repoName}…`);
     const zipFetchSucceeded = await cachedGetRepositoryZipFile({ username: adjustedUsername, repository: repoName, branchOrRelease: adjustedBranchOrRelease });
     if (!zipFetchSucceeded) {
-      console.error(`preloadReposIfNecessary() misfetched zip file for ${thisRepoCode} (${adjustedRepoCode}) repo with ${zipFetchSucceeded}`);
+      console.error(`preloadReposIfNecessary: misfetched zip file for ${adjustedUsername} ${thisRepoCode} (${adjustedRepoCode}) repo with ${zipFetchSucceeded}`);
       success = false;
+    }
+    if (!success && (thisRepoCode === 'UHB' || thisRepoCode === 'UGNT') && adjustedUsername !== 'Door43-Catalog') { // Have a second try
+      userLog(`preloadReposIfNecessary: trying username='Door43-Catalog' instead of '${adjustedUsername}' for ${repoName}…`);
+      adjustedUsername = 'Door43-Catalog';
+      const zipFetchSucceeded = await cachedGetRepositoryZipFile({ username: adjustedUsername, repository: repoName, branchOrRelease: adjustedBranchOrRelease });
+      if (zipFetchSucceeded)
+        success = true;
+      else {
+        console.error(`preloadReposIfNecessary: misfetched zip file for ${adjustedUsername} ${thisRepoCode} (${adjustedRepoCode}) repo with ${zipFetchSucceeded}`);
+        success = false;
+      }
+
     }
     if (thisRepoCode === 'OBS') {
       debugLog(`preloadReposIfNecessary: preloading OBS zipped pictures file from ${OBS_PICTURE_ZIP_URI}…`);

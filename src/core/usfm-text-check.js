@@ -90,7 +90,7 @@ const CANONICAL_TEXT_MARKERS = ['d'].concat(PARAGRAPH_MARKERS).concat(CHARACTER_
 const ANY_TEXT_MARKERS = [].concat(INTRO_LINE_START_MARKERS).concat(HEADING_TYPE_MARKERS)
     .concat(PARAGRAPH_MARKERS).concat(CHARACTER_MARKERS)
     .concat(MAIN_NOTE_MARKERS).concat(SPECIAL_MARKERS);
-const MATCHED_CHARACTER_FORMATTING_PAIRS = [
+const MATCHED_CHARACTER_FORMATTING_LINE_PAIRS = [ // These ones would normally be on the same line in uW USFM files
     ['add', 'add*'], ['addpn', 'addpn*'],
     ['bd', 'bd*'], ['bdit', 'bdit*'],
     ['bk', 'bk*'],
@@ -124,6 +124,42 @@ const MATCHED_CHARACTER_FORMATTING_PAIRS = [
 
     ['f', 'f*'], ['x', 'x*'],
 ];
+const MATCHED_CHARACTER_FORMATTING_FILE_PAIRS =  // These ones would not necessarily be on the same line
+    MATCHED_CHARACTER_FORMATTING_LINE_PAIRS;
+/*    [
+        ['add', 'add*'], ['addpn', 'addpn*'],
+        ['bd', 'bd*'], ['bdit', 'bdit*'],
+        ['bk', 'bk*'],
+        ['dc', 'dc*'],
+        ['em', 'em*'],
+        ['fig', 'fig*'],
+        ['ior', 'ior*'],
+        ['iqt', 'iqt*'],
+        ['it', 'it*'],
+        ['k', 'k*'],
+        ['litl', 'litl*'],
+        ['lik', 'lik*'],
+        ['liv', 'liv*'], ['liv1', 'liv1*'], ['liv2', 'liv2*'], ['liv3', 'liv3*'], ['liv4', 'liv4*'],
+        ['nd', 'nd*'], ['ndx', 'ndx*'],
+        ['no', 'no*'],
+        ['ord', 'ord*'],
+        ['pn', 'pn*'], ['png', 'png*'],
+        ['pro', 'pro*'],
+        ['qt', 'qt*'],
+        ['rb', 'rb*'],
+        ['sc', 'sc*'],
+        ['sig', 'sig*'],
+        ['sls', 'sls*'],
+        ['sup', 'sup*'],
+        ['tl', 'tl*'],
+        ['w', 'w*'], // Note that we also have \+w and \+w* in our files
+        ['wa', 'wa*'], ['wg', 'wg*'], ['wh', 'wh*'],
+        ['wj', 'wj*'],
+
+        ['ca', 'ca*'], ['va', 'va*'],
+
+        ['f', 'f*'], ['x', 'x*'],
+    ];*/
 
 const W_REGEX = new RegExp('\\\\\\+?w ([^\\\\]+?)\\\\\\+?w\\*', 'g'); // \w ...\w* or \+w ...\+w*
 // Note: lemma field can be blank in UHB
@@ -592,19 +628,6 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
     // end of ourBasicFileChecks function
 
 
-    // function checkUSFMFileCharacterFields(filename, fileText, fileLocation) {
-    //     // Check matched pairs
-    //     for (const punctSet of MATCHED_CHARACTER_FORMATTING_PAIRS) {
-    //         const opener = punctSet[0], closer = punctSet[1];
-    //         const lCount = countOccurrencesInString(fileText, opener);
-    //         const rCount = countOccurrencesInString(fileText, closer);
-    //         if (lCount !== rCount)
-    //             addNoticePartial({ priority: 873, message: `Mismatched ${opener}${closer} fields`, excerpt: `(left=${lCount.toLocaleString()}, right=${rCount.toLocaleString()})`, location: fileLocation });
-    //     }
-    // }
-    // // end of checkUSFMFileCharacterFields function
-
-
     /**
      *
      * @param {string} filename
@@ -622,9 +645,17 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         //              i.e., newLines can conceivably appear WITHIN a footnote for example.
         // functionLog(`checkUSFMFileContents(${filename}, ${fileText.length}, ${markerSet}, ${fileLocation}, ${JSON.stringify(checkingOptions)})…`);
 
-        // NOTE: No, better to do this for each line!!!
-        // Check markers like \add ... \add*, \f .. \f*
-        // checkUSFMFileCharacterFields(filename, fileText, fileLocation)
+        // NOTE: Better to do this for each line for most uW USFM files
+        // Check matched pairs of markers like \add ... \add*, \f .. \f*
+        if (!['en', 'hbo', 'el-x-koine'].includes(languageCode))
+            for (const punctSet of MATCHED_CHARACTER_FORMATTING_FILE_PAIRS) {
+                const opener = `\\${punctSet[0]} `, closer = `\\${punctSet[1]}`;
+                const lCount = countOccurrencesInString(fileText, opener);
+                const rCount = countOccurrencesInString(fileText, closer);
+                if (lCount !== rCount)
+                    addNoticePartial({ priority: 873, message: `Mismatched ${opener}${closer} fields`, details: `(opening=${lCount.toLocaleString()}, closing=${rCount.toLocaleString()})`, location: fileLocation });
+            }
+
 
         // Now do the general global checks (e.g., for general punctuation)
         ourBasicFileChecks(filename, fileText, fileLocation, checkingOptions);
@@ -1308,13 +1339,14 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                     addNoticePartial({ priority: languageCode === 'en' || languageCode === 'fr' ? 490 : 190, message: "Expected header field to contain a mixed-case string", fieldName: `\\${marker}`, excerpt: rest, lineNumber, C, V, location: lineLocation });
 
             // Check matched pairs that should all be inside a single line
-            for (const punctSet of MATCHED_CHARACTER_FORMATTING_PAIRS) {
-                const opener = `\\${punctSet[0]} `, closer = `\\${punctSet[1]}`;
-                const lCount = countOccurrencesInString(rest, opener) + (marker === punctSet[0] ? 1 : 0);
-                const rCount = countOccurrencesInString(rest, closer);
-                if (lCount !== rCount)
-                    addNoticePartial({ priority: 973, message: `Mismatched ${opener}${closer} fields`, details: `(opening=${lCount.toLocaleString()}, closing=${rCount.toLocaleString()})`, excerpt: rest, lineNumber, C, V, location: lineLocation });
-            }
+            if (['en', 'hbo', 'el-x-koine'].includes(languageCode))
+                for (const punctSet of MATCHED_CHARACTER_FORMATTING_LINE_PAIRS) {
+                    const opener = `\\${punctSet[0]} `, closer = `\\${punctSet[1]}`;
+                    const lCount = countOccurrencesInString(rest, opener) + (marker === punctSet[0] ? 1 : 0);
+                    const rCount = countOccurrencesInString(rest, closer);
+                    if (lCount !== rCount)
+                        addNoticePartial({ priority: 973, message: `Mismatched ${opener}${closer} fields`, details: `(opening=${lCount.toLocaleString()}, closing=${rCount.toLocaleString()})`, excerpt: rest, lineNumber, C, V, location: lineLocation });
+                }
 
             if (rest) {
                 checkUSFMLineText(lineNumber, C, V, marker, rest, lineLocation, checkingOptions);

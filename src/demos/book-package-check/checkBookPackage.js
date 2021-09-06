@@ -9,7 +9,7 @@ import { checkRepo } from '../repo-check/checkRepo';
 import { userLog, functionLog, debugLog, parameterAssert, logicAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.9.3';
+// const BP_VALIDATOR_VERSION_STRING = '0.9.4';
 
 const STANDARD_MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -365,6 +365,11 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     const repoLocation = ` in ${thisRepoCode}${generalLocation}`;
     if (adjustedRepoCode.startsWith('OBS-'))
       adjustedRepoCode = adjustedRepoCode.substring(4); // Remove the 'OBS-' from the beginning
+    if ((adjustedRepoCode === 'UHB' || adjustedRepoCode === 'UGNT')
+      && adjustedUsername !== 'Door43-Catalog' && adjustedUsername !== 'unfoldingWord') {
+      userLog(`checkBookPackage: switching ${adjustedRepoCode} username from '${adjustedUsername}' to 'Door43-Catalog'`);
+      adjustedUsername = 'Door43-Catalog';
+    }
     // if (bookID === 'OBS' && dataSet === 'OLD' && repoCode !== 'OBS' && repoCode !== 'TWL' && repoName === `${languageCode}_${adjustedRepoCode.toLowerCase()}`)
     //   repoName = `${languageCode}_obs-${adjustedRepoCode.toLowerCase()}`;
     userLog(`checkBookPackage: check ${languageCode} ${bookID} in ${thisRepoCode} (${adjustedRepoCode}) from ${adjustedUsername} ${repoName} ${adjustedBranch}…`);
