@@ -1,6 +1,6 @@
 import React from 'react';
 // eslint-disable-next-line no-unused-vars
-import { REPO_CODES_LIST } from '../../core/defaults';
+import { REPO_CODES_LIST, CATALOG_NEXT_ONLY_REPO_CODES_LIST } from '../../core/defaults';
 import * as books from '../../core/books/books';
 import { formRepoName, repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetBookFilenameFromManifest, checkManifestText, checkMarkdownFileContents } from '../../core';
 import { checkFileContents } from '../file-check/checkFileContents';
@@ -9,7 +9,7 @@ import { checkRepo } from '../repo-check/checkRepo';
 import { userLog, functionLog, debugLog, parameterAssert, logicAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.9.2';
+// const BP_VALIDATOR_VERSION_STRING = '0.9.3';
 
 const STANDARD_MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -109,7 +109,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   }
 
 
-  async function ourCheckBPFileContents(repoCode, repoName, repoBranch, cfFilename, fileContent, fileLocation, checkingOptions) {
+  async function ourCheckBPFileContents(username, languageCode, repoCode, repoName, repoBranch, cfFilename, fileContent, fileLocation, checkingOptions) {
     // functionLog(`checkBookPackage ourCheckBPFileContents(rC='${repoCode}', rN='${repoName}', rBr='${repoBranch}', fn='${cfFilename}', ${fileContent.length}, ${fileLocation}, ${JSON.stringify(checkingOptions)})…`);
 
     // Updates the global list of notices
@@ -170,7 +170,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
    * @param {string} manifestLocation
    * @param {Object} checkingOptions
    */
-  async function ourCheckManifestFile(repoCode, repoName, repoBranch, manifestLocation, checkingOptions) {
+  async function ourCheckManifestFile(username, repoCode, repoName, repoBranch, manifestLocation, checkingOptions) {
     // Updates the global list of notices
     // functionLog(`checkBookPackage ourCheckManifestFile(${repoCode}, ${repoName}, ${repoBranch}, ${manifestLocation}, ${JSON.stringify(checkingOptions)})…`);
     //parameterAssert(repoCode !== undefined, "cBP ourCheckManifestFile: 'repoCode' parameter should be defined");
@@ -233,7 +233,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
      * @param {string} markdownLocation
      * @param {Object} checkingOptions
      */
-  async function ourCheckMarkdownFile(repoCode, repoName, repoBranch, filename, markdownLocation, checkingOptions) {
+  async function ourCheckMarkdownFile(username, repoCode, repoName, repoBranch, filename, markdownLocation, checkingOptions) {
     // Updates the global list of notices
     // functionLog(`checkBookPackage ourCheckMarkdownFile(${repoCode}, ${repoName}, ${filename}, ${repoBranch}, ${markdownLocation}, ${JSON.stringify(checkingOptions)})…`);
     //parameterAssert(repoCode !== undefined, "cBP ourCheckMarkdownFile: 'repoCode' parameter should be defined");
@@ -344,11 +344,17 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
   // Main loop for checkBookPackage()
   const checkedManifestDetails = [];
   let numCheckedRepos = 0;
-  for (const repoCode of repoCodeList) {
-    // debugLog(`checkBookPackage for ${bookID} got repoCode=${repoCode} abortFlag=${abortFlag} from ${repoCodeList}`);
-    // if (repoCode !== 'UGNT') continue;
+  for (const thisRepoCode of repoCodeList) {
+    // debugLog(`checkBookPackage for ${bookID} got repoCode=${thisRepoCode} abortFlag=${abortFlag} from ${repoCodeList}`);
+    // if (thisRepoCode !== 'UGNT') continue;
     if (abortFlag) break;
-    let adjustedRepoCode = repoCode, adjustedBranch = originalBranch;
+
+    let adjustedUsername = username, adjustedRepoCode = thisRepoCode, adjustedBranch = originalBranch;
+    if (username === 'Door43-Catalog' && CATALOG_NEXT_ONLY_REPO_CODES_LIST.includes(thisRepoCode) && languageCode === 'en') {
+      userLog(`checkBookPackage: switching ${thisRepoCode} username from 'Door43-Catalog' to 'unfoldingWord'`);
+      adjustedUsername = 'unfoldingWord';
+      // TODO: Ideally we should also make it get the latest release (rather than master)
+    }
     if (adjustedRepoCode.endsWith('2')) {
       adjustedRepoCode = adjustedRepoCode.substring(0, adjustedRepoCode.length - 1); // Remove the '2' from the end
       adjustedBranch = 'newFormat';
@@ -356,28 +362,28 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     } else // doesn’t end with 2
       generalLocation = generalLocation.replace(adjustedBranch, originalBranch);
     let repoName = formRepoName(languageCode, adjustedRepoCode);
-    const repoLocation = ` in ${repoCode}${generalLocation}`;
+    const repoLocation = ` in ${thisRepoCode}${generalLocation}`;
     if (adjustedRepoCode.startsWith('OBS-'))
       adjustedRepoCode = adjustedRepoCode.substring(4); // Remove the 'OBS-' from the beginning
     // if (bookID === 'OBS' && dataSet === 'OLD' && repoCode !== 'OBS' && repoCode !== 'TWL' && repoName === `${languageCode}_${adjustedRepoCode.toLowerCase()}`)
     //   repoName = `${languageCode}_obs-${adjustedRepoCode.toLowerCase()}`;
-    userLog(`checkBookPackage: check ${languageCode} ${bookID} in ${repoCode} (${adjustedRepoCode}) from ${username} ${repoName} ${adjustedBranch}…`);
+    userLog(`checkBookPackage: check ${languageCode} ${bookID} in ${thisRepoCode} (${adjustedRepoCode}) from ${adjustedUsername} ${repoName} ${adjustedBranch}…`);
 
     // Update our "waiting" message
-    setResultValue(<p style={{ color: 'magenta' }}>Checking <i>{username}</i> {languageCode} <b>{bookID}</b> book package in <b>{repoCode}</b> (checked <b>{numCheckedRepos}</b>/{repoCodeList.length} repos)…</p>);
+    setResultValue(<p style={{ color: 'magenta' }}>Checking <i>{adjustedUsername}</i> {languageCode} <b>{bookID}</b> book package in <b>{thisRepoCode}</b> (checked <b>{numCheckedRepos}</b>/{repoCodeList.length} repos)…</p>);
 
     let filename;
-    if (repoCode === 'UHB' || repoCode === 'UGNT' || repoCode === 'LT' || repoCode === 'ST')
+    if (thisRepoCode === 'UHB' || thisRepoCode === 'UGNT' || thisRepoCode === 'LT' || thisRepoCode === 'ST')
       // TODO: Might we need specific releases/tags for some of these (e.g., from the TN2 manifest)???
       // TODO: Do we need to hard-code where to find the UHB and UGNT???
       filename = `${bookNumberAndName}.usfm`;
-    else if (adjustedRepoCode === 'TWL' || repoCode.endsWith('TN2') || repoCode.endsWith('TQ2'))
+    else if (adjustedRepoCode === 'TWL' || thisRepoCode.endsWith('TN2') || thisRepoCode.endsWith('TQ2'))
       filename = `${adjustedRepoCode.toLowerCase()}_${bookID}.tsv`
     else if ((adjustedRepoCode === 'SN' || adjustedRepoCode === 'SQ') && bookID !== 'OBS')
       filename = `${adjustedRepoCode.toLowerCase()}_${bookID}.tsv`
-    else if (adjustedRepoCode === 'TN' && !repoCode.startsWith('OBS-')) {
+    else if (adjustedRepoCode === 'TN' && !thisRepoCode.startsWith('OBS-')) {
       try {
-        filename = await cachedGetBookFilenameFromManifest({ username, repository: repoName, branch: originalBranch, bookID: bookID.toLowerCase() });
+        filename = await cachedGetBookFilenameFromManifest({ username: adjustedUsername, repository: repoName, branch: originalBranch, bookID: bookID.toLowerCase() });
         logicAssert(filename.startsWith(`${languageCode}_`), `Expected TN filename '${filename}' to start with the language code '${languageCode}_'`);
       } catch (e) {
         // console.error(`cachedGetBookFilenameFromManifest failed with: ${e}`);
@@ -386,9 +392,9 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       logicAssert(filename.endsWith('.tsv'), `Expected TN filename '${filename}' to end with '.tsv'`);
     }
 
-    if (repoCode === 'OBS') {
+    if (thisRepoCode === 'OBS') {
       // debugLog("Calling OBS checkRepo()…");
-      const crResultObject = await checkRepo(username, `${languageCode}_obs`, originalBranch, generalLocation, setResultValue, newCheckingOptions); // Adds the notices to checkBookPackageResult
+      const crResultObject = await checkRepo(adjustedUsername, `${languageCode}_obs`, originalBranch, generalLocation, setResultValue, newCheckingOptions); // Adds the notices to checkBookPackageResult
       // debugLog(`checkRepo('OBS') returned ${crResultObject.successList.length} success message(s) and ${crResultObject.noticeList.length} notice(s)`);
       // debugLog(`crResultObject keys: ${JSON.stringify(Object.keys(crResultObject))}`);
       // debugLog(`crResultObject checkedRepoNames: ${crResultObject.checkedRepoNames}`);
@@ -401,11 +407,11 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         totalCheckedSize += crResultObject.totalCheckedSize;
         checkedRepoNames.add(repoName);
       }
-      addSuccessMessage(`Checked ${languageCode} OBS repo from ${username}`);
-    } else if (repoCode === 'TQ'
-      || repoCode === 'OBS-TN' || repoCode === 'OBS-TQ' || repoCode === 'OBS-SN' || repoCode === 'OBS-SQ') { // These are still markdown for now
+      addSuccessMessage(`Checked ${languageCode} OBS repo from ${adjustedUsername}`);
+    } else if (thisRepoCode === 'TQ'
+      || thisRepoCode === 'OBS-TN' || thisRepoCode === 'OBS-TQ' || thisRepoCode === 'OBS-SN' || thisRepoCode === 'OBS-SQ') { // These are still markdown for now
       // This is the old markdown resource with hundreds/thousands of files
-      const tqResultObject = await checkMarkdownBook(username, languageCode, repoCode, repoName, originalBranch, bookID, newCheckingOptions);
+      const tqResultObject = await checkMarkdownBook(adjustedUsername, languageCode, thisRepoCode, repoName, originalBranch, bookID, newCheckingOptions);
       checkBookPackageResult.successList = checkBookPackageResult.successList.concat(tqResultObject.successList);
       checkBookPackageResult.noticeList = checkBookPackageResult.noticeList.concat(tqResultObject.noticeList);
       if (tqResultObject.checkedFileCount > 0) {
@@ -416,36 +422,37 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         checkedRepoNames.add(repoName);
       }
     } else { // For repos other than OBS and TQ, we only have one file to check
-      logicAssert(filename?.length, `filename should be set by now for un=${username} rC=${repoCode} aRC=${adjustedRepoCode} rN=${repoName} aBr=${adjustedBranch}`);
+      logicAssert(filename?.length, `filename should be set by now for un=${adjustedUsername} rC=${thisRepoCode} aRC=${adjustedRepoCode} rN=${repoName} aBr=${adjustedBranch}`);
       let repoFileContent;
       try {
-        // debugLog(`checkBookPackage about to fetch fileContent for ${username}, ${repoName}, ${adjustedBranch}, ${filename}`);
-        repoFileContent = await getFile_({ username, repository: repoName, path: filename, branch: adjustedBranch });
-        // debugLog(`checkBookPackage fetched fileContent for ${username}, ${repoName}, ${adjustedBranch}, ${filename}, ${typeof repoFileContent}, ${repoFileContent.length}`);
+        // debugLog(`checkBookPackage about to fetch fileContent for ${adjustedUsername}, ${repoName}, ${adjustedBranch}, ${filename}`);
+        repoFileContent = await getFile_({ username: adjustedUsername, repository: repoName, path: filename, branch: adjustedBranch });
+        // debugLog(`checkBookPackage fetched fileContent for ${adjustedUsername}, ${repoName}, ${adjustedBranch}, ${filename}, ${typeof repoFileContent}, ${repoFileContent.length}`);
         checkedFilenames.push(filename);
         totalCheckedSize += repoFileContent.length;
         checkedRepoNames.add(repoName);
       } catch (cBPgfError) { // NOTE: The error can depend on whether the zipped repo is cached or not
-        // debugLog(`checkBookPackage(${username}, ${languageCode}, ${bookID}, (fn), ${JSON.stringify(checkingOptions)}) failed to load ${repoName}, ${filename}, ${adjustedBranch}, ${cBPgfError}`);
+        // debugLog(`checkBookPackage(${adjustedUsername}, ${languageCode}, ${bookID}, (fn), ${JSON.stringify(checkingOptions)}) failed to load ${repoName}, ${filename}, ${adjustedBranch}, ${cBPgfError}`);
         // debugLog(`cBPgfError=${cBPgfError} or ${JSON.stringify(cBPgfError)} or2 ${cBPgfError === 'TypeError: repoFileContent is null'} or3 ${cBPgfError.message === 'TypeError: repoFileContent is null'} or4 ${cBPgfError.message === 'TypeError: repoFileContent is null'}`);
-        let details = `username=${username}`;
+        let details = `username=${adjustedUsername}`;
         // Next line has special code to handle book-package-check.test.js tests [so we don’t call repositoryExistsOnDoor43()]
-        if ((cBPgfError + '').startsWith('Tests could not find') || ! await repositoryExistsOnDoor43({ username, repository: repoName }))
-          checkBookPackageResult.noticeList.push({ priority: 997, message: "Repository doesn’t exist", details, username, repoCode, repoName, location: repoLocation, extra: repoCode });
+        if ((cBPgfError + '').startsWith('Tests could not find') || ! await repositoryExistsOnDoor43({ username: adjustedUsername, repository: repoName }))
+          checkBookPackageResult.noticeList.push({ priority: 997, message: "Repository doesn’t exist", details, username: adjustedUsername, repoCode: thisRepoCode, repoName, location: repoLocation, extra: thisRepoCode });
         else {
           // eslint-disable-next-line eqeqeq
           if (cBPgfError != 'TypeError: repoFileContent is null') details += ` error=${cBPgfError}`;
-          addNoticePartial({ priority: repoCode === 'SN' || repoCode === 'SQ' ? 196 : 996, message: "Unable to load book package file", details, repoCode, repoName, filename, location: repoLocation, extra: repoCode });
+          addNoticePartial({ priority: thisRepoCode === 'SN' || thisRepoCode === 'SQ' ? 196 : 996, message: "Unable to load book package file", details, repoCode: thisRepoCode, repoName, filename, location: repoLocation, extra: thisRepoCode });
         }
       }
       if (repoFileContent) {
-        // We use the generalLocation here (does not include repo name)
-        //  so that we can adjust the returned strings ourselves
-        await ourCheckBPFileContents(repoCode, repoName, adjustedBranch, filename, repoFileContent, generalLocation, newCheckingOptions); // Adds the notices to checkBookPackageResult
+        // debugLog(`checkBookPackage about to check ${repoFileContent.length} bytes for ${adjustedUsername}, ${repoName}, ${adjustedBranch}, ${filename}`);
+        // We use the generalLocation here (does not include repo name) so that we can adjust the returned strings ourselves
+        await ourCheckBPFileContents(adjustedUsername, languageCode, thisRepoCode, repoName, adjustedBranch, filename, repoFileContent, generalLocation, newCheckingOptions); // Adds the notices to checkBookPackageResult
         checkedFileCount += 1;
         checkedFilenameExtensions.add(filename.split('.').pop());
-        addSuccessMessage(`Checked ${repoCode.toUpperCase()} file: ${filename}`);
+        addSuccessMessage(`Checked ${adjustedUsername !== username ? `${adjustedUsername} ` : ''}${thisRepoCode.toUpperCase()} file: ${filename}`);
       }
+      else debugLog(`checkBookPackage: No fileContent to check for ${adjustedUsername}, ${repoName}, ${adjustedBranch}, ${filename}`);
     } // end of repo that's not OBS or TQ
 
     if (!newCheckingOptions?.disableAllLinkFetchingFlag) {
@@ -456,44 +463,44 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         // debugLog(`Maybe checking MANIFEST etc. for ${repoName}`);
 
         if (newCheckingOptions?.checkManifestFlag) {
-          // debugLog(`checkBookPackage: checking MANIFEST for ${repoName}`);
-          const numCheckedCharacters = await ourCheckManifestFile(repoCode, repoName, adjustedBranch, generalLocation, newCheckingOptions);
+          // debugLog(`checkBookPackage: checking MANIFEST for ${adjustedUsername} ${repoName}`);
+          const numCheckedCharacters = await ourCheckManifestFile(adjustedUsername, thisRepoCode, repoName, adjustedBranch, generalLocation, newCheckingOptions);
           if (numCheckedCharacters > 0) {
             checkedFileCount += 1;
             checkedFilenames.push('manifest.yaml');
             checkedFilenameExtensions.add('yaml');
             totalCheckedSize += numCheckedCharacters;
-            addSuccessMessage(`Checked ${repoName} manifest file`);
+            addSuccessMessage(`Checked ${adjustedUsername !== username ? `${adjustedUsername} ` : ''}${repoName} manifest file`);
           }
         }
         // else debugLog(`NOT checking MANIFEST for ${repoName}`);
 
         // We can also check the README file for each repo if requested
         if (newCheckingOptions?.checkReadmeFlag) {
-          // debugLog(`checkBookPackage: checking README for ${repoName}`);
+          // debugLog(`checkBookPackage: checking README for ${adjustedUsername} ${repoName}`);
           const filename = 'README.md';
-          const numCheckedCharacters = await ourCheckMarkdownFile(repoCode, repoName, adjustedBranch, filename, generalLocation, newCheckingOptions);
+          const numCheckedCharacters = await ourCheckMarkdownFile(adjustedUsername, thisRepoCode, repoName, adjustedBranch, filename, generalLocation, newCheckingOptions);
           if (numCheckedCharacters > 0) {
             checkedFileCount += 1;
             checkedFilenames.push(filename);
             checkedFilenameExtensions.add('md');
             totalCheckedSize += numCheckedCharacters;
-            addSuccessMessage(`Checked ${repoName} README file`);
+            addSuccessMessage(`Checked ${adjustedUsername !== username ? `${adjustedUsername} ` : ''}${repoName} README file`);
           }
         }
         // else debugLog(`NOT checking README for ${repoName}`);
 
         // We can also check the LICENSE file for each repo if requested
         if (newCheckingOptions?.checkLicenseFlag) {
-          // debugLog(`Checking LICENSE for ${repoName}`);
+          // debugLog(`Checking LICENSE for ${adjustedUsername} ${repoName}`);
           const filename = 'LICENSE.md';
-          const numCheckedCharacters = await ourCheckMarkdownFile(repoCode, repoName, adjustedBranch, filename, generalLocation, newCheckingOptions);
+          const numCheckedCharacters = await ourCheckMarkdownFile(adjustedUsername, thisRepoCode, repoName, adjustedBranch, filename, generalLocation, newCheckingOptions);
           if (numCheckedCharacters > 0) {
             checkedFileCount += 1;
             checkedFilenames.push(filename);
             checkedFilenameExtensions.add('md');
             totalCheckedSize += numCheckedCharacters;
-            addSuccessMessage(`Checked ${repoName} LICENSE file`);
+            addSuccessMessage(`Checked ${adjustedUsername !== username ? `${adjustedUsername} ` : ''}${repoName} LICENSE file`);
           }
         }
         // else debugLog(`NOT checking LICENSE for ${repoName}`);

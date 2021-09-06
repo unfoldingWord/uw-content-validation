@@ -12,3 +12,12 @@ export const REPO_CODES_LIST = [
   'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2',
   'OBS-SN', 'OBS-SN2', 'OBS-SQ', 'OBS-SQ2',
 ];
+
+export const CATALOG_NEXT_ONLY_REPO_CODES_LIST = [
+  'TWL',
+  'TN2', 'TQ2',
+  'SN', 'SQ',
+  'OBS-TWL',
+  'OBS-TN2', 'OBS-TQ2',
+  'OBS-SN2', 'OBS-SQ2',
+];

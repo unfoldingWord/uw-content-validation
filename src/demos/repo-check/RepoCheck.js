@@ -112,7 +112,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
                     repoPreloadList.push('OBS');
             }
             setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoCode} and {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for {repoName} repo check…</p>);
-            logicAssert(repoPreloadList.indexOf(repoCode) === -1, `Shouldn't have our repoCode ${repoCode} in repoPreloadList: ${repoPreloadList}`);
+            logicAssert(!repoPreloadList.includes(repoCode), `Shouldn't have our repoCode ${repoCode} in repoPreloadList: ${repoPreloadList}`);
             const successFlag = await preloadReposIfNecessary(username, languageCode, [], branchOrRelease, [repoCode])
                 && await preloadReposIfNecessary(username, languageCode, [], 'master', repoPreloadList);
             if (!successFlag)

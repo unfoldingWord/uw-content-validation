@@ -229,6 +229,9 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
             // debugLog(`Got verse text2: '${verseText}'`);
 
             // Remove footnotes
+            // NOTE: If there's two footnotes and no closer on the first one, this replace will swallow intervening text
+            //  but this isn't the place to worry about bad USFM in the original languages
+            //  so the quote match will possibly fail as a consequential error
             verseText = verseText.replace(/\\f (.+?)\\f\*/g, '');
             // Remove alternative versifications
             verseText = verseText.replace(/\\va (.+?)\\va\*/g, '');
@@ -710,7 +713,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
                 if ((quoteIndex = getWordsIndex(verseWordsList, quoteBits[bitIndex].split(' '), bitIndex === 0 ? occurrence : 1, quoteIndex + 1)) < 0) { // this is what we really want to catch
                     // If the quote has multiple parts, create a description of the current part
                     const excerpt = `${partDescription ? '(' + partDescription + ' quote portion)' : ''} '${quoteBits[bitIndex]}'`;
-                    if (verseWordsList.indexOf(quoteBits[bitIndex]) >= 0) {
+                    if (verseWordsList.includes(quoteBits[bitIndex])) {
                         logicAssert(bitIndex > 0, "This shouldn’t happen for bitIndex of zero!");
                         // debugLog(`914, Unable to find '${fieldText}' ${numQuoteBits === 1 ? '' : `'${quoteBits[bitIndex]}' `}${partDescription ? '(' + partDescription + ') ' : ''}in '${verseText}'`);
                         addNoticePartial({ priority: 914, message: "Unable to find original language quote portion in the right place in the verse text", details: `verse text ◗${verseText}◖`, excerpt, location: ourLocation });
