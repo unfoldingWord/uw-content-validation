@@ -9,7 +9,7 @@ import { checkLexiconFileContents } from './lexicon-file-contents-check';
 import { functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 
 
-// const STRONGS_FIELD_VALIDATOR_VERSION_STRING = '0.2.3';
+// const STRONGS_FIELD_VALIDATOR_VERSION_STRING = '0.2.6';
 
 
 /**
@@ -185,10 +185,10 @@ export async function checkStrongsField(languageCode, repoCode, fieldName, field
         if (whichTestament === 'old') {
             while (adjustedFieldText.startsWith('b:') || adjustedFieldText.startsWith('c:') || adjustedFieldText.startsWith('d:') || adjustedFieldText.startsWith('i:') || adjustedFieldText.startsWith('k:') || adjustedFieldText.startsWith('l:') || adjustedFieldText.startsWith('m:') || adjustedFieldText.startsWith('s:'))
                 adjustedFieldText = adjustedFieldText.substring(2); // Delete the prefix bit
-            while (adjustedFieldText.length > 1 && 'abcde'.indexOf(adjustedFieldText.slice(-1)) !== -1)
+            while (adjustedFieldText.length > 1 && 'abcdef'.indexOf(adjustedFieldText.slice(-1)) !== -1)
                 adjustedFieldText = adjustedFieldText.substring(0, adjustedFieldText.length - 1); // Delete the suffix bit
             if (adjustedFieldText[0] !== 'H') {
-                if (adjustedFieldText !== 'b' && adjustedFieldText !== 'k' && adjustedFieldText !== 'l' && adjustedFieldText !== 'm')
+                if (adjustedFieldText !== 'b' && adjustedFieldText !== 'i' && adjustedFieldText !== 'k' && adjustedFieldText !== 'k' && adjustedFieldText !== 'l' && adjustedFieldText !== 'm')
                     // Suppress the message in those cases, but still pretend it’s an error so don’t try to fetch lexicon article below
                     addNoticePartial({ priority: 841, message: "Strongs field must start with 'H'", location: ourLocation });
                 haveError = true; // May not be an actual error -- see comment just above
@@ -210,11 +210,14 @@ export async function checkStrongsField(languageCode, repoCode, fieldName, field
     if (!haveError) {
         if (checkingOptions?.disableAllLinkFetchingFlag !== true && checkingOptions?.disableLexiconLinkFetchingFlag !== true) {
             // debugLog(`checkStrongsField wants to fetch lexicon entry for ${fieldText}`);
+            let adjustedLanguageCode = languageCode;
+            if (languageCode ==='hbo' || languageCode==='el-x-koine') // lexicons are in GLs
+                adjustedLanguageCode = 'en'
             let username;
             try {
                 username = checkingOptions?.originalLanguageRepoUsername;
             } catch (qcoError) { }
-            if (!username) username = languageCode === 'en' ? 'unfoldingWord' : 'Door43-Catalog'; // ??? !!!
+            if (!username) username = adjustedLanguageCode === 'en' ? 'unfoldingWord' : 'Door43-Catalog'; // ??? !!!
             let repoBranch;
             try {
                 repoBranch = checkingOptions?.originalLanguageRepoBranch;
@@ -223,18 +226,18 @@ export async function checkStrongsField(languageCode, repoCode, fieldName, field
             let lexiconRepoCode, repoName, lexiconFilename, lexiconPathname;
             if (adjustedFieldText[0] === 'H') {
                 lexiconRepoCode = 'UHAL';
-                repoName = `${languageCode}_uhal`;
+                repoName = `${adjustedLanguageCode}_uhal`;
                 lexiconFilename = `${adjustedFieldText}.md`;
                 lexiconPathname = `content/${lexiconFilename}`;
             } else if (fieldText[0] === 'G') {
                 lexiconRepoCode = 'UGL';
-                repoName = `${languageCode}_ugl`;
+                repoName = `${adjustedLanguageCode}_ugl`;
                 lexiconFilename = '01.md';
                 lexiconPathname = `content/${fieldText}/${lexiconFilename}`;
             }
             const fetchLexiconFileParameters = { username, repository: repoName, path: lexiconPathname, branch: repoBranch };
             if (!await alreadyChecked(fetchLexiconFileParameters)) {
-                // debugLog(`checkStrongsField(${languageCode}, ${repoCode}, ${fieldName}, ${fieldText}, ${bookID} ${C}:${V}, ${givenLocation}, ${JSON.stringify(checkingOptions)} got ${JSON.stringify(fetchLexiconFileParameters)}`);
+                // debugLog(`checkStrongsField(${adjustedLanguageCode}, ${repoCode}, ${fieldName}, ${fieldText}, ${bookID} ${C}:${V}, ${givenLocation}, ${JSON.stringify(checkingOptions)} got ${JSON.stringify(fetchLexiconFileParameters)}`);
                 // debugLog(`checkStrongsField wants to check lexicon entry for ${JSON.stringify(fetchLexiconFileParameters)}`);
                 const fetchLinkDescription = `${username} ${repoName} ${repoBranch} ${lexiconPathname}`;
                 const getFile_ = (checkingOptions && checkingOptions?.getFile) ? checkingOptions?.getFile : cachedGetFile;

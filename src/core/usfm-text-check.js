@@ -718,7 +718,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                 debugLog(`checkUSFMLineText: ${bookID} ${C}:${V} line ${lineNumber} got BAD character before dagesh match: ${match.length} ${JSON.stringify(match)}`);
                 const characterIndex = rest.indexOf(match[0][0]);
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-                addNoticePartial({ priority: 863, message: "Unexpected Hebrew character before dagesh", details: `found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+                addNoticePartial({ priority: 863, message: "Unexpected Hebrew character before dagesh or mappiq", details: `found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
             else if ((match = BAD_HEBREW_CANTILLATION_DAGESH_REGEX.exec(rest))) { // it’s null if no matches
                 debugLog(`checkUSFMLineText: ${bookID} ${C}:${V} line ${lineNumber} got BAD cantillation mark character before dagesh match: ${match.length} ${JSON.stringify(match)}`);
