@@ -8,7 +8,7 @@ import { checkRepo } from './checkRepo';
 import { logicAssert, userLog, debugLog } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.3.3';
+// const REPO_VALIDATOR_VERSION_STRING = '0.3.4';
 
 
 function RepoCheck(/*username, languageCode,*/ props) {
@@ -34,6 +34,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
     const checkingOptions = { // Uncomment any of these to test them
         // excerptLength: 25,
         suppressNoticeDisablingFlag: true, // Leave this one as true (otherwise demo checks are less efficient)
+        checkType: 'Repo', // Always leave this one in
     };
     // NOTE: I removed this again as it didn’t really seem to make sense to enable it here
     //          Also, I don’t think the results were getting returned correctly yet

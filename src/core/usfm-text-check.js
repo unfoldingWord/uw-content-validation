@@ -14,18 +14,18 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.10.4';
+// const USFM_VALIDATOR_VERSION_STRING = '0.10.5';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for STs
 
 // See http://ubsicap.github.io/usfm/master/index.html
 // const COMPULSORY_MARKERS = ['id', 'ide']; // These are specifically checked for by the code near the start of mainUSFMCheck()
-const EXPECTED_MARKERS = ['usfm', 'mt1']; // The check also allows for removal of the final '1'
-const EXPECTED_BIBLE_BOOK_MARKERS = ['h', 'toc1', 'toc2', 'toc3'];
-const EXPECTED_PERIPHERAL_BOOK_MARKERS = ['periph'];
+const EXPECTED_MARKERS_LIST = ['usfm', 'mt1']; // The check also allows for removal of the final '1'
+const EXPECTED_BIBLE_BOOK_MARKERS_LIST = ['h', 'toc1', 'toc2', 'toc3'];
+const EXPECTED_PERIPHERAL_BOOK_MARKER_LIST = ['periph'];
 
-const INTRO_LINE_START_MARKERS = ['id', 'usfm', 'ide', 'h',
+const INTRO_LINE_START_MARKER_LIST = ['id', 'usfm', 'ide', 'h',
     'toc1', 'toc2', 'toc3',
     'mt', 'mt1', 'mt2',
     'mte', 'mte1', 'mte2',
@@ -36,8 +36,8 @@ const INTRO_LINE_START_MARKERS = ['id', 'usfm', 'ide', 'h',
     'ili', 'ili1', 'ili2',
     'iot', 'io', 'io1', 'io2',
     'iex', 'imte', 'imte1', 'imte2'];
-const CV_MARKERS = ['c', 'v', 'ca', 'va'];
-const HEADING_TYPE_MARKERS = [ // expected to contain text on the same line
+const CV_MARKERS_LIST = ['c', 'v', 'ca', 'va'];
+const HEADING_TYPE_MARKERS_LIST = [ // expected to contain text on the same line
     's', 's1', 's2', 's3', 's4', 'sr',
     'ms', 'ms1', 'mr',
     'r', 'd', 'rem', 'sp', 'cl',
@@ -45,7 +45,7 @@ const HEADING_TYPE_MARKERS = [ // expected to contain text on the same line
     'pr', 'qa', 'qc', 'qd', 'qr',
     'cls', 'pmo', 'pmc', 'pmr', 'pc',
     'periph'];
-const PARAGRAPH_MARKERS = ['p',
+const PARAGRAPH_MARKERS_LIST = ['p',
     'q', 'q1', 'q2', 'q3', 'q4',
     'qm', 'qm1', 'qm2', 'qm3', 'qm4',
     'm', 'mi',
@@ -56,41 +56,42 @@ const PARAGRAPH_MARKERS = ['p',
     'po', 'pm',
     'ph', 'ph1', 'ph2', 'ph3', 'ph4',
     'tr'];
-const MAIN_NOTE_MARKERS = ['f', 'x'];
-const SPECIAL_MARKERS = ['w', 'zaln-s', 'k-s',
+const MAIN_NOTE_MARKERS_LIST = ['f', 'x'];
+const SPECIAL_MARKERS_LIST = ['w', 'zaln-s', 'k-s', // NOTE that we have \w in TWO places
     'qt-s', 'qt1-s', 'qt2-s',
     'lit'];
-const MILESTONE_MARKERS = ['ts\\*', 'ts-s', 'ts-e', 'k-e\\*']; // Is this a good way to handle it???
-const MARKERS_WITHOUT_CONTENT = ['b', 'nb', 'ib', 'ie'].concat(MILESTONE_MARKERS);
-const ALLOWED_LINE_START_MARKERS = [].concat(INTRO_LINE_START_MARKERS).concat(HEADING_TYPE_MARKERS)
-    .concat(CV_MARKERS).concat(PARAGRAPH_MARKERS)
-    .concat(MAIN_NOTE_MARKERS).concat(SPECIAL_MARKERS).concat(MARKERS_WITHOUT_CONTENT)
-    .concat(MILESTONE_MARKERS).concat(['qs']);
-const DEPRECATED_MARKERS = [
+const MILESTONE_MARKERS_LIST = ['ts\\*', 'ts-s', 'ts-e', 'k-e\\*']; // Is this a good way to handle it???
+const TEXT_MARKERS_WITHOUT_CONTENT_LIST = ['b', 'nb', 'ib', 'ie'];
+const MARKERS_WITHOUT_CONTENT_LIST = [].concat(TEXT_MARKERS_WITHOUT_CONTENT_LIST).concat(MILESTONE_MARKERS_LIST);
+const ALLOWED_LINE_START_MARKERS_LIST = [].concat(INTRO_LINE_START_MARKER_LIST).concat(HEADING_TYPE_MARKERS_LIST)
+    .concat(CV_MARKERS_LIST).concat(PARAGRAPH_MARKERS_LIST)
+    .concat(MAIN_NOTE_MARKERS_LIST).concat(SPECIAL_MARKERS_LIST).concat(MARKERS_WITHOUT_CONTENT_LIST)
+    .concat(MILESTONE_MARKERS_LIST).concat(['qs']);
+const DEPRECATED_MARKERS_LIST = [
     'h1', 'h2', 'h3', 'h4',
     'pr',
     'ph', 'ph1', 'ph2', 'ph3', 'ph4',
     'addpn', 'pro', 'fdc', 'xdc'];
-const MARKERS_WITH_COMPULSORY_CONTENT = [].concat(INTRO_LINE_START_MARKERS).concat(HEADING_TYPE_MARKERS)
-    .concat(CV_MARKERS).concat(MAIN_NOTE_MARKERS).concat(SPECIAL_MARKERS);
-const FOOTNOTE_INTERNAL_MARKERS = ['fr', 'fq', 'fqa', 'fk', 'fl', 'fw', 'fp', 'fv', 'ft', 'fdc', 'fm', 'xt'];
-const XREF_INTERNAL_MARKERS = ['xo', 'xk', 'xq', 'xt', 'xta', 'xop', 'xot', 'xnt', 'xdc', 'rq'];
-const SIMPLE_CHARACTER_MARKERS = ['add', 'bk', 'dc', 'k', 'nd', 'ord', 'pn', 'png', 'addpn',
+const MARKERS_WITH_COMPULSORY_CONTENT_LIST = [].concat(INTRO_LINE_START_MARKER_LIST).concat(HEADING_TYPE_MARKERS_LIST)
+    .concat(CV_MARKERS_LIST).concat(MAIN_NOTE_MARKERS_LIST).concat(SPECIAL_MARKERS_LIST);
+const FOOTNOTE_INTERNAL_MARKERS_LIST = ['fr', 'fq', 'fqa', 'fk', 'fl', 'fw', 'fp', 'fv', 'ft', 'fdc', 'fm', 'xt'];
+const XREF_INTERNAL_MARKERS_LIST = ['xo', 'xk', 'xq', 'xt', 'xta', 'xop', 'xot', 'xnt', 'xdc', 'rq'];
+const SIMPLE_CHARACTER_MARKERS_LIST = ['add', 'bk', 'dc', 'k', 'nd', 'ord', 'pn', 'png', 'addpn',
     'qs', 'qt', 'sig', 'sls', 'tl', 'wj',
     'ior', 'iqt', // TODO: What/Why was 'rq' in here???
     'em', 'bd', 'it', 'bdit', 'no', 'sc', 'sup',
     'ndx', 'rb', 'pro', 'wg', 'wh', 'wa',
     'litl', 'lik',
     'liv', 'liv1', 'liv2', 'liv3', 'liv4'];
-const CHARACTER_MARKERS = ['fig', 'w'].concat(SIMPLE_CHARACTER_MARKERS); // NOTE that we have \w in TWO places
-const SIMPLE_INTERNAL_MARKERS = [SIMPLE_CHARACTER_MARKERS].concat().concat(FOOTNOTE_INTERNAL_MARKERS).concat(XREF_INTERNAL_MARKERS)
+const CHARACTER_MARKERS_LIST = ['fig', 'w'].concat(SIMPLE_CHARACTER_MARKERS_LIST); // NOTE that we have \w in TWO places
+const SIMPLE_INTERNAL_MARKERS_LIST = [SIMPLE_CHARACTER_MARKERS_LIST].concat().concat(FOOTNOTE_INTERNAL_MARKERS_LIST).concat(XREF_INTERNAL_MARKERS_LIST)
 // eslint-disable-next-line no-unused-vars
-const CANONICAL_TEXT_MARKERS = ['d'].concat(PARAGRAPH_MARKERS).concat(CHARACTER_MARKERS);
+const CANONICAL_TEXT_MARKERS_LIST = ['d'].concat(PARAGRAPH_MARKERS_LIST).concat(CHARACTER_MARKERS_LIST);
 // eslint-disable-next-line no-unused-vars
-const ANY_TEXT_MARKERS = [].concat(INTRO_LINE_START_MARKERS).concat(HEADING_TYPE_MARKERS)
-    .concat(PARAGRAPH_MARKERS).concat(CHARACTER_MARKERS)
-    .concat(MAIN_NOTE_MARKERS).concat(SPECIAL_MARKERS);
-const MATCHED_CHARACTER_FORMATTING_LINE_PAIRS = [ // These ones would normally be on the same line in uW USFM files
+const ANY_TEXT_MARKERS_LIST = [].concat(INTRO_LINE_START_MARKER_LIST).concat(HEADING_TYPE_MARKERS_LIST)
+    .concat(PARAGRAPH_MARKERS_LIST).concat(CHARACTER_MARKERS_LIST)
+    .concat(MAIN_NOTE_MARKERS_LIST).concat(SPECIAL_MARKERS_LIST);
+const MATCHED_CHARACTER_FORMATTING_LINE_PAIRS_LIST = [ // These ones would normally be on the same line in uW USFM files
     ['add', 'add*'], ['addpn', 'addpn*'],
     ['bd', 'bd*'], ['bdit', 'bdit*'],
     ['bk', 'bk*'],
@@ -124,8 +125,8 @@ const MATCHED_CHARACTER_FORMATTING_LINE_PAIRS = [ // These ones would normally b
 
     ['f', 'f*'], ['x', 'x*'],
 ];
-const MATCHED_CHARACTER_FORMATTING_FILE_PAIRS =  // These ones would not necessarily be on the same line
-    MATCHED_CHARACTER_FORMATTING_LINE_PAIRS;
+const MATCHED_CHARACTER_FORMATTING_FILE_PAIRS_LIST =  // These ones would not necessarily be on the same line
+    MATCHED_CHARACTER_FORMATTING_LINE_PAIRS_LIST;
 /*    [
         ['add', 'add*'], ['addpn', 'addpn*'],
         ['bd', 'bd*'], ['bdit', 'bdit*'],
@@ -648,7 +649,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         // NOTE: Better to do this for each line for most uW USFM files
         // Check matched pairs of markers like \add ... \add*, \f .. \f*
         if (!['en', 'hbo', 'el-x-koine'].includes(languageCode))
-            for (const punctSet of MATCHED_CHARACTER_FORMATTING_FILE_PAIRS) {
+            for (const punctSet of MATCHED_CHARACTER_FORMATTING_FILE_PAIRS_LIST) {
                 const opener = `\\${punctSet[0]} `, closer = `\\${punctSet[1]}`;
                 const lCount = countOccurrencesInString(fileText, opener);
                 const rCount = countOccurrencesInString(fileText, closer);
@@ -660,20 +661,20 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         // Now do the general global checks (e.g., for general punctuation)
         ourBasicFileChecks(filename, fileText, fileLocation, checkingOptions);
 
-        for (const expectedMarker of EXPECTED_MARKERS)
+        for (const expectedMarker of EXPECTED_MARKERS_LIST)
             if (!markerSet.has(expectedMarker)
                 && (!expectedMarker.endsWith('1') || !markerSet.has(expectedMarker.substring(0, expectedMarker.length - 1))))
                 // NOTE: \mt(1) is required by Proskomma so increased this priority
                 addNoticePartial({ priority: expectedMarker === 'mt1' ? 921 : 519, message: "Missing expected USFM line", excerpt: `missing \\${expectedMarker}`, location: fileLocation });
         if (books.isExtraBookID(bookID))
-            for (const expectedMarker of EXPECTED_PERIPHERAL_BOOK_MARKERS)
+            for (const expectedMarker of EXPECTED_PERIPHERAL_BOOK_MARKER_LIST)
                 if (!markerSet.has(expectedMarker))
                     addNoticePartial({ priority: 517, message: "Missing expected USFM line", excerpt: `missing \\${expectedMarker}`, location: fileLocation });
                 else
-                    for (const expectedMarker of EXPECTED_BIBLE_BOOK_MARKERS)
+                    for (const expectedMarker of EXPECTED_BIBLE_BOOK_MARKERS_LIST)
                         if (!markerSet.has(expectedMarker))
                             addNoticePartial({ priority: 518, message: "Missing expected USFM line", excerpt: `missing \\${expectedMarker}`, location: fileLocation });
-        for (const deprecatedMarker of DEPRECATED_MARKERS)
+        for (const deprecatedMarker of DEPRECATED_MARKERS_LIST)
             if (markerSet.has(deprecatedMarker))
                 addNoticePartial({ priority: 218, message: "Using deprecated USFM marker", excerpt: `\\${deprecatedMarker}`, location: fileLocation });
     }
@@ -773,7 +774,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
 
         // Remove any simple character markers
         // NOTE: replaceAll() is not generally available in browsers yet, so need to use RegExps
-        for (const charMarker of SIMPLE_INTERNAL_MARKERS) {
+        for (const charMarker of SIMPLE_INTERNAL_MARKERS_LIST) {
             // oldTODO: Move the regEx creation so it’s only done once -- not for every line!!!
             // const startRegex = new RegExp(`\\${charMarker} `, 'g');
             // // eslint-disable-next-line no-useless-escape
@@ -1115,7 +1116,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                     // debugLog("Fetched fileContent for", repoName, filename, typeof originalUSFM, originalUSFM.length);
                 } catch (gcUHBerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
                     console.error(`getOriginalPassage(${bookID}, ${C}:${V}, ${JSON.stringify(checkingOptions)}) failed to load UHB`, username, originalLanguageRepoCode, filename, branch, gcUHBerror.message);
-                    addNoticePartial({ priority: 601, message: "Unable to load file", details: `username=${username} error=${gcUHBerror}`, filename, location: ourLocation, extra: originalLanguageRepoName });
+                    addNoticePartial({ priority: 601, message: "Unable to load file", details: `error=${gcUHBerror}`, username, filename, location: ourLocation, extra: originalLanguageRepoName });
                 }
             } else if (originalLanguageRepoCode === 'UGNT') {
                 try {
@@ -1123,7 +1124,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                     // debugLog("Fetched fileContent for", repoName, filename, typeof originalUSFM, originalUSFM.length);
                 } catch (gcUGNTerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
                     console.error(`getOriginalPassage(${bookID}, ${C}:${V}, ${JSON.stringify(checkingOptions)}) failed to load UGNT`, username, originalLanguageRepoCode, filename, branch, gcUGNTerror.message);
-                    addNoticePartial({ priority: 601, message: "Unable to load file", details: `username=${username} error=${gcUGNTerror}`, filename, location: ourLocation, extra: originalLanguageRepoName });
+                    addNoticePartial({ priority: 601, message: "Unable to load file", details: `error=${gcUGNTerror}`, username, filename, location: ourLocation, extra: originalLanguageRepoName });
                 }
             }
             if (!originalUSFM) {
@@ -1340,7 +1341,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
 
             // Check matched pairs that should all be inside a single line
             if (['en', 'hbo', 'el-x-koine'].includes(languageCode))
-                for (const punctSet of MATCHED_CHARACTER_FORMATTING_LINE_PAIRS) {
+                for (const punctSet of MATCHED_CHARACTER_FORMATTING_LINE_PAIRS_LIST) {
                     const opener = `\\${punctSet[0]} `, closer = `\\${punctSet[1]}`;
                     const lCount = countOccurrencesInString(rest, opener) + (marker === punctSet[0] ? 1 : 0);
                     const rCount = countOccurrencesInString(rest, closer);
@@ -1364,13 +1365,13 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
 
 
         // Main code for checkUSFMLineContents()
-        if (ALLOWED_LINE_START_MARKERS.indexOf(marker) >= 0 || marker === 'SPECIAL' || marker === 'NONE') {
-            if (rest && MARKERS_WITHOUT_CONTENT.indexOf(marker) >= 0)
+        if (ALLOWED_LINE_START_MARKERS_LIST.includes(marker) || marker === 'SPECIAL' || marker === 'NONE') {
+            if (rest && MARKERS_WITHOUT_CONTENT_LIST.includes(marker))
                 if (isWhitespace(rest))
                     addNoticePartial({ priority: 301, message: `Unexpected whitespace after \\${marker} marker`, C, V, lineNumber, characterIndex: marker.length, excerpt: rest, location: lineLocation });
                 else if (rest !== 'ס' && rest !== 'פ') // in UHB NEH 3:20 or EZR 3:18
                     addNoticePartial({ priority: 401, message: `Unexpected content after \\${marker} marker`, C, V, lineNumber, characterIndex: marker.length, excerpt: rest, location: lineLocation });
-                else if (MARKERS_WITH_COMPULSORY_CONTENT.indexOf(marker) >= 0 && !rest)
+                else if (MARKERS_WITH_COMPULSORY_CONTENT_LIST.includes(marker) && !rest)
                     addNoticePartial({ priority: 711, message: "Expected compulsory content", C, V, lineNumber, characterIndex: marker.length, location: ` after \\${marker} marker${lineLocation}` });
         } else // it’s not a recognised line marker
             // Lower priority of deprecated \s5 markers (compared to all other unknown markers)
@@ -1601,13 +1602,15 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             else if (marker === 'toc3' && lastMarker !== 'toc2')
                 addNoticePartial({ priority: 87, C, V, message: "Expected \\toc3 line to follow \\toc2", lineNumber: n, characterIndex: 1, details: `not '\\${lastMarker}'`, location: ourLocation });
             // In chapters
-            else if ((PARAGRAPH_MARKERS.indexOf(marker) >= 0 || marker === 's5' || marker === 'ts\\*')
-                && PARAGRAPH_MARKERS.indexOf(lastMarker) >= 0
+            else if ((PARAGRAPH_MARKERS_LIST.includes(marker) || marker === 's5' || marker === 'ts\\*')
+                && PARAGRAPH_MARKERS_LIST.includes(lastMarker)
                 && !lastRest)
                 addNoticePartial({ priority: 399, C, V, message: "Useless paragraph marker", lineNumber: n, characterIndex: 1, details: `'\\${lastMarker}' before '\\${marker}'`, location: ourLocation });
-            else if (['c', 'ca', 'cl'].indexOf(lastMarker) > 0 && marker === 'v'
+            else if (['c', 'ca', 'cl'].includes(lastMarker) && marker === 'v'
                 && (rest === '1' || rest.startsWith('1 ')))
                 addNoticePartial({ priority: C === '1' ? 657 : 457, C, V, message: "Paragraph marker expected before first verse", lineNumber: n, characterIndex: 1, details: `'\\${marker}' after '\\${lastMarker}'`, location: ourLocation });
+            else if (TEXT_MARKERS_WITHOUT_CONTENT_LIST.includes(lastMarker) && ['w', 'v', 'zaln-s', 'k-s'].includes(marker))
+                addNoticePartial({ priority: 899, C, V, message: "Have USFM text not in a paragraph", lineNumber: n, characterIndex: 1, details: `'\\${lastMarker}' before '\\${marker}'`, location: ourLocation });
 
             // Do general checks
             await checkUSFMLineContents(n, C, V, marker, rest, ourLocation, checkingOptions);

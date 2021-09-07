@@ -27,8 +27,8 @@ import RepoCheck from './RepoCheck';
 
   // Lines starting with // are ignored -- you can add or remove // as desired
   // NOTE: Some of these whole repository checks can take a looong time!
-  // repoName='hbo_uhb' // includes OT books only—some large files with parsing info!
-  // repoName='el-x-koine_ugnt' // includes NT books only—some large files with parsing info!
+  // repoName='hbo_uhb' // includes OT books only—some large files when they have x-tw links!
+  // repoName='el-x-koine_ugnt' // includes NT books only—some large files when they have x-tw links!
   // repoName='en_twl' // Translation Words (TSV files but looks up 1,000+ markdown files)
   // repoName='en_ult' // Can use ult or ust here—some large files with alignment info!
   // repoName='en_tn' // Translation Notes (TSV tables -- MANY links to check!)

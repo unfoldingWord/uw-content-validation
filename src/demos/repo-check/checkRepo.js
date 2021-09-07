@@ -200,7 +200,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
   if (! await repositoryExistsOnDoor43({ username, repository: repoName })) {
     setResultValue(<p style={{ color: 'red' }}>No such <b>{username}/{repoName}</b> repository!</p>);
     console.error(`checkRepo ${username}/${repoName} doesn’t seem to exist`);
-    addNoticePartial({ priority: 986, message: "Repository doesn’t seem to exist", details: `username=${username}`, location: givenLocation, extra: repoName });
+    addNoticePartial({ priority: 986, message: "Repository doesn’t seem to exist", username, location: givenLocation, extra: repoName });
   } else {
 
     // Put all this in a try/catch block coz otherwise it’s difficult to debug/view errors
@@ -315,13 +315,13 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
           // debugLog("Fetched fileContent for", repoName, thisPath, typeof repoFileContent, repoFileContent.length);
         } catch (cRgfError) { // NOTE: The error can depend on whether the zipped repo is cached or not
           console.error(`checkRepo(${username}, ${repoName}, ${repoBranch}, ${givenLocation}, (fn), ${JSON.stringify(givenCheckingOptions)})) failed to load`, thisFilepath, repoBranch, `${cRgfError}`);
-          let details = `username=${username}`;
           if (! await repositoryExistsOnDoor43({ username, repository: repoName }))
-            checkRepoResult.noticeList.push({ priority: 997, message: "Repository doesn’t exist", details, username, repoCode, repoName, location: givenLocation, extra: repoCode });
+            checkRepoResult.noticeList.push({ priority: 997, message: "Repository doesn’t exist", username, repoCode, repoName, location: givenLocation, extra: repoCode });
           else {
+            const notice = { priority: 996, message: "Unable to load file", username, bookID: ourBookID, filename: thisFilename, location: `${givenLocation} ${thisFilepath}`, extra: repoName };
             // eslint-disable-next-line eqeqeq
-            if (cRgfError != 'TypeError: repoFileContent is null') details += ` error=${cRgfError}`;
-            addNoticePartial({ priority: 996, message: "Unable to load file", details, bookID: ourBookID, filename: thisFilename, location: `${givenLocation} ${thisFilepath}`, extra: repoName });
+            if (cRgfError != 'TypeError: repoFileContent is null') notice.details = `error=${cRgfError}`;
+            addNoticePartial(notice);
           }
           return;
         }

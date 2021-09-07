@@ -9,7 +9,7 @@ import { RenderCheckedFilesList, RenderSuccessesErrorsWarnings, RenderSuccessesS
 import { logicAssert, userLog, debugLog } from '../../core/utilities';
 
 
-// const ALL_BPS_VALIDATOR_VERSION_STRING = '0.3.15';
+// const ALL_BPS_VALIDATOR_VERSION_STRING = '0.3.16';
 
 const OLD_TESTAMENT_BOOK_CODES = 'GEN,EXO,LEV,NUM,DEU,JOS,JDG,RUT,1SA,2SA,1KI,2KI,1CH,2CH,EZR,NEH,EST,JOB,PSA,PRO,ECC,SNG,ISA,JER,LAM,EZK,DAN,HOS,JOL,AMO,OBA,JON,MIC,NAM,HAB,ZEP,HAG,ZEC,MAL';
 const NEW_TESTAMENT_BOOK_CODES = 'MAT,MRK,LUK,JHN,ACT,ROM,1CO,2CO,GAL,EPH,PHP,COL,1TH,2TH,1TI,2TI,TIT,PHM,HEB,JAS,1PE,2PE,1JN,2JN,3JN,JUD,REV';
@@ -69,6 +69,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
   const checkingOptions = { // Uncomment any of these to test them
     // excerptLength: 25,
     suppressNoticeDisablingFlag: true, // Leave this one as true (otherwise demo checks are less efficient)
+    checkType: 'AllBookPackages', // Always leave this one in
   };
   // Or this allows the parameters to be specified as a AllBookPackagesCheck property
   if (props.excerptLength) checkingOptions.excerptLength = ourParseInt(props.excerptLength);

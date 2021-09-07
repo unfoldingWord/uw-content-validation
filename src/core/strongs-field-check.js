@@ -211,7 +211,7 @@ export async function checkStrongsField(languageCode, repoCode, fieldName, field
         if (checkingOptions?.disableAllLinkFetchingFlag !== true && checkingOptions?.disableLexiconLinkFetchingFlag !== true) {
             // debugLog(`checkStrongsField wants to fetch lexicon entry for ${fieldText}`);
             let adjustedLanguageCode = languageCode;
-            if (languageCode ==='hbo' || languageCode==='el-x-koine') // lexicons are in GLs
+            if (languageCode === 'hbo' || languageCode === 'el-x-koine') // lexicons are in GLs
                 adjustedLanguageCode = 'en'
             let username;
             try {
@@ -250,10 +250,10 @@ export async function checkStrongsField(languageCode, repoCode, fieldName, field
                     // debugLog(`checkStrongsField lexicon link fetch got text: ${lexiconMarkdownTextContents.length}`);
                 } catch (flError) { // NOTE: The error can depend on whether the zipped repo is cached or not
                     // console.error(`checkStrongsField lexicon link fetch had an error fetching ${fetchLinkDescription}: ${flError}`);
-                    let details = `${lexiconRepoCode} username=${username}`;
+                    let details = `${lexiconRepoCode}`;
                     // eslint-disable-next-line eqeqeq
                     if (flError != 'TypeError: lexiconMarkdownTextContents is null') details += ` error=${flError}`;
-                    addNoticePartial({ priority: 850, message: "Unable to find/load lexicon entry", details, excerpt: fetchLinkDescription, location: ourLocation });
+                    addNoticePartial({ priority: 850, message: "Unable to find/load lexicon entry", details, username, excerpt: fetchLinkDescription, location: ourLocation });
                 }
                 if (lexiconMarkdownTextContents?.length) {
                     if (lexiconMarkdownTextContents.length < 10)

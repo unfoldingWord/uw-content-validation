@@ -8,7 +8,7 @@ import { checkFileContents } from './checkFileContents';
 import { debugLog, userLog } from '../../core/utilities';
 
 
-// const FILE_CHECK_VERSION_STRING = '0.4.0';
+// const FILE_CHECK_VERSION_STRING = '0.4.2';
 
 
 function FileCheck(props) {
@@ -63,7 +63,7 @@ function FileCheck(props) {
       }
 
       setResultValue(<p style={{ color: 'magenta' }}>Checking <i>{username}</i> {repoName} <b>{filename}</b>…</p>);
-      let rawCFResults = { noticeList: [{ priority: 990, message: "Unable to load file", details: `username=${username}`, repoName, filename }], elapsedSeconds: 0 };
+      let rawCFResults = { noticeList: [{ priority: 990, message: "Unable to load file", username, repoName, filename, location: givenLocation }], elapsedSeconds: 0 };
       if (fileContent) {
         const languageCode = repoName.split('_')[0];
 
@@ -229,6 +229,7 @@ function FileCheck(props) {
   const checkingOptions = { // Uncomment any of these to test them
     // excerptLength: 25,
     suppressNoticeDisablingFlag: true, // Leave this one as true (otherwise demo checks are less efficient)
+    checkType: 'File', // Always leave this one in
   };
   // Or this allows the parameters to be specified as a FileCheck property
   if (props.excerptLength) checkingOptions.excerptLength = ourParseInt(props.excerptLength);

@@ -9,7 +9,7 @@ import { checkBookPackage } from './checkBookPackage';
 import { userLog, debugLog, parameterAssert, logicAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.5.16';
+// const BP_VALIDATOR_VERSION_STRING = '0.5.17';
 
 
 function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
@@ -38,6 +38,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
         checkReadmeFlag: true,
         checkLicenseFlag: true,
         suppressNoticeDisablingFlag: true, // Leave this one as true (otherwise demo checks are less efficient)
+        checkType: 'BookPackage', // Always leave this one in
     };
     // Or this allows the parameters to be specified as a BookPackageCheck property
     if (props.excerptLength) checkingOptions.excerptLength = ourParseInt(props.excerptLength);
