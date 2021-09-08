@@ -197,10 +197,10 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
         // functionLog(`checkMarkdownLineContents for ${lineNumber} '${lineText}' at${lineLocation}`);
 
         // // Check for image links
-        // let regexResultArray;
-        // while ((regexResultArray = SIMPLE_IMAGE_REGEX.exec(lineText))) {
-        //     // debugLog(`Got markdown image in line ${lineNumber}:`, JSON.stringify(regexResultArray));
-        //     const [totalLink, altText, fetchLink] = regexResultArray;
+        // let regexMatchObject;
+        // while ((regexMatchObject = SIMPLE_IMAGE_REGEX.exec(lineText))) {
+        //     // debugLog(`Got markdown image in line ${lineNumber}:`, JSON.stringify(regexMatchObject));
+        //     const [totalLink, altText, fetchLink] = regexMatchObject;
         //     // if (altText !== 'OBS Image') userLog("This code was only checked for 'OBS Image' links");
         //     if (!altText)
         //         addNoticePartial({ priority: 199, message: "Markdown image link has no alternative text", lineNumber, excerpt: totalLink, location: lineLocation });
@@ -218,9 +218,9 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
         //         }
         //     }
         // }
-        // while ((regexResultArray = TITLED_IMAGE_REGEX.exec(lineText))) {
-        //     // debugLog(`Got markdown image in line ${lineNumber}:`, JSON.stringify(regexResultArray));
-        //     const [totalLink, alt, fetchLink, title] = regexResultArray;
+        // while ((regexMatchObject = TITLED_IMAGE_REGEX.exec(lineText))) {
+        //     // debugLog(`Got markdown image in line ${lineNumber}:`, JSON.stringify(regexMatchObject));
+        //     const [totalLink, alt, fetchLink, title] = regexMatchObject;
         //     if (!alt)
         //         addNoticePartial({ priority: 199, message: "Markdown image link has no alternative text", lineNumber, excerpt: totalLink, location: lineLocation });
         //     if (!title)

@@ -14,7 +14,7 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.10.5';
+// const USFM_VALIDATOR_VERSION_STRING = '0.10.8';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for STs
@@ -174,7 +174,7 @@ const ATTRIBUTE_REGEX = new RegExp('[ |]([^ |]+?)="([^"]*?)"', 'g');
 // Only shin/sin consonant should come before a sin/shin dot
 const BAD_HEBREW_SIN_SHIN_DOT_REGEX = new RegExp('[^\\u05E9][\\u05C1\\u05C2]', 'g');
 // Only certain consonants should come before a dagesh dot -- Unicode char is also used for mapiq
-const BAD_HEBREW_DAGESH_MAPIQ_REGEX = new RegExp('[^\\u05C1\\u05C2אבגדהוזטיךכלמנספצקרת]\\u05BC', 'g'); // includes shin/sin dots and some final consonants
+const BAD_HEBREW_DAGESH_MAPIQ_REGEX = new RegExp('[^\\u05C1\\u05C2אבגדהוזחטיכךלמנספףצקרת]\\u05BC', 'g'); // includes shin/sin dots and some final consonants
 // Hebrew vowels should never come before a dagesh
 const BAD_HEBREW_VOWEL_DAGESH_REGEX = new RegExp('[\\u05B4-\\u05BB]\\u05BC', 'g');
 // Hebrew cantillation marks should never come before a dagesh
@@ -204,8 +204,8 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
      Returns a result object containing a successList and a noticeList
      */
     // functionLog(`checkUSFMText(${languageCode}, ${repoCode}, ${bookID}, ${filename}, ${givenText.length.toLocaleString()} chars, '${givenLocation}', ${JSON.stringify(checkingOptions)})…`);
-    // const match = HEBREW_CANTILLATION_REGEX.exec('\\f + \\ft Q \\+w הִנֵּ֤ה|lemma="הִנֵּ֤ה" strong="H2009" x-morph="He,Tm"\\+w*\\f*');
-    // console.log(`Got test cantillation match: ${match.length} ${JSON.stringify(match)}`);
+    // const regexMatchObject = HEBREW_CANTILLATION_REGEX.exec('\\f + \\ft Q \\+w הִנֵּ֤ה|lemma="הִנֵּ֤ה" strong="H2009" x-morph="He,Tm"\\+w*\\f*');
+    // console.log(`Got test cantillation regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
 
     //parameterAssert(languageCode !== undefined, "checkUSFMText: 'languageCode' parameter should be defined");
     //parameterAssert(typeof languageCode === 'string', `checkUSFMText: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
@@ -236,6 +236,11 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
     if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
         excerptLength = DEFAULT_EXCERPT_LENGTH;
         // debugLog(`Using default excerptLength=${excerptLength}`);
+    }
+    if (languageCode === 'hbo') { // Hebrew vowels don't take up much horizontal space
+        // const previousExcerptLength = excerptLength;
+        excerptLength = Math.floor(excerptLength * 1.3);
+        // debugLog(`checkUSFMText adjusted ${languageCode} excerptLength from ${previousExcerptLength} to ${excerptLength}`);
     }
     // else
     // debugLog(`Using supplied excerptLength=${excerptLength} cf. default=${DEFAULT_EXCERPT_LENGTH}`);
@@ -319,12 +324,15 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             )
                 addNoticePartial({ priority: 102, message: `USFMGrammar: ${warningString}`, location: fileLocation });
 
+        /* Disable this extra check -- no real advantage gained I think
         if (!grammarCheckResult.isValidUSFM) {
+            userLog(`  Now running the BCS USFMGrammar RELAXED checker for ${repoCode} ${bookID}…`);
             const relaxedGrammarCheckResult = runBCSGrammarCheck('relaxed', bookID, fileText, filename, fileLocation);
             addSuccessMessage(`Checked USFM Grammar (relaxed mode) ${relaxedGrammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN’T validate)"}`);
             if (!relaxedGrammarCheckResult.isValidUSFM)
                 addNoticePartial({ priority: 644, message: "USFM3 Grammar Check (relaxed mode) doesn’t pass either", location: fileLocation });
         }
+        */
     }
     // end of ourRunBCSGrammarCheck function
 
@@ -701,43 +709,54 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
 
         // Check for invalid character combinations
         if (languageCode === 'hbo') {
-            let match;
-            // NOTE: Use else statements so we only get ONE of these errors
-            if ((match = BAD_HEBREW_SIN_SHIN_DOT_REGEX.exec(rest))) { // it’s null if no matches
-                debugLog(`checkUSFMLineText: ${bookID} ${C}:${V} line ${lineNumber} got BAD character before shin/sin dot match: ${match.length} ${JSON.stringify(match)}`);
-                const characterIndex = rest.indexOf(match[0][0]);
+            let regexMatchObject;
+            // NOTE: Use else statements so we only get ONE of these types of errors
+            // NOTE: We have no while loops, so only get one error per line, even if there's multiple errors!!!
+            if ((regexMatchObject = BAD_HEBREW_SIN_SHIN_DOT_REGEX.exec(rest))) { // it’s null if no matches
+                debugLog(`checkUSFMLineText 865: ${bookID} ${C}:${V} line ${lineNumber} got BAD character before shin/sin dot regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
+                const characterIndex = regexMatchObject.index;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-                addNoticePartial({ priority: 865, message: "Unexpected Hebrew character before shin/sin dot", details: `found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+                addNoticePartial({ priority: 865, message: "Unexpected Hebrew character before shin/sin dot", details: `found ${regexMatchObject.length} '${regexMatchObject}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
-            else if ((match = BAD_HEBREW_VOWEL_DAGESH_REGEX.exec(rest))) { // it’s null if no matches
-                // debugLog(`checkUSFMLineText: ${bookID} ${C}:${V} line ${lineNumber} got BAD dagesh after vowel character order match: ${match.length} ${JSON.stringify(match)}`);
-                const characterIndex = rest.indexOf(match[0][0]);
+            else if ((regexMatchObject = BAD_HEBREW_VOWEL_DAGESH_REGEX.exec(rest))) { // it’s null if no matches
+                // debugLog(`checkUSFMLineText 864: ${bookID} ${C}:${V} line ${lineNumber} got BAD dagesh after vowel character order regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
+                const characterIndex = regexMatchObject.index;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-                addNoticePartial({ priority: 864, message: "Unexpected Hebrew dagesh after vowel", details: `found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+                addNoticePartial({ priority: 864, message: "Unexpected Hebrew dagesh after vowel", details: `found ${regexMatchObject.length} '${regexMatchObject}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
-            else if ((match = BAD_HEBREW_DAGESH_MAPIQ_REGEX.exec(rest))) { // it’s null if no matches
-                debugLog(`checkUSFMLineText: ${bookID} ${C}:${V} line ${lineNumber} got BAD character before dagesh match: ${match.length} ${JSON.stringify(match)}`);
-                const characterIndex = rest.indexOf(match[0][0]);
+            else if ((regexMatchObject = BAD_HEBREW_DAGESH_MAPIQ_REGEX.exec(rest))) { // it’s null if no matches
+                debugLog(`checkUSFMLineText 863: ${bookID} ${C}:${V} line ${lineNumber} got BAD character before dagesh regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
+                const characterIndex = regexMatchObject.index;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-                addNoticePartial({ priority: 863, message: "Unexpected Hebrew character before dagesh or mappiq", details: `found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+                addNoticePartial({ priority: 863, message: "Unexpected Hebrew character before dagesh or mappiq", details: `found ${regexMatchObject.length} '${regexMatchObject}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
-            else if ((match = BAD_HEBREW_CANTILLATION_DAGESH_REGEX.exec(rest))) { // it’s null if no matches
-                debugLog(`checkUSFMLineText: ${bookID} ${C}:${V} line ${lineNumber} got BAD cantillation mark character before dagesh match: ${match.length} ${JSON.stringify(match)}`);
-                const characterIndex = rest.indexOf(match[0][0]);
+            else if ((regexMatchObject = BAD_HEBREW_CANTILLATION_DAGESH_REGEX.exec(rest))) { // it’s null if no matches
+                debugLog(`checkUSFMLineText 862: ${bookID} ${C}:${V} line ${lineNumber} got BAD cantillation mark character before dagesh regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
+                const characterIndex = regexMatchObject.index;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-                addNoticePartial({ priority: 862, message: "Unexpected Hebrew cantillation mark before dagesh", details: `found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+                addNoticePartial({ priority: 862, message: "Unexpected Hebrew cantillation mark before dagesh", details: `found ${regexMatchObject.length} '${regexMatchObject}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
-            else if ((match = BAD_HEBREW_CANTILLATION_VOWEL_REGEX.exec(rest))) { // it’s null if no matches
-                // debugLog(`checkUSFMLineText: ${bookID} ${C}:${V} line ${lineNumber} got BAD vowel after cantillation mark character order match: ${match.length} ${JSON.stringify(match)}`);
-                const characterIndex = rest.indexOf(match[0][0]);
+            else if ((regexMatchObject = BAD_HEBREW_CANTILLATION_VOWEL_REGEX.exec(rest)) // it’s null if no matches
+                // These are the actual accents that occur before the hiriq vowel (5B4) -- others could conceivable occur also
+                && ((regexMatchObject[0] !== '\u0591\u05B4' && regexMatchObject[0] !== '\u0596\u05B4' && regexMatchObject[0] !== '\u059B\u05B4' && regexMatchObject[0] !== '\u05A3\u05B4' && regexMatchObject[0] !== '\u05A5\u05B4' && regexMatchObject[0] !== '\u05A7\u05B4' && regexMatchObject[0] !== '\u05AB\u05B4')
+                    || rest.indexOf('וּשָׁל') === -1)) { // Yerushalayim has an exception -- a vowel after a cantillation mark
+                // debugLog(`checkUSFMLineText 861 regexMatchObject: ${typeof regexMatchObject} (${regexMatchObject.length}) '${regexMatchObject}' ${JSON.stringify(regexMatchObject)}`);
+                // debugLog(`checkUSFMLineText 861 regexMatchObject: ${typeof regexMatchObject} ${Object.keys(regexMatchObject)}`); // object with keys: 0,index,input,groups
+                // debugLog(`checkUSFMLineText 861 regexMatchObject: ${typeof regexMatchObject[0]} (${regexMatchObject[0].length}) '${regexMatchObject[0]}'  ${typeof regexMatchObject[0][0]} (${regexMatchObject[0][0].length}) '${regexMatchObject[0][0]}'`);
+                // debugLog(`checkUSFMLineText 861 regexMatchObject: ${regexMatchObject[0] !== '\u0591\u05B4'} ${regexMatchObject[0] !== '\u0596\u05B4'} ${rest.indexOf('וּשָׁל') === -1} => ${(regexMatchObject[0] !== '\u0591\u05B4' && regexMatchObject[0] !== '\u0596\u05B4') || rest.indexOf('וּשָׁל') === -1} '${rest}'`);
+                debugLog(`checkUSFMLineText 861: ${bookID} ${C}:${V} line ${lineNumber} got BAD vowel after cantillation mark character order regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
+                const characterIndex = regexMatchObject.index;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-                addNoticePartial({ priority: 861, message: "Unexpected Hebrew vowel after cantillation mark", details: `found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+                addNoticePartial({ priority: 861, message: "Unexpected Hebrew vowel after cantillation mark", details: `found ${regexMatchObject.length} '${regexMatchObject}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
-            else if ((match = BAD_HEBREW_FINAL_CONSONANT_REGEX.exec(rest))) { // it’s null if no matches
-                debugLog(`checkUSFMLineText: ${bookID} ${C}:${V} line ${lineNumber} got BAD final consonant match: ${match.length} ${JSON.stringify(match)}`);
-                const characterIndex = rest.indexOf(match[0][0]);
+            else if ((regexMatchObject = BAD_HEBREW_FINAL_CONSONANT_REGEX.exec(rest))) { // it’s null if no matches
+                // debugLog(`checkUSFMLineText 860 regexMatchObject: ${typeof regexMatchObject} (${regexMatchObject.length}) '${regexMatchObject}' ${JSON.stringify(regexMatchObject)}`);
+                // debugLog(`checkUSFMLineText 860 regexMatchObject: ${typeof regexMatchObject} ${Object.keys(regexMatchObject)}`); // object with keys: 0,index,input,groups
+                // debugLog(`checkUSFMLineText 860 regexMatchObject: ${typeof regexMatchObject[0]} (${regexMatchObject[0].length}) '${regexMatchObject[0]}'  ${typeof regexMatchObject[0][0]} (${regexMatchObject[0][0].length}) '${regexMatchObject[0][0]}'`);
+                debugLog(`checkUSFMLineText 860: ${bookID} ${C}:${V} line ${lineNumber} got BAD final consonant regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
+                const characterIndex = regexMatchObject.index;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-                addNoticePartial({ priority: 860, message: "Unexpected Hebrew final consonant not at word end", details: `found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+                addNoticePartial({ priority: 860, message: "Unexpected Hebrew final consonant not at word end", details: `found ${regexMatchObject.length} '${regexMatchObject}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
         }
 
@@ -1011,62 +1030,62 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
          */
         async function checkWAttributes(wContents) {
             // functionLog(`checkWAttributes(${wContents})…`);
-            let regexResultArray, attributeCounter = 0;
-            while ((regexResultArray = ATTRIBUTE_REGEX.exec(wContents))) {
+            let regexMatchObject, attributeCounter = 0;
+            while ((regexMatchObject = ATTRIBUTE_REGEX.exec(wContents))) {
                 attributeCounter += 1;
-                // debugLog(`  Got attribute Regex in \\w: ${attributeCounter} '${JSON.stringify(regexResultArray2)}`);
-                const attributeName = regexResultArray[1], attributeValue = regexResultArray[2];
+                // debugLog(`  Got attribute Regex in \\w: ${attributeCounter} '${JSON.stringify(regexMatchObject2)}`);
+                const attributeName = regexMatchObject[1], attributeValue = regexMatchObject[2];
                 if (repoCode === 'UHB' || repoCode === 'UGNT') {
                     if (attributeCounter === 1) {
                         if (attributeName !== 'lemma')
-                            addNoticePartial({ priority: 857, message: "Unexpected first original \\w attribute", details: "expected 'lemma'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                            addNoticePartial({ priority: 857, message: "Unexpected first original \\w attribute", details: "expected 'lemma'", lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                     } else if (attributeCounter === 2) {
                         if (attributeName !== 'strong')
-                            addNoticePartial({ priority: 856, message: "Unexpected second original \\w attribute", details: "expected 'strong'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                            addNoticePartial({ priority: 856, message: "Unexpected second original \\w attribute", details: "expected 'strong'", lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                     } else if (attributeCounter === 3) {
                         if (attributeName !== 'x-morph')
-                            addNoticePartial({ priority: 855, message: "Unexpected third original \\w attribute", details: "expected 'x-morph'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                            addNoticePartial({ priority: 855, message: "Unexpected third original \\w attribute", details: "expected 'x-morph'", lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                     } else if (attributeCounter === 4) {
                         if (attributeName !== 'x-tw') // we can have TWO of these -- THREE EVEN in EXO 15:23 and 1KI 21:9!!!
-                            addNoticePartial({ priority: 854, message: "Unexpected fourth original \\w attribute", details: "expected 'x-tw'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                            addNoticePartial({ priority: 854, message: "Unexpected fourth original \\w attribute", details: "expected 'x-tw'", lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                     } else if (attributeCounter === 5) {
                         if (attributeName !== 'x-tw')
-                            addNoticePartial({ priority: 854, message: "Unexpected fifth original \\w attribute", details: "expected second 'x-tw'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                            addNoticePartial({ priority: 854, message: "Unexpected fifth original \\w attribute", details: "expected second 'x-tw'", lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                     } else if (attributeCounter === 6) {
                         if (attributeName !== 'x-tw')
-                            addNoticePartial({ priority: 854, message: "Unexpected sixth original \\w attribute", details: "expected third 'x-tw'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                            addNoticePartial({ priority: 854, message: "Unexpected sixth original \\w attribute", details: "expected third 'x-tw'", lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                     } else // #7 or more
-                        addNoticePartial({ priority: 853, message: "Unexpected extra original \\w attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                        addNoticePartial({ priority: 853, message: "Unexpected extra original \\w attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                     if (attributeName === 'lemma' && repoCode === 'UHB') {
-                        const match = HEBREW_CANTILLATION_REGEX.exec(attributeValue);
-                        if (match) { // it’s null if no matches
-                            // debugLog(`Got cantillation match: ${match.length} ${JSON.stringify(match)}`);
-                            addNoticePartial({ priority: 905, message: "Unexpected Hebrew cantillation mark in lemma field", details: `found ${match.length} '${match}'`, lineNumber, C, V, excerpt: attributeValue, location: lineLocation });
+                        const regexMatchObject = HEBREW_CANTILLATION_REGEX.exec(attributeValue);
+                        if (regexMatchObject) { // it’s null if no matches
+                            // debugLog(`Got cantillation regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
+                            addNoticePartial({ priority: 905, message: "Unexpected Hebrew cantillation mark in lemma field", details: `found ${regexMatchObject.length} '${regexMatchObject}'`, lineNumber, C, V, excerpt: attributeValue, location: lineLocation });
                         }
                     } else if (attributeName === 'x-morph'
                         && ((repoCode === 'UHB' && !attributeValue.startsWith('He,') && !attributeValue.startsWith('Ar,'))
                             || (repoCode === 'UGNT' && !attributeValue.startsWith('Gr,'))))
-                        addNoticePartial({ priority: 852, message: "Unexpected original \\w x-morph language prefix", details: "Expected 'He,' 'Ar,' or 'Gr,'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                        addNoticePartial({ priority: 852, message: "Unexpected original \\w x-morph language prefix", details: "Expected 'He,' 'Ar,' or 'Gr,'", lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                     else if (attributeName === 'x-tw')
                         await ourCheckNotesLinksToOutside(lineNumber, C, V, marker, attributeValue, lineLocation, checkingOptions);
                 } else { // a translation -- perhaps LT or ST, but not UHB or UGNT
                     if (attributeCounter === 1) {
                         if (attributeName !== 'x-occurrence')
-                            addNoticePartial({ priority: 848, message: "Unexpected first translation \\w attribute", details: "expected 'x-occurrence'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                            addNoticePartial({ priority: 848, message: "Unexpected first translation \\w attribute", details: "expected 'x-occurrence'", lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                     } else if (attributeCounter === 2) {
                         if (attributeName !== 'x-occurrences')
-                            addNoticePartial({ priority: 847, message: "Unexpected second translation \\w attribute", details: "expected 'x-occurrences'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                            addNoticePartial({ priority: 847, message: "Unexpected second translation \\w attribute", details: "expected 'x-occurrences'", lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                     } else // #3 or more
-                        addNoticePartial({ priority: 846, message: "Unexpected extra translation \\w attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                        addNoticePartial({ priority: 846, message: "Unexpected extra translation \\w attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                 }
                 if (attributeName === 'strong' || attributeName === 'x-strong') // UHB/UGNT have strong, ULT/UST have x-strong
                     await ourCheckStrongsField(lineNumber, C, V, marker, attributeName, attributeValue, lineLocation, checkingOptions);
             }
             if (repoCode === 'UHB' || repoCode === 'UGNT') {
                 if (attributeCounter < 3)
-                    addNoticePartial({ priority: 837, message: "Seems too few original \\w attributes", details: `expected 3-4 attributes but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation });
+                    addNoticePartial({ priority: 837, message: "Seems too few original \\w attributes", details: `expected 3-4 attributes but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexMatchObject1[0], location: lineLocation });
             } else if (attributeCounter < 2)
-                addNoticePartial({ priority: 836, message: "Seems too few translation \\w attributes", details: `expected two attributes but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation });
+                addNoticePartial({ priority: 836, message: "Seems too few translation \\w attributes", details: `expected two attributes but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexMatchObject1[0], location: lineLocation });
         }
         // end of checkWAttributes function
 
@@ -1161,11 +1180,11 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             // debugLog(`getOriginalWordLists: Got verse words: '${wLinesVerseText}'`);
 
             // Get each \w field out
-            let regexResultArray1;
-            while ((regexResultArray1 = W_FIELDS_REGEX.exec(wLinesVerseText))) {
-                // debugLog(`Got ${repoCode} wFields Regex in ${bookID} ${C}:${V}: (${regexResultArray1.length}) ${JSON.stringify(regexResultArray1)}`);
+            let regexMatchObject1;
+            while ((regexMatchObject1 = W_FIELDS_REGEX.exec(wLinesVerseText))) {
+                // debugLog(`Got ${repoCode} wFields Regex in ${bookID} ${C}:${V}: (${regexMatchObject1.length}) ${JSON.stringify(regexMatchObject1)}`);
                 // eslint-disable-next-line no-unused-vars
-                const [_totalLink, word, lemma, strongs, morph] = regexResultArray1;
+                const [_totalLink, word, lemma, strongs, morph] = regexMatchObject1;
                 verseWordList.push(word);
                 verseWordObjectList.push({ lemma, strongs, morph });
             }
@@ -1185,36 +1204,36 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             // functionLog(`checkWAttributes(${zalnContents})…`);
             // The parameter normally starts with a |
             dataAssert(repoCode !== 'UHB' && repoCode !== 'UGNT', `checkZALNAttributes did not expect an original language repo: '${repoCode}'`);
-            let zalnSuggestion, regexResultArray, attributeCounter = 0;
+            let zalnSuggestion, regexMatchObject, attributeCounter = 0;
             const attributes = {};
-            while ((regexResultArray = ATTRIBUTE_REGEX.exec(zalnContents))) {
+            while ((regexMatchObject = ATTRIBUTE_REGEX.exec(zalnContents))) {
                 attributeCounter += 1;
-                // debugLog(`  Got attribute Regex in \\zaln-s: ${attributeCounter} '${JSON.stringify(regexResultArray2)}`);
-                const attributeName = regexResultArray[1], attributeValue = regexResultArray[2];
+                // debugLog(`  Got attribute Regex in \\zaln-s: ${attributeCounter} '${JSON.stringify(regexMatchObject2)}`);
+                const attributeName = regexMatchObject[1], attributeValue = regexMatchObject[2];
                 attributes[attributeName] = attributeValue;
                 if (attributeCounter === 1) {
                     if (attributeName !== 'x-strong')
-                        addNoticePartial({ priority: 830, message: "Unexpected first \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                        addNoticePartial({ priority: 830, message: "Unexpected first \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                 } else if (attributeCounter === 2) {
                     if (attributeName !== 'x-lemma')
-                        addNoticePartial({ priority: 829, message: "Unexpected second \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                        addNoticePartial({ priority: 829, message: "Unexpected second \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                 } else if (attributeCounter === 3) {
                     if (attributeName !== 'x-morph')
-                        addNoticePartial({ priority: 828, message: "Unexpected third \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                        addNoticePartial({ priority: 828, message: "Unexpected third \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                 } else if (attributeCounter === 4) {
                     if (attributeName !== 'x-occurrence')
-                        addNoticePartial({ priority: 827, message: "Unexpected fourth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                        addNoticePartial({ priority: 827, message: "Unexpected fourth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                 } else if (attributeCounter === 5) {
                     if (attributeName !== 'x-occurrences')
-                        addNoticePartial({ priority: 826, message: "Unexpected fifth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                        addNoticePartial({ priority: 826, message: "Unexpected fifth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                 } else if (attributeCounter === 6) {
                     if (attributeName !== 'x-content')
-                        addNoticePartial({ priority: 825, message: "Unexpected sixth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                        addNoticePartial({ priority: 825, message: "Unexpected sixth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                 } else // #7 or more
-                    addNoticePartial({ priority: 833, message: "Unexpected extra \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                    addNoticePartial({ priority: 833, message: "Unexpected extra \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
             }
             if (attributeCounter < 6)
-                addNoticePartial({ priority: 834, message: "Seems too few translation \\zaln-s attributes", details: `expected six attributes but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation });
+                addNoticePartial({ priority: 834, message: "Seems too few translation \\zaln-s attributes", details: `expected six attributes but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexMatchObject1[0], location: lineLocation });
             // debugLog(`checkZALNAttributes has ${bookID} ${C}:${V} attributes: ${JSON.stringify(attributes)}`);
 
             // The Strongs, lemma and morph fields are copied from the original UHB/UGNT files
@@ -1254,17 +1273,17 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                     else {
                         const vwolStrongs = verseWordObjectList[ix]?.strongs;
                         if (vwolStrongs !== oStrong) {
-                            addNoticePartial({ priority: 805, message: "Aligned x-strong number doesn’t match original", details: `${originalLanguageRepoCode} had '${vwolStrongs}'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                            addNoticePartial({ priority: 805, message: "Aligned x-strong number doesn’t regexMatchObject original", details: `${originalLanguageRepoCode} had '${vwolStrongs}'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                             zalnSuggestion = zalnContents.replace(`"${oStrong}"`, `"${vwolStrongs}"`);
                         }
                         const vwolLemma = verseWordObjectList[ix]?.lemma;
                         if (vwolLemma !== oLemma) {
-                            addNoticePartial({ priority: 806, message: "Aligned x-lemma doesn’t match original", details: `${originalLanguageRepoCode} had '${vwolLemma}'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                            addNoticePartial({ priority: 806, message: "Aligned x-lemma doesn’t regexMatchObject original", details: `${originalLanguageRepoCode} had '${vwolLemma}'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                             zalnSuggestion = zalnContents.replace(`"${oLemma}"`, `"${vwolLemma}"`);
                         }
                         const vwolMorph = verseWordObjectList[ix]?.morph;
                         if (vwolMorph !== oMorph) {
-                            addNoticePartial({ priority: 804, message: "Aligned x-morph doesn’t match original", details: `${originalLanguageRepoCode} had '${vwolMorph}'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                            addNoticePartial({ priority: 804, message: "Aligned x-morph doesn’t regexMatchObject original", details: `${originalLanguageRepoCode} had '${vwolMorph}'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                             zalnSuggestion = zalnContents.replace(`"${oMorph}"`, `"${vwolMorph}"`);
                         }
                     }
@@ -1276,34 +1295,34 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         }
         // end of checkZALNAttributes function
 
-        let suggestion, regexResultArray1;
-        while ((regexResultArray1 = W_REGEX.exec(adjustedRest))) {
-            // debugLog(`Got ${ repoCode } \\w Regex in ${ C }: ${ V } line: '${JSON.stringify(regexResultArray1)}`);
-            await checkWAttributes(regexResultArray1[1]); // The only call of this function
+        let suggestion, regexMatchObject1;
+        while ((regexMatchObject1 = W_REGEX.exec(adjustedRest))) {
+            // debugLog(`Got ${ repoCode } \\w Regex in ${ C }: ${ V } line: '${JSON.stringify(regexMatchObject1)}`);
+            await checkWAttributes(regexMatchObject1[1]); // The only call of this function
         }
-        let regexResultArray2;
-        while ((regexResultArray1 = KS_REGEX.exec(adjustedRest))) {
-            // debugLog(`Got ${repoCode} \\k-s Regex in ${C}:${V} line: '${JSON.stringify(regexResultArray1)}`);
+        let regexMatchObject2;
+        while ((regexMatchObject1 = KS_REGEX.exec(adjustedRest))) {
+            // debugLog(`Got ${repoCode} \\k-s Regex in ${C}:${V} line: '${JSON.stringify(regexMatchObject1)}`);
             dataAssert(repoCode === 'UHB' || repoCode === 'UGNT', `checkUSFMLineAttributes expected an original language repo not '${repoCode}'`);
             let attributeCounter = 0;
-            while ((regexResultArray2 = ATTRIBUTE_REGEX.exec(regexResultArray1[1]))) {
+            while ((regexMatchObject2 = ATTRIBUTE_REGEX.exec(regexMatchObject1[1]))) {
                 attributeCounter += 1;
-                // debugLog(`  Got attribute Regex in \\k-s: ${attributeCounter} '${JSON.stringify(regexResultArray2)}`);
-                const attributeName = regexResultArray2[1]; //, attributeValue = regexResultArray2[2];
+                // debugLog(`  Got attribute Regex in \\k-s: ${attributeCounter} '${JSON.stringify(regexMatchObject2)}`);
+                const attributeName = regexMatchObject2[1]; //, attributeValue = regexMatchObject2[2];
                 if (attributeCounter === 1) {
                     if (attributeName !== 'x-tw')
-                        addNoticePartial({ priority: 839, message: "Unexpected first \\k-s attribute", details: "expected 'x-tw'", lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
+                        addNoticePartial({ priority: 839, message: "Unexpected first \\k-s attribute", details: "expected 'x-tw'", lineNumber, C, V, excerpt: regexMatchObject2[0], location: lineLocation });
                 } else // #2 or more
-                    addNoticePartial({ priority: 838, message: "Unexpected extra \\k-s attribute", details, lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
+                    addNoticePartial({ priority: 838, message: "Unexpected extra \\k-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject2[0], location: lineLocation });
             }
             if (attributeCounter < 1)
-                addNoticePartial({ priority: 835, message: "Seems too few original \\k-s attributes", details: `expected one attribute but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation });
+                addNoticePartial({ priority: 835, message: "Seems too few original \\k-s attributes", details: `expected one attribute but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexMatchObject1[0], location: lineLocation });
         }
-        while ((regexResultArray1 = ZALN_S_REGEX.exec(adjustedRest))) {
-            // debugLog(`Got ${repoCode} \\zaln-s Regex in ${C}:${V} line: '${JSON.stringify(regexResultArray1)}`);
+        while ((regexMatchObject1 = ZALN_S_REGEX.exec(adjustedRest))) {
+            // debugLog(`Got ${repoCode} \\zaln-s Regex in ${C}:${V} line: '${JSON.stringify(regexMatchObject1)}`);
             // The found string normally starts with a |
-            const zalnSuggestion = await checkZALNAttributes(regexResultArray1[1]); // The only call of this function
-            if (zalnSuggestion) suggestion = rest.replace(regexResultArray1[1], zalnSuggestion);
+            const zalnSuggestion = await checkZALNAttributes(regexMatchObject1[1]); // The only call of this function
+            if (zalnSuggestion) suggestion = rest.replace(regexMatchObject1[1], zalnSuggestion);
         }
         return suggestion;
     }

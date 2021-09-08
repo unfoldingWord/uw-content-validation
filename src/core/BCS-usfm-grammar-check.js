@@ -67,8 +67,8 @@ export function runBCSGrammarCheck(strictnessString, bookID, fileText, filename,
         try { // See if we can improve the result with line and column numbers
             // NOTE: The following code is quite fragile
             //  as it depends on the precise format of the error message returned from USFMParser
-            const regexResultArray = LINE_COLUMN_NUMBERS_REGEX.exec(parserError);
-            const [totalLink, lineNumberString, columnNumberString] = regexResultArray;
+            const regexMatchObject = LINE_COLUMN_NUMBERS_REGEX.exec(parserError);
+            const [totalLink, lineNumberString, columnNumberString] = regexMatchObject;
             ourErrorObject.lineNumber = ourParseInt(lineNumberString);
             ourErrorObject.characterIndex = ourParseInt(columnNumberString) - 1;
             const errorLineText = fileText.split('\n')[ourErrorObject.lineNumber - 1];
@@ -92,7 +92,7 @@ export function runBCSGrammarCheck(strictnessString, bookID, fileText, filename,
     //  as it depends on the precise format of the error message returned from USFMParser
     let ourErrorObject = {};
     if (parseError) {
-        debugLog("Oh! This USFMGrammer check code IS still needed!!!");
+        debugLog("Oh! This USFMGrammar check code IS still needed!!!");
         const contextRE = /(\d+?)\s\|\s(.+)/g;
         for (const errorLine of parseError.split('\n')) {
             // debugLog(`BCS errorLine=${errorLine}`);

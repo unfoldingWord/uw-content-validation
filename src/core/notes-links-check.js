@@ -218,12 +218,12 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
         }
     }
 
-    let regexResultArray;
+    let regexMatchObject;
 
     // Check for image links (including OBS pictures)
-    while ((regexResultArray = SIMPLE_IMAGE_REGEX.exec(fieldText))) {
-        // debugLog(`Got markdown image in line ${lineNumber}:`, JSON.stringify(regexResultArray));
-        const [totalLink, altText, fetchLink] = regexResultArray;
+    while ((regexMatchObject = SIMPLE_IMAGE_REGEX.exec(fieldText))) {
+        // debugLog(`Got markdown image in line ${lineNumber}:`, JSON.stringify(regexMatchObject));
+        const [totalLink, altText, fetchLink] = regexMatchObject;
         // if (altText !== 'OBS Image') userLog("This code was only checked for 'OBS Image' links");
         if (!altText)
             addNoticePartial({ priority: 199, message: "Markdown image link has no alternative text", excerpt: totalLink, location: ourLocation });
@@ -241,9 +241,9 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             }
         }
     }
-    while ((regexResultArray = TITLED_IMAGE_REGEX.exec(fieldText))) {
-        // debugLog(`Got markdown image in line ${lineNumber}:`, JSON.stringify(regexResultArray));
-        const [totalLink, alt, fetchLink, title] = regexResultArray;
+    while ((regexMatchObject = TITLED_IMAGE_REGEX.exec(fieldText))) {
+        // debugLog(`Got markdown image in line ${lineNumber}:`, JSON.stringify(regexMatchObject));
+        const [totalLink, alt, fetchLink, title] = regexMatchObject;
         if (!alt)
             addNoticePartial({ priority: 199, message: "Markdown image link has no alternative text", excerpt: totalLink, location: ourLocation });
         if (!title)
@@ -275,12 +275,12 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     const processedLinkList = [];
 
     // Check for internal TW links like [Asher](../names/asher.md)
-    while ((regexResultArray = TW_INTERNAL_REGEX.exec(fieldText))) {
-        // debugLog(`  checkNotesLinksToOutside TW_INTERNAL_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
+    while ((regexMatchObject = TW_INTERNAL_REGEX.exec(fieldText))) {
+        // debugLog(`  checkNotesLinksToOutside TW_INTERNAL_REGEX regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
         twLinkCount1 += 1;
-        logicAssert(regexResultArray.length === 4, `TW_INTERNAL_REGEX expected 4 fields (not ${regexResultArray.length})`);
+        logicAssert(regexMatchObject.length === 4, `TW_INTERNAL_REGEX expected 4 fields (not ${regexMatchObject.length})`);
         // eslint-disable-next-line no-unused-vars
-        let [totalLink, _displayName, category, article] = regexResultArray;
+        let [totalLink, _displayName, category, article] = regexMatchObject;
         processedLinkList.push(totalLink); // Save the full link
 
         const twRepoName = `${defaultLanguageCode}_tw`;
@@ -290,12 +290,12 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
         // debugLog(`Got tW filepath=${filepath}`);
 
         if (!checkingOptions?.disableAllLinkFetchingFlag) {
-            // if (regexResultArray[3] === 'brother') debugLog(`Need to check ${fieldName} TW link ${regexResultArray} against ${twRepoName}`);
+            // if (regexMatchObject[3] === 'brother') debugLog(`Need to check ${fieldName} TW link ${regexMatchObject} against ${twRepoName}`);
             const twPathParameters = { username: twRepoUsername, repository: twRepoName, path: filepath, branch: twRepoBranch };
             let twFileContent;
             try {
                 twFileContent = await getFile_(twPathParameters);
-                // if (regexResultArray[3] === 'brother') debugLog(`Fetched fileContent for ${JSON.stringify(twPathParameters)}: ${typeof twFileContent} ${twFileContent.length}`);
+                // if (regexMatchObject[3] === 'brother') debugLog(`Fetched fileContent for ${JSON.stringify(twPathParameters)}: ${typeof twFileContent} ${twFileContent.length}`);
             } catch (trcGCerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
                 console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TW ${twRepoUsername} ${twRepoName}, ${filepath}, ${twRepoBranch}: ${trcGCerror.message}`);
                 addNoticePartial({ priority: 882, message: `Error loading TW article`, details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
@@ -328,12 +328,12 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     }
 
     // Check for TA links like [How to Translate Names](rc://en/ta/man/translate/translate-names)
-    while ((regexResultArray = TA_FULL_DISPLAY_LINK_REGEX.exec(fieldText))) {
-        // debugLog(`  checkNotesLinksToOutside TA_FULL_DISPLAY_LINK_REGEX resultArray=${JSON.stringify(regexResultArray)}`);
+    while ((regexMatchObject = TA_FULL_DISPLAY_LINK_REGEX.exec(fieldText))) {
+        // debugLog(`  checkNotesLinksToOutside TA_FULL_DISPLAY_LINK_REGEX resultArray=${JSON.stringify(regexMatchObject)}`);
         taLinkCount1 += 1;
-        logicAssert(regexResultArray.length === 5, `TA_FULL_DISPLAY_LINK_REGEX expected 5 fields (not ${regexResultArray.length})`)
+        logicAssert(regexMatchObject.length === 5, `TA_FULL_DISPLAY_LINK_REGEX expected 5 fields (not ${regexMatchObject.length})`)
         // eslint-disable-next-line no-unused-vars
-        let [totalLink, _displayName, foundLanguageCode, part, article] = regexResultArray;
+        let [totalLink, _displayName, foundLanguageCode, part, article] = regexMatchObject;
         processedLinkList.push(totalLink); // Save the full link
 
         if (foundLanguageCode !== '*') {
@@ -397,12 +397,12 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
 
     if (repoCode === 'TA' || fieldName.startsWith('TA ')) {
         // Check for relative TA links like [Borrow Words](../translate-transliterate/01.md)
-        while ((regexResultArray = TA_RELATIVE1_DISPLAY_LINK_REGEX.exec(fieldText))) {
-            // debugLog(`  checkNotesLinksToOutside TA_RELATIVE1_DISPLAY_LINK_REGEX resultArray=${JSON.stringify(regexResultArray)}`);
+        while ((regexMatchObject = TA_RELATIVE1_DISPLAY_LINK_REGEX.exec(fieldText))) {
+            // debugLog(`  checkNotesLinksToOutside TA_RELATIVE1_DISPLAY_LINK_REGEX resultArray=${JSON.stringify(regexMatchObject)}`);
             taLinkCount1 += 1;
-            logicAssert(regexResultArray.length === 3, `TA_RELATIVE1_DISPLAY_LINK_REGEX expected 3 fields (not ${regexResultArray.length})`)
+            logicAssert(regexMatchObject.length === 3, `TA_RELATIVE1_DISPLAY_LINK_REGEX expected 3 fields (not ${regexMatchObject.length})`)
             // eslint-disable-next-line no-unused-vars
-            let [totalLink, _displayName, article] = regexResultArray;
+            let [totalLink, _displayName, article] = regexMatchObject;
             processedLinkList.push(totalLink); // Save the full link
 
             const taRepoName = `${defaultLanguageCode}_ta`;
@@ -452,12 +452,12 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             }
         }
         // Check for relative TA links like [Borrow Words](../../translate/translate-transliterate/01.md)
-        while ((regexResultArray = TA_RELATIVE2_DISPLAY_LINK_REGEX.exec(fieldText))) {
-            // debugLog(`  checkNotesLinksToOutside TA_RELATIVE2_DISPLAY_LINK_REGEX resultArray=${JSON.stringify(regexResultArray)}`);
+        while ((regexMatchObject = TA_RELATIVE2_DISPLAY_LINK_REGEX.exec(fieldText))) {
+            // debugLog(`  checkNotesLinksToOutside TA_RELATIVE2_DISPLAY_LINK_REGEX resultArray=${JSON.stringify(regexMatchObject)}`);
             taLinkCount1 += 1;
-            logicAssert(regexResultArray.length === 4, `TA_RELATIVE2_DISPLAY_LINK_REGEX expected 4 fields (not ${regexResultArray.length})`)
+            logicAssert(regexMatchObject.length === 4, `TA_RELATIVE2_DISPLAY_LINK_REGEX expected 4 fields (not ${regexMatchObject.length})`)
             // eslint-disable-next-line no-unused-vars
-            let [totalLink, _displayName, TAsection, article] = regexResultArray;
+            let [totalLink, _displayName, TAsection, article] = regexMatchObject;
             processedLinkList.push(totalLink); // Save the full link
 
             const taRepoName = `${defaultLanguageCode}_ta`;
@@ -505,11 +505,11 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
 
     // Check for TA links like [[rc://en/ta/man/translate/figs-metaphor]]
     // if (fieldText.indexOf('brother') !== -1) debugLog("checkNotesLinksToOutside: Search for TA links")
-    while ((regexResultArray = TA_DOUBLE_BRACKETED_LINK_REGEX.exec(fieldText))) {
-        // debugLog(`  checkNotesLinksToOutside TA_DOUBLE_BRACKETED_LINK_REGEX resultArray=${JSON.stringify(regexResultArray)}`);
+    while ((regexMatchObject = TA_DOUBLE_BRACKETED_LINK_REGEX.exec(fieldText))) {
+        // debugLog(`  checkNotesLinksToOutside TA_DOUBLE_BRACKETED_LINK_REGEX resultArray=${JSON.stringify(regexMatchObject)}`);
         taLinkCount2 += 1;
-        logicAssert(regexResultArray.length === 4, `TA_DOUBLE_BRACKETED_LINK_REGEX expected 4 fields (not ${regexResultArray.length})`)
-        let [totalLink, foundLanguageCode, part, article] = regexResultArray;
+        logicAssert(regexMatchObject.length === 4, `TA_DOUBLE_BRACKETED_LINK_REGEX expected 4 fields (not ${regexMatchObject.length})`)
+        let [totalLink, foundLanguageCode, part, article] = regexMatchObject;
         processedLinkList.push(totalLink); // Save the full link
 
         if (foundLanguageCode !== '*') {
@@ -575,11 +575,11 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     //  (These are not nearly as many as TA links.)
     const ourTWRegex = (fieldName === 'TWLink') ? TWL_RAW_LINK_REGEX : TW_DOUBLE_BRACKETED_LINK_REGEX;
     // if (fieldText.indexOf('brother') !== -1) debugLog(`checkNotesLinksToOutside: ${bookID} ${givenC}:${givenV} Search for TW links with ${ourTWRegex}`)
-    while ((regexResultArray = ourTWRegex.exec(fieldText))) {
-        // debugLog(`  checkNotesLinksToOutside ${languageCode} ${repoCode} ${fieldName} ${givenC}:${givenV} found TW resultArray=${JSON.stringify(regexResultArray)}`);
+    while ((regexMatchObject = ourTWRegex.exec(fieldText))) {
+        // debugLog(`  checkNotesLinksToOutside ${languageCode} ${repoCode} ${fieldName} ${givenC}:${givenV} found TW resultArray=${JSON.stringify(regexMatchObject)}`);
         twLinkCount2 += 1;
-        logicAssert(regexResultArray.length === 4, `TW_REGEX expected 4 fields (not ${regexResultArray.length})`)
-        let [totalLink, foundLanguageCode, category, article] = regexResultArray;
+        logicAssert(regexMatchObject.length === 4, `TW_REGEX expected 4 fields (not ${regexMatchObject.length})`)
+        let [totalLink, foundLanguageCode, category, article] = regexMatchObject;
         processedLinkList.push(totalLink); // Save the full link
 
         if (!foundLanguageCode || foundLanguageCode === '*') foundLanguageCode = defaultLanguageCode;
@@ -590,7 +590,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
         // debugLog(`Got tW filepath=${filepath}`);
 
         if (!checkingOptions?.disableAllLinkFetchingFlag) {
-            // if (article === 'brother') debugLog(`Need to check ${fieldName} TW link ${regexResultArray} against ${twRepoName}`);
+            // if (article === 'brother') debugLog(`Need to check ${fieldName} TW link ${regexMatchObject} against ${twRepoName}`);
             const twPathParameters = { username: twRepoUsername, repository: twRepoName, path: filepath, branch: twRepoBranch };
             if (!await alreadyChecked(twPathParameters)) {
                 let twFileContent;
@@ -636,11 +636,11 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
 
     // debugLog("checkNotesLinksToOutside: Search for Bible links")
     // Check for other book Bible links like [Genesis 29:23](rc://en/tn/help/gen/29/23)
-    while ((regexResultArray = BIBLE_FULL_HELP_REGEX.exec(fieldText))) {
-        // debugLog(`  checkNotesLinksToOutside BIBLE_FULL_HELP_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
+    while ((regexMatchObject = BIBLE_FULL_HELP_REGEX.exec(fieldText))) {
+        // debugLog(`  checkNotesLinksToOutside BIBLE_FULL_HELP_REGEX regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
         otherBookBibleLinkCount1 += 1;
-        logicAssert(regexResultArray.length === 9, `BIBLE_FULL_HELP_REGEX expected 9 fields (not ${regexResultArray.length})`);
-        let [totalLink, optionalN1, optionalB1, C1, V1, Lg, B2, C2, V2] = regexResultArray;
+        logicAssert(regexMatchObject.length === 9, `BIBLE_FULL_HELP_REGEX expected 9 fields (not ${regexMatchObject.length})`);
+        let [totalLink, optionalN1, optionalB1, C1, V1, Lg, B2, C2, V2] = regexMatchObject;
         // debugLog(`Lg='${Lg}' B2='${B2}' C2='${C2}' V2='${V2}'`);
         processedLinkList.push(totalLink); // Save the full link
 
@@ -705,11 +705,11 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     }
 
     // Check for this-chapter Bible links like [Revelation 3:11](./11.md)
-    while ((regexResultArray = BIBLE_REGEX_THIS_CHAPTER_RELATIVE.exec(fieldText))) {
-        // debugLog(`  checkNotesLinksToOutside BIBLE_REGEX_THIS_CHAPTER_RELATIVE regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
+    while ((regexMatchObject = BIBLE_REGEX_THIS_CHAPTER_RELATIVE.exec(fieldText))) {
+        // debugLog(`  checkNotesLinksToOutside BIBLE_REGEX_THIS_CHAPTER_RELATIVE regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
         thisChapterBibleLinkCount1 += 1;
-        logicAssert(regexResultArray.length === 6, `BIBLE_REGEX_THIS_CHAPTER_RELATIVE expected 6 fields (not ${regexResultArray.length})`);
-        let [totalLink, optionalN1, optionalB1, C1, V1, V2] = regexResultArray;
+        logicAssert(regexMatchObject.length === 6, `BIBLE_REGEX_THIS_CHAPTER_RELATIVE expected 6 fields (not ${regexMatchObject.length})`);
+        let [totalLink, optionalN1, optionalB1, C1, V1, V2] = regexMatchObject;
         processedLinkList.push(totalLink); // Save the full link
 
         if (optionalN1) {
@@ -731,7 +731,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
         const linkVerseInt = ourParseInt(V2);
         if (C1 === undefined) {
             if (linkBookCode.length === 0 || !books.isOneChapterBook(linkBookCode)) {
-                // debugLog(`  checkNotesLinksToOutside C1 missing in BIBLE_REGEX_THIS_CHAPTER_RELATIVE regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
+                // debugLog(`  checkNotesLinksToOutside C1 missing in BIBLE_REGEX_THIS_CHAPTER_RELATIVE regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
                 addNoticePartial({ priority: 555, message: "Possible missing chapter number in markdown Bible link", excerpt: totalLink, location: ourLocation });
             }
             C1 = '0'; // Try to avoid consequential errors
@@ -770,11 +770,11 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     }
 
     // Check for this-verse Bible links like [11](../03/11.md)
-    while ((regexResultArray = THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX.exec(fieldText))) {
-        // debugLog(`  checkNotesLinksToOutside THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
+    while ((regexMatchObject = THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX.exec(fieldText))) {
+        // debugLog(`  checkNotesLinksToOutside THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
         thisVerseBibleLinkCount1 += 1;
-        logicAssert(regexResultArray.length === 4, `THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX expected 4 fields (not ${regexResultArray.length})`);
-        let [totalLink, V1, C2, V2] = regexResultArray;
+        logicAssert(regexMatchObject.length === 4, `THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX expected 4 fields (not ${regexMatchObject.length})`);
+        let [totalLink, V1, C2, V2] = regexMatchObject;
         processedLinkList.push(totalLink); // Save the full link
 
         let linkBookCode = bookID;
@@ -810,11 +810,11 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     }
 
     // Check for this-verse Bible links like [11](../03/11.md)
-    while ((regexResultArray = THIS_VERSE_RANGE_TO_THIS_CHAPTER_BIBLE_REGEX.exec(fieldText))) {
-        // debugLog(`  checkNotesLinksToOutside THIS_VERSE_RANGE_TO_THIS_CHAPTER_BIBLE_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
+    while ((regexMatchObject = THIS_VERSE_RANGE_TO_THIS_CHAPTER_BIBLE_REGEX.exec(fieldText))) {
+        // debugLog(`  checkNotesLinksToOutside THIS_VERSE_RANGE_TO_THIS_CHAPTER_BIBLE_REGEX regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
         thisVerseBibleLinkCount1 += 1;
-        logicAssert(regexResultArray.length === 5, `THIS_VERSE_RANGE_TO_THIS_CHAPTER_BIBLE_REGEX expected 5 fields (not ${regexResultArray.length})`);
-        let [totalLink, V1a, V1b, C2, V2] = regexResultArray;
+        logicAssert(regexMatchObject.length === 5, `THIS_VERSE_RANGE_TO_THIS_CHAPTER_BIBLE_REGEX expected 5 fields (not ${regexMatchObject.length})`);
+        let [totalLink, V1a, V1b, C2, V2] = regexMatchObject;
         processedLinkList.push(totalLink); // Save the full link
 
         let linkBookCode = bookID;
@@ -854,11 +854,11 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     }
 
     // Check for this-book Bible links like [Revelation 3:11](../03/11.md)
-    while ((regexResultArray = BIBLE_REGEX_THIS_BOOK_RELATIVE.exec(fieldText))) {
-        // debugLog(`  checkNotesLinksToOutside BIBLE_REGEX_THIS_BOOK_RELATIVE regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
+    while ((regexMatchObject = BIBLE_REGEX_THIS_BOOK_RELATIVE.exec(fieldText))) {
+        // debugLog(`  checkNotesLinksToOutside BIBLE_REGEX_THIS_BOOK_RELATIVE regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
         thisBookBibleLinkCount1 += 1;
-        logicAssert(regexResultArray.length === 7, `BIBLE_REGEX_THIS_BOOK_RELATIVE expected 7 fields (not ${regexResultArray.length})`);
-        let [totalLink, optionalN1, optionalB1, C1, V1, C2, V2] = regexResultArray;
+        logicAssert(regexMatchObject.length === 7, `BIBLE_REGEX_THIS_BOOK_RELATIVE expected 7 fields (not ${regexMatchObject.length})`);
+        let [totalLink, optionalN1, optionalB1, C1, V1, C2, V2] = regexMatchObject;
         processedLinkList.push(totalLink); // Save the full link
 
         if (optionalN1) {
@@ -911,11 +911,11 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     }
 
     // Check for other-book Bible links like [Revelation 3:11-12](../rev/03/11.md)
-    while ((regexResultArray = BCV_V_TO_OTHER_BOOK_BIBLE_REGEX.exec(fieldText))) {
-        // debugLog(`  checkNotesLinksToOutside BCV_V_TO_OTHER_BOOK_BIBLE_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
+    while ((regexMatchObject = BCV_V_TO_OTHER_BOOK_BIBLE_REGEX.exec(fieldText))) {
+        // debugLog(`  checkNotesLinksToOutside BCV_V_TO_OTHER_BOOK_BIBLE_REGEX regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
         thisBookBibleLinkCount1 += 1;
-        logicAssert(regexResultArray.length === 9, `BCV_V_TO_OTHER_BOOK_BIBLE_REGEX expected 9 fields (not ${regexResultArray.length})`);
-        let [totalLink, optionalN1, B1, C1, V1a, V1b, B2, C2, V2] = regexResultArray;
+        logicAssert(regexMatchObject.length === 9, `BCV_V_TO_OTHER_BOOK_BIBLE_REGEX expected 9 fields (not ${regexMatchObject.length})`);
+        let [totalLink, optionalN1, B1, C1, V1a, V1b, B2, C2, V2] = regexMatchObject;
         processedLinkList.push(totalLink); // Save the full link
 
         if (optionalN1) {
@@ -974,11 +974,11 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     }
 
     // Check for this-book Bible links like [Revelation 3:11-12](../03/11.md)
-    while ((regexResultArray = BCV_V_TO_THIS_BOOK_BIBLE_REGEX.exec(fieldText))) {
-        // debugLog(`  checkNotesLinksToOutside BCV_V_TO_THIS_BOOK_BIBLE_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
+    while ((regexMatchObject = BCV_V_TO_THIS_BOOK_BIBLE_REGEX.exec(fieldText))) {
+        // debugLog(`  checkNotesLinksToOutside BCV_V_TO_THIS_BOOK_BIBLE_REGEX regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
         thisBookBibleLinkCount1 += 1;
-        logicAssert(regexResultArray.length === 9, `BCV_V_TO_THIS_BOOK_BIBLE_REGEX expected 9 fields (not ${regexResultArray.length})`);
-        let [totalLink, optionalN1, optionalB1, C1, V1a, V1b, B2, C2, V2] = regexResultArray;
+        logicAssert(regexMatchObject.length === 9, `BCV_V_TO_THIS_BOOK_BIBLE_REGEX expected 9 fields (not ${regexMatchObject.length})`);
+        let [totalLink, optionalN1, optionalB1, C1, V1a, V1b, B2, C2, V2] = regexMatchObject;
         processedLinkList.push(totalLink); // Save the full link
 
         if (optionalN1) {
@@ -1038,11 +1038,11 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     }
 
     // Check for this-book Bible links like [Revelation 3:11-12](../03/11.md)
-    while ((regexResultArray = BCV_V_TO_THIS_CHAPTER_BIBLE_REGEX.exec(fieldText))) {
-        // debugLog(`  checkNotesLinksToOutside BCV_V_TO_THIS_CHAPTER_BIBLE_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
+    while ((regexMatchObject = BCV_V_TO_THIS_CHAPTER_BIBLE_REGEX.exec(fieldText))) {
+        // debugLog(`  checkNotesLinksToOutside BCV_V_TO_THIS_CHAPTER_BIBLE_REGEX regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
         thisChapterBibleLinkCount1 += 1;
-        logicAssert(regexResultArray.length === 7, `BCV_V_TO_THIS_CHAPTER_BIBLE_REGEX expected 7 fields (not ${regexResultArray.length})`);
-        let [totalLink, optionalN1, optionalB1, C1, V1a, V1b, V2] = regexResultArray;
+        logicAssert(regexMatchObject.length === 7, `BCV_V_TO_THIS_CHAPTER_BIBLE_REGEX expected 7 fields (not ${regexMatchObject.length})`);
+        let [totalLink, optionalN1, optionalB1, C1, V1a, V1b, V2] = regexMatchObject;
         processedLinkList.push(totalLink); // Save the full link
 
         if (optionalN1) {
@@ -1091,11 +1091,11 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     }
 
     // Check for other book Bible links like [Revelation 3:11](rev/03/11.md)
-    while ((regexResultArray = BIBLE_REGEX_OTHER_BOOK_ABSOLUTE.exec(fieldText))) {
-        // debugLog(`  checkNotesLinksToOutside BIBLE_REGEX_OTHER_BOOK_ABSOLUTE regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
+    while ((regexMatchObject = BIBLE_REGEX_OTHER_BOOK_ABSOLUTE.exec(fieldText))) {
+        // debugLog(`  checkNotesLinksToOutside BIBLE_REGEX_OTHER_BOOK_ABSOLUTE regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
         otherBookBibleLinkCount1 += 1;
-        logicAssert(regexResultArray.length === 8, `BIBLE_REGEX_OTHER_BOOK_ABSOLUTE expected 8 fields (not ${regexResultArray.length})`);
-        let [totalLink, optionalN1, B1, C1, V1, B2, C2, V2] = regexResultArray;
+        logicAssert(regexMatchObject.length === 8, `BIBLE_REGEX_OTHER_BOOK_ABSOLUTE expected 8 fields (not ${regexMatchObject.length})`);
+        let [totalLink, optionalN1, B1, C1, V1, B2, C2, V2] = regexMatchObject;
         processedLinkList.push(totalLink); // Save the full link
 
         if (optionalN1) {
@@ -1148,11 +1148,11 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     }
 
     // Check for other book Bible links like [Revelation 3:11](../../rev/03/11.md)
-    while ((regexResultArray = BIBLE_REGEX_OTHER_BOOK_RELATIVE.exec(fieldText))) {
-        // debugLog(`  checkNotesLinksToOutside BIBLE_REGEX_OTHER_BOOK_RELATIVE regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
+    while ((regexMatchObject = BIBLE_REGEX_OTHER_BOOK_RELATIVE.exec(fieldText))) {
+        // debugLog(`  checkNotesLinksToOutside BIBLE_REGEX_OTHER_BOOK_RELATIVE regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
         otherBookBibleLinkCount1 += 1;
-        logicAssert(regexResultArray.length === 8, `BIBLE_REGEX_OTHER_BOOK_RELATIVE expected 8 fields (not ${regexResultArray.length})`);
-        let [totalLink, optionalN1, B1, C1, V1, B2, C2, V2] = regexResultArray;
+        logicAssert(regexMatchObject.length === 8, `BIBLE_REGEX_OTHER_BOOK_RELATIVE expected 8 fields (not ${regexMatchObject.length})`);
+        let [totalLink, optionalN1, B1, C1, V1, B2, C2, V2] = regexMatchObject;
         processedLinkList.push(totalLink); // Save the full link
 
         if (optionalN1) {
@@ -1205,12 +1205,12 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     }
 
     // Check for TN links like [Titus 3:11](../03/11/zd2d)
-    while ((regexResultArray = TN_REGEX.exec(fieldText))) {
-        // debugLog(`  checkNotesLinksToOutside TN_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
+    while ((regexMatchObject = TN_REGEX.exec(fieldText))) {
+        // debugLog(`  checkNotesLinksToOutside TN_REGEX regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
         TNLinkCount1 += 1;
-        logicAssert(regexResultArray.length === 9, `TN_REGEX expected 9 fields (not ${regexResultArray.length})`);
+        logicAssert(regexMatchObject.length === 9, `TN_REGEX expected 9 fields (not ${regexMatchObject.length})`);
         // eslint-disable-next-line no-unused-vars
-        let [totalLink, optionalN1, optionalB1, C1, V1, B2, C2, V2, _noteID2] = regexResultArray;
+        let [totalLink, optionalN1, optionalB1, C1, V1, B2, C2, V2, _noteID2] = regexMatchObject;
         processedLinkList.push(totalLink); // Save the full link
 
         if (optionalN1) {
@@ -1266,12 +1266,12 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
 
     // Check for simple display links like [ULT](https://something)
     // if (fieldText.indexOf('http') !== -1) debugLog(`Checking for http links in '${fieldName}' '${fieldText}'`);
-    while ((regexResultArray = SIMPLE_DISPLAY_LINK_REGEX.exec(fieldText))) {
-        // debugLog(`  checkNotesLinksToOutside SIMPLE_DISPLAY_LINK_REGEX regexResultArray(${regexResultArray.length})=${JSON.stringify(regexResultArray)}`);
+    while ((regexMatchObject = SIMPLE_DISPLAY_LINK_REGEX.exec(fieldText))) {
+        // debugLog(`  checkNotesLinksToOutside SIMPLE_DISPLAY_LINK_REGEX regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
         generalLinkCount1 += 1;
-        logicAssert(regexResultArray.length === 3, `SIMPLE_DISPLAY_LINK_REGEX expected 3 fields (not ${regexResultArray.length})`);
+        logicAssert(regexMatchObject.length === 3, `SIMPLE_DISPLAY_LINK_REGEX expected 3 fields (not ${regexMatchObject.length})`);
         // eslint-disable-next-line no-unused-vars
-        let [totalLink, displayText, uri] = regexResultArray;
+        let [totalLink, displayText, uri] = regexMatchObject;
         processedLinkList.push(totalLink); // Save the full link
 
         if (!checkingOptions?.disableAllLinkFetchingFlag) {

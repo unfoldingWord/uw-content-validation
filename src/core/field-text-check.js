@@ -465,25 +465,25 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
             try { // This regex build fails for some of the characters
                 const leftRegex = new RegExp(`(\\w)\\${leftChar}(\\w)`, 'g'), rightRegex = new RegExp(`(\\w)\\${rightChar}(\\w)`, 'g');
                 // debugLog(`leftRegex is ${leftRegex}`);
-                let regexResultArray;
-                while ((regexResultArray = leftRegex.exec(fieldText)))
-                    if ((!fieldType.startsWith('markdown') || regexResultArray[0][0] !== '_')
+                let regexMatchObject;
+                while ((regexMatchObject = leftRegex.exec(fieldText)))
+                    if ((!fieldType.startsWith('markdown') || regexMatchObject[0][0] !== '_')
                         && (!fieldType.startsWith('YAML') || leftChar !== '{')
                         // TODO: We have to allow for a blank language code until we change checkPlainText()
-                        && (languageCode !== 'en' || regexResultArray[0][2] !== 's' || fieldText.indexOf('(s)') === -1)) {
-                        // debugLog(`Got possible misplaced '${languageCode}' left ${leftChar} in ${fieldType} ${fieldName} '${fieldText}': ${JSON.stringify(regexResultArray)}`);
+                        && (languageCode !== 'en' || regexMatchObject[0][2] !== 's' || fieldText.indexOf('(s)') === -1)) {
+                        // debugLog(`Got possible misplaced '${languageCode}' left ${leftChar} in ${fieldType} ${fieldName} '${fieldText}': ${JSON.stringify(regexMatchObject)}`);
                         let thisPriority = 717, thisMessage = `Misplaced ${leftChar} character`;
-                        if (leftChar === '(' && regexResultArray[0][2] === 's') { thisPriority = 17; thisMessage = `Possible misplaced ${leftChar} character`; } // Lower priority for words like 'thing(s)'
+                        if (leftChar === '(' && regexMatchObject[0][2] === 's') { thisPriority = 17; thisMessage = `Possible misplaced ${leftChar} character`; } // Lower priority for words like 'thing(s)'
                         if (cutoffPriorityLevel < thisPriority)
-                            addNoticePartial({ priority: thisPriority, message: thisMessage, excerpt: regexResultArray[0], location: ourLocation });
+                            addNoticePartial({ priority: thisPriority, message: thisMessage, excerpt: regexMatchObject[0], location: ourLocation });
                     }
                 if (rightChar !== '’') // Can’t check '‘’' coz they might be used as apostrophe
-                    while ((regexResultArray = rightRegex.exec(fieldText)))
-                        if ((!fieldType.startsWith('markdown') || regexResultArray[0][2] !== '_')
+                    while ((regexMatchObject = rightRegex.exec(fieldText)))
+                        if ((!fieldType.startsWith('markdown') || regexMatchObject[0][2] !== '_')
                             && (!fieldType.startsWith('YAML') || rightChar !== '}')) {
-                            // debugLog(`Got misplaced right ${rightChar} in ${fieldType} ${fieldName} '${fieldText}':`, JSON.stringify(regexResultArray));
+                            // debugLog(`Got misplaced right ${rightChar} in ${fieldType} ${fieldName} '${fieldText}':`, JSON.stringify(regexMatchObject));
                             if (cutoffPriorityLevel < 716)
-                                addNoticePartial({ priority: 716, message: `Misplaced ${rightChar} character`, excerpt: regexResultArray[0], location: ourLocation });
+                                addNoticePartial({ priority: 716, message: `Misplaced ${rightChar} character`, excerpt: regexMatchObject[0], location: ourLocation });
                         }
             } catch { }
         }

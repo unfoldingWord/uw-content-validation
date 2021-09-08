@@ -488,11 +488,11 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
                 const adjustedNote = note.replace(/\\n/g, '\n');
                 ASuggestion = await ourMarkdownTextChecks(rowID, 'Note', adjustedNote, true, ourRowLocation, checkingOptions);
                 // await ourCheckNotesLinksToOutside(rowID, 'Note', adjustedNote, ourRowLocation, linkCheckingOptions);
-                let regexResultArray, linksList = [], foundSR = false;
-                while ((regexResultArray = TA_REGEX.exec(adjustedNote))) {
-                    // debugLog("Got TA Regex in Note", JSON.stringify(regexResultArray));
-                    linksList.push(regexResultArray[1])
-                    const adjustedLink = regexResultArray[0].substring(2, regexResultArray[0].length - 2)
+                let regexMatchObject, linksList = [], foundSR = false;
+                while ((regexMatchObject = TA_REGEX.exec(adjustedNote))) {
+                    // debugLog("Got TA Regex in Note", JSON.stringify(regexMatchObject));
+                    linksList.push(regexMatchObject[1])
+                    const adjustedLink = regexMatchObject[0].substring(2, regexMatchObject[0].length - 2)
                     if (adjustedLink === supportReference) foundSR = true;
                 }
                 if (linksList.length && V !== 'intro') {

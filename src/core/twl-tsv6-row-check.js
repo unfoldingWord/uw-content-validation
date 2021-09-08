@@ -9,7 +9,7 @@ import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const TWL_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.1.10';
+// const TWL_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.1.11';
 
 const NUM_EXPECTED_TWL_TSV_FIELDS = 6; // so expects 5 tabs per line
 const EXPECTED_TWL_HEADING_LINE = 'Reference\tID\tTags\tOrigWords\tOccurrence\tTWLink';
@@ -415,9 +415,10 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
             if (isWhitespace(TWLink))
                 addNoticePartial({ priority: 796, message: "Field is only whitespace", fieldName: 'TWLink', rowID, location: ourRowLocation });
             else { // More than just whitespace
-                if (!TWLink.startsWith('rc://*/tw/dict/bible/'))
-                    addNoticePartial({ priority: 798, message: "Field doesn’t contain expected TW link", details: `should start with 'rc://*/tw/dict/bible/'`, fieldName: 'TWLink', rowID, location: ourRowLocation });
-                else { // it starts correctly
+                if (!TWLink.startsWith('rc://*/tw/dict/bible/')) {
+                    const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + TWLink.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < TWLink.length ? '…' : '')
+                    addNoticePartial({ priority: 798, message: "Field doesn’t contain expected TW link", details: `should start with 'rc://*/tw/dict/bible/'`, fieldName: 'TWLink', rowID, excerpt, location: ourRowLocation });
+                } else { // it starts correctly
                     const bits = TWLink.substring('rc://*/tw/dict/bible/'.length).split('/'); // Get the last two bits of the link path
                     // debugLog(`checkTWL_TSV6DataRow checking ${bookID} ${rowID} TWLink='${TWLink}' got bits=${JSON.stringify(bits)}`);
                     if (bits[0] !== 'kt' && bits[0] !== 'names' && bits[0] !== 'other') {

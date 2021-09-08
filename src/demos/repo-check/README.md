@@ -36,7 +36,7 @@ import RepoCheck from './RepoCheck';
   // repoName='en_sn' // Study Notes (TSV)
   // repoName='en_sq' // Study Questions (TSV)
   // repoName='en_tw' // Translation Words (1,000+ markdown files)
-  repoName='en_ta' // Translation Academy (700+ markdown files)
+  // repoName='en_ta' // Translation Academy (700+ markdown files)
   // repoName='en_obs' // Open Bible Stories (50+ markdown files)
   // repoName='en_obs-tn' // Open Bible Stories Translation Notes (markdown files)
   // repoName='en_obs-twl' // Open Bible Stories Translation Words Links (TSV)

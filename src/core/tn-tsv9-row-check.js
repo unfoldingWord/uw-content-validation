@@ -485,11 +485,11 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
                 const adjustedOccurrenceNote = occurrenceNote.replace(/<br>/g, '\n');
                 ONSuggestion = await ourMarkdownTextChecks(rowID, 'OccurrenceNote', adjustedOccurrenceNote, true, ourRowLocation, checkingOptions);
                 // await ourCheckNotesLinksToOutside(rowID, 'OccurrenceNote', adjustedOccurrenceNote, ourRowLocation, linkCheckingOptions);
-                let regexResultArray, linksList = [], foundSR = false;
-                while ((regexResultArray = TA_REGEX.exec(adjustedOccurrenceNote))) {
-                    // debugLog("Got TA Regex in OccurrenceNote", JSON.stringify(regexResultArray));
-                    linksList.push(regexResultArray[1])
-                    if (regexResultArray[1] === supportReference) foundSR = true;
+                let regexMatchObject, linksList = [], foundSR = false;
+                while ((regexMatchObject = TA_REGEX.exec(adjustedOccurrenceNote))) {
+                    // debugLog("Got TA Regex in OccurrenceNote", JSON.stringify(regexMatchObject));
+                    linksList.push(regexMatchObject[1])
+                    if (regexMatchObject[1] === supportReference) foundSR = true;
                 }
                 if (linksList.length && V !== 'intro') {
                     let details = supportReference ? `SR='${supportReference}'` : "empty SR field"

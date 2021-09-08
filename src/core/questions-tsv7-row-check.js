@@ -457,10 +457,10 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
             else { // More than just whitespace
                 RSuggestion = await ourMarkdownTextChecks(rowID, 'Question', question, true, ourRowLocation, checkingOptions);
                 // await ourCheckNotesLinksToOutside(rowID, 'Question', question, ourRowLocation, linkCheckingOptions);
-                // let regexResultArray;
-                // while ((regexResultArray = TA_REGEX.exec(question))) {
-                //     // debugLog("Got TA Regex in Question", JSON.stringify(regexResultArray));
-                //     const adjustedLink = regexResultArray[0].substring(2, regexResultArray[0].length - 2)
+                // let regexMatchObject;
+                // while ((regexMatchObject = TA_REGEX.exec(question))) {
+                //     // debugLog("Got TA Regex in Question", JSON.stringify(regexMatchObject));
+                //     const adjustedLink = regexMatchObject[0].substring(2, regexMatchObject[0].length - 2)
                 //     if (supportReference !== adjustedLink && V !== 'intro') {
                 //         const details = supportReference ? `(SR='${supportReference}')` : "(empty SR field)"
                 //         addNoticePartial({ priority: 786, message: "Should have a SupportReference when OccurrenceNote has a TA link", details, rowID, fieldName: 'Question', excerpt: adjustedLink, location: ourRowLocation });
@@ -486,10 +486,10 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
             else { // More than just whitespace
                 RSuggestion = await ourMarkdownTextChecks(rowID, 'Response', response, true, ourRowLocation, checkingOptions);
                 // await ourCheckNotesLinksToOutside(rowID, 'Response', response, ourRowLocation, linkCheckingOptions);
-                // let regexResultArray;
-                // while ((regexResultArray = TA_REGEX.exec(answer))) {
-                //     // debugLog("Got TA Regex in Response", JSON.stringify(regexResultArray));
-                //     const adjustedLink = regexResultArray[0].substring(2, regexResultArray[0].length - 2)
+                // let regexMatchObject;
+                // while ((regexMatchObject = TA_REGEX.exec(answer))) {
+                //     // debugLog("Got TA Regex in Response", JSON.stringify(regexMatchObject));
+                //     const adjustedLink = regexMatchObject[0].substring(2, regexMatchObject[0].length - 2)
                 //     if (supportReference !== adjustedLink && V !== 'intro') {
                 //         const details = supportReference ? `(SR='${supportReference}')` : "(empty SR field)"
                 //         addNoticePartial({ priority: 786, message: "Should have a SupportReference when OccurrenceNote has a TA link", details, rowID, fieldName: 'Response', excerpt: adjustedLink, location: ourRowLocation });
