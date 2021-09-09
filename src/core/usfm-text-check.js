@@ -14,7 +14,7 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.10.8';
+// const USFM_VALIDATOR_VERSION_STRING = '0.10.9';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for STs
@@ -296,11 +296,17 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         //  which can be quite time-consuming on large, complex USFM files
         // functionLog("Running our BCS USFM grammar check (can take quite a while for a large book)…");
 
-        const grammarCheckResult = runBCSGrammarCheck('strict', bookID, fileText, filename, fileLocation, checkingOptions);
-        // NOTE: We haven’t figured out how to get ERRORS out of this parser yet
-        // debugLog(`  Finished our BCS USFM grammar check with ${grammarCheckResult.isValidUSFM} and ${grammarCheckResult.warnings.length} warnings.`);
-        addSuccessMessage(`Checked USFM Grammar (strict mode) ${grammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN’T validate)"}`);
-
+        let grammarCheckResult;
+        try {
+            grammarCheckResult = runBCSGrammarCheck('strict', bookID, fileText, filename, fileLocation, checkingOptions);
+            // NOTE: We haven’t figured out how to get ERRORS out of this parser yet
+            // debugLog(`  Finished our BCS USFM grammar check with ${grammarCheckResult.isValidUSFM} and ${grammarCheckResult.warnings.length} warnings.`);
+            addSuccessMessage(`Checked USFM Grammar (strict mode) ${grammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN’T validate)"}`);
+        } catch (e) {
+            userLog(`ourRunBCSGrammarCheck got error: ${e}`);
+            addNoticePartial({ priority: 400, message: "USFMGrammar failed to run", details: `for ${bookID} got ${e}`, location: fileLocation });
+            return;
+        }
         // if (!grammarCheckResult.isValidUSFM) // TEMP DEGRADE TO WARNING 994 -> 544 ................XXXXXXXXXXXXXXXXXXXXXX
         // Don’t do this since we add the actual error message elsewhere now
         // addNoticePartial({priority:994, '', '', `USFM3 Grammar Check (strict mode) doesn’t pass`, location:fileLocation});
@@ -753,10 +759,11 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                 // debugLog(`checkUSFMLineText 860 regexMatchObject: ${typeof regexMatchObject} (${regexMatchObject.length}) '${regexMatchObject}' ${JSON.stringify(regexMatchObject)}`);
                 // debugLog(`checkUSFMLineText 860 regexMatchObject: ${typeof regexMatchObject} ${Object.keys(regexMatchObject)}`); // object with keys: 0,index,input,groups
                 // debugLog(`checkUSFMLineText 860 regexMatchObject: ${typeof regexMatchObject[0]} (${regexMatchObject[0].length}) '${regexMatchObject[0]}'  ${typeof regexMatchObject[0][0]} (${regexMatchObject[0][0].length}) '${regexMatchObject[0][0]}'`);
-                debugLog(`checkUSFMLineText 860: ${bookID} ${C}:${V} line ${lineNumber} got BAD final consonant regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
+                // debugLog(`checkUSFMLineText 860: ${bookID} ${C}:${V} line ${lineNumber} got BAD final consonant regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
                 const characterIndex = regexMatchObject.index;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-                addNoticePartial({ priority: 860, message: "Unexpected Hebrew final consonant not at word end", details: `found ${regexMatchObject.length} '${regexMatchObject}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+                if (excerpt.indexOf('ןׄ') === -1) // Allow this one exception for ְׄ⁠אַׄהֲׄרֹ֛ׄןׄ in Num 3:39
+                    addNoticePartial({ priority: 860, message: "Unexpected Hebrew final consonant not at word end", details: `found ${regexMatchObject.length} '${regexMatchObject}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
         }
 

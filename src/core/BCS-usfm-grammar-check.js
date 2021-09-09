@@ -78,6 +78,9 @@ export function runBCSGrammarCheck(strictnessString, bookID, fileText, filename,
         } catch (secondError) {
             debugLog(`USFMGrammar second error: ${secondError}`);
         }
+        // if (ourErrorObject.excerpt.startsWith('\\va ') || ourErrorObject.excerpt.startsWith('\\ca ')) // lower the priority
+        if (parserError.indexOf('\\va ') >= 0 || parserError.indexOf('\\ca ') >= 0)
+            ourErrorObject.priority = 140; // from 840
         return { isValidUSFM: false, error: ourErrorObject, warnings: [] };
     }
     let parserMessages;
