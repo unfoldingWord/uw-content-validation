@@ -376,7 +376,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
         else {
             if (rowID.length !== 4) {
                 addNoticePartial({ priority: 778, message: "Row ID should be exactly 4 characters", details: `not ${rowID.length}`, rowID, fieldName: 'ID', excerpt: rowID, location: ourRowLocation });
-                if (rowID.length > 4) RIDSuggestion = rowID.substring(0, 5);
+                if (rowID.length > 4) RIDSuggestion = rowID.slice(0, 5);
                 else { // must be < 4
                     RIDSuggestion = rowID;
                     while (RIDSuggestion.length < 4) RIDSuggestion += LC_ALPHABET_PLUS_DIGITS[Math.floor(Math.random() * LC_ALPHABET_PLUS_DIGITS.length)];;
@@ -492,7 +492,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
                 while ((regexMatchObject = TA_REGEX.exec(adjustedNote))) {
                     // debugLog("Got TA Regex in Note", JSON.stringify(regexMatchObject));
                     linksList.push(regexMatchObject[1])
-                    const adjustedLink = regexMatchObject[0].substring(2, regexMatchObject[0].length - 2)
+                    const adjustedLink = regexMatchObject[0].slice(2, regexMatchObject[0].length - 2)
                     if (adjustedLink === supportReference) foundSR = true;
                 }
                 if (linksList.length && V !== 'intro') {

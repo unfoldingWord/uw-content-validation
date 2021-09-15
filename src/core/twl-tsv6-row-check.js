@@ -336,7 +336,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         else {
             if (rowID.length !== 4) {
                 addNoticePartial({ priority: 778, message: "Row ID should be exactly 4 characters", details: `not ${rowID.length}`, rowID, fieldName: 'ID', excerpt: rowID, location: ourRowLocation });
-                if (rowID.length > 4) RIDSuggestion = rowID.substring(0, 5);
+                if (rowID.length > 4) RIDSuggestion = rowID.slice(0, 5);
                 else { // must be < 4
                     RIDSuggestion = rowID;
                     while (RIDSuggestion.length < 4) RIDSuggestion += LC_ALPHABET_PLUS_DIGITS[Math.floor(Math.random() * LC_ALPHABET_PLUS_DIGITS.length)];;
@@ -419,7 +419,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
                     const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + TWLink.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < TWLink.length ? '…' : '')
                     addNoticePartial({ priority: 798, message: "Field doesn’t contain expected TW link", details: `should start with 'rc://*/tw/dict/bible/'`, fieldName: 'TWLink', rowID, excerpt, location: ourRowLocation });
                 } else { // it starts correctly
-                    const bits = TWLink.substring('rc://*/tw/dict/bible/'.length).split('/'); // Get the last two bits of the link path
+                    const bits = TWLink.slice('rc://*/tw/dict/bible/'.length).split('/'); // Get the last two bits of the link path
                     // debugLog(`checkTWL_TSV6DataRow checking ${bookID} ${rowID} TWLink='${TWLink}' got bits=${JSON.stringify(bits)}`);
                     if (bits[0] !== 'kt' && bits[0] !== 'names' && bits[0] !== 'other') {
                         characterIndex = 'rc://*/tw/dict/bible/'.length;

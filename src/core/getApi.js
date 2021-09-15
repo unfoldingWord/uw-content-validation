@@ -146,7 +146,7 @@ export function formRepoName(languageCode, repoCode) {
 
   let repoName;
 
-  // if (repoCode.endsWith('2')) repoCode = repoCode.substring(0, repoCode.length - 1);
+  // if (repoCode.endsWith('2')) repoCode = repoCode.slice(0, repoCode.length - 1);
   repoName = `${repo_languageCode}_${repoCode.toLowerCase()}`;
   return repoName;
 }
@@ -272,7 +272,7 @@ export async function cachedGetBookFilenameFromManifest({ username, repository, 
   for (const projectEntry of manifestJSON.projects) {
     if (projectEntry.identifier === bookID) {
       let bookPath = projectEntry.path;
-      if (bookPath.startsWith('./')) bookPath = bookPath.substring(2);
+      if (bookPath.startsWith('./')) bookPath = bookPath.slice(2);
       return bookPath;
     }
   }
@@ -584,7 +584,7 @@ export async function cachedGetFileUsingFullURL({ uri, params }) {
         // zip.forEach(function (relativePath) {
         // debugLog(`relPath=${relativePath}`); // Displays 'relPath=360px/obs-en-17-09.jpg'
         // })
-        const zipPath = uri.substring(31); // Drop https://cdn.door43.org/obs/jpg/ to get 360px/obs-en-01-05.jpg
+        const zipPath = uri.slice(31); // Drop https://cdn.door43.org/obs/jpg/ to get 360px/obs-en-01-05.jpg
         // debugLog(`  zipPath=${zipPath}`);
         pictureContents = await zip.file(zipPath).async('string');
         // debugLog(`    Got zipBlob ${pictureContents.length} bytes`);
@@ -712,7 +712,7 @@ export async function getFileListFromZip({ username, repository, branchOrRelease
         if (!relativePath.endsWith('/')) // it’s not a folder
         {
           if (relativePath.startsWith(`${repository}/`)) // remove repo name prefix
-            relativePath = relativePath.substring(repository.length + 1);
+            relativePath = relativePath.slice(repository.length + 1);
           if (relativePath.length
             && !relativePath.startsWith('.git') // skips files in these folders
             && !relativePath.startsWith('.apps') // skips files in this folder

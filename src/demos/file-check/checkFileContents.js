@@ -64,9 +64,9 @@ export async function checkFileContents(username, languageCode, repoCode, branch
 
   let checkFileResultObject = { checkedFileCount: 0 };
   if (filenameLower.endsWith('.tsv')) {
-    const filenameMain = filepath.substring(0, filepath.length - 4); // drop .tsv
+    const filenameMain = filepath.slice(0, filepath.length - 4); // drop .tsv
     // functionLog(`checkFileContents have TSV filenameMain=${filenameMain}`);
-    const bookID = filenameMain.startsWith(`${languageCode}_`) || filenameMain.startsWith('en_') ? filenameMain.substring(filenameMain.length - 3) : filenameMain.substring(filenameMain.length - 3, filenameMain.length).toUpperCase();
+    const bookID = filenameMain.startsWith(`${languageCode}_`) || filenameMain.startsWith('en_') ? filenameMain.slice(filenameMain.length - 3) : filenameMain.slice(filenameMain.length - 3, filenameMain.length).toUpperCase();
     // functionLog(`checkFileContents have TSV bookID=${bookID}`);
     //parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
     if (filepath.startsWith(`${languageCode}_`) || filenameMain.startsWith('en_')) {
@@ -75,7 +75,7 @@ export async function checkFileContents(username, languageCode, repoCode, branch
     } else {
       // let adjustedRepoCode = repoCode;
       // if (adjustedRepoCode.startsWith('OBS-'))
-      //   adjustedRepoCode = adjustedRepoCode.substring(4); // Remove the 'OBS-' from the beginning
+      //   adjustedRepoCode = adjustedRepoCode.slice(4); // Remove the 'OBS-' from the beginning
       logicAssert(repoCode !== 'TN' && repoCode !== 'TQ' && repoCode !== 'OBS-TN' && repoCode !== 'OBS-TQ' && repoCode !== 'OBS_SN' && repoCode !== 'OBS-SQ', `This code with ${filenameMain} is not for ${repoCode}`);
       const checkFunction = {
         'TWL': checkTWL_TSV6Table, 'OBS-TWL': checkTWL_TSV6Table,
@@ -89,16 +89,16 @@ export async function checkFileContents(username, languageCode, repoCode, branch
     }
   }
   else if (filenameLower.endsWith('.usfm')) {
-    const filenameMain = filepath.substring(0, filepath.length - 5); // drop .usfm
+    const filenameMain = filepath.slice(0, filepath.length - 5); // drop .usfm
     // debugLog(`Have USFM filenameMain=${filenameMain}`);
-    const bookID = filenameMain.substring(filenameMain.length - 3);
+    const bookID = filenameMain.slice(filenameMain.length - 3);
     // debugLog(`Have USFM bookcode=${bookID}`);
     //parameterAssert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
     checkFileResultObject = await checkUSFMText(languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, newCheckingOptions);
   } else if (filenameLower.endsWith('.sfm')) {
-    const filenameMain = filepath.substring(0, filepath.length - 4); // drop .sfm
+    const filenameMain = filepath.slice(0, filepath.length - 4); // drop .sfm
     userLog(`checkFileContents have SFM filenameMain=${filenameMain}`);
-    const bookID = filenameMain.substring(2, 5);
+    const bookID = filenameMain.slice(2, 5);
     userLog(`checkFileContents have SFM bookcode=${bookID}`);
     //parameterAssert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
     checkFileResultObject = await checkUSFMText(languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, newCheckingOptions);

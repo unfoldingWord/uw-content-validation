@@ -14,7 +14,7 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.10.9';
+// const USFM_VALIDATOR_VERSION_STRING = '0.10.10';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for STs
@@ -677,7 +677,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
 
         for (const expectedMarker of EXPECTED_MARKERS_LIST)
             if (!markerSet.has(expectedMarker)
-                && (!expectedMarker.endsWith('1') || !markerSet.has(expectedMarker.substring(0, expectedMarker.length - 1))))
+                && (!expectedMarker.endsWith('1') || !markerSet.has(expectedMarker.slice(0, expectedMarker.length - 1))))
                 // NOTE: \mt(1) is required by Proskomma so increased this priority
                 addNoticePartial({ priority: expectedMarker === 'mt1' ? 921 : 519, message: "Missing expected USFM line", excerpt: `missing \\${expectedMarker}`, location: fileLocation });
         if (books.isExtraBookID(bookID))
@@ -823,23 +823,23 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             dataAssert(ixWordEnd >= 1, `Why1 is w| = ${ixWordEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
             ixEnd = adjustedRest.indexOf('\\w*');
             if (ixEnd >= 0)
-                adjustedRest = adjustedRest.substring(0, ixWordEnd) + adjustedRest.substring(ixEnd + 3, adjustedRest.length);
+                adjustedRest = adjustedRest.slice(0, ixWordEnd) + adjustedRest.slice(ixEnd + 3, adjustedRest.length);
             else dataAssert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
         } else if (marker === 'zaln-s') { // Remove first \zaln-s milestone (if marker == zaln-s)
             ixEnd = adjustedRest.indexOf('\\*');
             if (ixEnd >= 0)
-                adjustedRest = adjustedRest.substring(ixEnd + 2, adjustedRest.length);
+                adjustedRest = adjustedRest.slice(ixEnd + 2, adjustedRest.length);
             else dataAssert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
         } else if (marker === 'k-s') { // Remove first \k-s milestone (if marker == k-s)
             ixEnd = adjustedRest.indexOf('\\*');
             if (ixEnd >= 0)
-                adjustedRest = adjustedRest.substring(ixEnd + 2, adjustedRest.length);
+                adjustedRest = adjustedRest.slice(ixEnd + 2, adjustedRest.length);
             else dataAssert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
         } else if (marker === 'f') { // Handle first footnote (if marker == f)
             ixEnd = adjustedRest.indexOf('\\f*');
             const startIndex = adjustedRest.startsWith('+ ') ? 2 : 0;
             if (ixEnd >= 0)
-                adjustedRest = adjustedRest.substring(startIndex, ixEnd) + adjustedRest.substring(ixEnd + 3, adjustedRest.length);
+                adjustedRest = adjustedRest.slice(startIndex, ixEnd) + adjustedRest.slice(ixEnd + 3, adjustedRest.length);
             else {
                 // dataAssert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
                 addNoticePartial({ priority: 312, message: 'Possible unclosed footnote', details, lineNumber, C, V, location: lineLocation });
@@ -860,7 +860,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             // debugLog(`  ${nextZIndex} and ${ixZEnd}`);
             if (ixZEnd >= 0) {
                 // dataAssert(ixZEnd > nextZIndex, `Expected closure at ${ixZEnd} to be AFTER \\zaln-s (${nextZIndex})`);
-                adjustedRest = adjustedRest.substring(0, nextZIndex) + adjustedRest.substring(ixZEnd + 2, adjustedRest.length);
+                adjustedRest = adjustedRest.slice(0, nextZIndex) + adjustedRest.slice(ixZEnd + 2, adjustedRest.length);
                 // debugLog(`  Now '${adjustedRest}'`);
             } else {
                 userLog(`\\zaln-s seems unclosed: 'adjustedRest' from '${rest}'`);
@@ -882,7 +882,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             const ixWEnd = adjustedRest.indexOf('\\w*');
             if (ixWEnd >= 0) {
                 dataAssert(ixWEnd > nextWIndex, `Expected closure at ${ixWEnd} to be AFTER \\w (${nextWIndex})`);
-                adjustedRest = adjustedRest.substring(0, nextWIndex) + adjustedRest.substring(nextWIndex + 3, ixWordEnd) + adjustedRest.substring(ixWEnd + 3, adjustedRest.length);
+                adjustedRest = adjustedRest.slice(0, nextWIndex) + adjustedRest.slice(nextWIndex + 3, ixWordEnd) + adjustedRest.slice(ixWEnd + 3, adjustedRest.length);
                 // debugLog(`After removing w field, got '${adjustedRest}'`);
             } else {
                 userLog(`\\w seems unclosed: 'adjustedRest' from '${rest}'`);
@@ -903,7 +903,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             const ixWEnd = adjustedRest.indexOf('\\+w*');
             if (ixWEnd >= 0) {
                 dataAssert(ixWEnd > nextWIndex, `Expected closure at ${ixWEnd} to be AFTER \\+w (${nextWIndex})`);
-                adjustedRest = adjustedRest.substring(0, nextWIndex) + adjustedRest.substring(nextWIndex + 4, ixWordEnd) + adjustedRest.substring(ixWEnd + 4, adjustedRest.length);
+                adjustedRest = adjustedRest.slice(0, nextWIndex) + adjustedRest.slice(nextWIndex + 4, ixWordEnd) + adjustedRest.slice(ixWEnd + 4, adjustedRest.length);
                 // debugLog(`After removing w field, got '${adjustedRest}'`);
             } else {
                 userLog(`\\+w seems unclosed: 'adjustedRest' from '${rest}'`);
@@ -916,7 +916,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             const ixFEnd = adjustedRest.indexOf('\\f*');
             if (ixFEnd >= 0) {
                 dataAssert(ixFEnd > nextWIndex, `Expected closure at ${ixFEnd} to be AFTER \\w (${nextFIndex})`);
-                adjustedRest = `${adjustedRest.substring(0, nextFIndex)} ${adjustedRest.substring(nextFIndex + 5, ixFEnd)}${adjustedRest.substring(ixFEnd + 3, adjustedRest.length)}`;
+                adjustedRest = `${adjustedRest.slice(0, nextFIndex)} ${adjustedRest.slice(nextFIndex + 5, ixFEnd)}${adjustedRest.slice(ixFEnd + 3, adjustedRest.length)}`;
                 // functionLog(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
                 // debugLog(`After removing footnote: '${adjustedRest}'`);
             } else {
@@ -1175,7 +1175,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                 }
                 if (foundChapter && !foundVerse && bookLine.startsWith(`\\v ${V}`)) {
                     foundVerse = true;
-                    bookLine = bookLine.substring(3 + V.length); // Delete verse number so below bit doesn’t fail
+                    bookLine = bookLine.slice(3 + V.length); // Delete verse number so below bit doesn’t fail
                 }
                 if (foundVerse) {
                     if (bookLine.startsWith('\\v ') || bookLine.startsWith('\\c '))
@@ -1280,17 +1280,17 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                     else {
                         const vwolStrongs = verseWordObjectList[ix]?.strongs;
                         if (vwolStrongs !== oStrong) {
-                            addNoticePartial({ priority: 805, message: "Aligned x-strong number doesn’t regexMatchObject original", details: `${originalLanguageRepoCode} had '${vwolStrongs}'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                            addNoticePartial({ priority: 805, message: "Aligned x-strong number doesn’t match original", details: `${originalLanguageRepoCode} had '${vwolStrongs}'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                             zalnSuggestion = zalnContents.replace(`"${oStrong}"`, `"${vwolStrongs}"`);
                         }
                         const vwolLemma = verseWordObjectList[ix]?.lemma;
                         if (vwolLemma !== oLemma) {
-                            addNoticePartial({ priority: 806, message: "Aligned x-lemma doesn’t regexMatchObject original", details: `${originalLanguageRepoCode} had '${vwolLemma}'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                            addNoticePartial({ priority: 806, message: "Aligned x-lemma doesn’t match original", details: `${originalLanguageRepoCode} had '${vwolLemma}'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                             zalnSuggestion = zalnContents.replace(`"${oLemma}"`, `"${vwolLemma}"`);
                         }
                         const vwolMorph = verseWordObjectList[ix]?.morph;
                         if (vwolMorph !== oMorph) {
-                            addNoticePartial({ priority: 804, message: "Aligned x-morph doesn’t regexMatchObject original", details: `${originalLanguageRepoCode} had '${vwolMorph}'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                            addNoticePartial({ priority: 804, message: "Aligned x-morph doesn’t match original", details: `${originalLanguageRepoCode} had '${vwolMorph}'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                             zalnSuggestion = zalnContents.replace(`"${oMorph}"`, `"${vwolMorph}"`);
                         }
                     }
@@ -1486,7 +1486,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                 if (char === ' ') break;
                 // Cope with self-closing milestones like \k-s\*
                 if (char === '\\' && (characterIndex === USFMline.length - 1 || USFMline[characterIndex + 1] !== '*')) {
-                    const excerpt = USFMline.substring(0, excerptLength) + (USFMline.length > excerptLength ? '…' : '');
+                    const excerpt = USFMline.slice(0, excerptLength) + (USFMline.length > excerptLength ? '…' : '');
                     addNoticePartial({ priority: 603, message: "USFM marker doesn’t end with space", C, V, lineNumber, characterIndex, excerpt, location: ourLocation });
                     break;
                 }
@@ -1533,7 +1533,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             let marker, rest;
             if (line[0] === '\\') {
                 marker = findStartMarker(C, V, n, line);
-                rest = line.substring(marker.length + 2); // Skip backslash, marker, and space after marker
+                rest = line.slice(marker.length + 2); // Skip backslash, marker, and space after marker
                 // debugLog(`Line ${n}: marker='\\${marker}' rest='${rest}'`);
             } else { // Line didn’t start with a backslash
                 // NOTE: Some unfoldingWord USFM Bibles commonly have this
@@ -1543,8 +1543,8 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                     // Drop the priority if it’s a "half-likely" character
                     addNoticePartial({ priority: line[0] === ' ' || line[0] === '"' ? 180 : 880, C, V, message: "Expected line to start with backslash", lineNumber: n, characterIndex: 0, excerpt: line[0], location: ourLocation });
                     if (line[1] === '\\') { // Let’s drop the leading punctuation and try to check the rest of the line
-                        marker = line.substring(2).split(' ', 1)[0];
-                        rest = line.substring(marker.length + 2 + 1); // Skip leading character, backslash, marker, and space after marker
+                        marker = line.slice(2).split(' ', 1)[0];
+                        rest = line.slice(marker.length + 2 + 1); // Skip leading character, backslash, marker, and space after marker
                         // debugLog(`USFM after ${line[0]} got '\\${marker}': '${rest}'`);
                     }
                     else
@@ -1563,11 +1563,11 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                 try {
                     intC = ourParseInt(C);
                 } catch (usfmICerror) {
-                    addNoticePartial({ priority: 724, C, V, message: "Unable to convert chapter number to integer", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, excerptHalfLength)}${rest.length > excerptHalfLength ? '…' : ''}`, location: ourLocation });
+                    addNoticePartial({ priority: 724, C, V, message: "Unable to convert chapter number to integer", lineNumber: n, characterIndex: 3, excerpt: `${rest.slice(0, excerptHalfLength)}${rest.length > excerptHalfLength ? '…' : ''}`, location: ourLocation });
                     intC = -999; // Used to prevent consequential errors
                 }
                 if (C === lastC || (intC > 0 && intC !== lastIntC + 1))
-                    addNoticePartial({ priority: 764, C, V, message: "Chapter number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, excerptHalfLength)}${rest.length > excerptHalfLength ? '…' : ''} (${lastC ? lastC : '0'} → ${C})`, location: ourLocation });
+                    addNoticePartial({ priority: 764, C, V, message: "Chapter number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${rest.slice(0, excerptHalfLength)}${rest.length > excerptHalfLength ? '…' : ''} (${lastC ? lastC : '0'} → ${C})`, location: ourLocation });
                 lastC = C; lastV = '0';
                 lastIntC = intC; lastIntV = 0;
             } else if (marker === 'v') {
@@ -1576,11 +1576,11 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                     try {
                         intV = ourParseInt(V);
                     } catch (usfmIVerror) {
-                        addNoticePartial({ priority: 723, C, V, message: "Unable to convert verse number to integer", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, excerptHalfLength)}${rest.length > excerptHalfLength ? '…' : ''}`, location: ourLocation });
+                        addNoticePartial({ priority: 723, C, V, message: "Unable to convert verse number to integer", lineNumber: n, characterIndex: 3, excerpt: `${rest.slice(0, excerptHalfLength)}${rest.length > excerptHalfLength ? '…' : ''}`, location: ourLocation });
                         intV = -999; // Used to prevent consequential errors
                     }
                     if (V === lastV || (intV > 0 && intV !== lastIntV + 1))
-                        addNoticePartial({ priority: 763, C, V, message: "Verse number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, excerptHalfLength)}${rest.length > excerptHalfLength ? '…' : ''} (${lastV ? lastV : '0'} → ${V})`, location: ourLocation });
+                        addNoticePartial({ priority: 763, C, V, message: "Verse number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${rest.slice(0, excerptHalfLength)}${rest.length > excerptHalfLength ? '…' : ''} (${lastV ? lastV : '0'} → ${V})`, location: ourLocation });
                     lastV = V; lastIntV = intV;
                 } else { // handle verse bridge
                     const bits = V.split('-');
@@ -1590,34 +1590,34 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                         intFirstV = ourParseInt(firstV);
                         intSecondV = ourParseInt(secondV);
                     } catch (usfmV12error) {
-                        addNoticePartial({ priority: 762, C, V, message: "Unable to convert verse bridge numbers to integers", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, Math.max(9, excerptLength))}${rest.length > excerptLength ? '…' : ''}`, location: ourLocation });
+                        addNoticePartial({ priority: 762, C, V, message: "Unable to convert verse bridge numbers to integers", lineNumber: n, characterIndex: 3, excerpt: `${rest.slice(0, Math.max(9, excerptLength))}${rest.length > excerptLength ? '…' : ''}`, location: ourLocation });
                         intFirstV = -999; intSecondV = -998; // Used to prevent consequential errors
                     }
                     if (intSecondV <= intFirstV)
-                        addNoticePartial({ priority: 769, C, V, message: "Verse bridge numbers not in ascending order", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, Math.max(9, excerptLength))}${rest.length > excerptLength ? '…' : ''} (${firstV} → ${secondV})`, location: ourLocation });
+                        addNoticePartial({ priority: 769, C, V, message: "Verse bridge numbers not in ascending order", lineNumber: n, characterIndex: 3, excerpt: `${rest.slice(0, Math.max(9, excerptLength))}${rest.length > excerptLength ? '…' : ''} (${firstV} → ${secondV})`, location: ourLocation });
                     else if (firstV === lastV || (intFirstV > 0 && intFirstV !== lastIntV + 1))
-                        addNoticePartial({ priority: 766, C, V, message: "Bridged verse numbers didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, Math.max(9, excerptLength))}${rest.length > excerptLength ? '…' : ''} (${lastV} → ${firstV})`, location: ourLocation });
+                        addNoticePartial({ priority: 766, C, V, message: "Bridged verse numbers didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${rest.slice(0, Math.max(9, excerptLength))}${rest.length > excerptLength ? '…' : ''} (${lastV} → ${firstV})`, location: ourLocation });
                     lastV = secondV; lastIntV = intSecondV;
                 }
             } else if ((vIndex = rest.indexOf('\\v ')) >= 0) {
                 // verse number marker follows another marker on the same line, so it’s inside `rest`
-                const restRest = rest.substring(vIndex + 3);
+                const restRest = rest.slice(vIndex + 3);
                 // debugLog(`Got restRest=${restRest}`);
                 try {
                     intV = parseInt(restRest);
                     // debugLog("Got", intV);
                 } catch (usfmIIVerror) {
-                    addNoticePartial({ priority: 720, C, V, message: "Unable to convert internal verse number to integer", lineNumber: n, characterIndex: 3, excerpt: `${restRest.substring(0, excerptHalfLength)}${restRest.length > excerptHalfLength ? '…' : ''}`, location: ourLocation });
+                    addNoticePartial({ priority: 720, C, V, message: "Unable to convert internal verse number to integer", lineNumber: n, characterIndex: 3, excerpt: `${restRest.slice(0, excerptHalfLength)}${restRest.length > excerptHalfLength ? '…' : ''}`, location: ourLocation });
                     intV = -999; // Used to prevent consequential errors
                 }
                 if (intV > 0 && intV !== lastIntV + 1)
-                    addNoticePartial({ priority: 761, C, V, message: "Verse number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${restRest.substring(0, excerptHalfLength)}${restRest.length > excerptHalfLength ? '…' : ''} (${lastV ? lastV : '0'} → ${V})`, location: ourLocation });
+                    addNoticePartial({ priority: 761, C, V, message: "Verse number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${restRest.slice(0, excerptHalfLength)}${restRest.length > excerptHalfLength ? '…' : ''} (${lastV ? lastV : '0'} → ${V})`, location: ourLocation });
                 lastV = intV.toString(); lastIntV = intV;
             }
 
             if (marker === 'id' && !rest.startsWith(bookID)) {
                 const thisLength = Math.max(4, excerptLength);
-                const excerpt = `${rest.substring(0, thisLength)}${rest.length > thisLength ? '…' : ''}`;
+                const excerpt = `${rest.slice(0, thisLength)}${rest.length > thisLength ? '…' : ''}`;
                 addNoticePartial({ priority: 987, C, V, message: "Expected \\id line to start with book identifier", lineNumber: n, characterIndex: 4, excerpt, location: ourLocation });
             }
 

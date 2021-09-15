@@ -376,7 +376,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
         else {
             if (rowID.length !== 4) {
                 addNoticePartial({ priority: 778, message: "Row ID should be exactly 4 characters", details: `not ${rowID.length}`, rowID, fieldName: 'ID', excerpt: rowID, location: ourRowLocation });
-                if (rowID.length > 4) RIDSuggestion = rowID.substring(0, 5);
+                if (rowID.length > 4) RIDSuggestion = rowID.slice(0, 5);
                 else { // must be < 4
                     RIDSuggestion = rowID;
                     while (RIDSuggestion.length < 4) RIDSuggestion += LC_ALPHABET_PLUS_DIGITS[Math.floor(Math.random() * LC_ALPHABET_PLUS_DIGITS.length)];;
@@ -460,7 +460,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
                 // let regexMatchObject;
                 // while ((regexMatchObject = TA_REGEX.exec(question))) {
                 //     // debugLog("Got TA Regex in Question", JSON.stringify(regexMatchObject));
-                //     const adjustedLink = regexMatchObject[0].substring(2, regexMatchObject[0].length - 2)
+                //     const adjustedLink = regexMatchObject[0].slice(2, regexMatchObject[0].length - 2)
                 //     if (supportReference !== adjustedLink && V !== 'intro') {
                 //         const details = supportReference ? `(SR='${supportReference}')` : "(empty SR field)"
                 //         addNoticePartial({ priority: 786, message: "Should have a SupportReference when OccurrenceNote has a TA link", details, rowID, fieldName: 'Question', excerpt: adjustedLink, location: ourRowLocation });
@@ -489,7 +489,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
                 // let regexMatchObject;
                 // while ((regexMatchObject = TA_REGEX.exec(answer))) {
                 //     // debugLog("Got TA Regex in Response", JSON.stringify(regexMatchObject));
-                //     const adjustedLink = regexMatchObject[0].substring(2, regexMatchObject[0].length - 2)
+                //     const adjustedLink = regexMatchObject[0].slice(2, regexMatchObject[0].length - 2)
                 //     if (supportReference !== adjustedLink && V !== 'intro') {
                 //         const details = supportReference ? `(SR='${supportReference}')` : "(empty SR field)"
                 //         addNoticePartial({ priority: 786, message: "Should have a SupportReference when OccurrenceNote has a TA link", details, rowID, fieldName: 'Response', excerpt: adjustedLink, location: ourRowLocation });

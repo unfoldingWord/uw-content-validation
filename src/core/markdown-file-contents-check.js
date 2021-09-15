@@ -217,12 +217,12 @@ export async function checkMarkdownFileContents(languageCode, repoCode, markdown
       if (line.indexOf('Strong') !== -1) { // NOTE: This is intentionally a very broad catch
         // debugLog(`About to check this ${repoCode} ${markdownFilename} line: ${line}`);
         if (line.startsWith('* Strong’s: ')) { // 12 chars
-          const bits = line.substring(12).split(' ');
+          const bits = line.slice(12).split(' ');
           for (let bit of bits) {
             // debugLog(`About to check this ${repoCode} ${markdownFilename} bit: ${bit}`);
             if (bit.length) { // ignore double-spaces -- they're caught elsewhere
               if (bit[0] === 'H' || bit[0] === 'G') {
-                if (bit.slice(-1) === ',') bit = bit.substring(0, bit.length - 1); // Remove any trailing comma
+                if (bit.slice(-1) === ',') bit = bit.slice(0, bit.length - 1); // Remove any trailing comma
                 // Bit should now be a valid Strong's number
                 await ourCheckStrongsField(n, bit, ourLocation, checkingOptions);
               } else // doesn't start with H or G
@@ -230,7 +230,7 @@ export async function checkMarkdownFileContents(languageCode, repoCode, markdown
             }
           }
         } else
-          addNoticePartial({ priority: 70, message: "Possible unusual TW Strong's line", details: "expected line to start with '* Strong’s: '", excerpt: line.substring(0, excerptLength - 1), location: ourLocation });
+          addNoticePartial({ priority: 70, message: "Possible unusual TW Strong's line", details: "expected line to start with '* Strong’s: '", excerpt: line.slice(0, excerptLength - 1), location: ourLocation });
       }
     }
   }

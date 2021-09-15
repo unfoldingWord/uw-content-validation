@@ -184,9 +184,9 @@ export async function checkStrongsField(languageCode, repoCode, fieldName, field
     } else {
         if (whichTestament === 'old') {
             while (adjustedFieldText.startsWith('b:') || adjustedFieldText.startsWith('c:') || adjustedFieldText.startsWith('d:') || adjustedFieldText.startsWith('i:') || adjustedFieldText.startsWith('k:') || adjustedFieldText.startsWith('l:') || adjustedFieldText.startsWith('m:') || adjustedFieldText.startsWith('s:'))
-                adjustedFieldText = adjustedFieldText.substring(2); // Delete the prefix bit
+                adjustedFieldText = adjustedFieldText.slice(2); // Delete the prefix bit
             while (adjustedFieldText.length > 1 && 'abcdef'.indexOf(adjustedFieldText.slice(-1)) !== -1)
-                adjustedFieldText = adjustedFieldText.substring(0, adjustedFieldText.length - 1); // Delete the suffix bit
+                adjustedFieldText = adjustedFieldText.slice(0, adjustedFieldText.length - 1); // Delete the suffix bit
             if (adjustedFieldText[0] !== 'H') {
                 if (adjustedFieldText !== 'b' && adjustedFieldText !== 'i' && adjustedFieldText !== 'k' && adjustedFieldText !== 'k' && adjustedFieldText !== 'l' && adjustedFieldText !== 'm')
                     // Suppress the message in those cases, but still pretend it’s an error so don’t try to fetch lexicon article below

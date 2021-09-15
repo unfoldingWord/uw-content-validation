@@ -120,13 +120,13 @@ export async function checkLexiconFileContents(languageCode, repoCode, lexiconFi
     let hierarchy = [], currentLevel;
     for (const line of lines) {
         if (line.startsWith('## ')) {
-            currentLevel = line.substring(3);
+            currentLevel = line.slice(3);
             hierarchy.push({ level: currentLevel, sublevels: [] });
         }
         if (currentLevel && line.startsWith('* ')) {
-            let adjustedLine = line.substring(2);
+            let adjustedLine = line.slice(2);
             const colonIndex = adjustedLine.indexOf(':');
-            if (colonIndex !== -1) adjustedLine = adjustedLine.substring(0, colonIndex); // we don’t want the actual data
+            if (colonIndex !== -1) adjustedLine = adjustedLine.slice(0, colonIndex); // we don’t want the actual data
             hierarchy[hierarchy.length - 1].sublevels.push(adjustedLine);
         }
     }

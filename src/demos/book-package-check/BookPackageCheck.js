@@ -157,7 +157,7 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             if (props.ignorePriorityNumberList) { // We need to convert from string to Array
                 //parameterAssert(props.ignorePriorityNumberList[0] === '[' && props.ignorePriorityNumberList[props.ignorePriorityNumberList.length - 1] === ']', `Format of props.ignorePriorityNumberList '${props.ignorePriorityNumberList}' is wrong should be enclosed in []`)
                 processOptions.ignorePriorityNumberList = [];
-                for (const stringBit of props.ignorePriorityNumberList.substring(1, props.ignorePriorityNumberList.length - 1).split(',')) {
+                for (const stringBit of props.ignorePriorityNumberList.slice(1, props.ignorePriorityNumberList.length - 1).split(',')) {
                     const intBit = ourParseInt(stringBit.trim()); // trim allows comma,space to also be used as separator
                     processOptions.ignorePriorityNumberList.push(intBit);
                 }

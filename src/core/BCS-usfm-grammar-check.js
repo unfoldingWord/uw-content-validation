@@ -74,7 +74,7 @@ export function runBCSGrammarCheck(strictnessString, bookID, fileText, filename,
             const errorLineText = fileText.split('\n')[ourErrorObject.lineNumber - 1];
             ourErrorObject.excerpt = (ourErrorObject.characterIndex > excerptHalfLength ? '…' : '') + errorLineText.substring(ourErrorObject.characterIndex - excerptHalfLength, ourErrorObject.characterIndex + excerptHalfLengthPlus) + (ourErrorObject.characterIndex + excerptHalfLengthPlus < errorLineText.length ? '…' : '');
             // NOTE: Not 100% sure that it’s more helpful to the user if we do this next line ???
-            ourErrorObject.details = ourErrorObject.details.substring(totalLink.length); // Delete the line and column numbers that we found
+            ourErrorObject.details = ourErrorObject.details.slice(totalLink.length); // Delete the line and column numbers that we found
         } catch (secondError) {
             debugLog(`USFMGrammar second error: ${secondError}`);
         }
@@ -100,7 +100,7 @@ export function runBCSGrammarCheck(strictnessString, bookID, fileText, filename,
         for (const errorLine of parseError.split('\n')) {
             // debugLog(`BCS errorLine=${errorLine}`);
             if (errorLine.startsWith('>')) {
-                const regexResult = contextRE.exec(errorLine.substring(1).trim());
+                const regexResult = contextRE.exec(errorLine.slice(1).trim());
                 // debugLog(`  regexResult: ${JSON.stringify(regexResult)}`);
                 if (regexResult) {
                     lineNumberString = regexResult[1];
@@ -159,7 +159,7 @@ export function runBCSGrammarCheck(strictnessString, bookID, fileText, filename,
         // debugLog(`warningString: '${warningString}'`);
         // Clean up their warnings a little: Remove trailing spaces and periods
         let adjustedString = warningString.trim(); // Removes the trailing space
-        if (adjustedString.endsWith('.')) adjustedString = adjustedString.substring(0, adjustedString.length - 1);
+        if (adjustedString.endsWith('.')) adjustedString = adjustedString.slice(0, adjustedString.length - 1);
         ourWarnings.push(adjustedString);
     }
 

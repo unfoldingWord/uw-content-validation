@@ -407,8 +407,8 @@ function RenderExcerpt({ excerpt, message }) {
         if (excerpt && excerpt[0] === '[' && excerpt.slice(-1) === ')') { // then the excerpt is a link so let's liven it
             // debugLog(`Here2 RenderExcerpt(${excerpt}, ${message})`);
             const ix = excerpt.indexOf('](');
-            const displayPart = excerpt.substring(1, ix); // Start after the [ until before the ](
-            const linkPart = excerpt.substring(ix + 2, excerpt.length - 1); // Step past the ]( but don’t include the final )
+            const displayPart = excerpt.slice(1, ix); // Start after the [ until before the ](
+            const linkPart = excerpt.slice(ix + 2, excerpt.length - 1); // Step past the ]( but don’t include the final )
             const adjLinkPart = message === "Should http link be https" ? linkPart.replace('http:', 'https:') : linkPart;
             // debugLog(`RenderExcerpt from '${excerpt}' got ix=${ix}, displayPart='${displayPart}', linkPart='${linkPart}', adjLinkPart='${adjLinkPart}'`);
             return <><span style={{ color: 'DimGray' }}>` around ◗[{displayPart}](<a rel="noopener noreferrer" target="_blank" href={adjLinkPart}>{linkPart}</a>)◖`</span></>

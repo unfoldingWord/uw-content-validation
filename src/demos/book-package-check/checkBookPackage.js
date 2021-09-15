@@ -266,7 +266,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       }
     }
     if (markdownFileContent) {
-      const cmtResultObject = await checkMarkdownFileContents(languageCode, repoCode, filename.substring(0, filename.length - 3), markdownFileContent, markdownLocation, checkingOptions);
+      const cmtResultObject = await checkMarkdownFileContents(languageCode, repoCode, filename.slice(0, filename.length - 3), markdownFileContent, markdownLocation, checkingOptions);
       // debugLog(`ourCheckMarkdownFile checkMarkdownFileContents(${repoName}) returned ${cmtResultObject.successList.length} success message(s) and ${cmtResultObject.noticeList.length} notice(s)`);
       // debugLog(`ourCheckMarkdownFile checkMarkdownFileContents(${repoName}) returned ${JSON.stringify(cmtResultObject)}`);
       // NOTE: We ignore the returned success messages here
@@ -356,7 +356,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       // TODO: Ideally we should also make it get the latest release (rather than master)
     }
     if (adjustedRepoCode.endsWith('2')) {
-      adjustedRepoCode = adjustedRepoCode.substring(0, adjustedRepoCode.length - 1); // Remove the '2' from the end
+      adjustedRepoCode = adjustedRepoCode.slice(0, adjustedRepoCode.length - 1); // Remove the '2' from the end
       adjustedBranch = 'newFormat';
       generalLocation = generalLocation.replace(originalBranch, adjustedBranch);
     } else // doesn’t end with 2
@@ -364,7 +364,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     let repoName = formRepoName(languageCode, adjustedRepoCode);
     const repoLocation = ` in ${thisRepoCode}${generalLocation}`;
     if (adjustedRepoCode.startsWith('OBS-'))
-      adjustedRepoCode = adjustedRepoCode.substring(4); // Remove the 'OBS-' from the beginning
+      adjustedRepoCode = adjustedRepoCode.slice(4); // Remove the 'OBS-' from the beginning
     if ((adjustedRepoCode === 'UHB' || adjustedRepoCode === 'UGNT')
       && adjustedUsername !== 'Door43-Catalog' && adjustedUsername !== 'unfoldingWord') {
       userLog(`checkBookPackage: switching ${adjustedRepoCode} username from '${adjustedUsername}' to 'Door43-Catalog'`);

@@ -209,7 +209,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
         // The link should be the entire field (not just a string inside the field), so check for leading/trailing spaces
         const trimStartFieldText = fieldText.trimStart(), trimEndFieldText = fieldText.trimEnd();
         if (trimStartFieldText !== fieldText) {
-            const excerpt = fieldText.substring(0, excerptLength).replace(/ /g, '␣') + (fieldText.length > excerptLength ? '…' : '');
+            const excerpt = fieldText.slice(0, excerptLength).replace(/ /g, '␣') + (fieldText.length > excerptLength ? '…' : '');
             addNoticePartial({ priority: 784, message: "Unexpected leading whitespace in link field", excerpt, characterIndex: 0, location: ourLocation });
         }
         else if (trimEndFieldText !== fieldText) {
@@ -1287,7 +1287,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     let generalFileContent, hadError = false;
                     try {
                         // generalFileContent = await cachedGetFileUsingFullURL({ uri });
-                        // debugLog(`${displayText} ${uri} got: (${generalFileContent.length}) ${generalFileContent.substring(0, 10)}...`);
+                        // debugLog(`${displayText} ${uri} got: (${generalFileContent.length}) ${generalFileContent.slice(0, 10)}...`);
                         // debugLog(`uri='${uri}', serverString='${serverString}'`);
                         // NOTE: The following line (with or without the mode) doesn’t help -- actually makes things slightly worse
                         // const response = await fetch(uri, {headers:{'Access-Control-Allow-Origin': serverString}});
@@ -1296,7 +1296,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                         const response = await fetch(uri);
                         if (response.ok) {// if HTTP-status is 200-299
                             generalFileContent = await response.text();
-                            // debugLog(`General link ${displayText} @ ${uri} got: (${generalFileContent.length}) ${generalFileContent.substring(0, 10)}...`);
+                            // debugLog(`General link ${displayText} @ ${uri} got: (${generalFileContent.length}) ${generalFileContent.slice(0, 10)}...`);
                         } else throw new Error(`Our Network error: ${response.statusCode}`);
                     } catch (trcGCerror) {
                         // debugLog(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load general ${uri}: ${trcGCerror}`);

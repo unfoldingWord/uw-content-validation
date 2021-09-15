@@ -148,7 +148,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
 
         // Empty fields on the next line are bookID, C, V (as we don’t have that information here)
         let adjustedTextOrFileName = textOrFileName;
-        if (textOrFileName === 'README.md' || textOrFileName === 'LICENSE.md') adjustedTextOrFileName = textOrFileName.substring(0, textOrFileName.length - 3);
+        if (textOrFileName === 'README.md' || textOrFileName === 'LICENSE.md') adjustedTextOrFileName = textOrFileName.slice(0, textOrFileName.length - 3);
         let adjustedLanguageCode = languageCode; // This is the language code of the resource with the link
         if (languageCode === 'hbo' || languageCode === 'el-x-koine') adjustedLanguageCode = 'en' // This is a guess (and won’t be needed for TWs when we switch to TWLs)
         const coTNlResultObject = await checkNotesLinksToOutside(languageCode, repoCode, '', '', '', adjustedTextOrFileName, lineText, location, { ...checkingOptions, defaultLanguageCode: adjustedLanguageCode });
@@ -316,7 +316,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
             if (thisHeaderLevel > currentHeaderLevel + 1
                 && !textOrFileName.startsWith('TA ')) { // Suppress this notice for translationAcademy subsections
                 // debugLog(`checkMarkdownText: Got2 thisHeaderLevel=${thisHeaderLevel} after ${currentHeaderLevel} for line ${n}: ${line}`);
-                const excerpt = line.substring(0, excerptLength) + (line.length > excerptLength ? '…' : '');
+                const excerpt = line.slice(0, excerptLength) + (line.length > excerptLength ? '…' : '');
                 const notice = { priority: 172, message: "Header levels should only increment by one", details: `Going from level ${currentHeaderLevel} to level ${thisHeaderLevel}`, lineNumber: n, characterIndex: 0, excerpt, location: ourLocation };
                 if (textOrFileName === 'Note' || textOrFileName === 'OccurrenceNote')
                     notice.details = `markdown line ${n}`;

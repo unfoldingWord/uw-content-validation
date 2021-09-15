@@ -8,7 +8,7 @@ import { repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetR
 import { userLog, functionLog, debugLog, logicAssert, parameterAssert } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.6.2';
+// const REPO_VALIDATOR_VERSION_STRING = '0.6.4';
 
 
 /**
@@ -121,16 +121,16 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
 
   /**
    *
-   * @param {string} bookOrFileCode
+   * @param {string} cfBookOrFileCode
    * @param {string} cfBookID
-   * @param {string} filename
-   * @param {string} fileContent
-   * @param {string} fileLocation
-   * @param {Object} checkingOptions
+   * @param {string} cfFilename
+   * @param {string} cfFileContent
+   * @param {string} cfFileLocation
+   * @param {Object} cfCheckingOptions
    */
-  async function ourCheckRepoFileContents(bookOrFileCode, cfBookID, filename, fileContent, fileLocation, checkingOptions) {
+  async function ourCheckRepoFileContents(cfBookOrFileCode, cfBookID, cfFilename, cfFileContent, cfFileLocation, cfCheckingOptions) {
     // We assume that checking for compulsory fields is done elsewhere
-    // functionLog(`checkRepo ourCheckRepoFileContents(bk/fC='${bookOrFileCode}', bk='${cfBookID}', fn='${filename}', ${fileContent.length}, ${fileLocation}, ${JSON.stringify(checkingOptions)})…`);
+    // functionLog(`checkRepo ourCheckRepoFileContents(bk/fC='${cfBookOrFileCode}', bk='${cfBookID}', fn='${cfFilename}', ${cfFileContent.length}, ${cfFileLocation}, ${JSON.stringify(cfCheckingOptions)})…`);
 
     // Updates the global list of notices
     //parameterAssert(bookOrFileCode !== undefined, "ourCheckRepoFileContents: 'bookOrFileCode' parameter should be defined");
@@ -151,10 +151,10 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
     //parameterAssert(checkingOptions !== undefined, "ourCheckRepoFileContents: 'checkingOptions' parameter should be defined");
 
     let adjustedLanguageCode = languageCode;
-    if (filename === 'manifest.yaml' || filename === 'LICENSE.md'
-      || ((languageCode === 'el-x-koine' || languageCode === 'hbo') && filename === 'README.md'))
+    if (/*filename === 'manifest.yaml' || */cfFilename === 'LICENSE.md'
+      || ((languageCode === 'el-x-koine' || languageCode === 'hbo') && cfFilename === 'README.md'))
       adjustedLanguageCode = 'en'; // Correct the language for these auxilliary files
-    const cfcResultObject = await checkFileContents(username, adjustedLanguageCode, repoCode, repoBranch, filename, fileContent, fileLocation, checkingOptions);
+    const cfcResultObject = await checkFileContents(username, adjustedLanguageCode, repoCode, repoBranch, cfFilename, cfFileContent, cfFileLocation, cfCheckingOptions);
     // debugLog("checkFileContents() returned", resultObject.successList.length, "success message(s) and", resultObject.noticeList.length, "notice(s)");
     // for (const successEntry of resultObject.successList)
     //     userLog("  ", successEntry);
@@ -164,13 +164,19 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
       // We add the bookOrFileCode as an extra value (unless it’s already there from a TA or TW check)
       if (cfcNoticeEntry.extra)
         checkRepoResult.noticeList.push(cfcNoticeEntry); // Add this notice directly
-      else {
+      else { // no extra field yet
         // addNoticePartial({ ...cfcNoticeEntry, bookID: cfBookID, extra: bookOrFileCode.toUpperCase() });
-        const newNoticeObject = { ...cfcNoticeEntry, bookID: cfBookID };
-        if (bookOrFileCode !== '01' // UGL (from content/G04230/01.md)
-          && (bookOrFileCode[0] !== 'H' || bookOrFileCode.length !== 5)) // UHAL, e.g., H0612 from content/H0612.md
-          newNoticeObject.extra = bookOrFileCode.toUpperCase();
-        addNoticePartial(newNoticeObject);
+        // const newNoticeObject = { ...cfcNoticeEntry, bookID: cfBookID };
+        if (cfBookID.length) cfcNoticeEntry.bookID = cfBookID;
+        if (/[0-5][0-9]/.test(cfBookOrFileCode)) {// Assume it's an OBS story number 01…50
+          // debugLog(`ourCheckRepoFileContents adding integer extra: 'Story ${cfBookOrFileCode}'`);
+          cfcNoticeEntry.extra = `Story ${cfBookOrFileCode}`;
+        } else if (cfBookOrFileCode !== '01' // UGL (from content/G04230/01.md)
+          && (cfBookOrFileCode[0] !== 'H' || cfBookOrFileCode.length !== 5)) {// UHAL, e.g., H0612 from content/H0612.md
+          // debugLog(`ourCheckRepoFileContents adding UC extra: '${cfBookOrFileCode.toUpperCase()}'`);
+          cfcNoticeEntry.extra = cfBookOrFileCode.toUpperCase();
+        }
+        addNoticePartial(cfcNoticeEntry);
       }
     /* Removing the following code as it’s unneeded
     //  as we don’t enable TA or TW checking per repo anyway
@@ -254,12 +260,12 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
         // debugLog(`thisFilenameExtension=${thisFilenameExtension}`);
 
         // Default to the main filename without the extension
-        let bookOrFileCode = thisFilename.substring(0, thisFilename.length - thisFilenameExtension.length - 1);
-        let ourBookID = '';
+        let bookOrFileCode = thisFilename.slice(0, thisFilename.length - thisFilenameExtension.length - 1);
+        let ourBookID = ''; // Stays blank for OBS files
         if (thisFilenameExtension === 'usfm') {
-          // const filenameMain = thisFilename.substring(0, thisFilename.length - 5); // drop .usfm
+          // const filenameMain = thisFilename.slice(0, thisFilename.length - 5); // drop .usfm
           // debugLog(`Have USFM filenameMain=${bookOrFileCode}`);
-          const bookID = bookOrFileCode.substring(bookOrFileCode.length - 3).toUpperCase();
+          const bookID = bookOrFileCode.slice(bookOrFileCode.length - 3).toUpperCase();
           // debugLog(`Have USFM bookcode=${bookID}`);
           //parameterAssert(books.isValidBookID(bookID), `checkRepo: '${bookID}' is not a valid USFM book identifier (for USFM)`);
           bookOrFileCode = bookID;
@@ -270,7 +276,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
           // debugLog(`Have TSV bookOrFileCode(${bookOrFileCode.length})='${bookOrFileCode}'`);
           let bookID;
           // bookOrFileCode could be something like 'en_tn_09-1SA.tsv ' or 'tn_2CO' or 'twl_1CH'
-          // bookID = (bookOrFileCode.length === 6 || bookOrFileCode.length === 7) ? bookOrFileCode.substring(0, 3) : bookOrFileCode.slice(-3).toUpperCase();
+          // bookID = (bookOrFileCode.length === 6 || bookOrFileCode.length === 7) ? bookOrFileCode.slice(0, 3) : bookOrFileCode.slice(-3).toUpperCase();
           bookID = bookOrFileCode.slice(-3).toUpperCase();
           logicAssert(bookID !== 'twl' && bookID !== 'TWL', `Should get a valid bookID here, not '${bookID}'`)
           // debugLog(`Have TSV bookcode(${bookID.length})='${bookID}'`);
@@ -307,7 +313,8 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
           continue;
         }
 
-        // debugLog("checkRepo: Try to load", username, repoName, thisFilepath, branch);
+        // debugLog(`checkRepo: Try to load ${username} ${repoName} ${thisFilepath} ${repoBranch}`);
+        // debugLog(`checkRepo:        bookOrFileCode='${bookOrFileCode}' ourBookID='${ourBookID}'`);
         const getFile_ = givenCheckingOptions?.getFile ? givenCheckingOptions.getFile : cachedGetFile;
         let repoFileContent;
         try {

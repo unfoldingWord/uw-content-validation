@@ -144,7 +144,7 @@ export function checkTextfileContents(languageCode, repoCode, fileType, filename
     //     if (ix === -1) ix = fileText.indexOf('.info');
     //     if (ix === -1) ix = fileText.indexOf('.bible');
     //     if (ix >= 0) {
-    //         const excerpt = (ix>excerptHalfLength ? '…' : '') + fileText.substring(ix-excerptHalfLength, ix+excerptHalfLengthPlus) + (ix+excerptHalfLengthPlus < fileText.length ? '…' : '')
+    //         const excerpt = (ix>excerptHalfLength ? '…' : '') + fileText.slice(ix-excerptHalfLength, ix+excerptHalfLengthPlus) + (ix+excerptHalfLengthPlus < fileText.length ? '…' : '')
     //         addNotice({765, "Unexpected link", ix,excerpt, ourAtString});
     //     }
     // }
