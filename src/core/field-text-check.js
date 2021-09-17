@@ -5,7 +5,7 @@ import { OPEN_CLOSE_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, BAD_CHARACTER
 import { debugLog, parameterAssert } from './utilities';
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.13';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.14';
 
 
 /**
@@ -406,7 +406,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
                     && (nextChar === '*' || badTwoChars === '![')) // allow markdown formatting
                     continue;
                 if (badChars.startsWith('.md') || badChars.startsWith('.usfm') || badChars.startsWith('.tsv') || badChars.startsWith('.yaml')
-                    || badChars.startsWith('.org')
+                    || badChars.startsWith('.org') || badChars.startsWith('.com') || badChars.startsWith('.bible')
                     || (badChar === '.' && (fieldText.indexOf('http') !== -1 || fieldText.indexOf('rc:') !== -1 || fieldName.endsWith('manifest line'))))
                     continue; // Skip these known cases
                 if (badTwoChars === ':H' && repoCode === 'UHB') // e.g., strong="c:H1162"
