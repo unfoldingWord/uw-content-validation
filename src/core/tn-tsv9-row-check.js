@@ -54,11 +54,13 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
     //parameterAssert(bookID.length === 3, `checkTN_TSV9DataRow: 'bookID' parameter should be three characters long not ${bookID.length}`);
     //parameterAssert(bookID.toUpperCase() === bookID, `checkTN_TSV9DataRow: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
     //parameterAssert(books.isValidBookID(bookID), `checkTN_TSV9DataRow: '${bookID}' is not a valid USFM book identifier`);
-    // //parameterAssert(givenC !== undefined, "checkTN_TSV9DataRow: 'givenC' parameter should be defined");
-    if (givenC) { //parameterAssert(typeof givenC === 'string', `checkTN_TSV9DataRow: 'givenC' parameter should be a string not a '${typeof givenC}'`);
+    // parameterAssert(givenC !== undefined, "checkTN_TSV9DataRow: 'givenC' parameter should be defined");
+    if (givenC) {
+        //parameterAssert(typeof givenC === 'string', `checkTN_TSV9DataRow: 'givenC' parameter should be a string not a '${typeof givenC}'`);
     }
-    // //parameterAssert(givenV !== undefined, "checkTN_TSV9DataRow: 'givenV' parameter should be defined");
-    if (givenV) { //parameterAssert(typeof givenV === 'string', `checkTN_TSV9DataRow: 'givenV' parameter should be a string not a '${typeof givenV}'`);
+    // parameterAssert(givenV !== undefined, "checkTN_TSV9DataRow: 'givenV' parameter should be defined");
+    if (givenV) {
+        //parameterAssert(typeof givenV === 'string', `checkTN_TSV9DataRow: 'givenV' parameter should be a string not a '${typeof givenV}'`);
     }
     //parameterAssert(givenRowLocation !== undefined, "checkTN_TSV9DataRow: 'givenRowLocation' parameter should be defined");
     //parameterAssert(typeof givenRowLocation === 'string', `checkTN_TSV9DataRow: 'givenRowLocation' parameter should be a string not a '${typeof givenRowLocation}'`);
@@ -82,22 +84,24 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
     * @param {string} location - description of where the issue is located
     */
     function addNoticePartial(incompleteNoticeObject) {
-        // functionLog(`checkTN_TSV9DataRow addNoticePartial(priority=${noticeObject.priority}) ${noticeObject.message}, ${noticeObject.characterIndex}, ${noticeObject.excerpt}, ${noticeObject.location}`);
-        //parameterAssert(noticeObject.priority !== undefined, "checkTN_TSV9DataRow addNoticePartial: 'priority' parameter should be defined");
-        //parameterAssert(typeof noticeObject.priority === 'number', `checkTN_TSV9DataRow addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        //parameterAssert(noticeObject.message !== undefined, "checkTN_TSV9DataRow addNoticePartial: 'message' parameter should be defined");
-        //parameterAssert(typeof noticeObject.message === 'string', `checkTN_TSV9DataRow addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // //parameterAssert(lineNumber !== undefined, "checkTN_TSV9DataRow addNoticePartial: 'lineNumber' parameter should be defined");
-        // //parameterAssert(typeof lineNumber === 'number', `checkTN_TSV9DataRow addNoticePartial: 'lineNumber' parameter should be a number not a '${typeof lineNumber}': ${lineNumber}`);
-        // //parameterAssert(characterIndex !== undefined, "checkTN_TSV9DataRow addNoticePartial: 'characterIndex' parameter should be defined");
-        if (incompleteNoticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `checkTN_TSV9DataRow addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        // functionLog(`checkTN_TSV9DataRow addNoticePartial(priority=${incompleteNoticeObject.priority}) ${incompleteNoticeObject.message}, ${incompleteNoticeObject.characterIndex}, ${incompleteNoticeObject.excerpt}, ${incompleteNoticeObject.location}`);
+        //parameterAssert(incompleteNoticeObject.priority !== undefined, "checkTN_TSV9DataRow addNoticePartial: 'priority' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.priority === 'number', `checkTN_TSV9DataRow addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}': ${incompleteNoticeObject.priority}`);
+        //parameterAssert(incompleteNoticeObject.message !== undefined, "checkTN_TSV9DataRow addNoticePartial: 'message' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.message === 'string', `checkTN_TSV9DataRow addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}': ${incompleteNoticeObject.message}`);
+        // parameterAssert(lineNumber !== undefined, "checkTN_TSV9DataRow addNoticePartial: 'lineNumber' parameter should be defined");
+        // parameterAssert(typeof lineNumber === 'number', `checkTN_TSV9DataRow addNoticePartial: 'lineNumber' parameter should be a number not a '${typeof lineNumber}': ${lineNumber}`);
+        // parameterAssert(characterIndex !== undefined, "checkTN_TSV9DataRow addNoticePartial: 'characterIndex' parameter should be defined");
+        if (incompleteNoticeObject.characterIndex) {
+            //parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `checkTN_TSV9DataRow addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
         }
-        // //parameterAssert(excerpt !== undefined, "checkTN_TSV9DataRow addNoticePartial: 'excerpt' parameter should be defined");
-        if (incompleteNoticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `checkTN_TSV9DataRow addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        // parameterAssert(excerpt !== undefined, "checkTN_TSV9DataRow addNoticePartial: 'excerpt' parameter should be defined");
+        if (incompleteNoticeObject.excerpt) {
+            //parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `checkTN_TSV9DataRow addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt}`);
         }
-        //parameterAssert(noticeObject.location !== undefined, "checkTN_TSV9DataRow addNoticePartial: 'location' parameter should be defined");
-        //parameterAssert(typeof noticeObject.location === 'string', `checkTN_TSV9DataRow addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
-        // noticeObject.debugChain = noticeObject.debugChain ? `checkTN_TSV9DataRow ${noticeObject.debugChain}` : 'checkTN_TSV9DataRow';
+        //parameterAssert(incompleteNoticeObject.location !== undefined, "checkTN_TSV9DataRow addNoticePartial: 'location' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.location === 'string', `checkTN_TSV9DataRow addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
+        // incompleteNoticeObject.debugChain = incompleteNoticeObject.debugChain ? `checkTN_TSV9DataRow ${incompleteNoticeObject.debugChain}` : 'checkTN_TSV9DataRow';
         // Also uses the given bookID,C,V, parameters from the main function call
         drResult.noticeList.push({ ...incompleteNoticeObject, bookID, C: givenC, V: givenV });
     }
@@ -123,8 +127,8 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
         // functionLog(`checkTN_TSV9DataRow ourMarkdownTextChecks(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
         //parameterAssert(rowID !== undefined, "checkTN_TSV9DataRow ourMarkdownTextChecks: 'rowID' parameter should be defined");
         //parameterAssert(typeof rowID === 'string', `checkTN_TSV9DataRow ourMarkdownTextChecks: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        // //parameterAssert(fieldName !== undefined, "checkTN_TSV9DataRow ourMarkdownTextChecks: 'fieldName' parameter should be defined");
-        // //parameterAssert(typeof fieldName === 'string', `checkTN_TSV9DataRow ourMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        // parameterAssert(fieldName !== undefined, "checkTN_TSV9DataRow ourMarkdownTextChecks: 'fieldName' parameter should be defined");
+        // parameterAssert(typeof fieldName === 'string', `checkTN_TSV9DataRow ourMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
         //parameterAssert(fieldName === 'OccurrenceNote', `checkTN_TSV9DataRow ourMarkdownTextChecks: Only run this check on OccurrenceNotes not '${fieldName}'`);
         //parameterAssert(fieldText !== undefined, "checkTN_TSV9DataRow ourMarkdownTextChecks: 'fieldText' parameter should be defined");
         //parameterAssert(typeof fieldText === 'string', `checkTN_TSV9DataRow ourMarkdownTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
@@ -141,7 +145,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of omtcResultObject.noticeList) {
-            // //parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourMarkdownTextChecks notice length=${Object.keys(noticeEntry).length}`);
+            // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourMarkdownTextChecks notice length=${Object.keys(noticeEntry).length}`);
             // NOTE: Ellipses in OccurrenceNote have the normal meaning
             //          not like the specialised meaning in the snippet fields Quote and GLQuote
             if (noticeEntry.priority !== 178 && noticeEntry.priority !== 179 // unexpected space after ellipse, ellipse after space
@@ -190,7 +194,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of octfResultObject.noticeList) {
-            // //parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
+            // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
             addNoticePartial({ ...noticeEntry, rowID, fieldName });
         }
         return octfResultObject.suggestion; // There may or may not be one!
@@ -227,7 +231,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of coqResultObject.noticeList) {
-            // //parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckSupportReferenceInTA notice length=${Object.keys(noticeEntry).length}`);
+            // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckSupportReferenceInTA notice length=${Object.keys(noticeEntry).length}`);
             addNoticePartial({ ...noticeEntry, rowID, fieldName });
         }
     }
@@ -269,7 +273,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of coqResultObject.noticeList) {
-            // //parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckTNOriginalLanguageQuoteAndOccurrence notice length=${Object.keys(noticeEntry).length}`);
+            // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckTNOriginalLanguageQuoteAndOccurrence notice length=${Object.keys(noticeEntry).length}`);
             addNoticePartial({ ...noticeEntry, rowID, fieldName });
         }
     }

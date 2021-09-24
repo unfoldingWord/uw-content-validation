@@ -78,39 +78,43 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
             if (books.isValidBookID(bookID)) // must be in FRT, BAK, etc.
                 whichTestament = 'other';
         }
-        logicAssert(whichTestament === 'old' || whichTestament === 'new', `getOriginalPassage() couldn’t find testament for '${bookID}'`);
+        logicAssert(whichTestament === 'old' || whichTestament === 'new', `checkOriginalLanguageQuoteAndOccurrence() couldn’t find testament for '${bookID}'`);
     }
 
     const colqResult = { noticeList: [] };
 
-    function addNoticePartial(noticeObject) {
-        // functionLog(`checkOriginalLanguageQuoteAndOccurrence Notice: (priority=${noticeObject.priority}) ${noticeObject.message}${characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.excerpt ? ` ${noticeObject.excerpt}` : ""}${noticeObject.location}`);
-        //parameterAssert(noticeObject.priority !== undefined, "cOLQ addNotice: 'priority' parameter should be defined");
-        //parameterAssert(typeof noticeObject.priority === 'number', `cOLQ addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        //parameterAssert(noticeObject.message !== undefined, "cOLQ addNotice: 'message' parameter should be defined");
-        //parameterAssert(typeof noticeObject.message === 'string', `cOLQ addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // //parameterAssert(characterIndex !== undefined, "cOLQ addNotice: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cOLQ addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+    function addNoticePartial(incompleteNoticeObject) {
+        // functionLog(`checkOriginalLanguageQuoteAndOccurrence Notice: (priority=${incompleteNoticeObject.priority}) ${incompleteNoticeObject.message}${characterIndex > 0 ? ` (at character ${incompleteNoticeObject.characterIndex})` : ""}${incompleteNoticeObject.excerpt ? ` ${incompleteNoticeObject.excerpt}` : ""}${incompleteNoticeObject.location}`);
+        //parameterAssert(incompleteNoticeObject.priority !== undefined, "cOLQ addNotice: 'priority' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.priority === 'number', `cOLQ addNotice: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}': ${incompleteNoticeObject.priority}`);
+        //parameterAssert(incompleteNoticeObject.message !== undefined, "cOLQ addNotice: 'message' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.message === 'string', `cOLQ addNotice: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}': ${incompleteNoticeObject.message}`);
+        // parameterAssert(characterIndex !== undefined, "cOLQ addNotice: 'characterIndex' parameter should be defined");
+        if (incompleteNoticeObject.characterIndex) {
+            //parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `cOLQ addNotice: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
         }
-        // //parameterAssert(excerpt !== undefined, "cOLQ addNotice: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cOLQ addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt} for ${noticeObject.priority}`);
+        // parameterAssert(excerpt !== undefined, "cOLQ addNotice: 'excerpt' parameter should be defined");
+        if (incompleteNoticeObject.excerpt) {
+            //parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `cOLQ addNotice: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt} for ${incompleteNoticeObject.priority}`);
         }
-        //parameterAssert(noticeObject.location !== undefined, "cOLQ addNotice: 'location' parameter should be defined");
-        //parameterAssert(typeof noticeObject.location === 'string', `cOLQ addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
-        colqResult.noticeList.push({ ...noticeObject, bookID, C, V });
+        //parameterAssert(incompleteNoticeObject.location !== undefined, "cOLQ addNotice: 'location' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.location === 'string', `cOLQ addNotice: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
+        colqResult.noticeList.push({ ...incompleteNoticeObject, bookID, C, V });
     }
 
     /**
      *
      * @param {string} bookID -- USFM book ID or 'OBS'
      * @param {string} C -- chapter or story number
-     * @param {string} V -- verse or frame number
+     * @param {string} V -- single verse or frame number
      * @param {Object} checkingOptions
      */
-    async function getOriginalPassage(bookID, C, V, checkingOptions) {
+    async function getOriginalVerse(bookID, C, V, checkingOptions) {
         // TODO: Cache these ???
 
-        // functionLog(`getOriginalPassage(${bookID}, ${C}:${V})…`);
+        // functionLog(`checkOriginalLanguageQuoteAndOccurrence getOriginalVerse(${bookID}, ${C}:${V})…`);
+        //parameterAssert(V.indexOf('-') === -1 && V.indexOf('–') === -1, `checkOriginalLanguageQuoteAndOccurrence getOriginalVerse: Did not expect hyphen or dash in V parameter: '${V}'`);
+
         let username;
         try {
             username = checkingOptions?.originalLanguageRepoUsername;
@@ -134,7 +138,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
                 originalMarkdown = await getFile_({ username, repository: OBSRepoName, path: OBSPathname, branch });
                 // debugLog("Fetched fileContent for", OBSRepoName, OBSPathname, typeof originalMarkdown, originalMarkdown.length);
             } catch (gcUHBerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
-                console.error(`getOriginalPassage(${bookID}, ${C}:${V}, ${JSON.stringify(checkingOptions)}) failed to load UHB`, username, languageCode, OBSPathname, branch, gcUHBerror.message);
+                console.error(`getOriginalVerse(${bookID}, ${C}:${V}, ${JSON.stringify(checkingOptions)}) failed to load UHB`, username, languageCode, OBSPathname, branch, gcUHBerror.message);
                 addNoticePartial({ priority: 601, message: "Unable to load file", details: `error=${gcUHBerror}`, username, OBSPathname, location: ourLocation, extra: OBSRepoName });
             }
             if (!originalMarkdown) return '';
@@ -153,7 +157,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
                     else
                         verseText += line; // NOTE: works coz all text on one line, otherwise would need to insert spaces here
             }
-            // debugLog(`getOriginalPassage got OBS ${V}:${C} '${verseText}'`);
+            // debugLog(`getOriginalVerse got OBS ${V}:${C} '${verseText}'`);
         } else { // not OBS, so a USFM Bible book
             const bookNumberAndName = books.usfmNumberName(bookID);
             const originalLanguageRepoLanguageCode = whichTestament === 'old' ? 'hbo' : 'el-x-koine';
@@ -168,7 +172,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
                     originalUSFM = await getFile_({ username, repository: originalLanguageRepoName, path: filename, branch });
                     // debugLog("Fetched fileContent for", repoName, filename, typeof originalUSFM, originalUSFM.length);
                 } catch (gcUHBerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
-                    console.error(`getOriginalPassage(${bookID}, ${C}:${V}, ${JSON.stringify(checkingOptions)}) failed to load UHB`, username, originalLanguageRepoCode, filename, branch, gcUHBerror.message);
+                    console.error(`getOriginalVerse(${bookID}, ${C}:${V}, ${JSON.stringify(checkingOptions)}) failed to load UHB`, username, originalLanguageRepoCode, filename, branch, gcUHBerror.message);
                     addNoticePartial({ priority: 601, message: "Unable to load file", details: `error=${gcUHBerror}`, username, filename, location: ourLocation, extra: originalLanguageRepoName });
                 }
             } else if (originalLanguageRepoCode === 'UGNT') {
@@ -176,12 +180,12 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
                     originalUSFM = await getFile_({ username, repository: originalLanguageRepoName, path: filename, branch });
                     // debugLog("Fetched fileContent for", repoName, filename, typeof originalUSFM, originalUSFM.length);
                 } catch (gcUGNTerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
-                    console.error(`getOriginalPassage(${bookID}, ${C}:${V}, ${JSON.stringify(checkingOptions)}) failed to load UGNT`, username, originalLanguageRepoCode, filename, branch, gcUGNTerror.message);
+                    console.error(`getOriginalVerse(${bookID}, ${C}:${V}, ${JSON.stringify(checkingOptions)}) failed to load UGNT`, username, originalLanguageRepoCode, filename, branch, gcUGNTerror.message);
                     addNoticePartial({ priority: 601, message: "Unable to load file", details: `error=${gcUGNTerror}`, username, filename, location: ourLocation, extra: originalLanguageRepoName });
                 }
             }
             if (!originalUSFM) {
-                debugLog(`Oops: getOriginalPassage(${bookID}, ${C}:${V}, ) didn’t find a file!!!`);
+                debugLog(`Oops: getOriginalVerse(${bookID}, ${C}:${V}, ) didn’t find a file!!!`);
                 return '';
             }
 
@@ -221,7 +225,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
                     const adjusted_field = bits[0];
                     verseText = verseText.slice(0, ixW) + adjusted_field + verseText.slice(ixEnd + 3);
                 } else {
-                    debugLog(`getOriginalPassage: missing \\w* in ${bookID} ${C}:${V} verseText: '${verseText}'`);
+                    debugLog(`getOriginalVerse: missing \\w* in ${bookID} ${C}:${V} verseText: '${verseText}'`);
                     verseText = verseText.replace(/\\w /g, '', 1); // Attempt to limp on
                 }
                 ixW = verseText.indexOf('\\w ', ixW + 1); // Might be another one
@@ -239,15 +243,49 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
 
             // Final clean-up (shouldn’t be necessary, but just in case)
             verseText = verseText.replace(/ {2}/g, ' ');
-            //parameterAssert(verseText.indexOf('\\w') === -1, `getOriginalPassage: Should be no \\w in ${bookID} ${C}:${V} '${verseText}'`);
-            //parameterAssert(verseText.indexOf('\\k') === -1, `getOriginalPassage: Should be no \\k in ${bookID} ${C}:${V} '${verseText}'`);
-            //parameterAssert(verseText.indexOf('x-') === -1, `getOriginalPassage: Should be no x- in ${bookID} ${C}:${V} '${verseText}'`);
-            //parameterAssert(verseText.indexOf('\\f') === -1, `getOriginalPassage: Should be no \\f in ${bookID} ${C}:${V} '${verseText}'`);
-            //parameterAssert(verseText.indexOf('\\x') === -1, `getOriginalPassage: Should be no \\x in ${bookID} ${C}:${V} '${verseText}'`);
+            //parameterAssert(verseText.indexOf('\\w') === -1, `getOriginalVerse: Should be no \\w in ${bookID} ${C}:${V} '${verseText}'`);
+            //parameterAssert(verseText.indexOf('\\k') === -1, `getOriginalVerse: Should be no \\k in ${bookID} ${C}:${V} '${verseText}'`);
+            //parameterAssert(verseText.indexOf('x-') === -1, `getOriginalVerse: Should be no x- in ${bookID} ${C}:${V} '${verseText}'`);
+            //parameterAssert(verseText.indexOf('\\f') === -1, `getOriginalVerse: Should be no \\f in ${bookID} ${C}:${V} '${verseText}'`);
+            //parameterAssert(verseText.indexOf('\\x') === -1, `getOriginalVerse: Should be no \\x in ${bookID} ${C}:${V} '${verseText}'`);
         }
 
-        // debugLog(`  getOriginalPassage(${bookID} ${C}:${V}) is returning '${verseText}'`);
+        // debugLog(`  getOriginalVerse(${bookID} ${C}:${V}) is returning '${verseText}'`);
         return verseText;
+    }
+    // end of getOriginalVerse function
+
+
+    /**
+     *
+     * @param {string} bookID -- USFM book ID or 'OBS'
+     * @param {string} C -- chapter or story number
+     * @param {string} V -- frame number or verse/verse-range
+     * @param {Object} checkingOptions
+     */
+    async function getOriginalPassage(bookID, C, V, checkingOptions) {
+        // TODO: Cache these ???
+
+        // functionLog(`checkOriginalLanguageQuoteAndOccurrence getOriginalPassage(${bookID}, ${C}:${V})…`);
+
+        if (/^[0-9]{1,3}$/.test(V)) // Assume it's a single verse or frame-number
+            return await getOriginalVerse(bookID, C, V, checkingOptions);
+
+        V = V.replace('–', '-'); // Make sure than en-dash becomes a hyphen
+        const vBits = V.split('-');
+        if (vBits.length !== 2)
+            return await getOriginalVerse(bookID, C, V, checkingOptions);
+
+        let vStartInt, vEndInt;
+        try { vStartInt = parseInt(vBits[0]); vEndInt = parseInt(vBits[1]); }
+        catch (e) { console.log(`checkOriginalLanguageQuoteAndOccurrence: getOriginalVerse failed on '${V}' with ${e}`); return; }
+        if (vStartInt >= vEndInt) { console.log(`checkOriginalLanguageQuoteAndOccurrence: getOriginalVerse failed on '${V}'`); return; }
+
+        let versePassage = '';
+        for (let vInt = vStartInt; vInt <= vEndInt; vInt++) {
+            versePassage += (versePassage.length ? ' ' : '') + await getOriginalVerse(bookID, C, vInt.toString(), checkingOptions);
+        }
+        return versePassage;
     }
     // end of getOriginalPassage function
 
@@ -345,18 +383,18 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
         debugStrings.push(`getWordsIndex((${origWordsList.length}) ${JSON.stringify(origWordsList)}, (${searchWordsList.length}) ${JSON.stringify(searchWordsList)}, ${givenOccurrenceNumber}, ${startAt}) for ${bookID} ${C}:${V}…`);
         // if (givenOccurrenceNumber !== 1)
         //     functionLog(`getWordsIndex((${origWordsList.length}) ${JSON.stringify(origWordsList)}, (${searchWordsList.length}) ${JSON.stringify(searchWordsList)}, ${givenOccurrenceNumber}, ${startAt}) for ${bookID} ${C}:${V}…`);
-        parameterAssert(origWordsList !== undefined, "getWordsIndex: 'origWords' parameter should be defined");
-        parameterAssert(typeof origWordsList === 'object', `getWordsIndex: 'origWords' parameter should be an Array not a '${typeof origWordsList}': ${origWordsList}`);
-        parameterAssert(Array.isArray(origWordsList), `getWordsIndex: 'origWords' parameter should be an Array not a '${typeof origWordsList}': ${origWordsList}`);
-        parameterAssert(searchWordsList !== undefined, "getWordsIndex: 'searchWords' parameter should be defined");
-        parameterAssert(typeof searchWordsList === 'object', `getWordsIndex: 'searchWords' parameter should be an Array not a '${typeof searchWordsList}': ${searchWordsList}`);
-        parameterAssert(Array.isArray(searchWordsList), `getWordsIndex: 'searchWords' parameter should be an Array not a '${typeof searchWordsList}': ${searchWordsList}`);
-        parameterAssert(givenOccurrenceNumber !== undefined, "getWordsIndex: 'occurrence' parameter should be defined");
-        parameterAssert(typeof givenOccurrenceNumber === 'number', `getWordsIndex: 'occurrence' parameter should be a number not a '${typeof givenOccurrenceNumber}': '${givenOccurrenceNumber}'`);
-        parameterAssert(givenOccurrenceNumber >= 1 || givenOccurrenceNumber === -1, `getWordsIndex: 'occurrence' parameter should be one or greater or -1, not ${givenOccurrenceNumber}`);
-        parameterAssert(startAt !== undefined, "getWordsIndex: 'startAt' parameter should be defined");
-        parameterAssert(typeof startAt === 'number', `getWordsIndex: 'startAt' parameter should be a number not a '${typeof startAt}': '${startAt}'`);
-        parameterAssert(startAt >= 0 && startAt < origWordsList.length, `getWordsIndex: 'startAt' parameter should be in range 0..${origWordsList.length - 1} inclusive, not ${startAt}`);
+        //parameterAssert(origWordsList !== undefined, "getWordsIndex: 'origWords' parameter should be defined");
+        //parameterAssert(typeof origWordsList === 'object', `getWordsIndex: 'origWords' parameter should be an Array not a '${typeof origWordsList}': ${origWordsList}`);
+        //parameterAssert(Array.isArray(origWordsList), `getWordsIndex: 'origWords' parameter should be an Array not a '${typeof origWordsList}': ${origWordsList}`);
+        //parameterAssert(searchWordsList !== undefined, "getWordsIndex: 'searchWords' parameter should be defined");
+        //parameterAssert(typeof searchWordsList === 'object', `getWordsIndex: 'searchWords' parameter should be an Array not a '${typeof searchWordsList}': ${searchWordsList}`);
+        //parameterAssert(Array.isArray(searchWordsList), `getWordsIndex: 'searchWords' parameter should be an Array not a '${typeof searchWordsList}': ${searchWordsList}`);
+        //parameterAssert(givenOccurrenceNumber !== undefined, "getWordsIndex: 'occurrence' parameter should be defined");
+        //parameterAssert(typeof givenOccurrenceNumber === 'number', `getWordsIndex: 'occurrence' parameter should be a number not a '${typeof givenOccurrenceNumber}': '${givenOccurrenceNumber}'`);
+        //parameterAssert(givenOccurrenceNumber >= 1 || givenOccurrenceNumber === -1, `getWordsIndex: 'occurrence' parameter should be one or greater or -1, not ${givenOccurrenceNumber}`);
+        //parameterAssert(startAt !== undefined, "getWordsIndex: 'startAt' parameter should be defined");
+        //parameterAssert(typeof startAt === 'number', `getWordsIndex: 'startAt' parameter should be a number not a '${typeof startAt}': '${startAt}'`);
+        //parameterAssert(startAt >= 0 && startAt < origWordsList.length, `getWordsIndex: 'startAt' parameter should be in range 0..${origWordsList.length - 1} inclusive, not ${startAt}`);
 
         let occurrenceNumber = givenOccurrenceNumber === -1 ? 2 : givenOccurrenceNumber; // Convert -1 to +2, i.e., if -1 is used, we'll expect at least two occurrences
         let tryCount = 0;
@@ -629,7 +667,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
     /* Deficient code coz it’s only checking STRING matches, not WORD matches
     // Now check if the quote can be found in the verse text
     if (quoteBits) { // it had an ellipsis
-        // //parameterAssert(occurrence === 1, `Oh -- can get '${fieldText}' with occurrence=${occurrence} in ${bookID} ${C}:${V}`);
+        // parameterAssert(occurrence === 1, `Oh -- can get '${fieldText}' with occurrence=${occurrence} in ${bookID} ${C}:${V}`);
         if (occurrence !== 1) {
             addNotice({ priority: 50, message: "Is this quote/occurrence correct???", details: `occurrence=${occurrence}`, excerpt: fieldText, location: ourLocation });
         }
@@ -696,7 +734,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
     const verseWordsList = noDashVerseText.split(' ');
     // debugLog(`checkOriginalLanguageQuoteAndOccurrence got ${bookID} ${C}:${V} verseWords (${verseWords.length}) = ${verseWords}`);
     if (quoteBits) { // it had multiple discontiguous parts
-        // //parameterAssert(occurrence === 1, `Oh -- can get '${fieldText}' with occurrence=${occurrence} in ${bookID} ${C}:${V}`);
+        // parameterAssert(occurrence === 1, `Oh -- can get '${fieldText}' with occurrence=${occurrence} in ${bookID} ${C}:${V}`);
         // if (occurrence !== 1) {
         //     addNoticePartial({ priority: 50, message: "Is this quote/occurrence correct???", details: `occurrence=${occurrence} verse text ◗${verseText}◖`, excerpt: fieldText, location: ourLocation });
         // }

@@ -58,11 +58,11 @@ export function checkTextfileContents(languageCode, repoCode, fileType, filename
         //parameterAssert(typeof noticeObject.priority === 'number', `dBTCs addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         //parameterAssert(noticeObject.message !== undefined, "dBTCs addNotice: 'message' parameter should be defined");
         //parameterAssert(typeof noticeObject.message === 'string', `dBTCs addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // //parameterAssert(characterIndex !== undefined, "dBTCs addNotice: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `dBTCs addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        // parameterAssert(characterIndex !== undefined, "dBTCs addNotice: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex) { parameterAssert(typeof noticeObject.characterIndex === 'number', `dBTCs addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
         }
-        // //parameterAssert(excerpt !== undefined, "dBTCs addNotice: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `dBTCs addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        // parameterAssert(excerpt !== undefined, "dBTCs addNotice: 'excerpt' parameter should be defined");
+        if (noticeObject.excerpt) { parameterAssert(typeof noticeObject.excerpt === 'string', `dBTCs addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         }
         //parameterAssert(noticeObject.location !== undefined, "dBTCs addNotice: 'location' parameter should be defined");
         //parameterAssert(typeof noticeObject.location === 'string', `dBTCs addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
@@ -83,8 +83,8 @@ export function checkTextfileContents(languageCode, repoCode, fileType, filename
 
         // Updates the global list of notices
         // debugLog(`cPT ourCheckPlainText(${fieldName}, (${fieldText.length}), ${fieldLocation}, …)`);
-        // //parameterAssert(textName !== undefined, "cPT ourCheckPlainText: 'textName' parameter should be defined");
-        // //parameterAssert(typeof textName === 'string', `cPT ourCheckPlainText: 'fieldName' parameter should be a string not a '${typeof textName}'`);
+        // parameterAssert(textName !== undefined, "cPT ourCheckPlainText: 'textName' parameter should be defined");
+        // parameterAssert(typeof textName === 'string', `cPT ourCheckPlainText: 'fieldName' parameter should be a string not a '${typeof textName}'`);
         //parameterAssert(plainText !== undefined, "cPT ourCheckPlainText: 'plainText' parameter should be defined");
         //parameterAssert(typeof plainText === 'string', `cPT ourCheckPlainText: 'plainText' parameter should be a string not a '${typeof plainText}'`);
         //parameterAssert(checkingOptions !== undefined, "cPT ourCheckPlainText: 'checkingOptions' parameter should be defined");

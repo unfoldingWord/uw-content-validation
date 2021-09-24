@@ -85,7 +85,7 @@ and then validates the content of one file selected from the repo.
   // Specifying excerptLength and cutoffPriorityLevel is just to show off options
   // —those fields are not necessary (or normal) here
   excerptLength='25' // Default is 20 characters
-  // cutoffPriorityLevel='90' // Default is to detect all errors/warnings
+  // cutoffPriorityLevel='200' // Default is to detect all errors/warnings
   // Specifying maximumSimilarMessages is just to show off options
   // —those fields are not necessary (or normal) here
   //maximumSimilarMessages='0' // Default is 3 (0 means don’t suppress any)

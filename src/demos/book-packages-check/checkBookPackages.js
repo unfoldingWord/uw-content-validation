@@ -36,23 +36,23 @@ export async function checkBookPackages(username, languageCode, bookIDList, setR
         //parameterAssert(typeof noticeObject.priority === 'number', `cBPs addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}'`);
         //parameterAssert(noticeObject.message !== undefined, "cBPs addNotice: 'message' parameter should be defined");
         //parameterAssert(typeof noticeObject.message === 'string', `cBPs addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}'`);
-        // //parameterAssert(bookID !== undefined, "cBPs addNotice: 'bookID' parameter should be defined");
+        // parameterAssert(bookID !== undefined, "cBPs addNotice: 'bookID' parameter should be defined");
         if (noticeObject.bookID) {
             //parameterAssert(typeof noticeObject.bookID === 'string', `cBPs addNotice: 'bookID' parameter should be a string not a '${typeof noticeObject.bookID}'`);
             //parameterAssert(noticeObject.bookID.length === 3, `cBPs addNotice: 'bookID' parameter should be three characters long not ${noticeObject.bookID.length}`);
             //parameterAssert(books.isValidBookID(noticeObject.bookID), `cBPs addNotice: '${noticeObject.bookID}' is not a valid USFM book identifier`);
         }
-        // //parameterAssert(C !== undefined, "cBPs addNotice: 'C' parameter should be defined");
-        if (noticeObject.C) { //parameterAssert(typeof noticeObject.C === 'string', `cBPs addNotice: 'C' parameter should be a string not a '${typeof noticeObject.C}'`);
+        // parameterAssert(C !== undefined, "cBPs addNotice: 'C' parameter should be defined");
+        if (noticeObject.C) { parameterAssert(typeof noticeObject.C === 'string', `cBPs addNotice: 'C' parameter should be a string not a '${typeof noticeObject.C}'`);
         }
-        // //parameterAssert(V !== undefined, "cBPs addNotice: 'V' parameter should be defined");
-        if (noticeObject.V) { //parameterAssert(typeof noticeObject.V === 'string', `cBPs addNotice: 'V' parameter should be a string not a '${typeof noticeObject.V}'`);
+        // parameterAssert(V !== undefined, "cBPs addNotice: 'V' parameter should be defined");
+        if (noticeObject.V) { parameterAssert(typeof noticeObject.V === 'string', `cBPs addNotice: 'V' parameter should be a string not a '${typeof noticeObject.V}'`);
         }
-        // //parameterAssert(characterIndex !== undefined, "cBPs addNotice: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cBPs addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}'`);
+        // parameterAssert(characterIndex !== undefined, "cBPs addNotice: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex) { parameterAssert(typeof noticeObject.characterIndex === 'number', `cBPs addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}'`);
         }
-        // //parameterAssert(excerpt !== undefined, "cBPs addNotice: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cBPs addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}'`);
+        // parameterAssert(excerpt !== undefined, "cBPs addNotice: 'excerpt' parameter should be defined");
+        if (noticeObject.excerpt) { parameterAssert(typeof noticeObject.excerpt === 'string', `cBPs addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}'`);
         }
         //parameterAssert(noticeObject.location !== undefined, "cBPs addNotice: 'location' parameter should be defined");
         //parameterAssert(typeof noticeObject.location === 'string', `cBPs addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}'`);

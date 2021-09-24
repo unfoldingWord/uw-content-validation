@@ -6,9 +6,10 @@ import { countOccurrencesInString } from './text-handling-functions'
 import { cachedGetFile, cachedGetFileUsingFullURL, checkMarkdownFileContents } from '../core';
 // eslint-disable-next-line no-unused-vars
 import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
+import jQuery from 'jquery';
 
 
-// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.9.4';
+// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.10.1';
 
 // const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -96,7 +97,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     // functionLog(`checkNotesLinksToOutside(lC=${languageCode}, rC=${repoCode}', bk=${bookID} ${givenC}:${givenV} fN=${fieldName}, (${fieldText.length}), ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
     //parameterAssert(languageCode !== undefined, "checkNotesLinksToOutside: 'languageCode' parameter should be defined");
     //parameterAssert(typeof languageCode === 'string', `checkNotesLinksToOutside: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
-    // //parameterAssert(languageCode !== 'hbo' && languageCode !== 'el-x-koine', `checkNotesLinksToOutside: 'languageCode' parameter should not be an original language code: '${languageCode}'`);
+    // parameterAssert(languageCode !== 'hbo' && languageCode !== 'el-x-koine', `checkNotesLinksToOutside: 'languageCode' parameter should not be an original language code: '${languageCode}'`);
     //parameterAssert(repoCode !== undefined, "checkNotesLinksToOutside: 'repoCode' parameter should be defined");
     //parameterAssert(typeof repoCode === 'string', `checkNotesLinksToOutside: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
     //parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkNotesLinksToOutside: 'repoCode' parameter should not be '${repoCode}'`);
@@ -113,7 +114,8 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     //parameterAssert(typeof fieldName === 'string', `checkNotesLinksToOutside: 'fieldText' parameter should be a string not a '${typeof fieldName}'`);
     //parameterAssert(fieldName !== `${languageCode}_${repoCode.toLowerCase()}`, `checkNotesLinksToOutside: 'fieldText' parameter should not be the repoName: '${fieldName}'`);
     // if (fieldName === `${languageCode}_${repoCode.toLowerCase()}`) { console.trace('checkNotesLinksToOutside()'); }
-    if (!fieldName.startsWith('TA ') && !fieldName.startsWith('TW ') && fieldName.indexOf('/') === -1) { //parameterAssert(fieldName === 'OccurrenceNote' || fieldName === 'Note' || fieldName === 'TWLink' || fieldName === 'Response' || fieldName === 'README' || fieldName === 'LICENSE', `checkNotesLinksToOutside: 'fieldName' parameter should be 'OccurrenceNote', 'Note', 'TWLink', 'Response', 'README' or 'LICENSE' not '${fieldName}'`);
+    if (!fieldName.startsWith('TA ') && !fieldName.startsWith('TW ') && !fieldName.endsWith('.md') && fieldName.indexOf('/') === -1) {
+        //parameterAssert(fieldName === 'OccurrenceNote' || fieldName === 'Note' || fieldName === 'TWLink' || fieldName === 'Response' || fieldName === 'README' || fieldName === 'LICENSE', `checkNotesLinksToOutside: 'fieldName' parameter should be 'OccurrenceNote', 'Note', 'TWLink', 'Response', 'README' or 'LICENSE' not '${fieldName}'`);
     }
     //parameterAssert(fieldText !== undefined, "checkNotesLinksToOutside: 'fieldText' parameter should be defined");
     //parameterAssert(typeof fieldText === 'string', `checkNotesLinksToOutside: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
@@ -142,19 +144,21 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
      */
     function addNoticePartial(incompleteNoticeObject) {
         // functionLog(`checkNotesLinksToOutside Notice: (priority = ${ priority }) ${ message } ${ characterIndex > 0 ? ` (at character ${characterIndex})` : "" } ${ excerpt ? ` ${excerpt}` : "" } ${ location }`);
-        //parameterAssert(noticeObject.priority !== undefined, "cTNlnk addNoticePartial: 'priority' parameter should be defined");
-        //parameterAssert(typeof noticeObject.priority === 'number', `cTNlnk addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        //parameterAssert(noticeObject.message !== undefined, "cTNlnk addNoticePartial: 'message' parameter should be defined");
-        //parameterAssert(typeof noticeObject.message === 'string', `cTNlnk addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}');
-        // //parameterAssert(characterIndex !== undefined, "cTNlnk addNoticePartial: 'characterIndex' parameter should be defined");
-        if (incompleteNoticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cTNlnk addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        //parameterAssert(incompleteNoticeObject.priority !== undefined, "cTNlnk addNoticePartial: 'priority' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.priority === 'number', `cTNlnk addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}': ${incompleteNoticeObject.priority}`);
+        //parameterAssert(incompleteNoticeObject.message !== undefined, "cTNlnk addNoticePartial: 'message' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.message === 'string', `cTNlnk addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}': ${incompleteNoticeObject.message}`);
+        // parameterAssert(incompleteNoticeObject.characterIndex !== undefined, `cTNlnk addNoticePartial: 'characterIndex' parameter should be defined`);
+        if (incompleteNoticeObject.characterIndex) {
+            //parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `cTNlnk addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
         }
-        // //parameterAssert(excerpt !== undefined, "cTNlnk addNoticePartial: 'excerpt' parameter should be defined");
-        if (incompleteNoticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cTNlnk addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        // parameterAssert(excerpt !== undefined, "cTNlnk addNoticePartial: 'excerpt' parameter should be defined");
+        if (incompleteNoticeObject.excerpt) {
+            //parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `cTNlnk addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt}`);
         }
-        //parameterAssert(noticeObject.location !== undefined, "cTNlnk addNoticePartial: 'location' parameter should be defined");
-        //parameterAssert(typeof noticeObject.location === 'string', `cTNlnk addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
-        // noticeObject.debugChain = noticeObject.debugChain ? `checkNotesLinksToOutside ${ noticeObject.debugChain } ` : `checkNotesLinksToOutside(${ fieldName })`;
+        //parameterAssert(incompleteNoticeObject.location !== undefined, "cTNlnk addNoticePartial: 'location' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.location === 'string', `cTNlnk addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
+        // incompleteNoticeObject.debugChain = incompleteNoticeObject.debugChain ? `checkNotesLinksToOutside ${ incompleteNoticeObject.debugChain } ` : `checkNotesLinksToOutside(${ fieldName })`;
         ctarResult.noticeList.push({ ...incompleteNoticeObject, bookID, fieldName });
     }
 
@@ -1278,40 +1282,91 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             const dummyPathParameters = { username: uri, repository: '', path: '', branch: '' };
             if (!await alreadyChecked(dummyPathParameters)) {
                 // debugLog(`checkNotesLinksToOutside general link check needs to check: ${uri}`);
-                const serverString = uri.replace('://', '!!!').split('/')[0].replace('!!!', '://').toLowerCase(); // Get the bit before any forward slashes
-
-                // NOTE: These message strings must match RenderProcessedResults.js
-                if (!serverString.endsWith('door43.org') && !serverString.endsWith('unfoldingword.org') && !serverString.endsWith('ufw.io')) // don’t try to fetch general links
-                    addNoticePartial({ priority: 32, message: `Untested general/outside link`, details: "please manually double-check link—probably no problem", excerpt: totalLink, location: ourLocation });
-                else { // Try to fetch general links
-                    let generalFileContent, hadError = false;
-                    try {
-                        // generalFileContent = await cachedGetFileUsingFullURL({ uri });
-                        // debugLog(`${displayText} ${uri} got: (${generalFileContent.length}) ${generalFileContent.slice(0, 10)}...`);
-                        // debugLog(`uri='${uri}', serverString='${serverString}'`);
-                        // NOTE: The following line (with or without the mode) doesn’t help -- actually makes things slightly worse
-                        // const response = await fetch(uri, {headers:{'Access-Control-Allow-Origin': serverString}});
-                        // const response = await fetch(uri, {mode: 'cors'});
-                        // const response = await fetch(uri, {mode: 'cors', headers:{'Access-Control-Allow-Origin': serverString}});
-                        const response = await fetch(uri);
-                        if (response.ok) {// if HTTP-status is 200-299
-                            generalFileContent = await response.text();
-                            // debugLog(`General link ${displayText} @ ${uri} got: (${generalFileContent.length}) ${generalFileContent.slice(0, 10)}...`);
-                        } else throw new Error(`Our Network error: ${response.statusCode}`);
-                    } catch (trcGCerror) {
-                        // debugLog(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load general ${uri}: ${trcGCerror}`);
-                        // TODO: Put back up to 882 if we can solve cross-origin problems
-                        addNoticePartial({ priority: 82, message: `Error loading general link`, details: "please double-check link—there may be no problem", excerpt: totalLink, location: `${ourLocation}: ${trcGCerror}` });
-                        hadError = true;
-                    }
-                    if (!hadError && !generalFileContent)
-                        addNoticePartial({ priority: 783, message: "Unable to find/load general link", excerpt: totalLink, location: ourLocation });
-                    else if (generalFileContent) { // we got the content of the general article
-                        if (generalFileContent.length < 10)
-                            addNoticePartial({ priority: 781, message: "Linked general article seems empty", excerpt: totalLink, location: ourLocation });
-                    }
-                }
+                // Set as checked so that we only check this particular URL once
                 markAsChecked(dummyPathParameters); // don’t bother waiting for the result of this async call
+
+                const serverString = uri.replace('://', '!!!').split('/')[0].replace('!!!', '://').toLowerCase(); // Get the bit before any forward slashes
+                const isUW = serverString.endsWith('door43.org') || serverString.endsWith('unfoldingword.org') || serverString.endsWith('ufw.io');
+                // debugLog(`checkNotesLinksToOutside general link check needs to check: ${uri} on server ${serverString}`);
+
+                jQuery.ajax({
+                    // Calling this way seems to avoid CORS (cross-origin) issues (although they still appear in the console)
+                    // See https://stackoverflow.com/questions/59116711/how-to-check-or-validate-if-url-exists-cors-error-returned
+                    url: uri,
+                    dataType: 'text',
+                    statusCode: {
+                        // 200: function () {
+                        //     console.log(`Status code 200 OK returned for ${uri}`);
+                        // },
+                        404: function () {
+                            console.log(`Status code 404 NOT FOUND returned for ${uri}`);
+                            addNoticePartial({ priority: isUW ? 782 : 182, message: `Error loading link`, details: "please double-check link—there may be no problem", excerpt: totalLink, location: ourLocation });
+                        }
+                    },
+                    success: function (data) {
+                        // console.log(`Received ${data.length} bytes for ${uri}`);
+                        if (data.length < 10)
+                            addNoticePartial({ priority: isUW ? 781 : 181, message: "Linked web page seems empty", excerpt: totalLink, location: ourLocation });
+                    },
+                    error: function (ts) {
+                        if (ts.responseText) console.log(`Error for ${uri} is '${ts.responseText}'`);
+                    }
+                });
+                /* Re-written as above 20Sep2021
+                // NOTE: These message strings must match RenderProcessedResults.js
+            let fetchedFileContent, hadError = false;
+            // Don’t try to fetch general links
+            // addNoticePartial({ priority: 32, message: `Untested general/outside link`, details: "please manually double-check link—probably no problem", excerpt: totalLink, location: ourLocation });
+        } else { // Try to fetch uW links
+            try {
+                // generalFileContent = await cachedGetFileUsingFullURL({ uri });
+                // debugLog(`${displayText} ${uri} got: (${generalFileContent.length}) ${generalFileContent.slice(0, 10)}...`);
+                // debugLog(`uri='${uri}', serverString='${serverString}'`);
+                // NOTE: The following line (with or without the mode) doesn’t help -- actually makes things slightly worse
+                // const response = await fetch(uri, {headers:{'Access-Control-Allow-Origin': serverString}});
+                // const response = await fetch(uri, {mode: 'cors'});
+                // const response = await fetch(uri, {mode: 'cors', headers:{'Access-Control-Allow-Origin': serverString}});
+                const response = await fetch(uri);
+                if (response.ok) {// if HTTP-status is 200-299
+                    fetchedFileContent = await response.text();
+                    // debugLog(`General link ${displayText} @ ${uri} got: (${generalFileContent.length}) ${generalFileContent.slice(0, 10)}...`);
+                } else throw new Error(`Our Network error: ${response.statusCode}`);
+            } catch (trcGCerror) {
+                // debugLog(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load general ${uri}: ${trcGCerror}`);
+                // TODO: Put back up to 882 if we can solve cross-origin (CORS) problems
+                jQuery.ajax({ // try again without CORS checking
+                    url: uri,
+                    dataType: 'text',
+                    statusCode: {
+                        200: function () {
+                            console.log(`Status code 200 OK returned for uW ${uri}`);
+                        },
+                        404: function () {
+                            console.log(`Status code 404 NOT FOUND returned for uW ${uri}`);
+                            addNoticePartial({ priority: 82, message: `Error loading unfoldingWord link`, details: "please double-check link—there may be no problem", excerpt: totalLink, location: ourLocation });
+                            hadError = true;
+                        }
+                    },
+                    success: function(data) {
+                        console.log(`Got ${data.length} bytes for uW ${uri}`);
+                        fetchedFileContent = data;
+                    },
+                    error: function (ts) {
+                        if (ts.responseText) console.log(`Error for uW ${uri} is '${ts.responseText}'`);
+                    }
+                });
+                // addNoticePartial({ priority: 82, message: `Error loading unfoldingWord link`, details: "please double-check link—there may be no problem", excerpt: totalLink, location: `${ourLocation}: ${trcGCerror}` });
+                // hadError = true;
+            }
+            if (!hadError && !fetchedFileContent)
+                addNoticePartial({ priority: 783, message: "Unable to find/load unfoldingWord link", excerpt: totalLink, location: ourLocation });
+            else if (fetchedFileContent) { // we got the content of the general article
+                if (fetchedFileContent.length < 10)
+                    addNoticePartial({ priority: 781, message: "Linked unfoldingWord article seems empty", excerpt: totalLink, location: ourLocation });
+            }
+        }
+        */
+                // markAsChecked(dummyPathParameters); // don’t bother waiting for the result of this async call
             }
             // else debugLog(`Had already checked '${displayText}' ${uri}`);
 

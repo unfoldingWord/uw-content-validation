@@ -77,33 +77,33 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
 
   function addNoticePartial(incompleteNoticeObject) {
     // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
-    // functionLog(`checkBookPackage addNoticePartial: (priority=${noticeObject.priority}) ${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
-    //parameterAssert(noticeObject.priority !== undefined, "cBP addNoticePartial: 'priority' parameter should be defined");
-    //parameterAssert(typeof noticeObject.priority === 'number', `cBP addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-    //parameterAssert(noticeObject.message !== undefined, "cBP addNoticePartial: 'message' parameter should be defined");
-    //parameterAssert(typeof noticeObject.message === 'string', `cBP addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-    // //parameterAssert(bookID !== undefined, "cBP addNoticePartial: 'bookID' parameter should be defined");
+    // functionLog(`checkBookPackage addNoticePartial: (priority=${incompleteNoticeObject.priority}) ${incompleteNoticeObject.bookID} ${incompleteNoticeObject.C}:${incompleteNoticeObject.V} ${incompleteNoticeObject.message}${incompleteNoticeObject.characterIndex > 0 ? ` (at character ${incompleteNoticeObject.characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
+    //parameterAssert(incompleteNoticeObject.priority !== undefined, "cBP addNoticePartial: 'priority' parameter should be defined");
+    //parameterAssert(typeof incompleteNoticeObject.priority === 'number', `cBP addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}': ${incompleteNoticeObject.priority}`);
+    //parameterAssert(incompleteNoticeObject.message !== undefined, "cBP addNoticePartial: 'message' parameter should be defined");
+    //parameterAssert(typeof incompleteNoticeObject.message === 'string', `cBP addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}': ${incompleteNoticeObject.message}`);
+    // parameterAssert(bookID !== undefined, "cBP addNoticePartial: 'bookID' parameter should be defined");
     if (incompleteNoticeObject.bookID) {
-      //parameterAssert(typeof noticeObject.bookID === 'string', `cBP addNoticePartial: 'bookID' parameter should be a string not a '${typeof noticeObject.bookID}': ${noticeObject.bookID}`);
-      //parameterAssert(noticeObject.bookID.length === 3, `cBP addNoticePartial: 'bookID' parameter should be three characters long not ${noticeObject.bookID.length}`);
-      //parameterAssert(bookID === 'OBS' || books.isValidBookID(noticeObject.bookID), `cBP addNoticePartial: '${noticeObject.bookID}' is not a valid USFM book identifier`);
+      //parameterAssert(typeof incompleteNoticeObject.bookID === 'string', `cBP addNoticePartial: 'bookID' parameter should be a string not a '${typeof incompleteNoticeObject.bookID}': ${incompleteNoticeObject.bookID}`);
+      //parameterAssert(incompleteNoticeObject.bookID.length === 3, `cBP addNoticePartial: 'bookID' parameter should be three characters long not ${incompleteNoticeObject.bookID.length}`);
+      //parameterAssert(bookID === 'OBS' || books.isValidBookID(incompleteNoticeObject.bookID), `cBP addNoticePartial: '${incompleteNoticeObject.bookID}' is not a valid USFM book identifier`);
     }
-    // //parameterAssert(C !== undefined, "cBP addNoticePartial: 'C' parameter should be defined");
-    if (incompleteNoticeObject.C) { //parameterAssert(typeof noticeObject.C === 'string', `cBP addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
+    // parameterAssert(C !== undefined, "cBP addNoticePartial: 'C' parameter should be defined");
+    if (incompleteNoticeObject.C) { parameterAssert(typeof incompleteNoticeObject.C === 'string', `cBP addNoticePartial: 'C' parameter should be a string not a '${typeof incompleteNoticeObject.C}': ${incompleteNoticeObject.C}`);
     }
-    // //parameterAssert(V !== undefined, "cBP addNoticePartial: 'V' parameter should be defined");
-    if (incompleteNoticeObject.V) { //parameterAssert(typeof noticeObject.V === 'string', `cBP addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
+    // parameterAssert(V !== undefined, "cBP addNoticePartial: 'V' parameter should be defined");
+    if (incompleteNoticeObject.V) { parameterAssert(typeof incompleteNoticeObject.V === 'string', `cBP addNoticePartial: 'V' parameter should be a string not a '${typeof incompleteNoticeObject.V}': ${incompleteNoticeObject.V}`);
     }
-    // //parameterAssert(characterIndex !== undefined, "cBP addNoticePartial: 'characterIndex' parameter should be defined");
-    if (incompleteNoticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cBP addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+    // parameterAssert(characterIndex !== undefined, "cBP addNoticePartial: 'characterIndex' parameter should be defined");
+    if (incompleteNoticeObject.characterIndex) { parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `cBP addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
     }
-    // //parameterAssert(excerpt !== undefined, "cBP addNoticePartial: 'excerpt' parameter should be defined");
-    if (incompleteNoticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cBP addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+    // parameterAssert(excerpt !== undefined, "cBP addNoticePartial: 'excerpt' parameter should be defined");
+    if (incompleteNoticeObject.excerpt) { parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `cBP addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt}`);
     }
-    //parameterAssert(noticeObject.location !== undefined, "cBP addNoticePartial: 'location' parameter should be defined");
-    //parameterAssert(typeof noticeObject.location === 'string', `cBP addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
-    //parameterAssert(noticeObject.extra !== undefined, "cBP addNoticePartial: 'extra' parameter should be defined");
-    //parameterAssert(typeof noticeObject.extra === 'string', `cBP addNoticePartial: 'extra' parameter should be a string not a '${typeof noticeObject.extra}': ${noticeObject.extra}`);
+    //parameterAssert(incompleteNoticeObject.location !== undefined, "cBP addNoticePartial: 'location' parameter should be defined");
+    //parameterAssert(typeof incompleteNoticeObject.location === 'string', `cBP addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
+    //parameterAssert(incompleteNoticeObject.extra !== undefined, "cBP addNoticePartial: 'extra' parameter should be defined");
+    //parameterAssert(typeof incompleteNoticeObject.extra === 'string', `cBP addNoticePartial: 'extra' parameter should be a string not a '${typeof incompleteNoticeObject.extra}': ${incompleteNoticeObject.extra}`);
     if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkBookPackage ${incompleteNoticeObject.debugChain}`;
     checkBookPackageResult.noticeList.push({ ...incompleteNoticeObject, bookID, username });
   }
@@ -115,7 +115,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     // Updates the global list of notices
     //parameterAssert(repoCode !== undefined, "cBP ourCheckBPFileContents: 'repoCode' parameter should be defined");
     //parameterAssert(typeof repoCode === 'string', `cBP ourCheckBPFileContents: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
-    parameterAssert(REPO_CODES_LIST.includes(repoCode), `cBP ourCheckBPFileContents: 'repoCode' parameter should not be '${repoCode}'`);
+    //parameterAssert(REPO_CODES_LIST.includes(repoCode), `cBP ourCheckBPFileContents: 'repoCode' parameter should not be '${repoCode}'`);
     //parameterAssert(repoName !== undefined, "cBP ourCheckBPFileContents: 'repoName' parameter should be defined");
     //parameterAssert(typeof repoName === 'string', `cBP ourCheckBPFileContents: 'repoName' parameter should be a string not a '${typeof repoName}': ${repoName}`);
     //parameterAssert(repoBranch !== undefined, "cBP ourCheckBPFileContents: 'repoBranch' parameter should be defined");
@@ -558,7 +558,7 @@ async function checkMarkdownBook(username, languageCode, repoCode, repoName, bra
   //parameterAssert(typeof languageCode === 'string', `checkMarkdownBook: 'languageCode' parameter should be a string not a '${typeof languageCode}': '${languageCode}'`);
   //parameterAssert(repoCode !== undefined, "checkMarkdownBook: 'repoCode' parameter should be defined");
   //parameterAssert(typeof repoCode === 'string', `checkMarkdownBook: 'repoCode' parameter should be a string not a '${typeof repoCode}': '${repoCode}'`);
-  parameterAssert(repoCode === 'TQ' || repoCode === 'OBS-TN' || repoCode === 'OBS-TQ' || repoCode === 'OBS-SN' || repoCode === 'OBS-SQ', `checkMarkdownBook: 'repoCode' parameter should be 'TQ' or 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ' not '${repoCode}'`);
+  //parameterAssert(repoCode === 'TQ' || repoCode === 'OBS-TN' || repoCode === 'OBS-TQ' || repoCode === 'OBS-SN' || repoCode === 'OBS-SQ', `checkMarkdownBook: 'repoCode' parameter should be 'TQ' or 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ' not '${repoCode}'`);
   //parameterAssert(repoName !== undefined, "checkMarkdownBook: 'repoName' parameter should be defined");
   //parameterAssert(typeof repoName === 'string', `checkMarkdownBook: 'repoName' parameter should be a string not a '${typeof repoName}': ${repoName}`);
   //parameterAssert(branch !== undefined, "checkMarkdownBook: 'branch' parameter should be defined");
@@ -581,30 +581,30 @@ async function checkMarkdownBook(username, languageCode, repoCode, repoName, bra
   function addNoticePartial(incompleteNoticeObject) {
     // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
     // functionLog(`checkMarkdownBook addNoticePartial: ${incompleteNoticeObject.priority}:${incompleteNoticeObject.message} ${incompleteNoticeObject.bookID} ${incompleteNoticeObject.C}:${incompleteNoticeObject.V} ${incompleteNoticeObject.filename}:${incompleteNoticeObject.lineNumber} ${incompleteNoticeObject.characterIndex > 0 ? ` (at character ${incompleteNoticeObject.characterIndex})` : ""}${incompleteNoticeObject.excerpt ? ` ${incompleteNoticeObject.excerpt}` : ""}${incompleteNoticeObject.location}`);
-    //parameterAssert(noticeObject.priority !== undefined, "cTQ addNoticePartial: 'priority' parameter should be defined");
-    //parameterAssert(typeof noticeObject.priority === 'number', `cTQ addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}'`);
-    //parameterAssert(noticeObject.message !== undefined, "cTQ addNoticePartial: 'message' parameter should be defined");
-    //parameterAssert(typeof noticeObject.message === 'string', `cTQ addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}'`);
-    //parameterAssert(noticeObject.bookID !== undefined, "cTQ addNoticePartial: 'bookID' parameter should be defined");
-    //parameterAssert(typeof noticeObject.bookID === 'string', `cTQ addNoticePartial: 'bookID' parameter should be a string not a '${typeof noticeObject.bookID}'`);
-    //parameterAssert(noticeObject.bookID.length === 3, `cTQ addNoticePartial: 'bookID' parameter should be three characters long not ${noticeObject.bookID.length}`);
-    //parameterAssert(noticeObject.bookID === 'OBS' || books.isValidBookID(noticeObject.bookID), `cTQ addNoticePartial: '${noticeObject.bookID}' is not a valid USFM book identifier`);
-    // //parameterAssert(C !== undefined, "cTQ addNoticePartial: 'C' parameter should be defined");
-    if (incompleteNoticeObject.C) { //parameterAssert(typeof noticeObject.C === 'string', `cTQ addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}'`);
+    //parameterAssert(incompleteNoticeObject.priority !== undefined, "cTQ addNoticePartial: 'priority' parameter should be defined");
+    //parameterAssert(typeof incompleteNoticeObject.priority === 'number', `cTQ addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}'`);
+    //parameterAssert(incompleteNoticeObject.message !== undefined, "cTQ addNoticePartial: 'message' parameter should be defined");
+    //parameterAssert(typeof incompleteNoticeObject.message === 'string', `cTQ addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}'`);
+    //parameterAssert(incompleteNoticeObject.bookID !== undefined, "cTQ addNoticePartial: 'bookID' parameter should be defined");
+    //parameterAssert(typeof incompleteNoticeObject.bookID === 'string', `cTQ addNoticePartial: 'bookID' parameter should be a string not a '${typeof incompleteNoticeObject.bookID}'`);
+    //parameterAssert(incompleteNoticeObject.bookID.length === 3, `cTQ addNoticePartial: 'bookID' parameter should be three characters long not ${incompleteNoticeObject.bookID.length}`);
+    //parameterAssert(incompleteNoticeObject.bookID === 'OBS' || books.isValidBookID(incompleteNoticeObject.bookID), `cTQ addNoticePartial: '${incompleteNoticeObject.bookID}' is not a valid USFM book identifier`);
+    // parameterAssert(C !== undefined, "cTQ addNoticePartial: 'C' parameter should be defined");
+    if (incompleteNoticeObject.C) { parameterAssert(typeof incompleteNoticeObject.C === 'string', `cTQ addNoticePartial: 'C' parameter should be a string not a '${typeof incompleteNoticeObject.C}'`);
     }
-    // //parameterAssert(V !== undefined, "cTQ addNoticePartial: 'V' parameter should be defined");
-    if (incompleteNoticeObject.V) { //parameterAssert(typeof noticeObject.V === 'string', `cTQ addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}'`);
+    // parameterAssert(V !== undefined, "cTQ addNoticePartial: 'V' parameter should be defined");
+    if (incompleteNoticeObject.V) { parameterAssert(typeof incompleteNoticeObject.V === 'string', `cTQ addNoticePartial: 'V' parameter should be a string not a '${typeof incompleteNoticeObject.V}'`);
     }
-    // //parameterAssert(characterIndex !== undefined, "cTQ addNoticePartial: 'characterIndex' parameter should be defined");
-    if (incompleteNoticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cTQ addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}'`);
+    // parameterAssert(characterIndex !== undefined, "cTQ addNoticePartial: 'characterIndex' parameter should be defined");
+    if (incompleteNoticeObject.characterIndex) { parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `cTQ addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}'`);
     }
-    // //parameterAssert(excerpt !== undefined, "cTQ addNoticePartial: 'excerpt' parameter should be defined");
-    if (incompleteNoticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cTQ addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}'`);
+    // parameterAssert(excerpt !== undefined, "cTQ addNoticePartial: 'excerpt' parameter should be defined");
+    if (incompleteNoticeObject.excerpt) { parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `cTQ addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}'`);
     }
-    //parameterAssert(noticeObject.location !== undefined, "cTQ addNoticePartial: 'location' parameter should be defined");
-    //parameterAssert(typeof noticeObject.location === 'string', `cTQ addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}'`);
-    //parameterAssert(noticeObject.extra !== undefined, "cTQ addNoticePartial: 'extra' parameter should be defined");
-    //parameterAssert(typeof noticeObject.extra === 'string', `cTQ addNoticePartial: 'extra' parameter should be a string not a '${typeof noticeObject.extra}'`);
+    //parameterAssert(incompleteNoticeObject.location !== undefined, "cTQ addNoticePartial: 'location' parameter should be defined");
+    //parameterAssert(typeof incompleteNoticeObject.location === 'string', `cTQ addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}'`);
+    //parameterAssert(incompleteNoticeObject.extra !== undefined, "cTQ addNoticePartial: 'extra' parameter should be defined");
+    //parameterAssert(typeof incompleteNoticeObject.extra === 'string', `cTQ addNoticePartial: 'extra' parameter should be a string not a '${typeof incompleteNoticeObject.extra}'`);
     ctqResult.noticeList.push({ ...incompleteNoticeObject, username, repoCode, repoName, bookID });
   }
 
@@ -642,7 +642,7 @@ async function checkMarkdownBook(username, languageCode, repoCode, repoName, bra
     // Process noticeList line by line,  appending the repoCode as an extra field as we go
     for (const noticeEntry of cfResultObject.noticeList) {
       // noticeEntry is an array of eight fields: 1=priority, 2=bookID, 3=C, 4=V, 5=msg, 6=characterIndex, 7=excerpt, 8=location
-      // //parameterAssert(Object.keys(noticeEntry).length === 5, `cTQ ourCheckFileContents notice length=${Object.keys(noticeEntry).length}`);
+      // parameterAssert(Object.keys(noticeEntry).length === 5, `cTQ ourCheckFileContents notice length=${Object.keys(noticeEntry).length}`);
       // We add the repoCode as an extra value
       addNoticePartial({ ...noticeEntry, bookID, C, V, extra: repoCode });
     }

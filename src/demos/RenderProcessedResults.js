@@ -42,7 +42,7 @@ const tableIcons = {
 };
 
 
-// const RENDER_PROCESSED_RESULTS_VERSION = '0.7.2';
+// const RENDER_PROCESSED_RESULTS_VERSION = '0.7.3';
 
 
 /**
@@ -400,11 +400,11 @@ function RenderExcerpt({ excerpt, message }) {
     // functionLog(`RenderExcerpt(${excerpt}, ${message})`);
     // NOTE: These message strings must match notes-links-check.js (priority 82, and priority 32,)
     // Note that messages might start with a repo code, e.g., "TN Actual message start"
-    if (message.endsWith("Untested general/outside link")
-        || message.endsWith("Error loading general link")
-        || message.endsWith("Should http link be https")) {
+    // if (message.endsWith("Untested general/outside link")
+    //     || message.endsWith("Error loading general link")
+    //     || message.endsWith("Should http link be https")) {
         // debugLog(`Here1 RenderExcerpt(${excerpt}, ${message})`);
-        if (excerpt && excerpt[0] === '[' && excerpt.slice(-1) === ')') { // then the excerpt is a link so let's liven it
+        if (excerpt && excerpt[0] === '[' && excerpt.slice(-1) === ')' && excerpt.indexOf('](') !== -1) { // then the excerpt is a link so let's liven it
             // debugLog(`Here2 RenderExcerpt(${excerpt}, ${message})`);
             const ix = excerpt.indexOf('](');
             const displayPart = excerpt.slice(1, ix); // Start after the [ until before the ](
@@ -413,7 +413,7 @@ function RenderExcerpt({ excerpt, message }) {
             // debugLog(`RenderExcerpt from '${excerpt}' got ix=${ix}, displayPart='${displayPart}', linkPart='${linkPart}', adjLinkPart='${adjLinkPart}'`);
             return <><span style={{ color: 'DimGray' }}>` around ◗[{displayPart}](<a rel="noopener noreferrer" target="_blank" href={adjLinkPart}>{linkPart}</a>)◖`</span></>
         }
-    }
+    // }
     if (excerpt && excerpt.length)
         return <> around ◗<span style={{ color: 'DarkOrange' }}><b>{excerpt}</b></span>◖</>;
     // else

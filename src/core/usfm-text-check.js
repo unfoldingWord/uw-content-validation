@@ -14,7 +14,7 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.10.10';
+// const USFM_VALIDATOR_VERSION_STRING = '0.10.12';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for STs
@@ -223,7 +223,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
     //parameterAssert(typeof givenLocation === 'string', `checkUSFMText: 'givenRowLocation' parameter should be a string not a '${typeof givenLocation}'`);
     //parameterAssert(checkingOptions !== undefined, "checkUSFMText: 'checkingOptions' parameter should be defined");
     if (checkingOptions !== undefined) {
-        parameterAssert(typeof checkingOptions === 'object', `checkUSFMText: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
+        //parameterAssert(typeof checkingOptions === 'object', `checkUSFMText: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
     }
 
     let ourLocation = givenLocation;
@@ -260,31 +260,35 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         usfmResultObject.successList.push(successString);
     }
     function addNoticePartial(incompleteNoticeObject) {
-        // debugLog("checkUSFMText addNoticePartial:", JSON.stringify(noticeObject));
-        // functionLog(`checkUSFMText addNoticePartial: (priority=${noticeObject.priority}) ${noticeObject.C}:${noticeObject.V} ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.excerpt ? ` ${noticeObject.excerpt}` : ""}${noticeObject.location}`);
-        //parameterAssert(noticeObject.priority !== undefined, "cUSFM addNoticePartial: 'priority' parameter should be defined");
-        //parameterAssert(typeof noticeObject.priority === 'number', `cUSFM addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        //parameterAssert(noticeObject.message !== undefined, "cUSFM addNoticePartial: 'message' parameter should be defined");
-        //parameterAssert(typeof noticeObject.message === 'string', `cUSFM addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // //parameterAssert(C !== undefined, "cUSFM addNoticePartial: 'C' parameter should be defined");
-        if (incompleteNoticeObject.C) { //parameterAssert(typeof noticeObject.C === 'string', `cUSFM addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
+        // debugLog("checkUSFMText addNoticePartial:", JSON.stringify(incompleteNoticeObject));
+        // functionLog(`checkUSFMText addNoticePartial: (priority=${incompleteNoticeObject.priority}) ${incompleteNoticeObject.C}:${incompleteNoticeObject.V} ${incompleteNoticeObject.message}${incompleteNoticeObject.characterIndex > 0 ? ` (at character ${incompleteNoticeObject.characterIndex})` : ""}${incompleteNoticeObject.excerpt ? ` ${incompleteNoticeObject.excerpt}` : ""}${incompleteNoticeObject.location}`);
+        //parameterAssert(incompleteNoticeObject.priority !== undefined, "cUSFM addNoticePartial: 'priority' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.priority === 'number', `cUSFM addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}': ${incompleteNoticeObject.priority}`);
+        //parameterAssert(incompleteNoticeObject.message !== undefined, "cUSFM addNoticePartial: 'message' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.message === 'string', `cUSFM addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}': ${incompleteNoticeObject.message}`);
+        // parameterAssert(C !== undefined, "cUSFM addNoticePartial: 'C' parameter should be defined");
+        if (incompleteNoticeObject.C) {
+            //parameterAssert(typeof incompleteNoticeObject.C === 'string', `cUSFM addNoticePartial: 'C' parameter should be a string not a '${typeof incompleteNoticeObject.C}': ${incompleteNoticeObject.C}`);
         }
-        // //parameterAssert(V !== undefined, "cUSFM addNoticePartial: 'V' parameter should be defined");
-        if (incompleteNoticeObject.V) { //parameterAssert(typeof noticeObject.V === 'string', `cUSFM addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
+        // parameterAssert(V !== undefined, "cUSFM addNoticePartial: 'V' parameter should be defined");
+        if (incompleteNoticeObject.V) {
+            //parameterAssert(typeof incompleteNoticeObject.V === 'string', `cUSFM addNoticePartial: 'V' parameter should be a string not a '${typeof incompleteNoticeObject.V}': ${incompleteNoticeObject.V}`);
         }
-        // //parameterAssert(characterIndex !== undefined, "cUSFM addNoticePartial: 'characterIndex' parameter should be defined");
-        if (incompleteNoticeObject.characterIndex !== undefined) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cUSFM addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        // parameterAssert(characterIndex !== undefined, "cUSFM addNoticePartial: 'characterIndex' parameter should be defined");
+        if (incompleteNoticeObject.characterIndex !== undefined) {
+            //parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `cUSFM addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
         }
-        // //parameterAssert(excerpt !== undefined, "cUSFM addNoticePartial: 'excerpt' parameter should be defined");
-        if (incompleteNoticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cUSFM addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        // parameterAssert(excerpt !== undefined, "cUSFM addNoticePartial: 'excerpt' parameter should be defined");
+        if (incompleteNoticeObject.excerpt) {
+            //parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `cUSFM addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt}`);
         }
-        //parameterAssert(noticeObject.location !== undefined, "cUSFM addNoticePartial: 'location' parameter should be defined");
-        //parameterAssert(typeof noticeObject.location === 'string', `cUSFM addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        //parameterAssert(incompleteNoticeObject.location !== undefined, "cUSFM addNoticePartial: 'location' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.location === 'string', `cUSFM addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
 
         // Doublecheck -- we don’t want "Mismatched {}" per line, only per file
         // eslint-disable-next-line no-unused-vars
         const noticeObjectString = JSON.stringify(incompleteNoticeObject);
-        //parameterAssert(noticeObject.message.indexOf("Mismatched {}") === -1 || noticeObject.lineNumber === undefined, `checkUSFMText addNoticePartial: got bad notice: ${noticeObjectString}`);
+        //parameterAssert(incompleteNoticeObject.message.indexOf("Mismatched {}") === -1 || incompleteNoticeObject.lineNumber === undefined, `checkUSFMText addNoticePartial: got bad notice: ${noticeObjectString}`);
         //parameterAssert(noticeObjectString.indexOf('NONE') === -1 && noticeObjectString.indexOf('SPECIAL') === -1, `checkUSFMText addNoticePartial: 'NONE' & 'SPECIAL' shouldn’t make it thru to end user: ${noticeObjectString}`)
         if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkUSFMText ${incompleteNoticeObject.debugChain}`;
         usfmResultObject.noticeList.push({ ...incompleteNoticeObject, bookID, filename });
@@ -595,7 +599,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         //parameterAssert(typeof V === 'string', `cUSFM ourCheckTextField: 'V' parameter should be a string not a '${typeof V}'`);
         //parameterAssert(fieldType !== undefined, "cUSFM ourCheckTextField: 'fieldType' parameter should be defined");
         //parameterAssert(typeof fieldType === 'string', `cUSFM ourCheckTextField: 'fieldType' parameter should be a string not a '${typeof fieldType}'`);
-        //parameterAssert(fieldType === 'USFM' || fieldType === 'raw', `cUSFM ourCheckTextField: Unrecognized 'fieldType' parameter: ${fieldType}`);
+        //parameterAssert(fieldType === 'USFM line' || fieldType === 'raw USFM line', `cUSFM ourCheckTextField: Unrecognized 'fieldType' parameter: ${fieldType}`);
         //parameterAssert(fieldName !== undefined, "cUSFM ourCheckTextField: 'fieldName' parameter should be defined");
         //parameterAssert(typeof fieldName === 'string', `cUSFM ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
         //parameterAssert(fieldName !== '', `cUSFM ourCheckTextField: ${fieldType} 'fieldName' parameter should be not be an empty string`);
@@ -783,14 +787,17 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         // Check that no \f or \x markers follow a space
         if ((characterIndex = rest.indexOf(' \\f ')) !== -1) {
             const badCount = countOccurrencesInString(rest, ' \\f ');
-            const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-            addNoticePartial({ priority: 443, message: "Shouldn’t have a footnote after a space", details: badCount > 1 ? details + `${badCount} occurrences found in line` : details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+            if (badCount > 1 || marker !== 'v' || characterIndex > 3) { // Accept it if it seems to be after the space after a verse number
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
+                addNoticePartial({ priority: 443, message: "Shouldn’t have a footnote after a space", details: badCount > 1 ? details + `${badCount} occurrences found in line` : details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+            }
         }
         if ((characterIndex = rest.indexOf(' \\x ')) !== -1) {
             const badCount = countOccurrencesInString(rest, ' \\x ');
-            const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
+            if (badCount > 1 || marker !== 'v' || characterIndex > 3) { // Accept it if it seems to be after the space after a verse number
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
             addNoticePartial({ priority: 442, message: "Shouldn’t have a cross-reference after a space", details: badCount > 1 ? details + `${badCount} occurrences found in line` : details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
-        }
+        }}
 
         // Remove any self-closed milestones and internal \v markers
         // NOTE: replaceAll() is not generally available in browsers yet, so need to use RegExps
@@ -985,15 +992,15 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             // Updates the global list of notices
 
             // functionLog(`checkUSFMText ourCheckStrongsField(${lineNumber}, ${C}:${V}, ${marker}, ${fieldName}, (${fieldText.length}) '${fieldText}', ${location}, ${JSON.stringify(checkingOptions)})`);
-            parameterAssert(marker !== undefined, "checkUSFMText ourCheckStrongsField: 'marker' parameter should be defined");
-            parameterAssert(typeof marker === 'string', `checkUSFMText ourCheckStrongsField: 'marker' parameter should be a string not a '${typeof marker}': ${marker}`);
-            parameterAssert(fieldName !== undefined, "checkUSFMText ourCheckStrongsField: 'fieldName' parameter should be defined");
-            parameterAssert(typeof fieldName === 'string', `checkUSFMText ourCheckStrongsField: 'fieldName' parameter should be a string not a '${typeof fieldName}': ${fieldName}`);
-            parameterAssert(fieldText !== undefined, "checkUSFMText ourCheckStrongsField: 'fieldText' parameter should be defined");
-            parameterAssert(typeof fieldText === 'string', `checkUSFMText ourCheckStrongsField: 'fieldText' parameter should be a string not a '${typeof fieldText}': ${fieldText}`);
-            parameterAssert(checkingOptions !== undefined, "checkUSFMText ourCheckStrongsField: 'checkingOptions' parameter should be defined");
+            //parameterAssert(marker !== undefined, "checkUSFMText ourCheckStrongsField: 'marker' parameter should be defined");
+            //parameterAssert(typeof marker === 'string', `checkUSFMText ourCheckStrongsField: 'marker' parameter should be a string not a '${typeof marker}': ${marker}`);
+            //parameterAssert(fieldName !== undefined, "checkUSFMText ourCheckStrongsField: 'fieldName' parameter should be defined");
+            //parameterAssert(typeof fieldName === 'string', `checkUSFMText ourCheckStrongsField: 'fieldName' parameter should be a string not a '${typeof fieldName}': ${fieldName}`);
+            //parameterAssert(fieldText !== undefined, "checkUSFMText ourCheckStrongsField: 'fieldText' parameter should be defined");
+            //parameterAssert(typeof fieldText === 'string', `checkUSFMText ourCheckStrongsField: 'fieldText' parameter should be a string not a '${typeof fieldText}': ${fieldText}`);
+            //parameterAssert(checkingOptions !== undefined, "checkUSFMText ourCheckStrongsField: 'checkingOptions' parameter should be defined");
             if (checkingOptions !== undefined) {
-                parameterAssert(typeof checkingOptions === 'object', `checkUSFMText ourCheckStrongsField: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
+                //parameterAssert(typeof checkingOptions === 'object', `checkUSFMText ourCheckStrongsField: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
             }
 
             let adjustedLanguageCode = languageCode; // This is the language code of the resource with the link

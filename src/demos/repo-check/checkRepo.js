@@ -8,7 +8,7 @@ import { repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetR
 import { userLog, functionLog, debugLog, logicAssert, parameterAssert } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.6.4';
+// const REPO_VALIDATOR_VERSION_STRING = '0.6.6';
 
 
 /**
@@ -86,33 +86,37 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
     // Adds the notices to the result that we will later return
     // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
     // Note that bookID,C,V might all be empty strings (as some repos don’t have BCV)
-    // functionLog(`checkRepo addNoticePartial: ${noticeObject.priority}:${noticeObject.message} bookID=${noticeObject.bookID} ${noticeObject.C}:${noticeObject.V} ${noticeObject.filename}:${noticeObject.lineNumber} ${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.excerpt ? ` ${noticeObject.excerpt}` : ""}${noticeObject.location}`);
-    //parameterAssert(noticeObject.priority !== undefined, "cR addNoticePartial: 'priority' parameter should be defined");
-    //parameterAssert(typeof noticeObject.priority === 'number', `cR addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}'`);
-    //parameterAssert(noticeObject.message !== undefined, "cR addNoticePartial: 'message' parameter should be defined");
-    //parameterAssert(typeof noticeObject.message === 'string', `cR addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}'`);
-    // //parameterAssert(bookID !== undefined, "cR addNoticePartial: 'bookID' parameter should be defined");
+    // functionLog(`checkRepo addNoticePartial: ${incompleteNoticeObject.priority}:${incompleteNoticeObject.message} bookID=${incompleteNoticeObject.bookID} ${incompleteNoticeObject.C}:${incompleteNoticeObject.V} ${incompleteNoticeObject.filename}:${incompleteNoticeObject.lineNumber} ${incompleteNoticeObject.characterIndex > 0 ? ` (at character ${incompleteNoticeObject.characterIndex})` : ""}${incompleteNoticeObject.excerpt ? ` ${incompleteNoticeObject.excerpt}` : ""}${incompleteNoticeObject.location}`);
+    //parameterAssert(incompleteNoticeObject.priority !== undefined, "cR addNoticePartial: 'priority' parameter should be defined");
+    //parameterAssert(typeof incompleteNoticeObject.priority === 'number', `cR addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}'`);
+    //parameterAssert(incompleteNoticeObject.message !== undefined, "cR addNoticePartial: 'message' parameter should be defined");
+    //parameterAssert(typeof incompleteNoticeObject.message === 'string', `cR addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}'`);
+    // parameterAssert(bookID !== undefined, "cR addNoticePartial: 'bookID' parameter should be defined");
     if (incompleteNoticeObject.bookID) {
-      //parameterAssert(typeof noticeObject.bookID === 'string', `cR addNoticePartial: 'bookID' parameter should be a string not a '${typeof noticeObject.bookID}'`);
-      //parameterAssert(noticeObject.bookID.length === 3, `cR addNoticePartial: 'bookID' parameter should be three characters long not ${noticeObject.bookID.length}`);
-      //parameterAssert(noticeObject.bookID === 'OBS' || books.isOptionalValidBookID(noticeObject.bookID), `cR addNoticePartial: '${noticeObject.bookID}' is not a valid USFM book identifier`);
+      //parameterAssert(typeof incompleteNoticeObject.bookID === 'string', `cR addNoticePartial: 'bookID' parameter should be a string not a '${typeof incompleteNoticeObject.bookID}'`);
+      //parameterAssert(incompleteNoticeObject.bookID.length === 3, `cR addNoticePartial: 'bookID' parameter should be three characters long not ${incompleteNoticeObject.bookID.length}`);
+      //parameterAssert(incompleteNoticeObject.bookID === 'OBS' || books.isOptionalValidBookID(incompleteNoticeObject.bookID), `cR addNoticePartial: '${incompleteNoticeObject.bookID}' is not a valid USFM book identifier`);
     }
-    // //parameterAssert(C !== undefined, "cR addNoticePartial: 'C' parameter should be defined");
-    if (incompleteNoticeObject.C) { //parameterAssert(typeof noticeObject.C === 'string', `cR addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}'`);
+    // parameterAssert(C !== undefined, "cR addNoticePartial: 'C' parameter should be defined");
+    if (incompleteNoticeObject.C) {
+      //parameterAssert(typeof incompleteNoticeObject.C === 'string', `cR addNoticePartial: 'C' parameter should be a string not a '${typeof incompleteNoticeObject.C}'`);
     }
-    // //parameterAssert(V !== undefined, "cR addNoticePartial: 'V' parameter should be defined");
-    if (incompleteNoticeObject.V) { //parameterAssert(typeof noticeObject.V === 'string', `cR addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}'`);
+    // parameterAssert(V !== undefined, "cR addNoticePartial: 'V' parameter should be defined");
+    if (incompleteNoticeObject.V) {
+      //parameterAssert(typeof incompleteNoticeObject.V === 'string', `cR addNoticePartial: 'V' parameter should be a string not a '${typeof incompleteNoticeObject.V}'`);
     }
-    // //parameterAssert(characterIndex !== undefined, "cR addNoticePartial: 'characterIndex' parameter should be defined");
-    if (incompleteNoticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cR addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}'`);
+    // parameterAssert(characterIndex !== undefined, "cR addNoticePartial: 'characterIndex' parameter should be defined");
+    if (incompleteNoticeObject.characterIndex) {
+      //parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `cR addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}'`);
     }
-    // //parameterAssert(excerpt !== undefined, "cR addNoticePartial: 'excerpt' parameter should be defined");
-    if (incompleteNoticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cR addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}'`);
+    // parameterAssert(excerpt !== undefined, "cR addNoticePartial: 'excerpt' parameter should be defined");
+    if (incompleteNoticeObject.excerpt) {
+      //parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `cR addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}'`);
     }
-    //parameterAssert(noticeObject.location !== undefined, "cR addNoticePartial: 'location' parameter should be defined");
-    //parameterAssert(typeof noticeObject.location === 'string', `cR addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}'`);
-    // //parameterAssert(noticeObject.extra !== undefined, "cR addNoticePartial: 'extra' parameter should be defined");
-    //parameterAssert(typeof noticeObject.extra === 'string', `cR addNoticePartial: 'extra' parameter should be a string not a '${typeof noticeObject.extra}'`);
+    //parameterAssert(incompleteNoticeObject.location !== undefined, "cR addNoticePartial: 'location' parameter should be defined");
+    //parameterAssert(typeof incompleteNoticeObject.location === 'string', `cR addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}'`);
+    // parameterAssert(incompleteNoticeObject.extra !== undefined, "cR addNoticePartial: 'extra' parameter should be defined");
+    //parameterAssert(typeof incompleteNoticeObject.extra === 'string', `cR addNoticePartial: 'extra' parameter should be a string not a '${typeof incompleteNoticeObject.extra}'`);
     if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkRepo ${incompleteNoticeObject.debugChain}`;
     // Add in the repoName from the outer scope
     checkRepoResult.noticeList.push({ ...incompleteNoticeObject, username, repoCode, repoName });
@@ -133,8 +137,8 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
     // functionLog(`checkRepo ourCheckRepoFileContents(bk/fC='${cfBookOrFileCode}', bk='${cfBookID}', fn='${cfFilename}', ${cfFileContent.length}, ${cfFileLocation}, ${JSON.stringify(cfCheckingOptions)})…`);
 
     // Updates the global list of notices
-    //parameterAssert(bookOrFileCode !== undefined, "ourCheckRepoFileContents: 'bookOrFileCode' parameter should be defined");
-    //parameterAssert(typeof bookOrFileCode === 'string', `ourCheckRepoFileContents: 'bookOrFileCode' parameter should be a string not a '${typeof bookOrFileCode}'`);
+    //parameterAssert(cfBookOrFileCode !== undefined, "ourCheckRepoFileContents: 'cfBookOrFileCode' parameter should be defined");
+    //parameterAssert(typeof cfBookOrFileCode === 'string', `ourCheckRepoFileContents: 'cfBookOrFileCode' parameter should be a string not a '${typeof cfBookOrFileCode}': '${cfBookOrFileCode}'`);
     //parameterAssert(cfBookID !== undefined, "ourCheckRepoFileContents: 'cfBookID' parameter should be defined");
     //parameterAssert(typeof cfBookID === 'string', `ourCheckRepoFileContents: 'cfBookID' parameter should be a string not a '${typeof cfBookID}'`);
     if (cfBookID) {
@@ -142,13 +146,13 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
       //parameterAssert(cfBookID.toUpperCase() === cfBookID, `ourCheckRepoFileContents: 'cfBookID' parameter should be UPPERCASE not '${cfBookID}'`);
       //parameterAssert(cfBookID === 'OBS' || books.isValidBookID(cfBookID), `ourCheckRepoFileContents: '${cfBookID}' is not a valid USFM book identifier`);
     }
-    //parameterAssert(filename !== undefined, "ourCheckRepoFileContents: 'filename' parameter should be defined");
-    //parameterAssert(typeof filename === 'string', `ourCheckRepoFileContents: 'filename' parameter should be a string not a '${typeof filename}'`);
-    //parameterAssert(fileContent !== undefined, "ourCheckRepoFileContents: 'fileContent' parameter should be defined");
-    //parameterAssert(typeof fileContent === 'string', `ourCheckRepoFileContents: 'fileContent' parameter should be a string not a '${typeof fileContent}'`);
-    //parameterAssert(fileLocation !== undefined, "ourCheckRepoFileContents: 'fileLocation' parameter should be defined");
-    //parameterAssert(typeof fileLocation === 'string', `ourCheckRepoFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
-    //parameterAssert(checkingOptions !== undefined, "ourCheckRepoFileContents: 'checkingOptions' parameter should be defined");
+    //parameterAssert(cfFilename !== undefined, "ourCheckRepoFileContents: 'cfFilename' parameter should be defined");
+    //parameterAssert(typeof cfFilename === 'string', `ourCheckRepoFileContents: 'cfFilename' parameter should be a string not a '${typeof cfFilename}'`);
+    //parameterAssert(cfFileContent !== undefined, "ourCheckRepoFileContents: 'cfFileContent' parameter should be defined");
+    //parameterAssert(typeof cfFileContent === 'string', `ourCheckRepoFileContents: 'cfFileContent' parameter should be a string not a '${typeof cfFileContent}'`);
+    //parameterAssert(cfFileLocation !== undefined, "ourCheckRepoFileContents: 'cfFileLocation' parameter should be defined");
+    //parameterAssert(typeof cfFileLocation === 'string', `ourCheckRepoFileContents: 'cfFileLocation' parameter should be a string not a '${typeof cfFileLocation}'`);
+    //parameterAssert(cfCheckingOptions !== undefined, "ourCheckRepoFileContents: 'cfCheckingOptions' parameter should be defined");
 
     let adjustedLanguageCode = languageCode;
     if (/*filename === 'manifest.yaml' || */cfFilename === 'LICENSE.md'
@@ -346,7 +350,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
           totalCheckedSize += repoFileContent.length;
           // functionLog(`checkRepo checked ${thisFilename}`);
           if (thisFilenameExtension !== 'md') // There’s often far, far too many of these
-            addSuccessMessage(`Checked ${repoName} ${bookOrFileCode.toUpperCase()} file: ${thisFilename}`);
+            addSuccessMessage(`Checked ${repoName} ${bookOrFileCode.toUpperCase()} file: ${thisFilename.endsWith('.yaml') ? thisFilepath : thisFilename}`);
         }
       }
 

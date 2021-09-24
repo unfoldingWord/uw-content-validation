@@ -15,8 +15,8 @@ const YAML_VALIDATOR_VERSION_STRING = '0.4.4';
  *
  * @param {string} languageCode
  * @param {string} repoCode -- e.g., 'TN' or 'TQ2', etc.
- * @param {string} textName
- * @param {string} YAMLText
+ * @param {string} textName -- e.g., 'TOC.yaml'
+ * @param {string} YAMLText -- the text itself to be checked
  * @param {string} givenLocation
  * @param {Object} checkingOptions
  */
@@ -41,7 +41,7 @@ export function checkYAMLText(languageCode, repoCode, textName, YAMLText, givenL
     //parameterAssert(typeof givenLocation === 'string', `checkYAMLText: 'optionalFieldLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
     //parameterAssert(givenLocation.indexOf('true') === -1, `checkYAMLText: 'optionalFieldLocation' parameter should not be '${givenLocation}'`);
     //parameterAssert(checkingOptions !== undefined, "checkYAMLText: 'checkingOptions' parameter should be defined");
-    if (checkingOptions !== undefined) { //parameterAssert(typeof checkingOptions === 'object', `checkYAMLText: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
+    if (checkingOptions !== undefined) { parameterAssert(typeof checkingOptions === 'object', `checkYAMLText: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
     }
 
     let ourLocation = givenLocation;
@@ -74,11 +74,11 @@ export function checkYAMLText(languageCode, repoCode, textName, YAMLText, givenL
         //parameterAssert(typeof noticeObject.priority === 'number', `cManT addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         //parameterAssert(noticeObject.message !== undefined, "cYt addNotice: 'message' parameter should be defined");
         //parameterAssert(typeof noticeObject.message === 'string', `cManT addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // //parameterAssert(characterIndex!==undefined, "cYt addNotice: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cManT addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        // parameterAssert(characterIndex!==undefined, "cYt addNotice: 'characterIndex' parameter should be defined");
+        if (noticeObject.characterIndex) { parameterAssert(typeof noticeObject.characterIndex === 'number', `cManT addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
         }
-        // //parameterAssert(excerpt!==undefined, "cYt addNotice: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cManT addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        // parameterAssert(excerpt!==undefined, "cYt addNotice: 'excerpt' parameter should be defined");
+        if (noticeObject.excerpt) { parameterAssert(typeof noticeObject.excerpt === 'string', `cManT addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         }
         //parameterAssert(noticeObject.location !== undefined, "cYt addNotice: 'location' parameter should be defined");
         //parameterAssert(typeof noticeObject.location === 'string', `cYt addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);

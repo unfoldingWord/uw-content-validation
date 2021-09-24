@@ -61,6 +61,6 @@ clearCheckedArticleCache();
   // —those fields are not necessary (or normal) here
   //maximumSimilarMessages='4' // Default is 3 (0 means don’t suppress any)
   // excerptLength='25' // Default is 20 characters
-  cutoffPriorityLevel='90' // Default is to detect all errors/warnings
+  cutoffPriorityLevel='200' // Default is to detect all errors/warnings
   />
 ```

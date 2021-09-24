@@ -5,7 +5,7 @@ import { OPEN_CLOSE_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, BAD_CHARACTER
 import { debugLog, parameterAssert } from './utilities';
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.14';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.18';
 
 
 /**
@@ -40,7 +40,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     //parameterAssert(fieldType !== undefined, "checkTextField: 'fieldType' parameter should be defined");
     //parameterAssert(typeof fieldType === 'string', `checkTextField: 'fieldType' parameter should be a string not a '${typeof fieldType}': ${fieldType}`);
     //parameterAssert(fieldType !== '', `checkTextField: 'fieldType' ${fieldType} parameter should be not be an empty string`);
-    //parameterAssert(fieldType === 'markdown' || fieldType === 'USFM' || fieldType === 'YAML' || fieldType === 'text' || fieldType === 'raw' || fieldType === 'link', `checkTextField: unrecognised 'fieldType' parameter: '${fieldType}'`);
+    //parameterAssert(fieldType === 'markdown' || fieldType === 'USFM line' || fieldType === 'raw USFM line' || fieldType === 'YAML' || fieldType === 'text' || fieldType === 'raw' || fieldType === 'link', `checkTextField: unrecognised 'fieldType' parameter: '${fieldType}'`);
     //parameterAssert(fieldName !== undefined, "checkTextField: 'fieldName' parameter should be defined");
     //parameterAssert(typeof fieldName === 'string', `checkTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}': ${fieldName}`);
     // if (!fieldType.startsWith('markdown'))
@@ -48,12 +48,14 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     //parameterAssert(fieldText !== undefined, "checkTextField: 'fieldText' parameter should be defined");
     //parameterAssert(typeof fieldText === 'string', `checkTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}': ${fieldText}`);
     //parameterAssert(allowedLinks === true || allowedLinks === false, "checkTextField: allowedLinks parameter must be either true or false");
-    if (!allowedLinks) { //parameterAssert(fieldText.indexOf('x-tw') < 0, `checkTextField should be allowedLinks for ${fieldType} ${fieldName} ${fieldText}`);
+    if (!allowedLinks) {
+        //parameterAssert(fieldText.indexOf('x-tw') < 0, `checkTextField should be allowedLinks for ${fieldType} ${fieldName} ${fieldText}`);
     }
     //parameterAssert(optionalFieldLocation !== undefined, "checkTextField: 'optionalFieldLocation' parameter should be defined");
     //parameterAssert(typeof optionalFieldLocation === 'string', `checkTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}': ${optionalFieldLocation}`);
     //parameterAssert(optionalFieldLocation.indexOf('true') === -1, `checkTextField: 'optionalFieldLocation' parameter should not be '${optionalFieldLocation}'`);
-    if (checkingOptions !== undefined) { //parameterAssert(typeof checkingOptions === 'object', `checkTextField: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
+    if (checkingOptions !== undefined) {
+        //parameterAssert(typeof checkingOptions === 'object', `checkTextField: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
     }
 
     let result = { noticeList: [] };
@@ -61,20 +63,22 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     function addNoticePartial(incompleteNoticeObject) {
         // We add the fieldName here
         // debugLog(`dBTC Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
-        //parameterAssert(noticeObject.priority !== undefined, "dBTCs addNoticePartial: 'priority' parameter should be defined");
-        //parameterAssert(typeof noticeObject.priority === 'number', `dBTCs addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        //parameterAssert(noticeObject.message !== undefined, "dBTCs addNoticePartial: 'message' parameter should be defined");
-        //parameterAssert(typeof noticeObject.message === 'string', `dBTCs addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // //parameterAssert(characterIndex !== undefined, "dBTCs addNoticePartial: 'characterIndex' parameter should be defined");
-        if (incompleteNoticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `dBTCs addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        //parameterAssert(incompleteNoticeObject.priority !== undefined, "dBTCs addNoticePartial: 'priority' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.priority === 'number', `dBTCs addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}': ${incompleteNoticeObject.priority}`);
+        //parameterAssert(incompleteNoticeObject.message !== undefined, "dBTCs addNoticePartial: 'message' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.message === 'string', `dBTCs addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}': ${incompleteNoticeObject.message}`);
+        // parameterAssert(characterIndex !== undefined, "dBTCs addNoticePartial: 'characterIndex' parameter should be defined");
+        if (incompleteNoticeObject.characterIndex) {
+            //parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `dBTCs addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
         }
-        // //parameterAssert(excerpt !== undefined, "dBTCs addNoticePartial: 'excerpt' parameter should be defined");
-        if (incompleteNoticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `dBTCs addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        // parameterAssert(excerpt !== undefined, "dBTCs addNoticePartial: 'excerpt' parameter should be defined");
+        if (incompleteNoticeObject.excerpt) {
+            //parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `dBTCs addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt}`);
         }
-        //parameterAssert(noticeObject.location !== undefined, "dBTCs addNoticePartial: 'location' parameter should be defined");
-        //parameterAssert(typeof noticeObject.location === 'string', `dBTCs addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        //parameterAssert(incompleteNoticeObject.location !== undefined, "dBTCs addNoticePartial: 'location' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.location === 'string', `dBTCs addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
 
-        // noticeObject.debugChain = noticeObject.debugChain ? `checkTextField(${fieldType}, ${fieldName}, ${allowedLinks}) ${noticeObject.debugChain}` : `checkTextField(${fieldType}, ${fieldName}, ${allowedLinks})`;
+        // incompleteNoticeObject.debugChain = incompleteNoticeObject.debugChain ? `checkTextField(${fieldType}, ${fieldName}, ${allowedLinks}) ${incompleteNoticeObject.debugChain}` : `checkTextField(${fieldType}, ${fieldName}, ${allowedLinks})`;
         if (fieldName.length && !fieldName.endsWith(' line')) incompleteNoticeObject.fieldName = fieldName; // Don’t add the field if it’s blank
         result.noticeList.push(incompleteNoticeObject);
     }
@@ -390,7 +394,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
                 //  Is it really worth it when this many exceptions need to be defined -- yes, it does find some genuine errors
                 if (nextChars.startsWith('<br>') && (repoCode === 'TN' || repoCode === 'TA')) // allow <br>
                     continue;
-                if (nextTwoChars === '\\n' && (repoCode === 'TN2' || repoCode === 'SN')) // allow \n (2 chars)
+                if (nextTwoChars === '\\n' && (repoCode === 'TN2' || repoCode === 'SN' || repoCode === 'SQ')) // allow \n (2 chars)
                     continue;
                 if (nextChar === '\\' && fieldType === 'USFM line') // probably another USFM marker
                     continue;
@@ -419,8 +423,8 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
                 if (badTwoChars === '.m'
                     && (fieldText.toLowerCase().indexOf('a.m.') !== -1 || fieldText.toLowerCase().indexOf('p.m.') !== -1))
                     continue;
-                if ((badTwoChars === '.C' && fieldText.toLowerCase().indexOf('B.C.') !== -1)
-                    || (badTwoChars === '.D' && fieldText.toLowerCase().indexOf('A.D.') !== -1))
+                if ((badTwoChars === '.C' && fieldText.indexOf('B.C.') !== -1)
+                    || (badTwoChars === '.D' && fieldText.indexOf('A.D.') !== -1))
                     continue;
                 if (badTwoChars === '?v' && fieldName.endsWith('manifest line')) // presumably a relation version number
                     continue;
@@ -438,11 +442,12 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
         // Check for leading zeroes in numbers
         for (const badZeroCharCombination of LEADING_ZERO_COMBINATIONS)
             if ((characterIndex = fieldText.indexOf(badZeroCharCombination)) >= 0
-                // but not an error perhaps if followed by period, e.g., 0.32.
+                // but not an error perhaps if followed by period, e.g., 0.32
                 && (fieldText.slice(characterIndex + badZeroCharCombination.length, characterIndex + badZeroCharCombination.length + 1) !== '.')) {
-                const nextChar = fieldText.slice(characterIndex + 1, characterIndex + 2);
-                // debugLog(`92 leading zero for fieldType=${fieldType} fieldName=${fieldName}`);
-                if (nextChar !== '”' && // e.g., “0” is ok
+                // const nextChar = fieldText.slice(characterIndex + 1, characterIndex + 2);
+                const nextNextChar = fieldText.slice(characterIndex + 2, characterIndex + 3);
+                // debugLog(`92 leading zero for fieldType=${fieldType} fieldName=${fieldName} with nextChar=${nextChar} and nextNextChar=${nextNextChar}`);
+                if (nextNextChar !== '”' && nextNextChar !== '-' && // e.g., “0” is ok and 0-2 is ok
                     (fieldType !== 'YAML' || fieldText.indexOf('sort:') === -1)) { // "sort: 0" is ok in manifests
                     const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                     addNoticePartial({ priority: 92, message: `Unexpected leading zero`, characterIndex, excerpt, location: ourLocation });
