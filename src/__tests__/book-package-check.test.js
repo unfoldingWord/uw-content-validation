@@ -60,7 +60,7 @@ describe('checkBookPackage() - ', () => {
       checkedRepoNames: rawResults.checkedRepoNames,
     };
     expect(filteredResults).toMatchSnapshot();
-  }, 6000); // Allow 6 seconds
+  }, 8000); // Allow 8 seconds
 
   it('TIT should fail on missing repo', async () => {
     const username = 'unfoldingWord';
