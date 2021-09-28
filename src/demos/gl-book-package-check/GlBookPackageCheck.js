@@ -8,12 +8,12 @@ import { checkBookPackage } from '../book-package-check/checkBookPackage';
 import { userLog, logicAssert } from '../../core/utilities';
 
 
-// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.19';
+// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.20';
 
 
 function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
     // Check a single Bible book across many repositories
-    const [result, setResultValue] = useState("Waiting-CheckBookPackages");
+    const [result, setResultValue] = useState("Waiting-CheckBookPackage");
 
     // debugLog(`I'm here in GlBookPackageCheck v${GL_BP_VALIDATOR_VERSION_STRING}`);
     // consoleLogObject("props", props);
@@ -37,6 +37,7 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
         checkReadmeFlag: true,
         checkLicenseFlag: true,
         suppressNoticeDisablingFlag: true, // Leave this one as true (otherwise demo checks are less efficient)
+        checkType: 'GLBookPackage', // Always leave this one in
     };
     // Or this allows the parameters to be specified as a GlBookPackageCheck property
     if (props.excerptLength) checkingOptions.excerptLength = ourParseInt(props.excerptLength);

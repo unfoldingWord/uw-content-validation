@@ -413,7 +413,6 @@ Object {
       "username": "unfoldingWord",
     },
     Object {
-      "details": "username=unfoldingWord",
       "extra": "TWL",
       "location": " in TWL in en RUT book package from unfoldingWord master branch",
       "message": "Repository doesn’t exist",
@@ -7016,7 +7015,6 @@ Object {
       "username": "unfoldingWord",
     },
     Object {
-      "details": "username=unfoldingWord",
       "extra": "SN",
       "location": " in SN in en RUT book package from unfoldingWord master branch",
       "message": "Repository doesn’t exist",
@@ -7026,7 +7024,6 @@ Object {
       "username": "unfoldingWord",
     },
     Object {
-      "details": "username=unfoldingWord",
       "extra": "SQ",
       "location": " in SQ in en RUT book package from unfoldingWord master branch",
       "message": "Repository doesn’t exist",
@@ -7150,7 +7147,6 @@ Object {
       "username": "unfoldingWord",
     },
     Object {
-      "details": "username=unfoldingWord",
       "extra": "TWL",
       "location": " in TWL in en TIT book package from unfoldingWord master branch",
       "message": "Repository doesn’t exist",
@@ -7161,7 +7157,7 @@ Object {
     },
     Object {
       "bookID": "TIT",
-      "details": "username=unfoldingWord error=Simulated error - Could not find src/__tests__/fixtures/unfoldingWord/en_ult/57-TIT.usfm",
+      "details": "error=Simulated error - Could not find src/__tests__/fixtures/unfoldingWord/en_ult/57-TIT.usfm",
       "extra": "LT",
       "filename": "57-TIT.usfm",
       "location": " in LT in en TIT book package from unfoldingWord master branch",
@@ -7385,7 +7381,6 @@ Object {
       "username": "unfoldingWord",
     },
     Object {
-      "details": "username=unfoldingWord",
       "extra": "SN",
       "location": " in SN in en TIT book package from unfoldingWord master branch",
       "message": "Repository doesn’t exist",
@@ -7395,7 +7390,6 @@ Object {
       "username": "unfoldingWord",
     },
     Object {
-      "details": "username=unfoldingWord",
       "extra": "SQ",
       "location": " in SQ in en TIT book package from unfoldingWord master branch",
       "message": "Repository doesn’t exist",
@@ -7481,7 +7475,6 @@ Object {
       "username": "unfoldingWord",
     },
     Object {
-      "details": "username=unfoldingWord",
       "extra": "LT",
       "location": " in LT in zzz TIT book package from unfoldingWord master branch",
       "message": "Repository doesn’t exist",
@@ -7491,7 +7484,6 @@ Object {
       "username": "unfoldingWord",
     },
     Object {
-      "details": "username=unfoldingWord",
       "extra": "ST",
       "location": " in ST in zzz TIT book package from unfoldingWord master branch",
       "message": "Repository doesn’t exist",
@@ -7501,7 +7493,6 @@ Object {
       "username": "unfoldingWord",
     },
     Object {
-      "details": "username=unfoldingWord",
       "extra": "TN",
       "location": " in TN in zzz TIT book package from unfoldingWord master branch",
       "message": "Repository doesn’t exist",
@@ -7511,7 +7502,7 @@ Object {
       "username": "unfoldingWord",
     },
     Object {
-      "details": "username=unfoldingWord, folder=tit/",
+      "details": "folder=tit/",
       "extra": "TQ",
       "location": " in unfoldingWord (master)",
       "message": "Repository doesn’t exist",
@@ -7633,7 +7624,6 @@ Object {
       "username": "unfoldingWord",
     },
     Object {
-      "details": "username=unfoldingWord",
       "extra": "TWL",
       "location": " in TWL in en TIT book package from unfoldingWord master branch",
       "message": "Repository doesn’t exist",
@@ -20668,7 +20658,6 @@ Object {
       "username": "unfoldingWord",
     },
     Object {
-      "details": "username=unfoldingWord",
       "extra": "SN",
       "location": " in SN in en TIT book package from unfoldingWord master branch",
       "message": "Repository doesn’t exist",
@@ -20678,7 +20667,6 @@ Object {
       "username": "unfoldingWord",
     },
     Object {
-      "details": "username=unfoldingWord",
       "extra": "SQ",
       "location": " in SQ in en TIT book package from unfoldingWord master branch",
       "message": "Repository doesn’t exist",

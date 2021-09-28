@@ -3,7 +3,7 @@ import { userLog, parameterAssert, logicAssert, debugLog, functionLog } from '..
 import { isDisabledNotice } from '../core/disabled-notices';
 
 
-// const NOTICE_PROCESSOR_VERSION_STRING = '0.10.3';
+// const NOTICE_PROCESSOR_VERSION_STRING = '0.10.4';
 // TODO: Hidden message code probably doesn’t work for the other sort orders
 
 const DEFAULT_MAXIMUM_HIDDEN_NOTICES = 60; // Don’t want to hide HUNDREDS/THOUSANDS of notices for each notice type
@@ -206,7 +206,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 thisLocation = thisGivenNotice.location, thisExtra = thisGivenNotice.extra;
             if (thisRepoName) {
                 //parameterAssert(thisRepoName.indexOf(' ') < 0 && thisRepoName.indexOf('/') < 0 && thisRepoName.indexOf('\\') < 0, `repoName '${thisRepoName}' contains unexpected characters in ${JSON.stringify(thisGivenNotice)}`);
-                if (thisLocation) { //parameterAssert(thisLocation.indexOf(thisRepoName) < 0, `repoName is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
+                if (thisLocation) { parameterAssert(thisLocation.indexOf(thisRepoName) < 0, `repoName is repeated in location in ${JSON.stringify(thisGivenNotice)}`);
                 }
             }
             if (thisFilename) {
@@ -321,27 +321,27 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 // debugLog("thisParticularSuccessMsg", thisParticularSuccessMsg);
                 let regexResult;
                 if (thisParticularSuccessMsg.startsWith('Checked UHB file: '))
-                    UHBBookList.push(thisParticularSuccessMsg.substring(18, thisParticularSuccessMsg.length))
+                    UHBBookList.push(thisParticularSuccessMsg.slice(18, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked UGNT file: '))
-                    UGNTBookList.push(thisParticularSuccessMsg.substring(19, thisParticularSuccessMsg.length))
+                    UGNTBookList.push(thisParticularSuccessMsg.slice(19, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked TWL file: '))
-                    TWLList.push(thisParticularSuccessMsg.substring(18, thisParticularSuccessMsg.length))
+                    TWLList.push(thisParticularSuccessMsg.slice(18, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked LT file: '))
-                    LTBookList.push(thisParticularSuccessMsg.substring(17, thisParticularSuccessMsg.length))
+                    LTBookList.push(thisParticularSuccessMsg.slice(17, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked ST file: '))
-                    STBookList.push(thisParticularSuccessMsg.substring(17, thisParticularSuccessMsg.length))
+                    STBookList.push(thisParticularSuccessMsg.slice(17, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked TN file: '))
-                    TNBookList.push(thisParticularSuccessMsg.substring(17, thisParticularSuccessMsg.length))
+                    TNBookList.push(thisParticularSuccessMsg.slice(17, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked TN2 file: '))
-                    TN2BookList.push(thisParticularSuccessMsg.substring(18, thisParticularSuccessMsg.length))
+                    TN2BookList.push(thisParticularSuccessMsg.slice(18, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked TQ2 file: '))
-                    TQ2BookList.push(thisParticularSuccessMsg.substring(18, thisParticularSuccessMsg.length))
-                else if (thisParticularSuccessMsg.startsWith('Checked TN2 ') && thisParticularSuccessMsg.substring(14, 20) === ' file:')
-                    TNList.push(thisParticularSuccessMsg.substring(21, thisParticularSuccessMsg.length))
-                else if (thisParticularSuccessMsg.startsWith('Checked TQ2 ') && thisParticularSuccessMsg.substring(14, 20) === ' file:')
-                    TQList.push(thisParticularSuccessMsg.substring(21, thisParticularSuccessMsg.length))
-                else if (thisParticularSuccessMsg.startsWith('Checked TWL ') && thisParticularSuccessMsg.substring(15, 21) === ' file:')
-                    TWLList.push(thisParticularSuccessMsg.substring(22, thisParticularSuccessMsg.length))
+                    TQ2BookList.push(thisParticularSuccessMsg.slice(18, thisParticularSuccessMsg.length))
+                else if (thisParticularSuccessMsg.startsWith('Checked TN2 ') && thisParticularSuccessMsg.slice(14, 20) === ' file:')
+                    TNList.push(thisParticularSuccessMsg.slice(21, thisParticularSuccessMsg.length))
+                else if (thisParticularSuccessMsg.startsWith('Checked TQ2 ') && thisParticularSuccessMsg.slice(14, 20) === ' file:')
+                    TQList.push(thisParticularSuccessMsg.slice(21, thisParticularSuccessMsg.length))
+                else if (thisParticularSuccessMsg.startsWith('Checked TWL ') && thisParticularSuccessMsg.slice(15, 21) === ' file:')
+                    TWLList.push(thisParticularSuccessMsg.slice(22, thisParticularSuccessMsg.length))
                 else if ((regexResult = BibleRegex.exec(thisParticularSuccessMsg)) !== null
                     // but don’t do it for Book Package checks (in different repos)
                     && thisParticularSuccessMsg.startsWith(`Checked ${regexResult[1]} file`))
@@ -528,7 +528,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             const newNotice = { ...thisNotice };
             // We don’t need the extra field if we've already got this info
             if (thisExtra && thisExtra !== thisNotice.repoName && thisExtra !== thisNotice.bookID)
-                newNotice.message = `${thisExtra} ${thisNotice.message}`;
+                newNotice.message = `${thisExtra}: ${thisNotice.message}`;
             delete newNotice.extra; // since we've used it (if it existed)
             newNoticeList.push(newNotice);
         }

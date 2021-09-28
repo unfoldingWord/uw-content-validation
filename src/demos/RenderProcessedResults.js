@@ -42,7 +42,7 @@ const tableIcons = {
 };
 
 
-// const RENDER_PROCESSED_RESULTS_VERSION = '0.7.1';
+// const RENDER_PROCESSED_RESULTS_VERSION = '0.7.3';
 
 
 /**
@@ -333,6 +333,7 @@ function RenderFileDetails({ givenEntry }) {
 
     if (!givenEntry.branch) givenEntry.branch = givenEntry.repoName?.endsWith('2') ? 'newFormat' : 'master'; // default but with TEMP code for newFormat
     // debugLog(`RenderFileDetails2 ${repoName}, ${filename}, ${lineNumber}`);
+    // debugLog(`RenderFileDetails got givenEntry.branch='${givenEntry.branch}'`);
 
     // Not sure if this happens with BP check, but filecheck for TN was giving bad links for TA warnings
     let adjustedRepoName = givenEntry.repoName;
@@ -343,11 +344,11 @@ function RenderFileDetails({ givenEntry }) {
         adjustedRepoName = `${adjustedLanguageCode}_${firstMsgWord.toLowerCase()}`;
         if (adjustedRepoName !== givenEntry.repoName) debugLog(`RenderFileDetails: trying adjusting repoName from '${givenEntry.repoName}' to '${adjustedRepoName}' for ${JSON.stringify(givenEntry)}`);
     }
+    // debugLog(`RenderFileDetails got adjustedRepoName='${adjustedRepoName}'`);
 
     let resultStart = '', lineResult = '', resultEnd = '', fileLineLink = '', fileLink = '';
     if (adjustedRepoName?.length) resultStart += ` in ${adjustedRepoName} repository`;
     if (givenEntry.username && adjustedRepoName && givenEntry.filename) {
-        if (givenEntry.filename && givenEntry.filename.length) resultStart += ` in file ${givenEntry.filename}`;
         try { // use blame so we can see the actual line!
             if (givenEntry.filename.endsWith('.tsv') || givenEntry.filename.endsWith('.md')) {
                 let folder = '';
@@ -361,7 +362,8 @@ function RenderFileDetails({ givenEntry }) {
                 fileLink = `https://git.door43.org/${givenEntry.username}/${adjustedRepoName}/blame/branch/${givenEntry.branch}/${folder}${givenEntry.filename}`;
             } else // not TSV or MD
                 fileLink = `https://git.door43.org/${givenEntry.username}/${adjustedRepoName}/src/branch/${givenEntry.branch}/${givenEntry.filename}`;
-        } catch (someErr) { debugLog(`What was someErr here: ${someErr}`); }
+        } catch (someErr) {            debugLog(`What was someErr here: ${someErr}`);        }
+        if (!fileLink.length && givenEntry.filename && givenEntry.filename.length) resultStart += ` in file ${givenEntry.filename}`;
         if (givenEntry.lineNumber) {
             resultStart += ' on ';
             if (fileLink && givenEntry.lineNumber)
@@ -378,12 +380,19 @@ function RenderFileDetails({ givenEntry }) {
     if (givenEntry.fieldName && givenEntry.fieldName.length)
         resultEnd = <>{resultEnd} in {givenEntry.fieldName} field</>;
 
-    if (fileLineLink)
+    // debugLog(`RenderFileDetails got resultStart='${resultStart}'`);
+    // debugLog(`RenderFileDetails got lineResult='${lineResult}'`);
+    // debugLog(`RenderFileDetails got fileLineLink='${fileLineLink}'`);
+    // debugLog(`RenderFileDetails got fileLink='${fileLink}'`);
+    // debugLog(`RenderFileDetails got resultEnd='${resultEnd}'`);
+    if (fileLineLink.length)
         return <>{resultStart}<a rel="noopener noreferrer" target="_blank" href={fileLineLink}>{lineResult}</a>{resultEnd}</>;
-    else if (fileLink)
+    else if (fileLink.length)
         return <>{resultStart} in file <a rel="noopener noreferrer" target="_blank" href={fileLink}>{givenEntry.filename}</a>{resultEnd}</>;
-    else
+    else if (lineResult.length)
         return <>{resultStart}<b>{lineResult}</b>{resultEnd}</>;
+    else
+        return <>{resultStart} with file <b>{givenEntry.filename}</b>{resultEnd}</>;
 }
 // end of RenderFileDetails
 
@@ -391,20 +400,20 @@ function RenderExcerpt({ excerpt, message }) {
     // functionLog(`RenderExcerpt(${excerpt}, ${message})`);
     // NOTE: These message strings must match notes-links-check.js (priority 82, and priority 32,)
     // Note that messages might start with a repo code, e.g., "TN Actual message start"
-    if (message.endsWith("Untested general/outside link")
-        || message.endsWith("Error loading general link")
-        || message.endsWith("Should http link be https")) {
+    // if (message.endsWith("Untested general/outside link")
+    //     || message.endsWith("Error loading general link")
+    //     || message.endsWith("Should http link be https")) {
         // debugLog(`Here1 RenderExcerpt(${excerpt}, ${message})`);
-        if (excerpt && excerpt[0] === '[' && excerpt.slice(-1) === ')') { // then the excerpt is a link so let's liven it
+        if (excerpt && excerpt[0] === '[' && excerpt.slice(-1) === ')' && excerpt.indexOf('](') !== -1) { // then the excerpt is a link so let's liven it
             // debugLog(`Here2 RenderExcerpt(${excerpt}, ${message})`);
             const ix = excerpt.indexOf('](');
-            const displayPart = excerpt.substring(1, ix); // Start after the [ until before the ](
-            const linkPart = excerpt.substring(ix + 2, excerpt.length - 1); // Step past the ]( but don’t include the final )
+            const displayPart = excerpt.slice(1, ix); // Start after the [ until before the ](
+            const linkPart = excerpt.slice(ix + 2, excerpt.length - 1); // Step past the ]( but don’t include the final )
             const adjLinkPart = message === "Should http link be https" ? linkPart.replace('http:', 'https:') : linkPart;
             // debugLog(`RenderExcerpt from '${excerpt}' got ix=${ix}, displayPart='${displayPart}', linkPart='${linkPart}', adjLinkPart='${adjLinkPart}'`);
             return <><span style={{ color: 'DimGray' }}>` around ◗[{displayPart}](<a rel="noopener noreferrer" target="_blank" href={adjLinkPart}>{linkPart}</a>)◖`</span></>
         }
-    }
+    // }
     if (excerpt && excerpt.length)
         return <> around ◗<span style={{ color: 'DarkOrange' }}><b>{excerpt}</b></span>◖</>;
     // else
@@ -430,6 +439,7 @@ function RenderPriority({ entry }) {
  * @returns JSX rendered entry
  */
 function RenderOneEntry({ color, entry }) {
+    // functionLog(`RenderOneEntry with ${color} and ${JSON.stringify(entry)}`);
     return <>
         <RenderMessage color={color} message={entry.message} details={entry.details} />
         <RenderBCV bookID={entry.bookID} C={entry.C} V={entry.V} />
@@ -477,7 +487,9 @@ function RenderProcessedArray({ arrayType, results }) {
         const thisColor = arrayType === 'e' ? 'red' : 'orange';
         return <ul>
             {myList.map(function (listEntry, index) {
-                if (listEntry.location.indexOf(' HIDDEN') >= 0 && listEntry.hiddenNotices)
+                if (listEntry.location === undefined)
+                    debugLog(`RenderProcessedArray: why is location undefined for ${JSON.stringify(listEntry)}`);
+                else if (listEntry.location.indexOf(' HIDDEN') >= 0 && listEntry.hiddenNotices)
                     // This is a "MORE SIMILAR ERRORS/WARNINGS/NOTICES SUPRESSED" message with other notices embedded
                     //  so we allow it to be expanded using HTML5 "details" feature.
                     return <li key={'RPA' + index}><details>
@@ -561,7 +573,9 @@ function RenderGivenArray({ color, array }) {
     return <ul>
         {array.map(function (listEntry, index) {
             // debugLog(`RenderGivenArray ${index} ${JSON.stringify(listEntry)}`);
-            if (listEntry.location.indexOf(' HIDDEN') >= 0 && listEntry.hiddenNotices)
+            if (listEntry.location === undefined)
+                debugLog(`RenderGivenArray: why is location undefined for ${JSON.stringify(listEntry)}`);
+            else if (listEntry.location.indexOf(' HIDDEN') >= 0 && listEntry.hiddenNotices)
                 // This is a "MORE SIMILAR ERRORS/WARNINGS/NOTICES SUPRESSED" message with other notices embedded
                 //  so we allow it to be expanded using HTML5 "details" feature.
                 return <li key={'RGA' + index}><details>
@@ -658,14 +672,16 @@ function RenderNoticesGradient({ results }) {
     //
     // Called from RenderSuccessesNoticesGradient below
     //
-    // functionLog("RenderNoticesGradient with ", results.warningList);
+    // functionLog(`RenderNoticesGradient with ${results.warningList}`);
     // consoleLogObject('RenderNoticesGradient results', results);
 
     return <ul>
         {results.warningList.map(function (listEntry, index) {
             // debugLog(`RenderNoticesGradient ${index} ${JSON.stringify(listEntry)}`);
             const thisColor = getGradientcolor(listEntry.priority);
-            if (listEntry.location.indexOf(' HIDDEN') >= 0 && listEntry.hiddenNotices)
+            if (listEntry.location === undefined)
+                debugLog(`RenderNoticesGradient: why is location undefined for ${JSON.stringify(listEntry)}`);
+            else if (listEntry.location.indexOf(' HIDDEN') >= 0 && listEntry.hiddenNotices)
                 // This is a "MORE SIMILAR ERRORS/WARNINGS/NOTICES SUPRESSED" message with other notices embedded
                 //  so we allow it to be expanded using HTML5 "details" feature.
                 return <li key={'RWG' + index}><details>

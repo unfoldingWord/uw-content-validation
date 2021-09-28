@@ -9,7 +9,7 @@ import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
 import { debugLog, parameterAssert } from './utilities';
 
 
-// const QUESTIONS_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.2.8';
+// const QUESTIONS_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.2.9';
 
 const NUM_EXPECTED_QUESTIONS_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_QUESTIONS_HEADING_LINE = 'Reference\tID\tTags\tQuote\tOccurrence\tQuestion\tResponse';
@@ -61,11 +61,11 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
     //parameterAssert(bookID.length === 3, `checkQuestionsTSV7DataRow: 'bookID' parameter should be three characters long not ${bookID.length}`);
     //parameterAssert(bookID.toUpperCase() === bookID, `checkQuestionsTSV7DataRow: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
     //parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkQuestionsTSV7DataRow: '${bookID}' is not a valid USFM book identifier`);
-    // //parameterAssert(givenC !== undefined, "checkQuestionsTSV7DataRow: 'givenC' parameter should be defined");
+    // parameterAssert(givenC !== undefined, "checkQuestionsTSV7DataRow: 'givenC' parameter should be defined");
     if (givenC) {
         //parameterAssert(typeof givenC === 'string', `checkQuestionsTSV7DataRow: 'givenC' parameter should be a string not a '${typeof givenC}'`);
     }
-    // //parameterAssert(givenV !== undefined, "checkQuestionsTSV7DataRow: 'givenV' parameter should be defined");
+    // parameterAssert(givenV !== undefined, "checkQuestionsTSV7DataRow: 'givenV' parameter should be defined");
     if (givenV) {
         //parameterAssert(typeof givenV === 'string', `checkQuestionsTSV7DataRow: 'givenV' parameter should be a string not a '${typeof givenV}'`);
     }
@@ -92,24 +92,26 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
         * @param {string} excerpt - short excerpt from the line centred on the problem (if available)
         * @param {string} location - description of where the issue is located
         */
-        // functionLog(`checkQuestionsTSV7DataRow addNoticePartial(priority=${noticeObject.priority}) ${noticeObject.message}, ${noticeObject.characterIndex}, ${noticeObject.excerpt}, ${noticeObject.location}`);
-        //parameterAssert(noticeObject.priority !== undefined, "checkQuestionsTSV7DataRow addNoticePartial: 'priority' parameter should be defined");
-        //parameterAssert(typeof noticeObject.priority === 'number', `checkQuestionsTSV7DataRow addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        //parameterAssert(noticeObject.message !== undefined, "checkQuestionsTSV7DataRow addNoticePartial: 'message' parameter should be defined");
-        //parameterAssert(typeof noticeObject.message === 'string', `checkQuestionsTSV7DataRow addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // //parameterAssert(lineNumber !== undefined, "checkQuestionsTSV7DataRow addNoticePartial: 'lineNumber' parameter should be defined");
-        // //parameterAssert(typeof lineNumber === 'number', `checkQuestionsTSV7DataRow addNoticePartial: 'lineNumber' parameter should be a number not a '${typeof lineNumber}': ${lineNumber}`);
-        // //parameterAssert(characterIndex !== undefined, "checkQuestionsTSV7DataRow addNoticePartial: 'characterIndex' parameter should be defined");
-        if (incompleteNoticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `checkQuestionsTSV7DataRow addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        // functionLog(`checkQuestionsTSV7DataRow addNoticePartial(priority=${incompleteNoticeObject.priority}) ${incompleteNoticeObject.message}, ${incompleteNoticeObject.characterIndex}, ${incompleteNoticeObject.excerpt}, ${incompleteNoticeObject.location}`);
+        //parameterAssert(incompleteNoticeObject.priority !== undefined, "checkQuestionsTSV7DataRow addNoticePartial: 'priority' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.priority === 'number', `checkQuestionsTSV7DataRow addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}': ${incompleteNoticeObject.priority}`);
+        //parameterAssert(incompleteNoticeObject.message !== undefined, "checkQuestionsTSV7DataRow addNoticePartial: 'message' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.message === 'string', `checkQuestionsTSV7DataRow addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}': ${incompleteNoticeObject.message}`);
+        // parameterAssert(lineNumber !== undefined, "checkQuestionsTSV7DataRow addNoticePartial: 'lineNumber' parameter should be defined");
+        // parameterAssert(typeof lineNumber === 'number', `checkQuestionsTSV7DataRow addNoticePartial: 'lineNumber' parameter should be a number not a '${typeof lineNumber}': ${lineNumber}`);
+        // parameterAssert(characterIndex !== undefined, "checkQuestionsTSV7DataRow addNoticePartial: 'characterIndex' parameter should be defined");
+        if (incompleteNoticeObject.characterIndex) {
+            //parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `checkQuestionsTSV7DataRow addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
         }
-        // //parameterAssert(excerpt !== undefined, "checkQuestionsTSV7DataRow addNoticePartial: 'excerpt' parameter should be defined");
-        if (incompleteNoticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `checkQuestionsTSV7DataRow addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        // parameterAssert(excerpt !== undefined, "checkQuestionsTSV7DataRow addNoticePartial: 'excerpt' parameter should be defined");
+        if (incompleteNoticeObject.excerpt) {
+            //parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `checkQuestionsTSV7DataRow addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt}`);
         }
-        //parameterAssert(noticeObject.location !== undefined, "checkQuestionsTSV7DataRow addNoticePartial: 'location' parameter should be defined");
-        //parameterAssert(typeof noticeObject.location === 'string', `checkQuestionsTSV7DataRow addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        //parameterAssert(incompleteNoticeObject.location !== undefined, "checkQuestionsTSV7DataRow addNoticePartial: 'location' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.location === 'string', `checkQuestionsTSV7DataRow addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
 
         // Also uses the given bookID,C,V, parameters from the main function call
-        // noticeObject.debugChain = noticeObject.debugChain ? `checkQuestionsTSV7DataRow ${noticeObject.debugChain}` : `checkQuestionsTSV7DataRow(${repoCode})`;
+        // incompleteNoticeObject.debugChain = incompleteNoticeObject.debugChain ? `checkQuestionsTSV7DataRow ${incompleteNoticeObject.debugChain}` : `checkQuestionsTSV7DataRow(${repoCode})`;
         drResult.noticeList.push({ ...incompleteNoticeObject, bookID, C: givenC, V: givenV });
     }
 
@@ -134,8 +136,8 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
         // functionLog(`checkQuestionsTSV7DataRow ourMarkdownTextChecks(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${rowLocation}, …)`);
         //parameterAssert(rowID !== undefined, "checkQuestionsTSV7DataRow ourMarkdownTextChecks: 'rowID' parameter should be defined");
         //parameterAssert(typeof rowID === 'string', `checkQuestionsTSV7DataRow ourMarkdownTextChecks: 'rowID' parameter should be a string not a '${typeof rowID}'`);
-        // //parameterAssert(fieldName !== undefined, "checkQuestionsTSV7DataRow ourMarkdownTextChecks: 'fieldName' parameter should be defined");
-        // //parameterAssert(typeof fieldName === 'string', `checkQuestionsTSV7DataRow ourMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+        // parameterAssert(fieldName !== undefined, "checkQuestionsTSV7DataRow ourMarkdownTextChecks: 'fieldName' parameter should be defined");
+        // parameterAssert(typeof fieldName === 'string', `checkQuestionsTSV7DataRow ourMarkdownTextChecks: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
         //parameterAssert(fieldName === 'Question' || fieldName === 'Response', `checkQuestionsTSV7DataRow ourMarkdownTextChecks: Only run this check on Questions and Responses not '${fieldName}'`);
         //parameterAssert(fieldText !== undefined, "checkQuestionsTSV7DataRow ourMarkdownTextChecks: 'fieldText' parameter should be defined");
         //parameterAssert(typeof fieldText === 'string', `checkQuestionsTSV7DataRow ourMarkdownTextChecks: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
@@ -152,7 +154,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of omtcResultObject.noticeList) {
-            // //parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourMarkdownTextChecks notice length=${Object.keys(noticeEntry).length}`);
+            // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourMarkdownTextChecks notice length=${Object.keys(noticeEntry).length}`);
             // NOTE: Ellipses in Question and Answer have the normal meaning
             //          not like the specialised meaning in the Quote snippet fields
             if (noticeEntry.priority !== 178 && noticeEntry.priority !== 179 // unexpected space after ellipse, ellipse after space
@@ -201,7 +203,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of octfResultObject.noticeList) {
-            // //parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
+            // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
             addNoticePartial({ ...noticeEntry, rowID, fieldName });
         }
         return octfResultObject.suggestion; // There may or may not be one!
@@ -235,7 +237,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of coqResultObject.noticeList) {
-            // //parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckQOriginalLanguageQuote notice length=${Object.keys(noticeEntry).length}`);
+            // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckQOriginalLanguageQuote notice length=${Object.keys(noticeEntry).length}`);
             addNoticePartial({ ...noticeEntry, rowID, fieldName });
         }
     }
@@ -376,7 +378,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
         else {
             if (rowID.length !== 4) {
                 addNoticePartial({ priority: 778, message: "Row ID should be exactly 4 characters", details: `not ${rowID.length}`, rowID, fieldName: 'ID', excerpt: rowID, location: ourRowLocation });
-                if (rowID.length > 4) RIDSuggestion = rowID.substring(0, 5);
+                if (rowID.length > 4) RIDSuggestion = rowID.slice(0, 5);
                 else { // must be < 4
                     RIDSuggestion = rowID;
                     while (RIDSuggestion.length < 4) RIDSuggestion += LC_ALPHABET_PLUS_DIGITS[Math.floor(Math.random() * LC_ALPHABET_PLUS_DIGITS.length)];;
@@ -455,12 +457,13 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
             if (isWhitespace(question))
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'Question', rowID, location: ourRowLocation });
             else { // More than just whitespace
-                RSuggestion = await ourMarkdownTextChecks(rowID, 'Question', question, true, ourRowLocation, checkingOptions);
+                const adjustedQuestion = question.replace(/\\n/g, '\n');
+                RSuggestion = await ourMarkdownTextChecks(rowID, 'Question', adjustedQuestion, true, ourRowLocation, checkingOptions);
                 // await ourCheckNotesLinksToOutside(rowID, 'Question', question, ourRowLocation, linkCheckingOptions);
-                // let regexResultArray;
-                // while ((regexResultArray = TA_REGEX.exec(question))) {
-                //     // debugLog("Got TA Regex in Question", JSON.stringify(regexResultArray));
-                //     const adjustedLink = regexResultArray[0].substring(2, regexResultArray[0].length - 2)
+                // let regexMatchObject;
+                // while ((regexMatchObject = TA_REGEX.exec(question))) {
+                //     // debugLog("Got TA Regex in Question", JSON.stringify(regexMatchObject));
+                //     const adjustedLink = regexMatchObject[0].slice(2, regexMatchObject[0].length - 2)
                 //     if (supportReference !== adjustedLink && V !== 'intro') {
                 //         const details = supportReference ? `(SR='${supportReference}')` : "(empty SR field)"
                 //         addNoticePartial({ priority: 786, message: "Should have a SupportReference when OccurrenceNote has a TA link", details, rowID, fieldName: 'Question', excerpt: adjustedLink, location: ourRowLocation });
@@ -484,12 +487,13 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
             if (isWhitespace(response))
                 addNoticePartial({ priority: 373, message: "Field is only whitespace", fieldName: 'Response', rowID, location: ourRowLocation });
             else { // More than just whitespace
-                RSuggestion = await ourMarkdownTextChecks(rowID, 'Response', response, true, ourRowLocation, checkingOptions);
+                const adjustedResponse = response.replace(/\\n/g, '\n');
+                RSuggestion = await ourMarkdownTextChecks(rowID, 'Response', adjustedResponse, true, ourRowLocation, checkingOptions);
                 // await ourCheckNotesLinksToOutside(rowID, 'Response', response, ourRowLocation, linkCheckingOptions);
-                // let regexResultArray;
-                // while ((regexResultArray = TA_REGEX.exec(answer))) {
-                //     // debugLog("Got TA Regex in Response", JSON.stringify(regexResultArray));
-                //     const adjustedLink = regexResultArray[0].substring(2, regexResultArray[0].length - 2)
+                // let regexMatchObject;
+                // while ((regexMatchObject = TA_REGEX.exec(answer))) {
+                //     // debugLog("Got TA Regex in Response", JSON.stringify(regexMatchObject));
+                //     const adjustedLink = regexMatchObject[0].slice(2, regexMatchObject[0].length - 2)
                 //     if (supportReference !== adjustedLink && V !== 'intro') {
                 //         const details = supportReference ? `(SR='${supportReference}')` : "(empty SR field)"
                 //         addNoticePartial({ priority: 786, message: "Should have a SupportReference when OccurrenceNote has a TA link", details, rowID, fieldName: 'Response', excerpt: adjustedLink, location: ourRowLocation });

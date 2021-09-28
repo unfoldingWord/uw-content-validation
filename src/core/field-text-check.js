@@ -5,7 +5,7 @@ import { OPEN_CLOSE_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, BAD_CHARACTER
 import { debugLog, parameterAssert } from './utilities';
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.11';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.18';
 
 
 /**
@@ -40,7 +40,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     //parameterAssert(fieldType !== undefined, "checkTextField: 'fieldType' parameter should be defined");
     //parameterAssert(typeof fieldType === 'string', `checkTextField: 'fieldType' parameter should be a string not a '${typeof fieldType}': ${fieldType}`);
     //parameterAssert(fieldType !== '', `checkTextField: 'fieldType' ${fieldType} parameter should be not be an empty string`);
-    //parameterAssert(fieldType === 'markdown' || fieldType === 'USFM' || fieldType === 'YAML' || fieldType === 'text' || fieldType === 'raw' || fieldType === 'link', `checkTextField: unrecognised 'fieldType' parameter: '${fieldType}'`);
+    //parameterAssert(fieldType === 'markdown' || fieldType === 'USFM line' || fieldType === 'raw USFM line' || fieldType === 'YAML' || fieldType === 'text' || fieldType === 'raw' || fieldType === 'link', `checkTextField: unrecognised 'fieldType' parameter: '${fieldType}'`);
     //parameterAssert(fieldName !== undefined, "checkTextField: 'fieldName' parameter should be defined");
     //parameterAssert(typeof fieldName === 'string', `checkTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}': ${fieldName}`);
     // if (!fieldType.startsWith('markdown'))
@@ -48,12 +48,14 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     //parameterAssert(fieldText !== undefined, "checkTextField: 'fieldText' parameter should be defined");
     //parameterAssert(typeof fieldText === 'string', `checkTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}': ${fieldText}`);
     //parameterAssert(allowedLinks === true || allowedLinks === false, "checkTextField: allowedLinks parameter must be either true or false");
-    if (!allowedLinks) { //parameterAssert(fieldText.indexOf('x-tw') < 0, `checkTextField should be allowedLinks for ${fieldType} ${fieldName} ${fieldText}`);
+    if (!allowedLinks) {
+        //parameterAssert(fieldText.indexOf('x-tw') < 0, `checkTextField should be allowedLinks for ${fieldType} ${fieldName} ${fieldText}`);
     }
     //parameterAssert(optionalFieldLocation !== undefined, "checkTextField: 'optionalFieldLocation' parameter should be defined");
     //parameterAssert(typeof optionalFieldLocation === 'string', `checkTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}': ${optionalFieldLocation}`);
     //parameterAssert(optionalFieldLocation.indexOf('true') === -1, `checkTextField: 'optionalFieldLocation' parameter should not be '${optionalFieldLocation}'`);
-    if (checkingOptions !== undefined) { //parameterAssert(typeof checkingOptions === 'object', `checkTextField: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
+    if (checkingOptions !== undefined) {
+        //parameterAssert(typeof checkingOptions === 'object', `checkTextField: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
     }
 
     let result = { noticeList: [] };
@@ -61,20 +63,22 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     function addNoticePartial(incompleteNoticeObject) {
         // We add the fieldName here
         // debugLog(`dBTC Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
-        //parameterAssert(noticeObject.priority !== undefined, "dBTCs addNoticePartial: 'priority' parameter should be defined");
-        //parameterAssert(typeof noticeObject.priority === 'number', `dBTCs addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        //parameterAssert(noticeObject.message !== undefined, "dBTCs addNoticePartial: 'message' parameter should be defined");
-        //parameterAssert(typeof noticeObject.message === 'string', `dBTCs addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // //parameterAssert(characterIndex !== undefined, "dBTCs addNoticePartial: 'characterIndex' parameter should be defined");
-        if (incompleteNoticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `dBTCs addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        //parameterAssert(incompleteNoticeObject.priority !== undefined, "dBTCs addNoticePartial: 'priority' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.priority === 'number', `dBTCs addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}': ${incompleteNoticeObject.priority}`);
+        //parameterAssert(incompleteNoticeObject.message !== undefined, "dBTCs addNoticePartial: 'message' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.message === 'string', `dBTCs addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}': ${incompleteNoticeObject.message}`);
+        // parameterAssert(characterIndex !== undefined, "dBTCs addNoticePartial: 'characterIndex' parameter should be defined");
+        if (incompleteNoticeObject.characterIndex) {
+            //parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `dBTCs addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
         }
-        // //parameterAssert(excerpt !== undefined, "dBTCs addNoticePartial: 'excerpt' parameter should be defined");
-        if (incompleteNoticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `dBTCs addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        // parameterAssert(excerpt !== undefined, "dBTCs addNoticePartial: 'excerpt' parameter should be defined");
+        if (incompleteNoticeObject.excerpt) {
+            //parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `dBTCs addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt}`);
         }
-        //parameterAssert(noticeObject.location !== undefined, "dBTCs addNoticePartial: 'location' parameter should be defined");
-        //parameterAssert(typeof noticeObject.location === 'string', `dBTCs addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        //parameterAssert(incompleteNoticeObject.location !== undefined, "dBTCs addNoticePartial: 'location' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.location === 'string', `dBTCs addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
 
-        // noticeObject.debugChain = noticeObject.debugChain ? `checkTextField(${fieldType}, ${fieldName}, ${allowedLinks}) ${noticeObject.debugChain}` : `checkTextField(${fieldType}, ${fieldName}, ${allowedLinks})`;
+        // incompleteNoticeObject.debugChain = incompleteNoticeObject.debugChain ? `checkTextField(${fieldType}, ${fieldName}, ${allowedLinks}) ${incompleteNoticeObject.debugChain}` : `checkTextField(${fieldType}, ${fieldName}, ${allowedLinks})`;
         if (fieldName.length && !fieldName.endsWith(' line')) incompleteNoticeObject.fieldName = fieldName; // Don’t add the field if it’s blank
         result.noticeList.push(incompleteNoticeObject);
     }
@@ -108,7 +112,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     let suggestion = fieldText.trim();
 
     let characterIndex;
-    if (cutoffPriorityLevel < 895 && (characterIndex = fieldText.indexOf('\u200B')) >= 0) {
+    if (cutoffPriorityLevel < 895 && (characterIndex = fieldText.indexOf('\u200B')) !== -1) {
         const charCount = countOccurrencesInString(fieldText, '\u200B');
         const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/\u200B/g, '‼') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
         addNoticePartial({ priority: 895, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, characterIndex, excerpt, location: ourLocation });
@@ -120,18 +124,18 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
         return result;
     }
 
-    if (cutoffPriorityLevel < 993 && (characterIndex = fieldText.indexOf('<<<<<<<')) >= 0) {
+    if (cutoffPriorityLevel < 993 && (characterIndex = fieldText.indexOf('<<<<<<<')) !== -1) {
         const iy = characterIndex + excerptHalfLength; // Want excerpt to focus more on what follows
         const excerpt = (iy > excerptHalfLength ? '…' : '') + fieldText.substring(iy - excerptHalfLength, iy + excerptHalfLengthPlus).replace(/ /g, '␣') + (iy + excerptHalfLengthPlus < fieldText.length ? '…' : '');
 
         addNoticePartial({ priority: 993, message: "Unresolved GIT conflict", characterIndex, excerpt, location: ourLocation });
     } else {
-        if (cutoffPriorityLevel < 992 && (characterIndex = fieldText.indexOf('=======')) >= 0) {
+        if (cutoffPriorityLevel < 992 && (characterIndex = fieldText.indexOf('=======')) !== -1) {
             const iy = characterIndex + excerptHalfLength; // Want excerpt to focus more on what follows
             const excerpt = (iy > excerptHalfLength ? '…' : '') + fieldText.substring(iy - excerptHalfLength, iy + excerptHalfLengthPlus).replace(/ /g, '␣') + (iy + excerptHalfLengthPlus < fieldText.length ? '…' : '');
             addNoticePartial({ priority: 992, message: "Unresolved GIT conflict", characterIndex, excerpt, location: ourLocation });
         } else {
-            if (cutoffPriorityLevel < 991 && (characterIndex = fieldText.indexOf('>>>>>>>>')) >= 0) {
+            if (cutoffPriorityLevel < 991 && (characterIndex = fieldText.indexOf('>>>>>>>>')) !== -1) {
                 const iy = characterIndex + excerptHalfLength; // Want excerpt to focus more on what follows
                 const excerpt = (iy > excerptHalfLength ? '…' : '') + fieldText.substring(iy - excerptHalfLength, iy + excerptHalfLengthPlus).replace(/ /g, '␣') + (iy + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                 addNoticePartial({ priority: 991, message: "Unresolved GIT conflict", characterIndex, excerpt, location: ourLocation });
@@ -140,50 +144,50 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     }
 
     if (fieldText[0] === ' ') {
-        const excerpt = fieldText.substring(0, excerptLength).replace(/ /g, '␣') + (fieldText.length > excerptLength ? '…' : '');
+        const excerpt = fieldText.slice(0, excerptLength).replace(/ /g, '␣') + (fieldText.length > excerptLength ? '…' : '');
         if (fieldText[1] === ' ') // spaces plural
             addNoticePartial({ priority: 110, message: `Unexpected leading spaces`, characterIndex: 0, excerpt, location: ourLocation });
         else
             addNoticePartial({ priority: 109, message: `Unexpected leading space`, characterIndex: 0, excerpt, location: ourLocation });
     } else if (fieldText[0] === '\u2060') {
-        const excerpt = fieldText.substring(0, excerptLength).replace(/\u2060/g, '‼') + (fieldText.length > excerptLength ? '…' : '');
+        const excerpt = fieldText.slice(0, excerptLength).replace(/\u2060/g, '‼') + (fieldText.length > excerptLength ? '…' : '');
         addNoticePartial({ priority: 770, message: `Unexpected leading word-joiner (u2060) character`, characterIndex: 0, excerpt, location: ourLocation });
-        if (suggestion[0] === '\u2060') suggestion = suggestion.substring(1);
+        if (suggestion[0] === '\u2060') suggestion = suggestion.slice(1);
     } else if (fieldText[0] === '\u200D') {
-        const excerpt = fieldText.substring(0, excerptLength).replace(/\u200D/g, '‼') + (fieldText.length > excerptLength ? '…' : '');
+        const excerpt = fieldText.slice(0, excerptLength).replace(/\u200D/g, '‼') + (fieldText.length > excerptLength ? '…' : '');
         addNoticePartial({ priority: 771, message: `Unexpected leading zero-width joiner (u200D) character`, characterIndex: 0, excerpt, location: ourLocation });
-        if (suggestion[0] === '\u200D') suggestion = suggestion.substring(1);
+        if (suggestion[0] === '\u200D') suggestion = suggestion.slice(1);
     }
-    if (cutoffPriorityLevel < 64 && (characterIndex = fieldText.indexOf('<br> ')) >= 0) {
+    if (cutoffPriorityLevel < 64 && (characterIndex = fieldText.indexOf('<br> ')) !== -1) {
         const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
         addNoticePartial({ priority: 64, message: "Unexpected leading space(s) after break", characterIndex, excerpt, location: ourLocation });
     }
-    if (cutoffPriorityLevel < 63 && (characterIndex = fieldText.indexOf('\\n ')) >= 0) {
+    if (cutoffPriorityLevel < 63 && (characterIndex = fieldText.indexOf('\\n ')) !== -1) {
         const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
         addNoticePartial({ priority: 63, message: "Unexpected leading space(s) after line break", characterIndex, excerpt, location: ourLocation });
     }
 
     if (cutoffPriorityLevel < 772 && fieldText[fieldText.length - 1] === '\u2060') {
-        const excerpt = fieldText.substring(0, excerptLength).replace(/\u2060/g, '‼') + (fieldText.length > excerptLength ? '…' : '');
+        const excerpt = fieldText.slice(0, excerptLength).replace(/\u2060/g, '‼') + (fieldText.length > excerptLength ? '…' : '');
         addNoticePartial({ priority: 772, message: `Unexpected trailing word-joiner (u2060) character`, characterIndex: 0, excerpt, location: ourLocation });
-        if (suggestion[suggestion.length - 1] === '\u2060') suggestion = suggestion.substring(0, suggestion.length - 1);
+        if (suggestion[suggestion.length - 1] === '\u2060') suggestion = suggestion.slice(0, suggestion.length - 1);
     } else if (cutoffPriorityLevel < 773 && fieldText[fieldText.length - 1] === '\u200D') {
-        const excerpt = fieldText.substring(0, excerptLength).replace(/\u200D/g, '‼') + (fieldText.length > excerptLength ? '…' : '');
+        const excerpt = fieldText.slice(0, excerptLength).replace(/\u200D/g, '‼') + (fieldText.length > excerptLength ? '…' : '');
         addNoticePartial({ priority: 773, message: `Unexpected trailing zero-width joiner (u200D) character`, characterIndex: 0, excerpt, location: ourLocation });
-        if (suggestion[suggestion.length - 1] === '\u200D') suggestion = suggestion.substring(0, suggestion.length - 1);
+        if (suggestion[suggestion.length - 1] === '\u200D') suggestion = suggestion.slice(0, suggestion.length - 1);
     }
 
     // Find leading line breaks (but not if the whole line is just the line break sequence)
     const fieldTextLower = fieldText.toLowerCase();
     if (cutoffPriorityLevel < 107
-        && (fieldTextLower.substring(0, 2) === '\\n' || fieldTextLower.substring(0, 4) === '<br>' || fieldTextLower.substring(0, 5) === '<br/>' || fieldTextLower.substring(0, 6) === '<br />')
+        && (fieldTextLower.slice(0, 2) === '\\n' || fieldTextLower.slice(0, 4) === '<br>' || fieldTextLower.slice(0, 5) === '<br/>' || fieldTextLower.slice(0, 6) === '<br />')
         && fieldTextLower !== '\\n' && fieldTextLower !== '<br>' && fieldTextLower !== '<br/>' && fieldTextLower !== '<br />') {
-        const excerpt = fieldText.substring(0, excerptLength) + (fieldText.length > excerptLength ? '…' : '');
+        const excerpt = fieldText.slice(0, excerptLength) + (fieldText.length > excerptLength ? '…' : '');
         addNoticePartial({ priority: 107, message: "Unexpected leading line break", characterIndex: 0, excerpt, location: ourLocation });
-        while (suggestion.toLowerCase().substring(0, 2) === '\\n') suggestion = suggestion.substring(2);
-        while (suggestion.toLowerCase().substring(0, 4) === '<br>') suggestion = suggestion.substring(4);
-        while (suggestion.toLowerCase().substring(0, 5) === '<br/>') suggestion = suggestion.substring(5);
-        while (suggestion.toLowerCase().substring(0, 6) === '<br />') suggestion = suggestion.substring(6);
+        while (suggestion.toLowerCase().slice(0, 2) === '\\n') suggestion = suggestion.slice(2);
+        while (suggestion.toLowerCase().slice(0, 4) === '<br>') suggestion = suggestion.slice(4);
+        while (suggestion.toLowerCase().slice(0, 5) === '<br/>') suggestion = suggestion.slice(5);
+        while (suggestion.toLowerCase().slice(0, 6) === '<br />') suggestion = suggestion.slice(6);
     }
 
     if (cutoffPriorityLevel < 95 && fieldText[fieldText.length - 1] === ' ')
@@ -191,15 +195,15 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
         if (!fieldType.startsWith('markdown') || fieldText.length < 3 || fieldText[fieldText.length - 2] !== ' ' || fieldText[fieldText.length - 3] === ' ') {
             const excerpt = (fieldText.length > excerptLength ? '…' : '') + fieldText.substring(fieldText.length - 10).replace(/ /g, '␣');
             const notice = { priority: 95, message: "Unexpected trailing space(s)", excerpt, location: ourLocation };
-            if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.substring(0, 6) !== 'from \\')
+            if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.slice(0, 6) !== 'from \\')
                 notice.characterIndex = fieldText.length - 1; // characterIndex means nothing for processed USFM
             addNoticePartial(notice);
         }
-    if (cutoffPriorityLevel < 94 && (characterIndex = fieldText.indexOf(' <br')) >= 0) {
+    if (cutoffPriorityLevel < 94 && (characterIndex = fieldText.indexOf(' <br')) !== -1) {
         const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
         addNoticePartial({ priority: 94, message: "Unexpected trailing space(s) before break", characterIndex, excerpt, location: ourLocation });
     }
-    if (cutoffPriorityLevel < 93 && (characterIndex = fieldText.indexOf(' \\n')) >= 0) {
+    if (cutoffPriorityLevel < 93 && (characterIndex = fieldText.indexOf(' \\n')) !== -1) {
         const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
         addNoticePartial({ priority: 93, message: "Unexpected trailing space(s) before line break", characterIndex, excerpt, location: ourLocation });
     }
@@ -225,42 +229,46 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
             notice = { priority: 124, message: "Unexpected double spaces", excerpt, location: ourLocation };
         else
             notice = { priority: 224, message: "Multiple unexpected double spaces", details: `${doubleCount} occurrences—only first is displayed`, excerpt, location: ourLocation };
-        if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.substring(0, 6) !== 'from \\')
+        if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.slice(0, 6) !== 'from \\')
             notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
         if (cutoffPriorityLevel < notice.priority)
             addNoticePartial(notice);
         // Note: replacing double-spaces in the suggestion is done later -- after other suggestion modifications which might affect it
     }
-    if (cutoffPriorityLevel < 583 && (characterIndex = fieldText.indexOf('\n')) >= 0) {
+    if (cutoffPriorityLevel < 583 && (characterIndex = fieldText.indexOf('\n')) !== -1) {
         const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
         addNoticePartial({ priority: 583, message: "Unexpected newLine character", characterIndex, excerpt, location: ourLocation });
         suggestion = suggestion.replace(/\n/g, ' ');
     }
-    if (cutoffPriorityLevel < 582 && (characterIndex = fieldText.indexOf('\r')) >= 0) {
+    if (cutoffPriorityLevel < 582 && (characterIndex = fieldText.indexOf('\r')) !== -1) {
         const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
         addNoticePartial({ priority: 582, message: "Unexpected carriageReturn character", characterIndex, excerpt, location: ourLocation });
         suggestion = suggestion.replace(/\r/g, ' ');
     }
-    if (cutoffPriorityLevel < 581 && (characterIndex = fieldText.indexOf('\xA0')) >= 0) { // non-break space
-        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/\xA0/g, '⍽') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
-        addNoticePartial({ priority: 581, message: "Unexpected non-break space (u00A0) character", characterIndex, excerpt, location: ourLocation });
-        suggestion = suggestion.replace(/\xA0/g, ' ');
+    if (cutoffPriorityLevel < 581 && (characterIndex = fieldText.indexOf('\xA0')) !== -1) { // non-break space
+        const previousCharacter = characterIndex === 0 ? '' : fieldText.substring(characterIndex - 1, characterIndex);
+        const nextCharacter = characterIndex === fieldText.length - 1 ? '' : fieldText.slice(characterIndex + 1, characterIndex + 2);
+        if (previousCharacter !== '«' && previousCharacter !== '‹' && nextCharacter !== '»' && nextCharacter !== '›') { // For French punctuation
+            const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/\xA0/g, '⍽') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
+            addNoticePartial({ priority: 581, message: "Unexpected non-break space (u00A0) character", characterIndex, excerpt, location: ourLocation });
+            suggestion = suggestion.replace(/\xA0/g, ' ');
+        }
     }
-    if (cutoffPriorityLevel < 580 && (characterIndex = fieldText.indexOf('\u202F')) >= 0) { // narrow non-break space
+    if (cutoffPriorityLevel < 580 && (characterIndex = fieldText.indexOf('\u202F')) !== -1) { // narrow non-break space
         const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/\u202F/g, '⍽') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
         const notice = { priority: 580, message: "Unexpected narrow non-break space (u202F) character", excerpt, location: ourLocation };
-        if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.substring(0, 6) !== 'from \\')
+        if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.slice(0, 6) !== 'from \\')
             notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
         addNoticePartial(notice);
         suggestion = suggestion.replace(/\u202F/g, ' ');
     }
     if (fieldName === 'OrigQuote' || fieldName === 'Quote') {
-        if (cutoffPriorityLevel < 179 && (characterIndex = fieldText.indexOf(' …')) >= 0) {
+        if (cutoffPriorityLevel < 179 && (characterIndex = fieldText.indexOf(' …')) !== -1) {
             const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
             addNoticePartial({ priority: 179, message: "Unexpected space before ellipse character", characterIndex, excerpt, location: ourLocation });
             suggestion = suggestion.replace(/ …/g, '…');
         }
-        if (cutoffPriorityLevel < 178 && (characterIndex = fieldText.indexOf('… ')) >= 0) {
+        if (cutoffPriorityLevel < 178 && (characterIndex = fieldText.indexOf('… ')) !== -1) {
             const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
             addNoticePartial({ priority: 178, message: "Unexpected space after ellipse character", characterIndex, excerpt, location: ourLocation });
             suggestion = suggestion.replace(/… /g, '…');
@@ -282,7 +290,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
             if ((characterIndex = fieldText.indexOf(punctChar + punctChar)) >= 0) {
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                 const notice = { priority: 177, message: `Unexpected doubled ${punctChar} characters`, excerpt, location: ourLocation };
-                if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.substring(0, 6) !== 'from \\')
+                if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.slice(0, 6) !== 'from \\')
                     notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
                 addNoticePartial(notice);
             }
@@ -291,19 +299,27 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     if (cutoffPriorityLevel < 195) {
         // Check for punctuation chars following space and at start of line
         //  Removed © and leading currency symbols $€₱
+        // Note that this works for French punctuation, because ?! etc, should be preceded by a non-breaking space (not a regular space)
         let afterSpaceCheckList = ')}>⟩:,،、‒–—―!.›»‐-?’”;/⁄·@•^†‡°¡¿※#№÷×ºª%‰‱¶′″‴§‖¦℗®℠™¤₳฿₵¢₡₢₫₯֏₠ƒ₣₲₴₭₺₾ℳ₥₦₧₰£៛₽₹₨₪৳₸₮₩¥';
+        // if (['en','hbo','el-x-koine'].includes(languageCode) ) afterSpaceCheckList += '’'; // These languages don't have words starting with apostrophe/right-single-quotation-mark
         if (!fieldType.startsWith('markdown')) afterSpaceCheckList += '_*~'; // These are used for markdown formatting
         if (!fieldType.startsWith('USFM') || (fieldText.indexOf('x-lemma') < 0 && fieldText.indexOf('x-tw') < 0)) afterSpaceCheckList += '|';
         if (!fieldType.startsWith('YAML')) afterSpaceCheckList += '\'"'; // These are used for YAML strings, e.g., version: '0.15'
         // if (fieldName === 'OrigQuote' || fieldName === 'Quote') afterSpaceCheckList += '…'; // NOT NEEDED -- this is specifically checked elsewhere
         for (const punctCharBeingChecked of afterSpaceCheckList) {
             if (cutoffPriorityLevel < 191 && (characterIndex = fieldText.indexOf(' ' + punctCharBeingChecked)) >= 0) {
-                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
-                // Lower priority for em-dash in markdown and for forward slash (used to list alternatives, e.g., "yes / no")
-                const notice = { priority: (punctCharBeingChecked === '—' || punctCharBeingChecked === '/') && fieldType.startsWith('markdown') ? 71 : 191, message: `Unexpected ${punctCharBeingChecked} character after space`, excerpt, location: ourLocation };
-                if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.substring(0, 6) !== 'from \\')
-                    notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
-                addNoticePartial(notice);
+                const nextChar = fieldText.slice(characterIndex + 1, characterIndex + 2);
+                if (punctCharBeingChecked !== '-' || '1234567890'.indexOf(nextChar) === -1) { // Allow negative numbers, e.g., -1
+                    const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
+                    // Lower priority for em-dash in markdown and for forward slash (used to list alternatives, e.g., "yes / no")
+                    const notice = { priority: 191 /* can be lowered to 71 */, message: `Unexpected ${punctCharBeingChecked} character after space`, excerpt, location: ourLocation };
+                    if (((punctCharBeingChecked === '—' || punctCharBeingChecked === '/') && fieldType.startsWith('markdown'))
+                        || (punctCharBeingChecked === '’' && !['en', 'hbo', 'el-x-koine'].includes(languageCode))) // Some other languages allow words to start with apostrophes
+                        notice.priority = 71; // Lower the priority from 191
+                    if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.slice(0, 6) !== 'from \\')
+                        notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
+                    addNoticePartial(notice);
+                }
             }
             if (cutoffPriorityLevel < 195
                 && (punctCharBeingChecked !== '-' || !(fieldType.startsWith('YAML') || fieldType.startsWith('markdown')))
@@ -327,12 +343,12 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
         if (!fieldType.startsWith('markdown') && !fieldType.startsWith('USFM')) beforeSpaceCheckList += '*'; // There are used for markdown formatting and USFM closing markers
         if (!fieldType.startsWith('YAML')) beforeSpaceCheckList += '[';
         for (const punctCharBeingChecked of beforeSpaceCheckList) {
-            if ((characterIndex = fieldText.indexOf(punctCharBeingChecked + ' ')) >= 0) {
+            if ((characterIndex = fieldText.indexOf(punctCharBeingChecked + ' ')) !== -1) {
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                 // Lower priority for em-dash in markdown and for forward slash (used to list alternatives, e.g., "yes / no")
                 // debugLog(`Got space after ${punctCharBeingChecked} in ${fieldType} around ${excerpt}: priority ${punctCharBeingChecked === '—' && fieldType.startsWith('markdown') ? 72 : 192}`);
                 const notice = { priority: (punctCharBeingChecked === '—' || punctCharBeingChecked === '/') && fieldType.startsWith('markdown') ? 72 : 192, message: `Unexpected space after ${punctCharBeingChecked} character`, excerpt, location: ourLocation };
-                if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.substring(0, 6) !== 'from \\')
+                if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.slice(0, 6) !== 'from \\')
                     notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
                 addNoticePartial(notice);
             }
@@ -350,7 +366,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
                 characterIndex = fieldText.length - 1;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                 const notice = { priority: 193, message: `Unexpected ${punctChar} character at end of line`, excerpt, location: ourLocation };
-                if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.substring(0, 6) !== 'from \\')
+                if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.slice(0, 6) !== 'from \\')
                     notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
                 addNoticePartial(notice);
             }
@@ -368,16 +384,17 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
         // Check for bad combinations of characters with regex
         for (const [details, badCharCombinationRegex] of BAD_CHARACTER_REGEXES)
             if ((characterIndex = fieldText.search(badCharCombinationRegex)) >= 0) {
-                const badChar = fieldText.substring(characterIndex, characterIndex + 1);
-                const badTwoChars = fieldText.substring(characterIndex, characterIndex + 2);
-                const badChars = fieldText.substring(characterIndex);
-                const nextChar = fieldText.substring(characterIndex + 1, characterIndex + 2);
-                const nextChars = fieldText.substring(characterIndex + 1);
+                const badChar = fieldText.slice(characterIndex, characterIndex + 1);
+                const badTwoChars = fieldText.slice(characterIndex, characterIndex + 2);
+                const badChars = fieldText.slice(characterIndex);
+                const nextChar = fieldText.slice(characterIndex + 1, characterIndex + 2);
+                const nextTwoChars = fieldText.slice(characterIndex + 1, characterIndex + 3);
+                const nextChars = fieldText.slice(characterIndex + 1);
                 // NOTE: The hard part here is getting rid of false alarms
                 //  Is it really worth it when this many exceptions need to be defined -- yes, it does find some genuine errors
                 if (nextChars.startsWith('<br>') && (repoCode === 'TN' || repoCode === 'TA')) // allow <br>
                     continue;
-                if (nextChars.startsWith('\\n') && (repoCode === 'TN2' || repoCode === 'SN')) // allow \n (2 chars)
+                if (nextTwoChars === '\\n' && (repoCode === 'TN2' || repoCode === 'SN' || repoCode === 'SQ')) // allow \n (2 chars)
                     continue;
                 if (nextChar === '\\' && fieldType === 'USFM line') // probably another USFM marker
                     continue;
@@ -385,13 +402,15 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
                     continue;
                 if (nextChar === '…' && fieldName === 'OrigQuote') // discontiguous quote
                     continue;
+                if (nextTwoChars === '\u00A0»' || nextTwoChars === '\u00A0›') // French punctuation
+                    continue;
                 if (nextChars.startsWith('<sup>') && fieldType === 'markdown' && repoCode === 'TA')
                     continue;
                 if ((fieldName.startsWith('README') || fieldName.endsWith('.md line') || fieldName.endsWith('Note line'))
                     && (nextChar === '*' || badTwoChars === '![')) // allow markdown formatting
                     continue;
                 if (badChars.startsWith('.md') || badChars.startsWith('.usfm') || badChars.startsWith('.tsv') || badChars.startsWith('.yaml')
-                    || badChars.startsWith('.org')
+                    || badChars.startsWith('.org') || badChars.startsWith('.com') || badChars.startsWith('.bible')
                     || (badChar === '.' && (fieldText.indexOf('http') !== -1 || fieldText.indexOf('rc:') !== -1 || fieldName.endsWith('manifest line'))))
                     continue; // Skip these known cases
                 if (badTwoChars === ':H' && repoCode === 'UHB') // e.g., strong="c:H1162"
@@ -404,8 +423,8 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
                 if (badTwoChars === '.m'
                     && (fieldText.toLowerCase().indexOf('a.m.') !== -1 || fieldText.toLowerCase().indexOf('p.m.') !== -1))
                     continue;
-                if ((badTwoChars === '.C' && fieldText.toLowerCase().indexOf('B.C.') !== -1)
-                    || (badTwoChars === '.D' && fieldText.toLowerCase().indexOf('A.D.') !== -1))
+                if ((badTwoChars === '.C' && fieldText.indexOf('B.C.') !== -1)
+                    || (badTwoChars === '.D' && fieldText.indexOf('A.D.') !== -1))
                     continue;
                 if (badTwoChars === '?v' && fieldName.endsWith('manifest line')) // presumably a relation version number
                     continue;
@@ -423,10 +442,13 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
         // Check for leading zeroes in numbers
         for (const badZeroCharCombination of LEADING_ZERO_COMBINATIONS)
             if ((characterIndex = fieldText.indexOf(badZeroCharCombination)) >= 0
-                // but not an error perhaps if followed by period, e.g., 0.32.
-                && (fieldText.substring(characterIndex + badZeroCharCombination.length, characterIndex + badZeroCharCombination.length + 1) !== '.')) {
-                const nextChar = fieldText.substring(characterIndex + 1, characterIndex + 2);
-                if (nextChar !== '”') { // e.g., “0” is ok
+                // but not an error perhaps if followed by period, e.g., 0.32
+                && (fieldText.slice(characterIndex + badZeroCharCombination.length, characterIndex + badZeroCharCombination.length + 1) !== '.')) {
+                // const nextChar = fieldText.slice(characterIndex + 1, characterIndex + 2);
+                const nextNextChar = fieldText.slice(characterIndex + 2, characterIndex + 3);
+                // debugLog(`92 leading zero for fieldType=${fieldType} fieldName=${fieldName} with nextChar=${nextChar} and nextNextChar=${nextNextChar}`);
+                if (nextNextChar !== '”' && nextNextChar !== '-' && // e.g., “0” is ok and 0-2 is ok
+                    (fieldType !== 'YAML' || fieldText.indexOf('sort:') === -1)) { // "sort: 0" is ok in manifests
                     const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                     addNoticePartial({ priority: 92, message: `Unexpected leading zero`, characterIndex, excerpt, location: ourLocation });
                 }
@@ -465,25 +487,25 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
             try { // This regex build fails for some of the characters
                 const leftRegex = new RegExp(`(\\w)\\${leftChar}(\\w)`, 'g'), rightRegex = new RegExp(`(\\w)\\${rightChar}(\\w)`, 'g');
                 // debugLog(`leftRegex is ${leftRegex}`);
-                let regexResultArray;
-                while ((regexResultArray = leftRegex.exec(fieldText)))
-                    if ((!fieldType.startsWith('markdown') || regexResultArray[0][0] !== '_')
+                let regexMatchObject;
+                while ((regexMatchObject = leftRegex.exec(fieldText)))
+                    if ((!fieldType.startsWith('markdown') || regexMatchObject[0][0] !== '_')
                         && (!fieldType.startsWith('YAML') || leftChar !== '{')
                         // TODO: We have to allow for a blank language code until we change checkPlainText()
-                        && (languageCode !== 'en' || regexResultArray[0][2] !== 's' || fieldText.indexOf('(s)') === -1)) {
-                        // debugLog(`Got possible misplaced '${languageCode}' left ${leftChar} in ${fieldType} ${fieldName} '${fieldText}': ${JSON.stringify(regexResultArray)}`);
+                        && (languageCode !== 'en' || regexMatchObject[0][2] !== 's' || fieldText.indexOf('(s)') === -1)) {
+                        // debugLog(`Got possible misplaced '${languageCode}' left ${leftChar} in ${fieldType} ${fieldName} '${fieldText}': ${JSON.stringify(regexMatchObject)}`);
                         let thisPriority = 717, thisMessage = `Misplaced ${leftChar} character`;
-                        if (leftChar === '(' && regexResultArray[0][2] === 's') { thisPriority = 17; thisMessage = `Possible misplaced ${leftChar} character`; } // Lower priority for words like 'thing(s)'
+                        if (leftChar === '(' && regexMatchObject[0][2] === 's') { thisPriority = 17; thisMessage = `Possible misplaced ${leftChar} character`; } // Lower priority for words like 'thing(s)'
                         if (cutoffPriorityLevel < thisPriority)
-                            addNoticePartial({ priority: thisPriority, message: thisMessage, excerpt: regexResultArray[0], location: ourLocation });
+                            addNoticePartial({ priority: thisPriority, message: thisMessage, excerpt: regexMatchObject[0], location: ourLocation });
                     }
                 if (rightChar !== '’') // Can’t check '‘’' coz they might be used as apostrophe
-                    while ((regexResultArray = rightRegex.exec(fieldText)))
-                        if ((!fieldType.startsWith('markdown') || regexResultArray[0][2] !== '_')
+                    while ((regexMatchObject = rightRegex.exec(fieldText)))
+                        if ((!fieldType.startsWith('markdown') || regexMatchObject[0][2] !== '_')
                             && (!fieldType.startsWith('YAML') || rightChar !== '}')) {
-                            // debugLog(`Got misplaced right ${rightChar} in ${fieldType} ${fieldName} '${fieldText}':`, JSON.stringify(regexResultArray));
+                            // debugLog(`Got misplaced right ${rightChar} in ${fieldType} ${fieldName} '${fieldText}':`, JSON.stringify(regexMatchObject));
                             if (cutoffPriorityLevel < 716)
-                                addNoticePartial({ priority: 716, message: `Misplaced ${rightChar} character`, excerpt: regexResultArray[0], location: ourLocation });
+                                addNoticePartial({ priority: 716, message: `Misplaced ${rightChar} character`, excerpt: regexMatchObject[0], location: ourLocation });
                         }
             } catch { }
         }

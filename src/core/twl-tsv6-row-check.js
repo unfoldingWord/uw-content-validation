@@ -9,7 +9,7 @@ import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
 import { parameterAssert } from './utilities';
 
 
-// const TWL_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.1.10';
+// const TWL_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.1.11';
 
 const NUM_EXPECTED_TWL_TSV_FIELDS = 6; // so expects 5 tabs per line
 const EXPECTED_TWL_HEADING_LINE = 'Reference\tID\tTags\tOrigWords\tOccurrence\tTWLink';
@@ -57,11 +57,13 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
     //parameterAssert(bookID.length === 3, `checkTWL_TSV6DataRow: 'bookID' parameter should be three characters long not ${bookID.length}`);
     //parameterAssert(bookID.toUpperCase() === bookID, `checkTWL_TSV6DataRow: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
     //parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkTWL_TSV6DataRow: '${bookID}' is not a valid USFM book identifier`);
-    // //parameterAssert(givenC !== undefined, "checkTWL_TSV6DataRow: 'givenC' parameter should be defined");
-    if (givenC) { //parameterAssert(typeof givenC === 'string', `checkTWL_TSV6DataRow: 'givenC' parameter should be a string not a '${typeof givenC}'`);
+    // parameterAssert(givenC !== undefined, "checkTWL_TSV6DataRow: 'givenC' parameter should be defined");
+    if (givenC) {
+        //parameterAssert(typeof givenC === 'string', `checkTWL_TSV6DataRow: 'givenC' parameter should be a string not a '${typeof givenC}'`);
     }
-    // //parameterAssert(givenV !== undefined, "checkTWL_TSV6DataRow: 'givenV' parameter should be defined");
-    if (givenV) { //parameterAssert(typeof givenV === 'string', `checkTWL_TSV6DataRow: 'givenV' parameter should be a string not a '${typeof givenV}'`);
+    // parameterAssert(givenV !== undefined, "checkTWL_TSV6DataRow: 'givenV' parameter should be defined");
+    if (givenV) {
+        //parameterAssert(typeof givenV === 'string', `checkTWL_TSV6DataRow: 'givenV' parameter should be a string not a '${typeof givenV}'`);
     }
     //parameterAssert(givenRowLocation !== undefined, "checkTWL_TSV6DataRow: 'givenRowLocation' parameter should be defined");
     //parameterAssert(typeof givenRowLocation === 'string', `checkTWL_TSV6DataRow: 'givenRowLocation' parameter should be a string not a '${typeof givenRowLocation}'`);
@@ -86,24 +88,26 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         * @param {string} excerpt - short excerpt from the line centred on the problem (if available)
         * @param {string} location - description of where the issue is located
         */
-        // functionLog(`checkTWL_TSV6DataRow addNoticePartial(priority=${noticeObject.priority}) ${noticeObject.message}, ${noticeObject.characterIndex}, ${noticeObject.excerpt}, ${noticeObject.location}`);
-        //parameterAssert(noticeObject.priority !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'priority' parameter should be defined");
-        //parameterAssert(typeof noticeObject.priority === 'number', `checkTWL_TSV6DataRow addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        //parameterAssert(noticeObject.message !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'message' parameter should be defined");
-        //parameterAssert(typeof noticeObject.message === 'string', `checkTWL_TSV6DataRow addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // //parameterAssert(lineNumber !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'lineNumber' parameter should be defined");
-        // //parameterAssert(typeof lineNumber === 'number', `checkTWL_TSV6DataRow addNoticePartial: 'lineNumber' parameter should be a number not a '${typeof lineNumber}': ${lineNumber}`);
-        // //parameterAssert(characterIndex !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'characterIndex' parameter should be defined");
-        if (incompleteNoticeObject.characterIndex) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `checkTWL_TSV6DataRow addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        // functionLog(`checkTWL_TSV6DataRow addNoticePartial(priority=${incompleteNoticeObject.priority}) ${incompleteNoticeObject.message}, ${incompleteNoticeObject.characterIndex}, ${incompleteNoticeObject.excerpt}, ${incompleteNoticeObject.location}`);
+        //parameterAssert(incompleteNoticeObject.priority !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'priority' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.priority === 'number', `checkTWL_TSV6DataRow addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}': ${incompleteNoticeObject.priority}`);
+        //parameterAssert(incompleteNoticeObject.message !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'message' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.message === 'string', `checkTWL_TSV6DataRow addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}': ${incompleteNoticeObject.message}`);
+        // parameterAssert(lineNumber !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'lineNumber' parameter should be defined");
+        // parameterAssert(typeof lineNumber === 'number', `checkTWL_TSV6DataRow addNoticePartial: 'lineNumber' parameter should be a number not a '${typeof lineNumber}': ${lineNumber}`);
+        // parameterAssert(characterIndex !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'characterIndex' parameter should be defined");
+        if (incompleteNoticeObject.characterIndex) {
+            //parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `checkTWL_TSV6DataRow addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
         }
-        // //parameterAssert(excerpt !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'excerpt' parameter should be defined");
-        if (incompleteNoticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `checkTWL_TSV6DataRow addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        // parameterAssert(excerpt !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'excerpt' parameter should be defined");
+        if (incompleteNoticeObject.excerpt) {
+            //parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `checkTWL_TSV6DataRow addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt}`);
         }
-        //parameterAssert(noticeObject.location !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'location' parameter should be defined");
-        //parameterAssert(typeof noticeObject.location === 'string', `checkTWL_TSV6DataRow addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        //parameterAssert(incompleteNoticeObject.location !== undefined, "checkTWL_TSV6DataRow addNoticePartial: 'location' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.location === 'string', `checkTWL_TSV6DataRow addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
 
         // Also uses the given bookID,C,V, parameters from the main function call
-        // noticeObject.debugChain = noticeObject.debugChain ? `checkTWL_TSV6DataRow ${noticeObject.debugChain}` : `checkTWL_TSV6DataRow(${repoCode})`;
+        // incompleteNoticeObject.debugChain = incompleteNoticeObject.debugChain ? `checkTWL_TSV6DataRow ${incompleteNoticeObject.debugChain}` : `checkTWL_TSV6DataRow(${repoCode})`;
         drResult.noticeList.push({ ...incompleteNoticeObject, bookID, C: givenC, V: givenV });
     }
 
@@ -144,7 +148,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of octfResultObject.noticeList) {
-            // //parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
+            // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckTextField notice length=${Object.keys(noticeEntry).length}`);
             addNoticePartial({ ...noticeEntry, rowID, fieldName });
         }
         return octfResultObject.suggestion; // There may or may not be one!
@@ -178,7 +182,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
         for (const noticeEntry of colqResultObject.noticeList) {
-            // //parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckTNOriginalLanguageQuoteAndOccurrence notice length=${Object.keys(noticeEntry).length}`);
+            // parameterAssert(Object.keys(noticeEntry).length === 5, `TL ourCheckTNOriginalLanguageQuoteAndOccurrence notice length=${Object.keys(noticeEntry).length}`);
             addNoticePartial({ ...noticeEntry, rowID, fieldName });
         }
     }
@@ -336,7 +340,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         else {
             if (rowID.length !== 4) {
                 addNoticePartial({ priority: 778, message: "Row ID should be exactly 4 characters", details: `not ${rowID.length}`, rowID, fieldName: 'ID', excerpt: rowID, location: ourRowLocation });
-                if (rowID.length > 4) RIDSuggestion = rowID.substring(0, 5);
+                if (rowID.length > 4) RIDSuggestion = rowID.slice(0, 5);
                 else { // must be < 4
                     RIDSuggestion = rowID;
                     while (RIDSuggestion.length < 4) RIDSuggestion += LC_ALPHABET_PLUS_DIGITS[Math.floor(Math.random() * LC_ALPHABET_PLUS_DIGITS.length)];;
@@ -415,10 +419,11 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
             if (isWhitespace(TWLink))
                 addNoticePartial({ priority: 796, message: "Field is only whitespace", fieldName: 'TWLink', rowID, location: ourRowLocation });
             else { // More than just whitespace
-                if (!TWLink.startsWith('rc://*/tw/dict/bible/'))
-                    addNoticePartial({ priority: 798, message: "Field doesn’t contain expected TW link", details: `should start with 'rc://*/tw/dict/bible/'`, fieldName: 'TWLink', rowID, location: ourRowLocation });
-                else { // it starts correctly
-                    const bits = TWLink.substring('rc://*/tw/dict/bible/'.length).split('/'); // Get the last two bits of the link path
+                if (!TWLink.startsWith('rc://*/tw/dict/bible/')) {
+                    const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + TWLink.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < TWLink.length ? '…' : '')
+                    addNoticePartial({ priority: 798, message: "Field doesn’t contain expected TW link", details: `should start with 'rc://*/tw/dict/bible/'`, fieldName: 'TWLink', rowID, excerpt, location: ourRowLocation });
+                } else { // it starts correctly
+                    const bits = TWLink.slice('rc://*/tw/dict/bible/'.length).split('/'); // Get the last two bits of the link path
                     // debugLog(`checkTWL_TSV6DataRow checking ${bookID} ${rowID} TWLink='${TWLink}' got bits=${JSON.stringify(bits)}`);
                     if (bits[0] !== 'kt' && bits[0] !== 'names' && bits[0] !== 'other') {
                         characterIndex = 'rc://*/tw/dict/bible/'.length;

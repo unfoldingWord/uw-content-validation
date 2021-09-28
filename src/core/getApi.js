@@ -4,11 +4,12 @@ import localforage from 'localforage';
 import { setup } from 'axios-cache-adapter';
 import JSZip from 'jszip';
 import * as books from './books';
+import { CATALOG_NEXT_ONLY_REPO_CODES_LIST } from './defaults';
 // eslint-disable-next-line no-unused-vars
 import { functionLog, debugLog, userLog, parameterAssert, logicAssert } from './utilities';
 
 
-// const GETAPI_VERSION_STRING = '0.9.0';
+// const GETAPI_VERSION_STRING = '0.10.1';
 
 const MAX_INDIVIDUAL_FILES_TO_DOWNLOAD = 5; // More than this and it downloads the zipfile for the entire repo
 
@@ -145,7 +146,7 @@ export function formRepoName(languageCode, repoCode) {
 
   let repoName;
 
-  // if (repoCode.endsWith('2')) repoCode = repoCode.substring(0, repoCode.length - 1);
+  // if (repoCode.endsWith('2')) repoCode = repoCode.slice(0, repoCode.length - 1);
   repoName = `${repo_languageCode}_${repoCode.toLowerCase()}`;
   return repoName;
 }
@@ -271,7 +272,7 @@ export async function cachedGetBookFilenameFromManifest({ username, repository, 
   for (const projectEntry of manifestJSON.projects) {
     if (projectEntry.identifier === bookID) {
       let bookPath = projectEntry.path;
-      if (bookPath.startsWith('./')) bookPath = bookPath.substring(2);
+      if (bookPath.startsWith('./')) bookPath = bookPath.slice(2);
       return bookPath;
     }
   }
@@ -285,18 +286,18 @@ export async function cachedGetBookFilenameFromManifest({ username, repository, 
  *   TRICKY: note that even if the user is super fast in selecting books and clicking next, it will not hurt anything.
  *            cachedGetFileFromZipOrServer() would just be fetching files directly from repo until the zips are loaded.
  *            After that the files would be pulled out of zipStore.
- * @param {string} username
- * @param {string} languageCode
+ * @param {string} givenUsername
+ * @param {string} givenLanguageCode
  * @param {Array} bookIDList - one or more books that will be checked
  * @param {string} branch - optional, defaults to master
  * @param {Array} repoList - optional, list of repos to pre-load
  * @return {Promise<Boolean>} resolves to true if file loads are successful
  */
-export async function preloadReposIfNecessary(username, languageCode, bookIDList, branchOrRelease, repoList) {
+export async function preloadReposIfNecessary(givenUsername, givenLanguageCode, bookIDList, branchOrRelease, repoList) {
   // NOTE: We preload TA and TW by default because we are likely to have many links to those repos
   //        We preload TQ by default because it has thousands of files (17,337), so individual file fetches might be slow
   //          even for one book which might have several hundred files.
-  // functionLog(`preloadReposIfNecessary(${username}, ${languageCode}, ${bookIDList} (${typeof bookID}), ${branchOrRelease}, [${repoList}])…`);
+  // functionLog(`preloadReposIfNecessary(${givenUsername}, ${givenLanguageCode}, ${bookIDList} (${typeof bookID}), ${branchOrRelease}, [${repoList}])…`);
   let success = true;
 
   const repos_ = [...repoList];
@@ -343,14 +344,20 @@ export async function preloadReposIfNecessary(username, languageCode, bookIDList
   // }
   // else userLog("All repos were cached already!");
 
-  for (const repoCode of repos_) {
+  for (const thisRepoCode of repos_) {
     // debugLog(`preloadReposIfNecessary: looking at repoCode '${repoCode}'…`);
-    let adjustedLanguageCode = languageCode;
-    if ((languageCode === 'hbo' && repoCode !== 'UHB') || (languageCode === 'el-x-koine' && repoCode !== 'UGNT'))
+    let adjustedUsername = givenUsername;
+    if (givenUsername === 'Door43-Catalog' && CATALOG_NEXT_ONLY_REPO_CODES_LIST.includes(thisRepoCode) && givenLanguageCode === 'en') {
+      userLog(`preloadReposIfNecessary: switching ${thisRepoCode} username from 'Door43-Catalog' to 'unfoldingWord'`);
+      adjustedUsername = 'unfoldingWord';
+      // TODO: Ideally we should also make it get the latest release (rather than master)
+    }
+    let adjustedLanguageCode = givenLanguageCode;
+    if ((givenLanguageCode === 'hbo' && thisRepoCode !== 'UHB') || (givenLanguageCode === 'el-x-koine' && thisRepoCode !== 'UGNT'))
       adjustedLanguageCode = 'en'; // Assume English then
     let adjustedBranchOrRelease = branchOrRelease;
-    let adjustedRepoCode = repoCode;
-    if (repoCode.endsWith('2')) {
+    let adjustedRepoCode = thisRepoCode;
+    if (thisRepoCode.endsWith('2')) {
       adjustedRepoCode = adjustedRepoCode.substring(0, adjustedRepoCode.length - 1); // Remove the '2' from the end
       adjustedBranchOrRelease = 'newFormat';
     }
@@ -358,12 +365,24 @@ export async function preloadReposIfNecessary(username, languageCode, bookIDList
     //   adjustedBranchOrRelease = 'newFormat';
     const repoName = formRepoName(adjustedLanguageCode, adjustedRepoCode);
     // debugLog(`preloadReposIfNecessary: preloading zip file for ${repoName}…`);
-    const zipFetchSucceeded = await cachedGetRepositoryZipFile({ username, repository: repoName, branchOrRelease: adjustedBranchOrRelease });
+    const zipFetchSucceeded = await cachedGetRepositoryZipFile({ username: adjustedUsername, repository: repoName, branchOrRelease: adjustedBranchOrRelease });
     if (!zipFetchSucceeded) {
-      console.error(`preloadReposIfNecessary() misfetched zip file for ${repoCode} (${adjustedRepoCode}) repo with ${zipFetchSucceeded}`);
+      console.error(`preloadReposIfNecessary: misfetched zip file for ${adjustedUsername} ${thisRepoCode} (${adjustedRepoCode}) repo with ${zipFetchSucceeded}`);
       success = false;
     }
-    if (repoCode === 'OBS') {
+    if (!success && (thisRepoCode === 'UHB' || thisRepoCode === 'UGNT') && adjustedUsername !== 'Door43-Catalog') { // Have a second try
+      userLog(`preloadReposIfNecessary: trying username='Door43-Catalog' instead of '${adjustedUsername}' for ${repoName}…`);
+      adjustedUsername = 'Door43-Catalog';
+      const zipFetchSucceeded = await cachedGetRepositoryZipFile({ username: adjustedUsername, repository: repoName, branchOrRelease: adjustedBranchOrRelease });
+      if (zipFetchSucceeded)
+        success = true;
+      else {
+        console.error(`preloadReposIfNecessary: misfetched zip file for ${adjustedUsername} ${thisRepoCode} (${adjustedRepoCode}) repo with ${zipFetchSucceeded}`);
+        success = false;
+      }
+
+    }
+    if (thisRepoCode === 'OBS') {
       debugLog(`preloadReposIfNecessary: preloading OBS zipped pictures file from ${OBS_PICTURE_ZIP_URI}…`);
       const zipBlob = await zipStore.getItem(OBS_PICTURE_ZIP_FILENAME);
       // debugLog(`  getZipFromStore(${uri} -- empty: ${!zipBlob}`);
@@ -496,6 +515,7 @@ async function getUID({ username }) {
 }
 
 export async function repositoryExistsOnDoor43({ username, repository }) {
+  // NOTE: Not currently used locally
   // functionLog(`repositoryExistsOnDoor43(${username}, ${repository})…`);
   let uid;
   try {
@@ -541,7 +561,7 @@ async function cachedGetFileUsingPartialURL({ uri, params }) {
   // functionLog(`cachedGetFileUsingPartialURL(${uri}, ${JSON.stringify(params)})…`);
   // debugLog(`  get querying: ${baseURL+uri}`);
   const response = await Door43Api.get(DOOR43_BASE_URL + uri, { params });
-  if (response.request.fromCache !== true) userLog(`  Door43Api downloaded Door43 ${uri}`);
+  if (response.request.fromCache !== true) userLog(`  cachedGetFileUsingPartialURL downloaded Door43 ${uri}`);
   // debugLog(`  cachedGetFileUsingPartialURL returning: ${JSON.stringify(response.data)}`);
   return response.data;
 };
@@ -564,7 +584,7 @@ export async function cachedGetFileUsingFullURL({ uri, params }) {
         // zip.forEach(function (relativePath) {
         // debugLog(`relPath=${relativePath}`); // Displays 'relPath=360px/obs-en-17-09.jpg'
         // })
-        const zipPath = uri.substring(31); // Drop https://cdn.door43.org/obs/jpg/ to get 360px/obs-en-01-05.jpg
+        const zipPath = uri.slice(31); // Drop https://cdn.door43.org/obs/jpg/ to get 360px/obs-en-01-05.jpg
         // debugLog(`  zipPath=${zipPath}`);
         pictureContents = await zip.file(zipPath).async('string');
         // debugLog(`    Got zipBlob ${pictureContents.length} bytes`);
@@ -587,7 +607,7 @@ export async function cachedGetFileUsingFullURL({ uri, params }) {
     // else console.error(`cachedGetFileUsingFullURL(${uri}) -- failed to get file from zip`);
   }
   const response = await Door43Api.get(uri, { params });
-  if (response.request.fromCache !== true) userLog(`  Door43Api downloaded ${uri}`);
+  if (response.request.fromCache !== true) userLog(`  cachedGetFileUsingFullURL downloaded ${uri}`);
   // debugLog(`  cachedGetFileUsingFullURL returning: ${response.data}`);
   return response.data;
 };
@@ -692,7 +712,7 @@ export async function getFileListFromZip({ username, repository, branchOrRelease
         if (!relativePath.endsWith('/')) // it’s not a folder
         {
           if (relativePath.startsWith(`${repository}/`)) // remove repo name prefix
-            relativePath = relativePath.substring(repository.length + 1);
+            relativePath = relativePath.slice(repository.length + 1);
           if (relativePath.length
             && !relativePath.startsWith('.git') // skips files in these folders
             && !relativePath.startsWith('.apps') // skips files in this folder

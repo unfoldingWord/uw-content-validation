@@ -8,7 +8,7 @@ import { checkRepo } from './checkRepo';
 import { logicAssert, userLog, debugLog } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.3.2';
+// const REPO_VALIDATOR_VERSION_STRING = '0.3.4';
 
 
 function RepoCheck(/*username, languageCode,*/ props) {
@@ -34,6 +34,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
     const checkingOptions = { // Uncomment any of these to test them
         // excerptLength: 25,
         suppressNoticeDisablingFlag: true, // Leave this one as true (otherwise demo checks are less efficient)
+        checkType: 'Repo', // Always leave this one in
     };
     // NOTE: I removed this again as it didn’t really seem to make sense to enable it here
     //          Also, I don’t think the results were getting returned correctly yet
@@ -110,9 +111,16 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 }
                 if (repoCode.startsWith('OBS-'))
                     repoPreloadList.push('OBS');
+                if (!checkingOptions.disableLexiconLinkFetchingFlag
+                    && (['UHB', 'UGNT', 'TW'].includes(repoCode) || repoCode.endsWith('LT') || repoCode.endsWith('ST'))) {
+                    if (repoCode !== 'UGNT')
+                        repoPreloadList.push('UHAL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
+                    if (repoCode !== 'UHB')
+                        repoPreloadList.push('UGL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
+                }
             }
             setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoCode} and {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for {repoName} repo check…</p>);
-            logicAssert(repoPreloadList.indexOf(repoCode) === -1, `Shouldn't have our repoCode ${repoCode} in repoPreloadList: ${repoPreloadList}`);
+            logicAssert(!repoPreloadList.includes(repoCode), `Shouldn't have our repoCode ${repoCode} in repoPreloadList: ${repoPreloadList}`);
             const successFlag = await preloadReposIfNecessary(username, languageCode, [], branchOrRelease, [repoCode])
                 && await preloadReposIfNecessary(username, languageCode, [], 'master', repoPreloadList);
             if (!successFlag)

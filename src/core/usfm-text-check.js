@@ -14,18 +14,18 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.10.3';
+// const USFM_VALIDATOR_VERSION_STRING = '0.10.12';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for STs
 
 // See http://ubsicap.github.io/usfm/master/index.html
 // const COMPULSORY_MARKERS = ['id', 'ide']; // These are specifically checked for by the code near the start of mainUSFMCheck()
-const EXPECTED_MARKERS = ['usfm', 'mt1']; // The check also allows for removal of the final '1'
-const EXPECTED_BIBLE_BOOK_MARKERS = ['h', 'toc1', 'toc2', 'toc3'];
-const EXPECTED_PERIPHERAL_BOOK_MARKERS = ['periph'];
+const EXPECTED_MARKERS_LIST = ['usfm', 'mt1']; // The check also allows for removal of the final '1'
+const EXPECTED_BIBLE_BOOK_MARKERS_LIST = ['h', 'toc1', 'toc2', 'toc3'];
+const EXPECTED_PERIPHERAL_BOOK_MARKER_LIST = ['periph'];
 
-const INTRO_LINE_START_MARKERS = ['id', 'usfm', 'ide', 'h',
+const INTRO_LINE_START_MARKER_LIST = ['id', 'usfm', 'ide', 'h',
     'toc1', 'toc2', 'toc3',
     'mt', 'mt1', 'mt2',
     'mte', 'mte1', 'mte2',
@@ -36,8 +36,8 @@ const INTRO_LINE_START_MARKERS = ['id', 'usfm', 'ide', 'h',
     'ili', 'ili1', 'ili2',
     'iot', 'io', 'io1', 'io2',
     'iex', 'imte', 'imte1', 'imte2'];
-const CV_MARKERS = ['c', 'v', 'ca', 'va'];
-const HEADING_TYPE_MARKERS = [ // expected to contain text on the same line
+const CV_MARKERS_LIST = ['c', 'v', 'ca', 'va'];
+const HEADING_TYPE_MARKERS_LIST = [ // expected to contain text on the same line
     's', 's1', 's2', 's3', 's4', 'sr',
     'ms', 'ms1', 'mr',
     'r', 'd', 'rem', 'sp', 'cl',
@@ -45,7 +45,7 @@ const HEADING_TYPE_MARKERS = [ // expected to contain text on the same line
     'pr', 'qa', 'qc', 'qd', 'qr',
     'cls', 'pmo', 'pmc', 'pmr', 'pc',
     'periph'];
-const PARAGRAPH_MARKERS = ['p',
+const PARAGRAPH_MARKERS_LIST = ['p',
     'q', 'q1', 'q2', 'q3', 'q4',
     'qm', 'qm1', 'qm2', 'qm3', 'qm4',
     'm', 'mi',
@@ -56,74 +56,111 @@ const PARAGRAPH_MARKERS = ['p',
     'po', 'pm',
     'ph', 'ph1', 'ph2', 'ph3', 'ph4',
     'tr'];
-const MAIN_NOTE_MARKERS = ['f', 'x'];
-const SPECIAL_MARKERS = ['w', 'zaln-s', 'k-s',
+const MAIN_NOTE_MARKERS_LIST = ['f', 'x'];
+const SPECIAL_MARKERS_LIST = ['w', 'zaln-s', 'k-s', // NOTE that we have \w in TWO places
     'qt-s', 'qt1-s', 'qt2-s',
     'lit'];
-const MILESTONE_MARKERS = ['ts\\*', 'ts-s', 'ts-e', 'k-e\\*']; // Is this a good way to handle it???
-const MARKERS_WITHOUT_CONTENT = ['b', 'nb', 'ib', 'ie'].concat(MILESTONE_MARKERS);
-const ALLOWED_LINE_START_MARKERS = [].concat(INTRO_LINE_START_MARKERS).concat(HEADING_TYPE_MARKERS)
-    .concat(CV_MARKERS).concat(PARAGRAPH_MARKERS)
-    .concat(MAIN_NOTE_MARKERS).concat(SPECIAL_MARKERS).concat(MARKERS_WITHOUT_CONTENT)
-    .concat(MILESTONE_MARKERS).concat(['qs']);
-const DEPRECATED_MARKERS = [
+const MILESTONE_MARKERS_LIST = ['ts\\*', 'ts-s', 'ts-e', 'k-e\\*']; // Is this a good way to handle it???
+const TEXT_MARKERS_WITHOUT_CONTENT_LIST = ['b', 'nb', 'ib', 'ie'];
+const MARKERS_WITHOUT_CONTENT_LIST = [].concat(TEXT_MARKERS_WITHOUT_CONTENT_LIST).concat(MILESTONE_MARKERS_LIST);
+const ALLOWED_LINE_START_MARKERS_LIST = [].concat(INTRO_LINE_START_MARKER_LIST).concat(HEADING_TYPE_MARKERS_LIST)
+    .concat(CV_MARKERS_LIST).concat(PARAGRAPH_MARKERS_LIST)
+    .concat(MAIN_NOTE_MARKERS_LIST).concat(SPECIAL_MARKERS_LIST).concat(MARKERS_WITHOUT_CONTENT_LIST)
+    .concat(MILESTONE_MARKERS_LIST).concat(['qs']);
+const DEPRECATED_MARKERS_LIST = [
     'h1', 'h2', 'h3', 'h4',
     'pr',
     'ph', 'ph1', 'ph2', 'ph3', 'ph4',
     'addpn', 'pro', 'fdc', 'xdc'];
-const MARKERS_WITH_COMPULSORY_CONTENT = [].concat(INTRO_LINE_START_MARKERS).concat(HEADING_TYPE_MARKERS)
-    .concat(CV_MARKERS).concat(MAIN_NOTE_MARKERS).concat(SPECIAL_MARKERS);
-const FOOTNOTE_INTERNAL_MARKERS = ['fr', 'fq', 'fqa', 'fk', 'fl', 'fw', 'fp', 'fv', 'ft', 'fdc', 'fm', 'xt'];
-const XREF_INTERNAL_MARKERS = ['xo', 'xk', 'xq', 'xt', 'xta', 'xop', 'xot', 'xnt', 'xdc', 'rq'];
-const SIMPLE_CHARACTER_MARKERS = ['add', 'bk', 'dc', 'k', 'nd', 'ord', 'pn', 'png', 'addpn',
+const MARKERS_WITH_COMPULSORY_CONTENT_LIST = [].concat(INTRO_LINE_START_MARKER_LIST).concat(HEADING_TYPE_MARKERS_LIST)
+    .concat(CV_MARKERS_LIST).concat(MAIN_NOTE_MARKERS_LIST).concat(SPECIAL_MARKERS_LIST);
+const FOOTNOTE_INTERNAL_MARKERS_LIST = ['fr', 'fq', 'fqa', 'fk', 'fl', 'fw', 'fp', 'fv', 'ft', 'fdc', 'fm', 'xt'];
+const XREF_INTERNAL_MARKERS_LIST = ['xo', 'xk', 'xq', 'xt', 'xta', 'xop', 'xot', 'xnt', 'xdc', 'rq'];
+const SIMPLE_CHARACTER_MARKERS_LIST = ['add', 'bk', 'dc', 'k', 'nd', 'ord', 'pn', 'png', 'addpn',
     'qs', 'qt', 'sig', 'sls', 'tl', 'wj',
     'ior', 'iqt', // TODO: What/Why was 'rq' in here???
     'em', 'bd', 'it', 'bdit', 'no', 'sc', 'sup',
     'ndx', 'rb', 'pro', 'wg', 'wh', 'wa',
     'litl', 'lik',
     'liv', 'liv1', 'liv2', 'liv3', 'liv4'];
-const CHARACTER_MARKERS = ['fig', 'w'].concat(SIMPLE_CHARACTER_MARKERS); // NOTE that we have \w in TWO places
-const SIMPLE_INTERNAL_MARKERS = [SIMPLE_CHARACTER_MARKERS].concat().concat(FOOTNOTE_INTERNAL_MARKERS).concat(XREF_INTERNAL_MARKERS)
+const CHARACTER_MARKERS_LIST = ['fig', 'w'].concat(SIMPLE_CHARACTER_MARKERS_LIST); // NOTE that we have \w in TWO places
+const SIMPLE_INTERNAL_MARKERS_LIST = [SIMPLE_CHARACTER_MARKERS_LIST].concat().concat(FOOTNOTE_INTERNAL_MARKERS_LIST).concat(XREF_INTERNAL_MARKERS_LIST)
 // eslint-disable-next-line no-unused-vars
-const CANONICAL_TEXT_MARKERS = ['d'].concat(PARAGRAPH_MARKERS).concat(CHARACTER_MARKERS);
+const CANONICAL_TEXT_MARKERS_LIST = ['d'].concat(PARAGRAPH_MARKERS_LIST).concat(CHARACTER_MARKERS_LIST);
 // eslint-disable-next-line no-unused-vars
-const ANY_TEXT_MARKERS = [].concat(INTRO_LINE_START_MARKERS).concat(HEADING_TYPE_MARKERS)
-    .concat(PARAGRAPH_MARKERS).concat(CHARACTER_MARKERS)
-    .concat(MAIN_NOTE_MARKERS).concat(SPECIAL_MARKERS);
-const MATCHED_CHARACTER_FORMATTING_PAIRS = [
-    ['\\add ', '\\add*'], ['\\addpn ', '\\addpn*'],
-    ['\\bd ', '\\bd*'], ['\\bdit ', '\\bdit*'],
-    ['\\bk ', '\\bk*'],
-    ['\\dc ', '\\dc*'],
-    ['\\em ', '\\em*'],
-    ['\\fig ', '\\fig*'],
-    ['\\ior ', '\\ior*'],
-    ['\\iqt ', '\\iqt*'],
-    ['\\it ', '\\it*'],
-    ['\\k ', '\\k*'],
-    ['\\litl ', '\\litl*'],
-    ['\\lik ', '\\lik*'],
-    ['\\liv ', '\\liv*'], ['\\liv1 ', '\\liv1*'], ['\\liv2 ', '\\liv2*'], ['\\liv3 ', '\\liv3*'], ['\\liv4 ', '\\liv4*'],
-    ['\\nd ', '\\nd*'], ['\\ndx ', '\\ndx*'],
-    ['\\no ', '\\no*'],
-    ['\\ord ', '\\ord*'],
-    ['\\pn ', '\\pn*'], ['\\png ', '\\png*'],
-    ['\\pro ', '\\pro*'],
-    ['\\qt ', '\\qt*'],
-    ['\\rb ', '\\rb*'],
-    ['\\sc ', '\\sc*'],
-    ['\\sig ', '\\sig*'],
-    ['\\sls ', '\\sls*'],
-    ['\\sup ', '\\sup*'],
-    ['\\tl ', '\\tl*'],
-    ['\\w ', '\\w*'], // Note that we also have \+w and \+w* in our files
-    ['\\wa ', '\\wa*'], ['\\wg ', '\\wg*'], ['\\wh ', '\\wh*'],
-    ['\\wj ', '\\wj*'],
+const ANY_TEXT_MARKERS_LIST = [].concat(INTRO_LINE_START_MARKER_LIST).concat(HEADING_TYPE_MARKERS_LIST)
+    .concat(PARAGRAPH_MARKERS_LIST).concat(CHARACTER_MARKERS_LIST)
+    .concat(MAIN_NOTE_MARKERS_LIST).concat(SPECIAL_MARKERS_LIST);
+const MATCHED_CHARACTER_FORMATTING_LINE_PAIRS_LIST = [ // These ones would normally be on the same line in uW USFM files
+    ['add', 'add*'], ['addpn', 'addpn*'],
+    ['bd', 'bd*'], ['bdit', 'bdit*'],
+    ['bk', 'bk*'],
+    ['dc', 'dc*'],
+    ['em', 'em*'],
+    ['fig', 'fig*'],
+    ['ior', 'ior*'],
+    ['iqt', 'iqt*'],
+    ['it', 'it*'],
+    ['k', 'k*'],
+    ['litl', 'litl*'],
+    ['lik', 'lik*'],
+    ['liv', 'liv*'], ['liv1', 'liv1*'], ['liv2', 'liv2*'], ['liv3', 'liv3*'], ['liv4', 'liv4*'],
+    ['nd', 'nd*'], ['ndx', 'ndx*'],
+    ['no', 'no*'],
+    ['ord', 'ord*'],
+    ['pn', 'pn*'], ['png', 'png*'],
+    ['pro', 'pro*'],
+    ['qt', 'qt*'],
+    ['rb', 'rb*'],
+    ['sc', 'sc*'],
+    ['sig', 'sig*'],
+    ['sls', 'sls*'],
+    ['sup', 'sup*'],
+    ['tl', 'tl*'],
+    ['w', 'w*'], // Note that we also have \+w and \+w* in our files
+    ['wa', 'wa*'], ['wg', 'wg*'], ['wh', 'wh*'],
+    ['wj', 'wj*'],
 
-    ['\\ca ', '\\ca*'], ['\\va ', '\\va*'],
+    ['ca', 'ca*'], ['va', 'va*'],
 
-    ['\\f ', '\\f*'], ['\\x ', '\\x*'],
+    ['f', 'f*'], ['x', 'x*'],
 ];
+const MATCHED_CHARACTER_FORMATTING_FILE_PAIRS_LIST =  // These ones would not necessarily be on the same line
+    MATCHED_CHARACTER_FORMATTING_LINE_PAIRS_LIST;
+/*    [
+        ['add', 'add*'], ['addpn', 'addpn*'],
+        ['bd', 'bd*'], ['bdit', 'bdit*'],
+        ['bk', 'bk*'],
+        ['dc', 'dc*'],
+        ['em', 'em*'],
+        ['fig', 'fig*'],
+        ['ior', 'ior*'],
+        ['iqt', 'iqt*'],
+        ['it', 'it*'],
+        ['k', 'k*'],
+        ['litl', 'litl*'],
+        ['lik', 'lik*'],
+        ['liv', 'liv*'], ['liv1', 'liv1*'], ['liv2', 'liv2*'], ['liv3', 'liv3*'], ['liv4', 'liv4*'],
+        ['nd', 'nd*'], ['ndx', 'ndx*'],
+        ['no', 'no*'],
+        ['ord', 'ord*'],
+        ['pn', 'pn*'], ['png', 'png*'],
+        ['pro', 'pro*'],
+        ['qt', 'qt*'],
+        ['rb', 'rb*'],
+        ['sc', 'sc*'],
+        ['sig', 'sig*'],
+        ['sls', 'sls*'],
+        ['sup', 'sup*'],
+        ['tl', 'tl*'],
+        ['w', 'w*'], // Note that we also have \+w and \+w* in our files
+        ['wa', 'wa*'], ['wg', 'wg*'], ['wh', 'wh*'],
+        ['wj', 'wj*'],
+
+        ['ca', 'ca*'], ['va', 'va*'],
+
+        ['f', 'f*'], ['x', 'x*'],
+    ];*/
 
 const W_REGEX = new RegExp('\\\\\\+?w ([^\\\\]+?)\\\\\\+?w\\*', 'g'); // \w ...\w* or \+w ...\+w*
 // Note: lemma field can be blank in UHB
@@ -137,7 +174,7 @@ const ATTRIBUTE_REGEX = new RegExp('[ |]([^ |]+?)="([^"]*?)"', 'g');
 // Only shin/sin consonant should come before a sin/shin dot
 const BAD_HEBREW_SIN_SHIN_DOT_REGEX = new RegExp('[^\\u05E9][\\u05C1\\u05C2]', 'g');
 // Only certain consonants should come before a dagesh dot -- Unicode char is also used for mapiq
-const BAD_HEBREW_DAGESH_MAPIQ_REGEX = new RegExp('[^\\u05C1\\u05C2אבגדהוזטיךכלמנספצקרת]\\u05BC', 'g'); // includes shin/sin dots and some final consonants
+const BAD_HEBREW_DAGESH_MAPIQ_REGEX = new RegExp('[^\\u05C1\\u05C2אבגדהוזחטיכךלמנספףצקרת]\\u05BC', 'g'); // includes shin/sin dots and some final consonants
 // Hebrew vowels should never come before a dagesh
 const BAD_HEBREW_VOWEL_DAGESH_REGEX = new RegExp('[\\u05B4-\\u05BB]\\u05BC', 'g');
 // Hebrew cantillation marks should never come before a dagesh
@@ -167,8 +204,8 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
      Returns a result object containing a successList and a noticeList
      */
     // functionLog(`checkUSFMText(${languageCode}, ${repoCode}, ${bookID}, ${filename}, ${givenText.length.toLocaleString()} chars, '${givenLocation}', ${JSON.stringify(checkingOptions)})…`);
-    // const match = HEBREW_CANTILLATION_REGEX.exec('\\f + \\ft Q \\+w הִנֵּ֤ה|lemma="הִנֵּ֤ה" strong="H2009" x-morph="He,Tm"\\+w*\\f*');
-    // console.log(`Got test cantillation match: ${match.length} ${JSON.stringify(match)}`);
+    // const regexMatchObject = HEBREW_CANTILLATION_REGEX.exec('\\f + \\ft Q \\+w הִנֵּ֤ה|lemma="הִנֵּ֤ה" strong="H2009" x-morph="He,Tm"\\+w*\\f*');
+    // console.log(`Got test cantillation regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
 
     //parameterAssert(languageCode !== undefined, "checkUSFMText: 'languageCode' parameter should be defined");
     //parameterAssert(typeof languageCode === 'string', `checkUSFMText: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
@@ -186,7 +223,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
     //parameterAssert(typeof givenLocation === 'string', `checkUSFMText: 'givenRowLocation' parameter should be a string not a '${typeof givenLocation}'`);
     //parameterAssert(checkingOptions !== undefined, "checkUSFMText: 'checkingOptions' parameter should be defined");
     if (checkingOptions !== undefined) {
-        parameterAssert(typeof checkingOptions === 'object', `checkUSFMText: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
+        //parameterAssert(typeof checkingOptions === 'object', `checkUSFMText: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
     }
 
     let ourLocation = givenLocation;
@@ -199,6 +236,11 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
     if (typeof excerptLength !== 'number' || isNaN(excerptLength)) {
         excerptLength = DEFAULT_EXCERPT_LENGTH;
         // debugLog(`Using default excerptLength=${excerptLength}`);
+    }
+    if (languageCode === 'hbo') { // Hebrew vowels don't take up much horizontal space
+        // const previousExcerptLength = excerptLength;
+        excerptLength = Math.floor(excerptLength * 1.3);
+        // debugLog(`checkUSFMText adjusted ${languageCode} excerptLength from ${previousExcerptLength} to ${excerptLength}`);
     }
     // else
     // debugLog(`Using supplied excerptLength=${excerptLength} cf. default=${DEFAULT_EXCERPT_LENGTH}`);
@@ -218,31 +260,35 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         usfmResultObject.successList.push(successString);
     }
     function addNoticePartial(incompleteNoticeObject) {
-        // debugLog("checkUSFMText addNoticePartial:", JSON.stringify(noticeObject));
-        // functionLog(`checkUSFMText addNoticePartial: (priority=${noticeObject.priority}) ${noticeObject.C}:${noticeObject.V} ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.excerpt ? ` ${noticeObject.excerpt}` : ""}${noticeObject.location}`);
-        //parameterAssert(noticeObject.priority !== undefined, "cUSFM addNoticePartial: 'priority' parameter should be defined");
-        //parameterAssert(typeof noticeObject.priority === 'number', `cUSFM addNoticePartial: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
-        //parameterAssert(noticeObject.message !== undefined, "cUSFM addNoticePartial: 'message' parameter should be defined");
-        //parameterAssert(typeof noticeObject.message === 'string', `cUSFM addNoticePartial: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        // //parameterAssert(C !== undefined, "cUSFM addNoticePartial: 'C' parameter should be defined");
-        if (incompleteNoticeObject.C) { //parameterAssert(typeof noticeObject.C === 'string', `cUSFM addNoticePartial: 'C' parameter should be a string not a '${typeof noticeObject.C}': ${noticeObject.C}`);
+        // debugLog("checkUSFMText addNoticePartial:", JSON.stringify(incompleteNoticeObject));
+        // functionLog(`checkUSFMText addNoticePartial: (priority=${incompleteNoticeObject.priority}) ${incompleteNoticeObject.C}:${incompleteNoticeObject.V} ${incompleteNoticeObject.message}${incompleteNoticeObject.characterIndex > 0 ? ` (at character ${incompleteNoticeObject.characterIndex})` : ""}${incompleteNoticeObject.excerpt ? ` ${incompleteNoticeObject.excerpt}` : ""}${incompleteNoticeObject.location}`);
+        //parameterAssert(incompleteNoticeObject.priority !== undefined, "cUSFM addNoticePartial: 'priority' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.priority === 'number', `cUSFM addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}': ${incompleteNoticeObject.priority}`);
+        //parameterAssert(incompleteNoticeObject.message !== undefined, "cUSFM addNoticePartial: 'message' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.message === 'string', `cUSFM addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}': ${incompleteNoticeObject.message}`);
+        // parameterAssert(C !== undefined, "cUSFM addNoticePartial: 'C' parameter should be defined");
+        if (incompleteNoticeObject.C) {
+            //parameterAssert(typeof incompleteNoticeObject.C === 'string', `cUSFM addNoticePartial: 'C' parameter should be a string not a '${typeof incompleteNoticeObject.C}': ${incompleteNoticeObject.C}`);
         }
-        // //parameterAssert(V !== undefined, "cUSFM addNoticePartial: 'V' parameter should be defined");
-        if (incompleteNoticeObject.V) { //parameterAssert(typeof noticeObject.V === 'string', `cUSFM addNoticePartial: 'V' parameter should be a string not a '${typeof noticeObject.V}': ${noticeObject.V}`);
+        // parameterAssert(V !== undefined, "cUSFM addNoticePartial: 'V' parameter should be defined");
+        if (incompleteNoticeObject.V) {
+            //parameterAssert(typeof incompleteNoticeObject.V === 'string', `cUSFM addNoticePartial: 'V' parameter should be a string not a '${typeof incompleteNoticeObject.V}': ${incompleteNoticeObject.V}`);
         }
-        // //parameterAssert(characterIndex !== undefined, "cUSFM addNoticePartial: 'characterIndex' parameter should be defined");
-        if (incompleteNoticeObject.characterIndex !== undefined) { //parameterAssert(typeof noticeObject.characterIndex === 'number', `cUSFM addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        // parameterAssert(characterIndex !== undefined, "cUSFM addNoticePartial: 'characterIndex' parameter should be defined");
+        if (incompleteNoticeObject.characterIndex !== undefined) {
+            //parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `cUSFM addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
         }
-        // //parameterAssert(excerpt !== undefined, "cUSFM addNoticePartial: 'excerpt' parameter should be defined");
-        if (incompleteNoticeObject.excerpt) { //parameterAssert(typeof noticeObject.excerpt === 'string', `cUSFM addNoticePartial: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        // parameterAssert(excerpt !== undefined, "cUSFM addNoticePartial: 'excerpt' parameter should be defined");
+        if (incompleteNoticeObject.excerpt) {
+            //parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `cUSFM addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt}`);
         }
-        //parameterAssert(noticeObject.location !== undefined, "cUSFM addNoticePartial: 'location' parameter should be defined");
-        //parameterAssert(typeof noticeObject.location === 'string', `cUSFM addNoticePartial: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
+        //parameterAssert(incompleteNoticeObject.location !== undefined, "cUSFM addNoticePartial: 'location' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.location === 'string', `cUSFM addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
 
         // Doublecheck -- we don’t want "Mismatched {}" per line, only per file
         // eslint-disable-next-line no-unused-vars
         const noticeObjectString = JSON.stringify(incompleteNoticeObject);
-        //parameterAssert(noticeObject.message.indexOf("Mismatched {}") === -1 || noticeObject.lineNumber === undefined, `checkUSFMText addNoticePartial: got bad notice: ${noticeObjectString}`);
+        //parameterAssert(incompleteNoticeObject.message.indexOf("Mismatched {}") === -1 || incompleteNoticeObject.lineNumber === undefined, `checkUSFMText addNoticePartial: got bad notice: ${noticeObjectString}`);
         //parameterAssert(noticeObjectString.indexOf('NONE') === -1 && noticeObjectString.indexOf('SPECIAL') === -1, `checkUSFMText addNoticePartial: 'NONE' & 'SPECIAL' shouldn’t make it thru to end user: ${noticeObjectString}`)
         if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkUSFMText ${incompleteNoticeObject.debugChain}`;
         usfmResultObject.noticeList.push({ ...incompleteNoticeObject, bookID, filename });
@@ -254,11 +300,17 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         //  which can be quite time-consuming on large, complex USFM files
         // functionLog("Running our BCS USFM grammar check (can take quite a while for a large book)…");
 
-        const grammarCheckResult = runBCSGrammarCheck('strict', bookID, fileText, filename, fileLocation, checkingOptions);
-        // NOTE: We haven’t figured out how to get ERRORS out of this parser yet
-        // debugLog(`  Finished our BCS USFM grammar check with ${grammarCheckResult.isValidUSFM} and ${grammarCheckResult.warnings.length} warnings.`);
-        addSuccessMessage(`Checked USFM Grammar (strict mode) ${grammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN’T validate)"}`);
-
+        let grammarCheckResult;
+        try {
+            grammarCheckResult = runBCSGrammarCheck('strict', bookID, fileText, filename, fileLocation, checkingOptions);
+            // NOTE: We haven’t figured out how to get ERRORS out of this parser yet
+            // debugLog(`  Finished our BCS USFM grammar check with ${grammarCheckResult.isValidUSFM} and ${grammarCheckResult.warnings.length} warnings.`);
+            addSuccessMessage(`Checked USFM Grammar (strict mode) ${grammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN’T validate)"}`);
+        } catch (e) {
+            userLog(`ourRunBCSGrammarCheck got error: ${e}`);
+            addNoticePartial({ priority: 400, message: "USFMGrammar failed to run", details: `for ${bookID} got ${e}`, location: fileLocation });
+            return;
+        }
         // if (!grammarCheckResult.isValidUSFM) // TEMP DEGRADE TO WARNING 994 -> 544 ................XXXXXXXXXXXXXXXXXXXXXX
         // Don’t do this since we add the actual error message elsewhere now
         // addNoticePartial({priority:994, '', '', `USFM3 Grammar Check (strict mode) doesn’t pass`, location:fileLocation});
@@ -282,12 +334,15 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             )
                 addNoticePartial({ priority: 102, message: `USFMGrammar: ${warningString}`, location: fileLocation });
 
+        /* Disable this extra check -- no real advantage gained I think
         if (!grammarCheckResult.isValidUSFM) {
+            userLog(`  Now running the BCS USFMGrammar RELAXED checker for ${repoCode} ${bookID}…`);
             const relaxedGrammarCheckResult = runBCSGrammarCheck('relaxed', bookID, fileText, filename, fileLocation);
             addSuccessMessage(`Checked USFM Grammar (relaxed mode) ${relaxedGrammarCheckResult.isValidUSFM ? "without errors" : " (but the USFM DIDN’T validate)"}`);
             if (!relaxedGrammarCheckResult.isValidUSFM)
                 addNoticePartial({ priority: 644, message: "USFM3 Grammar Check (relaxed mode) doesn’t pass either", location: fileLocation });
         }
+        */
     }
     // end of ourRunBCSGrammarCheck function
 
@@ -544,7 +599,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         //parameterAssert(typeof V === 'string', `cUSFM ourCheckTextField: 'V' parameter should be a string not a '${typeof V}'`);
         //parameterAssert(fieldType !== undefined, "cUSFM ourCheckTextField: 'fieldType' parameter should be defined");
         //parameterAssert(typeof fieldType === 'string', `cUSFM ourCheckTextField: 'fieldType' parameter should be a string not a '${typeof fieldType}'`);
-        //parameterAssert(fieldType === 'USFM' || fieldType === 'raw', `cUSFM ourCheckTextField: Unrecognized 'fieldType' parameter: ${fieldType}`);
+        //parameterAssert(fieldType === 'USFM line' || fieldType === 'raw USFM line', `cUSFM ourCheckTextField: Unrecognized 'fieldType' parameter: ${fieldType}`);
         //parameterAssert(fieldName !== undefined, "cUSFM ourCheckTextField: 'fieldName' parameter should be defined");
         //parameterAssert(typeof fieldName === 'string', `cUSFM ourCheckTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
         //parameterAssert(fieldName !== '', `cUSFM ourCheckTextField: ${fieldType} 'fieldName' parameter should be not be an empty string`);
@@ -592,19 +647,6 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
     // end of ourBasicFileChecks function
 
 
-    function checkUSFMCharacterFields(filename, fileText, fileLocation) {
-        // Check matched pairs
-        for (const punctSet of MATCHED_CHARACTER_FORMATTING_PAIRS) {
-            const opener = punctSet[0], closer = punctSet[1];
-            const lCount = countOccurrencesInString(fileText, opener);
-            const rCount = countOccurrencesInString(fileText, closer);
-            if (lCount !== rCount)
-                addNoticePartial({ priority: 873, message: `Mismatched ${opener}${closer} fields`, excerpt: `(left=${lCount.toLocaleString()}, right=${rCount.toLocaleString()})`, location: fileLocation });
-        }
-    }
-    // end of checkUSFMCharacterFields function
-
-
     /**
      *
      * @param {string} filename
@@ -622,26 +664,35 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         //              i.e., newLines can conceivably appear WITHIN a footnote for example.
         // functionLog(`checkUSFMFileContents(${filename}, ${fileText.length}, ${markerSet}, ${fileLocation}, ${JSON.stringify(checkingOptions)})…`);
 
-        // Check markers like \add ... \add*, \f .. \f*
-        checkUSFMCharacterFields(filename, fileText, fileLocation)
+        // NOTE: Better to do this for each line for most uW USFM files
+        // Check matched pairs of markers like \add ... \add*, \f .. \f*
+        if (!['en', 'hbo', 'el-x-koine'].includes(languageCode))
+            for (const punctSet of MATCHED_CHARACTER_FORMATTING_FILE_PAIRS_LIST) {
+                const opener = `\\${punctSet[0]} `, closer = `\\${punctSet[1]}`;
+                const lCount = countOccurrencesInString(fileText, opener);
+                const rCount = countOccurrencesInString(fileText, closer);
+                if (lCount !== rCount)
+                    addNoticePartial({ priority: 873, message: `Mismatched ${opener}${closer} fields`, details: `(opening=${lCount.toLocaleString()}, closing=${rCount.toLocaleString()})`, location: fileLocation });
+            }
+
 
         // Now do the general global checks (e.g., for general punctuation)
         ourBasicFileChecks(filename, fileText, fileLocation, checkingOptions);
 
-        for (const expectedMarker of EXPECTED_MARKERS)
+        for (const expectedMarker of EXPECTED_MARKERS_LIST)
             if (!markerSet.has(expectedMarker)
-                && (!expectedMarker.endsWith('1') || !markerSet.has(expectedMarker.substring(0, expectedMarker.length - 1))))
+                && (!expectedMarker.endsWith('1') || !markerSet.has(expectedMarker.slice(0, expectedMarker.length - 1))))
                 // NOTE: \mt(1) is required by Proskomma so increased this priority
                 addNoticePartial({ priority: expectedMarker === 'mt1' ? 921 : 519, message: "Missing expected USFM line", excerpt: `missing \\${expectedMarker}`, location: fileLocation });
         if (books.isExtraBookID(bookID))
-            for (const expectedMarker of EXPECTED_PERIPHERAL_BOOK_MARKERS)
+            for (const expectedMarker of EXPECTED_PERIPHERAL_BOOK_MARKER_LIST)
                 if (!markerSet.has(expectedMarker))
                     addNoticePartial({ priority: 517, message: "Missing expected USFM line", excerpt: `missing \\${expectedMarker}`, location: fileLocation });
                 else
-                    for (const expectedMarker of EXPECTED_BIBLE_BOOK_MARKERS)
+                    for (const expectedMarker of EXPECTED_BIBLE_BOOK_MARKERS_LIST)
                         if (!markerSet.has(expectedMarker))
                             addNoticePartial({ priority: 518, message: "Missing expected USFM line", excerpt: `missing \\${expectedMarker}`, location: fileLocation });
-        for (const deprecatedMarker of DEPRECATED_MARKERS)
+        for (const deprecatedMarker of DEPRECATED_MARKERS_LIST)
             if (markerSet.has(deprecatedMarker))
                 addNoticePartial({ priority: 218, message: "Using deprecated USFM marker", excerpt: `\\${deprecatedMarker}`, location: fileLocation });
     }
@@ -668,43 +719,55 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
 
         // Check for invalid character combinations
         if (languageCode === 'hbo') {
-            let match;
-            // NOTE: Use else statements so we only get ONE of these errors
-            if ((match = BAD_HEBREW_SIN_SHIN_DOT_REGEX.exec(rest))) { // it’s null if no matches
-                debugLog(`checkUSFMLineText: ${bookID} ${C}:${V} line ${lineNumber} got BAD character before shin/sin dot match: ${match.length} ${JSON.stringify(match)}`);
-                const characterIndex = rest.indexOf(match[0][0]);
+            let regexMatchObject;
+            // NOTE: Use else statements so we only get ONE of these types of errors
+            // NOTE: We have no while loops, so only get one error per line, even if there's multiple errors!!!
+            if ((regexMatchObject = BAD_HEBREW_SIN_SHIN_DOT_REGEX.exec(rest))) { // it’s null if no matches
+                debugLog(`checkUSFMLineText 865: ${bookID} ${C}:${V} line ${lineNumber} got BAD character before shin/sin dot regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
+                const characterIndex = regexMatchObject.index;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-                addNoticePartial({ priority: 865, message: "Unexpected Hebrew character before shin/sin dot", details: `found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+                addNoticePartial({ priority: 865, message: "Unexpected Hebrew character before shin/sin dot", details: `found ${regexMatchObject.length} '${regexMatchObject}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
-            else if ((match = BAD_HEBREW_VOWEL_DAGESH_REGEX.exec(rest))) { // it’s null if no matches
-                // debugLog(`checkUSFMLineText: ${bookID} ${C}:${V} line ${lineNumber} got BAD dagesh after vowel character order match: ${match.length} ${JSON.stringify(match)}`);
-                const characterIndex = rest.indexOf(match[0][0]);
+            else if ((regexMatchObject = BAD_HEBREW_VOWEL_DAGESH_REGEX.exec(rest))) { // it’s null if no matches
+                // debugLog(`checkUSFMLineText 864: ${bookID} ${C}:${V} line ${lineNumber} got BAD dagesh after vowel character order regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
+                const characterIndex = regexMatchObject.index;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-                addNoticePartial({ priority: 864, message: "Unexpected Hebrew dagesh after vowel", details: `found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+                addNoticePartial({ priority: 864, message: "Unexpected Hebrew dagesh after vowel", details: `found ${regexMatchObject.length} '${regexMatchObject}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
-            else if ((match = BAD_HEBREW_DAGESH_MAPIQ_REGEX.exec(rest))) { // it’s null if no matches
-                debugLog(`checkUSFMLineText: ${bookID} ${C}:${V} line ${lineNumber} got BAD character before dagesh match: ${match.length} ${JSON.stringify(match)}`);
-                const characterIndex = rest.indexOf(match[0][0]);
+            else if ((regexMatchObject = BAD_HEBREW_DAGESH_MAPIQ_REGEX.exec(rest))) { // it’s null if no matches
+                debugLog(`checkUSFMLineText 863: ${bookID} ${C}:${V} line ${lineNumber} got BAD character before dagesh regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
+                const characterIndex = regexMatchObject.index;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-                addNoticePartial({ priority: 863, message: "Unexpected Hebrew character before dagesh", details: `found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+                addNoticePartial({ priority: 863, message: "Unexpected Hebrew character before dagesh or mappiq", details: `found ${regexMatchObject.length} '${regexMatchObject}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
-            else if ((match = BAD_HEBREW_CANTILLATION_DAGESH_REGEX.exec(rest))) { // it’s null if no matches
-                debugLog(`checkUSFMLineText: ${bookID} ${C}:${V} line ${lineNumber} got BAD cantillation mark character before dagesh match: ${match.length} ${JSON.stringify(match)}`);
-                const characterIndex = rest.indexOf(match[0][0]);
+            else if ((regexMatchObject = BAD_HEBREW_CANTILLATION_DAGESH_REGEX.exec(rest))) { // it’s null if no matches
+                debugLog(`checkUSFMLineText 862: ${bookID} ${C}:${V} line ${lineNumber} got BAD cantillation mark character before dagesh regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
+                const characterIndex = regexMatchObject.index;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-                addNoticePartial({ priority: 862, message: "Unexpected Hebrew cantillation mark before dagesh", details: `found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+                addNoticePartial({ priority: 862, message: "Unexpected Hebrew cantillation mark before dagesh", details: `found ${regexMatchObject.length} '${regexMatchObject}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
-            else if ((match = BAD_HEBREW_CANTILLATION_VOWEL_REGEX.exec(rest))) { // it’s null if no matches
-                // debugLog(`checkUSFMLineText: ${bookID} ${C}:${V} line ${lineNumber} got BAD vowel after cantillation mark character order match: ${match.length} ${JSON.stringify(match)}`);
-                const characterIndex = rest.indexOf(match[0][0]);
+            else if ((regexMatchObject = BAD_HEBREW_CANTILLATION_VOWEL_REGEX.exec(rest)) // it’s null if no matches
+                // These are the actual accents that occur before the hiriq vowel (5B4) -- others could conceivable occur also
+                && ((regexMatchObject[0] !== '\u0591\u05B4' && regexMatchObject[0] !== '\u0596\u05B4' && regexMatchObject[0] !== '\u059B\u05B4' && regexMatchObject[0] !== '\u05A3\u05B4' && regexMatchObject[0] !== '\u05A5\u05B4' && regexMatchObject[0] !== '\u05A7\u05B4' && regexMatchObject[0] !== '\u05AB\u05B4')
+                    || rest.indexOf('וּשָׁל') === -1)) { // Yerushalayim has an exception -- a vowel after a cantillation mark
+                // debugLog(`checkUSFMLineText 861 regexMatchObject: ${typeof regexMatchObject} (${regexMatchObject.length}) '${regexMatchObject}' ${JSON.stringify(regexMatchObject)}`);
+                // debugLog(`checkUSFMLineText 861 regexMatchObject: ${typeof regexMatchObject} ${Object.keys(regexMatchObject)}`); // object with keys: 0,index,input,groups
+                // debugLog(`checkUSFMLineText 861 regexMatchObject: ${typeof regexMatchObject[0]} (${regexMatchObject[0].length}) '${regexMatchObject[0]}'  ${typeof regexMatchObject[0][0]} (${regexMatchObject[0][0].length}) '${regexMatchObject[0][0]}'`);
+                // debugLog(`checkUSFMLineText 861 regexMatchObject: ${regexMatchObject[0] !== '\u0591\u05B4'} ${regexMatchObject[0] !== '\u0596\u05B4'} ${rest.indexOf('וּשָׁל') === -1} => ${(regexMatchObject[0] !== '\u0591\u05B4' && regexMatchObject[0] !== '\u0596\u05B4') || rest.indexOf('וּשָׁל') === -1} '${rest}'`);
+                debugLog(`checkUSFMLineText 861: ${bookID} ${C}:${V} line ${lineNumber} got BAD vowel after cantillation mark character order regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
+                const characterIndex = regexMatchObject.index;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-                addNoticePartial({ priority: 861, message: "Unexpected Hebrew vowel after cantillation mark", details: `found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+                addNoticePartial({ priority: 861, message: "Unexpected Hebrew vowel after cantillation mark", details: `found ${regexMatchObject.length} '${regexMatchObject}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
-            else if ((match = BAD_HEBREW_FINAL_CONSONANT_REGEX.exec(rest))) { // it’s null if no matches
-                debugLog(`checkUSFMLineText: ${bookID} ${C}:${V} line ${lineNumber} got BAD final consonant match: ${match.length} ${JSON.stringify(match)}`);
-                const characterIndex = rest.indexOf(match[0][0]);
+            else if ((regexMatchObject = BAD_HEBREW_FINAL_CONSONANT_REGEX.exec(rest))) { // it’s null if no matches
+                // debugLog(`checkUSFMLineText 860 regexMatchObject: ${typeof regexMatchObject} (${regexMatchObject.length}) '${regexMatchObject}' ${JSON.stringify(regexMatchObject)}`);
+                // debugLog(`checkUSFMLineText 860 regexMatchObject: ${typeof regexMatchObject} ${Object.keys(regexMatchObject)}`); // object with keys: 0,index,input,groups
+                // debugLog(`checkUSFMLineText 860 regexMatchObject: ${typeof regexMatchObject[0]} (${regexMatchObject[0].length}) '${regexMatchObject[0]}'  ${typeof regexMatchObject[0][0]} (${regexMatchObject[0][0].length}) '${regexMatchObject[0][0]}'`);
+                // debugLog(`checkUSFMLineText 860: ${bookID} ${C}:${V} line ${lineNumber} got BAD final consonant regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
+                const characterIndex = regexMatchObject.index;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-                addNoticePartial({ priority: 860, message: "Unexpected Hebrew final consonant not at word end", details: `found ${match.length} '${match}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+                if (excerpt.indexOf('ןׄ') === -1) // Allow this one exception for ְׄ⁠אַׄהֲׄרֹ֛ׄןׄ in Num 3:39
+                    addNoticePartial({ priority: 860, message: "Unexpected Hebrew final consonant not at word end", details: `found ${regexMatchObject.length} '${regexMatchObject}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
         }
 
@@ -724,14 +787,17 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         // Check that no \f or \x markers follow a space
         if ((characterIndex = rest.indexOf(' \\f ')) !== -1) {
             const badCount = countOccurrencesInString(rest, ' \\f ');
-            const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-            addNoticePartial({ priority: 443, message: "Shouldn’t have a footnote after a space", details: badCount > 1 ? details + `${badCount} occurrences found in line` : details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+            if (badCount > 1 || marker !== 'v' || characterIndex > 3) { // Accept it if it seems to be after the space after a verse number
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
+                addNoticePartial({ priority: 443, message: "Shouldn’t have a footnote after a space", details: badCount > 1 ? details + `${badCount} occurrences found in line` : details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+            }
         }
         if ((characterIndex = rest.indexOf(' \\x ')) !== -1) {
             const badCount = countOccurrencesInString(rest, ' \\x ');
-            const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
+            if (badCount > 1 || marker !== 'v' || characterIndex > 3) { // Accept it if it seems to be after the space after a verse number
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
             addNoticePartial({ priority: 442, message: "Shouldn’t have a cross-reference after a space", details: badCount > 1 ? details + `${badCount} occurrences found in line` : details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
-        }
+        }}
 
         // Remove any self-closed milestones and internal \v markers
         // NOTE: replaceAll() is not generally available in browsers yet, so need to use RegExps
@@ -741,7 +807,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
 
         // Remove any simple character markers
         // NOTE: replaceAll() is not generally available in browsers yet, so need to use RegExps
-        for (const charMarker of SIMPLE_INTERNAL_MARKERS) {
+        for (const charMarker of SIMPLE_INTERNAL_MARKERS_LIST) {
             // oldTODO: Move the regEx creation so it’s only done once -- not for every line!!!
             // const startRegex = new RegExp(`\\${charMarker} `, 'g');
             // // eslint-disable-next-line no-useless-escape
@@ -764,23 +830,23 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             dataAssert(ixWordEnd >= 1, `Why1 is w| = ${ixWordEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
             ixEnd = adjustedRest.indexOf('\\w*');
             if (ixEnd >= 0)
-                adjustedRest = adjustedRest.substring(0, ixWordEnd) + adjustedRest.substring(ixEnd + 3, adjustedRest.length);
+                adjustedRest = adjustedRest.slice(0, ixWordEnd) + adjustedRest.slice(ixEnd + 3, adjustedRest.length);
             else dataAssert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
         } else if (marker === 'zaln-s') { // Remove first \zaln-s milestone (if marker == zaln-s)
             ixEnd = adjustedRest.indexOf('\\*');
             if (ixEnd >= 0)
-                adjustedRest = adjustedRest.substring(ixEnd + 2, adjustedRest.length);
+                adjustedRest = adjustedRest.slice(ixEnd + 2, adjustedRest.length);
             else dataAssert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
         } else if (marker === 'k-s') { // Remove first \k-s milestone (if marker == k-s)
             ixEnd = adjustedRest.indexOf('\\*');
             if (ixEnd >= 0)
-                adjustedRest = adjustedRest.substring(ixEnd + 2, adjustedRest.length);
+                adjustedRest = adjustedRest.slice(ixEnd + 2, adjustedRest.length);
             else dataAssert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
         } else if (marker === 'f') { // Handle first footnote (if marker == f)
             ixEnd = adjustedRest.indexOf('\\f*');
             const startIndex = adjustedRest.startsWith('+ ') ? 2 : 0;
             if (ixEnd >= 0)
-                adjustedRest = adjustedRest.substring(startIndex, ixEnd) + adjustedRest.substring(ixEnd + 3, adjustedRest.length);
+                adjustedRest = adjustedRest.slice(startIndex, ixEnd) + adjustedRest.slice(ixEnd + 3, adjustedRest.length);
             else {
                 // dataAssert(false, `Why is ixEnd = ${ixEnd}? ${languageCode} ${bookID} ${C}:${V} ${lineNumber} '\\${marker}'`);
                 addNoticePartial({ priority: 312, message: 'Possible unclosed footnote', details, lineNumber, C, V, location: lineLocation });
@@ -801,7 +867,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             // debugLog(`  ${nextZIndex} and ${ixZEnd}`);
             if (ixZEnd >= 0) {
                 // dataAssert(ixZEnd > nextZIndex, `Expected closure at ${ixZEnd} to be AFTER \\zaln-s (${nextZIndex})`);
-                adjustedRest = adjustedRest.substring(0, nextZIndex) + adjustedRest.substring(ixZEnd + 2, adjustedRest.length);
+                adjustedRest = adjustedRest.slice(0, nextZIndex) + adjustedRest.slice(ixZEnd + 2, adjustedRest.length);
                 // debugLog(`  Now '${adjustedRest}'`);
             } else {
                 userLog(`\\zaln-s seems unclosed: 'adjustedRest' from '${rest}'`);
@@ -823,7 +889,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             const ixWEnd = adjustedRest.indexOf('\\w*');
             if (ixWEnd >= 0) {
                 dataAssert(ixWEnd > nextWIndex, `Expected closure at ${ixWEnd} to be AFTER \\w (${nextWIndex})`);
-                adjustedRest = adjustedRest.substring(0, nextWIndex) + adjustedRest.substring(nextWIndex + 3, ixWordEnd) + adjustedRest.substring(ixWEnd + 3, adjustedRest.length);
+                adjustedRest = adjustedRest.slice(0, nextWIndex) + adjustedRest.slice(nextWIndex + 3, ixWordEnd) + adjustedRest.slice(ixWEnd + 3, adjustedRest.length);
                 // debugLog(`After removing w field, got '${adjustedRest}'`);
             } else {
                 userLog(`\\w seems unclosed: 'adjustedRest' from '${rest}'`);
@@ -844,7 +910,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             const ixWEnd = adjustedRest.indexOf('\\+w*');
             if (ixWEnd >= 0) {
                 dataAssert(ixWEnd > nextWIndex, `Expected closure at ${ixWEnd} to be AFTER \\+w (${nextWIndex})`);
-                adjustedRest = adjustedRest.substring(0, nextWIndex) + adjustedRest.substring(nextWIndex + 4, ixWordEnd) + adjustedRest.substring(ixWEnd + 4, adjustedRest.length);
+                adjustedRest = adjustedRest.slice(0, nextWIndex) + adjustedRest.slice(nextWIndex + 4, ixWordEnd) + adjustedRest.slice(ixWEnd + 4, adjustedRest.length);
                 // debugLog(`After removing w field, got '${adjustedRest}'`);
             } else {
                 userLog(`\\+w seems unclosed: 'adjustedRest' from '${rest}'`);
@@ -857,7 +923,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             const ixFEnd = adjustedRest.indexOf('\\f*');
             if (ixFEnd >= 0) {
                 dataAssert(ixFEnd > nextWIndex, `Expected closure at ${ixFEnd} to be AFTER \\w (${nextFIndex})`);
-                adjustedRest = `${adjustedRest.substring(0, nextFIndex)} ${adjustedRest.substring(nextFIndex + 5, ixFEnd)}${adjustedRest.substring(ixFEnd + 3, adjustedRest.length)}`;
+                adjustedRest = `${adjustedRest.slice(0, nextFIndex)} ${adjustedRest.slice(nextFIndex + 5, ixFEnd)}${adjustedRest.slice(ixFEnd + 3, adjustedRest.length)}`;
                 // functionLog(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
                 // debugLog(`After removing footnote: '${adjustedRest}'`);
             } else {
@@ -926,15 +992,15 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             // Updates the global list of notices
 
             // functionLog(`checkUSFMText ourCheckStrongsField(${lineNumber}, ${C}:${V}, ${marker}, ${fieldName}, (${fieldText.length}) '${fieldText}', ${location}, ${JSON.stringify(checkingOptions)})`);
-            parameterAssert(marker !== undefined, "checkUSFMText ourCheckStrongsField: 'marker' parameter should be defined");
-            parameterAssert(typeof marker === 'string', `checkUSFMText ourCheckStrongsField: 'marker' parameter should be a string not a '${typeof marker}': ${marker}`);
-            parameterAssert(fieldName !== undefined, "checkUSFMText ourCheckStrongsField: 'fieldName' parameter should be defined");
-            parameterAssert(typeof fieldName === 'string', `checkUSFMText ourCheckStrongsField: 'fieldName' parameter should be a string not a '${typeof fieldName}': ${fieldName}`);
-            parameterAssert(fieldText !== undefined, "checkUSFMText ourCheckStrongsField: 'fieldText' parameter should be defined");
-            parameterAssert(typeof fieldText === 'string', `checkUSFMText ourCheckStrongsField: 'fieldText' parameter should be a string not a '${typeof fieldText}': ${fieldText}`);
-            parameterAssert(checkingOptions !== undefined, "checkUSFMText ourCheckStrongsField: 'checkingOptions' parameter should be defined");
+            //parameterAssert(marker !== undefined, "checkUSFMText ourCheckStrongsField: 'marker' parameter should be defined");
+            //parameterAssert(typeof marker === 'string', `checkUSFMText ourCheckStrongsField: 'marker' parameter should be a string not a '${typeof marker}': ${marker}`);
+            //parameterAssert(fieldName !== undefined, "checkUSFMText ourCheckStrongsField: 'fieldName' parameter should be defined");
+            //parameterAssert(typeof fieldName === 'string', `checkUSFMText ourCheckStrongsField: 'fieldName' parameter should be a string not a '${typeof fieldName}': ${fieldName}`);
+            //parameterAssert(fieldText !== undefined, "checkUSFMText ourCheckStrongsField: 'fieldText' parameter should be defined");
+            //parameterAssert(typeof fieldText === 'string', `checkUSFMText ourCheckStrongsField: 'fieldText' parameter should be a string not a '${typeof fieldText}': ${fieldText}`);
+            //parameterAssert(checkingOptions !== undefined, "checkUSFMText ourCheckStrongsField: 'checkingOptions' parameter should be defined");
             if (checkingOptions !== undefined) {
-                parameterAssert(typeof checkingOptions === 'object', `checkUSFMText ourCheckStrongsField: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
+                //parameterAssert(typeof checkingOptions === 'object', `checkUSFMText ourCheckStrongsField: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
             }
 
             let adjustedLanguageCode = languageCode; // This is the language code of the resource with the link
@@ -978,62 +1044,62 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
          */
         async function checkWAttributes(wContents) {
             // functionLog(`checkWAttributes(${wContents})…`);
-            let regexResultArray, attributeCounter = 0;
-            while ((regexResultArray = ATTRIBUTE_REGEX.exec(wContents))) {
+            let regexMatchObject, attributeCounter = 0;
+            while ((regexMatchObject = ATTRIBUTE_REGEX.exec(wContents))) {
                 attributeCounter += 1;
-                // debugLog(`  Got attribute Regex in \\w: ${attributeCounter} '${JSON.stringify(regexResultArray2)}`);
-                const attributeName = regexResultArray[1], attributeValue = regexResultArray[2];
+                // debugLog(`  Got attribute Regex in \\w: ${attributeCounter} '${JSON.stringify(regexMatchObject2)}`);
+                const attributeName = regexMatchObject[1], attributeValue = regexMatchObject[2];
                 if (repoCode === 'UHB' || repoCode === 'UGNT') {
                     if (attributeCounter === 1) {
                         if (attributeName !== 'lemma')
-                            addNoticePartial({ priority: 857, message: "Unexpected first original \\w attribute", details: "expected 'lemma'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                            addNoticePartial({ priority: 857, message: "Unexpected first original \\w attribute", details: "expected 'lemma'", lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                     } else if (attributeCounter === 2) {
                         if (attributeName !== 'strong')
-                            addNoticePartial({ priority: 856, message: "Unexpected second original \\w attribute", details: "expected 'strong'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                            addNoticePartial({ priority: 856, message: "Unexpected second original \\w attribute", details: "expected 'strong'", lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                     } else if (attributeCounter === 3) {
                         if (attributeName !== 'x-morph')
-                            addNoticePartial({ priority: 855, message: "Unexpected third original \\w attribute", details: "expected 'x-morph'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                            addNoticePartial({ priority: 855, message: "Unexpected third original \\w attribute", details: "expected 'x-morph'", lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                     } else if (attributeCounter === 4) {
                         if (attributeName !== 'x-tw') // we can have TWO of these -- THREE EVEN in EXO 15:23 and 1KI 21:9!!!
-                            addNoticePartial({ priority: 854, message: "Unexpected fourth original \\w attribute", details: "expected 'x-tw'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                            addNoticePartial({ priority: 854, message: "Unexpected fourth original \\w attribute", details: "expected 'x-tw'", lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                     } else if (attributeCounter === 5) {
                         if (attributeName !== 'x-tw')
-                            addNoticePartial({ priority: 854, message: "Unexpected fifth original \\w attribute", details: "expected second 'x-tw'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                            addNoticePartial({ priority: 854, message: "Unexpected fifth original \\w attribute", details: "expected second 'x-tw'", lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                     } else if (attributeCounter === 6) {
                         if (attributeName !== 'x-tw')
-                            addNoticePartial({ priority: 854, message: "Unexpected sixth original \\w attribute", details: "expected third 'x-tw'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                            addNoticePartial({ priority: 854, message: "Unexpected sixth original \\w attribute", details: "expected third 'x-tw'", lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                     } else // #7 or more
-                        addNoticePartial({ priority: 853, message: "Unexpected extra original \\w attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                        addNoticePartial({ priority: 853, message: "Unexpected extra original \\w attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                     if (attributeName === 'lemma' && repoCode === 'UHB') {
-                        const match = HEBREW_CANTILLATION_REGEX.exec(attributeValue);
-                        if (match) { // it’s null if no matches
-                            // debugLog(`Got cantillation match: ${match.length} ${JSON.stringify(match)}`);
-                            addNoticePartial({ priority: 905, message: "Unexpected Hebrew cantillation mark in lemma field", details: `found ${match.length} '${match}'`, lineNumber, C, V, excerpt: attributeValue, location: lineLocation });
+                        const regexMatchObject = HEBREW_CANTILLATION_REGEX.exec(attributeValue);
+                        if (regexMatchObject) { // it’s null if no matches
+                            // debugLog(`Got cantillation regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
+                            addNoticePartial({ priority: 905, message: "Unexpected Hebrew cantillation mark in lemma field", details: `found ${regexMatchObject.length} '${regexMatchObject}'`, lineNumber, C, V, excerpt: attributeValue, location: lineLocation });
                         }
                     } else if (attributeName === 'x-morph'
                         && ((repoCode === 'UHB' && !attributeValue.startsWith('He,') && !attributeValue.startsWith('Ar,'))
                             || (repoCode === 'UGNT' && !attributeValue.startsWith('Gr,'))))
-                        addNoticePartial({ priority: 852, message: "Unexpected original \\w x-morph language prefix", details: "Expected 'He,' 'Ar,' or 'Gr,'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                        addNoticePartial({ priority: 852, message: "Unexpected original \\w x-morph language prefix", details: "Expected 'He,' 'Ar,' or 'Gr,'", lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                     else if (attributeName === 'x-tw')
                         await ourCheckNotesLinksToOutside(lineNumber, C, V, marker, attributeValue, lineLocation, checkingOptions);
                 } else { // a translation -- perhaps LT or ST, but not UHB or UGNT
                     if (attributeCounter === 1) {
                         if (attributeName !== 'x-occurrence')
-                            addNoticePartial({ priority: 848, message: "Unexpected first translation \\w attribute", details: "expected 'x-occurrence'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                            addNoticePartial({ priority: 848, message: "Unexpected first translation \\w attribute", details: "expected 'x-occurrence'", lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                     } else if (attributeCounter === 2) {
                         if (attributeName !== 'x-occurrences')
-                            addNoticePartial({ priority: 847, message: "Unexpected second translation \\w attribute", details: "expected 'x-occurrences'", lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                            addNoticePartial({ priority: 847, message: "Unexpected second translation \\w attribute", details: "expected 'x-occurrences'", lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                     } else // #3 or more
-                        addNoticePartial({ priority: 846, message: "Unexpected extra translation \\w attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                        addNoticePartial({ priority: 846, message: "Unexpected extra translation \\w attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                 }
                 if (attributeName === 'strong' || attributeName === 'x-strong') // UHB/UGNT have strong, ULT/UST have x-strong
                     await ourCheckStrongsField(lineNumber, C, V, marker, attributeName, attributeValue, lineLocation, checkingOptions);
             }
             if (repoCode === 'UHB' || repoCode === 'UGNT') {
                 if (attributeCounter < 3)
-                    addNoticePartial({ priority: 837, message: "Seems too few original \\w attributes", details: `expected 3-4 attributes but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation });
+                    addNoticePartial({ priority: 837, message: "Seems too few original \\w attributes", details: `expected 3-4 attributes but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexMatchObject1[0], location: lineLocation });
             } else if (attributeCounter < 2)
-                addNoticePartial({ priority: 836, message: "Seems too few translation \\w attributes", details: `expected two attributes but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation });
+                addNoticePartial({ priority: 836, message: "Seems too few translation \\w attributes", details: `expected two attributes but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexMatchObject1[0], location: lineLocation });
         }
         // end of checkWAttributes function
 
@@ -1083,7 +1149,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                     // debugLog("Fetched fileContent for", repoName, filename, typeof originalUSFM, originalUSFM.length);
                 } catch (gcUHBerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
                     console.error(`getOriginalPassage(${bookID}, ${C}:${V}, ${JSON.stringify(checkingOptions)}) failed to load UHB`, username, originalLanguageRepoCode, filename, branch, gcUHBerror.message);
-                    addNoticePartial({ priority: 601, message: "Unable to load file", details: `username=${username} error=${gcUHBerror}`, filename, location: ourLocation, extra: originalLanguageRepoName });
+                    addNoticePartial({ priority: 601, message: "Unable to load file", details: `error=${gcUHBerror}`, username, filename, location: ourLocation, extra: originalLanguageRepoName });
                 }
             } else if (originalLanguageRepoCode === 'UGNT') {
                 try {
@@ -1091,7 +1157,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                     // debugLog("Fetched fileContent for", repoName, filename, typeof originalUSFM, originalUSFM.length);
                 } catch (gcUGNTerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
                     console.error(`getOriginalPassage(${bookID}, ${C}:${V}, ${JSON.stringify(checkingOptions)}) failed to load UGNT`, username, originalLanguageRepoCode, filename, branch, gcUGNTerror.message);
-                    addNoticePartial({ priority: 601, message: "Unable to load file", details: `username=${username} error=${gcUGNTerror}`, filename, location: ourLocation, extra: originalLanguageRepoName });
+                    addNoticePartial({ priority: 601, message: "Unable to load file", details: `error=${gcUGNTerror}`, username, filename, location: ourLocation, extra: originalLanguageRepoName });
                 }
             }
             if (!originalUSFM) {
@@ -1116,7 +1182,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                 }
                 if (foundChapter && !foundVerse && bookLine.startsWith(`\\v ${V}`)) {
                     foundVerse = true;
-                    bookLine = bookLine.substring(3 + V.length); // Delete verse number so below bit doesn’t fail
+                    bookLine = bookLine.slice(3 + V.length); // Delete verse number so below bit doesn’t fail
                 }
                 if (foundVerse) {
                     if (bookLine.startsWith('\\v ') || bookLine.startsWith('\\c '))
@@ -1128,11 +1194,11 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             // debugLog(`getOriginalWordLists: Got verse words: '${wLinesVerseText}'`);
 
             // Get each \w field out
-            let regexResultArray1;
-            while ((regexResultArray1 = W_FIELDS_REGEX.exec(wLinesVerseText))) {
-                // debugLog(`Got ${repoCode} wFields Regex in ${bookID} ${C}:${V}: (${regexResultArray1.length}) ${JSON.stringify(regexResultArray1)}`);
+            let regexMatchObject1;
+            while ((regexMatchObject1 = W_FIELDS_REGEX.exec(wLinesVerseText))) {
+                // debugLog(`Got ${repoCode} wFields Regex in ${bookID} ${C}:${V}: (${regexMatchObject1.length}) ${JSON.stringify(regexMatchObject1)}`);
                 // eslint-disable-next-line no-unused-vars
-                const [_totalLink, word, lemma, strongs, morph] = regexResultArray1;
+                const [_totalLink, word, lemma, strongs, morph] = regexMatchObject1;
                 verseWordList.push(word);
                 verseWordObjectList.push({ lemma, strongs, morph });
             }
@@ -1152,36 +1218,36 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             // functionLog(`checkWAttributes(${zalnContents})…`);
             // The parameter normally starts with a |
             dataAssert(repoCode !== 'UHB' && repoCode !== 'UGNT', `checkZALNAttributes did not expect an original language repo: '${repoCode}'`);
-            let zalnSuggestion, regexResultArray, attributeCounter = 0;
+            let zalnSuggestion, regexMatchObject, attributeCounter = 0;
             const attributes = {};
-            while ((regexResultArray = ATTRIBUTE_REGEX.exec(zalnContents))) {
+            while ((regexMatchObject = ATTRIBUTE_REGEX.exec(zalnContents))) {
                 attributeCounter += 1;
-                // debugLog(`  Got attribute Regex in \\zaln-s: ${attributeCounter} '${JSON.stringify(regexResultArray2)}`);
-                const attributeName = regexResultArray[1], attributeValue = regexResultArray[2];
+                // debugLog(`  Got attribute Regex in \\zaln-s: ${attributeCounter} '${JSON.stringify(regexMatchObject2)}`);
+                const attributeName = regexMatchObject[1], attributeValue = regexMatchObject[2];
                 attributes[attributeName] = attributeValue;
                 if (attributeCounter === 1) {
                     if (attributeName !== 'x-strong')
-                        addNoticePartial({ priority: 830, message: "Unexpected first \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                        addNoticePartial({ priority: 830, message: "Unexpected first \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                 } else if (attributeCounter === 2) {
                     if (attributeName !== 'x-lemma')
-                        addNoticePartial({ priority: 829, message: "Unexpected second \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                        addNoticePartial({ priority: 829, message: "Unexpected second \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                 } else if (attributeCounter === 3) {
                     if (attributeName !== 'x-morph')
-                        addNoticePartial({ priority: 828, message: "Unexpected third \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                        addNoticePartial({ priority: 828, message: "Unexpected third \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                 } else if (attributeCounter === 4) {
                     if (attributeName !== 'x-occurrence')
-                        addNoticePartial({ priority: 827, message: "Unexpected fourth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                        addNoticePartial({ priority: 827, message: "Unexpected fourth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                 } else if (attributeCounter === 5) {
                     if (attributeName !== 'x-occurrences')
-                        addNoticePartial({ priority: 826, message: "Unexpected fifth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                        addNoticePartial({ priority: 826, message: "Unexpected fifth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                 } else if (attributeCounter === 6) {
                     if (attributeName !== 'x-content')
-                        addNoticePartial({ priority: 825, message: "Unexpected sixth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                        addNoticePartial({ priority: 825, message: "Unexpected sixth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
                 } else // #7 or more
-                    addNoticePartial({ priority: 833, message: "Unexpected extra \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexResultArray[0], location: lineLocation });
+                    addNoticePartial({ priority: 833, message: "Unexpected extra \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
             }
             if (attributeCounter < 6)
-                addNoticePartial({ priority: 834, message: "Seems too few translation \\zaln-s attributes", details: `expected six attributes but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation });
+                addNoticePartial({ priority: 834, message: "Seems too few translation \\zaln-s attributes", details: `expected six attributes but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexMatchObject1[0], location: lineLocation });
             // debugLog(`checkZALNAttributes has ${bookID} ${C}:${V} attributes: ${JSON.stringify(attributes)}`);
 
             // The Strongs, lemma and morph fields are copied from the original UHB/UGNT files
@@ -1243,34 +1309,34 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         }
         // end of checkZALNAttributes function
 
-        let suggestion, regexResultArray1;
-        while ((regexResultArray1 = W_REGEX.exec(adjustedRest))) {
-            // debugLog(`Got ${ repoCode } \\w Regex in ${ C }: ${ V } line: '${JSON.stringify(regexResultArray1)}`);
-            await checkWAttributes(regexResultArray1[1]); // The only call of this function
+        let suggestion, regexMatchObject1;
+        while ((regexMatchObject1 = W_REGEX.exec(adjustedRest))) {
+            // debugLog(`Got ${ repoCode } \\w Regex in ${ C }: ${ V } line: '${JSON.stringify(regexMatchObject1)}`);
+            await checkWAttributes(regexMatchObject1[1]); // The only call of this function
         }
-        let regexResultArray2;
-        while ((regexResultArray1 = KS_REGEX.exec(adjustedRest))) {
-            // debugLog(`Got ${repoCode} \\k-s Regex in ${C}:${V} line: '${JSON.stringify(regexResultArray1)}`);
+        let regexMatchObject2;
+        while ((regexMatchObject1 = KS_REGEX.exec(adjustedRest))) {
+            // debugLog(`Got ${repoCode} \\k-s Regex in ${C}:${V} line: '${JSON.stringify(regexMatchObject1)}`);
             dataAssert(repoCode === 'UHB' || repoCode === 'UGNT', `checkUSFMLineAttributes expected an original language repo not '${repoCode}'`);
             let attributeCounter = 0;
-            while ((regexResultArray2 = ATTRIBUTE_REGEX.exec(regexResultArray1[1]))) {
+            while ((regexMatchObject2 = ATTRIBUTE_REGEX.exec(regexMatchObject1[1]))) {
                 attributeCounter += 1;
-                // debugLog(`  Got attribute Regex in \\k-s: ${attributeCounter} '${JSON.stringify(regexResultArray2)}`);
-                const attributeName = regexResultArray2[1]; //, attributeValue = regexResultArray2[2];
+                // debugLog(`  Got attribute Regex in \\k-s: ${attributeCounter} '${JSON.stringify(regexMatchObject2)}`);
+                const attributeName = regexMatchObject2[1]; //, attributeValue = regexMatchObject2[2];
                 if (attributeCounter === 1) {
                     if (attributeName !== 'x-tw')
-                        addNoticePartial({ priority: 839, message: "Unexpected first \\k-s attribute", details: "expected 'x-tw'", lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
+                        addNoticePartial({ priority: 839, message: "Unexpected first \\k-s attribute", details: "expected 'x-tw'", lineNumber, C, V, excerpt: regexMatchObject2[0], location: lineLocation });
                 } else // #2 or more
-                    addNoticePartial({ priority: 838, message: "Unexpected extra \\k-s attribute", details, lineNumber, C, V, excerpt: regexResultArray2[0], location: lineLocation });
+                    addNoticePartial({ priority: 838, message: "Unexpected extra \\k-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject2[0], location: lineLocation });
             }
             if (attributeCounter < 1)
-                addNoticePartial({ priority: 835, message: "Seems too few original \\k-s attributes", details: `expected one attribute but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexResultArray1[0], location: lineLocation });
+                addNoticePartial({ priority: 835, message: "Seems too few original \\k-s attributes", details: `expected one attribute but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexMatchObject1[0], location: lineLocation });
         }
-        while ((regexResultArray1 = ZALN_S_REGEX.exec(adjustedRest))) {
-            // debugLog(`Got ${repoCode} \\zaln-s Regex in ${C}:${V} line: '${JSON.stringify(regexResultArray1)}`);
+        while ((regexMatchObject1 = ZALN_S_REGEX.exec(adjustedRest))) {
+            // debugLog(`Got ${repoCode} \\zaln-s Regex in ${C}:${V} line: '${JSON.stringify(regexMatchObject1)}`);
             // The found string normally starts with a |
-            const zalnSuggestion = await checkZALNAttributes(regexResultArray1[1]); // The only call of this function
-            if (zalnSuggestion) suggestion = rest.replace(regexResultArray1[1], zalnSuggestion);
+            const zalnSuggestion = await checkZALNAttributes(regexMatchObject1[1]); // The only call of this function
+            if (zalnSuggestion) suggestion = rest.replace(regexMatchObject1[1], zalnSuggestion);
         }
         return suggestion;
     }
@@ -1296,15 +1362,25 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             // functionLog(`checkUSFMLineInternals(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
 
             if (marker === 'c' && isNaN(rest))
-                addNoticePartial({ priority: 822, message: "Expected field to contain an integer", lineNumber, characterIndex: 3, excerpt: `\\c ${rest}`, C, V, location: lineLocation });
+                addNoticePartial({ priority: 822, message: "Expected field to contain an integer", characterIndex: 3, excerpt: `\\c ${rest}`, lineNumber, C, V, location: lineLocation });
             if (marker === 'v') {
                 let Vstr = (rest) ? rest.split(' ', 1)[0] : '?';
                 if (isNaN(Vstr) && Vstr.indexOf('-') < 0)
-                    addNoticePartial({ priority: 822, message: "Expected field to contain an integer", characterIndex: 3, excerpt: `\\v ${rest}`, C, V, location: lineLocation });
+                    addNoticePartial({ priority: 822, message: "Expected field to contain an integer", characterIndex: 3, excerpt: `\\v ${rest}`, lineNumber, C, V, location: lineLocation });
             }
             else if (marker === 'h' || marker === 'toc1' || marker === 'toc2' || marker === 'toc3')
                 if (rest.toLowerCase() === rest || rest.toUpperCase() === rest)
-                    addNoticePartial({ priority: languageCode === 'en' || languageCode === 'fr' ? 490 : 190, message: "Expected header field to contain a mixed-case string", fieldName: `\\${marker}`, excerpt: rest, C, V, location: lineLocation });
+                    addNoticePartial({ priority: languageCode === 'en' || languageCode === 'fr' ? 490 : 190, message: "Expected header field to contain a mixed-case string", fieldName: `\\${marker}`, excerpt: rest, lineNumber, C, V, location: lineLocation });
+
+            // Check matched pairs that should all be inside a single line
+            if (['en', 'hbo', 'el-x-koine'].includes(languageCode))
+                for (const punctSet of MATCHED_CHARACTER_FORMATTING_LINE_PAIRS_LIST) {
+                    const opener = `\\${punctSet[0]} `, closer = `\\${punctSet[1]}`;
+                    const lCount = countOccurrencesInString(rest, opener) + (marker === punctSet[0] ? 1 : 0);
+                    const rCount = countOccurrencesInString(rest, closer);
+                    if (lCount !== rCount)
+                        addNoticePartial({ priority: 973, message: `Mismatched ${opener}${closer} fields`, details: `(opening=${lCount.toLocaleString()}, closing=${rCount.toLocaleString()})`, excerpt: rest, lineNumber, C, V, location: lineLocation });
+                }
 
             if (rest) {
                 checkUSFMLineText(lineNumber, C, V, marker, rest, lineLocation, checkingOptions);
@@ -1322,13 +1398,13 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
 
 
         // Main code for checkUSFMLineContents()
-        if (ALLOWED_LINE_START_MARKERS.indexOf(marker) >= 0 || marker === 'SPECIAL' || marker === 'NONE') {
-            if (rest && MARKERS_WITHOUT_CONTENT.indexOf(marker) >= 0)
+        if (ALLOWED_LINE_START_MARKERS_LIST.includes(marker) || marker === 'SPECIAL' || marker === 'NONE') {
+            if (rest && MARKERS_WITHOUT_CONTENT_LIST.includes(marker))
                 if (isWhitespace(rest))
                     addNoticePartial({ priority: 301, message: `Unexpected whitespace after \\${marker} marker`, C, V, lineNumber, characterIndex: marker.length, excerpt: rest, location: lineLocation });
                 else if (rest !== 'ס' && rest !== 'פ') // in UHB NEH 3:20 or EZR 3:18
                     addNoticePartial({ priority: 401, message: `Unexpected content after \\${marker} marker`, C, V, lineNumber, characterIndex: marker.length, excerpt: rest, location: lineLocation });
-                else if (MARKERS_WITH_COMPULSORY_CONTENT.indexOf(marker) >= 0 && !rest)
+                else if (MARKERS_WITH_COMPULSORY_CONTENT_LIST.includes(marker) && !rest)
                     addNoticePartial({ priority: 711, message: "Expected compulsory content", C, V, lineNumber, characterIndex: marker.length, location: ` after \\${marker} marker${lineLocation}` });
         } else // it’s not a recognised line marker
             // Lower priority of deprecated \s5 markers (compared to all other unknown markers)
@@ -1417,7 +1493,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                 if (char === ' ') break;
                 // Cope with self-closing milestones like \k-s\*
                 if (char === '\\' && (characterIndex === USFMline.length - 1 || USFMline[characterIndex + 1] !== '*')) {
-                    const excerpt = USFMline.substring(0, excerptLength) + (USFMline.length > excerptLength ? '…' : '');
+                    const excerpt = USFMline.slice(0, excerptLength) + (USFMline.length > excerptLength ? '…' : '');
                     addNoticePartial({ priority: 603, message: "USFM marker doesn’t end with space", C, V, lineNumber, characterIndex, excerpt, location: ourLocation });
                     break;
                 }
@@ -1464,7 +1540,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             let marker, rest;
             if (line[0] === '\\') {
                 marker = findStartMarker(C, V, n, line);
-                rest = line.substring(marker.length + 2); // Skip backslash, marker, and space after marker
+                rest = line.slice(marker.length + 2); // Skip backslash, marker, and space after marker
                 // debugLog(`Line ${n}: marker='\\${marker}' rest='${rest}'`);
             } else { // Line didn’t start with a backslash
                 // NOTE: Some unfoldingWord USFM Bibles commonly have this
@@ -1474,8 +1550,8 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                     // Drop the priority if it’s a "half-likely" character
                     addNoticePartial({ priority: line[0] === ' ' || line[0] === '"' ? 180 : 880, C, V, message: "Expected line to start with backslash", lineNumber: n, characterIndex: 0, excerpt: line[0], location: ourLocation });
                     if (line[1] === '\\') { // Let’s drop the leading punctuation and try to check the rest of the line
-                        marker = line.substring(2).split(' ', 1)[0];
-                        rest = line.substring(marker.length + 2 + 1); // Skip leading character, backslash, marker, and space after marker
+                        marker = line.slice(2).split(' ', 1)[0];
+                        rest = line.slice(marker.length + 2 + 1); // Skip leading character, backslash, marker, and space after marker
                         // debugLog(`USFM after ${line[0]} got '\\${marker}': '${rest}'`);
                     }
                     else
@@ -1494,11 +1570,11 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                 try {
                     intC = ourParseInt(C);
                 } catch (usfmICerror) {
-                    addNoticePartial({ priority: 724, C, V, message: "Unable to convert chapter number to integer", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, excerptHalfLength)}${rest.length > excerptHalfLength ? '…' : ''}`, location: ourLocation });
+                    addNoticePartial({ priority: 724, C, V, message: "Unable to convert chapter number to integer", lineNumber: n, characterIndex: 3, excerpt: `${rest.slice(0, excerptHalfLength)}${rest.length > excerptHalfLength ? '…' : ''}`, location: ourLocation });
                     intC = -999; // Used to prevent consequential errors
                 }
                 if (C === lastC || (intC > 0 && intC !== lastIntC + 1))
-                    addNoticePartial({ priority: 764, C, V, message: "Chapter number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, excerptHalfLength)}${rest.length > excerptHalfLength ? '…' : ''} (${lastC ? lastC : '0'} → ${C})`, location: ourLocation });
+                    addNoticePartial({ priority: 764, C, V, message: "Chapter number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${rest.slice(0, excerptHalfLength)}${rest.length > excerptHalfLength ? '…' : ''} (${lastC ? lastC : '0'} → ${C})`, location: ourLocation });
                 lastC = C; lastV = '0';
                 lastIntC = intC; lastIntV = 0;
             } else if (marker === 'v') {
@@ -1507,11 +1583,11 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                     try {
                         intV = ourParseInt(V);
                     } catch (usfmIVerror) {
-                        addNoticePartial({ priority: 723, C, V, message: "Unable to convert verse number to integer", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, excerptHalfLength)}${rest.length > excerptHalfLength ? '…' : ''}`, location: ourLocation });
+                        addNoticePartial({ priority: 723, C, V, message: "Unable to convert verse number to integer", lineNumber: n, characterIndex: 3, excerpt: `${rest.slice(0, excerptHalfLength)}${rest.length > excerptHalfLength ? '…' : ''}`, location: ourLocation });
                         intV = -999; // Used to prevent consequential errors
                     }
                     if (V === lastV || (intV > 0 && intV !== lastIntV + 1))
-                        addNoticePartial({ priority: 763, C, V, message: "Verse number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, excerptHalfLength)}${rest.length > excerptHalfLength ? '…' : ''} (${lastV ? lastV : '0'} → ${V})`, location: ourLocation });
+                        addNoticePartial({ priority: 763, C, V, message: "Verse number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${rest.slice(0, excerptHalfLength)}${rest.length > excerptHalfLength ? '…' : ''} (${lastV ? lastV : '0'} → ${V})`, location: ourLocation });
                     lastV = V; lastIntV = intV;
                 } else { // handle verse bridge
                     const bits = V.split('-');
@@ -1521,34 +1597,34 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                         intFirstV = ourParseInt(firstV);
                         intSecondV = ourParseInt(secondV);
                     } catch (usfmV12error) {
-                        addNoticePartial({ priority: 762, C, V, message: "Unable to convert verse bridge numbers to integers", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, Math.max(9, excerptLength))}${rest.length > excerptLength ? '…' : ''}`, location: ourLocation });
+                        addNoticePartial({ priority: 762, C, V, message: "Unable to convert verse bridge numbers to integers", lineNumber: n, characterIndex: 3, excerpt: `${rest.slice(0, Math.max(9, excerptLength))}${rest.length > excerptLength ? '…' : ''}`, location: ourLocation });
                         intFirstV = -999; intSecondV = -998; // Used to prevent consequential errors
                     }
                     if (intSecondV <= intFirstV)
-                        addNoticePartial({ priority: 769, C, V, message: "Verse bridge numbers not in ascending order", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, Math.max(9, excerptLength))}${rest.length > excerptLength ? '…' : ''} (${firstV} → ${secondV})`, location: ourLocation });
+                        addNoticePartial({ priority: 769, C, V, message: "Verse bridge numbers not in ascending order", lineNumber: n, characterIndex: 3, excerpt: `${rest.slice(0, Math.max(9, excerptLength))}${rest.length > excerptLength ? '…' : ''} (${firstV} → ${secondV})`, location: ourLocation });
                     else if (firstV === lastV || (intFirstV > 0 && intFirstV !== lastIntV + 1))
-                        addNoticePartial({ priority: 766, C, V, message: "Bridged verse numbers didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${rest.substring(0, Math.max(9, excerptLength))}${rest.length > excerptLength ? '…' : ''} (${lastV} → ${firstV})`, location: ourLocation });
+                        addNoticePartial({ priority: 766, C, V, message: "Bridged verse numbers didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${rest.slice(0, Math.max(9, excerptLength))}${rest.length > excerptLength ? '…' : ''} (${lastV} → ${firstV})`, location: ourLocation });
                     lastV = secondV; lastIntV = intSecondV;
                 }
             } else if ((vIndex = rest.indexOf('\\v ')) >= 0) {
                 // verse number marker follows another marker on the same line, so it’s inside `rest`
-                const restRest = rest.substring(vIndex + 3);
+                const restRest = rest.slice(vIndex + 3);
                 // debugLog(`Got restRest=${restRest}`);
                 try {
                     intV = parseInt(restRest);
                     // debugLog("Got", intV);
                 } catch (usfmIIVerror) {
-                    addNoticePartial({ priority: 720, C, V, message: "Unable to convert internal verse number to integer", lineNumber: n, characterIndex: 3, excerpt: `${restRest.substring(0, excerptHalfLength)}${restRest.length > excerptHalfLength ? '…' : ''}`, location: ourLocation });
+                    addNoticePartial({ priority: 720, C, V, message: "Unable to convert internal verse number to integer", lineNumber: n, characterIndex: 3, excerpt: `${restRest.slice(0, excerptHalfLength)}${restRest.length > excerptHalfLength ? '…' : ''}`, location: ourLocation });
                     intV = -999; // Used to prevent consequential errors
                 }
                 if (intV > 0 && intV !== lastIntV + 1)
-                    addNoticePartial({ priority: 761, C, V, message: "Verse number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${restRest.substring(0, excerptHalfLength)}${restRest.length > excerptHalfLength ? '…' : ''} (${lastV ? lastV : '0'} → ${V})`, location: ourLocation });
+                    addNoticePartial({ priority: 761, C, V, message: "Verse number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${restRest.slice(0, excerptHalfLength)}${restRest.length > excerptHalfLength ? '…' : ''} (${lastV ? lastV : '0'} → ${V})`, location: ourLocation });
                 lastV = intV.toString(); lastIntV = intV;
             }
 
             if (marker === 'id' && !rest.startsWith(bookID)) {
                 const thisLength = Math.max(4, excerptLength);
-                const excerpt = `${rest.substring(0, thisLength)}${rest.length > thisLength ? '…' : ''}`;
+                const excerpt = `${rest.slice(0, thisLength)}${rest.length > thisLength ? '…' : ''}`;
                 addNoticePartial({ priority: 987, C, V, message: "Expected \\id line to start with book identifier", lineNumber: n, characterIndex: 4, excerpt, location: ourLocation });
             }
 
@@ -1559,13 +1635,15 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             else if (marker === 'toc3' && lastMarker !== 'toc2')
                 addNoticePartial({ priority: 87, C, V, message: "Expected \\toc3 line to follow \\toc2", lineNumber: n, characterIndex: 1, details: `not '\\${lastMarker}'`, location: ourLocation });
             // In chapters
-            else if ((PARAGRAPH_MARKERS.indexOf(marker) >= 0 || marker === 's5' || marker === 'ts\\*')
-                && PARAGRAPH_MARKERS.indexOf(lastMarker) >= 0
+            else if ((PARAGRAPH_MARKERS_LIST.includes(marker) || marker === 's5' || marker === 'ts\\*')
+                && PARAGRAPH_MARKERS_LIST.includes(lastMarker)
                 && !lastRest)
                 addNoticePartial({ priority: 399, C, V, message: "Useless paragraph marker", lineNumber: n, characterIndex: 1, details: `'\\${lastMarker}' before '\\${marker}'`, location: ourLocation });
-            else if (['c', 'ca', 'cl'].indexOf(lastMarker) > 0 && marker === 'v'
+            else if (['c', 'ca', 'cl'].includes(lastMarker) && marker === 'v'
                 && (rest === '1' || rest.startsWith('1 ')))
                 addNoticePartial({ priority: C === '1' ? 657 : 457, C, V, message: "Paragraph marker expected before first verse", lineNumber: n, characterIndex: 1, details: `'\\${marker}' after '\\${lastMarker}'`, location: ourLocation });
+            else if (TEXT_MARKERS_WITHOUT_CONTENT_LIST.includes(lastMarker) && ['w', 'v', 'zaln-s', 'k-s'].includes(marker))
+                addNoticePartial({ priority: 899, C, V, message: "Have USFM text not in a paragraph", lineNumber: n, characterIndex: 1, details: `'\\${lastMarker}' before '\\${marker}'`, location: ourLocation });
 
             // Do general checks
             await checkUSFMLineContents(n, C, V, marker, rest, ourLocation, checkingOptions);

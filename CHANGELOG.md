@@ -1,14 +1,26 @@
 # Changelog
 
-## [Unreleased](https://github.com/unfoldingWord/uw-content-validation/tree/HEAD)
+## [2.2.2](https://github.com/unfoldingWord/uw-content-validation/tree/2.2.2) (2021-09-03)
 
-[Full Changelog](https://github.com/unfoldingWord/uw-content-validation/compare/2.2.0...HEAD)
+[Full Changelog](https://github.com/unfoldingWord/uw-content-validation/compare/2.2.1...2.2.2)
+
+**Merged pull requests:**
+
+- Fix bug with repoCode for linked articles; add test for newLine in TN single line field that crashed tC build [\#206](https://github.com/unfoldingWord/uw-content-validation/pull/206) ([RobH123](https://github.com/RobH123))
+
+## [2.2.1](https://github.com/unfoldingWord/uw-content-validation/tree/2.2.1) (2021-09-01)
+
+[Full Changelog](https://github.com/unfoldingWord/uw-content-validation/compare/2.2.0...2.2.1)
 
 **Implemented enhancements:**
 
 - Check strong and x-strong fields in BP check, etc. [\#192](https://github.com/unfoldingWord/uw-content-validation/issues/192)
 - Add check for en\_uhal [\#191](https://github.com/unfoldingWord/uw-content-validation/issues/191)
 - Add check for en\_ugl [\#190](https://github.com/unfoldingWord/uw-content-validation/issues/190)
+
+**Merged pull requests:**
+
+- Version 2.2.1 [\#205](https://github.com/unfoldingWord/uw-content-validation/pull/205) ([RobH123](https://github.com/RobH123))
 
 ## [2.2.0](https://github.com/unfoldingWord/uw-content-validation/tree/2.2.0) (2021-08-12)
 

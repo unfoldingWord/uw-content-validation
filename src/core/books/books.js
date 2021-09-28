@@ -122,7 +122,7 @@ export const usfmNumberName = (bookId) => {
 }
 
 export const expectedVersesPerChapterList = (bookId) => {
-  // //parameterAssert(bookId.toUpperCase() !== 'OBS', `expectedVersesPerChapterList shouldn’t be passed '${bookId}'`);
+  // parameterAssert(bookId.toUpperCase() !== 'OBS', `expectedVersesPerChapterList shouldn’t be passed '${bookId}'`);
   let verseList;
   try {
     verseList = BibleBookData[bookId.toUpperCase()].verseList;
@@ -144,7 +144,7 @@ export const isOneChapterBook = (bookId) => {
 };
 
 export const versesInChapter = (bookId, chapter) => {
-  // //parameterAssert(bookId.toUpperCase() !== 'OBS', `versesInChapter shouldn’t be passed '${bookId}'`);
+  // parameterAssert(bookId.toUpperCase() !== 'OBS', `versesInChapter shouldn’t be passed '${bookId}'`);
   const verses = expectedVersesPerChapterList(bookId)[chapter - 1];
   if (verses === undefined) {
     throw new Error(`versesInChapter(${bookId}) given invalid chapter: ${chapter}`);

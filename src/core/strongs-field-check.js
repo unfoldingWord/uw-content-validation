@@ -9,7 +9,7 @@ import { checkLexiconFileContents } from './lexicon-file-contents-check';
 import { functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
 
 
-// const STRONGS_FIELD_VALIDATOR_VERSION_STRING = '0.2.3';
+// const STRONGS_FIELD_VALIDATOR_VERSION_STRING = '0.2.6';
 
 
 /**
@@ -37,30 +37,30 @@ export async function checkStrongsField(languageCode, repoCode, fieldName, field
     //      checkingOptions?.originalLanguageRepoBranch (or tag)
 
     // functionLog(`checkStrongsField v${STRONGS_FIELD_VALIDATOR_VERSION_STRING} ${languageCode}, ${repoCode}, ${fieldName}, (${fieldText.length}) '${fieldText}', ${bookID} ${C}:${V} ${givenLocation}, …)…`);
-    parameterAssert(languageCode !== undefined, "checkStrongsField: 'languageCode' parameter should be defined");
-    parameterAssert(typeof languageCode === 'string', `checkStrongsField: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
-    parameterAssert(repoCode !== undefined, "checkStrongsField: 'repoCode' parameter should be defined");
-    parameterAssert(typeof repoCode === 'string', `checkStrongsField: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
-    parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkStrongsField: 'repoCode' parameter should not be '${repoCode}'`);
-    parameterAssert(fieldName !== undefined, "checkStrongsField: 'fieldName' parameter should be defined");
-    parameterAssert(typeof fieldName === 'string', `checkStrongsField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
-    parameterAssert(fieldText !== undefined, "checkStrongsField: 'fieldText' parameter should be defined");
-    parameterAssert(typeof fieldText === 'string', `checkStrongsField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-    parameterAssert(fieldText.length >= 1, `checkStrongsField: 'fieldText' parameter should have text not ${fieldText.length} characters`);
-    parameterAssert(bookID !== undefined, "checkStrongsField: 'bookID' parameter should be defined");
-    parameterAssert(typeof bookID === 'string', `checkStrongsField: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+    //parameterAssert(languageCode !== undefined, "checkStrongsField: 'languageCode' parameter should be defined");
+    //parameterAssert(typeof languageCode === 'string', `checkStrongsField: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    //parameterAssert(repoCode !== undefined, "checkStrongsField: 'repoCode' parameter should be defined");
+    //parameterAssert(typeof repoCode === 'string', `checkStrongsField: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
+    //parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkStrongsField: 'repoCode' parameter should not be '${repoCode}'`);
+    //parameterAssert(fieldName !== undefined, "checkStrongsField: 'fieldName' parameter should be defined");
+    //parameterAssert(typeof fieldName === 'string', `checkStrongsField: 'fieldName' parameter should be a string not a '${typeof fieldName}'`);
+    //parameterAssert(fieldText !== undefined, "checkStrongsField: 'fieldText' parameter should be defined");
+    //parameterAssert(typeof fieldText === 'string', `checkStrongsField: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+    //parameterAssert(fieldText.length >= 1, `checkStrongsField: 'fieldText' parameter should have text not ${fieldText.length} characters`);
+    //parameterAssert(bookID !== undefined, "checkStrongsField: 'bookID' parameter should be defined");
+    //parameterAssert(typeof bookID === 'string', `checkStrongsField: 'bookID' parameter should be a string not a '${typeof bookID}'`);
     // parameterAssert(bookID.length === 3, `checkStrongsField: 'bookID' parameter should be three characters long not ${bookID.length}`);
-    parameterAssert(bookID.toUpperCase() === bookID, `checkStrongsField: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-    parameterAssert(bookID === '' || bookID === 'OBS' || isValidBookID(bookID), `checkStrongsField: '${bookID}' is not a valid USFM book identifier`);
-    parameterAssert(C !== undefined, "checkStrongsField: 'C' parameter should be defined");
-    parameterAssert(typeof C === 'string', `checkStrongsField: 'C' parameter should be a string not a '${typeof C}'`);
-    parameterAssert(V !== undefined, "checkStrongsField: 'V' parameter should be defined");
-    parameterAssert(typeof V === 'string', `checkStrongsField: 'V' parameter should be a string not a '${typeof V}'`);
-    parameterAssert(givenLocation !== undefined, "checkStrongsField: 'givenLocation' parameter should be defined");
-    parameterAssert(typeof givenLocation === 'string', `checkStrongsField: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
-    parameterAssert(checkingOptions !== undefined, "checkStrongsField: 'checkingOptions' parameter should be defined");
+    //parameterAssert(bookID.toUpperCase() === bookID, `checkStrongsField: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+    //parameterAssert(bookID === '' || bookID === 'OBS' || isValidBookID(bookID), `checkStrongsField: '${bookID}' is not a valid USFM book identifier`);
+    //parameterAssert(C !== undefined, "checkStrongsField: 'C' parameter should be defined");
+    //parameterAssert(typeof C === 'string', `checkStrongsField: 'C' parameter should be a string not a '${typeof C}'`);
+    //parameterAssert(V !== undefined, "checkStrongsField: 'V' parameter should be defined");
+    //parameterAssert(typeof V === 'string', `checkStrongsField: 'V' parameter should be a string not a '${typeof V}'`);
+    //parameterAssert(givenLocation !== undefined, "checkStrongsField: 'givenLocation' parameter should be defined");
+    //parameterAssert(typeof givenLocation === 'string', `checkStrongsField: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
+    //parameterAssert(checkingOptions !== undefined, "checkStrongsField: 'checkingOptions' parameter should be defined");
     if (checkingOptions !== undefined) {
-        parameterAssert(typeof checkingOptions === 'object', `checkLexiconFileContents: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
+        //parameterAssert(typeof checkingOptions === 'object', `checkLexiconFileContents: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
     }
 
     let ourLocation = givenLocation;
@@ -71,20 +71,20 @@ export async function checkStrongsField(languageCode, repoCode, fieldName, field
 
     function addNoticePartial(incompleteNoticeObject) {
         // functionLog(`checkStrongsField Notice: (priority=${noticeObject.priority}) ${noticeObject.message}${characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.excerpt ? ` ${noticeObject.excerpt}` : ""}${noticeObject.location}`);
-        parameterAssert(incompleteNoticeObject.priority !== undefined, "checkStrongsField addNoticePartial: 'priority' parameter should be defined");
-        parameterAssert(typeof incompleteNoticeObject.priority === 'number', `checkStrongsField addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}': ${incompleteNoticeObject.priority}`);
-        parameterAssert(incompleteNoticeObject.message !== undefined, "checkStrongsField addNoticePartial: 'message' parameter should be defined");
-        parameterAssert(typeof incompleteNoticeObject.message === 'string', `checkStrongsField addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}': ${incompleteNoticeObject.message}`);
+        //parameterAssert(incompleteNoticeObject.priority !== undefined, "checkStrongsField addNoticePartial: 'priority' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.priority === 'number', `checkStrongsField addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}': ${incompleteNoticeObject.priority}`);
+        //parameterAssert(incompleteNoticeObject.message !== undefined, "checkStrongsField addNoticePartial: 'message' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.message === 'string', `checkStrongsField addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}': ${incompleteNoticeObject.message}`);
         // parameterAssert(characterIndex !== undefined, "checkStrongsField addNoticePartial: 'characterIndex' parameter should be defined");
         if (incompleteNoticeObject.characterIndex) {
-            parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `checkStrongsField addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
+            //parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `checkStrongsField addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
         }
         // parameterAssert(excerpt !== undefined, "checkStrongsField addNoticePartial: 'excerpt' parameter should be defined");
         if (incompleteNoticeObject.excerpt) {
-            parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `checkStrongsField addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt} for ${incompleteNoticeObject.priority}`);
+            //parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `checkStrongsField addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt} for ${incompleteNoticeObject.priority}`);
         }
-        parameterAssert(incompleteNoticeObject.location !== undefined, "checkStrongsField addNoticePartial: 'location' parameter should be defined");
-        parameterAssert(typeof incompleteNoticeObject.location === 'string', `checkStrongsField addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
+        //parameterAssert(incompleteNoticeObject.location !== undefined, "checkStrongsField addNoticePartial: 'location' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.location === 'string', `checkStrongsField addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
         const newObject = { ...incompleteNoticeObject, excerpt: fieldText, fieldName, repoCode };
         if (bookID.length) newObject.bookID = bookID;
         if (C.length && V.length) { newObject.C = C; newObject.V = V; }
@@ -98,19 +98,19 @@ export async function checkStrongsField(languageCode, repoCode, fieldName, field
          Returns a result object containing a successList and a noticeList
          */
         // functionLog(`ourCheckLexiconFileContents(lC=${languageCode}, rC=${repoCode}, fn=${lexiconFilename}, ${lexiconMarkdownText.length}, ${givenLocation})…`);
-        parameterAssert(languageCode !== undefined, "checkStrongsField ourCheckLexiconFileContents: 'languageCode' parameter should be defined");
-        parameterAssert(typeof languageCode === 'string', `checkStrongsField ourCheckLexiconFileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
-        parameterAssert(lexiconRepoCode === 'UHAL' || lexiconRepoCode === 'UGL', `checkStrongsField ourCheckLexiconFileContents: 'repoCode' parameter should be 'UHAL' or 'UGL', not '${lexiconRepoCode}'`);
-        parameterAssert(lexiconFilename !== undefined, "checkStrongsField ourCheckLexiconFileContents: 'lexiconFilename' parameter should be defined");
-        parameterAssert(typeof lexiconFilename === 'string', `checkStrongsField ourCheckLexiconFileContents: 'lexiconFilename' parameter should be a string not a '${typeof lexiconFilename}': ${lexiconFilename}`);
-        parameterAssert(lexiconMarkdownText !== undefined, "checkStrongsField ourCheckLexiconFileContents: 'lexiconMarkdownText' parameter should be defined");
-        parameterAssert(typeof lexiconMarkdownText === 'string', `checkStrongsField ourCheckLexiconFileContents: 'lexiconMarkdownText' parameter should be a string not a '${typeof lexiconMarkdownText}': ${lexiconMarkdownText}`);
-        parameterAssert(givenLocation !== undefined, "checkStrongsField ourCheckLexiconFileContents: 'givenLocation' parameter should be defined");
-        parameterAssert(typeof givenLocation === 'string', `checkStrongsField ourCheckLexiconFileContents: 'givenLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
-        parameterAssert(givenLocation.indexOf('true') === -1, `checkStrongsField ourCheckLexiconFileContents: 'givenLocation' parameter should not be '${givenLocation}'`);
-        parameterAssert(checkingOptions !== undefined, "checkStrongsField ourCheckLexiconFileContents: 'checkingOptions' parameter should be defined");
+        //parameterAssert(languageCode !== undefined, "checkStrongsField ourCheckLexiconFileContents: 'languageCode' parameter should be defined");
+        //parameterAssert(typeof languageCode === 'string', `checkStrongsField ourCheckLexiconFileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
+        //parameterAssert(lexiconRepoCode === 'UHAL' || lexiconRepoCode === 'UGL', `checkStrongsField ourCheckLexiconFileContents: 'repoCode' parameter should be 'UHAL' or 'UGL', not '${lexiconRepoCode}'`);
+        //parameterAssert(lexiconFilename !== undefined, "checkStrongsField ourCheckLexiconFileContents: 'lexiconFilename' parameter should be defined");
+        //parameterAssert(typeof lexiconFilename === 'string', `checkStrongsField ourCheckLexiconFileContents: 'lexiconFilename' parameter should be a string not a '${typeof lexiconFilename}': ${lexiconFilename}`);
+        //parameterAssert(lexiconMarkdownText !== undefined, "checkStrongsField ourCheckLexiconFileContents: 'lexiconMarkdownText' parameter should be defined");
+        //parameterAssert(typeof lexiconMarkdownText === 'string', `checkStrongsField ourCheckLexiconFileContents: 'lexiconMarkdownText' parameter should be a string not a '${typeof lexiconMarkdownText}': ${lexiconMarkdownText}`);
+        //parameterAssert(givenLocation !== undefined, "checkStrongsField ourCheckLexiconFileContents: 'givenLocation' parameter should be defined");
+        //parameterAssert(typeof givenLocation === 'string', `checkStrongsField ourCheckLexiconFileContents: 'givenLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
+        //parameterAssert(givenLocation.indexOf('true') === -1, `checkStrongsField ourCheckLexiconFileContents: 'givenLocation' parameter should not be '${givenLocation}'`);
+        //parameterAssert(checkingOptions !== undefined, "checkStrongsField ourCheckLexiconFileContents: 'checkingOptions' parameter should be defined");
         if (checkingOptions !== undefined) {
-            parameterAssert(typeof checkingOptions === 'object', `checkStrongsField ourCheckLexiconFileContents: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
+            //parameterAssert(typeof checkingOptions === 'object', `checkStrongsField ourCheckLexiconFileContents: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
         }
 
         let adjustedLanguageCode = languageCode; // This is the language code of the resource with the link
@@ -184,11 +184,11 @@ export async function checkStrongsField(languageCode, repoCode, fieldName, field
     } else {
         if (whichTestament === 'old') {
             while (adjustedFieldText.startsWith('b:') || adjustedFieldText.startsWith('c:') || adjustedFieldText.startsWith('d:') || adjustedFieldText.startsWith('i:') || adjustedFieldText.startsWith('k:') || adjustedFieldText.startsWith('l:') || adjustedFieldText.startsWith('m:') || adjustedFieldText.startsWith('s:'))
-                adjustedFieldText = adjustedFieldText.substring(2); // Delete the prefix bit
-            while (adjustedFieldText.length > 1 && 'abcde'.indexOf(adjustedFieldText.slice(-1)) !== -1)
-                adjustedFieldText = adjustedFieldText.substring(0, adjustedFieldText.length - 1); // Delete the suffix bit
+                adjustedFieldText = adjustedFieldText.slice(2); // Delete the prefix bit
+            while (adjustedFieldText.length > 1 && 'abcdef'.indexOf(adjustedFieldText.slice(-1)) !== -1)
+                adjustedFieldText = adjustedFieldText.slice(0, adjustedFieldText.length - 1); // Delete the suffix bit
             if (adjustedFieldText[0] !== 'H') {
-                if (adjustedFieldText !== 'b' && adjustedFieldText !== 'k' && adjustedFieldText !== 'l' && adjustedFieldText !== 'm')
+                if (adjustedFieldText !== 'b' && adjustedFieldText !== 'i' && adjustedFieldText !== 'k' && adjustedFieldText !== 'k' && adjustedFieldText !== 'l' && adjustedFieldText !== 'm')
                     // Suppress the message in those cases, but still pretend it’s an error so don’t try to fetch lexicon article below
                     addNoticePartial({ priority: 841, message: "Strongs field must start with 'H'", location: ourLocation });
                 haveError = true; // May not be an actual error -- see comment just above
@@ -210,11 +210,14 @@ export async function checkStrongsField(languageCode, repoCode, fieldName, field
     if (!haveError) {
         if (checkingOptions?.disableAllLinkFetchingFlag !== true && checkingOptions?.disableLexiconLinkFetchingFlag !== true) {
             // debugLog(`checkStrongsField wants to fetch lexicon entry for ${fieldText}`);
+            let adjustedLanguageCode = languageCode;
+            if (languageCode === 'hbo' || languageCode === 'el-x-koine') // lexicons are in GLs
+                adjustedLanguageCode = 'en'
             let username;
             try {
                 username = checkingOptions?.originalLanguageRepoUsername;
             } catch (qcoError) { }
-            if (!username) username = languageCode === 'en' ? 'unfoldingWord' : 'Door43-Catalog'; // ??? !!!
+            if (!username) username = adjustedLanguageCode === 'en' ? 'unfoldingWord' : 'Door43-Catalog'; // ??? !!!
             let repoBranch;
             try {
                 repoBranch = checkingOptions?.originalLanguageRepoBranch;
@@ -223,18 +226,18 @@ export async function checkStrongsField(languageCode, repoCode, fieldName, field
             let lexiconRepoCode, repoName, lexiconFilename, lexiconPathname;
             if (adjustedFieldText[0] === 'H') {
                 lexiconRepoCode = 'UHAL';
-                repoName = `${languageCode}_uhal`;
+                repoName = `${adjustedLanguageCode}_uhal`;
                 lexiconFilename = `${adjustedFieldText}.md`;
                 lexiconPathname = `content/${lexiconFilename}`;
             } else if (fieldText[0] === 'G') {
                 lexiconRepoCode = 'UGL';
-                repoName = `${languageCode}_ugl`;
+                repoName = `${adjustedLanguageCode}_ugl`;
                 lexiconFilename = '01.md';
                 lexiconPathname = `content/${fieldText}/${lexiconFilename}`;
             }
             const fetchLexiconFileParameters = { username, repository: repoName, path: lexiconPathname, branch: repoBranch };
             if (!await alreadyChecked(fetchLexiconFileParameters)) {
-                // debugLog(`checkStrongsField(${languageCode}, ${repoCode}, ${fieldName}, ${fieldText}, ${bookID} ${C}:${V}, ${givenLocation}, ${JSON.stringify(checkingOptions)} got ${JSON.stringify(fetchLexiconFileParameters)}`);
+                // debugLog(`checkStrongsField(${adjustedLanguageCode}, ${repoCode}, ${fieldName}, ${fieldText}, ${bookID} ${C}:${V}, ${givenLocation}, ${JSON.stringify(checkingOptions)} got ${JSON.stringify(fetchLexiconFileParameters)}`);
                 // debugLog(`checkStrongsField wants to check lexicon entry for ${JSON.stringify(fetchLexiconFileParameters)}`);
                 const fetchLinkDescription = `${username} ${repoName} ${repoBranch} ${lexiconPathname}`;
                 const getFile_ = (checkingOptions && checkingOptions?.getFile) ? checkingOptions?.getFile : cachedGetFile;
@@ -247,10 +250,10 @@ export async function checkStrongsField(languageCode, repoCode, fieldName, field
                     // debugLog(`checkStrongsField lexicon link fetch got text: ${lexiconMarkdownTextContents.length}`);
                 } catch (flError) { // NOTE: The error can depend on whether the zipped repo is cached or not
                     // console.error(`checkStrongsField lexicon link fetch had an error fetching ${fetchLinkDescription}: ${flError}`);
-                    let details = `${lexiconRepoCode} username=${username}`;
+                    let details = `${lexiconRepoCode}`;
                     // eslint-disable-next-line eqeqeq
                     if (flError != 'TypeError: lexiconMarkdownTextContents is null') details += ` error=${flError}`;
-                    addNoticePartial({ priority: 850, message: "Unable to find/load lexicon entry", details, excerpt: fetchLinkDescription, location: ourLocation });
+                    addNoticePartial({ priority: 850, message: "Unable to find/load lexicon entry", details, username, excerpt: fetchLinkDescription, location: ourLocation });
                 }
                 if (lexiconMarkdownTextContents?.length) {
                     if (lexiconMarkdownTextContents.length < 10)

@@ -27,8 +27,8 @@ import RepoCheck from './RepoCheck';
 
   // Lines starting with // are ignored -- you can add or remove // as desired
   // NOTE: Some of these whole repository checks can take a looong time!
-  // repoName='hbo_uhb' // includes OT books only—some large files with parsing info!
-  // repoName='el-x-koine_ugnt' // includes NT books only—some large files with parsing info!
+  // repoName='hbo_uhb' // includes OT books only—some large files when they have x-tw links!
+  // repoName='el-x-koine_ugnt' // includes NT books only—some large files when they have x-tw links!
   // repoName='en_twl' // Translation Words (TSV files but looks up 1,000+ markdown files)
   // repoName='en_ult' // Can use ult or ust here—some large files with alignment info!
   // repoName='en_tn' // Translation Notes (TSV tables -- MANY links to check!)
@@ -36,7 +36,7 @@ import RepoCheck from './RepoCheck';
   // repoName='en_sn' // Study Notes (TSV)
   // repoName='en_sq' // Study Questions (TSV)
   // repoName='en_tw' // Translation Words (1,000+ markdown files)
-  repoName='en_ta' // Translation Academy (700+ markdown files)
+  // repoName='en_ta' // Translation Academy (700+ markdown files)
   // repoName='en_obs' // Open Bible Stories (50+ markdown files)
   // repoName='en_obs-tn' // Open Bible Stories Translation Notes (markdown files)
   // repoName='en_obs-twl' // Open Bible Stories Translation Words Links (TSV)
@@ -75,7 +75,7 @@ import RepoCheck from './RepoCheck';
   // —those fields are not necessary (or normal) here
   //maximumSimilarMessages='4' // Default is 3 (0 means don’t suppress any)
   // excerptLength='25' // Default is 20 characters
-  cutoffPriorityLevel='90' // Default is to detect all errors/warnings
+  cutoffPriorityLevel='200' // Default is to detect all errors/warnings
   // sortBy='AsFound' // Default is 'ByPriority'; also have 'AsFound' and 'ByRepo' (not relevant here)
   showDisabledNoticesFlag='false' // Display known specific non-issues: 'true' or 'false'
 />

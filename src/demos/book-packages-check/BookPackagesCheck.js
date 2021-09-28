@@ -9,7 +9,7 @@ import { RenderCheckedFilesList, RenderSuccessesErrorsWarnings, RenderSuccessesS
 import { userLog, debugLog, logicAssert } from '../../core/utilities';
 
 
-// const BPS_VALIDATOR_VERSION_STRING = '0.2.16';
+// const BPS_VALIDATOR_VERSION_STRING = '0.2.17';
 
 
 /**
@@ -57,6 +57,7 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     dataSet: dataSet, // Can be 'OLD' (Markdown, etc.), 'NEW' (TSV only), or 'BOTH', or 'DEFAULT'
     // excerptLength: 25,
     suppressNoticeDisablingFlag: true, // Leave this one as true (otherwise demo checks are less efficient)
+    checkType: 'BookPackages', // Always leave this one in
   };
   // Or this allows the parameters to be specified as a BookPackagesCheck property
   if (props.excerptLength) checkingOptions.excerptLength = ourParseInt(props.excerptLength);

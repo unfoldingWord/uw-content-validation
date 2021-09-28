@@ -83,7 +83,7 @@ export function consoleLogObject(clTitle, clObject) {
         // debugLog("   ", clTitle, clPropertyName); // for debugging only!
         let thisPropertyContents = "" + clObject[clPropertyName];
         if (thisPropertyContents.length > 50)
-            thisPropertyContents = `(${thisPropertyContents.length}) ${thisPropertyContents.substring(0, 50)}…`;
+            thisPropertyContents = `(${thisPropertyContents.length}) ${thisPropertyContents.slice(0, 50)}…`;
         let oType = typeof clObject[clPropertyName];
         // From https://stackoverflow.com/questions/12996871/why-does-typeof-array-with-objects-return-object-and-not-array#12996879
         if (oType === "object" && Object.prototype.toString.call(clObject[clPropertyName]) === "[object Array]")
@@ -171,7 +171,7 @@ export function getBookNumber(bookID) {
     else if (bookID==='README') numberResult = 84;
     else {
         const thisUSFMNumberName = usfmNumberName(bookID);
-        numberResult = ourParseInt(thisUSFMNumberName.substring(0, 2)); // 01..67 converted to number
+        numberResult = ourParseInt(thisUSFMNumberName.slice(0, 2)); // 01..67 converted to number
     // } catch {}
     }
     // For everything else
