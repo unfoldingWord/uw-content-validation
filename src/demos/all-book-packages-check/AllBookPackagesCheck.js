@@ -106,11 +106,11 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
       // Load whole repos, especially if we are going to check files in manifests
       let repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ']; // for DEFAULT
       if (dataSet === 'OLD')
-        repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ'];
+        repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TA', 'TW', 'TQ1'];
       else if (dataSet === 'NEW')
-        repoPreloadList = ['TWL', 'LT', 'ST', 'TN2', 'TA', 'TW', 'TQ2'];
+        repoPreloadList = ['TWL', 'LT', 'ST', 'TN2', 'TA', 'TW', 'TQ'];
       else if (dataSet === 'BOTH')
-        repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TN2', 'TA', 'TW', 'TQ', 'TQ2'];
+        repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TN2', 'TA', 'TW', 'TQ'];
       if (haveNT) repoPreloadList.unshift('UGNT'); // These go on the front, so do in reverse order
       if (haveOT) repoPreloadList.unshift('UHB');
       if (!checkingOptions.disableAllLinkFetchingFlag) {
@@ -122,13 +122,13 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
         }
       }
       if (bookIDList.includes('OBS')) {
-        let obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2']; // for DEFAULT
+        let obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ', 'OBS-SN2', 'OBS-SQ2']; // for DEFAULT
         if (dataSet === 'OLD')
-          obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
+          obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ1', 'OBS-SN', 'OBS-SQ'];
         else if (dataSet === 'NEW')
-          obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ'];
+          obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ', 'OBS-SN2', 'OBS-SQ'];
         else if (dataSet === 'BOTH')
-          obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SN2', 'OBS-SQ', 'OBS-SQ2'];
+          obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-SN', 'OBS-SN2', 'OBS-SQ', 'OBS-SQ2'];
         repoPreloadList.push.apply(repoPreloadList, obsRepoPreloadList);
       }
 

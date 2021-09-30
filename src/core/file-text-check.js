@@ -10,7 +10,7 @@ import { parameterAssert } from './utilities';
 /**
  *
  * @param {string} languageCode
- * @param {string} repoCode -- e.g., 'TN' or 'TQ2', etc.
+ * @param {string} repoCode -- e.g., 'TN' or 'TQ', etc.
  * @param {string} fileType
  * @param {string} filename
  * @param {string} fileText

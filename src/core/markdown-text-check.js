@@ -14,7 +14,7 @@ const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.8.2';
 /**
  *
  * @param {string} languageCode, e.g., 'en'
- * @param {string} repoCode -- e.g., 'TN' or 'TQ2', etc.
+ * @param {string} repoCode -- e.g., 'TN' or 'TQ', etc.
  * @param {string} textOrFileName -- used for identification
  * @param {string} markdownText -- the actual text to be checked
  * @param {string} givenLocation

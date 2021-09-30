@@ -38,12 +38,12 @@ This code is designed to thoroughly check various types of Bible-related content
 
 1. [Unified Standard Format Marker](ubsicap.github.io/usfm/) (USFM) Bible content files, including original language Bibles and Bible translations aligned by word/phrase to the original words/phrases
 1. Legacy Translation Notes (TN) tables in Tab-Separated Values (9-column TSV) files
-1. New tables in Tab-Separated Values (TSV) files (uses TWL, TN2 and TQ2, SN and SQ)
-1. Markdown files (and markdown fields in TSV files)
+1. New tables in Tab-Separated Values (TSV) files (for TWL, TN2 and TQ, SN, and SQ)
+1. Markdown files (for TA, TW, and TQ1; also markdown fields in TSV files)
 1. Plain-text files
 1. Metadata (manifest) YAML files
 
-Note: There is also a separate function for checking individual TSV lines (e.g., TN, TN2, TQ2) which is intended to be able to provide immediate user feedback if built into a TSV editor.
+Note: There is also a separate function for checking individual TSV lines (e.g., TN, TN2, TQ) which is intended to be able to provide immediate user feedback if built into a TSV editor.
 
 The top-level checking demonstrations return:
 
@@ -64,7 +64,7 @@ There are two compulsory fields in all of these notice objects:
 All of the following fields may be missing or undefined, i.e., they’re all optional:
 
 1. `details`: More helpful details about the notice (if applicable; doesn’t start with a capital letter)
-1. `repoCode`: brief repository code (if available), e.g., 'UHB', 'LT', 'ST', 'TN', 'TQ', 'TN2', 'TQ2', etc.
+1. `repoCode`: brief repository code (if available), e.g., 'UHB', 'LT', 'ST', 'TN', 'TQ', forthcoming 'TN2', old 'TQ1', etc.
 1. `repoName`: Door43 repository name (if available), e.g., 'en_ta', 'hi_tw'
 1. `filename`: filename string (if available)
 1. `bookID`: The 3-character UPPERCASE [book identifier](http://ubsicap.github.io/usfm/identification/books.html) or [OBS](https://www.openbiblestories.org/) (if relevant)

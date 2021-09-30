@@ -11,7 +11,7 @@ import { debugLog, parameterAssert } from './utilities';
 /**
  * @description -- Does basic checks for small errors like leading/trailing spaces, etc.
  * @param {string} languageCode -- can be an empty string
- * @param {string} repoCode -- e.g., 'TN' or 'TQ2', etc.
+ * @param {string} repoCode -- e.g., 'TN' or 'TQ', etc.
  * @param {string} fieldType -- classification, e.g., TSV, USFM, YAML, link, markdown, raw
  * @param {string} fieldName -- used for identification
  * @param {string} fieldText -- the field being checked

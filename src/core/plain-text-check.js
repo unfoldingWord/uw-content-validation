@@ -13,7 +13,7 @@ const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.4.1';
 /**
  *
  * @param {string} textType 'markdown', 'USFM', 'YAML', 'text', or 'raw'
- * @param {string} repoCode -- e.g., 'TN' or 'TQ2', etc.
+ * @param {string} repoCode -- e.g., 'TN' or 'TQ', etc.
  * @param {string} textName
  * @param {string} plainText -- text to be checked
  * @param {string} givenLocation

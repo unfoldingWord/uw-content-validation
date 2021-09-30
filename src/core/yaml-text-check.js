@@ -14,7 +14,7 @@ const YAML_VALIDATOR_VERSION_STRING = '0.4.4';
 /**
  *
  * @param {string} languageCode
- * @param {string} repoCode -- e.g., 'TN' or 'TQ2', etc.
+ * @param {string} repoCode -- e.g., 'TN' or 'TQ', etc.
  * @param {string} textName -- e.g., 'TOC.yaml'
  * @param {string} YAMLText -- the text itself to be checked
  * @param {string} givenLocation

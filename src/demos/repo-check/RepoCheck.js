@@ -90,7 +90,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
             let [languageCode, repoCode] = repoName.split('_');
             repoCode = repoCode.toUpperCase();
             if (repoCode === 'TN2') repoCode = 'TN';
-            else if (repoCode === 'TQ2') repoCode = 'TQ';
+            // else if (repoCode === 'TQ1') repoCode = 'TQ';
             // debugLog(`RepoCheck languageCode='${languageCode}' repoCode='${repoCode}'`);
 
             // Load whole repos, especially if we are going to check files in manifests

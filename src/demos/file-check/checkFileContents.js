@@ -80,7 +80,7 @@ export async function checkFileContents(username, languageCode, repoCode, branch
       const checkFunction = {
         'TWL': checkTWL_TSV6Table, 'OBS-TWL': checkTWL_TSV6Table,
         'TN2': checkNotesTSV7Table, 'OBS-TN2': checkNotesTSV7Table,
-        'TQ2': checkQuestionsTSV7Table, 'OBS-TQ2': checkQuestionsTSV7Table,
+        'TQ': checkQuestionsTSV7Table, 'OBS-TQ': checkQuestionsTSV7Table,
         'SN': checkNotesTSV7Table, 'OBS-SN2': checkNotesTSV7Table,
         'SQ': checkQuestionsTSV7Table, 'OBS-SQ2': checkQuestionsTSV7Table,
       }[repoCode];

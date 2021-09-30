@@ -9,7 +9,7 @@ import { checkRepo } from '../repo-check/checkRepo';
 import { userLog, functionLog, debugLog, parameterAssert, logicAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.9.4';
+// const BP_VALIDATOR_VERSION_STRING = '0.9.5';
 
 const STANDARD_MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -281,9 +281,10 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       }
 
       if (filename === 'LICENSE.md') {
-        const fullYearString = `${(new Date()).getFullYear()}`;
+        const thisYear = (new Date()).getFullYear();
+        const fullYearString = `${thisYear}`;
         // debugLog(`Year ${fullYearString} is ${typeof fullYearString}`);
-        if (markdownFileContent.indexOf(fullYearString) === -1) // Can’t find this year string in file
+        if (markdownFileContent.indexOf(fullYearString) === -1 && markdownFileContent.indexOf(`${thisYear-1}`) === -1) // Can’t find this year or previous year in file
           // NOTE: We don’t use addNoticePartial, because it adds a misleading BookID
           checkBookPackageResult.noticeList.push({ priority: 256, message: "Possibly missing current copyright year", details: `possibly expecting '${fullYearString}'`, username, repoName, filename, location: markdownLocation, extra: repoCode });
       }
@@ -299,8 +300,8 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
 
 
   // Main code for checkBookPackage()
-  // NOTE: TN and TQ are used here for the old resource formats, e.g., 9-column TSV TN2 and markdown TQ2
-  //        The TN2, TQ2, SN, and if (linkBookCode.length) repoCodes refer to the new 7-column notes TSV format.
+  // NOTE: TN used here for the old resource formats, e.g., 9-column TSV TN2
+  //        The TN2, TQ, SN, and if (linkBookCode.length) repoCodes refer to the new 7-column notes TSV formats.
   // debugLog("checkBookPackage() main code…");
   let repoCodeList;
   let bookNumberAndName, whichTestament;
@@ -311,9 +312,9 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     else if (dataSet === 'OLD')
       repoCodeList = ['OBS', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
     else if (dataSet === 'NEW')
-      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2'];
+      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ', 'OBS-SN2', 'OBS-SQ2'];
     else if (dataSet === 'BOTH')
-      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SN2', 'OBS-SQ', 'OBS-SQ2'];
+      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-SN', 'OBS-SN2', 'OBS-SQ', 'OBS-SQ2'];
   } else { // not OBS
     // We also need to know the number for USFM books
     try {
@@ -333,11 +334,11 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     if (dataSet === 'DEFAULT')
       repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'TWL', 'LT', 'ST', 'TN', 'TQ', 'SN', 'SQ'] : [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'];
     else if (dataSet === 'OLD')
-      repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'TWL', 'LT', 'ST', 'TN', 'TQ'] : [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'];
+      repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'TWL', 'LT', 'ST', 'TN', 'TQ1'] : [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ1'];
     else if (dataSet === 'NEW')
-      repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'TWL', 'LT', 'ST', 'TN2', 'TQ2', 'SN', 'SQ'] : [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'];
+      repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'TWL', 'LT', 'ST', 'TN2', 'TQ', 'SN', 'SQ'] : [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'];
     else if (dataSet === 'BOTH')
-      repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'TWL', 'LT', 'ST', 'TN2', 'TN', 'TQ2', 'TQ', 'SN', 'SQ'] : [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'];
+      repoCodeList = languageCode === 'en' ? [origLangRepoCode, 'TWL', 'LT', 'ST', 'TN2', 'TN', 'TQ', 'SN', 'SQ'] : [origLangRepoCode, 'LT', 'ST', 'TN', 'TQ'];
   }
 
 
@@ -382,7 +383,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       // TODO: Might we need specific releases/tags for some of these (e.g., from the TN2 manifest)???
       // TODO: Do we need to hard-code where to find the UHB and UGNT???
       filename = `${bookNumberAndName}.usfm`;
-    else if (adjustedRepoCode === 'TWL' || thisRepoCode.endsWith('TN2') || thisRepoCode.endsWith('TQ2'))
+    else if (adjustedRepoCode === 'TWL' || thisRepoCode.endsWith('TN2') || thisRepoCode.endsWith('TQ'))
       filename = `${adjustedRepoCode.toLowerCase()}_${bookID}.tsv`
     else if ((adjustedRepoCode === 'SN' || adjustedRepoCode === 'SQ') && bookID !== 'OBS')
       filename = `${adjustedRepoCode.toLowerCase()}_${bookID}.tsv`
@@ -413,8 +414,8 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         checkedRepoNames.add(repoName);
       }
       addSuccessMessage(`Checked ${languageCode} OBS repo from ${adjustedUsername}`);
-    } else if (thisRepoCode === 'TQ'
-      || thisRepoCode === 'OBS-TN' || thisRepoCode === 'OBS-TQ' || thisRepoCode === 'OBS-SN' || thisRepoCode === 'OBS-SQ') { // These are still markdown for now
+    } else if (thisRepoCode === 'TQ1'
+      || thisRepoCode === 'OBS-TN' || thisRepoCode === 'OBS-TQ1' || thisRepoCode === 'OBS-SN' || thisRepoCode === 'OBS-SQ') { // These are still markdown for now
       // This is the old markdown resource with hundreds/thousands of files
       const tqResultObject = await checkMarkdownBook(adjustedUsername, languageCode, thisRepoCode, repoName, originalBranch, bookID, newCheckingOptions);
       checkBookPackageResult.successList = checkBookPackageResult.successList.concat(tqResultObject.successList);
@@ -426,7 +427,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         totalCheckedSize += tqResultObject.totalCheckedSize;
         checkedRepoNames.add(repoName);
       }
-    } else { // For repos other than OBS and TQ, we only have one file to check
+    } else { // For repos other than OBS and TQ1, we only have one file to check
       logicAssert(filename?.length, `filename should be set by now for un=${adjustedUsername} rC=${thisRepoCode} aRC=${adjustedRepoCode} rN=${repoName} aBr=${adjustedBranch}`);
       let repoFileContent;
       try {

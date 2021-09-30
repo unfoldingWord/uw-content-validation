@@ -1,4 +1,4 @@
-Last updated 2021-09-24 14:22:57.029402 by makeNoticeList.py
+Last updated 2021-10-01 10:37:02.296195 by makeNoticeList.py
 Got 592 notices:
   standardisedNoticeList.push( 1, `Reduced numbers of similar and hidden messages because of large list ($standardisedNoticeList.length.toLocaleString())`, location: " during notice processing"	from notice-processing-functions.js line 505
   previousObject.hiddenNotices.push( thisNotice.priority, maximumHiddenNoticesMessage	from notice-processing-functions.js line 629
@@ -9,8 +9,8 @@ Got 592 notices:
   previousObject.hiddenNotices.push( thisNotice.priority, maximumHiddenNoticesMessage	from notice-processing-functions.js line 873
   checkFileResultObject.noticeList.unshift( 982, "File extension is not recognized, so treated as markdown.", filename: filepath, location: ourCFLocation	from checkFileContents.js line 119
   checkFileResultObject.noticeList.unshift( 995, "File extension is not recognized, so treated as plain text.", filename: filepath, location: ourCFLocation	from checkFileContents.js line 122
-  thisRepoCode === 'SN' || thisRepoCode === 'SQ' ? 196 : 996, "Unable to load book package file", username: adjustedUsername, repoCode: thisRepoCode, repoName, filename, location: repoLocation, extra: thisRepoCode ;	from checkBookPackage.js line 446
-  checkRepoResult.noticeList.push( 997, "Repository doesn’t exist", username, repoCode, repoName, location: givenLocation, extra: repoCode	from checkRepo.js line 330
+  thisRepoCode === 'SN' || thisRepoCode === 'SQ' ? 196 : 996, "Unable to load book package file", username: adjustedUsername, repoCode: thisRepoCode, repoName, filename, location: repoLocation, extra: thisRepoCode ;	from checkBookPackage.js line 447
+  checkRepoResult.noticeList.push( 997, "Repository doesn’t exist", username, repoCode, repoName, location: givenLocation, extra: repoCode	from checkRepo.js line 327
   expectedMarker === 'mt1' ? 921 : 519, "Missing expected USFM line", excerpt: `missing \\$expectedMarker`, location: fileLocation	from usfm-text-check.js line 686
   languageCode === 'en' || languageCode === 'fr' ? 490 : 190, "Expected header field to contain a mixed-case string", fieldName: `\\$marker`, excerpt: rest, lineNumber, C, V, location: lineLocation	from usfm-text-check.js line 1,373
   marker === 's5' ? 111 : 809, `$marker === 's5' ? 'Deprecated' : 'Unexpected' '\\$marker' marker at start of line`, C, V, lineNumber, characterIndex: 1, location: lineLocation	from usfm-text-check.js line 1,411
@@ -36,14 +36,14 @@ Got 592 notices:
   999, "checkRepo function FAILED", repoName, excerpt: checkRepoError, location: repoName	from RepoCheck.js line 144
   997, "Repository doesn’t exist", username, repoCode, repoName, location: manifestLocation, extra: repoCode	from checkBookPackage.js line 195
   997, "Repository doesn’t exist", username, repoCode, repoName, location: markdownLocation, extra: repoCode	from checkBookPackage.js line 260
-  997, "Repository doesn’t exist", username: adjustedUsername, repoCode: thisRepoCode, repoName, location: repoLocation, extra: thisRepoCode	from checkBookPackage.js line 444
-  997, "Repository doesn’t exist", details, username, repoCode, repoName, location: generalLocation, extra: repoCode	from checkBookPackage.js line 663
-  997, "Repository doesn’t exist", username, repoCode, repoName, location: generalLocation, extra: repoCode	from checkBookPackage.js line 688
+  997, "Repository doesn’t exist", username: adjustedUsername, repoCode: thisRepoCode, repoName, location: repoLocation, extra: thisRepoCode	from checkBookPackage.js line 445
+  997, "Repository doesn’t exist", details, username, repoCode, repoName, location: generalLocation, extra: repoCode	from checkBookPackage.js line 664
+  997, "Repository doesn’t exist", username, repoCode, repoName, location: generalLocation, extra: repoCode	from checkBookPackage.js line 689
   996, "Unable to load file", username, repoName, filename: STANDARD_MANIFEST_FILENAME, location: manifestLocation, extra: repoCode ;	from checkBookPackage.js line 197
   996, "Unable to load file", username, repoName, filename, location: markdownLocation, extra: repoCode ;	from checkBookPackage.js line 262
-  996, "Unable to load file", details, bookID, location: generalLocation, extra: repoCode	from checkBookPackage.js line 665
-  996, "Unable to load file", username, bookID, C, V, filename: thisPath, location: `$generalLocation $thisPath `, extra: repoCode ;	from checkBookPackage.js line 690
-  996, "Unable to load file", username, bookID: ourBookID, filename: thisFilename, location: `$givenLocation $thisFilepath`, extra: repoName ;	from checkRepo.js line 332
+  996, "Unable to load file", details, bookID, location: generalLocation, extra: repoCode	from checkBookPackage.js line 666
+  996, "Unable to load file", username, bookID, C, V, filename: thisPath, location: `$generalLocation $thisPath `, extra: repoCode ;	from checkBookPackage.js line 691
+  996, "Unable to load file", username, bookID: ourBookID, filename: thisFilename, location: `$givenLocation $thisFilepath`, extra: repoName ;	from checkRepo.js line 329
   994, "USFM file must start with a valid \\id line", lineNumber: 1, location: ourLocation	from usfm-text-check.js line 1,510
   993, "Unresolved GIT conflict", characterIndex, excerpt, location: ourLocation	from field-text-check.js line 131
   993, "Unresolved GIT conflict", characterIndex, excerpt, location: ourLocation	from plain-text-check.js line 145
@@ -52,13 +52,13 @@ Got 592 notices:
   991, "Unresolved GIT conflict", characterIndex, excerpt, location: ourLocation	from field-text-check.js line 141
   991, "Unresolved GIT conflict", characterIndex, excerpt, location: ourLocation	from plain-text-check.js line 153
   990, "Unable to load file", username, repoName, filename, location: givenLocation ], elapsedSeconds: 0 ;	from FileCheck.js line 66
-  989, "Unable to find/load repository", location: ourLocation	from checkRepo.js line 233
+  989, "Unable to find/load repository", location: ourLocation	from checkRepo.js line 230
   988, "Bad TSV header", details: `expected '$EXPECTED_TN_HEADING_LINE'`, excerpt: lines[0], lineNumber: 1, location: ourLocation	from tn-tsv9-table-check.js line 137
   988, "Bad TSV header", details: `expected '$EXPECTED_TWL_HEADING_LINE'`, excerpt: lines[0], lineNumber: 1, location: ourLocation	from twl-tsv6-table-check.js line 129
   988, "Bad TSV header", details: `expected '$EXPECTED_NOTES_HEADING_LINE'`, excerpt: lines[0], lineNumber: 1, location: ourLocation	from notes-tsv7-table-check.js line 129
   988, "Bad TSV header", details: `expected '$EXPECTED_QUESTIONS_HEADING_LINE'`, excerpt: lines[0], lineNumber: 1, location: ourLocation	from questions-tsv7-table-check.js line 129
   987, C, V, "Expected \\id line to start with book identifier", lineNumber: n, characterIndex: 4, excerpt, location: ourLocation	from usfm-text-check.js line 1,628
-  986, "Repository doesn’t seem to exist", username, location: givenLocation, extra: repoName	from checkRepo.js line 213
+  986, "Repository doesn’t seem to exist", username, location: givenLocation, extra: repoName	from checkRepo.js line 210
   985, `Field does not match schema $errorObject.keyword`, details: errorObject.message, fieldName: errorObject.dataPath, location: ourLocation	from manifest-text-check.js line 728
   984, `Found wrong number of TSV fields (expected $NUM_EXPECTED_TWL_TSV_FIELDS)`, details: `found $fields.length field$fields.length === 1 ? '' : 's'`, rowID, location: ourRowLocation	from twl-tsv6-row-check.js line 452
   984, `Found wrong number of TSV fields (expected $NUM_EXPECTED_TN_TSV_FIELDS)`, details: `found $fields.length field$fields.length === 1 ? '' : 's'`, rowID, location: ourRowLocation	from tn-tsv9-row-check.js line 525
@@ -99,11 +99,11 @@ Got 592 notices:
   971, "Unexpected line break in single-line field", fieldName: 'GLQuote', rowID, characterIndex: characterIndex, excerpt, location: ourRowLocation	from notes-tsv7-row-check.js line 442
   971, "Unexpected line break in single-line field", fieldName: 'GLQuote', rowID, characterIndex: characterIndex, excerpt, location: ourRowLocation	from notes-tsv7-row-check.js line 457
   956, "Got empty manifest file", repoName, filename: STANDARD_MANIFEST_FILENAME, location: manifestLocation, extra: `$repoCode MANIFEST`	from checkBookPackage.js line 221
-  956, "Got empty markdown file", repoName, filename, location: markdownLocation, extra: repoCode	from checkBookPackage.js line 295
+  956, "Got empty markdown file", repoName, filename, location: markdownLocation, extra: repoCode	from checkBookPackage.js line 296
   950, "tC cannot yet process '*' language code", characterIndex, excerpt, location: ourLocation	from notes-links-check.js line 351
   950, "tC cannot yet process '*' language code", characterIndex, excerpt, location: ourLocation	from notes-links-check.js line 527
-  947, "Missing manifest.yaml", location: ourLocation, extra: `$repoName MANIFEST`	from checkRepo.js line 361
-  946, "Missing LICENSE.md", location: ourLocation, extra: `$repoName LICENSE`	from checkRepo.js line 359
+  947, "Missing manifest.yaml", location: ourLocation, extra: `$repoName MANIFEST`	from checkRepo.js line 358
+  946, "Missing LICENSE.md", location: ourLocation, extra: `$repoName LICENSE`	from checkRepo.js line 356
   944, `USFM3 Grammar Check ($strictnessString mode) doesn’t pass`, filename, location: ourLocation	from BCS-usfm-grammar-check.js line 229
   943, `USFM3 toJSON Check doesn’t pass`, location: ourLocation	from usfm-js-check.js line 95
   939, "Key is missing for project", details: keyName, excerpt: JSON.stringify(projectEntry), location: ourLocation	from manifest-text-check.js line 743
@@ -149,7 +149,7 @@ Got 592 notices:
   905, "Unexpected Hebrew cantillation mark in lemma field", details: `found $regexMatchObject.length '$regexMatchObject'`, lineNumber, C, V, excerpt: attributeValue, location: lineLocation	from usfm-text-check.js line 1,077
   904, "Unexpected Hebrew cantillation mark in original language field", details: `found $match.length '$match'`, C, V, excerpt: fieldText, location: ourLocation	from orig-quote-check.js line 586
   903, "Bad function call: should be given a valid book abbreviation", excerpt: bookID, location: ourLocation	from usfm-text-check.js line 1,483
-  902, "Bad function call: should be given a valid book abbreviation", excerpt: bookID, location: ` (not '$bookID')$generalLocation` ); return checkBookPackageResult;	from checkBookPackage.js line 326
+  902, "Bad function call: should be given a valid book abbreviation", excerpt: bookID, location: ` (not '$bookID')$generalLocation` ); return checkBookPackageResult;	from checkBookPackage.js line 327
   901, "Unexpected reference field", details: "expected C:V", fieldName: 'Reference', rowID, excerpt: reference, location: ourRowLocation	from questions-tsv7-row-check.js line 291
   900, "Bad parameter: should be given a valid book abbreviation", excerpt: bookIDList, location: ` (not '$bookIDList')`	from checkBookPackages.js line 79
   899, C, V, "Have USFM text not in a paragraph", lineNumber: n, characterIndex: 1, details: `'\\$lastMarker' before '\\$marker'`, location: ourLocation	from usfm-text-check.js line 1,646
@@ -528,7 +528,7 @@ Got 592 notices:
   274, "Missing Question field", fieldName: 'Question', rowID, location: ourRowLocation	from questions-tsv7-row-check.js line 476
   274, "Missing Response field", fieldName: 'Response', rowID, location: ourRowLocation	from questions-tsv7-row-check.js line 506
   274, "Missing Note field", fieldName: 'Note', rowID, location: ourRowLocation	from notes-tsv7-row-check.js line 514
-  256, "Possibly missing current copyright year", details: `possibly expecting '$fullYearString'`, username, repoName, filename, location: markdownLocation, extra: repoCode	from checkBookPackage.js line 288
+  256, "Possibly missing current copyright year", details: `possibly expecting '$fullYearString'`, username, repoName, filename, location: markdownLocation, extra: repoCode	from checkBookPackage.js line 289
   252, "Markdown headers should be preceded by a blank line", lineNumber: n, location: ourLocation ;	from markdown-text-check.js line 303
   251, "Markdown headers should be followed by a blank line", lineNumber: n, location: ourLocation ;	from markdown-text-check.js line 309
   250, "Multiple blank lines are not expected in markdown", lineNumber: n, location: ourLocation ;	from markdown-text-check.js line 372

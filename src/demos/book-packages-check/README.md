@@ -38,7 +38,7 @@ import BookPackagesCheck from './BookPackagesCheck';
   // bookIDs='LUK,EPH,1TI,2TI,TIT,JAS,1PE,1JN,2JN,3JN, OBS' // Uncomment if you're interested in NT and OBS only
 
   // We can choose the forthcoming new TSV formats or the existing formats
-  // dataSet='OLD' // 'OLD' (Markdown TQ, TSV TN, etc.), 'NEW' (TSV TQ2, TN2, etc.), 'DEFAULT', or 'BOTH'
+  // dataSet='OLD' // 'OLD' (Markdown TQ1, TSV TN, etc.), 'NEW' (TSV TQ, TN2, etc.), 'DEFAULT', or 'BOTH'
 
   // Normally links in files are downloaded to check that they really exist
   disableAllLinkFetchingFlag='false' // 'true' or 'false'

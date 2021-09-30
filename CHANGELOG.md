@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.2.5](https://github.com/unfoldingWord/uw-content-validation/tree/2.2.5) (2021-09-28)
+
+[Full Changelog](https://github.com/unfoldingWord/uw-content-validation/compare/2.2.2...2.2.5)
+
+**Merged pull requests:**
+
+- Version 2.2.5 [\#216](https://github.com/unfoldingWord/uw-content-validation/pull/216) ([RobH123](https://github.com/RobH123))
+
 ## [2.2.2](https://github.com/unfoldingWord/uw-content-validation/tree/2.2.2) (2021-09-03)
 
 [Full Changelog](https://github.com/unfoldingWord/uw-content-validation/compare/2.2.1...2.2.2)

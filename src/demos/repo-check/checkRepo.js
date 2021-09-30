@@ -45,9 +45,6 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
   if (repoCode === 'TN2') {
     repoCode = 'TN';
     if (repoBranch === undefined) repoBranch = 'newFormat';
-  } else if (repoCode === 'TQ2') {
-    repoCode = 'TQ';
-    if (repoBranch === undefined) repoBranch = 'newFormat';
   } else if (repoCode === 'OBS-TN2') {
     repoCode = 'OBS-TN';
     if (repoBranch === undefined) repoBranch = 'newFormat';
@@ -284,7 +281,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
           bookID = bookOrFileCode.slice(-3).toUpperCase();
           logicAssert(bookID !== 'twl' && bookID !== 'TWL', `Should get a valid bookID here, not '${bookID}'`)
           // debugLog(`Have TSV bookcode(${bookID.length})='${bookID}'`);
-          if (repoCode === 'TWL' || repoCode === 'SN' || repoCode === 'SQ' || repoCode === 'TN2' || repoCode === 'TQ2') {// new repos allow `OBS`
+          if (repoCode === 'TWL' || repoCode === 'SN' || repoCode === 'SQ' || repoCode === 'TN2' || repoCode === 'TQ') {// new repos allow `OBS`
             //parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkRepo: '${bookID}' is not a valid USFM book identifier (for TSV)`);
           } else {
             //parameterAssert(bookID !== 'OBS' && books.isValidBookID(bookID), `checkRepo: '${bookID}' is not a valid USFM book identifier (for TSV)`);

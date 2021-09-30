@@ -253,6 +253,27 @@ export function RenderRawResults({ results }) {
 }
 
 
+function RenderSuccessesSummaryLine({ haveErrorsOrWarnings, results }) {
+    // functionLog(`RenderSuccessesSummaryLine(${haveErrorsOrWarnings}, ${results})`);
+
+    let successCount;
+    if (results.successList.length === 1) successCount = 'One';
+    else if (results.successList.length === 2) successCount = 'Two';
+    else if (results.successList.length === 3) successCount = 'Three';
+    else if (results.successList.length === 4) successCount = 'Four';
+    else if (results.successList.length === 5) successCount = 'Five';
+    else if (results.successList.length === 6) successCount = 'Six';
+    else successCount = results.successList.length.toLocaleString();
+
+    let currentDate = new Date();
+    let dateString = currentDate.toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+    let timeString = currentDate.toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit' });
+
+    return <>
+        <b style={{ color: haveErrorsOrWarnings ? 'limegreen' : 'green' }}>{successCount.toLocaleString()} check{results.successList.length === 1 ? '' : 's'} completed {dateString} at {timeString}{results.successList.length ? ':' : ''}</b>
+    </>;
+}
+
 function RenderSuccessesColored({ results }) {
     // Display our array of success message strings in a nicer format
     //
@@ -362,7 +383,7 @@ function RenderFileDetails({ givenEntry }) {
                 fileLink = `https://git.door43.org/${givenEntry.username}/${adjustedRepoName}/blame/branch/${givenEntry.branch}/${folder}${givenEntry.filename}`;
             } else // not TSV or MD
                 fileLink = `https://git.door43.org/${givenEntry.username}/${adjustedRepoName}/src/branch/${givenEntry.branch}/${givenEntry.filename}`;
-        } catch (someErr) {            debugLog(`What was someErr here: ${someErr}`);        }
+        } catch (someErr) { debugLog(`What was someErr here: ${someErr}`); }
         if (!fileLink.length && givenEntry.filename && givenEntry.filename.length) resultStart += ` in file ${givenEntry.filename}`;
         if (givenEntry.lineNumber) {
             resultStart += ' on ';
@@ -403,16 +424,16 @@ function RenderExcerpt({ excerpt, message }) {
     // if (message.endsWith("Untested general/outside link")
     //     || message.endsWith("Error loading general link")
     //     || message.endsWith("Should http link be https")) {
-        // debugLog(`Here1 RenderExcerpt(${excerpt}, ${message})`);
-        if (excerpt && excerpt[0] === '[' && excerpt.slice(-1) === ')' && excerpt.indexOf('](') !== -1) { // then the excerpt is a link so let's liven it
-            // debugLog(`Here2 RenderExcerpt(${excerpt}, ${message})`);
-            const ix = excerpt.indexOf('](');
-            const displayPart = excerpt.slice(1, ix); // Start after the [ until before the ](
-            const linkPart = excerpt.slice(ix + 2, excerpt.length - 1); // Step past the ]( but don’t include the final )
-            const adjLinkPart = message === "Should http link be https" ? linkPart.replace('http:', 'https:') : linkPart;
-            // debugLog(`RenderExcerpt from '${excerpt}' got ix=${ix}, displayPart='${displayPart}', linkPart='${linkPart}', adjLinkPart='${adjLinkPart}'`);
-            return <><span style={{ color: 'DimGray' }}>` around ◗[{displayPart}](<a rel="noopener noreferrer" target="_blank" href={adjLinkPart}>{linkPart}</a>)◖`</span></>
-        }
+    // debugLog(`Here1 RenderExcerpt(${excerpt}, ${message})`);
+    if (excerpt && excerpt[0] === '[' && excerpt.slice(-1) === ')' && excerpt.indexOf('](') !== -1) { // then the excerpt is a link so let's liven it
+        // debugLog(`Here2 RenderExcerpt(${excerpt}, ${message})`);
+        const ix = excerpt.indexOf('](');
+        const displayPart = excerpt.slice(1, ix); // Start after the [ until before the ](
+        const linkPart = excerpt.slice(ix + 2, excerpt.length - 1); // Step past the ]( but don’t include the final )
+        const adjLinkPart = message === "Should http link be https" ? linkPart.replace('http:', 'https:') : linkPart;
+        // debugLog(`RenderExcerpt from '${excerpt}' got ix=${ix}, displayPart='${displayPart}', linkPart='${linkPart}', adjLinkPart='${adjLinkPart}'`);
+        return <><span style={{ color: 'DimGray' }}>` around ◗[{displayPart}](<a rel="noopener noreferrer" target="_blank" href={adjLinkPart}>{linkPart}</a>)◖`</span></>
+    }
     // }
     if (excerpt && excerpt.length)
         return <> around ◗<span style={{ color: 'DarkOrange' }}><b>{excerpt}</b></span>◖</>;
@@ -510,7 +531,7 @@ function RenderErrors({ results }) {
     return <>
         <b style={{ color: results.errorList.length ? 'red' : 'green' }}>{results.errorList.length.toLocaleString()} error{results.errorList.length === 1 ? '' : 's'}</b>{results.errorList.length ? ':' : ''}
         <small style={{ color: 'Gray' }}>{results.numHiddenErrors ? " (" + results.numHiddenErrors.toLocaleString() + " similar one" + (results.numHiddenErrors === 1 ? '' : 's') + " hidden)" : ''}</small>
-        <RenderProcessedArray results={results} arrayType='e' />
+        <RenderProcessedArray results arrayType='e' />
     </>;
 }
 function RenderWarnings({ results }) {
@@ -520,7 +541,7 @@ function RenderWarnings({ results }) {
     return <>
         <b style={{ color: results.warningList.length ? 'orange' : 'green' }}>{results.warningList.length.toLocaleString()} warning{results.warningList.length === 1 ? '' : 's'}</b>{results.warningList.length ? ':' : ''}
         <small style={{ color: 'Gray' }}>{results.numHiddenWarnings ? " (" + results.numHiddenWarnings.toLocaleString() + " similar one" + (results.numHiddenWarnings === 1 ? '' : 's') + " hidden)" : ''}</small>
-        <RenderProcessedArray results={results} arrayType='w' />
+        <RenderProcessedArray results arrayType='w' />
     </>;
 }
 function RenderErrorsAndWarnings({ results }) {
@@ -539,18 +560,10 @@ export function RenderSuccessesErrorsWarnings({ results }) {
 
     // consoleLogObject('RenderSuccessesErrorsWarnings results', results);
 
-    const haveErrorsOrWarnings = results.errorList.length || results.warningList.length;
-
-    let successCount;
-    if (results.successList.length === 1) successCount = 'One';
-    else if (results.successList.length === 2) successCount = 'Two';
-    else if (results.successList.length === 3) successCount = 'Three';
-    else if (results.successList.length === 4) successCount = 'Four';
-    else if (results.successList.length === 5) successCount = 'Five';
-    else successCount = results.successList.length.toLocaleString();
+    let haveErrorsOrWarnings = results.errorList.length || results.warningList.length;
 
     return <>
-        <b style={{ color: haveErrorsOrWarnings ? 'limegreen' : 'green' }}>{successCount.toLocaleString()} check{results.successList.length === 1 ? '' : 's'} completed</b>{results.successList.length ? ':' : ''}
+        <RenderSuccessesSummaryLine haveErrorsOrWarnings={haveErrorsOrWarnings} results={results} />
         <RenderSuccessesColored results={results} />
         {haveErrorsOrWarnings ? <RenderErrorsAndWarnings results={results} /> : ""}
     </>;
@@ -637,16 +650,8 @@ export function RenderSuccessesSevereMediumLow({ results }) {
 
     const haveErrorsOrWarnings = results.severeList.length || results.mediumList.length || results.lowList.length;
 
-    let successCount;
-    if (results.successList.length === 1) successCount = 'One';
-    else if (results.successList.length === 2) successCount = 'Two';
-    else if (results.successList.length === 3) successCount = 'Three';
-    else if (results.successList.length === 4) successCount = 'Four';
-    else if (results.successList.length === 5) successCount = 'Five';
-    else successCount = results.successList.length.toLocaleString();
-
     return <>
-        <b style={{ color: haveErrorsOrWarnings ? 'limegreen' : 'green' }}>{successCount.toLocaleString()} check{results.successList.length === 1 ? '' : 's'} completed</b>{results.successList.length ? ':' : ''}
+        <RenderSuccessesSummaryLine haveErrorsOrWarnings={haveErrorsOrWarnings} results={results} />
         <RenderSuccessesColored results={results} />
         {haveErrorsOrWarnings ? <RenderSevereMediumLow results={results} /> : ""}
     </>;
@@ -701,22 +706,16 @@ export function RenderSuccessesNoticesGradient({ results }) {
 
     // consoleLogObject('RenderSuccessesNoticesGradient results', results);
 
-    let successCount;
-    if (results.successList.length === 1) successCount = 'One';
-    else if (results.successList.length === 2) successCount = 'Two';
-    else if (results.successList.length === 3) successCount = 'Three';
-    else if (results.successList.length === 4) successCount = 'Four';
-    else if (results.successList.length === 5) successCount = 'Five';
-    else successCount = results.successList.length.toLocaleString();
+    let haveErrorsOrWarnings = results.warningList.length;
 
     userLog(`RenderSuccessesNoticesGradient displaying ${results.warningList.length.toLocaleString()} gradient notice(s) with ${results.numHiddenNotices.toLocaleString()} hidden`);
     return <>
-        <b style={{ color: results.warningList.length ? 'limegreen' : 'green' }}>{successCount.toLocaleString()} check{results.successList.length === 1 ? '' : 's'} completed</b>{results.successList.length ? ':' : ''}
+        <RenderSuccessesSummaryLine haveErrorsOrWarnings={haveErrorsOrWarnings} results={results} />
         <RenderSuccessesColored results={results} />
         <RenderSuppressedCount suppressedCount={results.numSuppressedNotices} />
         <b style={{ color: results.warningList.length ? 'orange' : 'green' }}>{results.warningList.length.toLocaleString()} warning notice{results.warningList.length === 1 ? '' : 's'}</b>{results.warningList.length ? ':' : ''}
         <small style={{ color: 'Gray' }}>{results.numHiddenNotices ? " (" + results.numHiddenNotices.toLocaleString() + " similar one" + (results.numHiddenNotices === 1 ? '' : 's') + " hidden)" : ''}</small>
-        {results.warningList.length ? <RenderNoticesGradient results={results} /> : ""}
+        {haveErrorsOrWarnings ? <RenderNoticesGradient results={results} /> : ""}
         <RenderCutoffCount cutoffCount={results.numCutoffNotices} cutoffLevel={results.processingOptions.cutoffPriorityLevel} />
     </>;
 }

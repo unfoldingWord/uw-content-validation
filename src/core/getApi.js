@@ -129,7 +129,7 @@ export async function clearCaches() {
 /**
  * @description - Forms and returns a Door43 repoName string
  * @param {string} languageCode - the language code, e.g., 'en'
- * @param {string} repoCode - the repo code, e.g., 'TQ2'
+ * @param {string} repoCode - the repo code, e.g., 'TN2'
  * @return {String} - the Door43 repoName string
  */
 export function formRepoName(languageCode, repoCode) {
@@ -217,7 +217,7 @@ export async function cachedGetFile({ username, repository, path, branch }) {
 
   contents = await getFileFromZip({ username, repository, path, branchOrRelease: branch });
   // if (contents)
-  //   if (filePath.indexOf('_tq/') < 0) // Don’t log for TQ2 files coz too many
+  //   if (filePath.indexOf('_tq/') < 0) // Don’t log for TQ1 files coz too many
   //     userLog(`  cachedGetFile got ${filePath} from zipfile`);
   if (!contents) {
     contents = await cachedFetchFileFromServerWithBranch({ username, repository, path, branch });
@@ -226,7 +226,7 @@ export async function cachedGetFile({ username, repository, path, branch }) {
   if (contents) {
     // save unzipped file in cache to speed later retrieval
     await unzipStore.setItem(filePath.toLowerCase(), contents);
-    // if (filePath.indexOf('_tq/') < 0) // Don’t log for TQ2 files coz too many
+    // if (filePath.indexOf('_tq/') < 0) // Don’t log for TQ1 files coz too many
     //   userLog(`cachedGetFile saved ${filePath} to cache for next time`);
   }
   // else console.error(`cachedGetFile(${username}, ${repository}, ${path}, ${branch}) -- failed to get file`);
@@ -596,7 +596,7 @@ export async function cachedGetFileUsingFullURL({ uri, params }) {
       pictureContents = null;
     }
     // if (contents)
-    //   if (filePath.indexOf('_tq/') < 0) // Don’t log for TQ2 files coz too many
+    //   if (filePath.indexOf('_tq/') < 0) // Don’t log for TQ1 files coz too many
     //     userLog(`  cachedGetFile got ${filePath} from zipfile`);
     if (pictureContents) {
       // save unzipped file in cache to speed later retrieval

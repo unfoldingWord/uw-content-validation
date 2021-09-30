@@ -85,21 +85,21 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
             const whichTestament = bookID === 'OBS' ? 'none' : books.testament(bookID); // returns 'old' or 'new'
             let repoPreloadList;
             if (bookID === 'OBS') {
-                repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2']; // for DEFAULT
+                repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ', 'OBS-SN2', 'OBS-SQ2']; // for DEFAULT
                 if (dataSet === 'OLD')
-                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
+                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ1', 'OBS-SN', 'OBS-SQ'];
                 else if (dataSet === 'NEW')
-                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ'];
+                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ', 'OBS-SN2', 'OBS-SQ'];
                 else if (dataSet === 'BOTH')
-                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SN2', 'OBS-SQ', 'OBS-SQ2'];
+                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ', 'OBS-SN', 'OBS-SN2', 'OBS-SQ', 'OBS-SQ2'];
             } else { // not OBS
                 repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TQ', 'SN', 'SQ']; // for DEFAULT
                 if (dataSet === 'OLD')
-                    repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TQ'];
+                    repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TQ1'];
                 else if (dataSet === 'NEW')
-                    repoPreloadList = ['TWL', 'LT', 'ST', 'TN2', 'TQ2', 'SN', 'SQ'];
+                    repoPreloadList = ['TWL', 'LT', 'ST', 'TN2', 'TQ', 'SN', 'SQ'];
                 else if (dataSet === 'BOTH')
-                    repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TN2', 'TQ', 'TQ2', 'SN', 'SQ'];
+                    repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TN2', 'TQ', 'SN', 'SQ'];
                 logicAssert(whichTestament === 'old' || whichTestament === 'new', `BookPackageCheck() couldn’t find testament for '${bookID}'`);
                 const origLangRepo = whichTestament === 'old' ? 'UHB' : 'UGNT';
                 repoPreloadList.unshift(origLangRepo);
