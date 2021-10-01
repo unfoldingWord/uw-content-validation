@@ -18,20 +18,22 @@ export async function startLiveLinksCheck(linksList, existingNoticeList, callbac
 
     let result = { noticeList: existingNoticeList };
 
-    function addNoticePartial({ priority, message, characterIndex, excerpt, location }) {
+    function addNotice({ priority, message, characterIndex, excerpt, location }) {
         userLog(`sLLC Link Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
-        //parameterAssert(priority !== undefined, "sLLC addNoticePartial: 'priority' parameter should be defined");
-        //parameterAssert(typeof priority === 'number', `sLLC addNoticePartial: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        //parameterAssert(message !== undefined, "sLLC addNoticePartial: 'message' parameter should be defined");
-        //parameterAssert(typeof message === 'string', `sLLC addNoticePartial: 'message' parameter should be a string not a '${typeof message}':${message}`);
-        // parameterAssert(characterIndex!==undefined, "sLLC addNoticePartial: 'characterIndex' parameter should be defined");
-        if (characterIndex) { parameterAssert(typeof characterIndex === 'number', `sLLC addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
+        //parameterAssert(priority !== undefined, "sLLC addNotice: 'priority' parameter should be defined");
+        //parameterAssert(typeof priority === 'number', `sLLC addNotice: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
+        //parameterAssert(message !== undefined, "sLLC addNotice: 'message' parameter should be defined");
+        //parameterAssert(typeof message === 'string', `sLLC addNotice: 'message' parameter should be a string not a '${typeof message}':${message}`);
+        // parameterAssert(characterIndex!==undefined, "sLLC addNotice: 'characterIndex' parameter should be defined");
+        if (characterIndex) {
+            parameterAssert(typeof characterIndex === 'number', `sLLC addNotice: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
         }
-        // parameterAssert(excerpt!==undefined, "sLLC addNoticePartial: 'excerpt' parameter should be defined");
-        if (excerpt) { parameterAssert(typeof excerpt === 'string', `sLLC addNoticePartial: 'excerpt' parameter should be a string not a '${typeof excerpt}': ${excerpt}`);
+        // parameterAssert(excerpt!==undefined, "sLLC addNotice: 'excerpt' parameter should be defined");
+        if (excerpt) {
+            parameterAssert(typeof excerpt === 'string', `sLLC addNotice: 'excerpt' parameter should be a string not a '${typeof excerpt}': ${excerpt}`);
         }
-        // parameterAssert(location!==undefined, "sLLC addNoticePartial: 'location' parameter should be defined");
-        // parameterAssert(typeof location==='string', `sLLC addNoticePartial: 'location' parameter should be a string not a '${typeof location}': ${location}`);
+        // parameterAssert(location!==undefined, "sLLC addNotice: 'location' parameter should be defined");
+        // parameterAssert(typeof location==='string', `sLLC addNotice: 'location' parameter should be a string not a '${typeof location}': ${location}`);
         result.noticeList.push({ priority, message, characterIndex, excerpt, location });
     }
 
@@ -46,7 +48,7 @@ export async function startLiveLinksCheck(linksList, existingNoticeList, callbac
             userLog("startLiveLinksCheck got response: ", responseText.length);
         } catch (lcError) {
             console.error(`startLiveLinksCheck had an error fetching '${fetchLink}': ${lcError}`);
-            addNoticePartial({ priority: 439, message: "Error fetching link", location: ` ${fetchLink}` });
+            addNotice({ priority: 439, message: "Error fetching link", location: ` ${fetchLink}` });
         }
     }
 
@@ -100,20 +102,22 @@ export function checkFieldLinks(languageCode, repoCode, fieldName, fieldText, li
 
     let result = { noticeList: [] };
 
-    function addNoticePartial({ priority, message, characterIndex, excerpt, location }) {
-        userLog(`cFLs addNoticePartial: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
-        //parameterAssert(priority !== undefined, "cFLs addNoticePartial: 'priority' parameter should be defined");
-        //parameterAssert(typeof priority === 'number', `cFLs addNoticePartial: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        //parameterAssert(message !== undefined, "cFLs addNoticePartial: 'message' parameter should be defined");
-        //parameterAssert(typeof message === 'string', `cFLs addNoticePartial: 'message' parameter should be a string not a '${typeof message}': ${message}`);
-        // parameterAssert(characterIndex!==undefined, "cFLs addNoticePartial: 'characterIndex' parameter should be defined");
-        if (characterIndex) { parameterAssert(typeof characterIndex === 'number', `cFLs addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
+    function addNotice({ priority, message, characterIndex, excerpt, location }) {
+        userLog(`cFLs addNotice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
+        //parameterAssert(priority !== undefined, "cFLs addNotice: 'priority' parameter should be defined");
+        //parameterAssert(typeof priority === 'number', `cFLs addNotice: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
+        //parameterAssert(message !== undefined, "cFLs addNotice: 'message' parameter should be defined");
+        //parameterAssert(typeof message === 'string', `cFLs addNotice: 'message' parameter should be a string not a '${typeof message}': ${message}`);
+        // parameterAssert(characterIndex!==undefined, "cFLs addNotice: 'characterIndex' parameter should be defined");
+        if (characterIndex) {
+            parameterAssert(typeof characterIndex === 'number', `cFLs addNotice: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
         }
-        // parameterAssert(excerpt!==undefined, "cFLs addNoticePartial: 'excerpt' parameter should be defined");
-        if (excerpt) { parameterAssert(typeof excerpt === 'string', `cFLs addNoticePartial: 'excerpt' parameter should be a string not a '${typeof excerpt}': ${excerpt}`);
+        // parameterAssert(excerpt!==undefined, "cFLs addNotice: 'excerpt' parameter should be defined");
+        if (excerpt) {
+            parameterAssert(typeof excerpt === 'string', `cFLs addNotice: 'excerpt' parameter should be a string not a '${typeof excerpt}': ${excerpt}`);
         }
-        //parameterAssert(location !== undefined, "cFLs addNoticePartial: 'location' parameter should be defined");
-        //parameterAssert(typeof location === 'string', `cFLs addNoticePartial: 'location' parameter should be a string not a '${typeof location}': ${location}`);
+        //parameterAssert(location !== undefined, "cFLs addNotice: 'location' parameter should be defined");
+        //parameterAssert(typeof location === 'string', `cFLs addNotice: 'location' parameter should be a string not a '${typeof location}': ${location}`);
 
         result.noticeList.push({ priority, message, characterIndex, excerpt, location });
     }
@@ -128,7 +132,7 @@ export function checkFieldLinks(languageCode, repoCode, fieldName, fieldText, li
 
     if (!fieldText) { // Nothing to check
         if (linkOptions.expectedCount > 0)
-            addNoticePartial({ priority: 438, message: `Blank field / missing link (expected ${linkOptions.expectedCount} link${linkOptions.expectedCount === 1 ? "" : "s"})`, location: ourLocation });
+            addNotice({ priority: 438, message: `Blank field / missing link (expected ${linkOptions.expectedCount} link${linkOptions.expectedCount === 1 ? "" : "s"})`, location: ourLocation });
         return result;
     }
 
@@ -138,7 +142,7 @@ export function checkFieldLinks(languageCode, repoCode, fieldName, fieldText, li
 
     // Parameter nonsense check
     if (linkOptions.allowedCount > 0 && linkOptions.expectedCount > linkOptions.allowedCount)
-        addNoticePartial({ priority: 111, message: `Bad options for checkFieldLinks: expectedCount=${linkOptions.expectedCount} but allowedCount=${linkOptions.allowedCount}` });
+        addNotice({ priority: 111, message: `Bad options for checkFieldLinks: expectedCount=${linkOptions.expectedCount} but allowedCount=${linkOptions.allowedCount}` });
 
     // Check for embedded links
     // First, create our regex from the allowed link types
@@ -156,7 +160,7 @@ export function checkFieldLinks(languageCode, repoCode, fieldName, fieldText, li
             else if (linkType === 'naked')
                 linkRegexParts.push('(https*://[^ ]+)');
             else
-                addNoticePartial({ priority: 441, message: `Unknown linkType parameter`, excerpt: linkType });
+                addNotice({ priority: 441, message: `Unknown linkType parameter`, excerpt: linkType });
         }
     } else { // No link types specified
         linkRegexParts = [];
@@ -170,11 +174,11 @@ export function checkFieldLinks(languageCode, repoCode, fieldName, fieldText, li
     // debugLog("checkFieldLinks regexResultsArray", regexResultsArray.length, JSON.stringify(regexResultsArray));
 
     if (regexResultsArray.length < linkOptions.expectedCount)
-        addNoticePartial({ priority: 287, message: `Not enough links (expected ${linkOptions.expectedCount} link${linkOptions.expectedCount === 1 ? "" : "s"})`, location: ` (only found ${regexResultsArray.length})${ourLocation}` });
+        addNotice({ priority: 287, message: `Not enough links (expected ${linkOptions.expectedCount} link${linkOptions.expectedCount === 1 ? "" : "s"})`, location: ` (only found ${regexResultsArray.length})${ourLocation}` });
 
     if (linkOptions.checkTargets && linkOptions.callbackFunction && regexResultsArray) {
         startLiveLinksCheck(regexResultsArray, result.noticeList.slice(0), linkOptions.callbackFunction);
-        addNoticePartial({ priority: 600, message: `${regexResultsArray.length} link target${regexResultsArray.length === 1 ? ' is' : 's are'} still being checked…`, location: ourLocation });
+        addNotice({ priority: 600, message: `${regexResultsArray.length} link target${regexResultsArray.length === 1 ? ' is' : 's are'} still being checked…`, location: ourLocation });
         userLog("checkFieldLinks now returning initial result…");
     }
 

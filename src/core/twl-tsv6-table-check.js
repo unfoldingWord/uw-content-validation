@@ -3,7 +3,7 @@ import { DEFAULT_EXCERPT_LENGTH } from './defaults'
 import { checkTWL_TSV6DataRow } from './twl-tsv6-row-check';
 import { removeDisabledNotices } from './disabled-notices';
 // eslint-disable-next-line no-unused-vars
-import { parameterAssert } from './utilities';
+import { parameterAssert, aboutToOverwrite } from './utilities';
 
 
 const TWL_TABLE_VALIDATOR_VERSION_STRING = '0.1.4';
@@ -94,6 +94,7 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
         //parameterAssert(typeof incompleteNoticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
 
         if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkTWL_TSV6Table ${incompleteNoticeObject.debugChain}`;
+        aboutToOverwrite('checkTWL_TSV6Table', ['bookID', 'filename', 'repoCode'], incompleteNoticeObject, { bookID, filename, repoCode });
         carResult.noticeList.push({ ...incompleteNoticeObject, bookID, filename, repoCode });
     }
 

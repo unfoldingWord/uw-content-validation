@@ -11,7 +11,7 @@ import { debugLog, userLog, functionLog } from './utilities';
 */
 
 
-// const DISABLED_NOTICES_VERSION_STRING = '0.3.7';
+// const DISABLED_NOTICES_VERSION_STRING = '0.3.8';
 
 
 const disabledNotices = [
@@ -19,6 +19,7 @@ const disabledNotices = [
   //  i.e., you can be as specific as you need about username and/or lineNumber, etc.
 
   { repoCode: 'TN', priority: 450, }, // TN "Resource container link should have '*' language code with (not 'en')" disabled as tC can’t handle it yet!
+  { repoCode: 'OBS-TN', priority: 450, }, // OBS-TN "Resource container link should have '*' language code with (not 'en')" disabled as tS can’t handle it yet!
   { repoCode: 'TW', priority: 450, }, // TW "Resource container link should have '*' language code with (not 'en')" disabled as tC can’t handle it yet!
   { extra: 'TW', priority: 450, }, // TW "Resource container link should have '*' language code with (not 'en')" disabled as tC can’t handle it yet!
 

@@ -10,7 +10,7 @@ import { runUsfmJsCheck } from './usfm-js-check';
 import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
 import { checkNotesLinksToOutside } from './notes-links-check';
 // eslint-disable-next-line no-unused-vars
-import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
+import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt, aboutToOverwrite } from './utilities';
 import { removeDisabledNotices } from './disabled-notices';
 
 
@@ -291,6 +291,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         //parameterAssert(incompleteNoticeObject.message.indexOf("Mismatched {}") === -1 || incompleteNoticeObject.lineNumber === undefined, `checkUSFMText addNoticePartial: got bad notice: ${noticeObjectString}`);
         //parameterAssert(noticeObjectString.indexOf('NONE') === -1 && noticeObjectString.indexOf('SPECIAL') === -1, `checkUSFMText addNoticePartial: 'NONE' & 'SPECIAL' shouldn’t make it thru to end user: ${noticeObjectString}`)
         if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkUSFMText ${incompleteNoticeObject.debugChain}`;
+        aboutToOverwrite('checkUSFMText', ['bookID', 'filename'], incompleteNoticeObject, { bookID, filename });
         usfmResultObject.noticeList.push({ ...incompleteNoticeObject, bookID, filename });
     }
 
@@ -796,8 +797,9 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             const badCount = countOccurrencesInString(rest, ' \\x ');
             if (badCount > 1 || marker !== 'v' || characterIndex > 3) { // Accept it if it seems to be after the space after a verse number
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-            addNoticePartial({ priority: 442, message: "Shouldn’t have a cross-reference after a space", details: badCount > 1 ? details + `${badCount} occurrences found in line` : details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
-        }}
+                addNoticePartial({ priority: 442, message: "Shouldn’t have a cross-reference after a space", details: badCount > 1 ? details + `${badCount} occurrences found in line` : details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+            }
+        }
 
         // Remove any self-closed milestones and internal \v markers
         // NOTE: replaceAll() is not generally available in browsers yet, so need to use RegExps

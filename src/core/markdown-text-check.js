@@ -306,6 +306,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
                 addNoticePartial(notice);
             }
             if (nextLine?.length !== 0) {
+                // debugLog(`251 line is '${line}' nextLine is (${nextLine.length}) '${nextLine}'`);
                 const notice = { priority: 251, message: "Markdown headers should be followed by a blank line", lineNumber: n, location: ourLocation };
                 if (textOrFileName === 'Note' || textOrFileName === 'OccurrenceNote')
                     notice.details = `markdown line ${n}`;

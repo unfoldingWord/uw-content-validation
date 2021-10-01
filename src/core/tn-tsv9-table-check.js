@@ -3,7 +3,7 @@ import { DEFAULT_EXCERPT_LENGTH } from './defaults'
 import { checkTN_TSV9DataRow } from './tn-tsv9-row-check';
 import { removeDisabledNotices } from './disabled-notices';
 // eslint-disable-next-line no-unused-vars
-import { debugLog, parameterAssert } from './utilities';
+import { debugLog, parameterAssert, aboutToOverwrite } from './utilities';
 
 
 const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.4.3';
@@ -106,6 +106,7 @@ export async function checkTN_TSV9Table(languageCode, repoCode, bookID, filename
         // NOTE: We only add the repoCode here because this function is called directly by tC Create
         //          and notice disabling currently depends on knowing the repoCode
         if (incompleteNoticeObject.repoCode && incompleteNoticeObject.repoCode !== 'TN') debugLog(`checkTN_TSV9Table.addNoticePartial already had repoCode=${incompleteNoticeObject.repoCode} (will be lost)`);
+        aboutToOverwrite('checkTN_TSV9Table', ['bookID', 'filename', 'repoCode'], incompleteNoticeObject, { bookID, filename, repoCode: 'TN' });
         ttResult.noticeList.push({ ...incompleteNoticeObject, bookID, filename, repoCode: 'TN' });
     }
 

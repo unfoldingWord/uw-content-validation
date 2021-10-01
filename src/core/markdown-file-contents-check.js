@@ -41,7 +41,8 @@ export async function checkMarkdownFileContents(languageCode, repoCode, markdown
   //parameterAssert(givenLocation !== undefined, "checkMarkdownFileContents: 'givenLocation' parameter should be defined");
   //parameterAssert(typeof givenLocation === 'string', `checkMarkdownFileContents: 'givenLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
   //parameterAssert(givenLocation.indexOf('true') === -1, `checkMarkdownFileContents: 'givenLocation' parameter should not be '${givenLocation}'`);
-  if (checkingOptions !== undefined) { parameterAssert(typeof checkingOptions === 'object', `checkMarkdownFileContents: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
+  if (checkingOptions !== undefined) {
+    parameterAssert(typeof checkingOptions === 'object', `checkMarkdownFileContents: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
   }
 
   let ourLocation = givenLocation;
@@ -74,22 +75,27 @@ export async function checkMarkdownFileContents(languageCode, repoCode, markdown
     //parameterAssert(incompleteNoticeObject.message !== undefined, "cMdT addNoticePartial: 'message' parameter should be defined");
     //parameterAssert(typeof incompleteNoticeObject.message === 'string', `cMdT addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}': ${incompleteNoticeObject.message}`);
     // parameterAssert(characterIndex !== undefined, "cMdT addNoticePartial: 'characterIndex' parameter should be defined");
-    if (incompleteNoticeObject.characterIndex) { parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `cMdT addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
+    if (incompleteNoticeObject.characterIndex) {
+      parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `cMdT addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
     }
     // parameterAssert(excerpt !== undefined, "cMdT addNoticePartial: 'excerpt' parameter should be defined");
-    if (incompleteNoticeObject.excerpt) { parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `cMdT addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt}`);
+    if (incompleteNoticeObject.excerpt) {
+      parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `cMdT addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt}`);
     }
     //parameterAssert(incompleteNoticeObject.location !== undefined, "cMdT addNoticePartial: 'location' parameter should be defined");
     //parameterAssert(typeof incompleteNoticeObject.location === 'string', `cMdT addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
 
-    if (incompleteNoticeObject.repoCode === undefined) {
+    if (!incompleteNoticeObject.repoCode) {
       // debugLog(`checkMarkdownFileContents addNoticePartial added rC=${repoCode} to ${JSON.stringify(incompleteNoticeObject)}`);
       incompleteNoticeObject.repoCode = repoCode;
     }
     // else if (repoCode !== incompleteNoticeObject.repoCode) debugLog(`checkMarkdownFileContents addNoticePartial DIDN'T ADD rC=${repoCode} to ${JSON.stringify(incompleteNoticeObject)}`);
 
     if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkMarkdownFileContents ${incompleteNoticeObject.debugChain}`; // Prepend our name
-    mfccResult.noticeList.push({ ...incompleteNoticeObject, filename: markdownFilename });
+    // aboutToOverwrite('checkMarkdownFileContents', ['filename'], incompleteNoticeObject, { filename: markdownFilename });
+    // Only put in our filename if we didn't already have (a linked) one
+    if (!incompleteNoticeObject.filename) incompleteNoticeObject.filename = markdownFilename;
+    mfccResult.noticeList.push(incompleteNoticeObject);
   }
   // end of addNoticePartial function
 

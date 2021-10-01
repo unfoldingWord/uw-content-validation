@@ -7,7 +7,7 @@ import { checkSupportReferenceInTA } from './ta-reference-check';
 // import { checkNotesLinksToOutside } from './notes-links-check';
 import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
 // eslint-disable-next-line no-unused-vars
-import { parameterAssert } from './utilities';
+import { parameterAssert, aboutToOverwrite } from './utilities';
 
 
 // const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.7.3';
@@ -103,6 +103,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
         //parameterAssert(typeof incompleteNoticeObject.location === 'string', `checkTN_TSV9DataRow addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
         // incompleteNoticeObject.debugChain = incompleteNoticeObject.debugChain ? `checkTN_TSV9DataRow ${incompleteNoticeObject.debugChain}` : 'checkTN_TSV9DataRow';
         // Also uses the given bookID,C,V, parameters from the main function call
+        aboutToOverwrite('checkTN_TSV9DataRow', ['bookID', 'C', 'V'], incompleteNoticeObject, { bookID, C: givenC, V: givenV });
         drResult.noticeList.push({ ...incompleteNoticeObject, bookID, C: givenC, V: givenV });
     }
 

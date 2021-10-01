@@ -1,6 +1,6 @@
 import { cachedGetFile } from './getApi';
 // eslint-disable-next-line no-unused-vars
-import { functionLog, parameterAssert } from './utilities';
+import { functionLog, parameterAssert, aboutToOverwrite } from './utilities';
 
 
 // const TA_REFERENCE_VALIDATOR_VERSION_STRING = '0.3.2';
@@ -51,6 +51,7 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
         }
         //parameterAssert(incompleteNoticeObject.location !== undefined, "cTAref addNoticePartial: 'location' parameter should be defined");
         //parameterAssert(typeof incompleteNoticeObject.location === 'string', `cTAref addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
+        aboutToOverwrite('checkSupportReferenceInTA', ['fieldName'], incompleteNoticeObject, { fieldName });
         ctarResult.noticeList.push({ ...incompleteNoticeObject, fieldName });
     }
 

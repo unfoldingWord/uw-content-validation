@@ -6,7 +6,7 @@ import { checkTextField } from './field-text-check';
 import { checkNotesLinksToOutside } from './notes-links-check';
 import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
 // eslint-disable-next-line no-unused-vars
-import { parameterAssert } from './utilities';
+import { parameterAssert, aboutToOverwrite } from './utilities';
 
 
 // const TWL_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.1.11';
@@ -108,6 +108,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
 
         // Also uses the given bookID,C,V, parameters from the main function call
         // incompleteNoticeObject.debugChain = incompleteNoticeObject.debugChain ? `checkTWL_TSV6DataRow ${incompleteNoticeObject.debugChain}` : `checkTWL_TSV6DataRow(${repoCode})`;
+        aboutToOverwrite('checkTWL_TSV6DataRow', ['bookID', 'C', 'V'], incompleteNoticeObject, { bookID, C: givenC, V: givenV });
         drResult.noticeList.push({ ...incompleteNoticeObject, bookID, C: givenC, V: givenV });
     }
 

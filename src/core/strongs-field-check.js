@@ -6,7 +6,7 @@ import { cachedGetFile } from './getApi';
 import { alreadyChecked, markAsChecked } from './getApi';
 import { checkLexiconFileContents } from './lexicon-file-contents-check';
 // eslint-disable-next-line no-unused-vars
-import { functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
+import { functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt, aboutToOverwrite } from './utilities';
 
 
 // const STRONGS_FIELD_VALIDATOR_VERSION_STRING = '0.2.6';
@@ -85,6 +85,7 @@ export async function checkStrongsField(languageCode, repoCode, fieldName, field
         }
         //parameterAssert(incompleteNoticeObject.location !== undefined, "checkStrongsField addNoticePartial: 'location' parameter should be defined");
         //parameterAssert(typeof incompleteNoticeObject.location === 'string', `checkStrongsField addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
+        aboutToOverwrite('checkStrongsField', ['excerpt', 'fieldName', 'repoCode'], incompleteNoticeObject, { excerpt: fieldText, fieldName, repoCode });
         const newObject = { ...incompleteNoticeObject, excerpt: fieldText, fieldName, repoCode };
         if (bookID.length) newObject.bookID = bookID;
         if (C.length && V.length) { newObject.C = C; newObject.V = V; }

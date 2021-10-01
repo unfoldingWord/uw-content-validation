@@ -6,7 +6,7 @@ import { checkTextField } from './field-text-check';
 import { checkMarkdownText } from './markdown-text-check';
 import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
 // eslint-disable-next-line no-unused-vars
-import { debugLog, parameterAssert } from './utilities';
+import { debugLog, parameterAssert, aboutToOverwrite } from './utilities';
 
 
 // const QUESTIONS_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.2.9';
@@ -112,6 +112,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
 
         // Also uses the given bookID,C,V, parameters from the main function call
         // incompleteNoticeObject.debugChain = incompleteNoticeObject.debugChain ? `checkQuestionsTSV7DataRow ${incompleteNoticeObject.debugChain}` : `checkQuestionsTSV7DataRow(${repoCode})`;
+        aboutToOverwrite('checkQuestionsTSV7DataRow', ['bookID', 'C', 'V'], incompleteNoticeObject, { bookID, C: givenC, V: givenV });
         drResult.noticeList.push({ ...incompleteNoticeObject, bookID, C: givenC, V: givenV });
     }
 

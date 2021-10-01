@@ -3,7 +3,7 @@ import { DEFAULT_EXCERPT_LENGTH } from './defaults'
 import { checkQuestionsTSV7DataRow } from './questions-tsv7-row-check';
 import { removeDisabledNotices } from './disabled-notices';
 // eslint-disable-next-line no-unused-vars
-import { parameterAssert } from './utilities';
+import { parameterAssert, aboutToOverwrite } from './utilities';
 
 
 const QUESTIONS_TABLE_VALIDATOR_VERSION_STRING = '0.2.4';
@@ -94,6 +94,7 @@ export async function checkQuestionsTSV7Table(languageCode, repoCode, bookID, fi
         //parameterAssert(typeof incompleteNoticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
 
         if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkQuestionsTSV7Table ${incompleteNoticeObject.debugChain}`;
+        aboutToOverwrite('checkQuestionsTSV7Table', ['bookID', 'filename', 'repoCode'], incompleteNoticeObject, { bookID, filename, repoCode });
         carResult.noticeList.push({ ...incompleteNoticeObject, bookID, filename, repoCode });
     }
 

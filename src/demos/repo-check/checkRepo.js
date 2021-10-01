@@ -5,7 +5,7 @@ import * as books from '../../core/books/books';
 import { checkFileContents } from '../file-check/checkFileContents';
 import { repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetRepositoryZipFile } from '../../core/getApi';
 // eslint-disable-next-line no-unused-vars
-import { userLog, functionLog, debugLog, logicAssert, parameterAssert } from '../../core/utilities';
+import { userLog, functionLog, debugLog, logicAssert, parameterAssert, aboutToOverwrite } from '../../core/utilities';
 
 
 // const REPO_VALIDATOR_VERSION_STRING = '0.6.6';
@@ -116,6 +116,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
     //parameterAssert(typeof incompleteNoticeObject.extra === 'string', `cR addNoticePartial: 'extra' parameter should be a string not a '${typeof incompleteNoticeObject.extra}'`);
     if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkRepo ${incompleteNoticeObject.debugChain}`;
     // Add in the repoName from the outer scope
+    aboutToOverwrite('checkRepo', ['username', 'repoCode', 'repoName'], incompleteNoticeObject, { username, repoCode, repoName });
     checkRepoResult.noticeList.push({ ...incompleteNoticeObject, username, repoCode, repoName });
   }
 

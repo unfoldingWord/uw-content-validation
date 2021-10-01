@@ -11,7 +11,7 @@ import {
 import { userLog, debugLog, functionLog, parameterAssert, logicAssert } from '../../core';
 
 
-// const CHECK_FILE_CONTENTS_VERSION_STRING = '0.5.0';
+// const CHECK_FILE_CONTENTS_VERSION_STRING = '0.5.1';
 
 
 /**
@@ -76,7 +76,7 @@ export async function checkFileContents(username, languageCode, repoCode, branch
       // let adjustedRepoCode = repoCode;
       // if (adjustedRepoCode.startsWith('OBS-'))
       //   adjustedRepoCode = adjustedRepoCode.slice(4); // Remove the 'OBS-' from the beginning
-      logicAssert(repoCode !== 'TN' && repoCode !== 'TQ' && repoCode !== 'OBS-TN' && repoCode !== 'OBS-TQ' && repoCode !== 'OBS_SN' && repoCode !== 'OBS-SQ', `This code with ${filenameMain} is not for ${repoCode}`);
+      logicAssert(repoCode !== 'TN' && repoCode !== 'TQ1' && repoCode !== 'OBS-TN' && repoCode !== 'OBS-TQ1' && repoCode !== 'OBS_SN' && repoCode !== 'OBS-SQ', `This checkFileContents code with ${filenameMain} is not for ${repoCode}`);
       const checkFunction = {
         'TWL': checkTWL_TSV6Table, 'OBS-TWL': checkTWL_TSV6Table,
         'TN2': checkNotesTSV7Table, 'OBS-TN2': checkNotesTSV7Table,

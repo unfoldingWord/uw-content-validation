@@ -1,4 +1,5 @@
 import grammar from 'usfm-grammar';
+import { aboutToOverwrite } from '.';
 import * as books from './books/books';
 import { DEFAULT_EXCERPT_LENGTH } from './defaults'
 // eslint-disable-next-line no-unused-vars
@@ -207,13 +208,16 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
         //parameterAssert(incompleteNoticeObject.message !== undefined, "cUSFMgr addNoticePartial: 'message' parameter should be defined");
         //parameterAssert(typeof incompleteNoticeObject.message === 'string', `cUSFMgr addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}': ${incompleteNoticeObject.message}`);
         // parameterAssert(characterIndex !== undefined, "cUSFMgr addNoticePartial: 'characterIndex' parameter should be defined");
-        if (incompleteNoticeObject.characterIndex) { parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `cUSFMgr addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
+        if (incompleteNoticeObject.characterIndex) {
+            parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `cUSFMgr addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
         }
         // parameterAssert(excerpt !== undefined, "cUSFMgr addNoticePartial: 'excerpt' parameter should be defined");
-        if (incompleteNoticeObject.excerpt) { parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `cUSFMgr addNoticePartial: 'excerpt' parameter should be a string not a '${typeof excerpt}': ${incompleteNoticeObject.excerpt}`);
+        if (incompleteNoticeObject.excerpt) {
+            parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `cUSFMgr addNoticePartial: 'excerpt' parameter should be a string not a '${typeof excerpt}': ${incompleteNoticeObject.excerpt}`);
         }
         //parameterAssert(incompleteNoticeObject.location !== undefined, "cUSFMgr addNoticePartial: 'location' parameter should be defined");
         //parameterAssert(typeof incompleteNoticeObject.location === 'string', `cUSFMgr addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
+        aboutToOverwrite('checkUSFMGrammar', ['bookID', 'filename'], incompleteNoticeObject, { bookID, filename });
         cugResult.noticeList.push({ ...incompleteNoticeObject, bookID, filename });
     }
 

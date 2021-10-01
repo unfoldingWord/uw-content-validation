@@ -7,7 +7,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert } from './utilities';
 
 
-const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.4.1';
+const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.4.2';
 
 
 /**
@@ -73,10 +73,12 @@ export function checkPlainText(languageCode, repoCode, textType, textName, plain
         //parameterAssert(typeof noticeObject.priority === 'number', `cPT addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         //parameterAssert(noticeObject.message !== undefined, "cPT addNotice: 'message' parameter should be defined");
         //parameterAssert(typeof noticeObject.message === 'string', `cPT addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        if (noticeObject.characterIndex) { parameterAssert(typeof noticeObject.characterIndex === 'number', `cPT addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        if (noticeObject.characterIndex) {
+            parameterAssert(typeof noticeObject.characterIndex === 'number', `cPT addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
         }
         // parameterAssert(excerpt!==undefined, "cPT addNotice: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) { parameterAssert(typeof noticeObject.excerpt === 'string', `cPT addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        if (noticeObject.excerpt) {
+            parameterAssert(typeof noticeObject.excerpt === 'string', `cPT addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         }
         //parameterAssert(noticeObject.location !== undefined, "cPT addNotice: 'location' parameter should be defined");
         //parameterAssert(typeof noticeObject.location === 'string', `cPT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
@@ -205,7 +207,7 @@ export function checkPlainText(languageCode, repoCode, textType, textName, plain
                             if (char !== '’' // Closing single quote is also used as apostrophe in English
                                 && (textType !== 'markdown' || char !== '>' || characterIndex > 4)) { // Markdown uses > or >> or > > or > > > for block indents so ignore these -- might just be consequential error
                                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + line.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < line.length ? '…' : '')
-                                const details = `'${lastEntry.char}' opened on line ${lastEntry.n} character ${lastEntry.x + 1}`;
+                                const details = `'${lastEntry.char}' opened on line ${lastEntry.n.toLocaleString()} character ${lastEntry.x + 1}`;
                                 addNotice({ priority: 777, message: `Bad punctuation nesting: ${char} closing character doesn’t match`, details, lineNumber: n, characterIndex, excerpt, location: ourLocation });
                                 // debugLog(`  ERROR 777: mismatched characters: ${details}`);
                             }
@@ -229,7 +231,7 @@ export function checkPlainText(languageCode, repoCode, textType, textName, plain
     if (openMarkers.length) {
         const [{ char, n, x }] = openMarkers.slice(-1);
         const line = lines[n - 1];
-        const excerpt = (x > excerptHalfLength ? '…' : '') + line.slice(x - excerptHalfLength, x + excerptHalfLengthPlus).replace(/ /g, '␣') + (x + excerptHalfLengthPlus < line.length ? '…' : '')
+        const excerpt = (x > excerptHalfLength ? '…' : '') + line.slice(x - excerptHalfLength, x + excerptHalfLengthPlus) + (x + excerptHalfLengthPlus < line.length ? '…' : '')
         const details = openMarkers.length > 1 ? `${openMarkers.length} unclosed set${openMarkers.length === 1 ? '' : 's'}` : null;
         addNotice({ priority: 768, message: `At end of text with unclosed ${char} opening character`, details, lineNumber: n, characterIndex: x, excerpt, location: ourLocation });
     }

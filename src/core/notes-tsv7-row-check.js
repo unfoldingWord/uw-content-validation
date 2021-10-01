@@ -8,7 +8,7 @@ import { checkSupportReferenceInTA } from './ta-reference-check';
 // import { checkNotesLinksToOutside } from './notes-links-check';
 import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
 // eslint-disable-next-line no-unused-vars
-import { parameterAssert } from './utilities';
+import { parameterAssert, aboutToOverwrite } from './utilities';
 
 
 // const NOTES_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.15';
@@ -111,6 +111,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
 
         // Also uses the given bookID,C,V, parameters from the main function call
         // incompleteNoticeObject.debugChain = incompleteNoticeObject.debugChain ? `checkNotesTSV7DataRow ${incompleteNoticeObject.debugChain}` : `checkNotesTSV7DataRow(${repoCode})`;
+        aboutToOverwrite('checkNotesTSV7DataRow', ['bookID', 'C', 'V'], incompleteNoticeObject, { bookID, C: givenC, V: givenV });
         drResult.noticeList.push({ ...incompleteNoticeObject, bookID, C: givenC, V: givenV });
     }
 

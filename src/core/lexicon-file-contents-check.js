@@ -1,7 +1,7 @@
 // import { DEFAULT_EXCERPT_LENGTH } from './defaults'
 import { checkMarkdownFileContents } from './markdown-file-contents-check';
 // eslint-disable-next-line no-unused-vars
-import { userLog, functionLog, debugLog, parameterAssert } from './utilities';
+import { userLog, functionLog, debugLog, parameterAssert, aboutToOverwrite } from './utilities';
 
 
 const LEXICON_MARKDOWN_FILE_VALIDATOR_VERSION_STRING = '0.2.0';
@@ -78,6 +78,7 @@ export async function checkLexiconFileContents(languageCode, repoCode, lexiconFi
         //parameterAssert(typeof incompleteNoticeObject.location === 'string', `checkLexiconFileContents addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
 
         if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkLexiconFileContents ${incompleteNoticeObject.debugChain}`; // Prepend our name
+        aboutToOverwrite('checkLexiconFileContents', ['filename'], incompleteNoticeObject, { filename: lexiconFilename });
         lexiconResultObject.noticeList.push({ ...incompleteNoticeObject, filename: lexiconFilename });
     }
     // end of addNoticePartial function

@@ -5,7 +5,7 @@ import { OPEN_CLOSE_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, BAD_CHARACTER
 import { debugLog, parameterAssert } from './utilities';
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.18';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.20';
 
 
 /**
@@ -407,7 +407,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
                 if (nextChars.startsWith('<sup>') && fieldType === 'markdown' && repoCode === 'TA')
                     continue;
                 if ((fieldName.startsWith('README') || fieldName.endsWith('.md line') || fieldName.endsWith('Note line'))
-                    && (nextChar === '*' || badTwoChars === '![')) // allow markdown formatting
+                    && (nextChar === '*' || badTwoChars === '![' || nextTwoChars === '~~')) // allow markdown formatting
                     continue;
                 if (badChars.startsWith('.md') || badChars.startsWith('.usfm') || badChars.startsWith('.tsv') || badChars.startsWith('.yaml')
                     || badChars.startsWith('.org') || badChars.startsWith('.com') || badChars.startsWith('.bible')
@@ -418,7 +418,8 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
                 if ((badTwoChars === '.g' && fieldText.toLowerCase().indexOf('e.g.') !== -1)
                     || (badTwoChars === '.e' && fieldText.toLowerCase().indexOf('i.e.') !== -1))
                     continue;
-                if (badChar === '.' && fieldText.indexOf('etc.') !== -1)
+                if (badChar === '.'
+                    && (fieldText.indexOf('etc.') !== -1 || fieldText.indexOf('.x.') !== -1)) // Last one is for version numbers
                     continue;
                 if (badTwoChars === '.m'
                     && (fieldText.toLowerCase().indexOf('a.m.') !== -1 || fieldText.toLowerCase().indexOf('p.m.') !== -1))
@@ -466,48 +467,50 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     //     userLog(`checkTextField(${fieldType}, ${fieldName}, '${fieldText}', ${allowedLinks}, ${ourLocation}) found ${countOccurrencesInString(fieldText, '(')} '(' but ${countOccurrencesInString(fieldText, ')')} ')'`);
     //     addNoticePartial({ priority: 1, message: `Mismatched ( ) characters`, details: `left=${countOccurrencesInString(fieldText, '(').toLocaleString()}, right=${countOccurrencesInString(fieldText, ')').toLocaleString()}`, location: ourLocation });
     // }
-    // Check matched pairs in the field
-    for (const punctSet of OPEN_CLOSE_PUNCTUATION_PAIRS) {
-        // Can’t check '‘’' coz they might be used as apostrophe
-        const leftChar = punctSet[0], rightChar = punctSet[1];
-        // if (fieldType === 'markdown' && leftChar === '<') continue; // markdown uses this for block quote
-        // TODO: The following 'continue' might not be doing the 2nd lot of checks
-        if ((fieldType.startsWith('USFM') || fieldName.startsWith('from \\') || (fieldType === 'markdown' && fieldName === ''))
-            && '([{“‘«'.indexOf(leftChar) >= 0) continue; // Start/end can be on different lines
-        if (!fieldType.startsWith('markdown') || leftChar !== '<') { // > is a markdown block marker and also used for HTML, e.g., <br>
-            const leftCount = countOccurrencesInString(fieldText, leftChar),
-                rightCount = countOccurrencesInString(fieldText, rightChar);
-            if (leftCount !== rightCount
-                && (rightChar !== '’' || leftCount > rightCount)) { // Closing single quote is also used as apostrophe in English
-                // NOTE: These are higher priority than similar checks in a whole file which is less specific
-                const thisPriority = leftChar === '“' ? 163 : 563;
-                if (cutoffPriorityLevel < thisPriority)
-                    addNoticePartial({ priority: thisPriority, message: `Mismatched ${leftChar}${rightChar} characters`, details: `left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()}`, location: ourLocation });
-            }
-            try { // This regex build fails for some of the characters
-                const leftRegex = new RegExp(`(\\w)\\${leftChar}(\\w)`, 'g'), rightRegex = new RegExp(`(\\w)\\${rightChar}(\\w)`, 'g');
-                // debugLog(`leftRegex is ${leftRegex}`);
-                let regexMatchObject;
-                while ((regexMatchObject = leftRegex.exec(fieldText)))
-                    if ((!fieldType.startsWith('markdown') || regexMatchObject[0][0] !== '_')
-                        && (!fieldType.startsWith('YAML') || leftChar !== '{')
-                        // TODO: We have to allow for a blank language code until we change checkPlainText()
-                        && (languageCode !== 'en' || regexMatchObject[0][2] !== 's' || fieldText.indexOf('(s)') === -1)) {
-                        // debugLog(`Got possible misplaced '${languageCode}' left ${leftChar} in ${fieldType} ${fieldName} '${fieldText}': ${JSON.stringify(regexMatchObject)}`);
-                        let thisPriority = 717, thisMessage = `Misplaced ${leftChar} character`;
-                        if (leftChar === '(' && regexMatchObject[0][2] === 's') { thisPriority = 17; thisMessage = `Possible misplaced ${leftChar} character`; } // Lower priority for words like 'thing(s)'
-                        if (cutoffPriorityLevel < thisPriority)
-                            addNoticePartial({ priority: thisPriority, message: thisMessage, excerpt: regexMatchObject[0], location: ourLocation });
-                    }
-                if (rightChar !== '’') // Can’t check '‘’' coz they might be used as apostrophe
-                    while ((regexMatchObject = rightRegex.exec(fieldText)))
-                        if ((!fieldType.startsWith('markdown') || regexMatchObject[0][2] !== '_')
-                            && (!fieldType.startsWith('YAML') || rightChar !== '}')) {
-                            // debugLog(`Got misplaced right ${rightChar} in ${fieldType} ${fieldName} '${fieldText}':`, JSON.stringify(regexMatchObject));
-                            if (cutoffPriorityLevel < 716)
-                                addNoticePartial({ priority: 716, message: `Misplaced ${rightChar} character`, excerpt: regexMatchObject[0], location: ourLocation });
+    if (fieldName !== 'GLQuote') { // NOTE: It's normal to have parts of quotes in the GLQuote field
+        // Check matched pairs in the field
+        for (const punctSet of OPEN_CLOSE_PUNCTUATION_PAIRS) {
+            // Can’t check '‘’' coz they might be used as apostrophe
+            const leftChar = punctSet[0], rightChar = punctSet[1];
+            // if (fieldType === 'markdown' && leftChar === '<') continue; // markdown uses this for block quote
+            // TODO: The following 'continue' might not be doing the 2nd lot of checks
+            if ((fieldType.startsWith('USFM') || fieldName.startsWith('from \\') || (fieldType === 'markdown' && fieldName === ''))
+                && '([{“‘«'.indexOf(leftChar) >= 0) continue; // Start/end can be on different lines
+            if (!fieldType.startsWith('markdown') || leftChar !== '<') { // > is a markdown block marker and also used for HTML, e.g., <br>
+                const leftCount = countOccurrencesInString(fieldText, leftChar),
+                    rightCount = countOccurrencesInString(fieldText, rightChar);
+                if (leftCount !== rightCount
+                    && (rightChar !== '’' || leftCount > rightCount)) { // Closing single quote is also used as apostrophe in English
+                    // NOTE: These are higher priority than similar checks in a whole file which is less specific
+                    const thisPriority = leftChar === '“' ? 163 : 563;
+                    if (cutoffPriorityLevel < thisPriority)
+                        addNoticePartial({ priority: thisPriority, message: `Mismatched ${leftChar}${rightChar} characters`, details: `left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()}`, location: ourLocation });
+                }
+                try { // This regex build fails for some of the characters
+                    const leftRegex = new RegExp(`(\\w)\\${leftChar}(\\w)`, 'g'), rightRegex = new RegExp(`(\\w)\\${rightChar}(\\w)`, 'g');
+                    // debugLog(`leftRegex is ${leftRegex}`);
+                    let regexMatchObject;
+                    while ((regexMatchObject = leftRegex.exec(fieldText)))
+                        if ((!fieldType.startsWith('markdown') || regexMatchObject[0][0] !== '_')
+                            && (!fieldType.startsWith('YAML') || leftChar !== '{')
+                            // TODO: We have to allow for a blank language code until we change checkPlainText()
+                            && (languageCode !== 'en' || regexMatchObject[0][2] !== 's' || fieldText.indexOf('(s)') === -1)) {
+                            // debugLog(`Got possible misplaced '${languageCode}' left ${leftChar} in ${fieldType} ${fieldName} '${fieldText}': ${JSON.stringify(regexMatchObject)}`);
+                            let thisPriority = 717, thisMessage = `Misplaced ${leftChar} character`;
+                            if (leftChar === '(' && regexMatchObject[0][2] === 's') { thisPriority = 17; thisMessage = `Possible misplaced ${leftChar} character`; } // Lower priority for words like 'thing(s)'
+                            if (cutoffPriorityLevel < thisPriority)
+                                addNoticePartial({ priority: thisPriority, message: thisMessage, excerpt: regexMatchObject[0], location: ourLocation });
                         }
-            } catch { }
+                    if (rightChar !== '’') // Can’t check '‘’' coz they might be used as apostrophe
+                        while ((regexMatchObject = rightRegex.exec(fieldText)))
+                            if ((!fieldType.startsWith('markdown') || regexMatchObject[0][2] !== '_')
+                                && (!fieldType.startsWith('YAML') || rightChar !== '}')) {
+                                // debugLog(`Got misplaced right ${rightChar} in ${fieldType} ${fieldName} '${fieldText}':`, JSON.stringify(regexMatchObject));
+                                if (cutoffPriorityLevel < 716)
+                                    addNoticePartial({ priority: 716, message: `Misplaced ${rightChar} character`, excerpt: regexMatchObject[0], location: ourLocation });
+                            }
+                } catch { }
+            }
         }
     }
 

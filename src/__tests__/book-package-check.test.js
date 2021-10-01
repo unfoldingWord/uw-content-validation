@@ -12,6 +12,7 @@ const optionalCheckingOptions = {
   // disableLinkedTWArticlesCheckFlag: true,
   // disableLexiconLinkFetchingFlag: true,
   // disableLinkedLexiconEntriesCheckFlag: true,
+  dataSet: 'OLD', // We still have markdown TQ1 in our test files
   getFile: params => {
     const { username, repository, path } = params;
     // console.log(`book-package-check.test getFile(${username}, ${repository}, ${path})`)
@@ -112,7 +113,7 @@ describe('checkBookPackage() - ', () => {
       checkedRepoNames: rawResults.checkedRepoNames,
     };
     expect(filteredResults).toMatchSnapshot();
-  }, 20000); // Allow 20 seconds
+  }, 25000); // Allow 25 seconds
 
 })
 

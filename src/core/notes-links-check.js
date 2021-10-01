@@ -5,11 +5,11 @@ import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
 import { countOccurrencesInString } from './text-handling-functions'
 import { cachedGetFile, cachedGetFileUsingFullURL, checkMarkdownFileContents } from '../core';
 // eslint-disable-next-line no-unused-vars
-import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
+import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAssert, ourParseInt, aboutToOverwrite } from './utilities';
 import jQuery from 'jquery';
 
 
-// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.10.1';
+// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.10.2';
 
 // const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -159,7 +159,9 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
         //parameterAssert(incompleteNoticeObject.location !== undefined, "cTNlnk addNoticePartial: 'location' parameter should be defined");
         //parameterAssert(typeof incompleteNoticeObject.location === 'string', `cTNlnk addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
         // incompleteNoticeObject.debugChain = incompleteNoticeObject.debugChain ? `checkNotesLinksToOutside ${ incompleteNoticeObject.debugChain } ` : `checkNotesLinksToOutside(${ fieldName })`;
-        ctarResult.noticeList.push({ ...incompleteNoticeObject, bookID, fieldName });
+        if (bookID.length) incompleteNoticeObject.bookID = bookID; // Don't set the field if we don't have a useful bookID
+        aboutToOverwrite('checkNotesLinksToOutside', ['filename'], incompleteNoticeObject, { fieldName });
+        ctarResult.noticeList.push({ ...incompleteNoticeObject, fieldName });
     }
 
 

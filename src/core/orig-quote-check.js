@@ -5,7 +5,7 @@ import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults';
 import { CLOSING_PUNCTUATION_CHARACTERS, HEBREW_CANTILLATION_REGEX, PAIRED_PUNCTUATION_OPENERS, PAIRED_PUNCTUATION_CLOSERS } from './text-handling-functions';
 import { cachedGetFile } from './getApi';
 // eslint-disable-next-line no-unused-vars
-import { functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
+import { functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt, aboutToOverwrite } from './utilities';
 
 
 // const OL_QUOTE_VALIDATOR_VERSION_STRING = '0.10.8';
@@ -99,6 +99,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
         }
         //parameterAssert(incompleteNoticeObject.location !== undefined, "cOLQ addNotice: 'location' parameter should be defined");
         //parameterAssert(typeof incompleteNoticeObject.location === 'string', `cOLQ addNotice: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
+        aboutToOverwrite('checkOriginalLanguageQuoteAndOccurrence', ['bookID', 'C', 'V'], incompleteNoticeObject, { bookID, C, V });
         colqResult.noticeList.push({ ...incompleteNoticeObject, bookID, C, V });
     }
 
