@@ -1,12 +1,12 @@
 import * as books from './books/books';
 import { DEFAULT_EXCERPT_LENGTH } from './defaults'
 import { checkTN_TSV9DataRow } from './tn-tsv9-row-check';
-import { removeDisabledNotices } from './disabled-notices';
+// import { removeDisabledNotices } from './disabled-notices';
 // eslint-disable-next-line no-unused-vars
 import { debugLog, parameterAssert, aboutToOverwrite } from './utilities';
 
 
-const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.4.3';
+const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.5.0';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -22,7 +22,7 @@ const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOr
  * @param {string} givenLocation
  * @param {Object} checkingOptions
  */
-export async function checkTN_TSV9Table(languageCode, repoCode, bookID, filename, tableText, givenLocation, checkingOptions) {
+export async function internalCheckTN_TSV9Table(languageCode, repoCode, bookID, filename, tableText, givenLocation, checkingOptions) {
     /*
     This function is optimised for checking the entire file, i.e., all rows.
 
@@ -32,18 +32,18 @@ export async function checkTN_TSV9Table(languageCode, repoCode, bookID, filename
 
      Returns a result object containing a successList and a noticeList
      */
-    // functionLog(`checkTN_TSV9Table(${languageCode}, ${bookID}, ${filename}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
-    //parameterAssert(languageCode !== undefined, "checkTN_TSV9Table: 'languageCode' parameter should be defined");
-    //parameterAssert(typeof languageCode === 'string', `checkTN_TSV9Table: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
-    //parameterAssert(repoCode === 'TN', `checkTN_TSV9Table: repoCode expected 'TN' not '${repoCode}'`);
-    //parameterAssert(bookID !== undefined, "checkTN_TSV9Table: 'bookID' parameter should be defined");
-    //parameterAssert(typeof bookID === 'string', `checkTN_TSV9Table: 'bookID' parameter should be a string not a '${typeof bookID}'`);
-    //parameterAssert(bookID.length === 3, `checkTN_TSV9Table: 'bookID' parameter should be three characters long not ${bookID.length}`);
-    //parameterAssert(bookID.toUpperCase() === bookID, `checkTN_TSV9Table: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-    //parameterAssert(books.isValidBookID(bookID), `checkTN_TSV9Table: '${bookID}' is not a valid USFM book identifier`);
-    //parameterAssert(givenLocation !== undefined, "checkTN_TSV9Table: 'givenLocation' parameter should be defined");
-    //parameterAssert(typeof givenLocation === 'string', `checkTN_TSV9Table: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
-    //parameterAssert(checkingOptions !== undefined, "checkTN_TSV9Table: 'checkingOptions' parameter should be defined");
+    // functionLog(`internalCheckTN_TSV9Table(${languageCode}, ${bookID}, ${filename}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
+    //parameterAssert(languageCode !== undefined, "internalCheckTN_TSV9Table: 'languageCode' parameter should be defined");
+    //parameterAssert(typeof languageCode === 'string', `internalCheckTN_TSV9Table: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    //parameterAssert(repoCode === 'TN', `internalCheckTN_TSV9Table: repoCode expected 'TN' not '${repoCode}'`);
+    //parameterAssert(bookID !== undefined, "internalCheckTN_TSV9Table: 'bookID' parameter should be defined");
+    //parameterAssert(typeof bookID === 'string', `internalCheckTN_TSV9Table: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+    //parameterAssert(bookID.length === 3, `internalCheckTN_TSV9Table: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    //parameterAssert(bookID.toUpperCase() === bookID, `internalCheckTN_TSV9Table: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+    //parameterAssert(books.isValidBookID(bookID), `internalCheckTN_TSV9Table: '${bookID}' is not a valid USFM book identifier`);
+    //parameterAssert(givenLocation !== undefined, "internalCheckTN_TSV9Table: 'givenLocation' parameter should be defined");
+    //parameterAssert(typeof givenLocation === 'string', `internalCheckTN_TSV9Table: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
+    //parameterAssert(checkingOptions !== undefined, "internalCheckTN_TSV9Table: 'checkingOptions' parameter should be defined");
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -71,7 +71,7 @@ export async function checkTN_TSV9Table(languageCode, repoCode, bookID, filename
      * @param {string} successString
      */
     function addSuccessMessage(successString) {
-        // functionLog(`checkTN_TSV9Table success: ${successString}`);
+        // functionLog(`internalCheckTN_TSV9Table success: ${successString}`);
         ttResult.successList.push(successString);
     }
     /**
@@ -79,7 +79,7 @@ export async function checkTN_TSV9Table(languageCode, repoCode, bookID, filename
      * @param {Object} incompleteNoticeObject
      */
     function addNoticePartial(incompleteNoticeObject) {
-        // functionLog(`checkTN_TSV9Table notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
+        // functionLog(`internalCheckTN_TSV9Table notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
         //parameterAssert(incompleteNoticeObject.priority !== undefined, "TSV addNoticePartial: 'priority' parameter should be defined");
         //parameterAssert(typeof incompleteNoticeObject.priority === 'number', `TSV addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}': ${incompleteNoticeObject.priority}`);
         //parameterAssert(incompleteNoticeObject.message !== undefined, "TSV addNoticePartial: 'message' parameter should be defined");
@@ -102,16 +102,16 @@ export async function checkTN_TSV9Table(languageCode, repoCode, bookID, filename
         }
         //parameterAssert(incompleteNoticeObject.location !== undefined, "TSV addNoticePartial: 'location' parameter should be defined");
         //parameterAssert(typeof incompleteNoticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
-        if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkTN_TSV9Table ${incompleteNoticeObject.debugChain}`;
+        if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `internalCheckTN_TSV9Table ${incompleteNoticeObject.debugChain}`;
         // NOTE: We only add the repoCode here because this function is called directly by tC Create
         //          and notice disabling currently depends on knowing the repoCode
-        if (incompleteNoticeObject.repoCode && incompleteNoticeObject.repoCode !== 'TN') debugLog(`checkTN_TSV9Table.addNoticePartial already had repoCode=${incompleteNoticeObject.repoCode} (will be lost)`);
-        aboutToOverwrite('checkTN_TSV9Table', ['bookID', 'filename', 'repoCode'], incompleteNoticeObject, { bookID, filename, repoCode: 'TN' });
+        if (incompleteNoticeObject.repoCode && incompleteNoticeObject.repoCode !== 'TN') debugLog(`internalCheckTN_TSV9Table.addNoticePartial already had repoCode=${incompleteNoticeObject.repoCode} (will be lost)`);
+        aboutToOverwrite('internalCheckTN_TSV9Table', ['bookID', 'filename', 'repoCode'], incompleteNoticeObject, { bookID, filename, repoCode: 'TN' });
         ttResult.noticeList.push({ ...incompleteNoticeObject, bookID, filename, repoCode: 'TN' });
     }
 
 
-    // Main code for checkTN_TSV9Table
+    // Main code for internalCheckTN_TSV9Table
     let lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook = 0;
     try {
@@ -130,7 +130,7 @@ export async function checkTN_TSV9Table(languageCode, repoCode, bookID, filename
     let rowIDListForVerse = [], uniqueRowListForVerse = [];
     let numVersesThisChapter = 0;
     for (let n = 0; n < lines.length; n++) {
-        // functionLog(`checkTN_TSV9Table checking line ${n}: ${JSON.stringify(lines[n])}`);
+        // functionLog(`internalCheckTN_TSV9Table checking line ${n}: ${JSON.stringify(lines[n])}`);
         if (n === 0) {
             if (lines[0] === EXPECTED_TN_HEADING_LINE)
                 addSuccessMessage(`Checked TSV header ${ourLocation}`);
@@ -267,21 +267,21 @@ export async function checkTN_TSV9Table(languageCode, repoCode, bookID, filename
         }
     }
 
-    if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        // functionLog(`checkTN_TSV9Table: calling removeDisabledNotices(${ttResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
-        ttResult.noticeList = removeDisabledNotices(ttResult.noticeList);
-    }
+    // if (!checkingOptions?.suppressNoticeDisablingFlag) {
+    //     // functionLog(`internalCheckTN_TSV9Table: calling removeDisabledNotices(${ttResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+    //     ttResult.noticeList = removeDisabledNotices(ttResult.noticeList);
+    // }
 
     if (cutoffPriorityLevel < 20 && checkingOptions?.disableAllLinkFetchingFlag)
         addNoticePartial({ priority: 20, message: "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked", location: ourLocation });
 
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}`);
     if (ttResult.noticeList.length)
-        addSuccessMessage(`checkTN_TSV9Table v${TN_TABLE_TEXT_VALIDATOR_VERSION_STRING} finished with ${ttResult.noticeList.length ? ttResult.noticeList.length.toLocaleString() : "zero"} notice${ttResult.noticeList.length === 1 ? '' : 's'}`);
+        addSuccessMessage(`internalCheckTN_TSV9Table v${TN_TABLE_TEXT_VALIDATOR_VERSION_STRING} finished with ${ttResult.noticeList.length ? ttResult.noticeList.length.toLocaleString() : "zero"} notice${ttResult.noticeList.length === 1 ? '' : 's'}`);
     else
-        addSuccessMessage(`No errors or warnings found by checkTN_TSV9Table v${TN_TABLE_TEXT_VALIDATOR_VERSION_STRING}`)
-    // debugLog(`  checkTN_TSV9Table returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
-    // debugLog("checkTN_TSV9Table result is", JSON.stringify(result));
+        addSuccessMessage(`No errors or warnings found by internalCheckTN_TSV9Table v${TN_TABLE_TEXT_VALIDATOR_VERSION_STRING}`)
+    // debugLog(`  internalCheckTN_TSV9Table returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
+    // debugLog("internalCheckTN_TSV9Table result is", JSON.stringify(result));
     return ttResult;
 }
-// end of checkTN_TSV9Table function
+// end of internalCheckTN_TSV9Table function

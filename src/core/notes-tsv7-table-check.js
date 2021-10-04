@@ -1,12 +1,12 @@
 import * as books from './books/books';
 import { DEFAULT_EXCERPT_LENGTH } from './defaults'
 import { checkNotesTSV7DataRow } from './notes-tsv7-row-check';
-import { removeDisabledNotices } from './disabled-notices';
+// import { removeDisabledNotices } from './disabled-notices';
 // eslint-disable-next-line no-unused-vars
 import { parameterAssert, aboutToOverwrite } from './utilities';
 
 
-const NOTES_TABLE_VALIDATOR_VERSION_STRING = '0.3.6';
+const NOTES_TABLE_VALIDATOR_VERSION_STRING = '0.4.0';
 
 const NUM_EXPECTED_NOTES_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_NOTES_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tNote';
@@ -272,10 +272,10 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
         }
     }
 
-    if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        // functionLog(`checkNotesTSV7Table: calling removeDisabledNotices(${carResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
-        carResult.noticeList = removeDisabledNotices(carResult.noticeList);
-    }
+    // if (!checkingOptions?.suppressNoticeDisablingFlag) {
+    //     // functionLog(`checkNotesTSV7Table: calling removeDisabledNotices(${carResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+    //     carResult.noticeList = removeDisabledNotices(carResult.noticeList);
+    // }
 
     if (cutoffPriorityLevel < 20 && checkingOptions?.disableAllLinkFetchingFlag)
         addNoticePartial({ priority: 20, message: "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked", location: ourLocation });

@@ -4,6 +4,8 @@ export * from './utilities';
 export * from './getApi';
 export * from './text-handling-functions';
 
+export * from './wrapper';
+
 export * from './field-text-check';
 export * from './file-text-check';
 export * from './lexicon-file-contents-check';

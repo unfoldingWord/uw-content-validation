@@ -1,12 +1,12 @@
 import * as books from './books/books';
 import { DEFAULT_EXCERPT_LENGTH } from './defaults'
 import { checkTWL_TSV6DataRow } from './twl-tsv6-row-check';
-import { removeDisabledNotices } from './disabled-notices';
+// import { removeDisabledNotices } from './disabled-notices';
 // eslint-disable-next-line no-unused-vars
 import { parameterAssert, aboutToOverwrite } from './utilities';
 
 
-const TWL_TABLE_VALIDATOR_VERSION_STRING = '0.1.4';
+const TWL_TABLE_VALIDATOR_VERSION_STRING = '0.2.0';
 
 const NUM_EXPECTED_TWL_TSV_FIELDS = 6; // so expects 5 tabs per line
 const EXPECTED_TWL_HEADING_LINE = 'Reference\tID\tTags\tOrigWords\tOccurrence\tTWLink';
@@ -22,7 +22,7 @@ const EXPECTED_TWL_HEADING_LINE = 'Reference\tID\tTags\tOrigWords\tOccurrence\tT
  * @param {string} givenLocation
  * @param {Object} checkingOptions
  */
-export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filename, tableText, givenLocation, checkingOptions) {
+export async function internalCheckTWL_TSV6Table(languageCode, repoCode, bookID, filename, tableText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire file, i.e., all rows.
 
       It also has the advantage of being able to compare one row with the previous one.
@@ -31,17 +31,17 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
 
      Returns a result object containing a successList and a noticeList
      */
-    // functionLog(`checkTWL_TSV6Table(${languageCode}, ${repoCode}, ${bookID}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
-    //parameterAssert(languageCode !== undefined, "checkTWL_TSV6Table: 'languageCode' parameter should be defined");
-    //parameterAssert(typeof languageCode === 'string', `checkTWL_TSV6Table: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
-    //parameterAssert(repoCode === 'TWL' || repoCode === 'OBS-TWL', `checkTWL_TSV6Table: repoCode expected 'TWL' or 'OBS-TWL' not '${repoCode}'`);
-    //parameterAssert(bookID !== undefined, "checkTWL_TSV6Table: 'bookID' parameter should be defined");
-    //parameterAssert(typeof bookID === 'string', `checkTWL_TSV6Table: 'bookID' parameter should be a string not a '${typeof bookID}'`);
-    //parameterAssert(bookID.length === 3, `checkTWL_TSV6Table: 'bookID' parameter should be three characters long not ${bookID.length}`);
-    //parameterAssert(bookID.toUpperCase() === bookID, `checkTWL_TSV6Table: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-    //parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkTWL_TSV6Table: '${bookID}' is not a valid USFM book identifier`);
-    //parameterAssert(givenLocation !== undefined, "checkTWL_TSV6Table: 'givenLocation' parameter should be defined");
-    //parameterAssert(typeof givenLocation === 'string', `checkTWL_TSV6Table: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
+    // functionLog(`internalCheckTWL_TSV6Table(${languageCode}, ${repoCode}, ${bookID}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
+    //parameterAssert(languageCode !== undefined, "internalCheckTWL_TSV6Table: 'languageCode' parameter should be defined");
+    //parameterAssert(typeof languageCode === 'string', `internalCheckTWL_TSV6Table: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    //parameterAssert(repoCode === 'TWL' || repoCode === 'OBS-TWL', `internalCheckTWL_TSV6Table: repoCode expected 'TWL' or 'OBS-TWL' not '${repoCode}'`);
+    //parameterAssert(bookID !== undefined, "internalCheckTWL_TSV6Table: 'bookID' parameter should be defined");
+    //parameterAssert(typeof bookID === 'string', `internalCheckTWL_TSV6Table: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+    //parameterAssert(bookID.length === 3, `internalCheckTWL_TSV6Table: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    //parameterAssert(bookID.toUpperCase() === bookID, `internalCheckTWL_TSV6Table: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+    //parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `internalCheckTWL_TSV6Table: '${bookID}' is not a valid USFM book identifier`);
+    //parameterAssert(givenLocation !== undefined, "internalCheckTWL_TSV6Table: 'givenLocation' parameter should be defined");
+    //parameterAssert(typeof givenLocation === 'string', `internalCheckTWL_TSV6Table: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -65,11 +65,11 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
     const carResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        // functionLog(`checkTWL_TSV6Table success: ${successString}`);
+        // functionLog(`internalCheckTWL_TSV6Table success: ${successString}`);
         carResult.successList.push(successString);
     }
     function addNoticePartial(incompleteNoticeObject) {
-        // functionLog(`checkTWL_TSV6Table notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
+        // functionLog(`internalCheckTWL_TSV6Table notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
         //parameterAssert(incompleteNoticeObject.priority !== undefined, "ATSV addNoticePartial: 'priority' parameter should be defined");
         //parameterAssert(typeof incompleteNoticeObject.priority === 'number', `TSV addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}': ${incompleteNoticeObject.priority}`);
         //parameterAssert(incompleteNoticeObject.message !== undefined, "ATSV addNoticePartial: 'message' parameter should be defined");
@@ -93,19 +93,19 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
         //parameterAssert(incompleteNoticeObject.location !== undefined, "ATSV addNoticePartial: 'location' parameter should be defined");
         //parameterAssert(typeof incompleteNoticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
 
-        if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkTWL_TSV6Table ${incompleteNoticeObject.debugChain}`;
-        aboutToOverwrite('checkTWL_TSV6Table', ['bookID', 'filename', 'repoCode'], incompleteNoticeObject, { bookID, filename, repoCode });
+        if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `internalCheckTWL_TSV6Table ${incompleteNoticeObject.debugChain}`;
+        aboutToOverwrite('internalCheckTWL_TSV6Table', ['bookID', 'filename', 'repoCode'], incompleteNoticeObject, { bookID, filename, repoCode });
         carResult.noticeList.push({ ...incompleteNoticeObject, bookID, filename, repoCode });
     }
 
 
-    // Main code for checkTWL_TSV6Table
+    // Main code for internalCheckTWL_TSV6Table
     let lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook = 0;
     if (bookID === 'OBS')
         numChaptersThisBook = 50; // There’s 50 Open Bible Stories
     else {
-        //parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in checkTWL_TSV6Table");
+        //parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in internalCheckTWL_TSV6Table");
         try {
             numChaptersThisBook = books.chaptersInBook(bookID);
         }
@@ -122,7 +122,7 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
     let rowIDListForVerse = [], uniqueRowListForVerse = [];
     let numVersesThisChapter = 0;
     for (let n = 0; n < lines.length; n++) {
-        // functionLog(`checkTWL_TSV6Table checking line ${n}: ${JSON.stringify(lines[n])}`);
+        // functionLog(`internalCheckTWL_TSV6Table checking line ${n}: ${JSON.stringify(lines[n])}`);
         if (n === 0) {
             if (lines[0] === EXPECTED_TWL_HEADING_LINE)
                 addSuccessMessage(`Checked TSV header ${ourLocation}`);
@@ -271,21 +271,21 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
         }
     }
 
-    if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        // functionLog(`checkTWL_TSV6Table: calling removeDisabledNotices(${carResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
-        carResult.noticeList = removeDisabledNotices(carResult.noticeList);
-    }
+    // if (!checkingOptions?.suppressNoticeDisablingFlag) {
+    //     // functionLog(`internalCheckTWL_TSV6Table: calling removeDisabledNotices(${carResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+    //     carResult.noticeList = removeDisabledNotices(carResult.noticeList);
+    // }
 
     if (cutoffPriorityLevel < 20 && checkingOptions?.disableAllLinkFetchingFlag)
         addNoticePartial({ priority: 20, message: "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked", location: ourLocation });
 
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}`);
     if (carResult.noticeList.length)
-        addSuccessMessage(`checkTWL_TSV6Table v${TWL_TABLE_VALIDATOR_VERSION_STRING} finished with ${carResult.noticeList.length ? carResult.noticeList.length.toLocaleString() : "zero"} notice${carResult.noticeList.length === 1 ? '' : 's'}`);
+        addSuccessMessage(`internalCheckTWL_TSV6Table v${TWL_TABLE_VALIDATOR_VERSION_STRING} finished with ${carResult.noticeList.length ? carResult.noticeList.length.toLocaleString() : "zero"} notice${carResult.noticeList.length === 1 ? '' : 's'}`);
     else
-        addSuccessMessage(`No errors or warnings found by checkTWL_TSV6Table v${TWL_TABLE_VALIDATOR_VERSION_STRING}`)
-    // debugLog(`  checkTWL_TSV6Table returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
-    // debugLog("checkTWL_TSV6Table result is", JSON.stringify(carResult));
+        addSuccessMessage(`No errors or warnings found by internalCheckTWL_TSV6Table v${TWL_TABLE_VALIDATOR_VERSION_STRING}`)
+    // debugLog(`  internalCheckTWL_TSV6Table returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
+    // debugLog("internalCheckTWL_TSV6Table result is", JSON.stringify(carResult));
     return carResult;
 }
-// end of checkTWL_TSV6Table function
+// end of internalCheckTWL_TSV6Table function

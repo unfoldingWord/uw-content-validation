@@ -5,13 +5,17 @@ import { debugLog, userLog, functionLog } from './utilities';
     but we just want to disable it for certain resources to handle special cases.
     In some cases, it’s to handle software deficiencies.
 
-  NOTE: This is only recommended for resources which are relatively stable,
+  Some examples:
+    An article about punctuation discusses the use of "(" (which would normally cause a warning)
+    An article about how to encode markdown discusses "#" (which would normally cause a warning)
+
+    NOTE: This is only recommended for resources which are relatively stable,
           e.g., completed book packages
         as it can rely on details like filename and maybe line number.
 */
 
 
-// const DISABLED_NOTICES_VERSION_STRING = '0.3.8';
+// const DISABLED_NOTICES_VERSION_STRING = '0.3.9';
 
 
 const disabledNotices = [

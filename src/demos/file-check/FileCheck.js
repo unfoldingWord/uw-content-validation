@@ -8,7 +8,7 @@ import { checkFileContents } from './checkFileContents';
 import { debugLog, userLog } from '../../core/utilities';
 
 
-// const FILE_CHECK_VERSION_STRING = '0.4.2';
+// const FILE_CHECK_VERSION_STRING = '0.4.3';
 
 
 function FileCheck(props) {
@@ -68,17 +68,26 @@ function FileCheck(props) {
         const languageCode = repoName.split('_')[0];
 
         let repoCodeGuess = '';
-        if (repoName === 'hbo_uhb') repoCodeGuess = 'UHB'
-        else if (repoName === 'el-x-koine_ugnt') repoCodeGuess = 'UGNT'
-        else if (repoName.endsWith('_twl')) repoCodeGuess = 'TWL'
-        else if (repoName.endsWith('_tn')) repoCodeGuess = 'TN'
-        else if (repoName.endsWith('_ta')) repoCodeGuess = 'TA'
-        else if (repoName.endsWith('_tq')) repoCodeGuess = 'TQ'
-        else if (repoName.endsWith('_tw')) repoCodeGuess = 'TW'
-        else if (repoName.endsWith('_sn')) repoCodeGuess = 'SN'
-        else if (repoName.endsWith('_sq')) repoCodeGuess = 'SQ'
-        else if (repoName.endsWith('lt')) repoCodeGuess = 'LT'
-        else if (repoName.endsWith('st')) repoCodeGuess = 'ST'
+        if (repoName === 'hbo_uhb') repoCodeGuess = 'UHB';
+        else if (repoName === 'el-x-koine_ugnt') repoCodeGuess = 'UGNT';
+
+        else if (repoName.endsWith('lt')) repoCodeGuess = 'LT';
+        else if (repoName.endsWith('st')) repoCodeGuess = 'ST';
+
+        else if (repoName.endsWith('_ta')) repoCodeGuess = 'TA';
+        else if (repoName.endsWith('_tw')) repoCodeGuess = 'TW';
+
+        else if (repoName.endsWith('_twl')) repoCodeGuess = 'TWL';
+        else if (repoName.endsWith('_tn')) repoCodeGuess = 'TN';
+        else if (repoName.endsWith('_tq')) repoCodeGuess = username === 'Door43-Catalog' ? 'TQ1' : 'TQ';
+        else if (repoName.endsWith('_sn')) repoCodeGuess = 'SN';
+        else if (repoName.endsWith('_sq')) repoCodeGuess = 'SQ';
+
+        else if (repoName.endsWith('_obs-twl')) repoCodeGuess = 'OBS-TWL';
+        else if (repoName.endsWith('_obs-tn')) repoCodeGuess = 'OBS-TN';
+        else if (repoName.endsWith('_obs-tq')) repoCodeGuess = username === 'Door43-Catalog' ? 'OBS-TQ1' : 'OBS-TQ';
+        else if (repoName.endsWith('_obs-sn')) repoCodeGuess = 'OBS-SN';
+        else if (repoName.endsWith('_obs-sq')) repoCodeGuess = 'OBS-SQ';
 
         // Even though we're only checking one file,
         //  sometimes it pays to preload another repo if the file has many links to that repo
