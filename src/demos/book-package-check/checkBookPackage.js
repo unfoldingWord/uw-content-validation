@@ -9,7 +9,7 @@ import { checkRepo } from '../repo-check/checkRepo';
 import { userLog, functionLog, debugLog, parameterAssert, logicAssert, aboutToOverwrite } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.9.6';
+// const BP_VALIDATOR_VERSION_STRING = '0.9.7';
 
 const STANDARD_MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -315,11 +315,11 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     if (dataSet === 'DEFAULT')
       repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
     else if (dataSet === 'OLD')
-      repoCodeList = ['OBS', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
+      repoCodeList = ['OBS', 'OBS-TN1', 'OBS-TQ1', 'OBS-SN1', 'OBS-SQ1'];
     else if (dataSet === 'NEW')
-      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ', 'OBS-SN2', 'OBS-SQ2'];
+      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
     else if (dataSet === 'BOTH')
-      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-SN', 'OBS-SN2', 'OBS-SQ', 'OBS-SQ2'];
+      repoCodeList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
   } else { // not OBS
     // We also need to know the number for USFM books
     try {
@@ -392,9 +392,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       // TODO: Might we need specific releases/tags for some of these (e.g., from the TN2 manifest)???
       // TODO: Do we need to hard-code where to find the UHB and UGNT???
       filename = `${bookNumberAndName}.usfm`;
-    else if (adjustedRepoCode === 'TWL' || thisRepoCode.endsWith('TN2') || thisRepoCode.endsWith('TQ'))
-      filename = `${adjustedRepoCode.toLowerCase()}_${bookID}.tsv`
-    else if ((adjustedRepoCode === 'SN' || adjustedRepoCode === 'SQ') && bookID !== 'OBS')
+    else if (adjustedRepoCode === 'TWL' || thisRepoCode.endsWith('TN2') || thisRepoCode.endsWith('TQ') || adjustedRepoCode === 'SN' || adjustedRepoCode === 'SQ' || thisRepoCode === 'OBS-TN')
       filename = `${adjustedRepoCode.toLowerCase()}_${bookID}.tsv`
     else if (adjustedRepoCode === 'TN' && !thisRepoCode.startsWith('OBS-')) {
       try {
@@ -424,7 +422,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       }
       addSuccessMessage(`Checked ${languageCode} OBS repo from ${adjustedUsername}`);
     } else if (thisRepoCode === 'TQ1'
-      || thisRepoCode === 'OBS-TN' || thisRepoCode === 'OBS-TQ1' || thisRepoCode === 'OBS-SN' || thisRepoCode === 'OBS-SQ') { // These are still markdown for now
+      || thisRepoCode === 'OBS-TN1' || thisRepoCode === 'OBS-TQ1' || thisRepoCode === 'OBS-SN1' || thisRepoCode === 'OBS-SQ1') { // These are still markdown for now
       // This is the old markdown resource with hundreds/thousands of files
       const tqResultObject = await checkMarkdownBook(adjustedUsername, languageCode, thisRepoCode, repoName, originalBranch, bookID, newCheckingOptions);
       checkBookPackageResult.successList = checkBookPackageResult.successList.concat(tqResultObject.successList);
@@ -440,7 +438,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
       logicAssert(filename?.length, `filename should be set by now for un=${adjustedUsername} rC=${thisRepoCode} aRC=${adjustedRepoCode} rN=${repoName} aBr=${adjustedBranch}`);
       let repoFileContent;
       try {
-        // debugLog(`checkBookPackage about to fetch fileContent for ${adjustedUsername}, ${repoName}, ${adjustedBranch}, ${filename}`);
+        // debugLog(`checkBookPackage about to fetch fileContent for aUN='${adjustedUsername}' rN='${repoName}' aB='${adjustedBranch}' fn='${filename}'`);
         repoFileContent = await getFile_({ username: adjustedUsername, repository: repoName, path: filename, branch: adjustedBranch });
         // debugLog(`checkBookPackage fetched fileContent for ${adjustedUsername}, ${repoName}, ${adjustedBranch}, ${filename}, ${typeof repoFileContent}, ${repoFileContent.length}`);
         checkedFilenames.push(filename);

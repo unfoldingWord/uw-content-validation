@@ -770,7 +770,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
         } else // < 2
             addNoticePartial({ priority: 815, message: "Divider without surrounding snippet", location: ourLocation });
     } else { // Only a single quote (no discontiguousDivider)
-        if (repoCode === 'OBS-TN2' && (fieldText === "General Information" || fieldText === "Connecting Statement"))
+        if (repoCode === 'OBS-TN' && (fieldText === "General Information" || fieldText === "Connecting Statement"))
             ; // Just ignore these fixed strings
         else if (getWordsIndex(verseWordsList, noDashFieldText.split(' '), occurrence) >= 0) {
             if (occurrence > 1) {

@@ -117,11 +117,11 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
       if (bookIDList.includes('OBS')) {
         let obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ']; // for DEFAULT
         if (dataSet === 'OLD')
-          obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ1', 'OBS-SN', 'OBS-SQ'];
+          obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN1', 'OBS-TQ1', 'OBS-SN1', 'OBS-SQ1'];
         else if (dataSet === 'NEW')
-          obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ', 'OBS-SN2', 'OBS-SQ2'];
+          obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
         else if (dataSet === 'BOTH')
-          obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-SN', 'OBS-SN2', 'OBS-SQ', 'OBS-SQ2'];
+          obsRepoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
         repoPreloadList.push.apply(repoPreloadList, obsRepoPreloadList);
       }
       // debugLog(`BookPackagesCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)

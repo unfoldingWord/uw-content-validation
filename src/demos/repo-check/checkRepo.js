@@ -45,15 +45,6 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
   if (repoCode === 'TN2') {
     repoCode = 'TN';
     if (repoBranch === undefined) repoBranch = 'newFormat';
-  } else if (repoCode === 'OBS-TN2') {
-    repoCode = 'OBS-TN';
-    if (repoBranch === undefined) repoBranch = 'newFormat';
-  } else if (repoCode === 'OBS-SN2') {
-    repoCode = 'OBS-SN';
-    if (repoBranch === undefined) repoBranch = 'newFormat';
-  } else if (repoCode === 'OBS-SQ2') {
-    repoCode = 'OBS-SQ';
-    if (repoBranch === undefined) repoBranch = 'newFormat';
   } else if (repoCode.endsWith('LT')) repoCode = 'LT';
   else if (repoCode.endsWith('ST')) repoCode = 'ST';
   // debugLog(`checkRepo now has languageCode='${languageCode}' repoCode='${repoCode}' repoBranch='${repoBranch}'`);

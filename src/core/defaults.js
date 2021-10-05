@@ -10,8 +10,8 @@ export const REPO_CODES_LIST = [
   'SN', 'SQ',
   'UGL', 'UHAL',
   'OBS', 'OBS-TWL',
-  'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ1',
-  'OBS-SN', 'OBS-SN2', 'OBS-SQ', 'OBS-SQ2',
+  'OBS-TN', 'OBS-TN1', 'OBS-TQ', 'OBS-TQ1',
+  'OBS-SN', 'OBS-SN1', 'OBS-SQ', 'OBS-SQ1',
 ];
 
 export const CATALOG_NEXT_ONLY_REPO_CODES_LIST = [
@@ -19,6 +19,6 @@ export const CATALOG_NEXT_ONLY_REPO_CODES_LIST = [
   'TN2', 'TQ',
   'SN', 'SQ',
   'OBS-TWL',
-  'OBS-TN2', 'OBS-TQ',
-  'OBS-SN2', 'OBS-SQ2',
+  'OBS-TN', 'OBS-TQ',
+  'OBS-SN', 'OBS-SQ',
 ];

@@ -79,10 +79,10 @@ export async function checkFileContents(username, languageCode, repoCode, branch
       logicAssert(repoCode !== 'TN' && repoCode !== 'TQ1' && repoCode !== 'OBS-TN' && repoCode !== 'OBS-TQ1' && repoCode !== 'OBS_SN' && repoCode !== 'OBS-SQ', `This checkFileContents code with ${filenameMain} is not for ${repoCode}`);
       const checkFunction = {
         'TWL': internalCheckTWL_TSV6Table, 'OBS-TWL': internalCheckTWL_TSV6Table,
-        'TN2': checkNotesTSV7Table, 'OBS-TN2': checkNotesTSV7Table,
+        'TN2': checkNotesTSV7Table, 'OBS-TN': checkNotesTSV7Table,
         'TQ': checkQuestionsTSV7Table, 'OBS-TQ': checkQuestionsTSV7Table,
-        'SN': checkNotesTSV7Table, 'OBS-SN2': checkNotesTSV7Table,
-        'SQ': checkQuestionsTSV7Table, 'OBS-SQ2': checkQuestionsTSV7Table,
+        'SN': checkNotesTSV7Table, 'OBS-SN': checkNotesTSV7Table,
+        'SQ': checkQuestionsTSV7Table, 'OBS-SQ': checkQuestionsTSV7Table,
       }[repoCode];
       // debugLog(`checkFileContents() got ${checkFunction} function for ${repoCode}`);
       checkFileResultObject = await checkFunction(languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, newCheckingOptions);
