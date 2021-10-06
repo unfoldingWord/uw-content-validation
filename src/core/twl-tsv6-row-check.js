@@ -1,4 +1,4 @@
-import { DEFAULT_EXCERPT_LENGTH } from './defaults';
+import { DEFAULT_EXCERPT_LENGTH, NUM_OBS_STORIES, MAX_OBS_FRAMES } from './defaults';
 import { isWhitespace, countOccurrencesInString } from './text-handling-functions';
 import * as books from './books/books';
 import { checkTextField } from './field-text-check';
@@ -255,7 +255,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
     const lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook;
     if (bookID === 'OBS')
-        numChaptersThisBook = 50; // There’s 50 Open Bible Stories
+        numChaptersThisBook = NUM_OBS_STORIES; // There’s 50 Open Bible Stories
     else {
         //parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in checkTWL_TSV6DataRow");
         try {
@@ -294,7 +294,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
                     haveGoodChapterNumber = false;
                 }
                 if (lowercaseBookID === 'obs')
-                    numVersesThisChapter = 99; // Set to maximum expected number of frames
+                    numVersesThisChapter = MAX_OBS_FRAMES; // Set to maximum expected number of frames
                 else {
                     try {
                         numVersesThisChapter = books.versesInChapter(lowercaseBookID, intC);

@@ -1,7 +1,7 @@
 import * as books from './books/books';
 import { alreadyChecked, markAsChecked } from './getApi';
 // eslint-disable-next-line no-unused-vars
-import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
+import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST, NUM_OBS_STORIES, MAX_OBS_FRAMES } from './defaults'
 import { countOccurrencesInString } from './text-handling-functions'
 import { cachedGetFile, cachedGetFileUsingFullURL, checkMarkdownFileContents } from '../core';
 // eslint-disable-next-line no-unused-vars
@@ -9,7 +9,7 @@ import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAsser
 import jQuery from 'jquery';
 
 
-// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.10.2';
+// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.10.3';
 
 // const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -50,6 +50,8 @@ const SIMPLE_DISPLAY_LINK_REGEX = new RegExp('\\[([^\\]]+?)\\]\\((https?://[^\\)
 
 const SIMPLE_IMAGE_REGEX = new RegExp('!\\[([^\\]]*?)\\]\\(([^ "\\)]+?)\\)', 'g'); // ![alt](y)
 const TITLED_IMAGE_REGEX = new RegExp('!\\[([^\\]]*?)\\]\\(([^ \\)]+?) "([^"\\)]+?)"\\)', 'g'); // ![alt](link "title")
+
+const OBS_LINK_REGEX = new RegExp('\\[(\\d\\d):(\\d\\d)\\]\\((\\d\\d)/(\\d\\d)\\)', 'g'); // [07:03](07/03)
 
 
 /**
@@ -277,7 +279,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     // const totalLinks1 = linksList1.length;
     // const totalLinks2 = linksList2.length;
     // eslint-disable-next-line no-unused-vars
-    let taLinkCount1 = 0, taLinkCount2 = 0, twLinkCount1 = 0, twLinkCount2 = 0, TNLinkCount1 = 0, thisChapterBibleLinkCount1 = 0, thisVerseBibleLinkCount1 = 0, thisBookBibleLinkCount1 = 0, otherBookBibleLinkCount1 = 0, generalLinkCount1 = 0;
+    let taLinkCount1 = 0, taLinkCount2 = 0, twLinkCount1 = 0, twLinkCount2 = 0, TNLinkCount1 = 0, thisChapterBibleLinkCount1 = 0, thisVerseBibleLinkCount1 = 0, thisBookBibleLinkCount1 = 0, otherBookBibleLinkCount1 = 0, OBSLinkCount = 0, generalLinkCount1 = 0;
     const processedLinkList = [];
 
     // Check for internal TW links like [Asher](../names/asher.md)
@@ -1268,6 +1270,71 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
         }
 
         // TODO: We should see if we can find the correct note
+    }
+
+    if (repoCode.startsWith('OBS-')) {
+        // Check for OBS links like [03:04](03/04)
+        while ((regexMatchObject = OBS_LINK_REGEX.exec(fieldText))) {
+            // debugLog(`  checkNotesLinksToOutside OBS_LINK_REGEX resultArray=${JSON.stringify(regexMatchObject)}`);
+            OBSLinkCount += 1;
+            logicAssert(regexMatchObject.length === 5, `OBS_LINK_REGEX expected 5 fields (not ${regexMatchObject.length})`)
+            // eslint-disable-next-line no-unused-vars
+            let [totalLink, storyNumberA, frameNumberA, storyNumberB, frameNumberB] = regexMatchObject;
+            processedLinkList.push(totalLink); // Save the full link
+
+            if (storyNumberA !== storyNumberB || frameNumberA !== frameNumberB)
+                addNoticePartial({ priority: 731, message: `OBS link has internal mismatch`, details: `${storyNumberA}:${frameNumberA} should equal ${storyNumberB}/${frameNumberA}`, excerpt: totalLink, location: ourLocation });
+            else {
+                const storyInt = ourParseInt(storyNumberA), frameInt = ourParseInt(frameNumberA); // We know from the test above that the B values are identical
+                if (storyInt < 1 || storyInt > NUM_OBS_STORIES || frameInt < 1 || frameInt > MAX_OBS_FRAMES)
+                    addNoticePartial({ priority: 730, message: `OBS link has out-of-range values`, details: `${NUM_OBS_STORIES} stories, max of ${MAX_OBS_FRAMES} frames`, excerpt: `${storyNumberA}/${frameNumberA}`, location: ourLocation });
+            }
+            // const OBSRepoName = `${defaultLanguageCode}_obs`;
+            // // debugLog(`Got taRepoName=${taRepoName}`);
+            // let TAsection = 'translate';
+            // if (fieldName.startsWith('checking/')) TAsection = 'checking';
+            // else if (fieldName.startsWith('process/')) TAsection = 'process';
+            // if (fieldName.startsWith('intro/')) TAsection = 'intro';
+            // dataAssert(TAsection === 'translate' || TAsection === 'checking' || TAsection === 'process' || TAsection === 'intro', `Unexpected TA section name = '${TAsection}'`);
+            // const filepath = `${TAsection}/${article}/01.md`; // Other files are title.md, sub-title.md
+            // // debugLog(`checkNotesLinksToOutside OBS_LINK_REGEX got tA filepath=${filepath}`);
+
+            /*
+            if (!checkingOptions?.disableAllLinkFetchingFlag) {
+                // debugLog(`checkNotesLinksToOutside OBS_LINK_REGEX need to check ${filepath} against ${taRepoName}`);
+                const taPathParameters = { username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch };
+                let taFileContent, alreadyGaveError = false;
+                try {
+                    taFileContent = await getFile_(taPathParameters);
+                    // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
+                } catch (trcGCerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
+                    console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
+                    addNoticePartial({ priority: 885, message: `Error loading TA article`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+                    alreadyGaveError = true;
+                }
+                if (!alreadyGaveError) {
+                    if (!taFileContent)
+                        addNoticePartial({ priority: 886, message: "Unable to find/load linked TA article", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                    else if (taFileContent.length < 10)
+                        addNoticePartial({ priority: 884, message: "Linked TA article seems empty", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
+                    // Don’t do this or it gets infinite recursion!!!
+                    // else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
+                    //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
+                    //     if (!await alreadyChecked(taPathParameters)) {
+                    //         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
+                    //         const checkTAFileResult = await checkMarkdownFileContents(languageCode, repoCode, `TA ${article.trim()}/01.md`, taFileContent, ourLocation, checkingOptions);
+                    //         for (const noticeObject of checkTAFileResult.noticeList)
+                    //             ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
+                    //         ctarResult.checkedFileCount += 1;
+                    //         ctarResult.checkedFilenames.push(`${article.trim()}/01.md`);
+                    //         ctarResult.checkedFilesizes = taFileContent.length;
+                    //         ctarResult.checkedFilenameExtensions = ['md'];
+                    //         ctarResult.checkedRepoNames.push(taRepoName);
+                    //         markAsChecked(taPathParameters); // don’t bother waiting for the result of this async call
+                    //     }
+                    // }
+                } */
+        }
     }
 
     // Check for simple display links like [ULT](https://something)

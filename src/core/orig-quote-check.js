@@ -8,7 +8,7 @@ import { cachedGetFile } from './getApi';
 import { functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt, aboutToOverwrite } from './utilities';
 
 
-// const OL_QUOTE_VALIDATOR_VERSION_STRING = '0.10.8';
+// const OL_QUOTE_VALIDATOR_VERSION_STRING = '0.10.9';
 
 
 /**
@@ -137,14 +137,14 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
             const OBSPathname = `content/${adjC}.md`;
             try {
                 originalMarkdown = await getFile_({ username, repository: OBSRepoName, path: OBSPathname, branch });
-                // debugLog("Fetched fileContent for", OBSRepoName, OBSPathname, typeof originalMarkdown, originalMarkdown.length);
+                // debugLog(`Fetched fileContent for ${OBSRepoName} ${OBSPathname} ${typeof originalMarkdown} ${originalMarkdown.length}`);
             } catch (gcUHBerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
                 console.error(`getOriginalVerse(${bookID}, ${C}:${V}, ${JSON.stringify(checkingOptions)}) failed to load UHB`, username, languageCode, OBSPathname, branch, gcUHBerror.message);
                 addNoticePartial({ priority: 601, message: "Unable to load file", details: `error=${gcUHBerror}`, username, OBSPathname, location: ourLocation, extra: OBSRepoName });
             }
             if (!originalMarkdown) return '';
 
-            let gotIt = V === 'intro'; // normally false, but true for intro (so grabs first line of text = heading line)
+            let gotIt = V === '0' || V === 'intro'; // normally false, but true for intro (so grabs first line of text = heading line)
             const searchString = `-${adjC}-${adjV}.`;
             // NOTE: Bible references get appended to the last frame text (but I don’t think it does any harm)
             for (const line of originalMarkdown.split('\n')) {
@@ -153,7 +153,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
                 if (gotIt)
                     if (line.indexOf('[OBS Image]') > 0) // This is the next frame
                         break;
-                    else if (line[0] === '_') // e.g., _A Bible story from...
+                    else if (line[0] === '_') // e.g., _A Bible story from..._
                         verseText += ` ${line.replace(/_/, '')}`; // NOTE: remove underlines (markdown format codes)
                     else
                         verseText += line; // NOTE: works coz all text on one line, otherwise would need to insert spaces here
@@ -658,7 +658,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
         else {
             verseText = await getOriginalPassage(bookID, C, V, checkingOptions);
             if (!verseText) {
-                addNoticePartial({ priority: 851, message: bookID === 'OBS' ? "Unable to load OBS story text" : "Unable to load original language verse text", location: ourLocation });
+                addNoticePartial({ priority: 851, message: bookID === 'OBS' ? "Unable to load original OBS story text" : "Unable to load original language verse text", location: ourLocation });
                 return colqResult; // nothing else we can do here
             }
             noDashVerseText = verseText.replace(/[—־]/g, ' '); // em-dash and then maqaf

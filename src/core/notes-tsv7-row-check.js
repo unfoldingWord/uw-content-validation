@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults';
+import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST, NUM_OBS_STORIES, MAX_OBS_FRAMES } from './defaults';
 import { isWhitespace, countOccurrencesInString } from './text-handling-functions';
 import * as books from './books/books';
 import { checkTextField } from './field-text-check';
@@ -11,7 +11,7 @@ import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
 import { parameterAssert, aboutToOverwrite } from './utilities';
 
 
-// const NOTES_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.15';
+// const NOTES_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.16';
 
 const NUM_EXPECTED_NOTES_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_NOTES_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tNote';
@@ -293,7 +293,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
     const lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook;
     if (bookID === 'OBS')
-        numChaptersThisBook = 50; // There’s 50 Open Bible Stories
+        numChaptersThisBook = NUM_OBS_STORIES; // There’s 50 Open Bible Stories
     else {
         //parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in checkNotesTSV7DataRow");
         try {
@@ -332,7 +332,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
                     haveGoodChapterNumber = false;
                 }
                 if (lowercaseBookID === 'obs')
-                    numVersesThisChapter = 99; // Set to maximum expected number of frames
+                    numVersesThisChapter = MAX_OBS_FRAMES; // Set to maximum expected number of frames
                 else {
                     try {
                         numVersesThisChapter = books.versesInChapter(lowercaseBookID, intC);
@@ -401,9 +401,8 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
             }
             let tagsList = tags.split('; ');
             for (const thisTag of tagsList) {
-                // No tags are yet defined for TNs or SNs
-                // if (thisTag !== 'keyterm' && thisTag !== 'name')
-                addNoticePartial({ priority: 746, message: "Unexpected tag", details: thisTag, excerpt: tags, fieldName: 'Tags', rowID, location: ourRowLocation });
+                if (thisTag !== 'title') // for TNs or SNs
+                    addNoticePartial({ priority: 740, message: "Unrecognized tag", details: thisTag, excerpt: tags, fieldName: 'Tags', rowID, location: ourRowLocation });
             }
         }
 

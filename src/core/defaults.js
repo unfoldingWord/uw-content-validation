@@ -22,3 +22,6 @@ export const CATALOG_NEXT_ONLY_REPO_CODES_LIST = [
   'OBS-TN', 'OBS-TQ',
   'OBS-SN', 'OBS-SQ',
 ];
+
+export const NUM_OBS_STORIES = 50;
+export const MAX_OBS_FRAMES = 18; // Stories 16, 19, and 49 each have 18 frames

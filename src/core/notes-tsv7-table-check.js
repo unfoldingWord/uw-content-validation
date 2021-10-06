@@ -1,5 +1,5 @@
 import * as books from './books/books';
-import { DEFAULT_EXCERPT_LENGTH } from './defaults'
+import { DEFAULT_EXCERPT_LENGTH, NUM_OBS_STORIES, MAX_OBS_FRAMES } from './defaults'
 import { checkNotesTSV7DataRow } from './notes-tsv7-row-check';
 // import { removeDisabledNotices } from './disabled-notices';
 // eslint-disable-next-line no-unused-vars
@@ -104,7 +104,7 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
     let lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook = 0;
     if (bookID === 'OBS')
-        numChaptersThisBook = 50; // There’s 50 Open Bible Stories
+        numChaptersThisBook = NUM_OBS_STORIES; // There’s 50 Open Bible Stories
     else {
         //parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in checkNotesTSV7Table");
         try {
@@ -188,7 +188,7 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
                         let intC = Number(C);
                         if (C !== lastC)
                             if (lowercaseBookID === 'obs')
-                                numVersesThisChapter = 99; // Set to maximum expected number of frames
+                                numVersesThisChapter = MAX_OBS_FRAMES; // Set to maximum expected number of frames
                             else
                                 numVersesThisChapter = books.versesInChapter(lowercaseBookID, intC);
                         if (intC === 0)
