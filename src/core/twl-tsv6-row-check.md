@@ -39,6 +39,7 @@ const lineA4 = "2:16\tytc7\tkeyterm; name\tΧριστοῦ Ἰησοῦ\t1\trc:/
 const data = {
   // You can choose any of the above lines here
   //  (to demonstrate differing results)
+  username: 'unfoldingWord',
   languageCode: 'en',
   repoCode: 'TWL',
   tableLineName : 'lineA4',
@@ -48,7 +49,7 @@ const data = {
 }
 
 function OurCheckTWLRow(props) {
-  const { languageCode, repoCode, bookID, C, V, tableLine, tableLineName, givenLocation } = props.data;
+  const { username, languageCode, repoCode, bookID, C, V, tableLine, tableLineName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
 
@@ -60,7 +61,7 @@ function OurCheckTWLRow(props) {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {tableLineName} <b>{bookID}</b>…</p>);
       const checkingOptions = {};
-      const rawResults = await checkTWL_TSV6DataRow(languageCode, repoCode, tableLine, bookID, C, V, givenLocation, checkingOptions);
+      const rawResults = await checkTWL_TSV6DataRow(username, languageCode, repoCode, tableLine, bookID, C, V, givenLocation, checkingOptions);
       setResults(
         <div>
           <b>Check</b> {tableLineName}: "{tableLine}"<br/><br/>

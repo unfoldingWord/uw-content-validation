@@ -9,7 +9,7 @@ import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAsser
 import jQuery from 'jquery';
 
 
-// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.10.3';
+// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.11.0';
 
 // const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -51,7 +51,7 @@ const SIMPLE_DISPLAY_LINK_REGEX = new RegExp('\\[([^\\]]+?)\\]\\((https?://[^\\)
 const SIMPLE_IMAGE_REGEX = new RegExp('!\\[([^\\]]*?)\\]\\(([^ "\\)]+?)\\)', 'g'); // ![alt](y)
 const TITLED_IMAGE_REGEX = new RegExp('!\\[([^\\]]*?)\\]\\(([^ \\)]+?) "([^"\\)]+?)"\\)', 'g'); // ![alt](link "title")
 
-const OBS_LINK_REGEX = new RegExp('\\[(\\d\\d):(\\d\\d)\\]\\((\\d\\d)/(\\d\\d)\\)', 'g'); // [07:03](07/03)
+const OBS_LINK_REGEX = new RegExp('\\[(\\d?\\d):(\\d?\\d)\\]\\((\\d\\d)/(\\d\\d)\\)', 'g'); // [7:3](07/03)
 
 
 /**
@@ -66,7 +66,7 @@ const OBS_LINK_REGEX = new RegExp('\\[(\\d\\d):(\\d\\d)\\]\\((\\d\\d)/(\\d\\d)\\
  * @param {string} givenLocation
  * @param {Object} checkingOptions
  */
-export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, givenC, givenV, fieldName, fieldText, givenLocation, checkingOptions) {
+export async function checkNotesLinksToOutside(username, languageCode, repoCode, bookID, givenC, givenV, fieldName, fieldText, givenLocation, checkingOptions) {
     /* This is for the case of the OccurrenceNote or Note or TWLink fields containing markdown links
 
     bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
@@ -97,32 +97,32 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     // if (fieldText.indexOf('brother') !== -1)
     // functionLog(`checkNotesLinksToOutside(lC=${languageCode}, rC=${repoCode}', bk=${bookID} ${givenC}:${givenV} fN=${fieldName}, (${fieldText.length}), ${givenLocation}, …)…`);
     // functionLog(`checkNotesLinksToOutside(lC=${languageCode}, rC=${repoCode}', bk=${bookID} ${givenC}:${givenV} fN=${fieldName}, (${fieldText.length}), ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
-    //parameterAssert(languageCode !== undefined, "checkNotesLinksToOutside: 'languageCode' parameter should be defined");
-    //parameterAssert(typeof languageCode === 'string', `checkNotesLinksToOutside: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    parameterAssert(languageCode !== undefined, "checkNotesLinksToOutside: 'languageCode' parameter should be defined");
+    parameterAssert(typeof languageCode === 'string', `checkNotesLinksToOutside: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
     // parameterAssert(languageCode !== 'hbo' && languageCode !== 'el-x-koine', `checkNotesLinksToOutside: 'languageCode' parameter should not be an original language code: '${languageCode}'`);
-    //parameterAssert(repoCode !== undefined, "checkNotesLinksToOutside: 'repoCode' parameter should be defined");
-    //parameterAssert(typeof repoCode === 'string', `checkNotesLinksToOutside: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
-    //parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkNotesLinksToOutside: 'repoCode' parameter should not be '${repoCode}'`);
-    //parameterAssert(bookID !== undefined, "checkNotesLinksToOutside: 'bookID' parameter should be defined");
-    //parameterAssert(typeof bookID === 'string', `checkNotesLinksToOutside: 'bookID' parameter should be a string not a '${typeof bookID}'`);
-    //parameterAssert(typeof givenC === 'string', `checkNotesLinksToOutside: 'givenC' parameter should be a string not a '${typeof givenC}'`);
-    //parameterAssert(typeof givenV === 'string', `checkNotesLinksToOutside: 'givenV' parameter should be a string not a '${typeof givenV}'`);
+    parameterAssert(repoCode !== undefined, "checkNotesLinksToOutside: 'repoCode' parameter should be defined");
+    parameterAssert(typeof repoCode === 'string', `checkNotesLinksToOutside: 'repoCode' parameter should be a string not a '${typeof repoCode}'`);
+    parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkNotesLinksToOutside: 'repoCode' parameter should not be '${repoCode}'`);
+    parameterAssert(bookID !== undefined, "checkNotesLinksToOutside: 'bookID' parameter should be defined");
+    parameterAssert(typeof bookID === 'string', `checkNotesLinksToOutside: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+    parameterAssert(typeof givenC === 'string', `checkNotesLinksToOutside: 'givenC' parameter should be a string not a '${typeof givenC}'`);
+    parameterAssert(typeof givenV === 'string', `checkNotesLinksToOutside: 'givenV' parameter should be a string not a '${typeof givenV}'`);
     // if (fieldName !== 'MDFile') {
-    //     //parameterAssert(bookID.length === 3, `checkNotesLinksToOutside: 'bookID' parameter should be three characters long not ${bookID.length}`);
-    //     //parameterAssert(bookID.toUpperCase() === bookID, `checkNotesLinksToOutside: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-    //     //parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkNotesLinksToOutside: '${bookID}' is not a valid USFM book identifier`);
+    //     parameterAssert(bookID.length === 3, `checkNotesLinksToOutside: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    //     parameterAssert(bookID.toUpperCase() === bookID, `checkNotesLinksToOutside: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+    //     parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkNotesLinksToOutside: '${bookID}' is not a valid USFM book identifier`);
     // }
-    //parameterAssert(fieldName !== undefined, "checkNotesLinksToOutside: 'fieldText' parameter should be defined");
-    //parameterAssert(typeof fieldName === 'string', `checkNotesLinksToOutside: 'fieldText' parameter should be a string not a '${typeof fieldName}'`);
-    //parameterAssert(fieldName !== `${languageCode}_${repoCode.toLowerCase()}`, `checkNotesLinksToOutside: 'fieldText' parameter should not be the repoName: '${fieldName}'`);
+    parameterAssert(fieldName !== undefined, "checkNotesLinksToOutside: 'fieldText' parameter should be defined");
+    parameterAssert(typeof fieldName === 'string', `checkNotesLinksToOutside: 'fieldText' parameter should be a string not a '${typeof fieldName}'`);
+    parameterAssert(fieldName !== `${languageCode}_${repoCode.toLowerCase()}`, `checkNotesLinksToOutside: 'fieldText' parameter should not be the repoName: '${fieldName}'`);
     // if (fieldName === `${languageCode}_${repoCode.toLowerCase()}`) { console.trace('checkNotesLinksToOutside()'); }
     if (!fieldName.startsWith('TA ') && !fieldName.startsWith('TW ') && !fieldName.endsWith('.md') && fieldName.indexOf('/') === -1) {
-        //parameterAssert(fieldName === 'OccurrenceNote' || fieldName === 'Note' || fieldName === 'TWLink' || fieldName === 'Response' || fieldName === 'README' || fieldName === 'LICENSE', `checkNotesLinksToOutside: 'fieldName' parameter should be 'OccurrenceNote', 'Note', 'TWLink', 'Response', 'README' or 'LICENSE' not '${fieldName}'`);
+        parameterAssert(fieldName === 'OccurrenceNote' || fieldName === 'Note' || fieldName === 'TWLink' || fieldName === 'Response' || fieldName === 'README' || fieldName === 'LICENSE', `checkNotesLinksToOutside: 'fieldName' parameter should be 'OccurrenceNote', 'Note', 'TWLink', 'Response', 'README' or 'LICENSE' not '${fieldName}'`);
     }
-    //parameterAssert(fieldText !== undefined, "checkNotesLinksToOutside: 'fieldText' parameter should be defined");
-    //parameterAssert(typeof fieldText === 'string', `checkNotesLinksToOutside: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
-    //parameterAssert(givenLocation !== undefined, "checkNotesLinksToOutside: 'fieldText' parameter should be defined");
-    //parameterAssert(typeof givenLocation === 'string', `checkNotesLinksToOutside: 'fieldText' parameter should be a string not a '${typeof givenLocation}'`);
+    parameterAssert(fieldText !== undefined, "checkNotesLinksToOutside: 'fieldText' parameter should be defined");
+    parameterAssert(typeof fieldText === 'string', `checkNotesLinksToOutside: 'fieldText' parameter should be a string not a '${typeof fieldText}'`);
+    parameterAssert(givenLocation !== undefined, "checkNotesLinksToOutside: 'fieldText' parameter should be defined");
+    parameterAssert(typeof givenLocation === 'string', `checkNotesLinksToOutside: 'fieldText' parameter should be a string not a '${typeof givenLocation}'`);
 
     /* // Regex test
     debugLog("Starting TextRegex…");
@@ -146,20 +146,20 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
      */
     function addNoticePartial(incompleteNoticeObject) {
         // functionLog(`checkNotesLinksToOutside Notice: (priority = ${ priority }) ${ message } ${ characterIndex > 0 ? ` (at character ${characterIndex})` : "" } ${ excerpt ? ` ${excerpt}` : "" } ${ location }`);
-        //parameterAssert(incompleteNoticeObject.priority !== undefined, "cTNlnk addNoticePartial: 'priority' parameter should be defined");
-        //parameterAssert(typeof incompleteNoticeObject.priority === 'number', `cTNlnk addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}': ${incompleteNoticeObject.priority}`);
-        //parameterAssert(incompleteNoticeObject.message !== undefined, "cTNlnk addNoticePartial: 'message' parameter should be defined");
-        //parameterAssert(typeof incompleteNoticeObject.message === 'string', `cTNlnk addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}': ${incompleteNoticeObject.message}`);
+        parameterAssert(incompleteNoticeObject.priority !== undefined, "cTNlnk addNoticePartial: 'priority' parameter should be defined");
+        parameterAssert(typeof incompleteNoticeObject.priority === 'number', `cTNlnk addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}': ${incompleteNoticeObject.priority}`);
+        parameterAssert(incompleteNoticeObject.message !== undefined, "cTNlnk addNoticePartial: 'message' parameter should be defined");
+        parameterAssert(typeof incompleteNoticeObject.message === 'string', `cTNlnk addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}': ${incompleteNoticeObject.message}`);
         // parameterAssert(incompleteNoticeObject.characterIndex !== undefined, `cTNlnk addNoticePartial: 'characterIndex' parameter should be defined`);
         if (incompleteNoticeObject.characterIndex) {
-            //parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `cTNlnk addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
+            parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `cTNlnk addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
         }
         // parameterAssert(excerpt !== undefined, "cTNlnk addNoticePartial: 'excerpt' parameter should be defined");
         if (incompleteNoticeObject.excerpt) {
-            //parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `cTNlnk addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt}`);
+            parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `cTNlnk addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt}`);
         }
-        //parameterAssert(incompleteNoticeObject.location !== undefined, "cTNlnk addNoticePartial: 'location' parameter should be defined");
-        //parameterAssert(typeof incompleteNoticeObject.location === 'string', `cTNlnk addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
+        parameterAssert(incompleteNoticeObject.location !== undefined, "cTNlnk addNoticePartial: 'location' parameter should be defined");
+        parameterAssert(typeof incompleteNoticeObject.location === 'string', `cTNlnk addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
         // incompleteNoticeObject.debugChain = incompleteNoticeObject.debugChain ? `checkNotesLinksToOutside ${ incompleteNoticeObject.debugChain } ` : `checkNotesLinksToOutside(${ fieldName })`;
         if (bookID.length) incompleteNoticeObject.bookID = bookID; // Don't set the field if we don't have a useful bookID
         aboutToOverwrite('checkNotesLinksToOutside', ['filename'], incompleteNoticeObject, { fieldName });
@@ -318,7 +318,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTWArticlesCheckFlag} so checking TW article: ${filepath}`);
                 //     if (!await alreadyChecked(twPathParameters)) {
                 //         // functionLog(`checkNotesLinksToOutside needs to check TW article: ${filepath}`);
-                //         const checkTWFileResult = await checkMarkdownFileContents(languageCode, repoCode, `TW ${filename}`, twFileContent, ourLocation, checkingOptions);
+                //         const checkTWFileResult = await checkMarkdownFileContents(username, languageCode, repoCode, `TW ${filename}`, twFileContent, ourLocation, checkingOptions);
                 //         for (const noticeObject of checkTWFileResult.noticeList)
                 //             ctarResult.noticeList.push({ ...noticeObject, username: twRepoUsername, repoCode: 'TW', repoName: twRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TW' });
                 //         ctarResult.checkedFileCount += 1;
@@ -381,7 +381,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
                         // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
                         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
-                        const checkTAFileResult = await checkMarkdownFileContents(foundLanguageCode, 'TA', filepath, taFileContent, ourLocation, checkingOptions);
+                        const checkTAFileResult = await checkMarkdownFileContents(username, foundLanguageCode, 'TA', filepath, taFileContent, ourLocation, checkingOptions);
                         for (const noticeObject of checkTAFileResult.noticeList) {
                             // Why don’t we use addNoticePartial() here? (It adds bookID and fieldName.) Maybe it would be misleading???
                             if (noticeObject.repoCode === undefined) {
@@ -445,7 +445,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
                     //     if (!await alreadyChecked(taPathParameters)) {
                     //         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
-                    //         const checkTAFileResult = await checkMarkdownFileContents(languageCode, repoCode, `TA ${article.trim()}/01.md`, taFileContent, ourLocation, checkingOptions);
+                    //         const checkTAFileResult = await checkMarkdownFileContents(username, languageCode, repoCode, `TA ${article.trim()}/01.md`, taFileContent, ourLocation, checkingOptions);
                     //         for (const noticeObject of checkTAFileResult.noticeList)
                     //             ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
                     //         ctarResult.checkedFileCount += 1;
@@ -495,7 +495,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
                     //     if (!await alreadyChecked(taPathParameters)) {
                     //         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
-                    //         const checkTAFileResult = await checkMarkdownFileContents(languageCode, repoCode, `TA ${filepath}`, taFileContent, ourLocation, checkingOptions);
+                    //         const checkTAFileResult = await checkMarkdownFileContents(username, languageCode, repoCode, `TA ${filepath}`, taFileContent, ourLocation, checkingOptions);
                     //         for (const noticeObject of checkTAFileResult.noticeList)
                     //             ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
                     //         ctarResult.checkedFileCount += 1;
@@ -557,7 +557,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
                         // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
                         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
-                        const checkTAFileResult = await checkMarkdownFileContents(foundLanguageCode, 'TA', filepath, taFileContent, ourLocation, checkingOptions);
+                        const checkTAFileResult = await checkMarkdownFileContents(username, foundLanguageCode, 'TA', filepath, taFileContent, ourLocation, checkingOptions);
                         for (const noticeObject of checkTAFileResult.noticeList) {
                             // Why don’t we use addNoticePartial() here? (It adds bookID and fieldName.) Maybe it would be misleading???
                             if (noticeObject.repoCode === undefined) {
@@ -618,7 +618,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                         // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTWArticlesCheckFlag} so checking TW article: ${filepath}`);
                         // functionLog(`checkNotesLinksToOutside needs to check TW article: ${filepath}`);
                         // NOTE: repoCode is the caller's repo code in the line below
-                        const checkTWFileResult = await checkMarkdownFileContents(foundLanguageCode, 'TW', `${filename}`, twFileContent, ourLocation, checkingOptions);
+                        const checkTWFileResult = await checkMarkdownFileContents(username, foundLanguageCode, 'TW', `${filename}`, twFileContent, ourLocation, checkingOptions);
                         for (const noticeObject of checkTWFileResult.noticeList) {
                             // Why don’t we use addNoticePartial() here? (It adds bookID and fieldName.) Maybe it would be misleading???
                             if (noticeObject.repoCode === undefined) {
@@ -664,8 +664,9 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 const checkResult = books.isGoodEnglishBookName(optionalB1);
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
-                    // NOTE: Our English bookname table has 'Song of Songs'
-                    addNoticePartial({ priority: optionalB1 === 'Song of Solomon' ? 43 : 143, message: `${optionalB1 === 'Song of Solomon' ? 'Unexpected' : 'Unknown'} Bible book name in TN RC link`, details: totalLink, excerpt: optionalB1, location: ourLocation });
+                    addNoticePartial(optionalB1 === 'Song of Solomon' ?
+                        { priority: 43, message: "Unexpected Bible book name in TN RC link", details: `expected 'Song of Songs' in ${totalLink}`, excerpt: optionalB1, location: ourLocation } :
+                        { priority: 143, message: "Unknown Bible book name in TN RC link", details: totalLink, excerpt: optionalB1, location: ourLocation });
             }
         }
 
@@ -729,8 +730,9 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 const checkResult = books.isGoodEnglishBookName(optionalB1);
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
-                    // NOTE: Our English bookname table has 'Song of Songs'
-                    addNoticePartial({ priority: optionalB1 === 'Song of Solomon' ? 43 : 143, message: `${optionalB1 === 'Song of Solomon' ? 'Unexpected' : 'Unknown'} Bible book name in Bible link`, details: totalLink, excerpt: optionalB1, location: ourLocation });
+                    addNoticePartial(optionalB1 === 'Song of Solomon' ?
+                        { priority: 43, message: "Unexpected Bible book name in Bible link", details: `expected 'Song of Songs' in ${totalLink}`, excerpt: optionalB1, location: ourLocation } :
+                        { priority: 143, message: "Unknown Bible book name in Bible link", details: totalLink, excerpt: optionalB1, location: ourLocation });
             }
         }
 
@@ -878,8 +880,9 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 const checkResult = books.isGoodEnglishBookName(optionalB1);
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
-                    // NOTE: Our English bookname table has 'Song of Songs'
-                    addNoticePartial({ priority: optionalB1 === 'Song of Solomon' ? 43 : 143, message: `${optionalB1 === 'Song of Solomon' ? 'Unexpected' : 'Unknown'} Bible book name in relative Bible link`, details: totalLink, excerpt: optionalB1, location: ourLocation });
+                    addNoticePartial(optionalB1 === 'Song of Solomon' ?
+                        { priority: 43, message: "Unexpected Bible book name in relative Bible link", details: `expected 'Song of Songs' in ${totalLink}`, excerpt: optionalB1, location: ourLocation } :
+                        { priority: 143, message: "Unknown Bible book name in relative Bible link", details: totalLink, excerpt: optionalB1, location: ourLocation });
             }
         }
 
@@ -935,8 +938,9 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             const checkResult = books.isGoodEnglishBookName(B1);
             // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
             if (checkResult === undefined || checkResult === false)
-                // NOTE: Our English bookname table has 'Song of Songs'
-                addNoticePartial({ priority: B1 === 'Song of Solomon' ? 43 : 143, message: `${B1 === 'Song of Solomon' ? 'Unexpected' : 'Unknown'} Bible book name in Bible link`, details: totalLink, excerpt: B1, location: ourLocation });
+                addNoticePartial(B1 === 'Song of Solomon' ?
+                    { priority: 43, message: "Unexpected Bible book name in Bible link", details: `expected 'Song of Songs' in ${totalLink}`, excerpt: B1, location: ourLocation } :
+                    { priority: 143, message: "Unknown Bible book name in Bible link", details: totalLink, excerpt: B1, location: ourLocation });
         }
 
         let linkBookCode = B2 === '..' ? bookID : B2;
@@ -998,8 +1002,9 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 const checkResult = books.isGoodEnglishBookName(optionalB1);
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
-                    // NOTE: Our English bookname table has 'Song of Songs'
-                    addNoticePartial({ priority: optionalB1 === 'Song of Solomon' ? 43 : 143, message: `${optionalB1 === 'Song of Solomon' ? 'Unexpected' : 'Unknown'} Bible book name in Bible link`, details: totalLink, excerpt: optionalB1, location: ourLocation });
+                    addNoticePartial(optionalB1 === 'Song of Solomon' ?
+                        { priority: 43, message: "Unexpected Bible book name in Bible link", details: `expected 'Song of Songs' in ${totalLink}`, excerpt: optionalB1, location: ourLocation } :
+                        { priority: 143, message: "Unknown Bible book name in Bible link", details: totalLink, excerpt: optionalB1, location: ourLocation });
             }
         }
 
@@ -1062,8 +1067,9 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                 const checkResult = books.isGoodEnglishBookName(optionalB1);
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
-                    // NOTE: Our English bookname table has 'Song of Songs'
-                    addNoticePartial({ priority: optionalB1 === 'Song of Solomon' ? 43 : 143, message: `${optionalB1 === 'Song of Solomon' ? 'Unexpected' : 'Unknown'} Bible book name in Bible link`, details: totalLink, excerpt: optionalB1, location: ourLocation });
+                    addNoticePartial(optionalB1 === 'Song of Solomon' ?
+                        { priority: 43, message: "Unexpected Bible book name in Bible link", details: `expected 'Song of Songs' in ${totalLink}`, excerpt: optionalB1, location: ourLocation } :
+                        { priority: 143, message: "Unknown Bible book name in Bible link", details: totalLink, excerpt: optionalB1, location: ourLocation });
             }
         }
 
@@ -1115,8 +1121,9 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             const checkResult = books.isGoodEnglishBookName(B1);
             // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
             if (checkResult === undefined || checkResult === false)
-                // NOTE: Our English bookname table has 'Song of Songs'
-                addNoticePartial({ priority: B1 === 'Song of Solomon' ? 43 : 143, message: `${B1 === 'Song of Solomon' ? 'Unexpected' : 'Unknown'} Bible book name in Bible link`, details: totalLink, excerpt: B1, location: ourLocation });
+                addNoticePartial(B1 === 'Song of Solomon' ?
+                    { priority: 43, message: "Unexpected Bible book name in Bible link", details: `expected 'Song of Songs' in ${totalLink}`, excerpt: B1, location: ourLocation } :
+                    { priority: 143, message: "Unknown Bible book name in Bible link", details: totalLink, excerpt: B1, location: ourLocation });
         }
 
         let linkBookCode = B2 === '..' ? bookID : B2;
@@ -1172,8 +1179,9 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             const checkResult = books.isGoodEnglishBookName(B1);
             // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
             if (checkResult === undefined || checkResult === false)
-                // NOTE: Our English bookname table has 'Song of Songs'
-                addNoticePartial({ priority: B1 === 'Song of Solomon' ? 43 : 143, message: `${B1 === 'Song of Solomon' ? 'Unexpected' : 'Unknown'} Bible book name in Bible link`, details: totalLink, excerpt: B1, location: ourLocation });
+                addNoticePartial(B1 === 'Song of Solomon' ?
+                    { priority: 43, message: "Unexpected Bible book name in Bible link", details: `expected 'Song of Songs' in ${totalLink}`, excerpt: B1, location: ourLocation } :
+                    { priority: 143, message: "Unknown Bible book name in Bible link", details: totalLink, excerpt: B1, location: ourLocation });
         }
 
         let linkBookCode = B2 === '..' ? bookID : B2;
@@ -1282,11 +1290,12 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
             let [totalLink, storyNumberA, frameNumberA, storyNumberB, frameNumberB] = regexMatchObject;
             processedLinkList.push(totalLink); // Save the full link
 
-            if (storyNumberA !== storyNumberB || frameNumberA !== frameNumberB)
+            const storyIntA = ourParseInt(storyNumberA), frameIntA = ourParseInt(frameNumberA);
+            const storyIntB = ourParseInt(storyNumberB), frameIntB = ourParseInt(frameNumberB);
+            if (storyIntA !== storyIntB || frameIntA !== frameIntB)
                 addNoticePartial({ priority: 731, message: `OBS link has internal mismatch`, details: `${storyNumberA}:${frameNumberA} should equal ${storyNumberB}/${frameNumberA}`, excerpt: totalLink, location: ourLocation });
             else {
-                const storyInt = ourParseInt(storyNumberA), frameInt = ourParseInt(frameNumberA); // We know from the test above that the B values are identical
-                if (storyInt < 1 || storyInt > NUM_OBS_STORIES || frameInt < 1 || frameInt > MAX_OBS_FRAMES)
+                if (storyIntB < 1 || storyIntB > NUM_OBS_STORIES || frameIntB < 1 || frameIntB > MAX_OBS_FRAMES)
                     addNoticePartial({ priority: 730, message: `OBS link has out-of-range values`, details: `${NUM_OBS_STORIES} stories, max of ${MAX_OBS_FRAMES} frames`, excerpt: `${storyNumberA}/${frameNumberA}`, location: ourLocation });
             }
             // const OBSRepoName = `${defaultLanguageCode}_obs`;
@@ -1322,7 +1331,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
                     //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
                     //     if (!await alreadyChecked(taPathParameters)) {
                     //         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
-                    //         const checkTAFileResult = await checkMarkdownFileContents(languageCode, repoCode, `TA ${article.trim()}/01.md`, taFileContent, ourLocation, checkingOptions);
+                    //         const checkTAFileResult = await checkMarkdownFileContents(username, languageCode, repoCode, `TA ${article.trim()}/01.md`, taFileContent, ourLocation, checkingOptions);
                     //         for (const noticeObject of checkTAFileResult.noticeList)
                     //             ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
                     //         ctarResult.checkedFileCount += 1;
@@ -1463,7 +1472,7 @@ export async function checkNotesLinksToOutside(languageCode, repoCode, bookID, g
     if (leftoverLinksList1.length)
         // if (leftoverLinksList1.length) debugLog(`'${languageCode}', ${repoCode}, '${bookID}', '${fieldName}' processedLinkList (${processedLinkList.length}) = ${JSON.stringify(processedLinkList)}\n        linksList1(${linksList1.length})=${JSON.stringify(linksList1)}\nleftoverLinksList1(${leftoverLinksList1.length})=${JSON.stringify(leftoverLinksList1)}`);
         // if (leftoverLinksList1.length) debugLog(`'${languageCode}', ${repoCode}, '${bookID}', '${fieldName}' leftoverLinksList1 (${leftoverLinksList1.length}) = ${JSON.stringify(leftoverLinksList1)}`);
-        addNoticePartial({ priority: 648, message: "Unusual [ ]( ) link(s)—not a recognized Bible or TA, TN, or TW link", details: `need to carefully check ${leftoverLinksList1.length === 1 ? '"' + leftoverLinksList1[0] + '"' : JSON.stringify(leftoverLinksList1)}`, location: ourLocation });
+        addNoticePartial({ priority: 648, message: "Unusual [ ]( ) link(s)—not a recognized Bible, OBS, or TA, TN, or TW link", details: `need to carefully check ${leftoverLinksList1.length === 1 ? '"' + leftoverLinksList1[0] + '"' : JSON.stringify(leftoverLinksList1)}`, location: ourLocation });
     // }
     // const linkCount2 = twLinkCount2 + taLinkCount2; // These are double-bracketed links, e.g., [[something]]
     // debugLog(`twLinkCount2 ${twLinkCount2} + taLinkCount2 ${taLinkCount2} = linkCount2 ${linkCount2}`);

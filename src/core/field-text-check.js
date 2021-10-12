@@ -5,11 +5,12 @@ import { OPEN_CLOSE_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, BAD_CHARACTER
 import { debugLog, parameterAssert } from './utilities';
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.21';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.4.0';
 
 
 /**
  * @description -- Does basic checks for small errors like leading/trailing spaces, etc.
+ * @param {string} username
  * @param {string} languageCode -- can be an empty string
  * @param {string} repoCode -- e.g., 'TN' or 'TQ', etc.
  * @param {string} fieldType -- classification, e.g., TSV, USFM, YAML, link, markdown, raw
@@ -19,7 +20,7 @@ import { debugLog, parameterAssert } from './utilities';
  * @param {string} optionalFieldLocation -- used to inform where this field is located
  * @param {Object} checkingOptions
  */
-export function checkTextField(languageCode, repoCode, fieldType, fieldName, fieldText, allowedLinks, optionalFieldLocation, checkingOptions) {
+export function checkTextField(username, languageCode, repoCode, fieldType, fieldName, fieldText, allowedLinks, optionalFieldLocation, checkingOptions) {
     // We assume that checking for compulsory fields is done elsewhere
 
     // Returns a single notice list
@@ -31,31 +32,31 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     //      location: the detailed location string
     //  (Returned in this way for more intelligent processing at a higher level)
     // functionLog(`checkTextField(${fieldName}, ${fieldText.length.toLocaleString()} chars, ${allowedLinks}, '${optionalFieldLocation}')…`);
-    //parameterAssert(languageCode !== undefined, "checkTextField: 'languageCode' parameter should be defined");
-    //parameterAssert(typeof languageCode === 'string', `checkTextField: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
-    //parameterAssert(languageCode !== 'unfoldingWord', `checkTextField: 'languageCode' ${languageCode} parameter should be not be 'unfoldingWord'`);
-    //parameterAssert(repoCode !== undefined, "checkTextField: 'repoCode' parameter should be defined");
-    //parameterAssert(typeof repoCode === 'string', `checkTextField: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
-    //parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkTextField: 'repoCode' parameter should not be '${repoCode}'`);
-    //parameterAssert(fieldType !== undefined, "checkTextField: 'fieldType' parameter should be defined");
-    //parameterAssert(typeof fieldType === 'string', `checkTextField: 'fieldType' parameter should be a string not a '${typeof fieldType}': ${fieldType}`);
-    //parameterAssert(fieldType !== '', `checkTextField: 'fieldType' ${fieldType} parameter should be not be an empty string`);
-    //parameterAssert(fieldType === 'markdown' || fieldType === 'USFM line' || fieldType === 'raw USFM line' || fieldType === 'YAML' || fieldType === 'text' || fieldType === 'raw' || fieldType === 'link', `checkTextField: unrecognised 'fieldType' parameter: '${fieldType}'`);
-    //parameterAssert(fieldName !== undefined, "checkTextField: 'fieldName' parameter should be defined");
-    //parameterAssert(typeof fieldName === 'string', `checkTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}': ${fieldName}`);
+    parameterAssert(languageCode !== undefined, "checkTextField: 'languageCode' parameter should be defined");
+    parameterAssert(typeof languageCode === 'string', `checkTextField: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
+    parameterAssert(languageCode !== 'unfoldingWord', `checkTextField: 'languageCode' ${languageCode} parameter should be not be 'unfoldingWord'`);
+    parameterAssert(repoCode !== undefined, "checkTextField: 'repoCode' parameter should be defined");
+    parameterAssert(typeof repoCode === 'string', `checkTextField: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
+    parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkTextField: 'repoCode' parameter should not be '${repoCode}'`);
+    parameterAssert(fieldType !== undefined, "checkTextField: 'fieldType' parameter should be defined");
+    parameterAssert(typeof fieldType === 'string', `checkTextField: 'fieldType' parameter should be a string not a '${typeof fieldType}': ${fieldType}`);
+    parameterAssert(fieldType !== '', `checkTextField: 'fieldType' ${fieldType} parameter should be not be an empty string`);
+    parameterAssert(fieldType === 'markdown' || fieldType === 'USFM line' || fieldType === 'raw USFM line' || fieldType === 'YAML' || fieldType === 'text' || fieldType === 'raw' || fieldType === 'link', `checkTextField: unrecognised 'fieldType' parameter: '${fieldType}'`);
+    parameterAssert(fieldName !== undefined, "checkTextField: 'fieldName' parameter should be defined");
+    parameterAssert(typeof fieldName === 'string', `checkTextField: 'fieldName' parameter should be a string not a '${typeof fieldName}': ${fieldName}`);
     // if (!fieldType.startsWith('markdown'))
-    //     //parameterAssert(fieldName !== '', `checkTextField: ${fieldType} 'fieldName' parameter should be not be an empty string`);
-    //parameterAssert(fieldText !== undefined, "checkTextField: 'fieldText' parameter should be defined");
-    //parameterAssert(typeof fieldText === 'string', `checkTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}': ${fieldText}`);
-    //parameterAssert(allowedLinks === true || allowedLinks === false, "checkTextField: allowedLinks parameter must be either true or false");
+    //     parameterAssert(fieldName !== '', `checkTextField: ${fieldType} 'fieldName' parameter should be not be an empty string`);
+    parameterAssert(fieldText !== undefined, "checkTextField: 'fieldText' parameter should be defined");
+    parameterAssert(typeof fieldText === 'string', `checkTextField: 'fieldText' parameter should be a string not a '${typeof fieldText}': ${fieldText}`);
+    parameterAssert(allowedLinks === true || allowedLinks === false, "checkTextField: allowedLinks parameter must be either true or false");
     if (!allowedLinks) {
-        //parameterAssert(fieldText.indexOf('x-tw') < 0, `checkTextField should be allowedLinks for ${fieldType} ${fieldName} ${fieldText}`);
+        parameterAssert(fieldText.indexOf('x-tw') < 0, `checkTextField should be allowedLinks for ${fieldType} ${fieldName} ${fieldText}`);
     }
-    //parameterAssert(optionalFieldLocation !== undefined, "checkTextField: 'optionalFieldLocation' parameter should be defined");
-    //parameterAssert(typeof optionalFieldLocation === 'string', `checkTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}': ${optionalFieldLocation}`);
-    //parameterAssert(optionalFieldLocation.indexOf('true') === -1, `checkTextField: 'optionalFieldLocation' parameter should not be '${optionalFieldLocation}'`);
+    parameterAssert(optionalFieldLocation !== undefined, "checkTextField: 'optionalFieldLocation' parameter should be defined");
+    parameterAssert(typeof optionalFieldLocation === 'string', `checkTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}': ${optionalFieldLocation}`);
+    parameterAssert(optionalFieldLocation.indexOf('true') === -1, `checkTextField: 'optionalFieldLocation' parameter should not be '${optionalFieldLocation}'`);
     if (checkingOptions !== undefined) {
-        //parameterAssert(typeof checkingOptions === 'object', `checkTextField: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
+        parameterAssert(typeof checkingOptions === 'object', `checkTextField: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
     }
 
     let result = { noticeList: [] };
@@ -63,20 +64,20 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     function addNoticePartial(incompleteNoticeObject) {
         // We add the fieldName here
         // debugLog(`dBTC Notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
-        //parameterAssert(incompleteNoticeObject.priority !== undefined, "dBTCs addNoticePartial: 'priority' parameter should be defined");
-        //parameterAssert(typeof incompleteNoticeObject.priority === 'number', `dBTCs addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}': ${incompleteNoticeObject.priority}`);
-        //parameterAssert(incompleteNoticeObject.message !== undefined, "dBTCs addNoticePartial: 'message' parameter should be defined");
-        //parameterAssert(typeof incompleteNoticeObject.message === 'string', `dBTCs addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}': ${incompleteNoticeObject.message}`);
+        parameterAssert(incompleteNoticeObject.priority !== undefined, "dBTCs addNoticePartial: 'priority' parameter should be defined");
+        parameterAssert(typeof incompleteNoticeObject.priority === 'number', `dBTCs addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}': ${incompleteNoticeObject.priority}`);
+        parameterAssert(incompleteNoticeObject.message !== undefined, "dBTCs addNoticePartial: 'message' parameter should be defined");
+        parameterAssert(typeof incompleteNoticeObject.message === 'string', `dBTCs addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}': ${incompleteNoticeObject.message}`);
         // parameterAssert(characterIndex !== undefined, "dBTCs addNoticePartial: 'characterIndex' parameter should be defined");
         if (incompleteNoticeObject.characterIndex) {
-            //parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `dBTCs addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
+            parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `dBTCs addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
         }
         // parameterAssert(excerpt !== undefined, "dBTCs addNoticePartial: 'excerpt' parameter should be defined");
         if (incompleteNoticeObject.excerpt) {
-            //parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `dBTCs addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt}`);
+            parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `dBTCs addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt}`);
         }
-        //parameterAssert(incompleteNoticeObject.location !== undefined, "dBTCs addNoticePartial: 'location' parameter should be defined");
-        //parameterAssert(typeof incompleteNoticeObject.location === 'string', `dBTCs addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
+        parameterAssert(incompleteNoticeObject.location !== undefined, "dBTCs addNoticePartial: 'location' parameter should be defined");
+        parameterAssert(typeof incompleteNoticeObject.location === 'string', `dBTCs addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
 
         // incompleteNoticeObject.debugChain = incompleteNoticeObject.debugChain ? `checkTextField(${fieldType}, ${fieldName}, ${allowedLinks}) ${incompleteNoticeObject.debugChain}` : `checkTextField(${fieldType}, ${fieldName}, ${allowedLinks})`;
         if (fieldName.length && !fieldName.endsWith(' line')) incompleteNoticeObject.fieldName = fieldName; // Don’t add the field if it’s blank
@@ -406,7 +407,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
                     continue;
                 if (nextChars.startsWith('<sup>') && fieldType === 'markdown' && repoCode === 'TA')
                     continue;
-                if ((fieldName.startsWith('README') || fieldName.endsWith('.md line') || fieldName.endsWith('Note line') || fieldName === 'Question line')
+                if ((fieldName.startsWith('README') || fieldName.endsWith('.md line') || fieldName.endsWith('Note line') || fieldName === 'Question line' || fieldName === 'Response line')
                     && (nextChar === '*' || badTwoChars === '![' || nextTwoChars === '~~')) // allow markdown formatting
                     continue;
                 if (badChars.startsWith('.md') || badChars.startsWith('.usfm') || badChars.startsWith('.tsv') || badChars.startsWith('.yaml')
@@ -447,9 +448,11 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
                 && (fieldText.slice(characterIndex + badZeroCharCombination.length, characterIndex + badZeroCharCombination.length + 1) !== '.')) {
                 // const nextChar = fieldText.slice(characterIndex + 1, characterIndex + 2);
                 const nextNextChar = fieldText.slice(characterIndex + 2, characterIndex + 3);
-                // debugLog(`92 leading zero for fieldType=${fieldType} fieldName=${fieldName} with nextChar=${nextChar} and nextNextChar=${nextNextChar}`);
-                if (nextNextChar !== '”' && nextNextChar !== '-' && // e.g., “0” is ok and 0-2 is ok
-                    (fieldType !== 'YAML' || fieldText.indexOf('sort:') === -1)) { // "sort: 0" is ok in manifests
+                // debugLog(`92 leading zero for fieldType='${fieldType}' fieldName='${fieldName}' with nextChar=${nextChar} and nextNextChar=${nextNextChar}`);
+                if (nextNextChar !== '”' && nextNextChar !== '-' // e.g., “0” is ok and 0-2 is ok
+                    && (fieldType !== 'YAML' || fieldText.indexOf('sort:') === -1)
+                    && (fieldType !== 'USFM line' || fieldName !== '\\id') // Some USFM producers put in a date like "Mar 03 2021"
+                ) { // "sort: 0" is ok in manifests
                     const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                     addNoticePartial({ priority: 92, message: `Unexpected leading zero`, characterIndex, excerpt, location: ourLocation });
                 }

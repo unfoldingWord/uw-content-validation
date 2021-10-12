@@ -185,6 +185,7 @@ const textB = `\\id GEN Bad USFM test
 const data = {
   // You can choose any of the above lines here
   //  (to demonstrate differing results)
+  username: 'unfoldingWord',
   languageCode: 'el-x-koine',
   repoCode: 'UGNT',
   USFMTextName : 'textG',
@@ -195,7 +196,7 @@ const data = {
 }
 
 function OurCheckUSFMText(props) {
-  const { languageCode, repoCode, bookID, filename, USFMText, USFMTextName, givenLocation } = props.data;
+  const { username, languageCode, repoCode, bookID, filename, USFMText, USFMTextName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
 
@@ -207,7 +208,7 @@ function OurCheckUSFMText(props) {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {languageCode} {repoCode} for {USFMTextName} <b>{bookID}</b>…</p>);
       const checkingOptions = {};
-      const rawResults = await checkUSFMText(languageCode, repoCode, bookID, filename, USFMText, givenLocation, checkingOptions);
+      const rawResults = await checkUSFMText(username, languageCode, repoCode, bookID, filename, USFMText, givenLocation, checkingOptions);
       setResults(
         <div>
           <b>Check</b> {USFMTextName}: "{USFMText.substr(0,256)}…"<br/><br/>

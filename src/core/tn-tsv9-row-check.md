@@ -44,15 +44,16 @@ const lineA9 = "GEN\t1\t9\tha33\t\t\t0\tIt was so\t“It happened like that” o
 const data = {
   // You can choose any of the above lines here
   //  (to demonstrate differing results)
+  username: 'unfoldingWord',
+  languageCode : 'en',
   tableLineName : 'lineB9',
   tableLine : lineB9,
-  languageCode : 'en',
   bookID : 'GEN', C:'1', V:'2',
   givenLocation : "that was supplied",
 }
 
 function OurCheckTNTSVRow(props) {
-  const { languageCode, bookID, C, V, tableLine, tableLineName, givenLocation } = props.data;
+  const { username, languageCode, bookID, C, V, tableLine, tableLineName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
 
@@ -64,7 +65,7 @@ function OurCheckTNTSVRow(props) {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {tableLineName} <b>{bookID}</b>…</p>);
       const checkingOptions = {};
-      const rawResults = await checkTN_TSV9DataRow(languageCode, 'TN', tableLine, bookID, C, V, givenLocation, checkingOptions);
+      const rawResults = await checkTN_TSV9DataRow(username, languageCode, 'TN', tableLine, bookID, C, V, givenLocation, checkingOptions);
       setResults(
         <div>
           <b>Check</b> {tableLineName}: "{tableLine.substr(0,256)}…"<br/><br/>

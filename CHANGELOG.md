@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased](https://github.com/unfoldingWord/uw-content-validation/tree/HEAD)
+
+[Full Changelog](https://github.com/unfoldingWord/uw-content-validation/compare/2.2.5...HEAD)
+
+**Closed issues:**
+
+- Problems with TWL [\#220](https://github.com/unfoldingWord/uw-content-validation/issues/220)
+
 ## [2.2.5](https://github.com/unfoldingWord/uw-content-validation/tree/2.2.5) (2021-09-28)
 
 [Full Changelog](https://github.com/unfoldingWord/uw-content-validation/compare/2.2.2...2.2.5)

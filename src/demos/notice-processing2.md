@@ -39,11 +39,12 @@ const textRC1 = "rc://en/obs/book/obs/02/03";
 const textRC2 = "Compare with rc://en/tw/dict/bible/other/canaan";
 
 // Just change this next two lines to change the text being used (to demonstrate differing results)
+const username = 'unfoldingWord';
 const chosenTextName = "textB";
 const chosenText = textB;
 
 // The third parameter is "linksAllowed"
-const rawResults = checkTextField('en', 'TN', 'raw', 'Sample', chosenText, false, 'in '+chosenTextName+' that was supplied');
+const rawResults = checkTextField(username, 'en', 'TN', 'raw', 'Sample', chosenText, false, 'in '+chosenTextName+' that was supplied');
 if (!rawResults.successList || !rawResults.successList.length)
     rawResults.successList = ["Done basic text checks"];
 const processOptions = {

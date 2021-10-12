@@ -42,7 +42,7 @@ const tableIcons = {
 };
 
 
-// const RENDER_PROCESSED_RESULTS_VERSION = '0.7.3';
+// const RENDER_PROCESSED_RESULTS_VERSION = '0.7.4';
 
 
 /**
@@ -71,7 +71,7 @@ export function RenderElapsedTime({ elapsedSeconds }) {
     remainingTime = Math.floor(remainingTime / 60);
     const hours = Math.round(remainingTime % 24);
     remainingTime = Math.floor(remainingTime / 24);
-    //parameterAssert(remainingTime === 0, `Elapsed time also contains ${remainingTime} days`);
+    parameterAssert(remainingTime === 0, `Elapsed time also contains ${remainingTime} days`);
     return <>{hours ? `${hours} hour` : ''}{hours && hours !== 1 ? 's' : ''}{hours ? ', ' : ''}{minutes ? `${minutes} minute` : ''}{minutes && minutes !== 1 ? 's' : ''}{minutes ? ', ' : ''}{seconds} second{seconds === 1 ? '' : 's'}</>;
 }
 /**
@@ -384,7 +384,7 @@ function RenderFileDetails({ givenEntry }) {
             } else // not TSV or MD
                 fileLink = `https://git.door43.org/${givenEntry.username}/${adjustedRepoName}/src/branch/${givenEntry.branch}/${givenEntry.filename}`;
         } catch (someErr) { debugLog(`What was someErr here: ${someErr}`); }
-        if (!fileLink.length && givenEntry.filename && givenEntry.filename.length) resultStart += ` in file ${givenEntry.filename}`;
+        if (givenEntry?.filename.length) resultStart += ` in file ${givenEntry.filename}`;
         if (givenEntry.lineNumber) {
             resultStart += ' on ';
             if (fileLink && givenEntry.lineNumber)
@@ -505,6 +505,10 @@ function RenderProcessedArray({ arrayType, results }) {
         </>;
     else { // not 's' (successList)
         const myList = arrayType === 'e' ? results.errorList : results.warningList;
+        // if (myList === undefined) {
+        //     debugLog(`RenderProcessedArray couldn't find errorList or warningList from ${JSON.stringify(results)}`);
+        //     return null;
+        // }
         const thisColor = arrayType === 'e' ? 'red' : 'orange';
         return <ul>
             {myList.map(function (listEntry, index) {
@@ -531,7 +535,7 @@ function RenderErrors({ results }) {
     return <>
         <b style={{ color: results.errorList.length ? 'red' : 'green' }}>{results.errorList.length.toLocaleString()} error{results.errorList.length === 1 ? '' : 's'}</b>{results.errorList.length ? ':' : ''}
         <small style={{ color: 'Gray' }}>{results.numHiddenErrors ? " (" + results.numHiddenErrors.toLocaleString() + " similar one" + (results.numHiddenErrors === 1 ? '' : 's') + " hidden)" : ''}</small>
-        <RenderProcessedArray results arrayType='e' />
+        <RenderProcessedArray results={results} arrayType='e' />
     </>;
 }
 function RenderWarnings({ results }) {
@@ -541,7 +545,7 @@ function RenderWarnings({ results }) {
     return <>
         <b style={{ color: results.warningList.length ? 'orange' : 'green' }}>{results.warningList.length.toLocaleString()} warning{results.warningList.length === 1 ? '' : 's'}</b>{results.warningList.length ? ':' : ''}
         <small style={{ color: 'Gray' }}>{results.numHiddenWarnings ? " (" + results.numHiddenWarnings.toLocaleString() + " similar one" + (results.numHiddenWarnings === 1 ? '' : 's') + " hidden)" : ''}</small>
-        <RenderProcessedArray results arrayType='w' />
+        <RenderProcessedArray results={results} arrayType='w' />
     </>;
 }
 function RenderErrorsAndWarnings({ results }) {

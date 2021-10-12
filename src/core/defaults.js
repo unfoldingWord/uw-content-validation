@@ -25,3 +25,7 @@ export const CATALOG_NEXT_ONLY_REPO_CODES_LIST = [
 
 export const NUM_OBS_STORIES = 50;
 export const MAX_OBS_FRAMES = 18; // Stories 16, 19, and 49 each have 18 frames
+
+export const OBS_FRAME_COUNT_LIST = [ // Starts with count for story #1
+  16, 12, 16, 9, 10, 7, 10, 15, 15, 12, 8, 14, 15, 15, 13, 18, 14, 13, 18, 13, 15, 7, 10, 9, 8,
+  10, 11, 10, 9, 9, 8, 16, 9, 10, 13, 7, 11, 15, 12, 9, 8, 11, 13, 9, 13, 10, 14, 14, 18, 17];

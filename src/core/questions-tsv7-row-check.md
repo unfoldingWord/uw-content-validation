@@ -44,6 +44,7 @@ const lineA9 = "1:9\tha33\t\t\t0\tIt was so\t“It happened like that” or “T
 const data = {
   // You can choose any of the above lines here
   //  (to demonstrate differing results)
+  username: 'unfoldingWord',
   languageCode: 'en',
   repoCode: 'TQ',
   tableLineName : 'lineA9',
@@ -53,7 +54,7 @@ const data = {
 }
 
 function OurCheckQuestionsRow(props) {
-  const { languageCode, repoCode, bookID, C, V, tableLine, tableLineName, givenLocation } = props.data;
+  const { username, languageCode, repoCode, bookID, C, V, tableLine, tableLineName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
 
@@ -65,7 +66,7 @@ function OurCheckQuestionsRow(props) {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {tableLineName} <b>{bookID}</b>…</p>);
       const checkingOptions = {};
-      const rawResults = await checkQuestionsTSV7DataRow(languageCode, repoCode, tableLine, bookID, C, V, givenLocation, checkingOptions);
+      const rawResults = await checkQuestionsTSV7DataRow(username, languageCode, repoCode, tableLine, bookID, C, V, givenLocation, checkingOptions);
       setResults(
         <div>
           <b>Check</b> {tableLineName}: "{tableLine.substr(0,256)}…"<br/><br/>

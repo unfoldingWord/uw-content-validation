@@ -11,7 +11,7 @@ import {
 import { userLog, debugLog, functionLog, parameterAssert, logicAssert } from '../../core';
 
 
-// const CHECK_FILE_CONTENTS_VERSION_STRING = '0.5.1';
+// const CHECK_FILE_CONTENTS_VERSION_STRING = '0.6.0';
 
 
 /**
@@ -29,22 +29,22 @@ export async function checkFileContents(username, languageCode, repoCode, branch
   // Determine the file type from the filename extension
   //  and return the results of checking that kind of file text
   // functionLog(`checkFileContents(un='${username}', lC='${languageCode}', rC='${repoCode}', rBr='${branch}', fn='${filepath}', ${fileContent.length} chars, ${givenLocation}, ${JSON.stringify(givenCheckingOptions)})…`);
-  //parameterAssert(username !== undefined, "checkFileContents: 'username' parameter should be defined");
-  //parameterAssert(typeof username === 'string', `checkFileContents: 'username' parameter should be a string not a '${typeof username}': ${username}`);
-  //parameterAssert(languageCode !== undefined, "checkFileContents: 'languageCode' parameter should be defined");
-  //parameterAssert(typeof languageCode === 'string', `checkFileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
-  //parameterAssert(repoCode !== undefined, "checkFileContents: 'repoCode' parameter should be defined");
-  //parameterAssert(typeof repoCode === 'string', `checkFileContents: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
-  //parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkFileContents: 'repoCode' parameter should not be '${repoCode}'`);
-  //parameterAssert(branch !== undefined, "checkFileContents: 'branch' parameter should be defined");
-  //parameterAssert(typeof branch === 'string', `checkFileContents: 'branch' parameter should be a string not a '${typeof branch}': ${branch}`);
-  //parameterAssert(filepath !== undefined, "checkFileContents: 'filepath' parameter should be defined");
-  //parameterAssert(typeof filepath === 'string', `checkFileContents: 'filepath' parameter should be a string not a '${typeof filepath}': ${filepath}`);
-  //parameterAssert(fileContent !== undefined, "checkFileContents: 'fileContent' parameter should be defined");
-  //parameterAssert(typeof fileContent === 'string', `checkFileContents: 'fileContent' parameter should be a string not a '${typeof fileContent}': ${fileContent.length}`);
-  //parameterAssert(givenLocation !== undefined, "checkFileContents: 'givenLocation' parameter should be defined");
-  //parameterAssert(typeof givenLocation === 'string', `checkFileContents: 'givenLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
-  //parameterAssert(givenCheckingOptions !== undefined, "checkFileContents: 'givenCheckingOptions' parameter should be defined");
+  parameterAssert(username !== undefined, "checkFileContents: 'username' parameter should be defined");
+  parameterAssert(typeof username === 'string', `checkFileContents: 'username' parameter should be a string not a '${typeof username}': ${username}`);
+  parameterAssert(languageCode !== undefined, "checkFileContents: 'languageCode' parameter should be defined");
+  parameterAssert(typeof languageCode === 'string', `checkFileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
+  parameterAssert(repoCode !== undefined, "checkFileContents: 'repoCode' parameter should be defined");
+  parameterAssert(typeof repoCode === 'string', `checkFileContents: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
+  parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkFileContents: 'repoCode' parameter should not be '${repoCode}'`);
+  parameterAssert(branch !== undefined, "checkFileContents: 'branch' parameter should be defined");
+  parameterAssert(typeof branch === 'string', `checkFileContents: 'branch' parameter should be a string not a '${typeof branch}': ${branch}`);
+  parameterAssert(filepath !== undefined, "checkFileContents: 'filepath' parameter should be defined");
+  parameterAssert(typeof filepath === 'string', `checkFileContents: 'filepath' parameter should be a string not a '${typeof filepath}': ${filepath}`);
+  parameterAssert(fileContent !== undefined, "checkFileContents: 'fileContent' parameter should be defined");
+  parameterAssert(typeof fileContent === 'string', `checkFileContents: 'fileContent' parameter should be a string not a '${typeof fileContent}': ${fileContent.length}`);
+  parameterAssert(givenLocation !== undefined, "checkFileContents: 'givenLocation' parameter should be defined");
+  parameterAssert(typeof givenLocation === 'string', `checkFileContents: 'givenLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
+  parameterAssert(givenCheckingOptions !== undefined, "checkFileContents: 'givenCheckingOptions' parameter should be defined");
 
   const startTime = new Date();
 
@@ -68,10 +68,10 @@ export async function checkFileContents(username, languageCode, repoCode, branch
     // functionLog(`checkFileContents have TSV filenameMain=${filenameMain}`);
     const bookID = filenameMain.startsWith(`${languageCode}_`) || filenameMain.startsWith('en_') ? filenameMain.slice(filenameMain.length - 3) : filenameMain.slice(filenameMain.length - 3, filenameMain.length).toUpperCase();
     // functionLog(`checkFileContents have TSV bookID=${bookID}`);
-    //parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
+    parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
     if (filepath.startsWith(`${languageCode}_`) || filenameMain.startsWith('en_')) {
       logicAssert(repoCode === 'TN', `These filenames ${filenameMain} are only for TN ${repoCode}`);
-      checkFileResultObject = await internalCheckTN_TSV9Table(languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, newCheckingOptions);
+      checkFileResultObject = await internalCheckTN_TSV9Table(username, languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, newCheckingOptions);
     } else {
       // let adjustedRepoCode = repoCode;
       // if (adjustedRepoCode.startsWith('OBS-'))
@@ -85,7 +85,7 @@ export async function checkFileContents(username, languageCode, repoCode, branch
         'SQ': checkQuestionsTSV7Table, 'OBS-SQ': checkQuestionsTSV7Table,
       }[repoCode];
       // debugLog(`checkFileContents() got ${checkFunction} function for ${repoCode}`);
-      checkFileResultObject = await checkFunction(languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, newCheckingOptions);
+      checkFileResultObject = await checkFunction(username, languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, newCheckingOptions);
     }
   }
   else if (filenameLower.endsWith('.usfm')) {
@@ -93,32 +93,32 @@ export async function checkFileContents(username, languageCode, repoCode, branch
     // debugLog(`Have USFM filenameMain=${filenameMain}`);
     const bookID = filenameMain.slice(filenameMain.length - 3);
     // debugLog(`Have USFM bookcode=${bookID}`);
-    //parameterAssert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
-    checkFileResultObject = await checkUSFMText(languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, newCheckingOptions);
+    parameterAssert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
+    checkFileResultObject = await checkUSFMText(username, languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, newCheckingOptions);
   } else if (filenameLower.endsWith('.sfm')) {
     const filenameMain = filepath.slice(0, filepath.length - 4); // drop .sfm
     userLog(`checkFileContents have SFM filenameMain=${filenameMain}`);
     const bookID = filenameMain.slice(2, 5);
     userLog(`checkFileContents have SFM bookcode=${bookID}`);
-    //parameterAssert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
-    checkFileResultObject = await checkUSFMText(languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, newCheckingOptions);
+    parameterAssert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
+    checkFileResultObject = await checkUSFMText(username, languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, newCheckingOptions);
   } else if (filenameLower.endsWith('.md'))
     if ((repoCode === 'UHAL' && filename[0] === 'H' && filename.length === 8)
       || (repoCode === 'UGL' && filename === '01.md'))
-      checkFileResultObject = await checkLexiconFileContents(languageCode, repoCode, filepath, fileContent, ourCFLocation, newCheckingOptions);
+      checkFileResultObject = await checkLexiconFileContents(username, languageCode, repoCode, filepath, fileContent, ourCFLocation, newCheckingOptions);
     else
-      checkFileResultObject = await checkMarkdownFileContents(languageCode, repoCode, filepath, fileContent, ourCFLocation, newCheckingOptions);
+      checkFileResultObject = await checkMarkdownFileContents(username, languageCode, repoCode, filepath, fileContent, ourCFLocation, newCheckingOptions);
   else if (filenameLower.endsWith('.txt'))
-    checkFileResultObject = checkPlainText(languageCode, repoCode, 'text', filepath, fileContent, ourCFLocation, newCheckingOptions);
+    checkFileResultObject = checkPlainText(username, languageCode, repoCode, 'text', filepath, fileContent, ourCFLocation, newCheckingOptions);
   else if (filenameLower === 'manifest.yaml')
-    checkFileResultObject = await checkManifestText(languageCode, repoCode, username, repoName, branch, fileContent, ourCFLocation, newCheckingOptions); // don’t know username or branch
+    checkFileResultObject = await checkManifestText(username, languageCode, repoCode, repoName, branch, fileContent, ourCFLocation, newCheckingOptions); // don’t know username or branch
   else if (filenameLower.endsWith('.yaml'))
-    checkFileResultObject = checkYAMLText(languageCode, repoCode, filepath, fileContent, ourCFLocation, newCheckingOptions);
+    checkFileResultObject = checkYAMLText(username, languageCode, repoCode, filepath, fileContent, ourCFLocation, newCheckingOptions);
   else if (filenameLower.startsWith('license')) {
-    checkFileResultObject = await checkMarkdownFileContents(languageCode, repoCode, filepath, fileContent, ourCFLocation, newCheckingOptions);
+    checkFileResultObject = await checkMarkdownFileContents(username, languageCode, repoCode, filepath, fileContent, ourCFLocation, newCheckingOptions);
     checkFileResultObject.noticeList.unshift({ priority: 982, message: "File extension is not recognized, so treated as markdown.", filename: filepath, location: ourCFLocation });
   } else {
-    checkFileResultObject = checkPlainText(languageCode, repoCode, 'raw', filepath, fileContent, ourCFLocation, newCheckingOptions);
+    checkFileResultObject = checkPlainText(username, languageCode, repoCode, 'raw', filepath, fileContent, ourCFLocation, newCheckingOptions);
     checkFileResultObject.noticeList.unshift({ priority: 995, message: "File extension is not recognized, so treated as plain text.", filename: filepath, location: ourCFLocation });
   }
   // debugLog(`checkFileContents got initial results: ${JSON.stringify(checkFileResult)}`);

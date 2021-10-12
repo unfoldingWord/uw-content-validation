@@ -41,6 +41,7 @@ const lineA9 = "1:9\tha33\t\t\t\t0\t“It happened like that” or “That is wh
 const data = {
   // You can choose any of the above lines here
   //  (to demonstrate differing results)
+  username: 'unfoldingWord',
   languageCode: 'en',
   repoCode: 'TWL',
   tableTextName : 'textG',
@@ -51,7 +52,7 @@ const data = {
 }
 
 function OurCheckTWL_TSV6Table(props) {
-  const { languageCode, repoCode, bookID, filename, tableText, tableTextName, givenLocation } = props.data;
+  const { username, languageCode, repoCode, bookID, filename, tableText, tableTextName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
 
@@ -63,7 +64,7 @@ function OurCheckTWL_TSV6Table(props) {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {languageCode} {repoCode} for {tableTextName} <b>{bookID}</b>…</p>);
       const checkingOptions = {};
-      const rawResults = await internalCheckTWL_TSV6Table(languageCode, repoCode, bookID, filename, tableText, givenLocation, checkingOptions);
+      const rawResults = await internalCheckTWL_TSV6Table(username, languageCode, repoCode, bookID, filename, tableText, givenLocation, checkingOptions);
       setResults(
         <div>
           <b>Check</b> {tableTextName}: "{tableText.substr(0,256)}…"<br/><br/>

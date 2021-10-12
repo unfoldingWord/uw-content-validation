@@ -26,11 +26,12 @@ const textB = `{ Peace  on Earth,,
  good will to all) men! `;
 
 // Just change these next two lines to change the text being used (to demonstrate differing results)
+const username = 'unfoldingWord';
 const chosenTextName = "textB";
 const chosenText = textB;
 const checkingOptions = {};
 
-const rawResults = checkTextfileContents('en', 'TN', 'text', 'Sample', chosenText, 'in '+chosenTextName+' that was supplied', checkingOptions);
+const rawResults = checkTextfileContents(username, 'en', 'TN', 'text', 'Sample', chosenText, 'in '+chosenTextName+' that was supplied', checkingOptions);
 
 // Because we know here that we're only checking one file, we don’t need the filename field in the notices
 function deleteFilenameField(notice) { delete notice.filename; return notice; }

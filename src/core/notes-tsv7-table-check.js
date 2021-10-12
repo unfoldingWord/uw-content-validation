@@ -6,7 +6,7 @@ import { checkNotesTSV7DataRow } from './notes-tsv7-row-check';
 import { parameterAssert, aboutToOverwrite } from './utilities';
 
 
-const NOTES_TABLE_VALIDATOR_VERSION_STRING = '0.4.0';
+const NOTES_TABLE_VALIDATOR_VERSION_STRING = '0.4.2';
 
 const NUM_EXPECTED_NOTES_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_NOTES_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tNote';
@@ -22,7 +22,7 @@ const EXPECTED_NOTES_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuot
  * @param {string} givenLocation
  * @param {Object} checkingOptions
  */
-export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filename, tableText, givenLocation, checkingOptions) {
+export async function checkNotesTSV7Table(username, languageCode, repoCode, bookID, filename, tableText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire file, i.e., all rows.
 
       It also has the advantage of being able to compare one row with the previous one.
@@ -32,16 +32,16 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
      Returns a result object containing a successList and a noticeList
      */
     // functionLog(`checkNotesTSV7Table(${languageCode}, ${repoCode}, ${bookID}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
-    //parameterAssert(languageCode !== undefined, "checkNotesTSV7Table: 'languageCode' parameter should be defined");
-    //parameterAssert(typeof languageCode === 'string', `checkNotesTSV7Table: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
-    //parameterAssert(repoCode.endsWith('TN') || repoCode.endsWith('TN2') || repoCode.endsWith('SN'), `checkNotesTSV7Table: repoCode expected to end with 'TN', 'TN2', or 'SN' not '${repoCode}'`);
-    //parameterAssert(bookID !== undefined, "checkNotesTSV7Table: 'bookID' parameter should be defined");
-    //parameterAssert(typeof bookID === 'string', `checkNotesTSV7Table: 'bookID' parameter should be a string not a '${typeof bookID}'`);
-    //parameterAssert(bookID.length === 3, `checkNotesTSV7Table: 'bookID' parameter should be three characters long not ${bookID.length}`);
-    //parameterAssert(bookID.toUpperCase() === bookID, `checkNotesTSV7Table: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-    //parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkNotesTSV7Table: '${bookID}' is not a valid USFM book identifier`);
-    //parameterAssert(givenLocation !== undefined, "checkNotesTSV7Table: 'givenLocation' parameter should be defined");
-    //parameterAssert(typeof givenLocation === 'string', `checkNotesTSV7Table: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
+    parameterAssert(languageCode !== undefined, "checkNotesTSV7Table: 'languageCode' parameter should be defined");
+    parameterAssert(typeof languageCode === 'string', `checkNotesTSV7Table: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    parameterAssert(repoCode.endsWith('TN') || repoCode.endsWith('TN2') || repoCode.endsWith('SN'), `checkNotesTSV7Table: repoCode expected to end with 'TN', 'TN2', or 'SN' not '${repoCode}'`);
+    parameterAssert(bookID !== undefined, "checkNotesTSV7Table: 'bookID' parameter should be defined");
+    parameterAssert(typeof bookID === 'string', `checkNotesTSV7Table: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+    parameterAssert(bookID.length === 3, `checkNotesTSV7Table: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    parameterAssert(bookID.toUpperCase() === bookID, `checkNotesTSV7Table: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+    parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkNotesTSV7Table: '${bookID}' is not a valid USFM book identifier`);
+    parameterAssert(givenLocation !== undefined, "checkNotesTSV7Table: 'givenLocation' parameter should be defined");
+    parameterAssert(typeof givenLocation === 'string', `checkNotesTSV7Table: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -70,28 +70,28 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
     }
     function addNoticePartial(incompleteNoticeObject) {
         // functionLog(`checkNotesTSV7Table notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
-        //parameterAssert(incompleteNoticeObject.priority !== undefined, "ATSV addNoticePartial: 'priority' parameter should be defined");
-        //parameterAssert(typeof incompleteNoticeObject.priority === 'number', `TSV addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}': ${incompleteNoticeObject.priority}`);
-        //parameterAssert(incompleteNoticeObject.message !== undefined, "ATSV addNoticePartial: 'message' parameter should be defined");
-        //parameterAssert(typeof incompleteNoticeObject.message === 'string', `TSV addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}': ${incompleteNoticeObject.message}`);
+        parameterAssert(incompleteNoticeObject.priority !== undefined, "ATSV addNoticePartial: 'priority' parameter should be defined");
+        parameterAssert(typeof incompleteNoticeObject.priority === 'number', `TSV addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}': ${incompleteNoticeObject.priority}`);
+        parameterAssert(incompleteNoticeObject.message !== undefined, "ATSV addNoticePartial: 'message' parameter should be defined");
+        parameterAssert(typeof incompleteNoticeObject.message === 'string', `TSV addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}': ${incompleteNoticeObject.message}`);
         // parameterAssert(C !== undefined, "ATSV addNoticePartial: 'C' parameter should be defined");
         if (incompleteNoticeObject.C) {
-            //parameterAssert(typeof incompleteNoticeObject.C === 'string', `TSV addNoticePartial: 'C' parameter should be a string not a '${typeof incompleteNoticeObject.C}': ${incompleteNoticeObject.C}`);
+            parameterAssert(typeof incompleteNoticeObject.C === 'string', `TSV addNoticePartial: 'C' parameter should be a string not a '${typeof incompleteNoticeObject.C}': ${incompleteNoticeObject.C}`);
         }
         // parameterAssert(V !== undefined, "ATSV addNoticePartial: 'V' parameter should be defined");
         if (incompleteNoticeObject.V) {
-            //parameterAssert(typeof incompleteNoticeObject.V === 'string', `TSV addNoticePartial: 'V' parameter should be a string not a '${typeof incompleteNoticeObject.V}': ${incompleteNoticeObject.V}`);
+            parameterAssert(typeof incompleteNoticeObject.V === 'string', `TSV addNoticePartial: 'V' parameter should be a string not a '${typeof incompleteNoticeObject.V}': ${incompleteNoticeObject.V}`);
         }
         // parameterAssert(characterIndex !== undefined, "ATSV addNoticePartial: 'characterIndex' parameter should be defined");
         if (incompleteNoticeObject.characterIndex) {
-            //parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `TSV addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
+            parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `TSV addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
         }
         // parameterAssert(excerpt !== undefined, "ATSV addNoticePartial: 'excerpt' parameter should be defined");
         if (incompleteNoticeObject.excerpt) {
-            //parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `TSV addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt}`);
+            parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `TSV addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt}`);
         }
-        //parameterAssert(incompleteNoticeObject.location !== undefined, "ATSV addNoticePartial: 'location' parameter should be defined");
-        //parameterAssert(typeof incompleteNoticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
+        parameterAssert(incompleteNoticeObject.location !== undefined, "ATSV addNoticePartial: 'location' parameter should be defined");
+        parameterAssert(typeof incompleteNoticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
 
         if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkNotesTSV7Table ${incompleteNoticeObject.debugChain}`;
 
@@ -106,7 +106,7 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
     if (bookID === 'OBS')
         numChaptersThisBook = NUM_OBS_STORIES; // There’s 50 Open Bible Stories
     else {
-        //parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in checkNotesTSV7Table");
+        parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in checkNotesTSV7Table");
         try {
             numChaptersThisBook = books.chaptersInBook(bookID);
         }
@@ -139,7 +139,7 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
                 const [C, V] = reference.split(':')
 
                 // Use the row check to do most basic checks
-                const drResultObject = await checkNotesTSV7DataRow(languageCode, repoCode, lines[n], bookID, C, V, ourLocation, checkingOptions);
+                const drResultObject = await checkNotesTSV7DataRow(username, languageCode, repoCode, lines[n], bookID, C, V, ourLocation, checkingOptions);
                 // Choose only ONE of the following
                 // This is the fast way of append the results from this field
                 // result.noticeList = result.noticeList.concat(firstResult.noticeList);
@@ -192,9 +192,9 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
                             else
                                 numVersesThisChapter = books.versesInChapter(lowercaseBookID, intC);
                         if (intC === 0)
-                            addNoticePartial({ priority: 551, C, V, message: `Invalid zero chapter number`, rowID, lineNumber: n + 1, excerpt: C, location: ourLocation });
+                            addNoticePartial({ priority: 551, C, V, message: `Invalid zero chapter number`, rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
                         if (intC > numChaptersThisBook)
-                            addNoticePartial({ priority: 737, C, V, message: "Invalid large chapter number", rowID, lineNumber: n + 1, excerpt: C, location: ourLocation });
+                            addNoticePartial({ priority: 737, C, V, message: "Invalid large chapter number", rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
                         if (/^\d+$/.test(lastC)) {
                             let lastintC = Number(lastC);
                             if (intC < lastintC)
@@ -213,14 +213,14 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
                     if (V === 'intro') { }
                     else if (/^\d+$/.test(V)) { // all digits
                         let intV = Number(V);
-                        if (intV === 0 && bookID !== 'PSA') // Psalms have \d titles
-                            addNoticePartial({ priority: 552, C, V, message: "Invalid zero verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
+                        if (intV === 0 && bookID !== 'PSA' && repoCode !== 'OBS-TN') // Psalms have \d titles
+                            addNoticePartial({ priority: 552, C, V, message: "Invalid zero verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
                         if (intV > numVersesThisChapter)
-                            addNoticePartial({ priority: 734, C, V, message: "Invalid large verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
+                            addNoticePartial({ priority: 734, C, V, message: "Invalid large verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
                         if (/^\d+$/.test(lastV)) {
                             let lastintV = Number(lastV);
                             if (C === lastC && intV < lastintV)
-                                addNoticePartial({ priority: 733, C, V, message: "Receding verse number", details: `'${V}' after '${lastV} for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
+                                addNoticePartial({ priority: 733, C, V, message: "Receding verse number", details: `'${V}' after '${lastV} for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
                             // else if (intV > lastintV + 1)
                             //   addNoticePartial({priority:556, `Skipped verses with '${V}' verse number after '${lastV}'${withString}`);
                         }
@@ -229,23 +229,23 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
                         const [V1, V2] = V.split('-')
                         let intV1 = Number(V1), intV2 = Number(V2);
                         if (intV1 >= intV2) // in the wrong order
-                            addNoticePartial({ priority: 732, C, V, message: "Verse range in wrong order", details: `detected ${intV1} before ${intV2}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
+                            addNoticePartial({ priority: 732, C, V, message: "Verse range in wrong order", details: `detected ${intV1} before ${intV2}`, rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
                         if (intV2 > numVersesThisChapter)
-                            addNoticePartial({ priority: 734, C, V, message: "Invalid large verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
+                            addNoticePartial({ priority: 734, C, V, message: "Invalid large verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
                         if (/^\d+$/.test(lastV)) {
                             let lastintV = Number(lastV);
                             if (C === lastC && intV1 < lastintV)
-                                addNoticePartial({ priority: 733, C, V, message: "Receding verse number", details: `'${V}' after '${lastV} for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
+                                addNoticePartial({ priority: 733, C, V, message: "Receding verse number", details: `'${V}' after '${lastV} for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
                             // else if (intV > lastintV + 1)
                             //   addNoticePartial({priority:556, `Skipped verses with '${V}' verse number after '${lastV}'${withString}`);
                         }
                     }
                     else
-                        addNoticePartial({ priority: 738, C, V, message: "Bad verse number", rowID, lineNumber: n + 1, location: ourLocation });
+                        addNoticePartial({ priority: 738, C, V, message: "Bad verse number", rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
 
                 }
                 else
-                    addNoticePartial({ priority: 790, C, V, message: "Missing verse number", rowID, lineNumber: n + 1, location: ` after ${C}:${lastV}${ourLocation}` });
+                    addNoticePartial({ priority: 790, C, V, message: "Missing verse number", rowID, lineNumber: n + 1, excerpt: reference, location: ` after ${C}:${lastV}${ourLocation}` });
 
                 if (rowID) {
                     if (rowIDListForVerse.includes(rowID))

@@ -24,6 +24,7 @@ const textMD2 = " Look at [[https://unfoldingWord.org]] ";
 const textMD3 = "Now  look at [[http://door43.org]] ";
 
 // Easy for user to change text used in next line (to demonstrate differing results)
+const username = 'unfoldingWord';
 const chosenTextName = "textMD3";
 const chosenText = textMD3;
 
@@ -51,7 +52,7 @@ const linkOptions = {
 
 // This function returns the results of the fast checks
 //  and if specified in linkOptions, the callback will update result later with results of slower checks
-rawResults = checkFieldLinks('en', '', chosenTextName, chosenText, linkOptions, 'that was supplied');
+rawResults = checkFieldLinks(username, 'en', '', chosenTextName, chosenText, linkOptions, 'that was supplied');
 if (!rawResults.successList || !rawResults.successList.length)
     rawResults.successList = ["Done basic link checks"];
 
