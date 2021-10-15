@@ -713,8 +713,7 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
      */
     function checkUSFMLineText(lineNumber, C, V, marker, rest, lineLocation, checkingOptions) {
         // Removes character formatting within the line contents and checks the remaining text
-        if (rest.indexOf('qs') !== -1)
-            functionLog(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
+        // functionLog(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
         // functionLog(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}=${rest.length} chars, ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
         //if (C !== '0' && C !== '1') { parameterAssert(bookID !== '2JN' && bookID !== '3JN' && bookID !== 'JUD', `checkUSFMLineText() can’t have ${C}:${V} for ${bookID}`); }
 
