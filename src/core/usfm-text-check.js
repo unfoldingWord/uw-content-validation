@@ -14,7 +14,7 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.10.14';
+// const USFM_VALIDATOR_VERSION_STRING = '0.10.15';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for STs
@@ -863,6 +863,8 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
             adjustedRest = adjustedRest.replace('\\va*', '');
         else if (marker === 'ca')
             adjustedRest = adjustedRest.replace('\\ca*', '');
+        else if (marker === 'qs')
+            adjustedRest = adjustedRest.replace('\\qs*', '');
 
         // Remove any other \zaln-s fields in the line
         // if (adjustedRest.indexOf('\\z') !== -1) userLog(`checkUSFMLineText here first at ${lineNumber} ${C}:${V} with ${marker}='${adjustedRest}'`);
