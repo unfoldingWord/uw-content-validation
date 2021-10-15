@@ -203,10 +203,10 @@ async function getUnZippedPictureFile(uri) {
 // This is the function that we call the most from the outside
 export async function cachedGetFile({ username, repository, path, branch }) {
   // functionLog(`cachedGetFile(${username}, ${repository}, ${path}, ${branch})…`);
-  parameterAssert(typeof username === 'string' && username.length, `cachedGetFile: username parameter should be a non-empty string not ${typeof username}: ${username}`);
-  parameterAssert(typeof repository === 'string' && repository.length, `cachedGetFile: repository parameter should be a non-empty string not ${typeof repository}: ${repository}`);
-  parameterAssert(typeof path === 'string' && path.length, `cachedGetFile: path parameter should be a non-empty string not ${typeof path}: ${path}`);
-  parameterAssert(typeof branch === 'string' && branch.length, `cachedGetFile: branch parameter should be a non-empty string not ${typeof branch}: ${branch}`);
+  //parameterAssert(typeof username === 'string' && username.length, `cachedGetFile: username parameter should be a non-empty string not ${typeof username}: ${username}`);
+  //parameterAssert(typeof repository === 'string' && repository.length, `cachedGetFile: repository parameter should be a non-empty string not ${typeof repository}: ${repository}`);
+  //parameterAssert(typeof path === 'string' && path.length, `cachedGetFile: path parameter should be a non-empty string not ${typeof path}: ${path}`);
+  //parameterAssert(typeof branch === 'string' && branch.length, `cachedGetFile: branch parameter should be a non-empty string not ${typeof branch}: ${branch}`);
 
   const filePath = Path.join(username, repository, path, branch);
   let contents = await getUnZippedFile(filePath);

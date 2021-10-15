@@ -22,19 +22,19 @@ export async function checkLexiconFileContents(username, languageCode, repoCode,
      Returns a result object containing a successList and a noticeList
      */
     // functionLog(`checkLexiconFileContents(lC=${languageCode}, rC=${repoCode}, fn=${lexiconFilename}, ${lexiconMarkdownText.length}, ${givenLocation})…`);
-    parameterAssert(languageCode !== undefined, "checkLexiconFileContents: 'languageCode' parameter should be defined");
-    parameterAssert(typeof languageCode === 'string', `checkLexiconFileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
-    parameterAssert(repoCode === 'UHAL' || repoCode === 'UGL', `checkLexiconFileContents: 'repoCode' parameter should be 'UHAL' or 'UGL', not '${repoCode}'`);
-    parameterAssert(lexiconFilename !== undefined, "checkLexiconFileContents: 'lexiconFilename' parameter should be defined");
-    parameterAssert(typeof lexiconFilename === 'string', `checkLexiconFileContents: 'lexiconFilename' parameter should be a string not a '${typeof lexiconFilename}': ${lexiconFilename}`);
-    parameterAssert(lexiconMarkdownText !== undefined, "checkLexiconFileContents: 'lexiconMarkdownText' parameter should be defined");
-    parameterAssert(typeof lexiconMarkdownText === 'string', `checkLexiconFileContents: 'lexiconMarkdownText' parameter should be a string not a '${typeof lexiconMarkdownText}': ${lexiconMarkdownText}`);
-    parameterAssert(givenLocation !== undefined, "checkLexiconFileContents: 'givenLocation' parameter should be defined");
-    parameterAssert(typeof givenLocation === 'string', `checkLexiconFileContents: 'givenLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
-    parameterAssert(givenLocation.indexOf('true') === -1, `checkLexiconFileContents: 'givenLocation' parameter should not be '${givenLocation}'`);
-    parameterAssert(checkingOptions !== undefined, "checkLexiconFileContents: 'checkingOptions' parameter should be defined");
+    //parameterAssert(languageCode !== undefined, "checkLexiconFileContents: 'languageCode' parameter should be defined");
+    //parameterAssert(typeof languageCode === 'string', `checkLexiconFileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
+    //parameterAssert(repoCode === 'UHAL' || repoCode === 'UGL', `checkLexiconFileContents: 'repoCode' parameter should be 'UHAL' or 'UGL', not '${repoCode}'`);
+    //parameterAssert(lexiconFilename !== undefined, "checkLexiconFileContents: 'lexiconFilename' parameter should be defined");
+    //parameterAssert(typeof lexiconFilename === 'string', `checkLexiconFileContents: 'lexiconFilename' parameter should be a string not a '${typeof lexiconFilename}': ${lexiconFilename}`);
+    //parameterAssert(lexiconMarkdownText !== undefined, "checkLexiconFileContents: 'lexiconMarkdownText' parameter should be defined");
+    //parameterAssert(typeof lexiconMarkdownText === 'string', `checkLexiconFileContents: 'lexiconMarkdownText' parameter should be a string not a '${typeof lexiconMarkdownText}': ${lexiconMarkdownText}`);
+    //parameterAssert(givenLocation !== undefined, "checkLexiconFileContents: 'givenLocation' parameter should be defined");
+    //parameterAssert(typeof givenLocation === 'string', `checkLexiconFileContents: 'givenLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
+    //parameterAssert(givenLocation.indexOf('true') === -1, `checkLexiconFileContents: 'givenLocation' parameter should not be '${givenLocation}'`);
+    //parameterAssert(checkingOptions !== undefined, "checkLexiconFileContents: 'checkingOptions' parameter should be defined");
     if (checkingOptions !== undefined) {
-        parameterAssert(typeof checkingOptions === 'object', `checkLexiconFileContents: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
+        //parameterAssert(typeof checkingOptions === 'object', `checkLexiconFileContents: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
     }
 
     let ourLocation = givenLocation;
@@ -62,20 +62,20 @@ export async function checkLexiconFileContents(username, languageCode, repoCode,
     }
     function addNoticePartial(incompleteNoticeObject) {
         // functionLog(`checkLexiconFileContents addNoticePartial: (priority=${incompleteNoticeObject.priority}) ${incompleteNoticeObject.message}${incompleteNoticeObject.characterIndex > 0 ? ` (at character ${incompleteNoticeObject.characterIndex})` : ""}${incompleteNoticeObject.excerpt ? " " + incompleteNoticeObject.excerpt : ""}${incompleteNoticeObject.location}`);
-        parameterAssert(incompleteNoticeObject.priority !== undefined, "checkLexiconFileContents addNoticePartial: 'priority' parameter should be defined");
-        parameterAssert(typeof incompleteNoticeObject.priority === 'number', `checkLexiconFileContents addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}': ${incompleteNoticeObject.priority}`);
-        parameterAssert(incompleteNoticeObject.message !== undefined, "checkLexiconFileContents addNoticePartial: 'message' parameter should be defined");
-        parameterAssert(typeof incompleteNoticeObject.message === 'string', `checkLexiconFileContents addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}': ${incompleteNoticeObject.message}`);
+        //parameterAssert(incompleteNoticeObject.priority !== undefined, "checkLexiconFileContents addNoticePartial: 'priority' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.priority === 'number', `checkLexiconFileContents addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}': ${incompleteNoticeObject.priority}`);
+        //parameterAssert(incompleteNoticeObject.message !== undefined, "checkLexiconFileContents addNoticePartial: 'message' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.message === 'string', `checkLexiconFileContents addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}': ${incompleteNoticeObject.message}`);
         // parameterAssert(characterIndex !== undefined, "checkLexiconFileContents addNoticePartial: 'characterIndex' parameter should be defined");
         if (incompleteNoticeObject.characterIndex) {
-            parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `checkLexiconFileContents addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
+            //parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `checkLexiconFileContents addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
         }
         // parameterAssert(excerpt !== undefined, "checkLexiconFileContents addNoticePartial: 'excerpt' parameter should be defined");
         if (incompleteNoticeObject.excerpt) {
-            parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `checkLexiconFileContents addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt}`);
+            //parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `checkLexiconFileContents addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt}`);
         }
-        parameterAssert(incompleteNoticeObject.location !== undefined, "checkLexiconFileContents addNoticePartial: 'location' parameter should be defined");
-        parameterAssert(typeof incompleteNoticeObject.location === 'string', `checkLexiconFileContents addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
+        //parameterAssert(incompleteNoticeObject.location !== undefined, "checkLexiconFileContents addNoticePartial: 'location' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.location === 'string', `checkLexiconFileContents addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
 
         if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkLexiconFileContents ${incompleteNoticeObject.debugChain}`; // Prepend our name
         aboutToOverwrite('checkLexiconFileContents', ['filename'], incompleteNoticeObject, { filename: lexiconFilename });
@@ -97,10 +97,10 @@ export async function checkLexiconFileContents(username, languageCode, repoCode,
 
         // Updates the global list of notices
         // debugLog(`checkLexiconFileContents ourCheckMarkdownFileContents(${fieldName}, (${fieldText.length}), ${allowedLinks}, ${optionalFieldLocation}, …)`);
-        parameterAssert(lexiconMarkdownText !== undefined, "cMdFC ourCheckMarkdownFileContents: 'lexiconMarkdownText' parameter should be defined");
-        parameterAssert(typeof lexiconMarkdownText === 'string', `cMdFC ourCheckMarkdownFileContents: 'lexiconMarkdownText' parameter should be a string not a '${typeof lexiconMarkdownText}'`);
-        parameterAssert(optionalFieldLocation !== undefined, "cMdFC ourCheckMarkdownFileContents: 'optionalFieldLocation' parameter should be defined");
-        parameterAssert(typeof optionalFieldLocation === 'string', `cMdFC ourCheckMarkdownFileContents: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
+        //parameterAssert(lexiconMarkdownText !== undefined, "cMdFC ourCheckMarkdownFileContents: 'lexiconMarkdownText' parameter should be defined");
+        //parameterAssert(typeof lexiconMarkdownText === 'string', `cMdFC ourCheckMarkdownFileContents: 'lexiconMarkdownText' parameter should be a string not a '${typeof lexiconMarkdownText}'`);
+        //parameterAssert(optionalFieldLocation !== undefined, "cMdFC ourCheckMarkdownFileContents: 'optionalFieldLocation' parameter should be defined");
+        //parameterAssert(typeof optionalFieldLocation === 'string', `cMdFC ourCheckMarkdownFileContents: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
         const cmtResultObject = await checkMarkdownFileContents(username, languageCode, repoCode, lexiconFilename, lexiconMarkdownText, optionalFieldLocation, checkingOptions);
         // debugLog(`cmtResultObject=${JSON.stringify(cmtResultObject)}`);

@@ -33,17 +33,17 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, chec
      Returns a result object containing a successList and a noticeList
      */
     // functionLog(`checkUSFMToJSON(${givenText.length.toLocaleString()} chars, '${givenLocation}')…`);
-    parameterAssert(bookID !== undefined, "checkUSFMToJSON: 'bookID' parameter should be defined");
-    parameterAssert(typeof bookID === 'string', `checkUSFMToJSON: 'bookID' parameter should be a string not a '${typeof bookID}': ${bookID}`);
-    parameterAssert(bookID.length === 3, `checkUSFMToJSON: 'bookID' parameter should be three characters long not ${bookID.length}`);
-    parameterAssert(bookID.toUpperCase() === bookID, `checkUSFMToJSON: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-    parameterAssert(books.isValidBookID(bookID), `checkUSFMToJSON: '${bookID}' is not a valid USFM book identifier`);
-    parameterAssert(filename !== undefined, "checkUSFMToJSON: 'filename' parameter should be defined");
-    parameterAssert(typeof filename === 'string', `checkUSFMToJSON: 'filename' parameter should be a string not a '${typeof filename}': ${filename}`);
-    parameterAssert(givenText !== undefined, "checkUSFMToJSON: 'givenText' parameter should be defined");
-    parameterAssert(typeof givenText === 'string', `checkUSFMToJSON: 'givenText' parameter should be a string not a '${typeof givenText}': ${givenText}`);
-    parameterAssert(givenLocation !== undefined, "checkUSFMToJSON: 'givenRowLocation' parameter should be defined");
-    parameterAssert(typeof givenLocation === 'string', `checkUSFMToJSON: 'givenRowLocation' parameter should be a string not a '${typeof givenLocation}'`);
+    //parameterAssert(bookID !== undefined, "checkUSFMToJSON: 'bookID' parameter should be defined");
+    //parameterAssert(typeof bookID === 'string', `checkUSFMToJSON: 'bookID' parameter should be a string not a '${typeof bookID}': ${bookID}`);
+    //parameterAssert(bookID.length === 3, `checkUSFMToJSON: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    //parameterAssert(bookID.toUpperCase() === bookID, `checkUSFMToJSON: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+    //parameterAssert(books.isValidBookID(bookID), `checkUSFMToJSON: '${bookID}' is not a valid USFM book identifier`);
+    //parameterAssert(filename !== undefined, "checkUSFMToJSON: 'filename' parameter should be defined");
+    //parameterAssert(typeof filename === 'string', `checkUSFMToJSON: 'filename' parameter should be a string not a '${typeof filename}': ${filename}`);
+    //parameterAssert(givenText !== undefined, "checkUSFMToJSON: 'givenText' parameter should be defined");
+    //parameterAssert(typeof givenText === 'string', `checkUSFMToJSON: 'givenText' parameter should be a string not a '${typeof givenText}': ${givenText}`);
+    //parameterAssert(givenLocation !== undefined, "checkUSFMToJSON: 'givenRowLocation' parameter should be defined");
+    //parameterAssert(typeof givenLocation === 'string', `checkUSFMToJSON: 'givenRowLocation' parameter should be a string not a '${typeof givenLocation}'`);
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -66,18 +66,18 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, chec
         * @param {string} location - description of where the issue is located
         */
         // functionLog(`checkUSFMToJSON notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
-        parameterAssert(priority !== undefined, "cUSFMjs addNoticePartial: 'priority' parameter should be defined");
-        parameterAssert(typeof priority === 'number', `cUSFMjs addNoticePartial: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
-        parameterAssert(message !== undefined, "cUSFMjs addNoticePartial: 'message' parameter should be defined");
-        parameterAssert(typeof message === 'string', `cUSFMjs addNoticePartial: 'message' parameter should be a string not a '${typeof message}': ${message}`);
+        //parameterAssert(priority !== undefined, "cUSFMjs addNoticePartial: 'priority' parameter should be defined");
+        //parameterAssert(typeof priority === 'number', `cUSFMjs addNoticePartial: 'priority' parameter should be a number not a '${typeof priority}': ${priority}`);
+        //parameterAssert(message !== undefined, "cUSFMjs addNoticePartial: 'message' parameter should be defined");
+        //parameterAssert(typeof message === 'string', `cUSFMjs addNoticePartial: 'message' parameter should be a string not a '${typeof message}': ${message}`);
         // parameterAssert(characterIndex !== undefined, "cUSFMjs addNoticePartial: 'characterIndex' parameter should be defined");
         if (characterIndex) { parameterAssert(typeof characterIndex === 'number', `cUSFMjs addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
         }
         // parameterAssert(excerpt !== undefined, "cUSFMjs addNoticePartial: 'excerpt' parameter should be defined");
         if (excerpt) { parameterAssert(typeof excerpt === 'string', `cUSFMjs addNoticePartial: 'excerpt' parameter should be a string not a '${typeof excerpt}': ${excerpt}`);
         }
-        parameterAssert(location !== undefined, "cUSFMjs addNoticePartial: 'location' parameter should be defined");
-        parameterAssert(typeof location === 'string', `cUSFMjs addNoticePartial: 'location' parameter should be a string not a '${typeof location}': ${location}`);
+        //parameterAssert(location !== undefined, "cUSFMjs addNoticePartial: 'location' parameter should be defined");
+        //parameterAssert(typeof location === 'string', `cUSFMjs addNoticePartial: 'location' parameter should be a string not a '${typeof location}': ${location}`);
         cutjResult.noticeList.push({ priority, message, bookID, lineNumber, characterIndex, excerpt, location });
     }
 

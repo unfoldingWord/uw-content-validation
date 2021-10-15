@@ -32,15 +32,15 @@ export async function checkBookPackages(username, languageCode, bookIDList, setR
     function addNotice(noticeObject) {
         // bookID is a three-character UPPERCASE USFM book identifier or 'OBS'.
         userLog(`cBPs addNotice: (priority=${noticeObject.priority}) ${noticeObject.extra} ${noticeObject.message}${noticeObject.characterIndex > 0 ? ` (at character ${noticeObject.characterIndex})` : ""}${noticeObject.excerpt ? ` ${noticeObject.excerpt}` : ""}${noticeObject.location}`);
-        parameterAssert(noticeObject.priority !== undefined, "cBPs addNotice: 'priority' parameter should be defined");
-        parameterAssert(typeof noticeObject.priority === 'number', `cBPs addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}'`);
-        parameterAssert(noticeObject.message !== undefined, "cBPs addNotice: 'message' parameter should be defined");
-        parameterAssert(typeof noticeObject.message === 'string', `cBPs addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}'`);
+        //parameterAssert(noticeObject.priority !== undefined, "cBPs addNotice: 'priority' parameter should be defined");
+        //parameterAssert(typeof noticeObject.priority === 'number', `cBPs addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}'`);
+        //parameterAssert(noticeObject.message !== undefined, "cBPs addNotice: 'message' parameter should be defined");
+        //parameterAssert(typeof noticeObject.message === 'string', `cBPs addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}'`);
         // parameterAssert(bookID !== undefined, "cBPs addNotice: 'bookID' parameter should be defined");
         if (noticeObject.bookID) {
-            parameterAssert(typeof noticeObject.bookID === 'string', `cBPs addNotice: 'bookID' parameter should be a string not a '${typeof noticeObject.bookID}'`);
-            parameterAssert(noticeObject.bookID.length === 3, `cBPs addNotice: 'bookID' parameter should be three characters long not ${noticeObject.bookID.length}`);
-            parameterAssert(books.isValidBookID(noticeObject.bookID), `cBPs addNotice: '${noticeObject.bookID}' is not a valid USFM book identifier`);
+            //parameterAssert(typeof noticeObject.bookID === 'string', `cBPs addNotice: 'bookID' parameter should be a string not a '${typeof noticeObject.bookID}'`);
+            //parameterAssert(noticeObject.bookID.length === 3, `cBPs addNotice: 'bookID' parameter should be three characters long not ${noticeObject.bookID.length}`);
+            //parameterAssert(books.isValidBookID(noticeObject.bookID), `cBPs addNotice: '${noticeObject.bookID}' is not a valid USFM book identifier`);
         }
         // parameterAssert(C !== undefined, "cBPs addNotice: 'C' parameter should be defined");
         if (noticeObject.C) { parameterAssert(typeof noticeObject.C === 'string', `cBPs addNotice: 'C' parameter should be a string not a '${typeof noticeObject.C}'`);
@@ -54,10 +54,10 @@ export async function checkBookPackages(username, languageCode, bookIDList, setR
         // parameterAssert(excerpt !== undefined, "cBPs addNotice: 'excerpt' parameter should be defined");
         if (noticeObject.excerpt) { parameterAssert(typeof noticeObject.excerpt === 'string', `cBPs addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}'`);
         }
-        parameterAssert(noticeObject.location !== undefined, "cBPs addNotice: 'location' parameter should be defined");
-        parameterAssert(typeof noticeObject.location === 'string', `cBPs addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}'`);
-        parameterAssert(noticeObject.extra !== undefined, "cBPs addNotice: 'extra' parameter should be defined");
-        parameterAssert(typeof noticeObject.extra === 'string', `cBPs addNotice: 'extra' parameter should be a string not a '${typeof extra}'`);
+        //parameterAssert(noticeObject.location !== undefined, "cBPs addNotice: 'location' parameter should be defined");
+        //parameterAssert(typeof noticeObject.location === 'string', `cBPs addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}'`);
+        //parameterAssert(noticeObject.extra !== undefined, "cBPs addNotice: 'extra' parameter should be defined");
+        //parameterAssert(typeof noticeObject.extra === 'string', `cBPs addNotice: 'extra' parameter should be a string not a '${typeof extra}'`);
         checkBookPackagesResult.noticeList.push(noticeObject);
     }
 

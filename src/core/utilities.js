@@ -154,8 +154,8 @@ export function ourParseInt(givenString) {
         throw "String is not a simple integer";
     return int1;
     */
-    parameterAssert(typeof givenString === 'string', `ourParseInt: 'givenString' parameter should be a string not a '${typeof givenString}': ${givenString}`);
-    parameterAssert(givenString.length > 0, "ourParseInt: 'givenString' parameter should be not be an empty string!");
+    //parameterAssert(typeof givenString === 'string', `ourParseInt: 'givenString' parameter should be a string not a '${typeof givenString}': ${givenString}`);
+    //parameterAssert(givenString.length > 0, "ourParseInt: 'givenString' parameter should be not be an empty string!");
     // eslint-disable-next-line no-throw-literal
     if (givenString.length === 0) throw `String '${givenString}'is empty`;
 

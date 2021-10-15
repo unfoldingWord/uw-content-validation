@@ -33,17 +33,17 @@ export async function internalCheckTN_TSV9Table(username, languageCode, repoCode
      Returns a result object containing a successList and a noticeList
      */
     // functionLog(`internalCheckTN_TSV9Table(${languageCode}, ${bookID}, ${filename}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
-    parameterAssert(languageCode !== undefined, "internalCheckTN_TSV9Table: 'languageCode' parameter should be defined");
-    parameterAssert(typeof languageCode === 'string', `internalCheckTN_TSV9Table: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
-    parameterAssert(repoCode === 'TN', `internalCheckTN_TSV9Table: repoCode expected 'TN' not '${repoCode}'`);
-    parameterAssert(bookID !== undefined, "internalCheckTN_TSV9Table: 'bookID' parameter should be defined");
-    parameterAssert(typeof bookID === 'string', `internalCheckTN_TSV9Table: 'bookID' parameter should be a string not a '${typeof bookID}'`);
-    parameterAssert(bookID.length === 3, `internalCheckTN_TSV9Table: 'bookID' parameter should be three characters long not ${bookID.length}`);
-    parameterAssert(bookID.toUpperCase() === bookID, `internalCheckTN_TSV9Table: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-    parameterAssert(books.isValidBookID(bookID), `internalCheckTN_TSV9Table: '${bookID}' is not a valid USFM book identifier`);
-    parameterAssert(givenLocation !== undefined, "internalCheckTN_TSV9Table: 'givenLocation' parameter should be defined");
-    parameterAssert(typeof givenLocation === 'string', `internalCheckTN_TSV9Table: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
-    parameterAssert(checkingOptions !== undefined, "internalCheckTN_TSV9Table: 'checkingOptions' parameter should be defined");
+    //parameterAssert(languageCode !== undefined, "internalCheckTN_TSV9Table: 'languageCode' parameter should be defined");
+    //parameterAssert(typeof languageCode === 'string', `internalCheckTN_TSV9Table: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    //parameterAssert(repoCode === 'TN', `internalCheckTN_TSV9Table: repoCode expected 'TN' not '${repoCode}'`);
+    //parameterAssert(bookID !== undefined, "internalCheckTN_TSV9Table: 'bookID' parameter should be defined");
+    //parameterAssert(typeof bookID === 'string', `internalCheckTN_TSV9Table: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+    //parameterAssert(bookID.length === 3, `internalCheckTN_TSV9Table: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    //parameterAssert(bookID.toUpperCase() === bookID, `internalCheckTN_TSV9Table: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+    //parameterAssert(books.isValidBookID(bookID), `internalCheckTN_TSV9Table: '${bookID}' is not a valid USFM book identifier`);
+    //parameterAssert(givenLocation !== undefined, "internalCheckTN_TSV9Table: 'givenLocation' parameter should be defined");
+    //parameterAssert(typeof givenLocation === 'string', `internalCheckTN_TSV9Table: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
+    //parameterAssert(checkingOptions !== undefined, "internalCheckTN_TSV9Table: 'checkingOptions' parameter should be defined");
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -80,28 +80,28 @@ export async function internalCheckTN_TSV9Table(username, languageCode, repoCode
      */
     function addNoticePartial(incompleteNoticeObject) {
         // functionLog(`internalCheckTN_TSV9Table notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
-        parameterAssert(incompleteNoticeObject.priority !== undefined, "TSV addNoticePartial: 'priority' parameter should be defined");
-        parameterAssert(typeof incompleteNoticeObject.priority === 'number', `TSV addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}': ${incompleteNoticeObject.priority}`);
-        parameterAssert(incompleteNoticeObject.message !== undefined, "TSV addNoticePartial: 'message' parameter should be defined");
-        parameterAssert(typeof incompleteNoticeObject.message === 'string', `TSV addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}': ${incompleteNoticeObject.message}`);
+        //parameterAssert(incompleteNoticeObject.priority !== undefined, "TSV addNoticePartial: 'priority' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.priority === 'number', `TSV addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}': ${incompleteNoticeObject.priority}`);
+        //parameterAssert(incompleteNoticeObject.message !== undefined, "TSV addNoticePartial: 'message' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.message === 'string', `TSV addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}': ${incompleteNoticeObject.message}`);
         // parameterAssert(C !== undefined, "TSV addNoticePartial: 'C' parameter should be defined");
         if (incompleteNoticeObject.C) {
-            parameterAssert(typeof incompleteNoticeObject.C === 'string', `TSV addNoticePartial: 'C' parameter should be a string not a '${typeof incompleteNoticeObject.C}': ${incompleteNoticeObject.C}`);
+            //parameterAssert(typeof incompleteNoticeObject.C === 'string', `TSV addNoticePartial: 'C' parameter should be a string not a '${typeof incompleteNoticeObject.C}': ${incompleteNoticeObject.C}`);
         }
         // parameterAssert(V !== undefined, "TSV addNoticePartial: 'V' parameter should be defined");
         if (incompleteNoticeObject.V) {
-            parameterAssert(typeof incompleteNoticeObject.V === 'string', `TSV addNoticePartial: 'V' parameter should be a string not a '${typeof incompleteNoticeObject.V}': ${incompleteNoticeObject.V}`);
+            //parameterAssert(typeof incompleteNoticeObject.V === 'string', `TSV addNoticePartial: 'V' parameter should be a string not a '${typeof incompleteNoticeObject.V}': ${incompleteNoticeObject.V}`);
         }
         // parameterAssert(characterIndex !== undefined, "TSV addNoticePartial: 'characterIndex' parameter should be defined");
         if (incompleteNoticeObject.characterIndex) {
-            parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `TSV addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
+            //parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `TSV addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
         }
         // parameterAssert(excerpt !== undefined, "TSV addNoticePartial: 'excerpt' parameter should be defined");
         if (incompleteNoticeObject.excerpt) {
-            parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `TSV addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt}`);
+            //parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `TSV addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt}`);
         }
-        parameterAssert(incompleteNoticeObject.location !== undefined, "TSV addNoticePartial: 'location' parameter should be defined");
-        parameterAssert(typeof incompleteNoticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
+        //parameterAssert(incompleteNoticeObject.location !== undefined, "TSV addNoticePartial: 'location' parameter should be defined");
+        //parameterAssert(typeof incompleteNoticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
         if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `internalCheckTN_TSV9Table ${incompleteNoticeObject.debugChain}`;
         // NOTE: We only add the repoCode here because this function is called directly by tC Create
         //          and notice disabling currently depends on knowing the repoCode
@@ -115,7 +115,7 @@ export async function internalCheckTN_TSV9Table(username, languageCode, repoCode
     let lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook = 0;
     try {
-        parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in tn_table-text-check");
+        //parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in tn_table-text-check");
         numChaptersThisBook = books.chaptersInBook(bookID);
     }
     catch {
