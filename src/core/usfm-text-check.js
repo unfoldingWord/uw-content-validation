@@ -14,7 +14,7 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.10.15';
+// const USFM_VALIDATOR_VERSION_STRING = '0.10.16';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for STs
@@ -1615,10 +1615,11 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
             } else if ((vIndex = rest.indexOf('\\v ')) !== -1) {
                 // verse number marker follows another marker on the same line, so it’s inside `rest`
                 const restRest = rest.slice(vIndex + 3);
-                // debugLog(`Got restRest=${restRest}`);
+                // debugLog(`mainUSFMCheck at ${bookID} ${C}:${V} ${n} \\${marker} got restRest='${restRest}'`);
                 try {
-                    intV = parseInt(restRest);
-                    // debugLog("Got", intV);
+                    intV = parseInt(restRest); // Parses the first integer that it finds
+                    // debugLog(`mainUSFMCheck  got intV=${intV}`);
+                    V = intV.toString();
                 } catch (usfmIIVerror) {
                     addNoticePartial({ priority: 720, C, V, message: "Unable to convert internal verse number to integer", lineNumber: n, characterIndex: 3, excerpt: `${restRest.slice(0, excerptHalfLength)}${restRest.length > excerptHalfLength ? '…' : ''}`, location: ourLocation });
                     intV = -999; // Used to prevent consequential errors
