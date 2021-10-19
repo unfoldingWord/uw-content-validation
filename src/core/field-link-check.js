@@ -6,7 +6,7 @@ import { cachedGetFileUsingFullURL } from './getApi';
 import { userLog, parameterAssert } from './utilities';
 
 
-const LINK_VALIDATOR_VERSION_STRING = '0.4.0';
+const LINK_VALIDATOR_VERSION_STRING = '0.4.1';
 
 
 export async function startLiveLinksCheck(linksList, existingNoticeList, callbackFunction) {
@@ -39,16 +39,16 @@ export async function startLiveLinksCheck(linksList, existingNoticeList, callbac
 
     // Now try fetching each link in turn
     for (const linkEntry of linksList) {
-        userLog("startLiveLinksCheck linkEntry", JSON.stringify(linkEntry));
-        const fetchLink = linkEntry[1] ? linkEntry[1] : linkEntry[2]; // Why ??? !!!
-        userLog("startLiveLinksCheck attempting to fetch", fetchLink, '…');
+        userLog(`startLiveLinksCheck linkEntry=${JSON.stringify(linkEntry)}`);
+        const uri = linkEntry[1] ? linkEntry[1] : linkEntry[2]; // Why ??? !!!
+        userLog(`startLiveLinksCheck attempting to fetch ${uri}…`);
         try {
-            const responseData = await cachedGetFileUsingFullURL(fetchLink);
+            const responseData = await cachedGetFileUsingFullURL({uri, params:{}});
             const responseText = responseData;
-            userLog("startLiveLinksCheck got response: ", responseText.length);
+            userLog(`startLiveLinksCheck got response: ${responseText.length}`);
         } catch (lcError) {
-            console.error(`startLiveLinksCheck had an error fetching '${fetchLink}': ${lcError}`);
-            addNotice({ priority: 439, message: "Error fetching link", location: ` ${fetchLink}` });
+            console.error(`startLiveLinksCheck had an error fetching '${uri}': ${lcError}`);
+            addNotice({ priority: 439, message: "Error fetching link", location: ` ${uri}` });
         }
     }
 

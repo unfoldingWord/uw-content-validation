@@ -1,5 +1,5 @@
 import * as books from './books/books';
-import { alreadyChecked, markAsChecked } from './getApi';
+import { alreadyChecked, markAsChecked, isFilepathInRepoTree } from './getApi';
 // eslint-disable-next-line no-unused-vars
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST, NUM_OBS_STORIES, MAX_OBS_FRAMES } from './defaults'
 import { countOccurrencesInString } from './text-handling-functions'
@@ -300,36 +300,49 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         if (!checkingOptions?.disableAllLinkFetchingFlag) {
             // if (regexMatchObject[3] === 'brother') debugLog(`Need to check ${fieldName} TW link ${regexMatchObject} against ${twRepoName}`);
             const twPathParameters = { username: twRepoUsername, repository: twRepoName, path: filepath, branch: twRepoBranch };
-            let twFileContent;
-            try {
-                twFileContent = await getFile_(twPathParameters);
-                // if (regexMatchObject[3] === 'brother') debugLog(`Fetched fileContent for ${JSON.stringify(twPathParameters)}: ${typeof twFileContent} ${twFileContent.length}`);
-            } catch (trcGCerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
-                console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TW ${twRepoUsername} ${twRepoName}, ${filepath}, ${twRepoBranch}: ${trcGCerror.message}`);
-                addNoticePartial({ priority: 882, message: `Error loading TW article`, details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
-            }
-            if (!twFileContent)
-                addNoticePartial({ priority: 883, message: "Unable to find/load linked TW article", details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
-            else { // we got the content of the TW article
-                if (twFileContent.length < 10)
-                    addNoticePartial({ priority: 881, message: `TW article seems empty`, details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
-                // THIS IS DISABLED COZ IT CAN GIVE AN INFINITE LOOP !!!
-                // else if (checkingOptions?.disableLinkedTWArticlesCheckFlag !== true) {
-                //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTWArticlesCheckFlag} so checking TW article: ${filepath}`);
-                //     if (!await alreadyChecked(twPathParameters)) {
-                //         // functionLog(`checkNotesLinksToOutside needs to check TW article: ${filepath}`);
-                //         const checkTWFileResult = await checkMarkdownFileContents(username, languageCode, repoCode, `TW ${filename}`, twFileContent, ourLocation, checkingOptions);
-                //         for (const noticeObject of checkTWFileResult.noticeList)
-                //             ctarResult.noticeList.push({ ...noticeObject, username: twRepoUsername, repoCode: 'TW', repoName: twRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TW' });
-                //         ctarResult.checkedFileCount += 1;
-                //         ctarResult.checkedFilenames.push(filename);
-                //         ctarResult.checkedFilesizes = twFileContent.length;
-                //         ctarResult.checkedFilenameExtensions = ['md'];
-                //         ctarResult.checkedRepoNames.push(twRepoName);
-                //         markAsChecked(twPathParameters); // don’t bother waiting for the result of this async call
-                //     }
-                // }
-                // else debugLog("checkNotesLinksToOutside: disableLinkedTWArticlesCheckFlag is set to TRUE!");
+            if (!await alreadyChecked(twPathParameters)) {
+                if (checkingOptions?.disableLinkedTWArticlesCheckFlag === true) {
+                    // New code
+                    // We don't need/want to check the actual article, so we don't need to fetch it
+                    // However, we still want to know if the given link actually links to an article
+                    //  so we'll check it against the tree listing from DCS
+                    if (!await isFilepathInRepoTree(twPathParameters))
+                        addNoticePartial({ priority: 883, message: "Unable to find linked TW article", details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: ourLocation });
+                }
+                else {
+                    let twFileContent;
+                    try {
+                        twFileContent = await getFile_(twPathParameters);
+                        // if (regexMatchObject[3] === 'brother') debugLog(`Fetched fileContent for ${JSON.stringify(twPathParameters)}: ${typeof twFileContent} ${twFileContent.length}`);
+                    } catch (trcGCerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
+                        console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TW ${twRepoUsername} ${twRepoName}, ${filepath}, ${twRepoBranch}: ${trcGCerror.message}`);
+                        addNoticePartial({ priority: 882, message: `Error loading TW article`, details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+                    }
+                    if (!twFileContent)
+                        addNoticePartial({ priority: 883, message: "Unable to find/load linked TW article", details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: ourLocation });
+                    else { // we got the content of the TW article
+                        if (twFileContent.length < 10)
+                            addNoticePartial({ priority: 881, message: `TW article seems empty`, details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: ourLocation });
+                        // THIS IS DISABLED COZ IT CAN GIVE AN INFINITE LOOP !!!
+                        // else if (checkingOptions?.disableLinkedTWArticlesCheckFlag !== true) {
+                        //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTWArticlesCheckFlag} so checking TW article: ${filepath}`);
+                        //     if (!await alreadyChecked(twPathParameters)) {
+                        //         // functionLog(`checkNotesLinksToOutside needs to check TW article: ${filepath}`);
+                        //         const checkTWFileResult = await checkMarkdownFileContents(username, languageCode, repoCode, `TW ${filename}`, twFileContent, ourLocation, checkingOptions);
+                        //         for (const noticeObject of checkTWFileResult.noticeList)
+                        //             ctarResult.noticeList.push({ ...noticeObject, username: twRepoUsername, repoCode: 'TW', repoName: twRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TW' });
+                        //         ctarResult.checkedFileCount += 1;
+                        //         ctarResult.checkedFilenames.push(filename);
+                        //         ctarResult.checkedFilesizes = twFileContent.length;
+                        //         ctarResult.checkedFilenameExtensions = ['md'];
+                        //         ctarResult.checkedRepoNames.push(twRepoName);
+                        //         markAsChecked(twPathParameters); // don’t bother waiting for the result of this async call
+                        //     }
+                        // }
+                        // else debugLog("checkNotesLinksToOutside: disableLinkedTWArticlesCheckFlag is set to TRUE!");
+                    }
+                }
+                markAsChecked(twPathParameters); // don’t bother waiting for the result of this async call
             }
         }
         // else debugLog("checkNotesLinksToOutside: disableAllLinkFetchingFlag is set to TRUE!");
@@ -364,38 +377,48 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
             // functionLog(`checkNotesLinksToOutside: need to check against ${taRepoName}`);
             const taPathParameters = { username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch };
             if (!await alreadyChecked(taPathParameters)) {
-                let taFileContent, alreadyGaveError = false;
-                try {
-                    taFileContent = await getFile_(taPathParameters);
-                    // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
-                } catch (trcGCerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
-                    // console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
-                    addNoticePartial({ priority: 885, message: `Error loading TA article`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
-                    alreadyGaveError = true;
-                }
-                if (!alreadyGaveError) {
-                    if (!taFileContent)
-                        addNoticePartial({ priority: 886, message: "Unable to find/load linked TA article", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
-                    else if (taFileContent.length < 10)
-                        addNoticePartial({ priority: 884, message: `TA article seems empty`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
-                    else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
-                        // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
-                        // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
-                        const checkTAFileResult = await checkMarkdownFileContents(username, foundLanguageCode, 'TA', filepath, taFileContent, ourLocation, checkingOptions);
-                        for (const noticeObject of checkTAFileResult.noticeList) {
-                            // Why don’t we use addNoticePartial() here? (It adds bookID and fieldName.) Maybe it would be misleading???
-                            if (noticeObject.repoCode === undefined) {
-                                // debugLog(`checkMarkdownText 378 added rC=TA to ${JSON.stringify(noticeObject)}`);
-                                noticeObject.repoCode = 'TA';
+                if (checkingOptions?.disableLinkedTAArticlesCheckFlag === true) {
+                    // New code
+                    // We don't need/want to check the actual article, so we don't need to fetch it
+                    // However, we still want to know if the given link actually links to an article
+                    //  so we'll check it against the tree listing from DCS
+                    if (!await isFilepathInRepoTree(taPathParameters)) {
+                        addNoticePartial({ priority: 886, message: "Unable to find linked TA article", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: ourLocation });
+                    }
+                } else {
+                    let taFileContent, alreadyGaveError = false;
+                    try {
+                        taFileContent = await getFile_(taPathParameters);
+                        // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
+                    } catch (trcGCerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
+                        // console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
+                        addNoticePartial({ priority: 885, message: `Error loading TA article`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+                        alreadyGaveError = true;
+                    }
+                    if (!alreadyGaveError) {
+                        if (!taFileContent)
+                            addNoticePartial({ priority: 886, message: "Unable to find/load linked TA article", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: ourLocation });
+                        else if (taFileContent.length < 10)
+                            addNoticePartial({ priority: 884, message: `TA article seems empty`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: ourLocation });
+                        else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
+                            // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
+                            // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
+                            const checkTAFileResult = await checkMarkdownFileContents(username, foundLanguageCode, 'TA', filepath, taFileContent, ourLocation, checkingOptions);
+                            for (const noticeObject of checkTAFileResult.noticeList) {
+                                // Why don’t we use addNoticePartial() here? (It adds bookID and fieldName.) Maybe it would be misleading???
+                                if (noticeObject.repoCode === undefined) {
+                                    // debugLog(`checkMarkdownText 378 added rC=TA to ${JSON.stringify(noticeObject)}`);
+                                    noticeObject.repoCode = 'TA';
+                                }
+                                // else if (noticeObject.repoCode !== 'TA') debugLog(`checkMarkdownText 378 DIDN'T ADD rC=TA to ${JSON.stringify(noticeObject)}`);
+                                ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
                             }
-                            // else if (noticeObject.repoCode !== 'TA') debugLog(`checkMarkdownText 378 DIDN'T ADD rC=TA to ${JSON.stringify(noticeObject)}`);
-                            ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
+                            ctarResult.checkedFileCount += 1;
+                            ctarResult.checkedFilenames.push(filepath);
+                            ctarResult.checkedFilesizes = taFileContent.length;
+                            ctarResult.checkedFilenameExtensions = ['md'];
+                            ctarResult.checkedRepoNames.push(taRepoName);
                         }
-                        ctarResult.checkedFileCount += 1;
-                        ctarResult.checkedFilenames.push(filepath);
-                        ctarResult.checkedFilesizes = taFileContent.length;
-                        ctarResult.checkedFilenameExtensions = ['md'];
-                        ctarResult.checkedRepoNames.push(taRepoName);
                     }
                 }
                 markAsChecked(taPathParameters); // don’t bother waiting for the result of this async call
@@ -426,36 +449,49 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
             if (!checkingOptions?.disableAllLinkFetchingFlag) {
                 // debugLog(`checkNotesLinksToOutside TA_RELATIVE1_DISPLAY_LINK_REGEX need to check ${filepath} against ${taRepoName}`);
                 const taPathParameters = { username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch };
-                let taFileContent, alreadyGaveError = false;
-                try {
-                    taFileContent = await getFile_(taPathParameters);
-                    // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
-                } catch (trcGCerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
-                    console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
-                    addNoticePartial({ priority: 885, message: `Error loading TA article`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
-                    alreadyGaveError = true;
-                }
-                if (!alreadyGaveError) {
-                    if (!taFileContent)
-                        addNoticePartial({ priority: 886, message: "Unable to find/load linked TA article", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
-                    else if (taFileContent.length < 10)
-                        addNoticePartial({ priority: 884, message: "Linked TA article seems empty", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
-                    // Don’t do this or it gets infinite recursion!!!
-                    // else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
-                    //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
-                    //     if (!await alreadyChecked(taPathParameters)) {
-                    //         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
-                    //         const checkTAFileResult = await checkMarkdownFileContents(username, languageCode, repoCode, `TA ${article.trim()}/01.md`, taFileContent, ourLocation, checkingOptions);
-                    //         for (const noticeObject of checkTAFileResult.noticeList)
-                    //             ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
-                    //         ctarResult.checkedFileCount += 1;
-                    //         ctarResult.checkedFilenames.push(`${article.trim()}/01.md`);
-                    //         ctarResult.checkedFilesizes = taFileContent.length;
-                    //         ctarResult.checkedFilenameExtensions = ['md'];
-                    //         ctarResult.checkedRepoNames.push(taRepoName);
-                    //         markAsChecked(taPathParameters); // don’t bother waiting for the result of this async call
-                    //     }
-                    // }
+                if (!await alreadyChecked(taPathParameters)) {
+                    if (checkingOptions?.disableLinkedTAArticlesCheckFlag === true) {
+                        // New code
+                        // We don't need/want to check the actual article, so we don't need to fetch it
+                        // However, we still want to know if the given link actually links to an article
+                        //  so we'll check it against the tree listing from DCS
+                        if (!await isFilepathInRepoTree(taPathParameters))
+                            addNoticePartial({ priority: 886, message: "Unable to find linked TA article", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: ourLocation });
+                    }
+                    else {
+                        let taFileContent, alreadyGaveError = false;
+                        try {
+                            taFileContent = await getFile_(taPathParameters);
+                            // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
+                        } catch (trcGCerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
+                            console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
+                            addNoticePartial({ priority: 885, message: `Error loading TA article`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+                            alreadyGaveError = true;
+                        }
+                        if (!alreadyGaveError) {
+                            if (!taFileContent)
+                                addNoticePartial({ priority: 886, message: "Unable to find/load linked TA article", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: ourLocation });
+                            else if (taFileContent.length < 10)
+                                addNoticePartial({ priority: 884, message: "Linked TA article seems empty", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: ourLocation });
+                            // Don’t do this or it gets infinite recursion!!!
+                            // else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
+                            //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
+                            //     if (!await alreadyChecked(taPathParameters)) {
+                            //         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
+                            //         const checkTAFileResult = await checkMarkdownFileContents(username, languageCode, repoCode, `TA ${article.trim()}/01.md`, taFileContent, ourLocation, checkingOptions);
+                            //         for (const noticeObject of checkTAFileResult.noticeList)
+                            //             ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
+                            //         ctarResult.checkedFileCount += 1;
+                            //         ctarResult.checkedFilenames.push(`${article.trim()}/01.md`);
+                            //         ctarResult.checkedFilesizes = taFileContent.length;
+                            //         ctarResult.checkedFilenameExtensions = ['md'];
+                            //         ctarResult.checkedRepoNames.push(taRepoName);
+                            //         markAsChecked(taPathParameters); // don’t bother waiting for the result of this async call
+                            //     }
+                            // }
+                        }
+                    }
+                    markAsChecked(taPathParameters); // don’t bother waiting for the result of this async call
                 }
             }
         }
@@ -476,36 +512,49 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
             if (!checkingOptions?.disableAllLinkFetchingFlag) {
                 // functionLog(`checkNotesLinksToOutside: need to check against ${taRepoName}`);
                 const taPathParameters = { username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch };
-                let taFileContent, alreadyGaveError = false;
-                try {
-                    taFileContent = await getFile_(taPathParameters);
-                    // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
-                } catch (trcGCerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
-                    // console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
-                    addNoticePartial({ priority: 885, message: `Error loading TA article`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
-                    alreadyGaveError = true;
-                }
-                if (!alreadyGaveError) {
-                    if (!taFileContent)
-                        addNoticePartial({ priority: 886, message: "Unable to find/load linked TA article", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
-                    else if (taFileContent.length < 10)
-                        addNoticePartial({ priority: 884, message: "Linked TA article seems empty", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
-                    // Don’t do this or it gets infinite recursion!!!
-                    // else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
-                    //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
-                    //     if (!await alreadyChecked(taPathParameters)) {
-                    //         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
-                    //         const checkTAFileResult = await checkMarkdownFileContents(username, languageCode, repoCode, `TA ${filepath}`, taFileContent, ourLocation, checkingOptions);
-                    //         for (const noticeObject of checkTAFileResult.noticeList)
-                    //             ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
-                    //         ctarResult.checkedFileCount += 1;
-                    //         ctarResult.checkedFilenames.push(filepath);
-                    //         ctarResult.checkedFilesizes = taFileContent.length;
-                    //         ctarResult.checkedFilenameExtensions = ['md'];
-                    //         ctarResult.checkedRepoNames.push(taRepoName);
-                    //         markAsChecked(taPathParameters); // don’t bother waiting for the result of this async call
-                    //     }
-                    // }
+                if (!await alreadyChecked(taPathParameters)) {
+                    if (checkingOptions?.disableLinkedTAArticlesCheckFlag === true) {
+                        // New code
+                        // We don't need/want to check the actual article, so we don't need to fetch it
+                        // However, we still want to know if the given link actually links to an article
+                        //  so we'll check it against the tree listing from DCS
+                        if (!await isFilepathInRepoTree(taPathParameters))
+                            addNoticePartial({ priority: 886, message: "Unable to find linked TA article", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: ourLocation });
+                    }
+                    else {
+                        let taFileContent, alreadyGaveError = false;
+                        try {
+                            taFileContent = await getFile_(taPathParameters);
+                            // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
+                        } catch (trcGCerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
+                            // console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
+                            addNoticePartial({ priority: 885, message: `Error loading TA article`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+                            alreadyGaveError = true;
+                        }
+                        if (!alreadyGaveError) {
+                            if (!taFileContent)
+                                addNoticePartial({ priority: 886, message: "Unable to find/load linked TA article", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: ourLocation });
+                            else if (taFileContent.length < 10)
+                                addNoticePartial({ priority: 884, message: "Linked TA article seems empty", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: ourLocation });
+                            // Don’t do this or it gets infinite recursion!!!
+                            // else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
+                            //     // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
+                            //     if (!await alreadyChecked(taPathParameters)) {
+                            //         // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
+                            //         const checkTAFileResult = await checkMarkdownFileContents(username, languageCode, repoCode, `TA ${filepath}`, taFileContent, ourLocation, checkingOptions);
+                            //         for (const noticeObject of checkTAFileResult.noticeList)
+                            //             ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoCode: 'TA', repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
+                            //         ctarResult.checkedFileCount += 1;
+                            //         ctarResult.checkedFilenames.push(filepath);
+                            //         ctarResult.checkedFilesizes = taFileContent.length;
+                            //         ctarResult.checkedFilenameExtensions = ['md'];
+                            //         ctarResult.checkedRepoNames.push(taRepoName);
+                            //         markAsChecked(taPathParameters); // don’t bother waiting for the result of this async call
+                            //     }
+                            // }
+                        }
+                    }
+                    markAsChecked(taPathParameters); // don’t bother waiting for the result of this async call
                 }
             }
         }
@@ -540,40 +589,51 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
             // functionLog(`checkNotesLinksToOutside: need to check against ${taRepoName}`);
             const taPathParameters = { username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch };
             if (!await alreadyChecked(taPathParameters)) {
-                let taFileContent, alreadyGaveError = false;
-                try {
-                    taFileContent = await getFile_(taPathParameters);
-                    // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
-                } catch (trcGCerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
-                    // console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
-                    addNoticePartial({ priority: 885, message: `Error loading TA article`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
-                    alreadyGaveError = true;
+                if (checkingOptions?.disableLinkedTAArticlesCheckFlag === true) {
+                    // New code
+                    // We don't need/want to check the actual article, so we don't need to fetch it
+                    // However, we still want to know if the given link actually links to an article
+                    //  so we'll check it against the tree listing from DCS
+                    if (!await isFilepathInRepoTree(taPathParameters))
+                        addNoticePartial({ priority: 886, message: "Unable to find linked TA article", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: ourLocation });
                 }
-                if (!alreadyGaveError) {
-                    if (!taFileContent)
-                        addNoticePartial({ priority: 886, message: "Unable to find/load linked TA article", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
-                    else if (taFileContent.length < 10)
-                        addNoticePartial({ priority: 884, message: "Linked TA article seems empty", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}` });
-                    else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
-                        // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
-                        // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
-                        const checkTAFileResult = await checkMarkdownFileContents(username, foundLanguageCode, 'TA', filepath, taFileContent, ourLocation, checkingOptions);
-                        for (const noticeObject of checkTAFileResult.noticeList) {
-                            // Why don’t we use addNoticePartial() here? (It adds bookID and fieldName.) Maybe it would be misleading???
-                            if (noticeObject.repoCode === undefined) {
-                                // debugLog(`checkMarkdownText 554 added rC=TA to ${JSON.stringify(noticeObject)}`);
-                                noticeObject.repoCode = 'TA';
-                            }
-                            // else if (noticeObject.repoCode !== 'TA') debugLog(`checkMarkdownText 554 DIDN'T ADD rC=TA to ${JSON.stringify(noticeObject)}`);
-                            ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
+                else
+                    if (!await alreadyChecked(taPathParameters)) {
+                        let taFileContent, alreadyGaveError = false;
+                        try {
+                            taFileContent = await getFile_(taPathParameters);
+                            // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
+                        } catch (trcGCerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
+                            // console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TA for '${taRepoUsername}', '${taRepoName}', '${filepath}', '${taRepoBranch}', ${trcGCerror.message}`);
+                            addNoticePartial({ priority: 885, message: `Error loading TA article`, details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+                            alreadyGaveError = true;
                         }
-                        ctarResult.checkedFileCount += 1;
-                        ctarResult.checkedFilenames.push(filepath);
-                        ctarResult.checkedFilesizes = taFileContent.length;
-                        ctarResult.checkedFilenameExtensions = ['md'];
-                        ctarResult.checkedRepoNames.push(taRepoName);
+                        if (!alreadyGaveError) {
+                            if (!taFileContent)
+                                addNoticePartial({ priority: 886, message: "Unable to find/load linked TA article", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: ourLocation });
+                            else if (taFileContent.length < 10)
+                                addNoticePartial({ priority: 884, message: "Linked TA article seems empty", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: ourLocation });
+                            else if (checkingOptions?.disableLinkedTAArticlesCheckFlag !== true) {
+                                // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTAArticlesCheckFlag} so checking TA article: ${filepath}`);
+                                // functionLog(`checkNotesLinksToOutside needs to check TA article: ${filepath}`);
+                                const checkTAFileResult = await checkMarkdownFileContents(username, foundLanguageCode, 'TA', filepath, taFileContent, ourLocation, checkingOptions);
+                                for (const noticeObject of checkTAFileResult.noticeList) {
+                                    // Why don’t we use addNoticePartial() here? (It adds bookID and fieldName.) Maybe it would be misleading???
+                                    if (noticeObject.repoCode === undefined) {
+                                        // debugLog(`checkMarkdownText 554 added rC=TA to ${JSON.stringify(noticeObject)}`);
+                                        noticeObject.repoCode = 'TA';
+                                    }
+                                    // else if (noticeObject.repoCode !== 'TA') debugLog(`checkMarkdownText 554 DIDN'T ADD rC=TA to ${JSON.stringify(noticeObject)}`);
+                                    ctarResult.noticeList.push({ ...noticeObject, username: taRepoUsername, repoName: taRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TA' });
+                                }
+                                ctarResult.checkedFileCount += 1;
+                                ctarResult.checkedFilenames.push(filepath);
+                                ctarResult.checkedFilesizes = taFileContent.length;
+                                ctarResult.checkedFilenameExtensions = ['md'];
+                                ctarResult.checkedRepoNames.push(taRepoName);
+                            }
+                        }
                     }
-                }
                 markAsChecked(taPathParameters); // don’t bother waiting for the result of this async call
             }
         }
@@ -601,40 +661,51 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
             // if (article === 'brother') debugLog(`Need to check ${fieldName} TW link ${regexMatchObject} against ${twRepoName}`);
             const twPathParameters = { username: twRepoUsername, repository: twRepoName, path: filepath, branch: twRepoBranch };
             if (!await alreadyChecked(twPathParameters)) {
-                let twFileContent;
-                try {
-                    twFileContent = await getFile_(twPathParameters);
-                    // if (article === 'brother') debugLog(`Fetched fileContent for ${JSON.stringify(twPathParameters)}: ${typeof twFileContent} ${twFileContent.length}`);
-                } catch (trcGCerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
-                    console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TW ${twRepoUsername} ${twRepoName}, ${filepath}, ${twRepoBranch}: ${trcGCerror.message}`);
-                    addNoticePartial({ priority: 882, message: `Error loading TW article`, details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}: ${trcGCerror}`, excerpt: totalLink, location: ourLocation });
+                if (checkingOptions?.disableLinkedTWArticlesCheckFlag === true) {
+                    // New code
+                    // We don't need/want to check the actual article, so we don't need to fetch it
+                    // However, we still want to know if the given link actually links to an article
+                    //  so we'll check it against the tree listing from DCS
+                    if (!await isFilepathInRepoTree(twPathParameters))
+                        addNoticePartial({ priority: 883, message: "Unable to find linked TW article", details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: ourLocation });
                 }
-                if (!twFileContent)
-                    addNoticePartial({ priority: 883, message: "Unable to find/load linked TW article", details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: ourLocation });
-                else { // we got the content of the TW article
-                    if (twFileContent.length < 10)
-                        addNoticePartial({ priority: 881, message: `TW article seems empty`, details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: ourLocation });
-                    else if (checkingOptions?.disableLinkedTWArticlesCheckFlag !== true) {
-                        // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTWArticlesCheckFlag} so checking TW article: ${filepath}`);
-                        // functionLog(`checkNotesLinksToOutside needs to check TW article: ${filepath}`);
-                        // NOTE: repoCode is the caller's repo code in the line below
-                        const checkTWFileResult = await checkMarkdownFileContents(username, foundLanguageCode, 'TW', `${filename}`, twFileContent, ourLocation, checkingOptions);
-                        for (const noticeObject of checkTWFileResult.noticeList) {
-                            // Why don’t we use addNoticePartial() here? (It adds bookID and fieldName.) Maybe it would be misleading???
-                            if (noticeObject.repoCode === undefined) {
-                                // debugLog(`checkMarkdownText 600 added rC=TW to ${JSON.stringify(noticeObject)}`);
-                                noticeObject.repoCode = 'TW';
-                            }
-                            // else if (noticeObject.repoCode !== 'TW') debugLog(`checkMarkdownText 600 DIDN'T ADD rC=TW to ${JSON.stringify(noticeObject)}`);
-                            ctarResult.noticeList.push({ ...noticeObject, username: twRepoUsername, repoName: twRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TW' });
+                else
+                    if (!await alreadyChecked(twPathParameters)) {
+                        let twFileContent;
+                        try {
+                            twFileContent = await getFile_(twPathParameters);
+                            // if (article === 'brother') debugLog(`Fetched fileContent for ${JSON.stringify(twPathParameters)}: ${typeof twFileContent} ${twFileContent.length}`);
+                        } catch (trcGCerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
+                            console.error(`checkNotesLinksToOutside(${bookID}, ${fieldName}, …) failed to load TW ${twRepoUsername} ${twRepoName}, ${filepath}, ${twRepoBranch}: ${trcGCerror.message}`);
+                            addNoticePartial({ priority: 882, message: `Error loading TW article`, details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}: ${trcGCerror}`, excerpt: totalLink, location: ourLocation });
                         }
-                        ctarResult.checkedFileCount += 1;
-                        ctarResult.checkedFilenames.push(filename);
-                        ctarResult.checkedFilesizes = twFileContent.length;
-                        ctarResult.checkedFilenameExtensions = ['md'];
-                        ctarResult.checkedRepoNames.push(twRepoName);
+                        if (!twFileContent)
+                            addNoticePartial({ priority: 883, message: "Unable to find/load linked TW article", details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: ourLocation });
+                        else { // we got the content of the TW article
+                            if (twFileContent.length < 10)
+                                addNoticePartial({ priority: 881, message: `TW article seems empty`, details: `${twRepoUsername} ${twRepoName} ${twRepoBranch} ${filepath}`, excerpt: totalLink, location: ourLocation });
+                            else if (checkingOptions?.disableLinkedTWArticlesCheckFlag !== true) {
+                                // functionLog(`checkNotesLinksToOutside got ${checkingOptions?.disableLinkedTWArticlesCheckFlag} so checking TW article: ${filepath}`);
+                                // functionLog(`checkNotesLinksToOutside needs to check TW article: ${filepath}`);
+                                // NOTE: repoCode is the caller's repo code in the line below
+                                const checkTWFileResult = await checkMarkdownFileContents(username, foundLanguageCode, 'TW', `${filename}`, twFileContent, ourLocation, checkingOptions);
+                                for (const noticeObject of checkTWFileResult.noticeList) {
+                                    // Why don’t we use addNoticePartial() here? (It adds bookID and fieldName.) Maybe it would be misleading???
+                                    if (noticeObject.repoCode === undefined) {
+                                        // debugLog(`checkMarkdownText 600 added rC=TW to ${JSON.stringify(noticeObject)}`);
+                                        noticeObject.repoCode = 'TW';
+                                    }
+                                    // else if (noticeObject.repoCode !== 'TW') debugLog(`checkMarkdownText 600 DIDN'T ADD rC=TW to ${JSON.stringify(noticeObject)}`);
+                                    ctarResult.noticeList.push({ ...noticeObject, username: twRepoUsername, repoName: twRepoName, filename: filepath, location: ` linked to${ourLocation}`, extra: 'TW' });
+                                }
+                                ctarResult.checkedFileCount += 1;
+                                ctarResult.checkedFilenames.push(filename);
+                                ctarResult.checkedFilesizes = twFileContent.length;
+                                ctarResult.checkedFilenameExtensions = ['md'];
+                                ctarResult.checkedRepoNames.push(twRepoName);
+                            }
+                        }
                     }
-                }
                 markAsChecked(twPathParameters); // don’t bother waiting for the result of this async call
                 // else debugLog("checkNotesLinksToOutside: disableLinkedTWArticlesCheckFlag is set to TRUE!");
             }
