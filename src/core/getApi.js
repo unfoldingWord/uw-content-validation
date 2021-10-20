@@ -247,7 +247,7 @@ export async function isFilepathInRepoTree({ username, repository, path, branch 
   if (!treeJSON)
     treeJSON = await cachedFetchFileFromServerWithBranch({ username, repository, path, branch });
 
-    // Loop through the array to see if the one we want exists
+  // Loop through the array to see if the one we want exists
   for (const treeEntry of treeJSON) {
     // debugLog(`treeEntry=${JSON.stringify(treeEntry)}`); // Keys are path, mode, type, size, sha, url
     if (treeEntry.path === path)// Yup, it exists
@@ -716,23 +716,41 @@ async function downloadRepositoryZipFile({ username, repository, branchOrRelease
 async function downloadRepositoryTreeFile({ username, repository, branchOrRelease }) {
   functionLog(`downloadRepositoryTreeFile(${username}, ${repository}, ${branchOrRelease})…`);
 
-  // Template is https://git.door43.org/api/v1/repos/{username}/{repository}/git/trees/{branchOrRelease}?recursive=true&per_page=99999
+  // Template is https://git.door43.org/api/v1/repos/{username}/{repository}/git/trees/{branchOrRelease}?recursive=true&per_page=12345
   const treeURI = treeUri({ username, repository, branchOrRelease });
-  // debugLog(`downloadRepositoryTreeFile got treeURI ${treeURI}`);
-  const response = await fetch(treeURI);
-  // debugLog(`downloadRepositoryTreeFile got response (${response.length}) ${JSON.stringify(response)}`);
-  if (response.status === 200 || response.status === 0) {
-    const treeJSON = await response.json();
-    dataAssert(!treeJSON['truncated'], `tree data for ${treeURI} shouldn't be truncated!`);
-    dataAssert(treeJSON['page'] === 1, `tree data for ${treeURI} should be page 1 not ${typeof treeJSON['page']} ${treeJSON['page']}!`);
-    // debugLog(`downloadRepositoryTreeFile got treeJSON (${treeJSON.length}) ${JSON.stringify(treeJSON)}`);
-    await zipJsonStore.setItem(treeURI.toLowerCase(), treeJSON['tree']); // Don't need the sha, url, or total_count
-    // debugLog(`  downloadRepositoryTreeFile(${username}, ${repository}, ${branchOrRelease}) -- saved JSON from ${treeURI}`);
-    return true;
-  } else {
-    console.error(`downloadRepositoryTreeFile(${username}, ${repository}, ${branchOrRelease}) -- got response status: ${response.status}`);
-    return false;
+  // debugLog(`  downloadRepositoryTreeFile got treeURI ${treeURI}`);
+  let page_number = 0; // incremented before use
+  let JSONTree = [];
+  while (true) {
+    ++page_number;
+    const fetchURI = page_number === 1 ? treeURI : `${treeURI}&page=${page_number}`;
+    // debugLog(`    downloadRepositoryTreeFile fetching from ${fetchURI}…`);
+    const response = await fetch(fetchURI);
+    // debugLog(`downloadRepositoryTreeFile got response (${response.length}) ${JSON.stringify(response)}`);
+    if (response.status === 200 || response.status === 0) {
+      const thisPageJSON = await response.json();
+      if (page_number === 1)
+        userLog(`    downloadRepositoryTreeFile treeJSON total_count to download is ${thisPageJSON['total_count'].toLocaleString()} entries`);
+      dataAssert(thisPageJSON['page'] === page_number, `tree data for ${treeURI} should be page ${page_number} not ${typeof thisPageJSON['page']} ${thisPageJSON['page']}!`);
+      // debugLog(`downloadRepositoryTreeFile got thisPageJSON (${thisPageJSON.length}) ${JSON.stringify(thisPageJSON)}`);
+      const thisPageJSONTree = thisPageJSON['tree']; // Don't need to store the page (number), truncated, sha, url, or total_count fields
+      if (thisPageJSONTree === null) break;
+      // debugLog(`    downloadRepositoryTreeFile thisPageJSONTree for page ${page_number} is ${thisPageJSONTree.length.toLocaleString()} entries`);
+      JSONTree = JSONTree.concat(thisPageJSONTree);
+      if (JSONTree.length < thisPageJSON['total_count'])
+        userLog(`    downloadRepositoryTreeFile now have combined JSONTree of ${JSONTree.length.toLocaleString()} entries`);
+      if (!thisPageJSON['truncated']) break; // Does nothing coz even the last page of data has 'truncated' set to true
+      if (JSONTree.length === thisPageJSON['total_count']) break; // We've got them all!
+    } else {
+      console.error(`  downloadRepositoryTreeFile(${username}, ${repository}, ${branchOrRelease}) page=${page_number} -- got response status: ${response.status}`);
+      return false;
+    }
   }
+  // We must be done
+  // debugLog(`  downloadRepositoryTreeFile saving JSONTree ${JSONTree.length.toLocaleString()} entries…`);
+  await zipJsonStore.setItem(treeURI.toLowerCase(), JSONTree);
+  // debugLog(`  downloadRepositoryTreeFile(${username}, ${repository}, ${branchOrRelease}) -- saved ${JSONTree.length.toLocaleString()} JSON entries from ${treeURI}`);
+  return true;
 };
 
 
@@ -860,9 +878,9 @@ function zipUri({ username, repository, branchOrRelease = 'master' }) {
 };
 
 function treeUri({ username, repository, branchOrRelease = 'master' }) {
-  // Template is https://git.door43.org/api/v1/repos/{username}/{repository}/git/trees/{branchOrRelease}?recursive=true&per_page=99999
+  // Template is https://git.door43.org/api/v1/repos/{username}/{repository}/git/trees/{branchOrRelease}?recursive=true&per_page=12345
   // functionLog(`treeUri(${username}, ${repository}, ${branchOrRelease})…`);
-  const treePath = Path.join('api', 'v1', 'repos', username, repository, 'git', 'trees', `${branchOrRelease}?recursive=true&per_page=99999`);
+  const treePath = Path.join('api', 'v1', 'repos', username, repository, 'git', 'trees', `${branchOrRelease}?recursive=true&per_page=12345`);
   const treeUri = DOOR43_BASE_URL + treePath;
   return treeUri;
 };

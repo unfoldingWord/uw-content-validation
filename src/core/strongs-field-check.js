@@ -3,13 +3,13 @@ import { isValidBookID, testament } from './books/books'
 // eslint-disable-next-line no-unused-vars
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults';
 import { cachedGetFile } from './getApi';
-import { alreadyChecked, markAsChecked } from './getApi';
+import { alreadyChecked, markAsChecked, isFilepathInRepoTree } from './getApi';
 import { checkLexiconFileContents } from './lexicon-file-contents-check';
 // eslint-disable-next-line no-unused-vars
 import { functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt, aboutToOverwrite } from './utilities';
 
 
-// const STRONGS_FIELD_VALIDATOR_VERSION_STRING = '0.3.0';
+// const STRONGS_FIELD_VALIDATOR_VERSION_STRING = '0.4.1';
 
 
 /**
@@ -86,8 +86,9 @@ export async function checkStrongsField(username, languageCode, repoCode, fieldN
         }
         //parameterAssert(incompleteNoticeObject.location !== undefined, "checkStrongsField addNoticePartial: 'location' parameter should be defined");
         //parameterAssert(typeof incompleteNoticeObject.location === 'string', `checkStrongsField addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
-        aboutToOverwrite('checkStrongsField', ['excerpt', 'fieldName', 'repoCode'], incompleteNoticeObject, { excerpt: fieldText, fieldName, repoCode });
-        const newObject = { ...incompleteNoticeObject, excerpt: fieldText, fieldName, repoCode };
+        aboutToOverwrite('checkStrongsField', ['fieldName', 'repoCode'], incompleteNoticeObject, { fieldName, repoCode });
+        const newObject = { ...incompleteNoticeObject, fieldName, repoCode };
+        if (newObject.excerpt === undefined) newObject.excerpt = fieldText;
         if (bookID.length) newObject.bookID = bookID;
         if (C.length && V.length) { newObject.C = C; newObject.V = V; }
         csfResult.noticeList.push(newObject);
@@ -239,33 +240,43 @@ export async function checkStrongsField(username, languageCode, repoCode, fieldN
             }
             const fetchLexiconFileParameters = { username, repository: repoName, path: lexiconPathname, branch: repoBranch };
             if (!await alreadyChecked(fetchLexiconFileParameters)) {
-                // debugLog(`checkStrongsField(${adjustedLanguageCode}, ${repoCode}, ${fieldName}, ${fieldText}, ${bookID} ${C}:${V}, ${givenLocation}, ${JSON.stringify(checkingOptions)} got ${JSON.stringify(fetchLexiconFileParameters)}`);
-                // debugLog(`checkStrongsField wants to check lexicon entry for ${JSON.stringify(fetchLexiconFileParameters)}`);
                 const fetchLinkDescription = `${username} ${repoName} ${repoBranch} ${lexiconPathname}`;
-                const getFile_ = (checkingOptions && checkingOptions?.getFile) ? checkingOptions?.getFile : cachedGetFile;
-                let lexiconMarkdownTextContents;
-                try {
-                    lexiconMarkdownTextContents = await getFile_(fetchLexiconFileParameters);
-                    // const responseData = await cachedGetFileUsingFullURL({ uri: fetchLink });
-                    // const manifestContents = await cachedGetFile({ username, repository, path: 'manifest.yaml', branch });
-                    dataAssert(lexiconMarkdownTextContents.length > 10, `checkStrongsField expected ${fetchLinkDescription} lexicon file to be longer: ${lexiconMarkdownTextContents.length}`);
-                    // debugLog(`checkStrongsField lexicon link fetch got text: ${lexiconMarkdownTextContents.length}`);
-                } catch (flError) { // NOTE: The error can depend on whether the zipped repo is cached or not
-                    // console.error(`checkStrongsField lexicon link fetch had an error fetching ${fetchLinkDescription}: ${flError}`);
-                    let details = `${lexiconRepoCode}`;
-                    // eslint-disable-next-line eqeqeq
-                    if (flError != 'TypeError: lexiconMarkdownTextContents is null') details += ` error=${flError}`;
-                    addNoticePartial({ priority: 850, message: "Unable to find/load lexicon entry", details, username, excerpt: fetchLinkDescription, location: ourLocation });
+                if (checkingOptions?.disableLinkedLexiconEntriesCheckFlag === true) {
+                    // New code
+                    // We don't need/want to check the actual article, so we don't need to fetch it
+                    // However, we still want to know if the given link actually links to an article
+                    //  so we'll check it against the tree listing from DCS
+                    if (!await isFilepathInRepoTree(fetchLexiconFileParameters))
+                        addNoticePartial({ priority: 850, message: "Unable to find lexicon entry", details:lexiconRepoCode, username, excerpt: fetchLinkDescription, location: ourLocation });
                 }
-                if (lexiconMarkdownTextContents?.length) {
-                    if (lexiconMarkdownTextContents.length < 10)
-                        addNoticePartial({ priority: 878, message: `Lexicon entry seems empty`, details: `${username} ${repoName} ${repoBranch} ${lexiconPathname}`, excerpt: fieldText, location: ourLocation });
-                    else if (checkingOptions?.disableLinkedLexiconEntriesCheckFlag !== true) {
-                        await ourCheckLexiconFileContents(username, languageCode, lexiconRepoCode, repoName, repoBranch, lexiconPathname, lexiconMarkdownTextContents, givenLocation, checkingOptions);
-                        csfResult.checkedFileCount += 1;
-                        csfResult.checkedFilenames.push(adjustedFieldText[0] === 'H' ? lexiconFilename : `${adjustedFieldText}/${lexiconFilename}`);
-                        csfResult.checkedRepoNames.push(repoName);
-                        csfResult.checkedFilenameExtensions.push('md');
+                else {
+                    // debugLog(`checkStrongsField(${adjustedLanguageCode}, ${repoCode}, ${fieldName}, ${fieldText}, ${bookID} ${C}:${V}, ${givenLocation}, ${JSON.stringify(checkingOptions)} got ${JSON.stringify(fetchLexiconFileParameters)}`);
+                    // debugLog(`checkStrongsField wants to check lexicon entry for ${JSON.stringify(fetchLexiconFileParameters)}`);
+                    const getFile_ = (checkingOptions && checkingOptions?.getFile) ? checkingOptions?.getFile : cachedGetFile;
+                    let lexiconMarkdownTextContents;
+                    try {
+                        lexiconMarkdownTextContents = await getFile_(fetchLexiconFileParameters);
+                        // const responseData = await cachedGetFileUsingFullURL({ uri: fetchLink });
+                        // const manifestContents = await cachedGetFile({ username, repository, path: 'manifest.yaml', branch });
+                        dataAssert(lexiconMarkdownTextContents.length > 10, `checkStrongsField expected ${fetchLinkDescription} lexicon file to be longer: ${lexiconMarkdownTextContents.length}`);
+                        // debugLog(`checkStrongsField lexicon link fetch got text: ${lexiconMarkdownTextContents.length}`);
+                    } catch (flError) { // NOTE: The error can depend on whether the zipped repo is cached or not
+                        // console.error(`checkStrongsField lexicon link fetch had an error fetching ${fetchLinkDescription}: ${flError}`);
+                        let details = `${lexiconRepoCode}`;
+                        // eslint-disable-next-line eqeqeq
+                        if (flError != 'TypeError: lexiconMarkdownTextContents is null') details += ` error=${flError}`;
+                        addNoticePartial({ priority: 850, message: "Unable to find/load lexicon entry", details, username, excerpt: fetchLinkDescription, location: ourLocation });
+                    }
+                    if (lexiconMarkdownTextContents?.length) {
+                        if (lexiconMarkdownTextContents.length < 10)
+                            addNoticePartial({ priority: 878, message: `Lexicon entry seems empty`, details: `${username} ${repoName} ${repoBranch} ${lexiconPathname}`, excerpt: fieldText, location: ourLocation });
+                        else if (checkingOptions?.disableLinkedLexiconEntriesCheckFlag !== true) {
+                            await ourCheckLexiconFileContents(username, languageCode, lexiconRepoCode, repoName, repoBranch, lexiconPathname, lexiconMarkdownTextContents, givenLocation, checkingOptions);
+                            csfResult.checkedFileCount += 1;
+                            csfResult.checkedFilenames.push(adjustedFieldText[0] === 'H' ? lexiconFilename : `${adjustedFieldText}/${lexiconFilename}`);
+                            csfResult.checkedRepoNames.push(repoName);
+                            csfResult.checkedFilenameExtensions.push('md');
+                        }
                     }
                 }
                 // Only mark this error once, even if the fetch failed
