@@ -10,7 +10,7 @@ import { functionLog, debugLog, userLog, parameterAssert, logicAssert } from './
 import { dataAssert } from '.';
 
 
-// const GETAPI_VERSION_STRING = '0.11.3';
+// const GETAPI_VERSION_STRING = '0.11.4';
 
 const MAX_INDIVIDUAL_FILES_TO_DOWNLOAD = 5; // More than this and it downloads the zipfile for the entire repo
 
@@ -247,13 +247,17 @@ export async function isFilepathInRepoTree({ username, repository, path, branch 
   if (!treeJSON)
     treeJSON = await cachedFetchFileFromServerWithBranch({ username, repository, path, branch });
 
+    return treeJSON.includes(path);
+    /*
   // Loop through the array to see if the one we want exists
   for (const treeEntry of treeJSON) {
     // debugLog(`treeEntry=${JSON.stringify(treeEntry)}`); // Keys are path, mode, type, size, sha, url
-    if (treeEntry.path === path)// Yup, it exists
+    // if (treeEntry.path === path)// Yup, it exists (if we saved the entire tree object)
+    if (treeEntry === path) // Yup, it exists (if we only saved the pathnames in the array)
       return true;
   }
   return false;
+  */
 }
 
 
@@ -680,7 +684,7 @@ export async function cachedGetRepositoryTreeFile({ username, repository, branch
   if (!forceLoad) { // see if we already have in zipJsonStore
     const treeJSON = await getTreeFromStore(username, repository, branchOrRelease);
     if (treeJSON) {
-      debugLog(`cachedGetRepositoryTreeFile for ${username}, ${repository}, ${branchOrRelease} -- already loaded`);
+      // debugLog(`cachedGetRepositoryTreeFile for ${username}, ${repository}, ${branchOrRelease} -- already loaded`);
       return true;
     }
   }
@@ -747,8 +751,13 @@ async function downloadRepositoryTreeFile({ username, repository, branchOrReleas
     }
   }
   // We must be done
-  // debugLog(`  downloadRepositoryTreeFile saving JSONTree ${JSONTree.length.toLocaleString()} entries…`);
-  await zipJsonStore.setItem(treeURI.toLowerCase(), JSONTree);
+  // debugLog(`  downloadRepositoryTreeFile saving ${repository} JSONTree ${JSONTree.length.toLocaleString()} entries…`);
+  // debugLog(`  downloadRepositoryTreeFile saving ${repository} JSONTree[17]=${JSON.stringify(JSONTree[17])}`);
+  // We only need to save the list of actual paths --
+  //    saves a lot of memory not storing the entire object of {path, mode, type, size, sha, url}
+  // const abbreviatedJSONTree = JSONTree.map(x => x.path);
+  // debugLog(`  downloadRepositoryTreeFile saving ${repository} abbreviatedJSONTree[17]=${JSON.stringify(abbreviatedJSONTree[17])}`);
+  await zipJsonStore.setItem(treeURI.toLowerCase(), JSONTree.map(x => x.path));
   // debugLog(`  downloadRepositoryTreeFile(${username}, ${repository}, ${branchOrRelease}) -- saved ${JSONTree.length.toLocaleString()} JSON entries from ${treeURI}`);
   return true;
 };
