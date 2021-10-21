@@ -10,7 +10,7 @@ import { functionLog, debugLog, userLog, parameterAssert, logicAssert } from './
 import { dataAssert } from '.';
 
 
-// const GETAPI_VERSION_STRING = '0.11.2';
+// const GETAPI_VERSION_STRING = '0.11.3';
 
 const MAX_INDIVIDUAL_FILES_TO_DOWNLOAD = 5; // More than this and it downloads the zipfile for the entire repo
 
@@ -730,7 +730,7 @@ async function downloadRepositoryTreeFile({ username, repository, branchOrReleas
     if (response.status === 200 || response.status === 0) {
       const thisPageJSON = await response.json();
       if (page_number === 1)
-        userLog(`    downloadRepositoryTreeFile treeJSON total_count to download is ${thisPageJSON['total_count'].toLocaleString()} entries`);
+        userLog(`    downloadRepositoryTreeFile ${repository} treeJSON total_count to download is ${thisPageJSON['total_count'].toLocaleString()} entries`);
       dataAssert(thisPageJSON['page'] === page_number, `tree data for ${treeURI} should be page ${page_number} not ${typeof thisPageJSON['page']} ${thisPageJSON['page']}!`);
       // debugLog(`downloadRepositoryTreeFile got thisPageJSON (${thisPageJSON.length}) ${JSON.stringify(thisPageJSON)}`);
       const thisPageJSONTree = thisPageJSON['tree']; // Don't need to store the page (number), truncated, sha, url, or total_count fields
@@ -738,7 +738,7 @@ async function downloadRepositoryTreeFile({ username, repository, branchOrReleas
       // debugLog(`    downloadRepositoryTreeFile thisPageJSONTree for page ${page_number} is ${thisPageJSONTree.length.toLocaleString()} entries`);
       JSONTree = JSONTree.concat(thisPageJSONTree);
       if (JSONTree.length < thisPageJSON['total_count'])
-        userLog(`    downloadRepositoryTreeFile now have combined JSONTree of ${JSONTree.length.toLocaleString()} entries`);
+        userLog(`    downloadRepositoryTreeFile ${repository} only has combined JSONTree of ${JSONTree.length.toLocaleString()} entries`);
       if (!thisPageJSON['truncated']) break; // Does nothing coz even the last page of data has 'truncated' set to true
       if (JSONTree.length === thisPageJSON['total_count']) break; // We've got them all!
     } else {

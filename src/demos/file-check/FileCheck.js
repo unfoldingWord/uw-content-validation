@@ -94,8 +94,8 @@ function FileCheck(props) {
         const repoPreloadList = []; // The repo being checked doesn't need to be added here as done separately below
         if (!checkingOptions.disableAllLinkFetchingFlag) {
           if (repoCodeGuess === 'TN') {
-            repoPreloadList.push('TA');
-            repoPreloadList.push('TW');
+            repoPreloadList.push(checkingOptions.disableLinkedTWArticlesCheckFlag ? 'TWtree' : 'TW');
+            repoPreloadList.push(checkingOptions.disableLinkedTAArticlesCheckFlag ? 'TAtree' : 'TA');
           }
           // TODO: There's sure to be others we need to put in here
         }

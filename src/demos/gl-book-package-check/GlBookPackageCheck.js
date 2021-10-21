@@ -8,7 +8,7 @@ import { checkBookPackage } from '../book-package-check/checkBookPackage';
 import { userLog, logicAssert } from '../../core/utilities';
 
 
-// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.20';
+// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.21';
 
 
 function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
@@ -105,14 +105,14 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
                 repoPreloadList.unshift(origLangRepo);
             }
             if (!checkingOptions.disableAllLinkFetchingFlag) { // Both Bible books and OBS refer to TW and TA
-                repoPreloadList.push('TW');
-                repoPreloadList.push('TA');
+                repoPreloadList.push(checkingOptions.disableLinkedTWArticlesCheckFlag ? 'TWtree' : 'TW');
+                repoPreloadList.push(checkingOptions.disableLinkedTAArticlesCheckFlag ? 'TAtree' : 'TA');
                 if (!checkingOptions.disableLexiconLinkFetchingFlag) {
                     // TODO: What if it's OBS (whichTestament === 'none' ???)
                     // const lexiconRepo = whichTestament === 'old' ? 'UHAL' : 'UGL';
                     // repoPreloadList.push(whichTestament === 'old' ? 'UHAL' : 'UGL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
-                    repoPreloadList.push('UHAL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
-                    repoPreloadList.push('UGL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
+                    repoPreloadList.push(checkingOptions.disableLinkedLexiconEntriesCheckFlag ? 'UHALtree' : 'UHAL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
+                    repoPreloadList.push(checkingOptions.disableLinkedLexiconEntriesCheckFlag ? 'UGLtree' : 'UGL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
                 }
             }
             // debugLog(`GlBookPackageCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)

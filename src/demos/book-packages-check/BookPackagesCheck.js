@@ -9,7 +9,7 @@ import { RenderCheckedFilesList, RenderSuccessesErrorsWarnings, RenderSuccessesS
 import { userLog, debugLog, logicAssert } from '../../core/utilities';
 
 
-// const BPS_VALIDATOR_VERSION_STRING = '0.2.17';
+// const BPS_VALIDATOR_VERSION_STRING = '0.2.18';
 
 
 /**
@@ -105,13 +105,11 @@ function BookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
       if (haveNT) repoPreloadList.unshift('UGNT'); // These go on the front, so do in reverse order
       if (haveOT) repoPreloadList.unshift('UHB');
       if (!checkingOptions.disableAllLinkFetchingFlag) {
-        repoPreloadList.push('TW');
-        repoPreloadList.push('TA');
+        repoPreloadList.push(checkingOptions.disableLinkedTWArticlesCheckFlag ? 'TWtree' : 'TW');
+        repoPreloadList.push(checkingOptions.disableLinkedTAArticlesCheckFlag ? 'TAtree' : 'TA');
         if (!checkingOptions.disableLexiconLinkFetchingFlag) {
-          // if (haveOT) repoPreloadList.push('UHAL'); // UHB, ULT, UST, TW all have lexicon links
-          // if (haveNT) repoPreloadList.push('UGL'); // UGNT, ULT, UST, TW all have lexicon links
-          repoPreloadList.push('UHAL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
-          repoPreloadList.push('UGL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
+          repoPreloadList.push(checkingOptions.disableLinkedLexiconEntriesCheckFlag ? 'UHALtree' : 'UHAL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
+          repoPreloadList.push(checkingOptions.disableLinkedLexiconEntriesCheckFlag ? 'UGLtree' : 'UGL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
         }
       }
       if (bookIDList.includes('OBS')) {

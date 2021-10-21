@@ -9,7 +9,7 @@ import { checkBookPackage } from './checkBookPackage';
 import { userLog, debugLog, parameterAssert, logicAssert } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.5.18';
+// const BP_VALIDATOR_VERSION_STRING = '0.5.19';
 
 
 function BookPackageCheck(/*username, languageCode, bookID,*/ props) {

@@ -5,7 +5,7 @@ import { OPEN_CLOSE_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, BAD_CHARACTER
 import { debugLog, parameterAssert } from './utilities';
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.4.0';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.4.1';
 
 
 /**
@@ -284,11 +284,11 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
         let doubledPunctuationCheckList = '({}<>⟨⟩:،、‒–—―…!‹›«»‐?‘’“”\';⁄·&@•^†‡°¡¿※№÷×ºª%‰+−=‱¶′″‴§|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥';
         if (!allowedLinks) doubledPunctuationCheckList += '/[].)'; // Double square brackets can be part of markdown links, double periods can be part of a path
         if (!fieldType.startsWith('markdown')) doubledPunctuationCheckList += '_*#~'; // There are used for markdown formatting
-        if (!fieldType.startsWith('USFM') || fieldText.indexOf('x-morph') < 0) doubledPunctuationCheckList += ',"'; // Allowed in original language morphology fields
+        if (fieldType.indexOf('USFM') === -1 || fieldText.indexOf('x-morph') === -1) doubledPunctuationCheckList += ',"'; // Allowed in original language morphology fields
         if (!fieldType.startsWith('YAML') || !fieldText.startsWith('--')) // NOTE: First hyphen may have been removed in preprocessing
             doubledPunctuationCheckList += '-';
         for (const punctChar of doubledPunctuationCheckList) {
-            if ((characterIndex = fieldText.indexOf(punctChar + punctChar)) >= 0) {
+            if ((characterIndex = fieldText.indexOf(punctChar + punctChar)) !== -1) {
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                 const notice = { priority: 177, message: `Unexpected doubled ${punctChar} characters`, excerpt, location: ourLocation };
                 if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.slice(0, 6) !== 'from \\')
@@ -304,7 +304,7 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
         let afterSpaceCheckList = ')}>⟩:,،、‒–—―!.›»‐-?’”;/⁄·@•^†‡°¡¿※#№÷×ºª%‰‱¶′″‴§‖¦℗®℠™¤₳฿₵¢₡₢₫₯֏₠ƒ₣₲₴₭₺₾ℳ₥₦₧₰£៛₽₹₨₪৳₸₮₩¥';
         // if (['en','hbo','el-x-koine'].includes(languageCode) ) afterSpaceCheckList += '’'; // These languages don't have words starting with apostrophe/right-single-quotation-mark
         if (!fieldType.startsWith('markdown')) afterSpaceCheckList += '_*~'; // These are used for markdown formatting
-        if (!fieldType.startsWith('USFM') || (fieldText.indexOf('x-lemma') < 0 && fieldText.indexOf('x-tw') < 0)) afterSpaceCheckList += '|';
+        if (fieldType.indexOf('USFM') === -1 || (fieldText.indexOf('x-lemma') ===-1 && fieldText.indexOf('x-tw') ===-1)) afterSpaceCheckList += '|';
         if (!fieldType.startsWith('YAML')) afterSpaceCheckList += '\'"'; // These are used for YAML strings, e.g., version: '0.15'
         // if (fieldName === 'OrigQuote' || fieldName === 'Quote') afterSpaceCheckList += '…'; // NOT NEEDED -- this is specifically checked elsewhere
         for (const punctCharBeingChecked of afterSpaceCheckList) {
@@ -331,7 +331,7 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                 addNoticePartial({ priority: 195, message: `Unexpected ${punctCharBeingChecked} character at start of line`, characterIndex, excerpt, location: ourLocation });
             }
         }
-        if (fieldType.startsWith('USFM'))
+        if (fieldType.indexOf('USFM') !== -1)
             suggestion = suggestion.replace(/| /g, '|');
     }
 
@@ -341,7 +341,7 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
         //  Removed ©
         let beforeSpaceCheckList = '({<⟨،、‒–—―‹«‐‘“/⁄·@\\•^†‡°¡¿※№×ºª‰‱¶′″‴§|‖¦℗℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥';
         if (!fieldType.startsWith('markdown')) beforeSpaceCheckList += '_~'; // These are used for markdown formatting
-        if (!fieldType.startsWith('markdown') && !fieldType.startsWith('USFM')) beforeSpaceCheckList += '*'; // There are used for markdown formatting and USFM closing markers
+        if (!fieldType.startsWith('markdown') && fieldType.indexOf('USFM') === -1) beforeSpaceCheckList += '*'; // There are used for markdown formatting and USFM closing markers
         if (!fieldType.startsWith('YAML')) beforeSpaceCheckList += '[';
         for (const punctCharBeingChecked of beforeSpaceCheckList) {
             if ((characterIndex = fieldText.indexOf(punctCharBeingChecked + ' ')) !== -1) {
@@ -361,7 +361,7 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
         //  Removed ' (can be normal, e.g., Jesus' cloak)
         let beforeEOLCheckList = '([{<⟨،、‒–—―‹«‐‘“/⁄·@©\\•^†‡°¡¿※№×ºª‰‱¶′″‴§|‖¦℗℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥';
         if (!fieldType.startsWith('markdown')) beforeEOLCheckList += '_~'; // These are used for markdown formatting
-        if (!fieldType.startsWith('markdown') && !fieldType.startsWith('USFM')) beforeEOLCheckList += '*'; // There are used for markdown formatting and USFM closing markers
+        if (!fieldType.startsWith('markdown') && fieldType.indexOf('USFM') === -1) beforeEOLCheckList += '*'; // There are used for markdown formatting and USFM closing markers
         for (const punctChar of beforeEOLCheckList) {
             if (punctChar !== '—' && fieldText[fieldText.length - 1] === punctChar) {
                 characterIndex = fieldText.length - 1;
@@ -477,8 +477,11 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
             const leftChar = punctSet[0], rightChar = punctSet[1];
             // if (fieldType === 'markdown' && leftChar === '<') continue; // markdown uses this for block quote
             // TODO: The following 'continue' might not be doing the 2nd lot of checks
-            if ((fieldType.startsWith('USFM') || fieldName.startsWith('from \\') || (fieldType === 'markdown' && fieldName === ''))
-                && '([{“‘«'.indexOf(leftChar) >= 0) continue; // Start/end can be on different lines
+            if ((fieldType.indexOf('USFM') !== -1 // e.g., "raw USFM line"
+                || fieldName.startsWith('from \\')
+                || (fieldType === 'markdown' && fieldName === ''))
+                && '([{“‘«‹'.indexOf(leftChar) !== -1)
+                continue; // Start/end can be on different lines for these cases
             if (!fieldType.startsWith('markdown') || leftChar !== '<') { // > is a markdown block marker and also used for HTML, e.g., <br>
                 const leftCount = countOccurrencesInString(fieldText, leftChar),
                     rightCount = countOccurrencesInString(fieldText, rightChar);
@@ -486,6 +489,7 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                     && (rightChar !== '’' || leftCount > rightCount)) { // Closing single quote is also used as apostrophe in English
                     // NOTE: These are higher priority than similar checks in a whole file which is less specific
                     const thisPriority = leftChar === '“' ? 163 : 563;
+                    // debugLog(`checkTextField has ${thisPriority} notice for rC=${repoCode} fN=${fieldName} fT=${fieldType}`);
                     if (cutoffPriorityLevel < thisPriority)
                         addNoticePartial({ priority: thisPriority, message: `Mismatched ${leftChar}${rightChar} characters`, details: `left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()}`, location: ourLocation });
                 }
