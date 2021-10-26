@@ -5,7 +5,7 @@ import { OPEN_CLOSE_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, BAD_CHARACTER
 import { debugLog, parameterAssert } from './utilities';
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.4.1';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.4.2';
 
 
 /**
@@ -408,7 +408,7 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                 if (nextChars.startsWith('<sup>') && fieldType === 'markdown' && repoCode === 'TA')
                     continue;
                 if ((fieldName.startsWith('README') || fieldName.endsWith('.md line') || fieldName.endsWith('Note line') || fieldName === 'Question line' || fieldName === 'Response line')
-                    && (nextChar === '*' || badTwoChars === '![' || nextTwoChars === '~~')) // allow markdown formatting
+                    && (nextChar === '*' ||nextChar === '_' || badTwoChars === '![' || nextTwoChars === '~~')) // allow markdown formatting
                     continue;
                 if (badChars.startsWith('.md') || badChars.startsWith('.usfm') || badChars.startsWith('.tsv') || badChars.startsWith('.yaml')
                     || badChars.startsWith('.org') || badChars.startsWith('.com') || badChars.startsWith('.bible')

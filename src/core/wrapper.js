@@ -78,7 +78,7 @@ export async function checkTW_markdownArticle(username, languageCode, articleFil
 }
 
 // This format is scheduled to be deprecated
-export async function checkTN_TSV9Table(username, languageCode, bookID, tableText, checkingOptions) {
+export async function checkDeprecatedTN_TSV9Table(username, languageCode, bookID, tableText, checkingOptions) {
   // Note: the filename and givenLocation parameters are left blank
   let checkResults = await internalCheckTN_TSV9Table(username, languageCode, 'TN', bookID, '', tableText, '', { ...checkingOptions, suppressNoticeDisablingFlag: false });
   if (!checkingOptions?.suppressNoticeDisablingFlag) {

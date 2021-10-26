@@ -8,7 +8,7 @@ import { cachedGetFile } from './getApi';
 import { functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt, aboutToOverwrite } from './utilities';
 
 
-// const OL_QUOTE_VALIDATOR_VERSION_STRING = '0.10.9';
+// const OL_QUOTE_VALIDATOR_VERSION_STRING = '0.10.10';
 
 
 /**
@@ -154,7 +154,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(username, language
                     if (line.indexOf('[OBS Image]') > 0) // This is the next frame
                         break;
                     else if (line[0] === '_') // e.g., _A Bible story from..._
-                        verseText += ` ${line.replace(/_/, '')}`; // NOTE: remove underlines (markdown format codes)
+                        verseText += ` ${line.replace(/_/g, '')}`; // NOTE: remove underlines (markdown format codes)
                     else
                         verseText += line; // NOTE: works coz all text on one line, otherwise would need to insert spaces here
             }
