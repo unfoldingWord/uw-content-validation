@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`checkTN_TSV7Table() -  TIT should fail on unsupported language 1`] = `
+Object {
+  "checkedFilenames": undefined,
+  "checkedRepoNames": undefined,
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "3",
+      "bookID": "TIT",
+      "characterIndex": 60,
+      "excerpt": "…e: [[rc://*/ta/man/t…",
+      "fieldName": "Note",
+      "filename": "",
+      "lineNumber": 3,
+      "location": "",
+      "message": "tC cannot yet process '*' language code",
+      "priority": 950,
+      "repoCode": "TN",
+      "rowID": "xy18",
+    },
+    Object {
+      "bookID": "TIT",
+      "filename": "",
+      "location": "",
+      "message": "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked",
+      "priority": 20,
+      "repoCode": "TN",
+    },
+  ],
+  "successList": Array [
+    "Checked TSV header ",
+    "Checked all 3 data lines",
+    "checkNotesTSV7Table v0.4.2 finished with 2 notices",
+  ],
+}
+`;
