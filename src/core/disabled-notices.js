@@ -15,7 +15,7 @@ import { debugLog, userLog, functionLog } from './utilities';
 */
 
 
-// const DISABLED_NOTICES_VERSION_STRING = '0.3.9';
+// const DISABLED_NOTICES_VERSION_STRING = '1.0.0';
 
 
 const disabledNotices = [
@@ -51,7 +51,7 @@ const disabledNotices = [
   { repoCode: 'TA', filename: 'translate/translate-textvariants/01.md', message: "Unexpected space after [ character", }, // 192
   { repoCode: 'TA', filename: 'translate/translate-formatsignals/01.md', message: "Unexpected space after ( character", }, // 192
 
-  { repoCode: 'TN', excerpt: ' brackets [ ] to ind', message: "Unexpected space after [ character", }, // 192
+  { repoCode: 'TN', excerpt: 'brackets [ ] ', message: "Unexpected space after [ character", }, // 192 (x2)
 
   // This file explains how to use markdown headings
   { repoCode: 'TA', filename: 'translate/file-formats/01.md', message: "Unexpected # character at start of line", }, // 195
@@ -90,7 +90,12 @@ export function isDisabledNotice(givenNotice) {
     for (const propertyName in disabledNotice)
       // if ((propertyName !== 'repoCode' || givenNotice.repoCode !== undefined) // Some individual checks don’t set repoCode
       // && (givenNotice[propertyName] !== disabledNotice[propertyName])) {
-      if (givenNotice[propertyName] !== disabledNotice[propertyName]) {
+      if (propertyName === 'excerpt') {
+        if (propertyName in givenNotice && givenNotice[propertyName].indexOf(disabledNotice[propertyName]) === -1) {
+          matchedAllSpecifiedFields = false;
+          break;
+        }
+      } else if (givenNotice[propertyName] !== disabledNotice[propertyName]) {
         matchedAllSpecifiedFields = false;
         break;
       }
