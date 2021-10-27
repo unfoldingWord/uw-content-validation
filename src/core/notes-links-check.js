@@ -287,6 +287,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         // debugLog(`  checkNotesLinksToOutside TW_INTERNAL_REGEX regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
         twLinkCount1 += 1;
         logicAssert(regexMatchObject.length === 4, `TW_INTERNAL_REGEX expected 4 fields (not ${regexMatchObject.length})`);
+        logicAssert(repoCode === 'TW', `Shouldn't this only be for TW repos, not for ${repoCode}?`);
         // eslint-disable-next-line no-unused-vars
         let [totalLink, _displayName, category, article] = regexMatchObject;
         processedLinkList.push(totalLink); // Save the full link
@@ -301,7 +302,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
             // if (regexMatchObject[3] === 'brother') debugLog(`Need to check ${fieldName} TW link ${regexMatchObject} against ${twRepoName}`);
             const twPathParameters = { username: twRepoUsername, repository: twRepoName, path: filepath, branch: twRepoBranch };
             if (!await alreadyChecked(twPathParameters)) {
-                if (checkingOptions?.disableLinkedTWArticlesCheckFlag === true) {
+                if (checkingOptions?.disableLinkedTWArticlesCheckFlag === true && repoCode !== 'TW') {
                     // New code
                     // We don't need/want to check the actual article, so we don't need to fetch it
                     // However, we still want to know if the given link actually links to an article

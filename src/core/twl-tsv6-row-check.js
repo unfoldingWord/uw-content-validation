@@ -9,7 +9,7 @@ import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
 import { parameterAssert, aboutToOverwrite } from './utilities';
 
 
-// const TWL_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.1.11';
+// const TWL_TABLE_ROW_VALIDATOR_VERSION_STRING = '1.0.0';
 
 const NUM_EXPECTED_TWL_TSV_FIELDS = 6; // so expects 5 tabs per line
 const EXPECTED_TWL_HEADING_LINE = 'Reference\tID\tTags\tOrigWords\tOccurrence\tTWLink';
@@ -381,7 +381,7 @@ export async function checkTWL_TSV6DataRow(username, languageCode, repoCode, lin
         }
         else // TODO: Find more details about when these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             if (V !== 'intro' && occurrence !== '0')
-                addNoticePartial({ priority: 919, message: "Missing OrigWords field", fieldName: 'OrigWords', rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 919, message: "Missing OrigWords field", details: `should Occurrence be zero instead of ${occurrence}`, fieldName: 'OrigWords', rowID, location: ourRowLocation });
 
         if (occurrence.length) { // This should usually be a digit
             if ((characterIndex = occurrence.indexOf('\\n')) !== -1) {

@@ -4,20 +4,23 @@ import { OPEN_CLOSE_PUNCTUATION_PAIRS, PAIRED_PUNCTUATION_OPENERS, PAIRED_PUNCTU
 import { checkTextField } from './field-text-check';
 import { removeDisabledNotices } from './disabled-notices';
 // eslint-disable-next-line no-unused-vars
-import { parameterAssert } from './utilities';
+import { parameterAssert, debugLog } from './utilities';
 
 
-const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.5.0';
+const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.5.1';
 
 
 /**
  *
- * @param {string} textType 'markdown', 'USFM', 'YAML', 'text', or 'raw'
+ * @param {string} username -- e.g., 'unfoldingWord'
+ * @param {string} languageCode -- e.g., 'en' or 'hbo'
  * @param {string} repoCode -- e.g., 'TN' or 'TQ', etc.
+ * @param {string} textType 'markdown', 'USFM', 'YAML', 'text', or 'raw'
  * @param {string} textName
  * @param {string} plainText -- text to be checked
  * @param {string} givenLocation
  * @param {Object} checkingOptions
+ * @returns {Object} probably containing 'noticeList' and 'successList'
  */
 export function checkPlainText(username, languageCode, repoCode, textType, textName, plainText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire text, i.e., all lines.
@@ -179,9 +182,11 @@ export function checkPlainText(username, languageCode, repoCode, textType, textN
     // if (regexResult) {
     // }
     if (cutoffPriorityLevel < 237 && (characterIndex = plainText.indexOf('"')) !== -1 // file contains straight double-quote(s)
-        && plainText.indexOf('="') === -1) { // e.g., in a field like word="abc"
+        && plainText.indexOf('="') === -1 // e.g., in a field like word="abc"
+        && textType !== 'YAML') {
         const iy = characterIndex + excerptHalfLength; // Want excerpt to focus more on what follows
-        const excerpt = (iy > excerptHalfLength ? '…' : '') + plainText.substring(iy - excerptHalfLength, iy + excerptHalfLengthPlus).replace(/ /g, '␣') + (iy + excerptHalfLengthPlus < plainText.length ? '…' : '')
+        const excerpt = (iy > excerptHalfLength ? '…' : '') + plainText.substring(iy - excerptHalfLength, iy + excerptHalfLengthPlus) + (iy + excerptHalfLengthPlus < plainText.length ? '…' : '')
+        // debugLog(`checkPlainText 237 with '${excerpt}' from un=${username} lC=${languageCode} rC=${repoCode} tT=${textType} tN=${textName}`);
         addNotice({ priority: languageCode === 'en' ? 237 : 37, message: "File contains straight double-quote(s)", characterIndex, excerpt, location: ourLocation });
     }
 

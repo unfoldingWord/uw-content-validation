@@ -590,7 +590,10 @@ async function cachedGetFileUsingPartialURL({ uri, params }) {
   // functionLog(`cachedGetFileUsingPartialURL(${uri}, ${JSON.stringify(params)})…`);
   // debugLog(`  get querying: ${baseURL+uri}`);
   const response = await Door43Api.get(DOOR43_BASE_URL + uri, { params });
-  if (response.request.fromCache !== true) userLog(`  cachedGetFileUsingPartialURL downloaded Door43 ${uri}`);
+  if (response.request.fromCache !== true) {
+    userLog(`  cachedGetFileUsingPartialURL downloaded Door43 ${uri}`);
+    // let stop = 1 / undefined;
+  }
   // debugLog(`  cachedGetFileUsingPartialURL returning: ${JSON.stringify(response.data)}`);
   return response.data;
 };

@@ -8,7 +8,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert } from './utilities';
 
 
-const YAML_VALIDATOR_VERSION_STRING = '0.5.0';
+const YAML_VALIDATOR_VERSION_STRING = '1.0.0';
 
 
 /**
@@ -60,8 +60,8 @@ export function checkYAMLText(username, languageCode, repoCode, textName, YAMLTe
     }
     // else
     // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
-    // const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
-    // const excerptHalfLengthPlus = Math.floor((excerptLength+1) / 2); // rounded up
+    const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
     // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
     const cytResult = { successList: [], noticeList: [] };
@@ -125,6 +125,18 @@ export function checkYAMLText(username, languageCode, repoCode, textName, YAMLTe
     function checkYAMLLineContents(lineNumber, lineText, lineLocation) {
 
         // functionLog(`checkYAMLLineContents for '${lineNumber} ${lineText}' at${lineLocation}`);
+        let characterIndex = lineText.indexOf(': “');
+        if (characterIndex === -1) characterIndex = lineText.indexOf(':“');
+        if (characterIndex === -1) {
+            characterIndex = characterIndex = lineText.indexOf('”');
+            if (characterIndex !== lineText.length - 1) // Not at end of line
+                characterIndex = -1; // so ignore it
+        }
+        if (characterIndex !== -1) {
+            const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + lineText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < lineText.length ? '…' : '');
+            addNotice({ priority: 898, message: "Unexpected typographical double-quote character", characterIndex, excerpt, location: ourLocation });
+        }
+
         let thisText = lineText
 
         // Remove leading spaces

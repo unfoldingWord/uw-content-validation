@@ -10,7 +10,7 @@ import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
 import { parameterAssert, aboutToOverwrite } from './utilities';
 
 
-// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.7.3';
+// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '1.0.0';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -438,8 +438,9 @@ export async function checkTN_TSV9DataRow(username, languageCode, repoCode, line
                     addNoticePartial({ priority: 750, message: "Missing occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, location: ourRowLocation });
             }
         } else // TODO: Find more details about when these fields are really compulsory (and when they're not, e.g., for 'intro') ???
-            if (V !== 'intro' && occurrence !== '0')
-                addNoticePartial({ priority: 919, message: "Missing OrigQuote field", fieldName: 'OrigQuote', rowID, location: ourRowLocation });
+            if (V !== 'intro' && occurrence !== '0') {
+                addNoticePartial({ priority: 919, message: "Missing OrigQuote field", details: `should Occurrence be zero instead of ${occurrence} with SR='${supportReference}'`, fieldName: 'OrigQuote', rowID, location: ourRowLocation });
+            }
 
         if (occurrence.length) { // This should usually be a digit
             if (occurrence === '0') { // zero means that it doesn’t occur
@@ -494,7 +495,9 @@ export async function checkTN_TSV9DataRow(username, languageCode, repoCode, line
                 while ((regexMatchObject = TA_REGEX.exec(adjustedOccurrenceNote))) {
                     // debugLog("Got TA Regex in OccurrenceNote", JSON.stringify(regexMatchObject));
                     linksList.push(regexMatchObject[1])
-                    if (regexMatchObject[1] === supportReference) foundSR = true;
+                    if (regexMatchObject[1] === supportReference
+                        || `checking/${regexMatchObject[1]}` === supportReference) // for checking/headings
+                        foundSR = true;
                 }
                 if (linksList.length && V !== 'intro') {
                     let details = supportReference ? `SR='${supportReference}'` : "empty SR field"
