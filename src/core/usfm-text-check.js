@@ -14,7 +14,7 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.10.16';
+// const USFM_VALIDATOR_VERSION_STRING = '1.0.0';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for STs
@@ -1176,6 +1176,13 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
             // originalUSFM = originalUSFM.replace(/\\k-e\\\*/g, ''); // Remove \k-e self-closed milestones
             // originalUSFM = originalUSFM.replace(/\\k-s.+?\\\*/g, ''); // Remove \k-s self-closed milestones
 
+            const V1 = V.split('-')[0]; // Usually identical to V
+            let V2, intV2;
+            if (V1 !== V) {
+                V2 = V.split('-')[1];
+                intV2 = Number(V2);
+                // debugLog(`getOriginalWordLists got verse range ${V1} and ${V2} (${intV2})`)
+            }
 
             // Now find the desired C:V
             let foundChapter = false, foundVerse = false;
@@ -1186,13 +1193,20 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
                     foundChapter = true;
                     continue;
                 }
-                if (foundChapter && !foundVerse && bookLine.startsWith(`\\v ${V}`)) {
+                if (foundChapter && !foundVerse && bookLine.startsWith(`\\v ${V1}`)) {
                     foundVerse = true;
-                    bookLine = bookLine.slice(3 + V.length); // Delete verse number so below bit doesn’t fail
+                    bookLine = bookLine.slice(3 + V1.length); // Delete verse number so below bit doesn’t fail
                 }
                 if (foundVerse) {
-                    if (bookLine.startsWith('\\v ') || bookLine.startsWith('\\c '))
-                        break; // Don’t go into the next verse or chapter
+                    if (bookLine.startsWith('\\c ')) break; // Don't go into the next chapter
+                    if (bookLine.startsWith('\\v '))
+                        if (!V2) // no range requested
+                            break; // Don’t go into the next verse or chapter
+                        else { // there is a range requested
+                            const intV = Number(bookLine.slice(3));
+                            // debugLog(`getOriginalWordLists got verse number ${intV} for range ${V1} and ${V2} (${intV2})`)
+                            if (intV > intV2) break; // we're past the bit we want
+                        }
                     if (bookLine.indexOf('\\w ') !== -1 || bookLine.indexOf('\\+w ') !== -1)
                         wLinesVerseText += bookLine;
                 }
