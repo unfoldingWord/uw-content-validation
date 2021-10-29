@@ -377,7 +377,7 @@ function RenderFileDetails({ givenEntry }) {
                     if (adjustedRepoName.endsWith('_obs')) folder = 'content/';
                     else if (adjustedRepoName.endsWith('_tw') && !givenEntry.filename.startsWith('bible/')) {
                         folder = 'bible/';
-                        dataAssert(givenEntry.filename.indexOf('/') === 1, `RenderFileDetails expected TW filename '${givenEntry.filename}' to contain subfolder`); // filename actually contains the subfolder
+                        dataAssert(givenEntry.filename.split('/').length === 2, `RenderFileDetails expected TW filename '${givenEntry.filename}' to contain subfolder`); // filename actually contains the subfolder
                     }
                 }
                 fileLink = `https://git.door43.org/${givenEntry.username}/${adjustedRepoName}/blame/branch/${givenEntry.branch}/${folder}${givenEntry.filename}`;

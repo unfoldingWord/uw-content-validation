@@ -10,7 +10,7 @@ import { functionLog, debugLog, userLog, parameterAssert, logicAssert } from './
 import { dataAssert } from '.';
 
 
-// const GETAPI_VERSION_STRING = '0.11.4';
+// const GETAPI_VERSION_STRING = '1.0.0';
 
 const MAX_INDIVIDUAL_FILES_TO_DOWNLOAD = 5; // More than this and it downloads the zipfile for the entire repo
 
@@ -244,20 +244,13 @@ export async function isFilepathInRepoTree({ username, repository, path, branch 
   //parameterAssert(typeof branch === 'string' && branch.length, `isFilepathInRepoTree: branch parameter should be a non-empty string not ${typeof branch}: ${branch}`);
 
   let treeJSON = await getTreeFromStore(username, repository, branch);
-  if (!treeJSON)
-    treeJSON = await cachedFetchFileFromServerWithBranch({ username, repository, path, branch });
-
+  if (treeJSON)
     return treeJSON.includes(path);
-    /*
-  // Loop through the array to see if the one we want exists
-  for (const treeEntry of treeJSON) {
-    // debugLog(`treeEntry=${JSON.stringify(treeEntry)}`); // Keys are path, mode, type, size, sha, url
-    // if (treeEntry.path === path)// Yup, it exists (if we saved the entire tree object)
-    if (treeEntry === path) // Yup, it exists (if we only saved the pathnames in the array)
-      return true;
-  }
-  return false;
-  */
+
+  debugLog(`isFilepathInRepoTree: why didn't we have the tree for ${username} ${repository} ${path} ${branch}?`);
+  const fileContents = await cachedFetchFileFromServerWithBranch({ username, repository, path, branch });
+  // debugLog(`isFilepathInRepoTree got fileContents=(${fileContents.length}) ${fileContents}`);
+  return fileContents?.length > 10;
 }
 
 

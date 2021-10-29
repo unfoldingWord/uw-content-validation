@@ -5,7 +5,7 @@ import { OPEN_CLOSE_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, BAD_CHARACTER
 import { debugLog, parameterAssert } from './utilities';
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.4.2';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '1.0.0';
 
 
 /**
@@ -304,7 +304,7 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
         let afterSpaceCheckList = ')}>⟩:,،、‒–—―!.›»‐-?’”;/⁄·@•^†‡°¡¿※#№÷×ºª%‰‱¶′″‴§‖¦℗®℠™¤₳฿₵¢₡₢₫₯֏₠ƒ₣₲₴₭₺₾ℳ₥₦₧₰£៛₽₹₨₪৳₸₮₩¥';
         // if (['en','hbo','el-x-koine'].includes(languageCode) ) afterSpaceCheckList += '’'; // These languages don't have words starting with apostrophe/right-single-quotation-mark
         if (!fieldType.startsWith('markdown')) afterSpaceCheckList += '_*~'; // These are used for markdown formatting
-        if (fieldType.indexOf('USFM') === -1 || (fieldText.indexOf('x-lemma') ===-1 && fieldText.indexOf('x-tw') ===-1)) afterSpaceCheckList += '|';
+        if (fieldType.indexOf('USFM') === -1 || (fieldText.indexOf('x-lemma') === -1 && fieldText.indexOf('x-tw') === -1)) afterSpaceCheckList += '|';
         if (!fieldType.startsWith('YAML')) afterSpaceCheckList += '\'"'; // These are used for YAML strings, e.g., version: '0.15'
         // if (fieldName === 'OrigQuote' || fieldName === 'Quote') afterSpaceCheckList += '…'; // NOT NEEDED -- this is specifically checked elsewhere
         for (const punctCharBeingChecked of afterSpaceCheckList) {
@@ -381,7 +381,7 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                 addNoticePartial({ priority: 849, message: `Unexpected '${badCharCombination}' character combination`, characterIndex, excerpt, location: ourLocation });
             }
-    if (cutoffPriorityLevel < 819)
+    if (cutoffPriorityLevel < 329)
         // Check for bad combinations of characters with regex
         for (const [details, badCharCombinationRegex] of BAD_CHARACTER_REGEXES)
             if ((characterIndex = fieldText.search(badCharCombinationRegex)) >= 0) {
@@ -408,7 +408,7 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                 if (nextChars.startsWith('<sup>') && fieldType === 'markdown' && repoCode === 'TA')
                     continue;
                 if ((fieldName.startsWith('README') || fieldName.endsWith('.md line') || fieldName.endsWith('Note line') || fieldName === 'Question line' || fieldName === 'Response line')
-                    && (nextChar === '*' ||nextChar === '_' || badTwoChars === '![' || nextTwoChars === '~~')) // allow markdown formatting
+                    && (nextChar === '*' || nextChar === '_' || badTwoChars === '![' || nextTwoChars === '~~')) // allow markdown formatting
                     continue;
                 if (badChars.startsWith('.md') || badChars.startsWith('.usfm') || badChars.startsWith('.tsv') || badChars.startsWith('.yaml')
                     || badChars.startsWith('.org') || badChars.startsWith('.com') || badChars.startsWith('.bible')
@@ -432,7 +432,9 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                     continue;
                 if (badChar === '?' && fieldText.indexOf('http') !== -1) // ? can be part of a URL
                     continue;
-                if (['\\w', '\\zaln-s', '\\v', '\\p', '\\q', '\\q1', '\\SPECIAL', '\\NONE', '\\f'].indexOf(fieldName) !== -1 && (badChar === ',' || badChar === ':')) // suppress x-morph formatting false alarms
+                // if (['\\w', '\\zaln-s', '\\v', '\\p', '\\pi', '\\q', '\\q1', '\\SPECIAL', '\\NONE', '\\f'].indexOf(fieldName) !== -1 && (badChar === ',' || badChar === ':')) // suppress x-morph formatting false alarms
+                if ((badChar === ',' || badChar === ':')
+                    && fieldText.indexOf('x-morph') !== -1) // suppress x-morph formatting false alarms
                     continue;
                 // debugLog(`checkTextField 329 at the bottom with ${badChar} in '${fieldName}' preceding ${nextChars}`);
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');

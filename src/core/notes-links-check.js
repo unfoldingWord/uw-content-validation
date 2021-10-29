@@ -6,10 +6,10 @@ import { countOccurrencesInString } from './text-handling-functions'
 import { cachedGetFile, cachedGetFileUsingFullURL, checkMarkdownFileContents } from '../core';
 // eslint-disable-next-line no-unused-vars
 import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAssert, ourParseInt, aboutToOverwrite } from './utilities';
-import jQuery from 'jquery';
+import jQuery from 'jquery'; // For avoiding CORS checking
 
 
-// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '0.11.0';
+// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '1.0.0';
 
 // const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -450,8 +450,9 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
             if (!checkingOptions?.disableAllLinkFetchingFlag) {
                 // debugLog(`checkNotesLinksToOutside TA_RELATIVE1_DISPLAY_LINK_REGEX need to check ${filepath} against ${taRepoName}`);
                 const taPathParameters = { username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch };
+                // debugLog(`checkNotesLinksToOutside TA_RELATIVE1_DISPLAY_LINK_REGEX need to check taPathParameters=${JSON.stringify(taPathParameters)})`);
                 if (!await alreadyChecked(taPathParameters)) {
-                    if (checkingOptions?.disableLinkedTAArticlesCheckFlag === true) {
+                    if (repoCode !== 'TA' && checkingOptions?.disableLinkedTAArticlesCheckFlag === true) {
                         // New code
                         // We don't need/want to check the actual article, so we don't need to fetch it
                         // However, we still want to know if the given link actually links to an article
@@ -459,7 +460,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
                         if (!await isFilepathInRepoTree(taPathParameters))
                             addNoticePartial({ priority: 886, message: "Unable to find linked TA article", details: `${taRepoUsername} ${taRepoName} ${taRepoBranch} ${filepath}`, excerpt: totalLink, location: ourLocation });
                     }
-                    else {
+                    else { // hopefully all the TA articles were preloaded
                         let taFileContent, alreadyGaveError = false;
                         try {
                             taFileContent = await getFile_(taPathParameters);
@@ -514,7 +515,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
                 // functionLog(`checkNotesLinksToOutside: need to check against ${taRepoName}`);
                 const taPathParameters = { username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch };
                 if (!await alreadyChecked(taPathParameters)) {
-                    if (checkingOptions?.disableLinkedTAArticlesCheckFlag === true) {
+                    if (repoCode !== 'TA' && checkingOptions?.disableLinkedTAArticlesCheckFlag === true) {
                         // New code
                         // We don't need/want to check the actual article, so we don't need to fetch it
                         // However, we still want to know if the given link actually links to an article

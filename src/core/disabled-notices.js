@@ -15,7 +15,7 @@ import { debugLog, userLog, functionLog } from './utilities';
 */
 
 
-// const DISABLED_NOTICES_VERSION_STRING = '1.0.0';
+// const DISABLED_NOTICES_VERSION_STRING = '1.0.1';
 
 
 const disabledNotices = [
@@ -90,15 +90,18 @@ export function isDisabledNotice(givenNotice) {
     for (const propertyName in disabledNotice)
       // if ((propertyName !== 'repoCode' || givenNotice.repoCode !== undefined) // Some individual checks don’t set repoCode
       // && (givenNotice[propertyName] !== disabledNotice[propertyName])) {
-      if (propertyName === 'excerpt') {
-        if (propertyName in givenNotice && givenNotice[propertyName].indexOf(disabledNotice[propertyName]) === -1) {
+      if (propertyName in givenNotice) // as well as in disabledNotice
+        if (propertyName === 'excerpt') {
+          if (givenNotice[propertyName].indexOf(disabledNotice[propertyName]) === -1) {
+            matchedAllSpecifiedFields = false;
+            break;
+          }
+        } else if (givenNotice[propertyName] !== disabledNotice[propertyName]) {
           matchedAllSpecifiedFields = false;
           break;
         }
-      } else if (givenNotice[propertyName] !== disabledNotice[propertyName]) {
-        matchedAllSpecifiedFields = false;
-        break;
-      }
+    // else // property name not in givenNotice
+    // Should we be setting matchedAllSpecifiedFields = false here ????
     if (matchedAllSpecifiedFields) {
       // debugLog(`  isDisabledNotice() returning true for ${JSON.stringify(disabledNotice)}`);
       return true;
