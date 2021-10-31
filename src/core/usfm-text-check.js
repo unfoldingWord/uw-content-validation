@@ -204,7 +204,7 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
 
      Returns a result object containing a successList and a noticeList
      */
-    // functionLog(`checkUSFMText(${languageCode}, ${repoCode}, ${bookID}, ${filename}, ${givenText.length.toLocaleString()} chars, '${givenLocation}', ${JSON.stringify(checkingOptions)})…`);
+    // functionLog(`checkUSFMText(uN=${username} lC=${languageCode} rC=${repoCode}, bkID=${bookID} fN=${filename}, ${givenText.length.toLocaleString()} chars, '${givenLocation}', ${JSON.stringify(checkingOptions)})…`);
     // const regexMatchObject = HEBREW_CANTILLATION_REGEX.exec('\\f + \\ft Q \\+w הִנֵּ֤ה|lemma="הִנֵּ֤ה" strong="H2009" x-morph="He,Tm"\\+w*\\f*');
     // console.log(`Got test cantillation regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
 
@@ -592,7 +592,9 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global list of notices
-        // debugLog(`cUSFM ourCheckTextField(${lineNumber}, ${C}:${V}, ${fieldName}, (${fieldText.length} chars), ${allowedLinks}, ${fieldLocation}, ${JSON.stringify(checkingOptions)})…`);
+        // debugLog(`cUSFM ourCheckTextField(${lineNumber} ${C}:${V} fN=${fieldName}, (${fieldText.length} chars) aL=${allowedLinks}, ${fieldLocation}, ${JSON.stringify(checkingOptions)})…`);
+        // if (fieldText.indexOf('| ') !== -1)
+        //     debugLog(`cUSFM ourCheckTextField(${lineNumber} ${C}:${V} fN=${fieldName}, '${fieldText}' aL=${allowedLinks}, ${fieldLocation}, ${JSON.stringify(checkingOptions)}) for ${repoCode}…`);
         //parameterAssert(lineNumber !== undefined, "cUSFM ourCheckTextField: 'lineNumber' parameter should be defined");
         //parameterAssert(typeof lineNumber === 'number', `cUSFM ourCheckTextField: 'lineNumber' parameter should be a number not a '${typeof lineNumber}'`);
         //parameterAssert(C !== undefined, "cUSFM ourCheckTextField: 'C' parameter should be defined");
