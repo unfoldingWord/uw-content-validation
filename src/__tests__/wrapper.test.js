@@ -53,11 +53,12 @@ describe('checkTN_TSV7Table() - ', () => {
     const username = 'unfoldingWord';
     const languageCode = 'en';
     const bookID = 'TIT';
+    const filename = 'testFile.tsv';
     const tableText = `Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tNote
 1:3\tb22h\t\t\tκαιροῖς ἰδίοις\t1\t“at the proper time”
 1:3\txy18\t\trc://*/ta/man/translate/figs-exclusive\tἡμῶν\t1\tThis includes Paul, Titus, and all Christians. (See: [[rc://*/ta/man/translate/figs-exclusive]])
 `;
-    const rawResults = await checkTN_TSV7Table(username, languageCode, bookID, tableText, optionalCheckingOptions);
+    const rawResults = await checkTN_TSV7Table(username, languageCode, bookID, filename, tableText, optionalCheckingOptions);
     // console.log(`Test took ${rawResults.elapsedSeconds} seconds`);
     expect(rawResults.noticeList.length).toBeGreaterThan(0);
     const filteredResults = {
@@ -135,6 +136,7 @@ describe('checkSN_TSV7Table() - ', () => {
     const username = 'unfoldingWord';
     const languageCode = 'en';
     const bookID = 'TIT';
+    const filename = 'testFile.tsv';
     const tableText = `Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tNote
 front:intro\tm2jl\t\t\t\t\t# Introduction to Titus\\n\\nThis is the introduction to the book of Titus
 1:intro\tc7me\t\t\t\t\t# Introduction to Titus chapter 01\\n\\nPaul begins his letter by reminding Titus who Paul is to God, and who Titus is to Paul. He then instructs Titus about the kind of man that Titus must appoint as elders. These elders are necessary for the health of the new believers because there were so many people in Crete who are teaching things that were not true about God, and turning people away from God.
@@ -142,7 +144,7 @@ front:intro\tm2jl\t\t\t\t\t# Introduction to Titus\\n\\nThis is the introduction
 1:1\txyz8\t\t\tδοῦλος\t1\tPeople who speak some modern languages think that slave is different from servant, because slaves suffer in ways that servants do not. However, the Greek word **servant** means both slave and servant. It means anyone who must obey his master. This is why Paul said he was a slave or servant of God, because he wanted to obey God in every way.
 1:1\tabc8\t\t\tἐκλεκτῶν Θεοῦ\t1\tThese people were the Christians. God chose them to know him. They did this by believing in Christ. This is why they were different from all other people. Paul became a servant and apostle of God so that they would trust in Christ and know God increasingly well.
 `;
-    const rawResults = await checkSN_TSV7Table(username, languageCode, bookID, tableText, optionalCheckingOptions);
+    const rawResults = await checkSN_TSV7Table(username, languageCode, bookID, filename, tableText, optionalCheckingOptions);
     // console.log(`Test took ${rawResults.elapsedSeconds} seconds`);
     expect(rawResults.noticeList.length).toBeGreaterThan(0);
     const filteredResults = {
@@ -166,6 +168,7 @@ describe('checkTQ_TSV7Table() - ', () => {
     const username = 'unfoldingWord';
     const languageCode = 'en';
     const bookID = 'TIT';
+    const filename = 'testFile.tsv';
     const tableText = `Reference\tID\tTags\tQuote\tOccurrence\tQuestion\tResponse
 1:2\tkowp\t\t\t\tWho were the “eyewitnesses” that Luke mentions?\tThe “eyewitnesses” were the ones who were with the apostles from the beginning of Jesus’ ministry.
 1:2\tgjx5\t\t\t\tWhat did some of the eyewitnesses do after they saw what Jesus did?\tThey wrote down an account or story of what Jesus did.
@@ -174,7 +177,7 @@ describe('checkTQ_TSV7Table() - ', () => {
 1:7\tlyss\t\t\t\tWhy did Zechariah and Elizabeth have no children?\tThey did not have children because Elizabeth was unable to bear a child. Now she and Zechariah were very old.
 1:8\tndy2\t\t\t\tWhat work was Zechariah doing before God?\tZechariah was serving as a priest.
 `;
-    const rawResults = await checkTQ_TSV7Table(username, languageCode, bookID, tableText, optionalCheckingOptions);
+    const rawResults = await checkTQ_TSV7Table(username, languageCode, bookID, filename, tableText, optionalCheckingOptions);
     // console.log(`Test took ${rawResults.elapsedSeconds} seconds`);
     expect(rawResults.noticeList.length).toBeGreaterThan(0);
     const filteredResults = {
@@ -198,13 +201,14 @@ describe('checkSQ_TSV7Table() - ', () => {
     const username = 'unfoldingWord';
     const languageCode = 'en';
     const bookID = 'TIT';
+    const filename = 'testFile.tsv';
     const tableText = `Reference\tID\tTags\tQuote\tOccurrence\tQuestion\tResponse
 front:intro\tgtn1\t\t\t\t# Titus Study Questions\\n\\nThe Apostle Paul left Titus in Crete and gave him the responsibility to teach the new believers there, and to appoint elders in the local churches. Titus was a godly man, but he was not have as much experience as Paul did in guiding the formation of the new churches. In this letter, therefore, Paul counsels Titus concerning:\\n\\n* How Titus should fulfil his task\\n* The kind of men he should appoint as elders\\n* The type of threats that existed that could damage the new believers\\n* How believers should act in their daily lifes\\n* What is the hope that the believers look forward to\\n* How believers should interact with secular authorities and those who do not believe in Jesus\\n* The precise message that we should believe and teach\\n* How to deal with division within the church\\n\\nYou can discover Paul’s teaching concerning each of these things by carefully reading each chapter of the letter. Ask yourself questions about what you read, and pray to God that he will open your eyes to see clearly.\t
 1:1\tx3em\t\tδοῦλος Θεοῦ, ἀπόστολος δὲ Ἰησοῦ Χριστοῦ\t1\tHow did Paul describe himself to Titus?\t
 1:1\tv5b9\t\tδοῦλος & ἀπόστολος\t1\tWhy do you think Paul described himself as a **servant** before he described himself as an **apostle**?\t
 1:1\tsg88\t\tδοῦλος Θεοῦ\t1\tIn what ways was Paul **a servant of God**?\t
 `;
-    const rawResults = await checkSQ_TSV7Table(username, languageCode, bookID, tableText, optionalCheckingOptions);
+    const rawResults = await checkSQ_TSV7Table(username, languageCode, bookID, filename, tableText, optionalCheckingOptions);
     // console.log(`Test took ${rawResults.elapsedSeconds} seconds`);
     expect(rawResults.noticeList.length).toBeGreaterThan(0);
     const filteredResults = {
@@ -228,6 +232,7 @@ describe('checkTWL_TSV6Table() - ', () => {
     const username = 'unfoldingWord';
     const languageCode = 'en';
     const bookID = '1JN';
+    const filename = 'testFile.tsv';
     const tableText = `Reference\tID\tTags\tOrigWords\tOccurrence\tTWLink
 1:1\te6vb\t\tχεῖρες\t1\trc://*/tw/dict/bible/other/hand
 1:1\tndps\tkeyterm\tζωῆς\t1\trc://*/tw/dict/bible/kt/life
@@ -235,7 +240,7 @@ describe('checkTWL_TSV6Table() - ', () => {
 1:2\tbtym\tkeyterm\tμαρτυροῦμεν\t1\trc://*/tw/dict/bible/kt/testimony
 1:2\tch2n\t\tἀπαγγέλλομεν\t1\trc://*/tw/dict/bible/other/declare
 `;
-    const rawResults = await checkTWL_TSV6Table(username, languageCode, bookID, tableText, optionalCheckingOptions);
+    const rawResults = await checkTWL_TSV6Table(username, languageCode, bookID, filename, tableText, optionalCheckingOptions);
     // console.log(`Test took ${rawResults.elapsedSeconds} seconds`);
     expect(rawResults.noticeList.length).toBeGreaterThan(0);
     const filteredResults = {
@@ -346,6 +351,7 @@ describe('checkDeprecatedTN_TSV9Table() - ', () => {
     const username = 'unfoldingWord';
     const languageCode = 'en';
     const bookID = 'TIT';
+    const filename = 'testFile.tsv';
     const tableText = `Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote
 TIT\tfront\tintro\tm2jl\t\t\t0\t\t# Introduction to Titus<br><br><br>## Part 1: General Introduction<br><br>### Outline of the book of Titus<br><br>1. Paul instructs Titus to appoint godly leaders. (1:1-16)<br>2. Paul instructs Titus to train people to live godly lives. (2:1-3:11)<br>3. Paul ends by sharing some of his plans and sending greetings to various believers. (3:12-15)<br><br>### Who wrote the book of Titus?<br><br>Paul wrote the book of Titus. Paul was from the city of Tarsus. He had been known as Saul in his early life. Before becoming a Christian, Paul was a Pharisee. He persecuted Christians. After he became a Christian, he traveled several times throughout the Roman Empire telling people about Jesus.<br><br>### What is the book of Titus about?<br><br>Paul wrote this letter to Titus, his fellow worker, who was leading the churches on the island of Crete. Paul instructed him about selecting church leaders. Paul also described how the believers should behave towards each other. He also encouraged them all to live in a way that pleases God.<br><br>### How should the title of this book be translated?<br><br>Translators may choose to call this book by its traditional title, “Titus.” Or they may choose a clearer title, such as “Paul’s Letter to Titus” or “A Letter to Titus.” (See: [[rc://en/ta/man/translate/translate-names]])<br><br>## Part 2: Important Religious and Cultural Concepts<br><br>### In what roles can people serve within the church?<br><br>There are some teachings in the book of Titus about whether a woman or divorced man can serve in positions of leadership within the church. Scholars disagree about the meaning of these teachings. Further study on these issues may be necessary before translating this book.<br><br>## Part 3: Important Translation Issues<br><br>### Singular and plural **you**<br><br>In this book, the word **I** refers to Paul. Also, the word **you** is almost always singular and refers to Titus. The exception to this is 3:15. (See: [[rc://en/ta/man/translate/figs-exclusive]] and [[rc://en/ta/man/translate/figs-you]])<br><br>### What is the meaning of **God our Savior**?<br><br>This is a common phrase in this letter. Paul meant to make the readers think about how God forgave them in Christ for sinning against him, and by forgiving them he saved them from being punished when he judges all people. A similar phrase in this letter is **our great God and Savior Jesus Christ**.
 TIT\t1\tintro\tc7me\t\t\t0\t\t# Titus 1 General Notes<br><br>## Structure and formatting<br><br>Paul formally introduces this letter in verses 1-4. Writers often began letters in this way in the ancient Near East.<br><br>In verses 6-9, Paul lists several qualities that a man must have if he is to be an elder in the church. (See: rc://en/ta/man/translate/figs-abstractnouns) Paul gives a similar list in 1 Timothy 3.<br><br>## Special concepts in this chapter<br><br>### Elders<br><br>The church has used different titles for church leaders. Some titles include overseer, elder, pastor, and bishop.<br><br>## Other possible translation difficulties in this chapter<br><br>### Should, may, must<br><br>The ULT uses different words that indicate requirements or obligations. These verbs have different levels of force associated with them. The subtle differences may be difficult to translate. The UST translates these verbs in a more general way.
@@ -357,7 +363,7 @@ TIT\t1\t2\txyz9\t\tἐπ’ ἐλπίδι ζωῆς αἰωνίου\t1\twith the
 TIT\t1\t2\tr2gj\t\tπρὸ χρόνων αἰωνίων\t1\tbefore all the ages of time\t“before time began”
 TIT\t1\t3\tb22h\t\tκαιροῖς ἰδίοις\t1\tat the right time\t“at the proper time”
 `;
-    const rawResults = await checkDeprecatedTN_TSV9Table(username, languageCode, bookID, tableText, optionalCheckingOptions);
+    const rawResults = await checkDeprecatedTN_TSV9Table(username, languageCode, bookID, filename, tableText, optionalCheckingOptions);
     // console.log(`Test took ${rawResults.elapsedSeconds} seconds`);
     expect(rawResults.noticeList.length).toBeGreaterThan(0);
     const filteredResults = {

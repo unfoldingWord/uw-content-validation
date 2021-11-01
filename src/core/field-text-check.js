@@ -313,7 +313,10 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                 if (punctCharBeingChecked !== '-' || '1234567890'.indexOf(nextChar) === -1) { // Allow negative numbers, e.g., -1
                     const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                     // Lower priority for em-dash in markdown and for forward slash (used to list alternatives, e.g., "yes / no")
-                    const notice = { priority: 191 /* can be lowered to 71 */, message: `Unexpected ${punctCharBeingChecked} character after space`, excerpt, location: ourLocation };
+                    let optionalName = '';
+                    if (punctCharBeingChecked === '–') optionalName = ' (en-dash)';
+                    else if (punctCharBeingChecked === '—') optionalName = ' (em-dash)';
+                    const notice = { priority: 191 /* can be lowered to 71 */, message: `Unexpected ${punctCharBeingChecked}${optionalName} character after space`, excerpt, location: ourLocation };
                     if (((punctCharBeingChecked === '—' || punctCharBeingChecked === '/') && fieldType.startsWith('markdown'))
                         || (punctCharBeingChecked === '’' && !['en', 'hbo', 'el-x-koine'].includes(languageCode))) // Some other languages allow words to start with apostrophes
                         notice.priority = 71; // Lower the priority from 191
@@ -348,7 +351,10 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                 // Lower priority for em-dash in markdown and for forward slash (used to list alternatives, e.g., "yes / no")
                 // debugLog(`Got space after ${punctCharBeingChecked} in ${fieldType} around ${excerpt}: priority ${punctCharBeingChecked === '—' && fieldType.startsWith('markdown') ? 72 : 192}`);
-                const notice = { priority: (punctCharBeingChecked === '—' || punctCharBeingChecked === '/') && fieldType.startsWith('markdown') ? 72 : 192, message: `Unexpected space after ${punctCharBeingChecked} character`, excerpt, location: ourLocation };
+                let optionalName = '';
+                if (punctCharBeingChecked === '–') optionalName = ' (en-dash)';
+                else if (punctCharBeingChecked === '—') optionalName = ' (em-dash)';
+                const notice = { priority: (punctCharBeingChecked === '—' || punctCharBeingChecked === '/') && fieldType.startsWith('markdown') ? 72 : 192, message: `Unexpected space after ${punctCharBeingChecked}${optionalName} character`, excerpt, location: ourLocation };
                 if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.slice(0, 6) !== 'from \\')
                     notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
                 addNoticePartial(notice);

@@ -29,7 +29,7 @@ const TW_INTERNAL_REGEX = new RegExp('\\[([-,\\w ()]+?)\\]\\(\\.{2}/([a-z]{2,5})
 // NOTE: Bible link format is archaic, presumably from pre-USFM days!
 // TODO: Do we need to normalise Bible links, i.e., make sure that the link itself
 //          (we don’t care about the displayed text) doesn’t specify superfluous levels/information
-// TODO: We need a decision on hyphen vs en-dash in verse references
+// TODO: We need a decision on hyphen vs en-dash in verse references -- we currently allow either which isn't good in the long term!
 // TODO: Test to see if "[2:23](../02/03.md)" is found by more than one regex below
 const BIBLE_REGEX_OTHER_BOOK_ABSOLUTE = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(\\d{1,3}):(\\d{1,3})\\]\\(([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Revelation 3:11](rev/03/11.md)
 // TODO: Is this option with ../../ really valid? Where/Why does it occur?
@@ -42,7 +42,8 @@ const THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[(?:verse )?(\\d{1,
 const THIS_VERSE_RANGE_TO_THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[(?:verses )?(\\d{1,3})[–-](\\d{1,3})\\]\\(\\.{2}/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');// [2–7](../09/2.md) or [verses 2–7](../09/2.md) NOTE en-dash
 const BCV_V_TO_THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(\\d{1,3}):(\\d{1,3})[–-](\\d{1,3})\\]\\(\\./(\\d{1,3})\\.md\\)', 'g'); // [Genesis 26:12-14](./12.md) NOTE en-dash
 
-const BIBLE_FULL_HELP_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(\\d{1,3}):(\\d{1,3})(?:-\\d{1,3})?\\]\\(rc://([^ /]+?)/tn/help/([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\)', 'g'); // [Song of Solomon 29:23-24](rc://en/tn/help/sng/29/23)
+const TN_FULL_HELP_CV_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(\\d{1,3}):(\\d{1,3})(?:[–-]\\d{1,3})?\\]\\(rc://([^ /]+?)/tn/help/([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\)', 'g'); // [Song of Solomon 29:23-24](rc://en/tn/help/sng/29/23)
+const TN_FULL_HELP_C_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(\\d{1,3})\\]\\(rc://([^ /]+?)/tn/help/([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\)', 'g'); // [Song of Solomon 29:23-24](rc://en/tn/help/sng/29/23)
 
 const TN_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(\\d{1,3}):(\\d{1,3})\\]\\((\\.{2})/(\\d{1,3})/(\\d{1,3})/([a-z][a-z0-9][a-z0-9][a-z0-9])\\)', 'g');
 
@@ -272,20 +273,17 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
     }
 
     // Find total regular (non-image) links
-    const linksList1 = fieldText.match(GENERAL_MARKDOWN_LINK1_REGEX) || []; // [[something]]
-    // if (linksList1.length) debugLog(`linksList1 (${linksList1.length}) = ${JSON.stringify(linksList1)}`);
-    const linksList2 = fieldText.match(GENERAL_MARKDOWN_LINK2_REGEX) || []; // [display](link)
-    // if (linksList2.length) debugLog(`linksList2 (${linksList2.length}) = ${JSON.stringify(linksList2)}`);
-    // const totalLinks1 = linksList1.length;
-    // const totalLinks2 = linksList2.length;
-    // eslint-disable-next-line no-unused-vars
-    let taLinkCount1 = 0, taLinkCount2 = 0, twLinkCount1 = 0, twLinkCount2 = 0, TNLinkCount1 = 0, thisChapterBibleLinkCount1 = 0, thisVerseBibleLinkCount1 = 0, thisBookBibleLinkCount1 = 0, otherBookBibleLinkCount1 = 0, OBSLinkCount = 0, generalLinkCount1 = 0;
+    const singlePartLinksList = fieldText.match(GENERAL_MARKDOWN_LINK1_REGEX) || []; // [[something]]
+    // if (singlePartLinksList.length) debugLog(`singlePartLinksList (${singlePartLinksList.length}) = ${JSON.stringify(singlePartLinksList)}`);
+    const doublePartLinksList = fieldText.match(GENERAL_MARKDOWN_LINK2_REGEX) || []; // [display](link)
+    // if (doublePartLinksList.length) debugLog(`doublePartLinksList (${doublePartLinksList.length}) = ${JSON.stringify(doublePartLinksList)}`);
+    // let taLinkCount1 = 0, taLinkCount2 = 0, twLinkCount1 = 0, twLinkCount2 = 0, TNLinkCount1 = 0, thisChapterBibleLinkCount1 = 0, thisVerseBibleLinkCount1 = 0, thisBookBibleLinkCount1 = 0, otherBookBibleLinkCount1 = 0, OBSLinkCount = 0, generalLinkCount1 = 0;
     const processedLinkList = [];
 
     // Check for internal TW links like [Asher](../names/asher.md)
     while ((regexMatchObject = TW_INTERNAL_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside TW_INTERNAL_REGEX regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
-        twLinkCount1 += 1;
+        // twLinkCount1 += 1;
         logicAssert(regexMatchObject.length === 4, `TW_INTERNAL_REGEX expected 4 fields (not ${regexMatchObject.length})`);
         logicAssert(repoCode === 'TW', `Shouldn't this only be for TW repos, not for ${repoCode}?`);
         // eslint-disable-next-line no-unused-vars
@@ -352,7 +350,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
     // Check for TA links like [How to Translate Names](rc://en/ta/man/translate/translate-names)
     while ((regexMatchObject = TA_FULL_DISPLAY_LINK_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside TA_FULL_DISPLAY_LINK_REGEX resultArray=${JSON.stringify(regexMatchObject)}`);
-        taLinkCount1 += 1;
+        // taLinkCount1 += 1;
         logicAssert(regexMatchObject.length === 5, `TA_FULL_DISPLAY_LINK_REGEX expected 5 fields (not ${regexMatchObject.length})`)
         // eslint-disable-next-line no-unused-vars
         let [totalLink, _displayName, foundLanguageCode, part, article] = regexMatchObject;
@@ -431,7 +429,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         // Check for relative TA links like [Borrow Words](../translate-transliterate/01.md)
         while ((regexMatchObject = TA_RELATIVE1_DISPLAY_LINK_REGEX.exec(fieldText))) {
             // debugLog(`  checkNotesLinksToOutside TA_RELATIVE1_DISPLAY_LINK_REGEX resultArray=${JSON.stringify(regexMatchObject)}`);
-            taLinkCount1 += 1;
+            // taLinkCount1 += 1;
             logicAssert(regexMatchObject.length === 3, `TA_RELATIVE1_DISPLAY_LINK_REGEX expected 3 fields (not ${regexMatchObject.length})`)
             // eslint-disable-next-line no-unused-vars
             let [totalLink, _displayName, article] = regexMatchObject;
@@ -500,7 +498,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         // Check for relative TA links like [Borrow Words](../../translate/translate-transliterate/01.md)
         while ((regexMatchObject = TA_RELATIVE2_DISPLAY_LINK_REGEX.exec(fieldText))) {
             // debugLog(`  checkNotesLinksToOutside TA_RELATIVE2_DISPLAY_LINK_REGEX resultArray=${JSON.stringify(regexMatchObject)}`);
-            taLinkCount1 += 1;
+            // taLinkCount1 += 1;
             logicAssert(regexMatchObject.length === 4, `TA_RELATIVE2_DISPLAY_LINK_REGEX expected 4 fields (not ${regexMatchObject.length})`)
             // eslint-disable-next-line no-unused-vars
             let [totalLink, _displayName, TAsection, article] = regexMatchObject;
@@ -566,7 +564,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
     // if (fieldText.indexOf('brother') !== -1) debugLog("checkNotesLinksToOutside: Search for TA links")
     while ((regexMatchObject = TA_DOUBLE_BRACKETED_LINK_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside TA_DOUBLE_BRACKETED_LINK_REGEX resultArray=${JSON.stringify(regexMatchObject)}`);
-        taLinkCount2 += 1;
+        // taLinkCount2 += 1;
         logicAssert(regexMatchObject.length === 4, `TA_DOUBLE_BRACKETED_LINK_REGEX expected 4 fields (not ${regexMatchObject.length})`)
         let [totalLink, foundLanguageCode, part, article] = regexMatchObject;
         processedLinkList.push(totalLink); // Save the full link
@@ -647,7 +645,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
     // if (fieldText.indexOf('brother') !== -1) debugLog(`checkNotesLinksToOutside: ${bookID} ${givenC}:${givenV} Search for TW links with ${ourTWRegex}`)
     while ((regexMatchObject = ourTWRegex.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside ${languageCode} ${repoCode} ${fieldName} ${givenC}:${givenV} found TW resultArray=${JSON.stringify(regexMatchObject)}`);
-        twLinkCount2 += 1;
+        // twLinkCount2 += 1;
         logicAssert(regexMatchObject.length === 4, `TW_REGEX expected 4 fields (not ${regexMatchObject.length})`)
         let [totalLink, foundLanguageCode, category, article] = regexMatchObject;
         processedLinkList.push(totalLink); // Save the full link
@@ -715,12 +713,12 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         // else debugLog("checkNotesLinksToOutside: disableAllLinkFetchingFlag is set to TRUE!");
     }
 
-    // debugLog("checkNotesLinksToOutside: Search for Bible links")
-    // Check for other book Bible links like [Genesis 29:23](rc://en/tn/help/gen/29/23)
-    while ((regexMatchObject = BIBLE_FULL_HELP_REGEX.exec(fieldText))) {
-        // debugLog(`  checkNotesLinksToOutside BIBLE_FULL_HELP_REGEX regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
-        otherBookBibleLinkCount1 += 1;
-        logicAssert(regexMatchObject.length === 9, `BIBLE_FULL_HELP_REGEX expected 9 fields (not ${regexMatchObject.length})`);
+    // debugLog("checkNotesLinksToOutside: Search for TN links")
+    // Check for other book Bible links like [Genesis 29:23](rc://en/tn/help/gen/29/23) or [Leviticus 11:44–45](rc://en/tn/help/lev/11/44)
+    while ((regexMatchObject = TN_FULL_HELP_CV_REGEX.exec(fieldText))) {
+        // debugLog(`  checkNotesLinksToOutside TN_FULL_HELP_CV_REGEX regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
+        // otherBookBibleLinkCount1 += 1; // TODO: What should this really be?
+        logicAssert(regexMatchObject.length === 9, `TN_FULL_HELP_CV_REGEX expected 9 fields (not ${regexMatchObject.length})`);
         let [totalLink, optionalN1, optionalB1, C1, V1, Lg, B2, C2, V2] = regexMatchObject;
         // debugLog(`Lg='${Lg}' B2='${B2}' C2='${C2}' V2='${V2}'`);
         processedLinkList.push(totalLink); // Save the full link
@@ -748,13 +746,13 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         const linkChapterInt = ourParseInt(C2), linkVerseInt = ourParseInt(V2);
         try {
             if (ourParseInt(C1) !== linkChapterInt)
-                addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don’t match", details: `${C1} vs ${linkChapterInt}`, excerpt: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 743, message: "Chapter numbers of markdown TN link don’t match", details: `${C1} vs ${linkChapterInt}`, excerpt: totalLink, location: ourLocation });
         } catch (ccError) {
             console.error(`TN Link CheckA couldn’t compare chapter numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C1} from '${fieldText}': ${ccError}`);
         }
         try {
             if (ourParseInt(V1) !== linkVerseInt)
-                addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don’t match", details: `${V1} vs ${linkVerseInt}`, excerpt: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 742, message: "Verse numbers of markdown TN link don’t match", details: `${V1} vs ${linkVerseInt}`, excerpt: totalLink, location: ourLocation });
         } catch (vvError) {
             console.error(`TN Link CheckA couldn’t compare verse numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C1}:${V1} from '${fieldText}': ${vvError}`);
         }
@@ -768,7 +766,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         } else if (linkBookCode.length) { // then we know which Bible book this link is to
             // So we can check for valid C:V numbers
             let numChaptersThisBook, numVersesThisChapter;
-            logicAssert(linkBookCode.toLowerCase() !== 'obs', `BIBLE_FULL_HELP_REGEX linkBookCode shouldn’t be '${linkBookCode}' in notes-links-check`);
+            logicAssert(linkBookCode.toLowerCase() !== 'obs', `TN_FULL_HELP_CV_REGEX linkBookCode shouldn’t be '${linkBookCode}' in notes-links-check`);
             try {
                 numChaptersThisBook = books.chaptersInBook(linkBookCode);
             } catch (tlcNCerror) {
@@ -779,17 +777,75 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
                 numVersesThisChapter = books.versesInChapter(linkBookCode, linkChapterInt);
             } catch (tlcNVerror) { }
             if (!linkChapterInt || linkChapterInt < 1 || linkChapterInt > numChaptersThisBook)
-                addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible help link", details: `${linkBookCode} ${linkChapterInt} vs ${numChaptersThisBook} chapters`, excerpt: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 655, message: "Bad chapter number in markdown TN help link", details: `${linkBookCode} ${linkChapterInt} vs ${numChaptersThisBook} chapters`, excerpt: totalLink, location: ourLocation });
             else if (!linkVerseInt || linkVerseInt < 0 || linkVerseInt > numVersesThisChapter)
-                addNoticePartial({ priority: 653, message: "Bad verse number in markdown Bible help link", details: `${linkBookCode} ${linkChapterInt}:${linkVerseInt} vs ${numVersesThisChapter} verses`, excerpt: totalLink, location: ourLocation });
+                addNoticePartial({ priority: 653, message: "Bad verse number in markdown TN help link", details: `${linkBookCode} ${linkChapterInt}:${linkVerseInt} vs ${numVersesThisChapter} verses`, excerpt: totalLink, location: ourLocation });
         } else
-            debugLog(`Seems BIBLE_FULL_HELP_REGEX '${totalLink}' didn’t have a link book code!`);
+            debugLog(`Seems TN_FULL_HELP_CV_REGEX '${totalLink}' didn’t have a link book code!`);
+    }
+    while ((regexMatchObject = TN_FULL_HELP_C_REGEX.exec(fieldText))) {
+        // debugLog(`  checkNotesLinksToOutside TN_FULL_HELP_C_REGEX regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
+        // otherBookBibleLinkCount1 += 1; // TODO: What should this really be?
+        logicAssert(regexMatchObject.length === 8, `TN_FULL_HELP_C_REGEX expected 8 fields (not ${regexMatchObject.length})`);
+        let [totalLink, optionalN1, optionalB1, C1, Lg, B2, C2, V2] = regexMatchObject;
+        // debugLog(`Lg='${Lg}' B2='${B2}' C2='${C2}' V2='${V2}'`);
+        processedLinkList.push(totalLink); // Save the full link
+
+        if (Lg !== '*' && Lg !== languageCode)
+            addNoticePartial({ priority: 669, message: "Unexpected language code in link", details: `resource language code is '${languageCode}'`, excerpt: Lg, location: ourLocation });
+
+        if (optionalN1) {
+            logicAssert(optionalB1, `Should have book name as well as number '${optionalN1}' in '${totalLink}'`);
+        }
+        if (optionalB1) {
+            optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
+            if (defaultLanguageCode === 'en') { // should be able to check the book name
+                const checkResult = books.isGoodEnglishBookName(optionalB1);
+                // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
+                if (checkResult === undefined || checkResult === false)
+                    addNoticePartial(optionalB1 === 'Song of Solomon' ?
+                        { priority: 43, message: "Unexpected Bible book name in TN RC link", details: `expected 'Song of Songs' in ${totalLink}`, excerpt: optionalB1, location: ourLocation } :
+                        { priority: 143, message: "Unknown Bible book name in TN RC link", details: totalLink, excerpt: optionalB1, location: ourLocation });
+            }
+        }
+
+        let linkBookCode = B2 === '..' ? bookID : B2;
+
+        const linkChapterInt = ourParseInt(C2), linkVerseInt = ourParseInt(V2);
+        try {
+            if (ourParseInt(C1) !== linkChapterInt)
+                addNoticePartial({ priority: 743, message: "Chapter numbers of markdown TN link don’t match", details: `${C1} vs ${linkChapterInt}`, excerpt: totalLink, location: ourLocation });
+        } catch (ccError) {
+            console.error(`TN Link CheckA couldn’t compare chapter numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C1} from '${fieldText}': ${ccError}`);
+        }
+        if (linkVerseInt !== 1)
+                addNoticePartial({ priority: 729, message: "Expected verse one for whole chapter link", details: `not verse ${linkVerseInt}`, excerpt: totalLink, location: ourLocation });
+
+        if (linkBookCode === 'obs') {
+            const numStories = 50;
+            if (!linkChapterInt || linkChapterInt < 1 || linkChapterInt > numStories)
+                addNoticePartial({ priority: 655, message: "Bad story number in markdown OBS help link", details: `${linkBookCode} ${linkChapterInt} vs ${numStories} chapters`, excerpt: totalLink, location: ourLocation });
+        } else if (linkBookCode.length) { // then we know which Bible book this link is to
+            // So we can check for valid C:V numbers
+            let numChaptersThisBook;
+            logicAssert(linkBookCode.toLowerCase() !== 'obs', `TN_FULL_HELP_C_REGEX linkBookCode shouldn’t be '${linkBookCode}' in notes-links-check`);
+            try {
+                numChaptersThisBook = books.chaptersInBook(linkBookCode);
+            } catch (tlcNCerror) {
+                debugLog(`checkNotesLinksToOutside1 with linkBookCode '${linkBookCode}' got error: ${tlcNCerror}`);
+                numChaptersThisBook = 0;
+            }
+            if (!linkChapterInt || linkChapterInt < 1 || linkChapterInt > numChaptersThisBook)
+                addNoticePartial({ priority: 655, message: "Bad chapter number in markdown TN help link", details: `${linkBookCode} ${linkChapterInt} vs ${numChaptersThisBook} chapters`, excerpt: totalLink, location: ourLocation });
+        } else
+            debugLog(`Seems TN_FULL_HELP_C_REGEX '${totalLink}' didn’t have a link book code!`);
     }
 
+    // debugLog("checkNotesLinksToOutside: Search for Bible links")
     // Check for this-chapter Bible links like [Revelation 3:11](./11.md)
     while ((regexMatchObject = BIBLE_REGEX_THIS_CHAPTER_RELATIVE.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside BIBLE_REGEX_THIS_CHAPTER_RELATIVE regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
-        thisChapterBibleLinkCount1 += 1;
+        // thisChapterBibleLinkCount1 += 1;
         logicAssert(regexMatchObject.length === 6, `BIBLE_REGEX_THIS_CHAPTER_RELATIVE expected 6 fields (not ${regexMatchObject.length})`);
         let [totalLink, optionalN1, optionalB1, C1, V1, V2] = regexMatchObject;
         processedLinkList.push(totalLink); // Save the full link
@@ -855,7 +911,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
     // Check for this-verse Bible links like [11](../03/11.md)
     while ((regexMatchObject = THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
-        thisVerseBibleLinkCount1 += 1;
+        // thisVerseBibleLinkCount1 += 1;
         logicAssert(regexMatchObject.length === 4, `THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX expected 4 fields (not ${regexMatchObject.length})`);
         let [totalLink, V1, C2, V2] = regexMatchObject;
         processedLinkList.push(totalLink); // Save the full link
@@ -895,7 +951,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
     // Check for this-verse Bible links like [11](../03/11.md)
     while ((regexMatchObject = THIS_VERSE_RANGE_TO_THIS_CHAPTER_BIBLE_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside THIS_VERSE_RANGE_TO_THIS_CHAPTER_BIBLE_REGEX regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
-        thisVerseBibleLinkCount1 += 1;
+        // thisVerseBibleLinkCount1 += 1;
         logicAssert(regexMatchObject.length === 5, `THIS_VERSE_RANGE_TO_THIS_CHAPTER_BIBLE_REGEX expected 5 fields (not ${regexMatchObject.length})`);
         let [totalLink, V1a, V1b, C2, V2] = regexMatchObject;
         processedLinkList.push(totalLink); // Save the full link
@@ -939,7 +995,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
     // Check for this-book Bible links like [Revelation 3:11](../03/11.md)
     while ((regexMatchObject = BIBLE_REGEX_THIS_BOOK_RELATIVE.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside BIBLE_REGEX_THIS_BOOK_RELATIVE regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
-        thisBookBibleLinkCount1 += 1;
+        // thisBookBibleLinkCount1 += 1;
         logicAssert(regexMatchObject.length === 7, `BIBLE_REGEX_THIS_BOOK_RELATIVE expected 7 fields (not ${regexMatchObject.length})`);
         let [totalLink, optionalN1, optionalB1, C1, V1, C2, V2] = regexMatchObject;
         processedLinkList.push(totalLink); // Save the full link
@@ -997,7 +1053,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
     // Check for other-book Bible links like [Revelation 3:11-12](../rev/03/11.md)
     while ((regexMatchObject = BCV_V_TO_OTHER_BOOK_BIBLE_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside BCV_V_TO_OTHER_BOOK_BIBLE_REGEX regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
-        thisBookBibleLinkCount1 += 1;
+        // thisBookBibleLinkCount1 += 1;
         logicAssert(regexMatchObject.length === 9, `BCV_V_TO_OTHER_BOOK_BIBLE_REGEX expected 9 fields (not ${regexMatchObject.length})`);
         let [totalLink, optionalN1, B1, C1, V1a, V1b, B2, C2, V2] = regexMatchObject;
         processedLinkList.push(totalLink); // Save the full link
@@ -1061,7 +1117,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
     // Check for this-book Bible links like [Revelation 3:11-12](../03/11.md)
     while ((regexMatchObject = BCV_V_TO_THIS_BOOK_BIBLE_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside BCV_V_TO_THIS_BOOK_BIBLE_REGEX regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
-        thisBookBibleLinkCount1 += 1;
+        // thisBookBibleLinkCount1 += 1;
         logicAssert(regexMatchObject.length === 9, `BCV_V_TO_THIS_BOOK_BIBLE_REGEX expected 9 fields (not ${regexMatchObject.length})`);
         let [totalLink, optionalN1, optionalB1, C1, V1a, V1b, B2, C2, V2] = regexMatchObject;
         processedLinkList.push(totalLink); // Save the full link
@@ -1126,7 +1182,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
     // Check for this-book Bible links like [Revelation 3:11-12](../03/11.md)
     while ((regexMatchObject = BCV_V_TO_THIS_CHAPTER_BIBLE_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside BCV_V_TO_THIS_CHAPTER_BIBLE_REGEX regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
-        thisChapterBibleLinkCount1 += 1;
+        // thisChapterBibleLinkCount1 += 1;
         logicAssert(regexMatchObject.length === 7, `BCV_V_TO_THIS_CHAPTER_BIBLE_REGEX expected 7 fields (not ${regexMatchObject.length})`);
         let [totalLink, optionalN1, optionalB1, C1, V1a, V1b, V2] = regexMatchObject;
         processedLinkList.push(totalLink); // Save the full link
@@ -1180,7 +1236,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
     // Check for other book Bible links like [Revelation 3:11](rev/03/11.md)
     while ((regexMatchObject = BIBLE_REGEX_OTHER_BOOK_ABSOLUTE.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside BIBLE_REGEX_OTHER_BOOK_ABSOLUTE regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
-        otherBookBibleLinkCount1 += 1;
+        // otherBookBibleLinkCount1 += 1;
         logicAssert(regexMatchObject.length === 8, `BIBLE_REGEX_OTHER_BOOK_ABSOLUTE expected 8 fields (not ${regexMatchObject.length})`);
         let [totalLink, optionalN1, B1, C1, V1, B2, C2, V2] = regexMatchObject;
         processedLinkList.push(totalLink); // Save the full link
@@ -1238,7 +1294,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
     // Check for other book Bible links like [Revelation 3:11](../../rev/03/11.md)
     while ((regexMatchObject = BIBLE_REGEX_OTHER_BOOK_RELATIVE.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside BIBLE_REGEX_OTHER_BOOK_RELATIVE regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
-        otherBookBibleLinkCount1 += 1;
+        // otherBookBibleLinkCount1 += 1;
         logicAssert(regexMatchObject.length === 8, `BIBLE_REGEX_OTHER_BOOK_RELATIVE expected 8 fields (not ${regexMatchObject.length})`);
         let [totalLink, optionalN1, B1, C1, V1, B2, C2, V2] = regexMatchObject;
         processedLinkList.push(totalLink); // Save the full link
@@ -1296,7 +1352,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
     // Check for TN links like [Titus 3:11](../03/11/zd2d)
     while ((regexMatchObject = TN_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside TN_REGEX regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
-        TNLinkCount1 += 1;
+        // TNLinkCount1 += 1;
         logicAssert(regexMatchObject.length === 9, `TN_REGEX expected 9 fields (not ${regexMatchObject.length})`);
         // eslint-disable-next-line no-unused-vars
         let [totalLink, optionalN1, optionalB1, C1, V1, B2, C2, V2, _noteID2] = regexMatchObject;
@@ -1357,7 +1413,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         // Check for OBS links like [03:04](03/04)
         while ((regexMatchObject = OBS_LINK_REGEX.exec(fieldText))) {
             // debugLog(`  checkNotesLinksToOutside OBS_LINK_REGEX resultArray=${JSON.stringify(regexMatchObject)}`);
-            OBSLinkCount += 1;
+            // OBSLinkCount += 1;
             logicAssert(regexMatchObject.length === 5, `OBS_LINK_REGEX expected 5 fields (not ${regexMatchObject.length})`)
             // eslint-disable-next-line no-unused-vars
             let [totalLink, storyNumberA, frameNumberA, storyNumberB, frameNumberB] = regexMatchObject;
@@ -1423,7 +1479,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
     // if (fieldText.indexOf('http') !== -1) debugLog(`Checking for http links in '${fieldName}' '${fieldText}'`);
     while ((regexMatchObject = SIMPLE_DISPLAY_LINK_REGEX.exec(fieldText))) {
         // debugLog(`  checkNotesLinksToOutside SIMPLE_DISPLAY_LINK_REGEX regexMatchObject(${regexMatchObject.length})=${JSON.stringify(regexMatchObject)}`);
-        generalLinkCount1 += 1;
+        // generalLinkCount1 += 1;
         logicAssert(regexMatchObject.length === 3, `SIMPLE_DISPLAY_LINK_REGEX expected 3 fields (not ${regexMatchObject.length})`);
         // eslint-disable-next-line no-unused-vars
         let [totalLink, displayText, uri] = regexMatchObject;
@@ -1527,34 +1583,34 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
     }
 
     // Check for additional links that we can’t explain
-    // if (processedLinkList.length || linksList1.length || linksList2.length) {
+    // if (processedLinkList.length || singlePartLinksList.length || doublePartLinksList.length) {
     //     debugLog(`processedLinkList (${processedLinkList.length}) = ${JSON.stringify(processedLinkList)}`);
-    //     if (linksList1.length) {
+    //     if (singlePartLinksList.length) {
     //         debugLog(`   ${thisChapterBibleLinkCount1? 'thisChapterBibleLinkCount1='+thisChapterBibleLinkCount1:''} ${thisVerseBibleLinkCount1?'thisVerseBibleLinkCount1='+thisVerseBibleLinkCount1:''} ${thisBookBibleLinkCount1?'thisBookBibleLinkCount1='+thisBookBibleLinkCount1:''} ${otherBookBibleLinkCount1?'otherBookBibleLinkCount1='+otherBookBibleLinkCount1:''} ${TNLinkCount1?'TNLinkCount1='+TNLinkCount1:''} ${twLinkCount1?'twLinkCount1='+twLinkCount1:''} ${taLinkCount1?'taLinkCount1='+taLinkCount1:''} ${generalLinkCount1?'generalLinkCount1='+generalLinkCount1:''}`);
-    //         debugLog(`   linksList1 (${linksList1.length}) = ${JSON.stringify(linksList1)}`);
+    //         debugLog(`   singlePartLinksList (${singlePartLinksList.length}) = ${JSON.stringify(singlePartLinksList)}`);
     //     }
-    //     if (linksList2.length) {
+    //     if (doublePartLinksList.length) {
     //         debugLog(`   ${twLinkCount2?'twLinkCount2='+twLinkCount2:''} ${taLinkCount2?'taLinkCount2='+taLinkCount2:''}`);
-    //         debugLog(`   linksList2 (${linksList2.length}) = ${JSON.stringify(linksList2)}`);
+    //         debugLog(`   doublePartLinksList (${doublePartLinksList.length}) = ${JSON.stringify(doublePartLinksList)}`);
     //     }
     // }
     // NOTE: This additional check using counts would fail if a link was found by more than one RegEx
     // const linkCount1 = thisChapterBibleLinkCount1 + thisVerseBibleLinkCount1 + thisBookBibleLinkCount1 + otherBookBibleLinkCount1 + TNLinkCount1 + twLinkCount1 + taLinkCount1 + generalLinkCount1;
     // if (totalLinks1 > linkCount1) {
-    const leftoverLinksList1 = linksList1.filter(x => !processedLinkList.includes(x)); // Delete links that we processed above
-    if (leftoverLinksList1.length)
-        // if (leftoverLinksList1.length) debugLog(`'${languageCode}', ${repoCode}, '${bookID}', '${fieldName}' processedLinkList (${processedLinkList.length}) = ${JSON.stringify(processedLinkList)}\n        linksList1(${linksList1.length})=${JSON.stringify(linksList1)}\nleftoverLinksList1(${leftoverLinksList1.length})=${JSON.stringify(leftoverLinksList1)}`);
-        // if (leftoverLinksList1.length) debugLog(`'${languageCode}', ${repoCode}, '${bookID}', '${fieldName}' leftoverLinksList1 (${leftoverLinksList1.length}) = ${JSON.stringify(leftoverLinksList1)}`);
-        addNoticePartial({ priority: 648, message: "Unusual [ ]( ) link(s)—not a recognized Bible, OBS, or TA, TN, or TW link", details: `need to carefully check ${leftoverLinksList1.length === 1 ? '"' + leftoverLinksList1[0] + '"' : JSON.stringify(leftoverLinksList1)}`, location: ourLocation });
+    const singlePartLeftoverLinksList = singlePartLinksList.filter(x => !processedLinkList.includes(x)); // Delete links that we processed above
+    if (singlePartLeftoverLinksList.length)
+        // if (singlePartLeftoverLinksList.length) debugLog(`'${languageCode}', ${repoCode}, '${bookID}', '${fieldName}' processedLinkList (${processedLinkList.length}) = ${JSON.stringify(processedLinkList)}\n        singlePartLinksList(${singlePartLinksList.length})=${JSON.stringify(singlePartLinksList)}\nsinglePartLeftoverLinksList(${singlePartLeftoverLinksList.length})=${JSON.stringify(singlePartLeftoverLinksList)}`);
+        // if (singlePartLeftoverLinksList.length) debugLog(`'${languageCode}', ${repoCode}, '${bookID}', '${fieldName}' singlePartLeftoverLinksList (${singlePartLeftoverLinksList.length}) = ${JSON.stringify(singlePartLeftoverLinksList)}`);
+        addNoticePartial({ priority: 648, message: "Unusual [ ]( ) link(s)—not a recognized Bible, OBS, or TA, TN, or TW link", details: `need to carefully check ${singlePartLeftoverLinksList.length === 1 ? '"' + singlePartLeftoverLinksList[0] + '"' : JSON.stringify(singlePartLeftoverLinksList)}`, location: ourLocation });
     // }
     // const linkCount2 = twLinkCount2 + taLinkCount2; // These are double-bracketed links, e.g., [[something]]
     // debugLog(`twLinkCount2 ${twLinkCount2} + taLinkCount2 ${taLinkCount2} = linkCount2 ${linkCount2}`);
     // if (totalLinks2 > linkCount2) {
-    const leftoverLinksList2 = linksList2.filter(x => !processedLinkList.includes(x)); // Delete links that we processed above
-    if (leftoverLinksList2.length)
-        // if (leftoverLinksList2.length) debugLog(`'${languageCode}', ${repoCode}, '${bookID}', '${fieldName}' processedLinkList (${processedLinkList.length}) = ${JSON.stringify(processedLinkList)}\n        linksList2(${linksList2.length})=${JSON.stringify(linksList2)}\nleftoverLinksList2(${leftoverLinksList2.length})=${JSON.stringify(leftoverLinksList2)}`);
-        // if (leftoverLinksList2.length) debugLog(`'${languageCode}', ${repoCode}, '${bookID}', '${fieldName}' leftoverLinksList2 (${leftoverLinksList2.length}) = ${JSON.stringify(leftoverLinksList2)}`);
-        addNoticePartial({ priority: 649, message: "Unusual [[ ]] link(s)—not a recognized TA or TW link", details: `need to carefully check ${leftoverLinksList2.length === 1 ? '"' + leftoverLinksList2[0] + '"' : JSON.stringify(leftoverLinksList2)}`, location: ourLocation });
+    const doublePartLeftoverLinksList = doublePartLinksList.filter(x => !processedLinkList.includes(x)); // Delete links that we processed above
+    if (doublePartLeftoverLinksList.length)
+        // if (doublePartLeftoverLinksList.length) debugLog(`'${languageCode}', ${repoCode}, '${bookID}', '${fieldName}' processedLinkList (${processedLinkList.length}) = ${JSON.stringify(processedLinkList)}\n        doublePartLinksList(${doublePartLinksList.length})=${JSON.stringify(doublePartLinksList)}\ndoublePartLeftoverLinksList(${doublePartLeftoverLinksList.length})=${JSON.stringify(doublePartLeftoverLinksList)}`);
+        // if (doublePartLeftoverLinksList.length) debugLog(`'${languageCode}', ${repoCode}, '${bookID}', '${fieldName}' doublePartLeftoverLinksList (${doublePartLeftoverLinksList.length}) = ${JSON.stringify(doublePartLeftoverLinksList)}`);
+        addNoticePartial({ priority: 649, message: "Unusual [[ ]] link(s)—not a recognized TA or TW link", details: `need to carefully check ${doublePartLeftoverLinksList.length === 1 ? '"' + doublePartLeftoverLinksList[0] + '"' : JSON.stringify(doublePartLeftoverLinksList)}`, location: ourLocation });
     // }
 
     // Check for badly formed links (not processed by the above code)

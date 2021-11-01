@@ -16,43 +16,43 @@ import { removeDisabledNotices } from './disabled-notices';
 // NOTE: We don't need to know the org name or the repo name here
 //        because if we check linked articles, the function to do this will be provided in checkingOptions
 
-export async function checkTN_TSV7Table(username, languageCode, bookID, tableText, checkingOptions) {
-  // Note: the filename and givenLocation parameters are left blank
-  let checkResults = await checkNotesTSV7Table(username, languageCode, bookID === 'OBS' ? 'OBS-TN' : 'TN', bookID, '', tableText, '', { ...checkingOptions, suppressNoticeDisablingFlag: false });
+export async function checkTN_TSV7Table(username, languageCode, bookID, filename, tableText, checkingOptions) {
+  // Note: the givenLocation parameter is left blank
+  let checkResults = await checkNotesTSV7Table(username, languageCode, bookID === 'OBS' ? 'OBS-TN' : 'TN', bookID, filename, tableText, '', { ...checkingOptions, suppressNoticeDisablingFlag: false });
   if (!checkingOptions?.suppressNoticeDisablingFlag) {
     checkResults.noticeList = removeDisabledNotices(checkResults.noticeList);
   }
   return checkResults;
 }
-export async function checkSN_TSV7Table(username, languageCode, bookID, tableText, checkingOptions) {
-  // Note: the filename and givenLocation parameters are left blank
-  let checkResults = await checkNotesTSV7Table(username, languageCode, bookID === 'OBS' ? 'OBS-SN' : 'SN', bookID, '', tableText, '', { ...checkingOptions, suppressNoticeDisablingFlag: false });
-  if (!checkingOptions?.suppressNoticeDisablingFlag) {
-    checkResults.noticeList = removeDisabledNotices(checkResults.noticeList);
-  }
-  return checkResults;
-}
-
-export async function checkTQ_TSV7Table(username, languageCode, bookID, tableText, checkingOptions) {
-  // Note: the filename and givenLocation parameters are left blank
-  let checkResults = await checkQuestionsTSV7Table(username, languageCode, bookID === 'OBS' ? 'OBS-TQ' : 'TQ', bookID, '', tableText, '', checkingOptions)
-  if (!checkingOptions?.suppressNoticeDisablingFlag) {
-    checkResults.noticeList = removeDisabledNotices(checkResults.noticeList);
-  }
-  return checkResults;
-}
-export async function checkSQ_TSV7Table(username, languageCode, bookID, tableText, checkingOptions) {
-  // Note: the filename and givenLocation parameters are left blank
-  let checkResults = await checkQuestionsTSV7Table(username, languageCode, bookID === 'OBS' ? 'OBS-SQ' : 'SQ', bookID, '', tableText, '', checkingOptions)
+export async function checkSN_TSV7Table(username, languageCode, bookID, filename, tableText, checkingOptions) {
+  // Note: the givenLocation parameter is left blank
+  let checkResults = await checkNotesTSV7Table(username, languageCode, bookID === 'OBS' ? 'OBS-SN' : 'SN', bookID, filename, tableText, '', { ...checkingOptions, suppressNoticeDisablingFlag: false });
   if (!checkingOptions?.suppressNoticeDisablingFlag) {
     checkResults.noticeList = removeDisabledNotices(checkResults.noticeList);
   }
   return checkResults;
 }
 
-export async function checkTWL_TSV6Table(username, languageCode, bookID, tableText, checkingOptions) {
-  // Note: the filename and givenLocation parameters are left blank
-  let checkResults = await internalCheckTWL_TSV6Table(username, languageCode, bookID === 'OBS' ? 'OBS-TWL' : 'TWL', bookID, '', tableText, '', checkingOptions)
+export async function checkTQ_TSV7Table(username, languageCode, bookID, filename, tableText, checkingOptions) {
+  // Note: the givenLocation parameter is left blank
+  let checkResults = await checkQuestionsTSV7Table(username, languageCode, bookID === 'OBS' ? 'OBS-TQ' : 'TQ', bookID, filename, tableText, '', { ...checkingOptions, suppressNoticeDisablingFlag: false })
+  if (!checkingOptions?.suppressNoticeDisablingFlag) {
+    checkResults.noticeList = removeDisabledNotices(checkResults.noticeList);
+  }
+  return checkResults;
+}
+export async function checkSQ_TSV7Table(username, languageCode, bookID, filename, tableText, checkingOptions) {
+  // Note: the givenLocation parameter is left blank
+  let checkResults = await checkQuestionsTSV7Table(username, languageCode, bookID === 'OBS' ? 'OBS-SQ' : 'SQ', bookID, filename, tableText, '', { ...checkingOptions, suppressNoticeDisablingFlag: false })
+  if (!checkingOptions?.suppressNoticeDisablingFlag) {
+    checkResults.noticeList = removeDisabledNotices(checkResults.noticeList);
+  }
+  return checkResults;
+}
+
+export async function checkTWL_TSV6Table(username, languageCode, bookID, filename, tableText, checkingOptions) {
+  // Note: the givenLocation parameter is left blank
+  let checkResults = await internalCheckTWL_TSV6Table(username, languageCode, bookID === 'OBS' ? 'OBS-TWL' : 'TWL', bookID, filename, tableText, '', { ...checkingOptions, suppressNoticeDisablingFlag: false })
   if (!checkingOptions?.suppressNoticeDisablingFlag) {
     checkResults.noticeList = removeDisabledNotices(checkResults.noticeList);
   }
@@ -61,7 +61,7 @@ export async function checkTWL_TSV6Table(username, languageCode, bookID, tableTe
 
 export async function checkTA_markdownArticle(username, languageCode, articleFilepathInRepo, articleFileContent, checkingOptions) {
   // Note: the givenLocation parameter is left blank
-  let checkResults = await checkMarkdownFileContents(username, languageCode, 'TA', articleFilepathInRepo, articleFileContent, '', checkingOptions);
+  let checkResults = await checkMarkdownFileContents(username, languageCode, 'TA', articleFilepathInRepo, articleFileContent, '', { ...checkingOptions, suppressNoticeDisablingFlag: false });
   if (!checkingOptions?.suppressNoticeDisablingFlag) {
     checkResults.noticeList = removeDisabledNotices(checkResults.noticeList);
   }
@@ -70,7 +70,7 @@ export async function checkTA_markdownArticle(username, languageCode, articleFil
 
 export async function checkTW_markdownArticle(username, languageCode, articleFilepathInRepo, articleFileContent, checkingOptions) {
   // Note: the givenLocation parameter is left blank
-  let checkResults = await checkMarkdownFileContents(username, languageCode, 'TW', articleFilepathInRepo, articleFileContent, '', checkingOptions);
+  let checkResults = await checkMarkdownFileContents(username, languageCode, 'TW', articleFilepathInRepo, articleFileContent, '', { ...checkingOptions, suppressNoticeDisablingFlag: false });
   if (!checkingOptions?.suppressNoticeDisablingFlag) {
     checkResults.noticeList = removeDisabledNotices(checkResults.noticeList);
   }
@@ -78,9 +78,9 @@ export async function checkTW_markdownArticle(username, languageCode, articleFil
 }
 
 // This format is scheduled to be deprecated
-export async function checkDeprecatedTN_TSV9Table(username, languageCode, bookID, tableText, checkingOptions) {
-  // Note: the filename and givenLocation parameters are left blank
-  let checkResults = await internalCheckTN_TSV9Table(username, languageCode, 'TN', bookID, '', tableText, '', { ...checkingOptions, suppressNoticeDisablingFlag: false });
+export async function checkDeprecatedTN_TSV9Table(username, languageCode, bookID, filename, tableText, checkingOptions) {
+  // Note: the givenLocation parameter is left blank
+  let checkResults = await internalCheckTN_TSV9Table(username, languageCode, 'TN', bookID, filename, tableText, '', { ...checkingOptions, suppressNoticeDisablingFlag: false });
   if (!checkingOptions?.suppressNoticeDisablingFlag) {
     checkResults.noticeList = removeDisabledNotices(checkResults.noticeList);
   }
