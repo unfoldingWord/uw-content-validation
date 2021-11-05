@@ -8,7 +8,7 @@ import { repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetR
 import { userLog, functionLog, debugLog, logicAssert, parameterAssert, aboutToOverwrite } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.6.6';
+// const REPO_VALIDATOR_VERSION_STRING = '1.0.0';
 
 
 /**
@@ -147,7 +147,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
     if (/*filename === 'manifest.yaml' || */cfFilename === 'LICENSE.md'
       || ((languageCode === 'el-x-koine' || languageCode === 'hbo') && cfFilename === 'README.md'))
       adjustedLanguageCode = 'en'; // Correct the language for these auxilliary files
-    const cfcResultObject = await checkFileContents(username, adjustedLanguageCode, repoCode, repoBranch, cfFilename, cfFileContent, cfFileLocation, cfCheckingOptions);
+    const cfcResultObject = await checkFileContents(username, adjustedLanguageCode, repoCode, repoName, repoBranch, cfFilename, cfFileContent, cfFileLocation, cfCheckingOptions);
     // debugLog("checkFileContents() returned", resultObject.successList.length, "success message(s) and", resultObject.noticeList.length, "notice(s)");
     // for (const successEntry of resultObject.successList)
     //     userLog("  ", successEntry);
@@ -211,6 +211,10 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
 
       // Update our "waiting" message
       setResultValue(<p style={{ color: 'magenta' }}>Fetching zipped files from <b>{username}/{repoName}</b> repository…</p>);
+
+      const repoNamePart2 = repoName.split('_')[1]
+      if ((username !== 'unfoldingWord' || languageCode !== 'en') && repoNamePart2.startsWith('u'))
+        addNoticePartial({ priority: 980, message: "Unexpected repo name", details: `expected ‘g${repoNamePart2.slice(1)}’`, excerpt: repoNamePart2, location: ourLocation });
 
       // Let’s fetch the zipped repo since it should be much more efficient than individual fetches
       // functionLog(`checkRepo: fetch zip file for ${repoName}…`);
