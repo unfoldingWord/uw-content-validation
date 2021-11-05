@@ -8,7 +8,7 @@ import { checkFileContents } from './checkFileContents';
 import { debugLog, userLog } from '../../core/utilities';
 
 
-// const FILE_CHECK_VERSION_STRING = '0.4.3';
+// const FILE_CHECK_VERSION_STRING = '1.0.0';
 
 
 function FileCheck(props) {
@@ -107,7 +107,7 @@ function FileCheck(props) {
           // else debugLog(`RepoCheck preloaded repos ${repoCode} and ${repoPreloadList}`)
         }
 
-        rawCFResults = await checkFileContents(username, languageCode, repoCodeGuess, branchOrRelease, filename, fileContent, givenLocation, checkingOptions);
+        rawCFResults = await checkFileContents(username, languageCode, repoCodeGuess, repoName, branchOrRelease, filename, fileContent, givenLocation, checkingOptions);
         // debugLog(`rawCFResults=${JSON.stringify(rawCFResults)}`);
 
         // Because we know here that we're only checking one file, we don’t need the filename field in the notices

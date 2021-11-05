@@ -692,7 +692,7 @@ export async function checkManifestText(username, languageCode, repoCode, repoNa
             if ((repoCode === 'UHB' && languageIdentifier !== 'hbo')
                 || (repoCode === 'UGNT' && languageIdentifier !== 'el-x-koine')
                 || (repoCode !== 'UHB' && repoCode !== 'UGNT' && languageIdentifier !== languageCode)) // for most repos
-                addNotice({ priority: 933, message: "Manifest' language' 'identifier' doesn’t match", details: `expected '${languageCode}' but manifest has '${languageIdentifier}'`, location: ourLocation });
+                addNotice({ priority: 933, message: "Manifest' language' 'identifier' doesn’t match", details: `expected ‘${languageCode}’ but manifest has ‘${languageIdentifier}’`, location: ourLocation });
         } catch (e) {
             debugLog(`checkManifestText got error ${e.message} while loading 'language' 'identifier'`);
             addNotice({ priority: 934, message: "'language' key or 'idenfier' subkey is missing", location: ourLocation });

@@ -295,7 +295,7 @@ export async function checkQuestionsTSV7DataRow(username, languageCode, repoCode
         let numVersesThisChapter, haveGoodChapterNumber;
         if (C?.length) {
             if (C !== givenC)
-                addNoticePartial({ priority: 976, message: "Wrong chapter number", details: `expected '${givenC}'`, fieldName: 'Reference', rowID, excerpt: C, location: ourRowLocation });
+                addNoticePartial({ priority: 976, message: "Wrong chapter number", details: `expected ‘${givenC}’`, fieldName: 'Reference', rowID, excerpt: C, location: ourRowLocation });
             if (C === 'front') { }
             else if (/^\d+$/.test(C)) {
                 let intC = Number(C);
@@ -333,7 +333,7 @@ export async function checkQuestionsTSV7DataRow(username, languageCode, repoCode
         if (V?.length) { // can be undefined if no colon at split above
             if (V.indexOf('-') === -1) { // Not a verse bridge
                 if (V !== givenV)
-                    addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected '${givenV}'`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+                    addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected ‘${givenV}’`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
                 if (bookID === 'OBS' || V === 'intro') { }
                 else if (/^\d+$/.test(V)) {
                     let intV = Number(V);
@@ -356,7 +356,7 @@ export async function checkQuestionsTSV7DataRow(username, languageCode, repoCode
                 if (/^\d+$/.test(V1) && /^\d+$/.test(V2)) {
                     const intV1 = Number(V1), intV2 = Number(V2), intGivenV = Number(givenV);
                     if (intGivenV < intV1 || intGivenV > intV2)
-                        addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected '${givenV}' to be inside range`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+                        addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected ‘${givenV}' to be inside range`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
                     else if (intV1 >= intV2)
                         addNoticePartial({ priority: 808, message: "Bad verse range", details: "Second digits should be greater", rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
                     else if (intV1 === 0 && bookID !== 'PSA') // Psalms have \d as verse zero

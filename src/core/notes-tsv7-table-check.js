@@ -128,7 +128,7 @@ export async function checkNotesTSV7Table(username, languageCode, repoCode, book
             if (lines[0] === EXPECTED_NOTES_HEADING_LINE)
                 addSuccessMessage(`Checked TSV header ${ourLocation}`);
             else
-                addNoticePartial({ priority: 988, message: "Bad TSV header", details: `expected '${EXPECTED_NOTES_HEADING_LINE}'`, excerpt: lines[0], lineNumber: 1, location: ourLocation });
+                addNoticePartial({ priority: 988, message: "Bad TSV header", details: `expected ‘${EXPECTED_NOTES_HEADING_LINE}’`, excerpt: lines[0], lineNumber: 1, location: ourLocation });
         }
         else // not the header
         {
@@ -198,7 +198,7 @@ export async function checkNotesTSV7Table(username, languageCode, repoCode, book
                         if (/^\d+$/.test(lastC)) {
                             let lastintC = Number(lastC);
                             if (intC < lastintC)
-                                addNoticePartial({ priority: 736, C, V, message: "Receding chapter number", details: `'${C}' after '${lastC}'`, rowID, lineNumber: n + 1, location: ourLocation });
+                                addNoticePartial({ priority: 736, C, V, message: "Receding chapter number", details: `'${C}' after '${lastC}’`, rowID, lineNumber: n + 1, location: ourLocation });
                             else if (intC > lastintC + 1)
                                 addNoticePartial({ priority: 735, C, V, message: "Advancing chapter number", details: `'${C}' after '${lastC}'`.rowID, lineNumber: n + 1, location: ourLocation });
                         }

@@ -359,7 +359,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         if (foundLanguageCode !== '*') {
             const characterIndex = TA_FULL_DISPLAY_LINK_REGEX.lastIndex - totalLink.length + 7; // lastIndex points to the end of the field that was found
             const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
-            addNoticePartial({ priority: 450, message: "Resource container link should have '*' language code", details: `not '${foundLanguageCode}'`, characterIndex, excerpt, location: ourLocation });
+            addNoticePartial({ priority: 450, message: "Resource container link should have '*' language code", details: `not ‘${foundLanguageCode}’`, characterIndex, excerpt, location: ourLocation });
         } else if (repoCode === 'TN') { // but not TN2
             // At the moment, tC can’t handle these links with * so we have to ensure that they're not there
             const characterIndex = TA_FULL_DISPLAY_LINK_REGEX.lastIndex - totalLink.length + 7; // lastIndex points to the end of the field that was found
@@ -572,7 +572,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         if (foundLanguageCode !== '*') {
             const characterIndex = TA_DOUBLE_BRACKETED_LINK_REGEX.lastIndex - totalLink.length + 7; // lastIndex points to the end of the field that was found
             const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
-            addNoticePartial({ priority: 450, message: "Resource container link should have '*' language code", details: `not '${foundLanguageCode}'`, characterIndex, excerpt, location: ourLocation });
+            addNoticePartial({ priority: 450, message: "Resource container link should have '*' language code", details: `not ‘${foundLanguageCode}’`, characterIndex, excerpt, location: ourLocation });
         } else if (repoCode === 'TN') { // but not TN2
             // At the moment, tC can’t handle these links with * so we have to ensure that they're not there
             const characterIndex = TA_DOUBLE_BRACKETED_LINK_REGEX.lastIndex - totalLink.length + 7; // lastIndex points to the end of the field that was found
@@ -724,7 +724,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         processedLinkList.push(totalLink); // Save the full link
 
         if (Lg !== '*' && Lg !== languageCode)
-            addNoticePartial({ priority: 669, message: "Unexpected language code in link", details: `resource language code is '${languageCode}'`, excerpt: Lg, location: ourLocation });
+            addNoticePartial({ priority: 669, message: "Unexpected language code in link", details: `resource language code is ‘${languageCode}’`, excerpt: Lg, location: ourLocation });
 
         if (optionalN1) {
             logicAssert(optionalB1, `Should have book name as well as number '${optionalN1}' in '${totalLink}'`);
@@ -792,7 +792,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         processedLinkList.push(totalLink); // Save the full link
 
         if (Lg !== '*' && Lg !== languageCode)
-            addNoticePartial({ priority: 669, message: "Unexpected language code in link", details: `resource language code is '${languageCode}'`, excerpt: Lg, location: ourLocation });
+            addNoticePartial({ priority: 669, message: "Unexpected language code in link", details: `resource language code is '${languageCode}’`, excerpt: Lg, location: ourLocation });
 
         if (optionalN1) {
             logicAssert(optionalB1, `Should have book name as well as number '${optionalN1}' in '${totalLink}'`);
@@ -819,7 +819,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
             console.error(`TN Link CheckA couldn’t compare chapter numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C1} from '${fieldText}': ${ccError}`);
         }
         if (linkVerseInt !== 1)
-                addNoticePartial({ priority: 729, message: "Expected verse one for whole chapter link", details: `not verse ${linkVerseInt}`, excerpt: totalLink, location: ourLocation });
+            addNoticePartial({ priority: 729, message: "Expected verse one for whole chapter link", details: `not verse ${linkVerseInt}`, excerpt: totalLink, location: ourLocation });
 
         if (linkBookCode === 'obs') {
             const numStories = 50;

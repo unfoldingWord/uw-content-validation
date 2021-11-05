@@ -136,7 +136,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     let adjustedLanguageCode = languageCode;
     // if (repoCode === 'UHB') adjustedLanguageCode = 'hbo'; // NO -- we need the languageCode of the BP being checked (so we can resolve TW links with * for language) !!!
     // else if (repoCode === 'UGNT') adjustedLanguageCode = 'el-x-koine';
-    const cfcResultObject = await checkFileContents(username, adjustedLanguageCode, repoCode, repoBranch, cfFilename, fileContent, fileLocation, checkingOptions);
+    const cfcResultObject = await checkFileContents(username, adjustedLanguageCode, repoCode, repoName, repoBranch, cfFilename, fileContent, fileLocation, checkingOptions);
     // debugLog("checkFileContents() returned", cfResultObject.successList.length, "success message(s) and", cfResultObject.noticeList.length, "notice(s)");
     // for (const successEntry of cfResultObject.successList) debugLog("  ourCheckBPFileContents:", successEntry);
     // debugLog("cfcResultObject", JSON.stringify(cfcResultObject));
@@ -291,7 +291,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         // debugLog(`Year ${fullYearString} is ${typeof fullYearString}`);
         if (markdownFileContent.indexOf(fullYearString) === -1 && markdownFileContent.indexOf(`${thisYear - 1}`) === -1) // Can’t find this year or previous year in file
           // NOTE: We don’t use addNoticePartial, because it adds a misleading BookID
-          checkBookPackageResult.noticeList.push({ priority: 256, message: "Possibly missing current copyright year", details: `possibly expecting '${fullYearString}'`, username, repoName, filename, location: markdownLocation, extra: repoCode });
+          checkBookPackageResult.noticeList.push({ priority: 256, message: "Possibly missing current copyright year", details: `possibly expecting ‘${fullYearString}’`, username, repoName, filename, location: markdownLocation, extra: repoCode });
       }
 
       return markdownFileContent.length;

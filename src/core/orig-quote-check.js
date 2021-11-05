@@ -584,7 +584,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(username, language
     const match = HEBREW_CANTILLATION_REGEX.exec(fieldText);
     if (match) { // it’s null if no matches
         debugLog(`checkOriginalLanguageQuoteAndOccurrence: got cantillation match: ${typeof match} ${match.length} '${JSON.stringify(match)}'`);
-        addNoticePartial({ priority: 904, message: "Unexpected Hebrew cantillation mark in original language field", details: `found ${match.length} '${match}'`, C, V, excerpt: fieldText, location: ourLocation });
+        addNoticePartial({ priority: 904, message: "Unexpected Hebrew cantillation mark in original language field", details: `found ${match.length} '${match}’`, C, V, excerpt: fieldText, location: ourLocation });
     }
     */
 
@@ -611,14 +611,14 @@ export async function checkOriginalLanguageQuoteAndOccurrence(username, language
     if (fieldText.length > 1 && (opener_index = PAIRED_PUNCTUATION_OPENERS.indexOf(fieldText[0])) !== -1
         && fieldText.indexOf(expected_closing_char = PAIRED_PUNCTUATION_CLOSERS[opener_index]) === -1) {
         const excerpt = fieldText.length <= excerptLength ? fieldText : `${fieldText.slice(0, excerptHalfLength)}…${fieldText.substring(fieldText.length - excerptHalfLength)}`;
-        addNoticePartial({ priority: 859, message: `Unexpected unclosed paired punctuation at beginning of quote`, details: `Found '${fieldText[0]}' at start, but no matching '${expected_closing_char}'`, characterIndex: 0, excerpt, location: ourLocation });
+        addNoticePartial({ priority: 859, message: `Unexpected unclosed paired punctuation at beginning of quote`, details: `Found '${fieldText[0]}' at start, but no matching '${expected_closing_char}’`, characterIndex: 0, excerpt, location: ourLocation });
     }
     let closer_index, expected_opening_char
     if (fieldText.length > 1 && (closer_index = PAIRED_PUNCTUATION_CLOSERS.indexOf(fieldText.slice(-1))) !== -1
         && ((whichTestament !== 'new' && whichTestament !== 'both') || fieldText.slice(-1) !== '’') // Allow final apostrophe for UGNT and OBS
         && fieldText.indexOf(expected_opening_char = PAIRED_PUNCTUATION_OPENERS[closer_index]) === -1) {
         const excerpt = fieldText.length <= excerptLength ? fieldText : `${fieldText.slice(0, excerptHalfLength)}…${fieldText.substring(fieldText.length - excerptHalfLength)}`;
-        addNoticePartial({ priority: 858, message: `Unexpected unopened paired punctuation at end of quote`, details: `Found '${fieldText.slice(-1)}' at end, but no matching '${expected_opening_char}'`, characterIndex: fieldText.length - 1, excerpt, location: ourLocation });
+        addNoticePartial({ priority: 858, message: `Unexpected unopened paired punctuation at end of quote`, details: `Found '${fieldText.slice(-1)}' at end, but no matching '${expected_opening_char}’`, characterIndex: fieldText.length - 1, excerpt, location: ourLocation });
     }
 
     const noDashFieldText = fieldText.replace(/[—־]/g, ' '); // em-dash and then maqaf

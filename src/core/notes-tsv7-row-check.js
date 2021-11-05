@@ -318,7 +318,7 @@ export async function checkNotesTSV7DataRow(username, languageCode, repoCode, li
         let numVersesThisChapter, haveGoodChapterNumber;
         if (C.length) {
             if (C !== givenC)
-                addNoticePartial({ priority: 976, message: "Wrong chapter number", details: `expected '${givenC}'`, fieldName: 'Reference', rowID, excerpt: C, location: ourRowLocation });
+                addNoticePartial({ priority: 976, message: "Wrong chapter number", details: `expected ‘${givenC}’`, fieldName: 'Reference', rowID, excerpt: C, location: ourRowLocation });
             if (C === 'front') { }
             else if (/^\d+$/.test(C)) {
                 let intC = Number(C);
@@ -354,7 +354,7 @@ export async function checkNotesTSV7DataRow(username, languageCode, repoCode, li
 
         if (V?.length) { // can be undefined if no colon at split above
             if (V !== givenV)
-                addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected '${givenV}'`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+                addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected ‘${givenV}’`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
             if (bookID === 'OBS' || V === 'intro') { }
             else if (/^\d+$/.test(V)) {
                 let intV = Number(V);
@@ -449,7 +449,7 @@ export async function checkNotesTSV7DataRow(username, languageCode, repoCode, li
         }
         else // TODO: Find more details about when these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             if (repoCode === 'TN2' && V !== 'intro' && occurrence !== '0')
-                addNoticePartial({ priority: 919, message: "Missing Quote field", details: `should Occurrence be zero instead of ${occurrence} with SR='${supportReference}'`, fieldName: 'Quote', rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 919, message: "Missing Quote field", details: `should Occurrence be zero instead of ${occurrence} with SR='${supportReference}’`, fieldName: 'Quote', rowID, location: ourRowLocation });
 
         if (occurrence.length) { // This should usually be a digit
             if ((characterIndex = occurrence.indexOf('\\n')) !== -1) {

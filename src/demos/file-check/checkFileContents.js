@@ -3,7 +3,6 @@ import * as books from '../../core/books/books';
 import {
   // eslint-disable-next-line no-unused-vars
   REPO_CODES_LIST,
-  formRepoName,
   checkUSFMText, checkMarkdownFileContents, checkLexiconFileContents, checkPlainText, checkYAMLText, checkManifestText,
   internalCheckTN_TSV9Table, checkNotesTSV7Table, checkQuestionsTSV7Table, internalCheckTWL_TSV6Table,
 } from '../../core';
@@ -11,7 +10,7 @@ import {
 import { userLog, debugLog, functionLog, parameterAssert, logicAssert } from '../../core';
 
 
-// const CHECK_FILE_CONTENTS_VERSION_STRING = '0.6.0';
+// const CHECK_FILE_CONTENTS_VERSION_STRING = '1.0.0';
 
 
 /**
@@ -19,13 +18,14 @@ import { userLog, debugLog, functionLog, parameterAssert, logicAssert } from '..
  * @param {string} username for Door43.org
  * @param {string} languageCode, e.g., 'en'
  * @param {string} repoCode, e.g., 'LT', 'TN', 'TN2', 'TQ', 'TWL', etc.
+ * @param {string} repoName, e.g., 'en_ult', 'ru_gst', etc.
  * @param {string} branch, e.g., 'master'
  * @param {string} filepath -- often just a filename
  * @param {string} fileContent
  * @param {string} givenLocation
  * @param {Object} givenCheckingOptions
  */
-export async function checkFileContents(username, languageCode, repoCode, branch, filepath, fileContent, givenLocation, givenCheckingOptions) {
+export async function checkFileContents(username, languageCode, repoCode, repoName, branch, filepath, fileContent, givenLocation, givenCheckingOptions) {
   // Determine the file type from the filename extension
   //  and return the results of checking that kind of file text
   // functionLog(`checkFileContents(un='${username}', lC='${languageCode}', rC='${repoCode}', rBr='${branch}', fn='${filepath}', ${fileContent.length} chars, ${givenLocation}, ${JSON.stringify(givenCheckingOptions)})…`);
@@ -55,7 +55,6 @@ export async function checkFileContents(username, languageCode, repoCode, branch
   const filename = filebits[filebits.length - 1];
   // debugLog(`checkFileContents from filepath='${filepath}' got (${filebits.length}) ${filebits} and then '${filename}'`);
   const filenameLower = filename.toLowerCase();
-  const repoName = formRepoName(languageCode, repoCode);
 
   const newCheckingOptions = givenCheckingOptions ? { ...givenCheckingOptions } : {}; // clone before modify
   if (!newCheckingOptions.originalLanguageRepoUsername) newCheckingOptions.originalLanguageRepoUsername = username;

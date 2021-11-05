@@ -730,25 +730,25 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
                 debugLog(`checkUSFMLineText 865: ${bookID} ${C}:${V} line ${lineNumber} got BAD character before shin/sin dot regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
                 const characterIndex = regexMatchObject.index;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-                addNoticePartial({ priority: 865, message: "Unexpected Hebrew character before shin/sin dot", details: `found ${regexMatchObject.length} '${regexMatchObject}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+                addNoticePartial({ priority: 865, message: "Unexpected Hebrew character before shin/sin dot", details: `found ${regexMatchObject.length} ‘${regexMatchObject}’`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
             else if ((regexMatchObject = BAD_HEBREW_VOWEL_DAGESH_REGEX.exec(rest))) { // it’s null if no matches
                 // debugLog(`checkUSFMLineText 864: ${bookID} ${C}:${V} line ${lineNumber} got BAD dagesh after vowel character order regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
                 const characterIndex = regexMatchObject.index;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-                addNoticePartial({ priority: 864, message: "Unexpected Hebrew dagesh after vowel", details: `found ${regexMatchObject.length} '${regexMatchObject}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+                addNoticePartial({ priority: 864, message: "Unexpected Hebrew dagesh after vowel", details: `found ${regexMatchObject.length} ‘${regexMatchObject}’`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
             else if ((regexMatchObject = BAD_HEBREW_DAGESH_MAPIQ_REGEX.exec(rest))) { // it’s null if no matches
                 debugLog(`checkUSFMLineText 863: ${bookID} ${C}:${V} line ${lineNumber} got BAD character before dagesh regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
                 const characterIndex = regexMatchObject.index;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-                addNoticePartial({ priority: 863, message: "Unexpected Hebrew character before dagesh or mappiq", details: `found ${regexMatchObject.length} '${regexMatchObject}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+                addNoticePartial({ priority: 863, message: "Unexpected Hebrew character before dagesh or mappiq", details: `found ${regexMatchObject.length} ‘${regexMatchObject}’`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
             else if ((regexMatchObject = BAD_HEBREW_CANTILLATION_DAGESH_REGEX.exec(rest))) { // it’s null if no matches
                 debugLog(`checkUSFMLineText 862: ${bookID} ${C}:${V} line ${lineNumber} got BAD cantillation mark character before dagesh regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
                 const characterIndex = regexMatchObject.index;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-                addNoticePartial({ priority: 862, message: "Unexpected Hebrew cantillation mark before dagesh", details: `found ${regexMatchObject.length} '${regexMatchObject}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+                addNoticePartial({ priority: 862, message: "Unexpected Hebrew cantillation mark before dagesh", details: `found ${regexMatchObject.length} ‘${regexMatchObject}’`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
             else if ((regexMatchObject = BAD_HEBREW_CANTILLATION_VOWEL_REGEX.exec(rest)) // it’s null if no matches
                 // These are the actual accents that occur before the hiriq vowel (5B4) -- others could conceivable occur also
@@ -761,7 +761,7 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
                 debugLog(`checkUSFMLineText 861: ${bookID} ${C}:${V} line ${lineNumber} got BAD vowel after cantillation mark character order regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
                 const characterIndex = regexMatchObject.index;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-                addNoticePartial({ priority: 861, message: "Unexpected Hebrew vowel after cantillation mark", details: `found ${regexMatchObject.length} '${regexMatchObject}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+                addNoticePartial({ priority: 861, message: "Unexpected Hebrew vowel after cantillation mark", details: `found ${regexMatchObject.length} ‘${regexMatchObject}’`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
             else if ((regexMatchObject = BAD_HEBREW_FINAL_CONSONANT_REGEX.exec(rest))) { // it’s null if no matches
                 // debugLog(`checkUSFMLineText 860 regexMatchObject: ${typeof regexMatchObject} (${regexMatchObject.length}) '${regexMatchObject}' ${JSON.stringify(regexMatchObject)}`);
@@ -771,7 +771,7 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
                 const characterIndex = regexMatchObject.index;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
                 if (excerpt.indexOf('ןׄ') === -1) // Allow this one exception for ְׄ⁠אַׄהֲׄרֹ֛ׄןׄ in Num 3:39
-                    addNoticePartial({ priority: 860, message: "Unexpected Hebrew final consonant not at word end", details: `found ${regexMatchObject.length} '${regexMatchObject}'`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+                    addNoticePartial({ priority: 860, message: "Unexpected Hebrew final consonant not at word end", details: `found ${regexMatchObject.length} ‘${regexMatchObject}’`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
         }
 
@@ -1082,7 +1082,7 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
                         const regexMatchObject = HEBREW_CANTILLATION_REGEX.exec(attributeValue);
                         if (regexMatchObject) { // it’s null if no matches
                             // debugLog(`Got cantillation regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
-                            addNoticePartial({ priority: 905, message: "Unexpected Hebrew cantillation mark in lemma field", details: `found ${regexMatchObject.length} '${regexMatchObject}'`, lineNumber, C, V, excerpt: attributeValue, location: lineLocation });
+                            addNoticePartial({ priority: 905, message: "Unexpected Hebrew cantillation mark in lemma field", details: `found ${regexMatchObject.length} ‘${regexMatchObject}’`, lineNumber, C, V, excerpt: attributeValue, location: lineLocation });
                         }
                     } else if (attributeName === 'x-morph'
                         && ((repoCode === 'UHB' && !attributeValue.startsWith('He,') && !attributeValue.startsWith('Ar,'))
@@ -1309,17 +1309,17 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
                     else {
                         const vwolStrongs = verseWordObjectList[ix]?.strongs;
                         if (vwolStrongs !== oStrong) {
-                            addNoticePartial({ priority: 805, message: "Aligned x-strong number doesn’t match original", details: `${originalLanguageRepoCode} had '${vwolStrongs}'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                            addNoticePartial({ priority: 805, message: "Aligned x-strong number doesn’t match original", details: `${originalLanguageRepoCode} had ‘${vwolStrongs}’`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                             zalnSuggestion = zalnContents.replace(`"${oStrong}"`, `"${vwolStrongs}"`);
                         }
                         const vwolLemma = verseWordObjectList[ix]?.lemma;
                         if (vwolLemma !== oLemma) {
-                            addNoticePartial({ priority: 806, message: "Aligned x-lemma doesn’t match original", details: `${originalLanguageRepoCode} had '${vwolLemma}'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                            addNoticePartial({ priority: 806, message: "Aligned x-lemma doesn’t match original", details: `${originalLanguageRepoCode} had ‘${vwolLemma}’`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                             zalnSuggestion = zalnContents.replace(`"${oLemma}"`, `"${vwolLemma}"`);
                         }
                         const vwolMorph = verseWordObjectList[ix]?.morph;
                         if (vwolMorph !== oMorph) {
-                            addNoticePartial({ priority: 804, message: "Aligned x-morph doesn’t match original", details: `${originalLanguageRepoCode} had '${vwolMorph}'`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                            addNoticePartial({ priority: 804, message: "Aligned x-morph doesn’t match original", details: `${originalLanguageRepoCode} had ‘${vwolMorph}’`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                             zalnSuggestion = zalnContents.replace(`"${oMorph}"`, `"${vwolMorph}"`);
                         }
                     }
@@ -1654,19 +1654,19 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
             // Check the order of markers
             // In headers
             if (marker === 'toc2' && lastMarker !== 'toc1')
-                addNoticePartial({ priority: 87, C, V, message: "Expected \\toc2 line to follow \\toc1", lineNumber: n, characterIndex: 1, details: `not '\\${lastMarker}'`, location: ourLocation });
+                addNoticePartial({ priority: 87, C, V, message: "Expected \\toc2 line to follow \\toc1", lineNumber: n, characterIndex: 1, details: `not '\\${lastMarker}’`, location: ourLocation });
             else if (marker === 'toc3' && lastMarker !== 'toc2')
-                addNoticePartial({ priority: 87, C, V, message: "Expected \\toc3 line to follow \\toc2", lineNumber: n, characterIndex: 1, details: `not '\\${lastMarker}'`, location: ourLocation });
+                addNoticePartial({ priority: 87, C, V, message: "Expected \\toc3 line to follow \\toc2", lineNumber: n, characterIndex: 1, details: `not '\\${lastMarker}’`, location: ourLocation });
             // In chapters
             else if ((PARAGRAPH_MARKERS_LIST.includes(marker) || marker === 's5' || marker === 'ts\\*')
                 && PARAGRAPH_MARKERS_LIST.includes(lastMarker)
                 && !lastRest)
-                addNoticePartial({ priority: 399, C, V, message: "Useless paragraph marker", lineNumber: n, characterIndex: 1, details: `'\\${lastMarker}' before '\\${marker}'`, location: ourLocation });
+                addNoticePartial({ priority: 399, C, V, message: "Useless paragraph marker", lineNumber: n, characterIndex: 1, details: `'\\${lastMarker}' before '\\${marker}’`, location: ourLocation });
             else if (['c', 'ca', 'cl'].includes(lastMarker) && marker === 'v'
                 && (rest === '1' || rest.startsWith('1 ')))
-                addNoticePartial({ priority: C === '1' ? 657 : 457, C, V, message: "Paragraph marker expected before first verse", lineNumber: n, characterIndex: 1, details: `'\\${marker}' after '\\${lastMarker}'`, location: ourLocation });
+                addNoticePartial({ priority: C === '1' ? 657 : 457, C, V, message: "Paragraph marker expected before first verse", lineNumber: n, characterIndex: 1, details: `'\\${marker}' after '\\${lastMarker}’`, location: ourLocation });
             else if (TEXT_MARKERS_WITHOUT_CONTENT_LIST.includes(lastMarker) && ['w', 'v', 'zaln-s', 'k-s'].includes(marker))
-                addNoticePartial({ priority: 899, C, V, message: "Have USFM text not in a paragraph", lineNumber: n, characterIndex: 1, details: `'\\${lastMarker}' before '\\${marker}'`, location: ourLocation });
+                addNoticePartial({ priority: 899, C, V, message: "Have USFM text not in a paragraph", lineNumber: n, characterIndex: 1, details: `'\\${lastMarker}' before '\\${marker}’`, location: ourLocation });
 
             // Do general checks
             await checkUSFMLineContents(n, C, V, marker, rest, ourLocation, checkingOptions);

@@ -280,7 +280,7 @@ export async function checkTWL_TSV6DataRow(username, languageCode, repoCode, lin
         let numVersesThisChapter, haveGoodChapterNumber;
         if (C.length) {
             if (C !== givenC)
-                addNoticePartial({ priority: 976, message: "Wrong chapter number", details: `expected '${givenC}'`, fieldName: 'Reference', rowID, excerpt: C, location: ourRowLocation });
+                addNoticePartial({ priority: 976, message: "Wrong chapter number", details: `expected ‘${givenC}’`, fieldName: 'Reference', rowID, excerpt: C, location: ourRowLocation });
             if (C === 'front') { }
             else if (/^\d+$/.test(C)) {
                 let intC = Number(C);
@@ -316,7 +316,7 @@ export async function checkTWL_TSV6DataRow(username, languageCode, repoCode, lin
 
         if (V?.length) { // can be undefined if no colon at split above
             if (V !== givenV)
-                addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected '${givenV}'`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+                addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected ‘${givenV}’`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
             if (bookID === 'OBS' || V === 'intro') { }
             else if (/^\d+$/.test(V)) {
                 let intV = Number(V);
@@ -364,7 +364,7 @@ export async function checkTWL_TSV6DataRow(username, languageCode, repoCode, lin
             let tagsList = tags.split('; ');
             for (const thisTag of tagsList) {
                 if (thisTag !== 'keyterm' && thisTag !== 'name')
-                    addNoticePartial({ priority: 740, message: "Unrecognized tag", details: `found '${thisTag}' but expected 'keyterm' or 'name'`, excerpt: tags, fieldName: 'Tags', rowID, location: ourRowLocation });
+                    addNoticePartial({ priority: 740, message: "Unrecognized tag", details: `found '${thisTag}' but expected 'keyterm' or 'name’`, excerpt: tags, fieldName: 'Tags', rowID, location: ourRowLocation });
             }
         }
 
@@ -422,14 +422,14 @@ export async function checkTWL_TSV6DataRow(username, languageCode, repoCode, lin
             else { // More than just whitespace
                 if (!TWLink.startsWith('rc://*/tw/dict/bible/')) {
                     const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + TWLink.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < TWLink.length ? '…' : '')
-                    addNoticePartial({ priority: 798, message: "Field doesn’t contain expected TW link", details: `should start with 'rc://*/tw/dict/bible/'`, fieldName: 'TWLink', rowID, excerpt, location: ourRowLocation });
+                    addNoticePartial({ priority: 798, message: "Field doesn’t contain expected TW link", details: `should start with ‘rc://*/tw/dict/bible/’`, fieldName: 'TWLink', rowID, excerpt, location: ourRowLocation });
                 } else { // it starts correctly
                     const bits = TWLink.slice('rc://*/tw/dict/bible/'.length).split('/'); // Get the last two bits of the link path
                     // debugLog(`checkTWL_TSV6DataRow checking ${bookID} ${rowID} TWLink='${TWLink}' got bits=${JSON.stringify(bits)}`);
                     if (bits[0] !== 'kt' && bits[0] !== 'names' && bits[0] !== 'other') {
                         characterIndex = 'rc://*/tw/dict/bible/'.length;
                         const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + TWLink.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < TWLink.length ? '…' : '')
-                        addNoticePartial({ priority: 797, message: "Field doesn’t contain proper TW link", details: `should be 'kt', 'names', or 'other'`, fieldName: 'TWLink', rowID, characterIndex, excerpt, location: ourRowLocation });
+                        addNoticePartial({ priority: 797, message: "Field doesn’t contain proper TW link", details: `should be ‘kt', ‘names', or ‘other’`, fieldName: 'TWLink', rowID, characterIndex, excerpt, location: ourRowLocation });
                     } else { // all good so far
                         // debugLog(`checkTWL_TSV6DataRow looking up ${bookID} ${rowID} TWLink='${TWLink}' got bits=${JSON.stringify(bits)}`);
                         await ourCheckNotesLinksToOutside(rowID, 'TWLink', TWLink, ourRowLocation, linkCheckingOptions);

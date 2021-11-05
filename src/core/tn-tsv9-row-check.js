@@ -318,7 +318,7 @@ export async function checkTN_TSV9DataRow(username, languageCode, repoCode, line
         // Check the fields one-by-one
         if (B.length) {
             if (B !== bookID)
-                addNoticePartial({ priority: 978, message: "Wrong book identifier", details: `expected '${bookID}'`, fieldName: 'Book', rowID, excerpt: B, location: ourRowLocation });
+                addNoticePartial({ priority: 978, message: "Wrong book identifier", details: `expected ‘${bookID}’`, fieldName: 'Book', rowID, excerpt: B, location: ourRowLocation });
         }
         else
             addNoticePartial({ priority: 977, message: "Missing book identifier", characterIndex: 0, rowID, location: ourRowLocation });
@@ -326,7 +326,7 @@ export async function checkTN_TSV9DataRow(username, languageCode, repoCode, line
         let numVersesThisChapter, haveGoodChapterNumber;
         if (C.length) {
             if (C !== givenC)
-                addNoticePartial({ priority: 976, message: "Wrong chapter number", details: `expected '${givenC}'`, fieldName: 'Chapter', rowID, excerpt: C, location: ourRowLocation });
+                addNoticePartial({ priority: 976, message: "Wrong chapter number", details: `expected ‘${givenC}’`, fieldName: 'Chapter', rowID, excerpt: C, location: ourRowLocation });
             if (C === 'front') { }
             else if (/^\d+$/.test(C)) {
                 let intC = Number(C);
@@ -358,7 +358,7 @@ export async function checkTN_TSV9DataRow(username, languageCode, repoCode, line
 
         if (V.length) {
             if (V !== givenV)
-                addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected '${givenV}'`, rowID, fieldName: 'Verse', excerpt: V, location: ourRowLocation });
+                addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected ‘${givenV}’`, rowID, fieldName: 'Verse', excerpt: V, location: ourRowLocation });
             if (bookID === 'OBS' || V === 'intro') { }
             else if (/^\d+$/.test(V)) {
                 let intV = Number(V);
@@ -439,7 +439,7 @@ export async function checkTN_TSV9DataRow(username, languageCode, repoCode, line
             }
         } else // TODO: Find more details about when these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             if (V !== 'intro' && occurrence !== '0') {
-                addNoticePartial({ priority: 919, message: "Missing OrigQuote field", details: `should Occurrence be zero instead of ${occurrence} with SR='${supportReference}'`, fieldName: 'OrigQuote', rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 919, message: "Missing OrigQuote field", details: `should Occurrence be zero instead of ${occurrence} with SR='${supportReference}’`, fieldName: 'OrigQuote', rowID, location: ourRowLocation });
             }
 
         if (occurrence.length) { // This should usually be a digit
