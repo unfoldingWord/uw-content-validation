@@ -115,7 +115,7 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
     let characterIndex;
     if (cutoffPriorityLevel < 895 && (characterIndex = fieldText.indexOf('\u200B')) !== -1) {
         const charCount = countOccurrencesInString(fieldText, '\u200B');
-        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/\u200B/g, '‼') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
+        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/\u200B/g, '‡') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
         addNoticePartial({ priority: 895, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, characterIndex, excerpt, location: ourLocation });
         suggestion = suggestion.replace(/\u200B/g, ''); // Or should it be space ???
     }
@@ -151,11 +151,11 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
         else
             addNoticePartial({ priority: 109, message: `Unexpected leading space`, characterIndex: 0, excerpt, location: ourLocation });
     } else if (fieldText[0] === '\u2060') {
-        const excerpt = fieldText.slice(0, excerptLength).replace(/\u2060/g, '‼') + (fieldText.length > excerptLength ? '…' : '');
+        const excerpt = fieldText.slice(0, excerptLength).replace(/\u2060/g, '‡') + (fieldText.length > excerptLength ? '…' : '');
         addNoticePartial({ priority: 770, message: `Unexpected leading word-joiner (u2060) character`, characterIndex: 0, excerpt, location: ourLocation });
         if (suggestion[0] === '\u2060') suggestion = suggestion.slice(1);
     } else if (fieldText[0] === '\u200D') {
-        const excerpt = fieldText.slice(0, excerptLength).replace(/\u200D/g, '‼') + (fieldText.length > excerptLength ? '…' : '');
+        const excerpt = fieldText.slice(0, excerptLength).replace(/\u200D/g, '‡') + (fieldText.length > excerptLength ? '…' : '');
         addNoticePartial({ priority: 771, message: `Unexpected leading zero-width joiner (u200D) character`, characterIndex: 0, excerpt, location: ourLocation });
         if (suggestion[0] === '\u200D') suggestion = suggestion.slice(1);
     }
@@ -169,11 +169,11 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
     }
 
     if (cutoffPriorityLevel < 772 && fieldText[fieldText.length - 1] === '\u2060') {
-        const excerpt = fieldText.slice(0, excerptLength).replace(/\u2060/g, '‼') + (fieldText.length > excerptLength ? '…' : '');
+        const excerpt = fieldText.slice(0, excerptLength).replace(/\u2060/g, '‡') + (fieldText.length > excerptLength ? '…' : '');
         addNoticePartial({ priority: 772, message: `Unexpected trailing word-joiner (u2060) character`, characterIndex: 0, excerpt, location: ourLocation });
         if (suggestion[suggestion.length - 1] === '\u2060') suggestion = suggestion.slice(0, suggestion.length - 1);
     } else if (cutoffPriorityLevel < 773 && fieldText[fieldText.length - 1] === '\u200D') {
-        const excerpt = fieldText.slice(0, excerptLength).replace(/\u200D/g, '‼') + (fieldText.length > excerptLength ? '…' : '');
+        const excerpt = fieldText.slice(0, excerptLength).replace(/\u200D/g, '‡') + (fieldText.length > excerptLength ? '…' : '');
         addNoticePartial({ priority: 773, message: `Unexpected trailing zero-width joiner (u200D) character`, characterIndex: 0, excerpt, location: ourLocation });
         if (suggestion[suggestion.length - 1] === '\u200D') suggestion = suggestion.slice(0, suggestion.length - 1);
     }
