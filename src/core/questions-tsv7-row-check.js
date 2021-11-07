@@ -467,7 +467,7 @@ export async function checkQuestionsTSV7DataRow(username, languageCode, repoCode
                 //     // debugLog("Got TA Regex in Question", JSON.stringify(regexMatchObject));
                 //     const adjustedLink = regexMatchObject[0].slice(2, regexMatchObject[0].length - 2)
                 //     if (supportReference !== adjustedLink && V !== 'intro') {
-                //         const details = supportReference ? `(SR='${supportReference}')` : "(empty SR field)"
+                //         const details = supportReference ? `(SR=‘${supportReference}’)` : "(empty SR field)"
                 //         addNoticePartial({ priority: 786, message: "Should have a SupportReference when OccurrenceNote has a TA link", details, rowID, fieldName: 'Question', excerpt: adjustedLink, location: ourRowLocation });
                 //     }
                 // }
@@ -497,7 +497,7 @@ export async function checkQuestionsTSV7DataRow(username, languageCode, repoCode
                 //     // debugLog("Got TA Regex in Response", JSON.stringify(regexMatchObject));
                 //     const adjustedLink = regexMatchObject[0].slice(2, regexMatchObject[0].length - 2)
                 //     if (supportReference !== adjustedLink && V !== 'intro') {
-                //         const details = supportReference ? `(SR='${supportReference}')` : "(empty SR field)"
+                //         const details = supportReference ? `(SR=‘${supportReference}’)` : "(empty SR field)"
                 //         addNoticePartial({ priority: 786, message: "Should have a SupportReference when OccurrenceNote has a TA link", details, rowID, fieldName: 'Response', excerpt: adjustedLink, location: ourRowLocation });
                 //     }
                 // }

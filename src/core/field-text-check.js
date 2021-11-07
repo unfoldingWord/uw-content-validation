@@ -275,7 +275,7 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
             suggestion = suggestion.replace(/… /g, '…');
         }
     }
-    suggestion = suggestion.replace(/ {2}/g, ' ');
+    suggestion = suggestion.replace(/ {2}/g, ' '); // Eliminate double spaces
 
     if (cutoffPriorityLevel < 177) {
         // Check for doubled punctuation chars (international)

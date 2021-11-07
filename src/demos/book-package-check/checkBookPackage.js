@@ -648,7 +648,7 @@ async function checkMarkdownBook(username, languageCode, repoCode, repoName, bra
     //parameterAssert(typeof fileLocation === 'string', `cTQ ourCheckFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
     //parameterAssert(checkingOptions !== undefined, "cTQ ourCheckFileContents: 'checkingOptions' parameter should be defined");
 
-    const cfResultObject = await checkFileContents(username, languageCode, repoCode, branch, cfFilename, fileContent, fileLocation, checkingOptions);
+    const cfResultObject = await checkFileContents(username, languageCode, repoCode, repoName, branch, cfFilename, fileContent, fileLocation, checkingOptions);
     // debugLog("checkFileContents() returned", cfResultObject.successList.length, "success message(s) and", cfResultObject.noticeList.length, "notice(s)");
     // for (const successEntry of cfResultObject.successList) debugLog("  ourCheckFileContents:", successEntry);
 

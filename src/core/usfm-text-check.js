@@ -9,6 +9,7 @@ import { checkStrongsField } from './strongs-field-check'; // and this may call 
 import { runUsfmJsCheck } from './usfm-js-check';
 import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
 import { checkNotesLinksToOutside } from './notes-links-check';
+import { extractTextFromComplexUSFM } from './usfm_helpers';
 // eslint-disable-next-line no-unused-vars
 import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt, aboutToOverwrite } from './utilities';
 import { removeDisabledNotices } from './disabled-notices';
@@ -699,6 +700,24 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
         for (const deprecatedMarker of DEPRECATED_MARKERS_LIST)
             if (markerSet.has(deprecatedMarker))
                 addNoticePartial({ priority: 218, message: "Using deprecated USFM marker", excerpt: `\\${deprecatedMarker}`, location: fileLocation });
+
+        // Now check how the text looks overall
+        //  but not worried about double spaces, etc, here -- more on word/punctuation stuff
+        const cleanishText = extractTextFromComplexUSFM(fileText);
+        // debugLog(`checkUSFMFileContents got ${repoCode} cleanishText (${cleanishText.length}) ${cleanishText}`);
+        const separatedDigitsRegex = new RegExp('\\d{1,3}, (\\d{1,3})', 'g'); // e.g., "5, 000"
+        let regexMatchObject;
+        while ((regexMatchObject = separatedDigitsRegex.exec(cleanishText))) {
+            if (regexMatchObject[1].startsWith('0'))
+                addNoticePartial({ priority: 498, message: "Found separated digits", excerpt: regexMatchObject[0], location: fileLocation });
+            else
+                addNoticePartial({ priority: 198, message: "Found possible separated digits", excerpt: regexMatchObject[0], location: fileLocation });
+        }
+        if (['en'].includes(languageCode)) {
+            const noCapitalSentenceRegex = new RegExp(`[.!?] [a-z]{1,${excerptLength}}`, 'g'); // e.g., "end. start"
+            while ((regexMatchObject = noCapitalSentenceRegex.exec(cleanishText)))
+                addNoticePartial({ priority: 197, message: "Sentence may not start with capital letter", excerpt: regexMatchObject[0], location: fileLocation });
+        }
     }
     // end of checkUSFMFileContents function
 
@@ -1497,7 +1516,7 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
         // eslint-disable-next-line no-unused-vars
         let numChaptersThisBook = 0;
         try {
-            logicAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in usfm-text-check2");
+            logicAssert(lowercaseBookID !== 'obs', "OBS shouldn't get as far as mainUSFMCheck");
             numChaptersThisBook = books.chaptersInBook(bookID);
         }
         catch {

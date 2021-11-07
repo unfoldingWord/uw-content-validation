@@ -213,7 +213,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(username, language
                     verseText += (bookLine.startsWith('\\f ') ? '' : ' ') + bookLine;
                 }
             }
-            verseText = verseText.replace(/\\p/g, '').trim().replace(/ {2}/g, ' ')
+            verseText = verseText.replace(/\\p/g, '').trim().replace(/ {2}/g, ' ') // Eliminate double spaces
             // debugLog(`Got verse text1: '${verseText}'`);
 
             // Remove \w fields (just leaving the actual Bible text words)
@@ -243,7 +243,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(username, language
             // debugLog(`Got verse text3: '${verseText}'`);
 
             // Final clean-up (shouldn’t be necessary, but just in case)
-            verseText = verseText.replace(/ {2}/g, ' ');
+            verseText = verseText.replace(/ {2}/g, ' '); // Eliminate double spaces
             //parameterAssert(verseText.indexOf('\\w') === -1, `getOriginalVerse: Should be no \\w in ${bookID} ${C}:${V} '${verseText}'`);
             //parameterAssert(verseText.indexOf('\\k') === -1, `getOriginalVerse: Should be no \\k in ${bookID} ${C}:${V} '${verseText}'`);
             //parameterAssert(verseText.indexOf('x-') === -1, `getOriginalVerse: Should be no x- in ${bookID} ${C}:${V} '${verseText}'`);

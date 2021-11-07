@@ -449,7 +449,7 @@ export async function checkNotesTSV7DataRow(username, languageCode, repoCode, li
         }
         else // TODO: Find more details about when these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             if (repoCode === 'TN2' && V !== 'intro' && occurrence !== '0')
-                addNoticePartial({ priority: 919, message: "Missing Quote field", details: `should Occurrence be zero instead of ${occurrence} with SR='${supportReference}’`, fieldName: 'Quote', rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 919, message: "Missing Quote field", details: `should Occurrence be zero instead of ${occurrence} with SR=‘${supportReference}’`, fieldName: 'Quote', rowID, location: ourRowLocation });
 
         if (occurrence.length) { // This should usually be a digit
             if ((characterIndex = occurrence.indexOf('\\n')) !== -1) {
@@ -499,7 +499,7 @@ export async function checkNotesTSV7DataRow(username, languageCode, repoCode, li
                     if (adjustedLink === supportReference) foundSR = true;
                 }
                 if (linksList.length && V !== 'intro') {
-                    let details = supportReference ? `SR='${supportReference}'` : "empty SR field"
+                    let details = supportReference ? `SR=‘${supportReference}’` : "empty SR field"
                     if (linksList.length > 1) details += `—found ${linksList.length} TA links`;
                     const excerpt = linksList.length > 1 ? JSON.stringify(linksList) : linksList[0];
                     if (foundSR) {
