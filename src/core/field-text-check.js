@@ -457,9 +457,11 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                 // const nextChar = fieldText.slice(characterIndex + 1, characterIndex + 2);
                 const nextNextChar = fieldText.slice(characterIndex + 2, characterIndex + 3);
                 // debugLog(`92 leading zero for fieldType='${fieldType}' fieldName='${fieldName}' with nextChar=${nextChar} and nextNextChar=${nextNextChar}`);
+                // debugLog(`92 leading zero for fieldType='${fieldType}' fieldName='${fieldName}' fieldText='${fieldText}' with nextChar=${nextChar} and nextNextChar=${nextNextChar}`);
                 if (nextNextChar !== '”' && nextNextChar !== '-' // e.g., “0” is ok and 0-2 is ok
                     && (fieldType !== 'YAML' || fieldText.indexOf('sort:') === -1)
-                    && (fieldType !== 'USFM line' || fieldName !== '\\id') // Some USFM producers put in a date like "Mar 03 2021"
+                    && (fieldType !== 'USFM line' || (fieldName !== '\\id' // Some USFM producers put in a date like "Mar 03 2021"
+                     && fieldText.indexOf('\\w 0') === -1)) // A leading zero in a \w field might be a false alarm (it's the end of the \w marker)
                 ) { // "sort: 0" is ok in manifests
                     const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                     addNoticePartial({ priority: 92, message: `Unexpected leading zero`, characterIndex, excerpt, location: ourLocation });

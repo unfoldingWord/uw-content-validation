@@ -1,0 +1,397 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`checkUSFMText() -  short snippet tests -  should fail on empty string 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "bookID": "RUT",
+      "filename": "test.usfm",
+      "lineNumber": 1,
+      "location": " from test line",
+      "message": "USFM file must start with a valid \\\\id line",
+      "priority": 994,
+    },
+    Object {
+      "bookID": "RUT",
+      "filename": "test.usfm",
+      "lineNumber": 2,
+      "location": " from test line",
+      "message": "USFM file is recommended to have \\\\ide line",
+      "priority": 719,
+    },
+    Object {
+      "bookID": "RUT",
+      "excerpt": "missing \\\\usfm",
+      "filename": "test.usfm",
+      "location": " from test line",
+      "message": "Missing expected USFM line",
+      "priority": 519,
+    },
+    Object {
+      "bookID": "RUT",
+      "excerpt": "missing \\\\mt1",
+      "filename": "test.usfm",
+      "location": " from test line",
+      "message": "Missing expected USFM line",
+      "priority": 921,
+    },
+    Object {
+      "bookID": "RUT",
+      "characterIndex": 0,
+      "details": "
+> 1 | 
+      ^
+Expected \\"\\\\\\\\\\"",
+      "excerpt": "",
+      "filename": "test.usfm",
+      "lineNumber": 1,
+      "location": " from test line",
+      "message": "USFMGrammar check failed",
+      "priority": 840,
+    },
+  ],
+  "successList": Array [
+    "Checked all 1 line for RUT from test line",
+    "Checked C:V patterns for RUT from test line",
+    "Checked USFM Grammar (strict mode)  (but the USFM DIDN’T validate)",
+  ],
+}
+`;
+
+exports[`checkUSFMText() -  short snippet tests -  should fail on gap between "5, 000" 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "13",
+      "bookID": "2JN",
+      "characterIndex": 3,
+      "excerpt": "13 (\\\\zaln-… (1 → 13)",
+      "filename": "test.usfm",
+      "lineNumber": 7,
+      "location": " from test line",
+      "message": "Verse number didn’t increment correctly",
+      "priority": 763,
+    },
+    Object {
+      "bookID": "2JN",
+      "excerpt": "5, 000",
+      "filename": "test.usfm",
+      "location": " from test line",
+      "message": "Found separated digits",
+      "priority": 498,
+    },
+  ],
+  "successList": Array [
+    "Checked all 14 lines for 2JN from test line",
+    "Checked C:V patterns for 2JN from test line",
+    "Checked USFM Grammar (strict mode) without errors",
+  ],
+}
+`;
+
+exports[`checkUSFMText() -  short snippet tests -  should fail on no ID line 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "bookID": "RUT",
+      "filename": "test.usfm",
+      "lineNumber": 1,
+      "location": " from test line",
+      "message": "USFM file must start with a valid \\\\id line",
+      "priority": 994,
+    },
+    Object {
+      "bookID": "RUT",
+      "filename": "test.usfm",
+      "lineNumber": 2,
+      "location": " from test line",
+      "message": "USFM file is recommended to have \\\\ide line",
+      "priority": 719,
+    },
+    Object {
+      "bookID": "RUT",
+      "excerpt": "missing \\\\usfm",
+      "filename": "test.usfm",
+      "location": " from test line",
+      "message": "Missing expected USFM line",
+      "priority": 519,
+    },
+    Object {
+      "bookID": "RUT",
+      "excerpt": "missing \\\\mt1",
+      "filename": "test.usfm",
+      "location": " from test line",
+      "message": "Missing expected USFM line",
+      "priority": 921,
+    },
+    Object {
+      "bookID": "RUT",
+      "characterIndex": 3,
+      "details": "
+> 1 | \\\\ide UTF-8
+         ^
+  2 | 
+Expected \\" \\"",
+      "excerpt": "\\\\ide UTF-8",
+      "filename": "test.usfm",
+      "lineNumber": 1,
+      "location": " from test line",
+      "message": "USFMGrammar check failed",
+      "priority": 840,
+    },
+  ],
+  "successList": Array [
+    "Checked all 2 lines for RUT from test line",
+    "Checked C:V patterns for RUT from test line",
+    "Checked USFM Grammar (strict mode)  (but the USFM DIDN’T validate)",
+  ],
+}
+`;
+
+exports[`checkUSFMText() -  short snippet tests -  should fail on non-USFM 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "bookID": "RUT",
+      "filename": "test.usfm",
+      "lineNumber": 1,
+      "location": " from test line",
+      "message": "USFM file must start with a valid \\\\id line",
+      "priority": 994,
+    },
+    Object {
+      "bookID": "RUT",
+      "filename": "test.usfm",
+      "lineNumber": 2,
+      "location": " from test line",
+      "message": "USFM file is recommended to have \\\\ide line",
+      "priority": 719,
+    },
+    Object {
+      "C": "0",
+      "V": "1",
+      "bookID": "RUT",
+      "characterIndex": 0,
+      "excerpt": "2",
+      "filename": "test.usfm",
+      "lineNumber": 1,
+      "location": " from test line",
+      "message": "Expected line to start with backslash",
+      "priority": 880,
+    },
+    Object {
+      "C": "0",
+      "V": "1",
+      "bookID": "RUT",
+      "characterIndex": 208,
+      "excerpt": "…See: [[rc://*/ta/man…",
+      "fieldName": "\\\\NONE",
+      "filename": "test.usfm",
+      "lineNumber": 1,
+      "location": " from test line",
+      "message": "Unexpected doubled / characters",
+      "priority": 177,
+    },
+    Object {
+      "C": "0",
+      "V": "1",
+      "bookID": "RUT",
+      "characterIndex": 203,
+      "excerpt": "…ve” (See: [[rc://*/t…",
+      "fieldName": "\\\\NONE",
+      "filename": "test.usfm",
+      "lineNumber": 1,
+      "location": " from test line",
+      "message": "Unexpected doubled [ characters",
+      "priority": 177,
+    },
+    Object {
+      "C": "0",
+      "V": "1",
+      "bookID": "RUT",
+      "characterIndex": 245,
+      "excerpt": "…arallelism]], [Doubl…",
+      "fieldName": "\\\\NONE",
+      "filename": "test.usfm",
+      "lineNumber": 1,
+      "location": " from test line",
+      "message": "Unexpected doubled ] characters",
+      "priority": 177,
+    },
+    Object {
+      "C": "0",
+      "V": "1",
+      "bookID": "RUT",
+      "characterIndex": 259,
+      "excerpt": "…[Doublet](../figs-do…",
+      "fieldName": "\\\\NONE",
+      "filename": "test.usfm",
+      "lineNumber": 1,
+      "location": " from test line",
+      "message": "Unexpected doubled . characters",
+      "priority": 177,
+    },
+    Object {
+      "C": "0",
+      "V": "1",
+      "bookID": "RUT",
+      "characterIndex": 280,
+      "excerpt": "…blet/01.md))",
+      "fieldName": "\\\\NONE",
+      "filename": "test.usfm",
+      "lineNumber": 1,
+      "location": " from test line",
+      "message": "Unexpected doubled ) characters",
+      "priority": 177,
+    },
+    Object {
+      "C": "0",
+      "V": "1",
+      "bookID": "RUT",
+      "characterIndex": 207,
+      "excerpt": "…(See: [[rc://*/ta/ma…",
+      "fieldName": "\\\\NONE",
+      "filename": "test.usfm",
+      "lineNumber": 1,
+      "location": " from test line",
+      "message": "Unexpected link",
+      "priority": 765,
+    },
+    Object {
+      "bookID": "RUT",
+      "excerpt": "missing \\\\usfm",
+      "filename": "test.usfm",
+      "location": " from test line",
+      "message": "Missing expected USFM line",
+      "priority": 519,
+    },
+    Object {
+      "bookID": "RUT",
+      "excerpt": "missing \\\\mt1",
+      "filename": "test.usfm",
+      "location": " from test line",
+      "message": "Missing expected USFM line",
+      "priority": 921,
+    },
+    Object {
+      "bookID": "RUT",
+      "characterIndex": 0,
+      "details": "
+> 1 | 2:12	gnn5		figs-parallelism	שְׁלֵמָ֗ה	1	This is a poetic expression that is very similar to the previous sentence. Alternate translation: “May Yahweh fully give to you everything that you deserve” (See: [[rc://*/ta/man/translate/figs-parallelism]], [Doublet](../figs-doublet/01.md))
+      ^
+  2 | 
+Expected \\"\\\\\\\\\\"",
+      "excerpt": "2:12	gnn5	…",
+      "filename": "test.usfm",
+      "lineNumber": 1,
+      "location": " from test line",
+      "message": "USFMGrammar check failed",
+      "priority": 840,
+    },
+  ],
+  "successList": Array [
+    "Checked all 2 lines for RUT from test line",
+    "Checked C:V patterns for RUT from test line",
+    "Checked USFM Grammar (strict mode)  (but the USFM DIDN’T validate)",
+  ],
+}
+`;
+
+exports[`checkUSFMText() -  short snippet tests -  should fail on wrong book code 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "bookID": "RUT",
+      "filename": "test.usfm",
+      "lineNumber": 2,
+      "location": " from test line",
+      "message": "USFM file is recommended to have \\\\ide line",
+      "priority": 719,
+    },
+    Object {
+      "C": "0",
+      "V": "1",
+      "bookID": "RUT",
+      "characterIndex": 4,
+      "excerpt": "GEN",
+      "filename": "test.usfm",
+      "lineNumber": 1,
+      "location": " from test line",
+      "message": "Expected \\\\id line to start with book identifier",
+      "priority": 987,
+    },
+    Object {
+      "bookID": "RUT",
+      "excerpt": "missing \\\\usfm",
+      "filename": "test.usfm",
+      "location": " from test line",
+      "message": "Missing expected USFM line",
+      "priority": 519,
+    },
+    Object {
+      "bookID": "RUT",
+      "excerpt": "missing \\\\mt1",
+      "filename": "test.usfm",
+      "location": " from test line",
+      "message": "Missing expected USFM line",
+      "priority": 921,
+    },
+    Object {
+      "bookID": "RUT",
+      "characterIndex": 0,
+      "details": "
+  1 | \\\\id GEN
+> 2 | 
+      ^
+Expected \\"\\\\\\\\\\"",
+      "excerpt": "",
+      "filename": "test.usfm",
+      "lineNumber": 2,
+      "location": " from test line",
+      "message": "USFMGrammar check failed",
+      "priority": 840,
+    },
+  ],
+  "successList": Array [
+    "Checked all 2 lines for RUT from test line",
+    "Checked C:V patterns for RUT from test line",
+    "Checked USFM Grammar (strict mode)  (but the USFM DIDN’T validate)",
+  ],
+}
+`;
+
+exports[`checkUSFMText() -  short snippet tests -  should not fail on gap between "5, 000" 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "13",
+      "bookID": "2JN",
+      "characterIndex": 3,
+      "excerpt": "13 (\\\\zaln-… (1 → 13)",
+      "filename": "test.usfm",
+      "lineNumber": 7,
+      "location": " from test line",
+      "message": "Verse number didn’t increment correctly",
+      "priority": 763,
+    },
+  ],
+  "successList": Array [
+    "Checked all 13 lines for 2JN from test line",
+    "Checked C:V patterns for 2JN from test line",
+    "Checked USFM Grammar (strict mode) without errors",
+  ],
+}
+`;
+
+exports[`checkUSFMText() -  short snippet tests -  should pass on smallest snippet 1`] = `
+Object {
+  "noticeList": Array [],
+  "successList": Array [
+    "Checked all 7 lines for 2JN from test line",
+    "Checked C:V patterns for 2JN from test line",
+    "Checked USFM Grammar (strict mode) without errors",
+  ],
+}
+`;

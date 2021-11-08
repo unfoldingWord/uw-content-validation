@@ -15,7 +15,7 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '1.0.0';
+// const USFM_VALIDATOR_VERSION_STRING = '1.0.1';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for STs
@@ -205,7 +205,7 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
 
      Returns a result object containing a successList and a noticeList
      */
-    // functionLog(`checkUSFMText(uN=${username} lC=${languageCode} rC=${repoCode}, bkID=${bookID} fN=${filename}, ${givenText.length.toLocaleString()} chars, '${givenLocation}', ${JSON.stringify(checkingOptions)})…`);
+    functionLog(`checkUSFMText(uN=${username} lC=${languageCode} rC=${repoCode}, bkID=${bookID} fN=${filename}, ${givenText.length.toLocaleString()} chars, '${givenLocation}', ${JSON.stringify(checkingOptions)})…`);
     // const regexMatchObject = HEBREW_CANTILLATION_REGEX.exec('\\f + \\ft Q \\+w הִנֵּ֤ה|lemma="הִנֵּ֤ה" strong="H2009" x-morph="He,Tm"\\+w*\\f*');
     // console.log(`Got test cantillation regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
 
@@ -376,89 +376,89 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
         function hasText(verseObjects) {
             let gotDeep = false;
             for (const someObject of verseObjects) {
-                // debugLog("someObject", JSON.stringify(someObject));
-                if (someObject['type'] === 'text' && someObject['text'].length > MINIMUM_TEXT_WORDS)
+                // debugLog(`CVCheck someObject=${JSON.stringify(someObject)}``);
+                if (someObject['type'] === 'text' && someObject['text'].length >= MINIMUM_TEXT_WORDS)
                     return true;
-                if (someObject['type'] === 'word' && someObject['text'].length > MINIMUM_WORD_LENGTH)
+                if (someObject['type'] === 'word' && someObject['text'].length >= MINIMUM_WORD_LENGTH)
                     return true;
                 if (someObject['type'] === 'milestone')
                     for (const someSubobject of someObject['children']) {
                         // debugLog("someSubobject", JSON.stringify(someSubobject));
-                        if (someSubobject['type'] === 'text' && someSubobject['text'].length > MINIMUM_TEXT_WORDS)
+                        if (someSubobject['type'] === 'text' && someSubobject['text'].length >= MINIMUM_TEXT_WORDS)
                             return true;
-                        if (someSubobject['type'] === 'word' && someSubobject['text'].length > MINIMUM_WORD_LENGTH)
+                        if (someSubobject['type'] === 'word' && someSubobject['text'].length >= MINIMUM_WORD_LENGTH)
                             return true;
                         if (someSubobject['type'] === 'milestone')
                             for (const someSub2object of someSubobject['children']) {
                                 // debugLog("someSub2object", JSON.stringify(someSub2object));
-                                if (someSub2object['type'] === 'text' && someSub2object['text'].length > MINIMUM_TEXT_WORDS)
+                                if (someSub2object['type'] === 'text' && someSub2object['text'].length >= MINIMUM_TEXT_WORDS)
                                     return true;
-                                if (someSub2object['type'] === 'word' && someSub2object['text'].length > MINIMUM_WORD_LENGTH)
+                                if (someSub2object['type'] === 'word' && someSub2object['text'].length >= MINIMUM_WORD_LENGTH)
                                     return true;
                                 if (someSub2object['type'] === 'milestone')
                                     for (const someSub3object of someSub2object['children']) {
                                         // debugLog("someSub3object", JSON.stringify(someSub3object));
-                                        if (someSub3object['type'] === 'text' && someSub3object['text'].length > MINIMUM_TEXT_WORDS)
+                                        if (someSub3object['type'] === 'text' && someSub3object['text'].length >= MINIMUM_TEXT_WORDS)
                                             return true;
-                                        if (someSub3object['type'] === 'word' && someSub3object['text'].length > MINIMUM_WORD_LENGTH)
+                                        if (someSub3object['type'] === 'word' && someSub3object['text'].length >= MINIMUM_WORD_LENGTH)
                                             return true;
                                         if (someSub3object['type'] === 'milestone')
                                             for (const someSub4object of someSub3object['children']) {
                                                 // debugLog("someSub4object", JSON.stringify(someSub4object));
-                                                if (someSub4object['type'] === 'text' && someSub4object['text'].length > MINIMUM_TEXT_WORDS)
+                                                if (someSub4object['type'] === 'text' && someSub4object['text'].length >= MINIMUM_TEXT_WORDS)
                                                     return true;
-                                                if (someSub4object['type'] === 'word' && someSub4object['text'].length > MINIMUM_WORD_LENGTH)
+                                                if (someSub4object['type'] === 'word' && someSub4object['text'].length >= MINIMUM_WORD_LENGTH)
                                                     return true;
                                                 if (someSub4object['type'] === 'milestone')
                                                     for (const someSub5object of someSub4object['children']) {
                                                         // debugLog("someSub5object", JSON.stringify(someSub5object));
-                                                        if (someSub5object['type'] === 'text' && someSub5object['text'].length > MINIMUM_TEXT_WORDS)
+                                                        if (someSub5object['type'] === 'text' && someSub5object['text'].length >= MINIMUM_TEXT_WORDS)
                                                             return true;
-                                                        if (someSub5object['type'] === 'word' && someSub5object['text'].length > MINIMUM_WORD_LENGTH)
+                                                        if (someSub5object['type'] === 'word' && someSub5object['text'].length >= MINIMUM_WORD_LENGTH)
                                                             return true;
                                                         if (someSub5object['type'] === 'milestone')
                                                             for (const someSub6object of someSub5object['children']) {
                                                                 // debugLog("someSub6object", bookID, CVlocation, JSON.stringify(someSub6object));
-                                                                if (someSub6object['type'] === 'text' && someSub6object['text'].length > MINIMUM_TEXT_WORDS)
+                                                                if (someSub6object['type'] === 'text' && someSub6object['text'].length >= MINIMUM_TEXT_WORDS)
                                                                     return true;
-                                                                if (someSub6object['type'] === 'word' && someSub6object['text'].length > MINIMUM_WORD_LENGTH)
+                                                                if (someSub6object['type'] === 'word' && someSub6object['text'].length >= MINIMUM_WORD_LENGTH)
                                                                     return true;
                                                                 if (someSub6object['type'] === 'milestone')
                                                                     for (const someSub7object of someSub6object['children']) {
                                                                         // debugLog("someSub7object", bookID, CVlocation, JSON.stringify(someSub7object));
-                                                                        if (someSub7object['type'] === 'text' && someSub7object['text'].length > MINIMUM_TEXT_WORDS)
+                                                                        if (someSub7object['type'] === 'text' && someSub7object['text'].length >= MINIMUM_TEXT_WORDS)
                                                                             return true;
-                                                                        if (someSub7object['type'] === 'word' && someSub7object['text'].length > MINIMUM_WORD_LENGTH)
+                                                                        if (someSub7object['type'] === 'word' && someSub7object['text'].length >= MINIMUM_WORD_LENGTH)
                                                                             return true;
                                                                         if (someSub7object['type'] === 'milestone')
                                                                             // UST Luke 15:3 has eight levels of nesting !!!
                                                                             for (const someSub8object of someSub7object['children']) {
                                                                                 // debugLog("someSub8object", bookID, CVlocation, JSON.stringify(someSub8object));
-                                                                                if (someSub8object['type'] === 'text' && someSub8object['text'].length > MINIMUM_TEXT_WORDS)
+                                                                                if (someSub8object['type'] === 'text' && someSub8object['text'].length >= MINIMUM_TEXT_WORDS)
                                                                                     return true;
-                                                                                if (someSub8object['type'] === 'word' && someSub8object['text'].length > MINIMUM_WORD_LENGTH)
+                                                                                if (someSub8object['type'] === 'word' && someSub8object['text'].length >= MINIMUM_WORD_LENGTH)
                                                                                     return true;
                                                                                 if (someSub8object['type'] === 'milestone')
                                                                                     for (const someSub9object of someSub8object['children']) {
                                                                                         // debugLog("someSub9object", bookID, CVlocation, JSON.stringify(someSub9object));
-                                                                                        if (someSub9object['type'] === 'text' && someSub9object['text'].length > MINIMUM_TEXT_WORDS)
+                                                                                        if (someSub9object['type'] === 'text' && someSub9object['text'].length >= MINIMUM_TEXT_WORDS)
                                                                                             return true;
-                                                                                        if (someSub9object['type'] === 'word' && someSub9object['text'].length > MINIMUM_WORD_LENGTH)
+                                                                                        if (someSub9object['type'] === 'word' && someSub9object['text'].length >= MINIMUM_WORD_LENGTH)
                                                                                             return true;
                                                                                         if (someSub9object['type'] === 'milestone')
                                                                                             for (const someSub10object of someSub9object['children']) {
                                                                                                 // debugLog("someSub10object", bookID, CVlocation, JSON.stringify(someSub10object));
-                                                                                                if (someSub10object['type'] === 'text' && someSub10object['text'].length > MINIMUM_TEXT_WORDS)
+                                                                                                if (someSub10object['type'] === 'text' && someSub10object['text'].length >= MINIMUM_TEXT_WORDS)
                                                                                                     return true;
-                                                                                                if (someSub10object['type'] === 'word' && someSub10object['text'].length > MINIMUM_WORD_LENGTH)
+                                                                                                if (someSub10object['type'] === 'word' && someSub10object['text'].length >= MINIMUM_WORD_LENGTH)
                                                                                                     return true;
                                                                                                 if (someSub10object['type'] === 'milestone')
                                                                                                     // UST Obadiah 1:8 has eleven levels of nesting !!!
                                                                                                     for (const someSub11object of someSub10object['children']) {
                                                                                                         // debugLog("someSub11object", bookID, CVlocation, JSON.stringify(someSub11object));
-                                                                                                        if (someSub11object['type'] === 'text' && someSub11object['text'].length > MINIMUM_TEXT_WORDS)
+                                                                                                        if (someSub11object['type'] === 'text' && someSub11object['text'].length >= MINIMUM_TEXT_WORDS)
                                                                                                             return true;
-                                                                                                        if (someSub11object['type'] === 'word' && someSub11object['text'].length > MINIMUM_WORD_LENGTH)
+                                                                                                        if (someSub11object['type'] === 'word' && someSub11object['text'].length >= MINIMUM_WORD_LENGTH)
                                                                                                             return true;
                                                                                                         if (someSub11object['type'] === 'milestone')
                                                                                                             gotDeep = true;
@@ -713,11 +713,9 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
             else
                 addNoticePartial({ priority: 198, message: "Found possible separated digits", excerpt: regexMatchObject[0], location: fileLocation });
         }
-        if (['en'].includes(languageCode)) {
-            const noCapitalSentenceRegex = new RegExp(`[.!?] [a-z]{1,${excerptLength}}`, 'g'); // e.g., "end. start"
-            while ((regexMatchObject = noCapitalSentenceRegex.exec(cleanishText)))
-                addNoticePartial({ priority: 197, message: "Sentence may not start with capital letter", excerpt: regexMatchObject[0], location: fileLocation });
-        }
+        const noCapitalSentenceRegex = new RegExp(`[.!?] [a-z]{1,${excerptLength}}`, 'g'); // e.g., "end. start"
+        while ((regexMatchObject = noCapitalSentenceRegex.exec(cleanishText)))
+            addNoticePartial({ priority: ['en'].includes(languageCode) ? 197 : 97, message: "Sentence may not start with capital letter", excerpt: regexMatchObject[0], location: fileLocation });
     }
     // end of checkUSFMFileContents function
 
@@ -1545,13 +1543,13 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
         }
 
         let lines = givenText.split('\n');
-        // debugLog(`  '${ourLocation}' has ${lines.length.toLocaleString()} total lines`);
+        // debugLog(`  '${ourLocation}' has ${lines.length.toLocaleString()} total USFM lines`);
 
         if (lines.length === 0 || !lines[0].startsWith('\\id ') || lines[0].length < 7 || !books.isValidBookID(lines[0].slice(4, 7)))
             addNoticePartial({ priority: 994, message: "USFM file must start with a valid \\id line", lineNumber: 1, location: ourLocation });
         const haveUSFM3Line = lines.length > 1 && lines[1] === '\\usfm 3.0';
         const ideIndex = haveUSFM3Line ? 2 : 1;
-        if (lines.length < ideIndex || !lines[ideIndex].startsWith('\\ide ') || lines[ideIndex].length < 7)
+        if (lines.length <= ideIndex || !lines[ideIndex].startsWith('\\ide ') || lines[ideIndex].length < 7)
             addNoticePartial({ priority: 719, message: "USFM file is recommended to have \\ide line", lineNumber: ideIndex + 1, location: ourLocation });
         else if (!lines[ideIndex].endsWith(' UTF-8'))
             addNoticePartial({ priority: 619, message: "USFM \\ide field is recommended to be set to 'UTF-8'", lineNumber: ideIndex + 1, characterIndex: 5, excerpt: lines[ideIndex], location: ourLocation });
