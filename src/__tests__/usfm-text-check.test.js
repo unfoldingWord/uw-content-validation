@@ -39,37 +39,37 @@ describe('checkUSFMText() - ', () => {
 \\c 1
 \\p \\v 1 a b c\\v 2 b c d\\v 3 c d e\\v 4 d e f\\v 5 e f g\\v 6 f g h\\v 7 g h i\\v 8 h i j\\v 9 i j k\\v 10 j k l\\v 11 k l m\\v 12 l m n\\v 13 n o p
 `; // There's a minimum number of words/characters expected in each verse
-      const rawResults = await checkUSFMText(username, languageCode, repoCode, '2JN', 'test.usfm', usfmText, 'from test line', optionalCheckingOptions);
-      console.log(`from usfmText=${usfmText} got rawResults=${JSON.stringify(rawResults)}`);
+      const rawResults = await checkUSFMText(username, languageCode, repoCode, '2JN', 'test.usfm', usfmText, 'from test snippet', optionalCheckingOptions);
+      console.log(`checkUSFMText from usfmText='${usfmText}' got rawResults=${JSON.stringify(rawResults)}`);
       expect(rawResults.noticeList.length).toEqual(0);
       expect(rawResults).toMatchSnapshot();
     });
 
     it('should fail on empty string', async () => {
-      const rawResults = await checkUSFMText(username, languageCode, repoCode, 'RUT', 'test.usfm', "", 'from test line', optionalCheckingOptions);
-      // console.log(`rawResults=${JSON.stringify(rawResults)}`);
+      const rawResults = await checkUSFMText(username, languageCode, repoCode, 'RUT', 'test.usfm', "", 'from test snippet', optionalCheckingOptions);
+      // console.log(`checkUSFMText rawResults=${JSON.stringify(rawResults)}`);
       expect(rawResults.noticeList.length).toEqual(5);
       expect(rawResults).toMatchSnapshot();
     });
 
     it('should fail on non-USFM', async () => {
       const usfmText = "2:12\tgnn5\t\tfigs-parallelism\tשְׁלֵמָ֗ה\t1\tThis is a poetic expression that is very similar to the previous sentence. Alternate translation: “May Yahweh fully give to you everything that you deserve” (See: [[rc://*/ta/man/translate/figs-parallelism]], [Doublet](../figs-doublet/01.md))\n";
-      const rawResults = await checkUSFMText(username, languageCode, repoCode, 'RUT', 'test.usfm', usfmText, 'from test line', optionalCheckingOptions);
-      // console.log(`from usfmText=${usfmText} got rawResults=${JSON.stringify(rawResults)}`);
+      const rawResults = await checkUSFMText(username, languageCode, repoCode, 'RUT', 'test.usfm', usfmText, 'from test snippet', optionalCheckingOptions);
+      // console.log(`checkUSFMText from usfmText='${usfmText}' got rawResults=${JSON.stringify(rawResults)}`);
       expect(rawResults.noticeList.length).toEqual(12);
       expect(rawResults).toMatchSnapshot();
     });
 
     it('should fail on no ID line', async () => {
-      const rawResults = await checkUSFMText(username, languageCode, repoCode, 'RUT', 'test.usfm', "\\ide UTF-8\n", 'from test line', optionalCheckingOptions);
-      console.log(`rawResults=${JSON.stringify(rawResults)}`);
+      const rawResults = await checkUSFMText(username, languageCode, repoCode, 'RUT', 'test.usfm', "\\ide UTF-8\n", 'from test snippet', optionalCheckingOptions);
+      // console.log(`checkUSFMText rawResults=${JSON.stringify(rawResults)}`);
       // expect(rawResults.noticeList.length).toEqual(5);
       expect(rawResults).toMatchSnapshot();
     });
 
     it('should fail on wrong book code', async () => {
-      const rawResults = await checkUSFMText(username, languageCode, repoCode, 'RUT', 'test.usfm', "\\id GEN\n", 'from test line', optionalCheckingOptions);
-      // console.log(`rawResults=${JSON.stringify(rawResults)}`);
+      const rawResults = await checkUSFMText(username, languageCode, repoCode, 'RUT', 'test.usfm', "\\id GEN\n", 'from test snippet', optionalCheckingOptions);
+      // console.log(`checkUSFMText rawResults=${JSON.stringify(rawResults)}`);
       expect(rawResults.noticeList.length).toEqual(5);
       expect(rawResults).toMatchSnapshot();
     });
@@ -89,8 +89,8 @@ describe('checkUSFMText() - ', () => {
 \\w 000|x-occurrence="1" x-occurrences="1"\\w*\\zaln-e\\*
 \\zaln-s |x-strong="G04350" x-lemma="ἀνήρ" x-morph="Gr,N,,,,,NMP," x-occurrence="1" x-occurrences="1" x-content="ἄνδρες"\\*\\w men|x-occurrence="1" x-occurrences="1"\\w*\\zaln-e\\*.)
 `; // There's a minimum number of words/characters expected in each verse
-      const rawResults = await checkUSFMText(username, languageCode, repoCode, '2JN', 'test.usfm', usfmText, 'from test line', optionalCheckingOptions);
-      // console.log(`from usfmText=${usfmText} got rawResults=${JSON.stringify(rawResults)}`);
+      const rawResults = await checkUSFMText(username, languageCode, repoCode, '2JN', 'test.usfm', usfmText, 'from test snippet', optionalCheckingOptions);
+      // console.log(`checkUSFMText from usfmText='${usfmText}' got rawResults=${JSON.stringify(rawResults)}`);
       expect(rawResults.noticeList.length).toEqual(2);
       expect(rawResults).toMatchSnapshot();
     });
@@ -109,8 +109,8 @@ describe('checkUSFMText() - ', () => {
 \\zaln-s |x-strong="G40000" x-lemma="πεντακισχίλιοι" x-morph="Gr,EN,,,,NMP," x-occurrence="1" x-occurrences="1" x-content="πεντακισχίλιοι"\\*\\w 5|x-occurrence="1" x-occurrences="1"\\w*,\\w 000|x-occurrence="1" x-occurrences="1"\\w*\\zaln-e\\*
 \\zaln-s |x-strong="G04350" x-lemma="ἀνήρ" x-morph="Gr,N,,,,,NMP," x-occurrence="1" x-occurrences="1" x-content="ἄνδρες"\\*\\w men|x-occurrence="1" x-occurrences="1"\\w*\\zaln-e\\*.)
 `; // There's a minimum number of words/characters expected in each verse
-      const rawResults = await checkUSFMText(username, languageCode, repoCode, '2JN', 'test.usfm', usfmText, 'from test line', optionalCheckingOptions);
-      console.log(`from usfmText=${usfmText} got rawResults=${JSON.stringify(rawResults)}`);
+      const rawResults = await checkUSFMText(username, languageCode, repoCode, '2JN', 'test.usfm', usfmText, 'from test snippet', optionalCheckingOptions);
+      console.log(`checkUSFMText from usfmText='${usfmText}' got rawResults=${JSON.stringify(rawResults)}`);
       expect(rawResults.noticeList.length).toEqual(1); // TODO: Why do we get "verse number didn't increment correctly"???
       expect(rawResults).toMatchSnapshot();
     });

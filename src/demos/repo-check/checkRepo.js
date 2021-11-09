@@ -158,6 +158,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
       if (cfcNoticeEntry.extra)
         checkRepoResult.noticeList.push(cfcNoticeEntry); // Add this notice directly
       else { // no extra field yet
+        aboutToOverwrite('ourCheckRepoFileContents', ['bookID'], cfcResultObject, { bookID: cfBookID });
         // addNoticePartial({ ...cfcNoticeEntry, bookID: cfBookID, extra: bookOrFileCode.toUpperCase() });
         // const newNoticeObject = { ...cfcNoticeEntry, bookID: cfBookID };
         if (cfBookID.length) cfcNoticeEntry.bookID = cfBookID;

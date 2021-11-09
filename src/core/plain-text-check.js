@@ -277,6 +277,19 @@ export function checkPlainText(username, languageCode, repoCode, textType, textN
                 addNotice({ priority: leftChar === '“' ? 162 : 462, message: `Mismatched ${leftChar}${rightChar} characters`, details: `left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()}`, location: ourLocation });
         }
 
+    const separatedDigitsRegex = new RegExp('\\d{1,3}, (\\d{1,3})', 'g'); // e.g., "5, 000"
+    let regexMatchObject;
+    while ((regexMatchObject = separatedDigitsRegex.exec(plainText))) {
+        if (regexMatchObject[1].startsWith('0'))
+            addNotice({ priority: 498, message: "Found separated digits", excerpt: regexMatchObject[0], location: ourLocation });
+        else
+            addNotice({ priority: 198, message: "Found possible separated digits", excerpt: regexMatchObject[0], location: ourLocation });
+    }
+    
+    const noCapitalSentenceRegex = new RegExp(`[.!?] [a-z]{1,${excerptLength}}`, 'g'); // e.g., "end. start"
+    while ((regexMatchObject = noCapitalSentenceRegex.exec(plainText)))
+        addNotice({ priority: ['en'].includes(languageCode) ? 197 : 97, message: "Sentence may not start with capital letter", excerpt: regexMatchObject[0], location: ourLocation });
+
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
         // functionLog(`checkPlainText: calling removeDisabledNotices(${cptResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
         cptResult.noticeList = removeDisabledNotices(cptResult.noticeList);

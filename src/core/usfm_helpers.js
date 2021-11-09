@@ -18,6 +18,7 @@ export function extractTextFromComplexUSFM(usfmText) {
   // debugLog(`  extractTextFromComplexUSFM: got verse text3: (${usfmText.length}) '${usfmText}'`);
 
   // Remove lines we don't want
+  const hadTrailingNewline = usfmText.slice(-1) === '\n';
   const newLines = [];
   for (let line of usfmText.split('\n')) {
     if (!line.length) continue;
@@ -40,11 +41,14 @@ export function extractTextFromComplexUSFM(usfmText) {
     newLines.push(line);
   }
   usfmText = newLines.join(' ').replace(/\\p /g, '\n')
-  // debugLog(`  extractTextFromComplexUSFM: got verse text4: (${usfmText.length}) '${usfmText}'`);
+  // debugLog(`  extractTextFromComplexUSFM got verse text4: (${usfmText.length}) '${usfmText}'`);
+  if (hadTrailingNewline) usfmText += '\n';
+  // debugLog(`  extractTextFromComplexUSFM got verse text4b: (${usfmText.length}) '${usfmText}'`);
+  logicAssert(hadTrailingNewline === (usfmText.slice(-1) === '\n'), `extractTextFromComplexUSFM hadTrailingNewline was ${hadTrailingNewline} now different!`);
 
   usfmText = usfmText.replace(/ ‹v\d{1,3}›/g, ''); // Remove (now-adjusted) verse numbers inside the text so we get the flowing text
 
-  usfmText = usfmText.trim().replace(/ {2}/g, ' ') // Eliminate double spaces
+  usfmText = usfmText.replace(/ {2}/g, ' ') // Eliminate double spaces
   // debugLog(`Got verse text1: '${usfmText}'`);
 
 

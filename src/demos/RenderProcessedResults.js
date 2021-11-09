@@ -42,7 +42,7 @@ const tableIcons = {
 };
 
 
-// const RENDER_PROCESSED_RESULTS_VERSION = '1.0.0';
+// const RENDER_PROCESSED_RESULTS_VERSION = '1.0.1';
 
 
 /**
@@ -369,22 +369,23 @@ function RenderFileDetails({ givenEntry }) {
 
     let resultStart = '', lineResult = '', resultEnd = '', fileLineLink = '', fileLink = '';
     if (adjustedRepoName?.length) resultStart += ` in ${adjustedRepoName} repository`;
-    if (givenEntry.username && adjustedRepoName && givenEntry.filename) {
+    if (givenEntry.username && adjustedRepoName && givenEntry.filename ) {
+        const useFilename = givenEntry.filename.startsWith('text extracted from ') ? givenEntry.filename.slice('text extracted from '.length) : givenEntry.filename;
         try { // use blame so we can see the actual line!
-            if (givenEntry.filename.endsWith('.tsv') || givenEntry.filename.endsWith('.md')) {
+            if (useFilename.endsWith('.tsv') || useFilename.endsWith('.md')) {
                 let folder = '';
-                if (givenEntry.filename !== 'README.md' && givenEntry.filename !== 'LICENSE.md') {
+                if (useFilename !== 'README.md' && useFilename !== 'LICENSE.md') {
                     if (adjustedRepoName.endsWith('_obs')) folder = 'content/';
-                    else if (adjustedRepoName.endsWith('_tw') && !givenEntry.filename.startsWith('bible/')) {
+                    else if (adjustedRepoName.endsWith('_tw') && !useFilename.startsWith('bible/')) {
                         folder = 'bible/';
-                        dataAssert(givenEntry.filename.split('/').length === 2, `RenderFileDetails expected TW filename '${givenEntry.filename}' to contain subfolder`); // filename actually contains the subfolder
+                        dataAssert(useFilename.split('/').length === 2, `RenderFileDetails expected TW filename '${useFilename}' to contain subfolder`); // filename actually contains the subfolder
                     }
                 }
-                fileLink = `https://git.door43.org/${givenEntry.username}/${adjustedRepoName}/blame/branch/${givenEntry.branch}/${folder}${givenEntry.filename}`;
+                fileLink = `https://git.door43.org/${givenEntry.username}/${adjustedRepoName}/blame/branch/${givenEntry.branch}/${folder}${useFilename}`;
             } else // not TSV or MD
-                fileLink = `https://git.door43.org/${givenEntry.username}/${adjustedRepoName}/src/branch/${givenEntry.branch}/${givenEntry.filename}`;
+                fileLink = `https://git.door43.org/${givenEntry.username}/${adjustedRepoName}/src/branch/${givenEntry.branch}/${useFilename}`;
         } catch (someErr) { debugLog(`What was someErr here: ${someErr}`); }
-        if (givenEntry?.filename.length) resultStart += ` in file ${givenEntry.filename}`;
+        if (givenEntry?.filename.length && !fileLink) resultStart += ` in file ${givenEntry.filename}`;
         if (givenEntry.lineNumber) {
             resultStart += ' on ';
             if (fileLink && givenEntry.lineNumber)

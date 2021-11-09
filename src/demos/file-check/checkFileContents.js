@@ -7,10 +7,10 @@ import {
   internalCheckTN_TSV9Table, checkNotesTSV7Table, checkQuestionsTSV7Table, internalCheckTWL_TSV6Table,
 } from '../../core';
 // eslint-disable-next-line no-unused-vars
-import { userLog, debugLog, functionLog, parameterAssert, logicAssert } from '../../core';
+import { userLog, debugLog, functionLog, parameterAssert, logicAssert, aboutToOverwrite } from '../../core';
 
 
-// const CHECK_FILE_CONTENTS_VERSION_STRING = '1.0.0';
+// const CHECK_FILE_CONTENTS_VERSION_STRING = '1.0.1';
 
 
 /**
@@ -124,13 +124,19 @@ export async function checkFileContents(username, languageCode, repoCode, repoNa
   // debugLog(`checkFileContents got initial results with ${checkFileResult.successList.length} success message(s) and ${checkFileResult.noticeList.length} notice(s)`);
 
   // Make sure that we have the filename in all of our notices (in case other files are being checked as well)
+  /*
   function addFilenameField(noticeObjectParameter) {
     if (noticeObjectParameter.debugChain) noticeObjectParameter.debugChain = `checkFileContents ${noticeObjectParameter.debugChain}`;
     if (noticeObjectParameter.fieldName === filepath) delete noticeObjectParameter.fieldName;
+    // aboutToOverwrite('checkFileContents', ['filename'], noticeObjectParameter, { filename: filepath });
     // TODO: Might we need to add username, repoName, or branch here ???
     return noticeObjectParameter.extra ? noticeObjectParameter : { ...noticeObjectParameter, filename: filepath }; // NOTE: might be an indirect check on a TA/TW article or UHAL/UGL entry
   }
   checkFileResultObject.noticeList = checkFileResultObject.noticeList.map(addFilenameField);
+  */
+  for (const noticeObject of checkFileResultObject.noticeList) {
+    if (noticeObject.filename === undefined) noticeObject.filename = filepath;
+  }
 
   // Add some extra fields to our checkFileResult object
   //  in case we need this information again later

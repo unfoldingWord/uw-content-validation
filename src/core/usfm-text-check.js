@@ -15,7 +15,7 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '1.0.1';
+// const USFM_VALIDATOR_VERSION_STRING = '1.0.2';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for STs
@@ -205,7 +205,7 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
 
      Returns a result object containing a successList and a noticeList
      */
-    functionLog(`checkUSFMText(uN=${username} lC=${languageCode} rC=${repoCode}, bkID=${bookID} fN=${filename}, ${givenText.length.toLocaleString()} chars, '${givenLocation}', ${JSON.stringify(checkingOptions)})…`);
+    // functionLog(`checkUSFMText(uN=${username} lC=${languageCode} rC=${repoCode}, bkID=${bookID} fN=${filename}, ${givenText.length.toLocaleString()} chars, '${givenLocation}', ${JSON.stringify(checkingOptions)})…`);
     // const regexMatchObject = HEBREW_CANTILLATION_REGEX.exec('\\f + \\ft Q \\+w הִנֵּ֤ה|lemma="הִנֵּ֤ה" strong="H2009" x-morph="He,Tm"\\+w*\\f*');
     // console.log(`Got test cantillation regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
 
@@ -293,8 +293,9 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
         //parameterAssert(incompleteNoticeObject.message.indexOf("Mismatched {}") === -1 || incompleteNoticeObject.lineNumber === undefined, `checkUSFMText addNoticePartial: got bad notice: ${noticeObjectString}`);
         //parameterAssert(noticeObjectString.indexOf('NONE') === -1 && noticeObjectString.indexOf('SPECIAL') === -1, `checkUSFMText addNoticePartial: 'NONE' & 'SPECIAL' shouldn’t make it thru to end user: ${noticeObjectString}`)
         if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkUSFMText ${incompleteNoticeObject.debugChain}`;
-        aboutToOverwrite('checkUSFMText', ['bookID', 'filename'], incompleteNoticeObject, { bookID, filename });
-        usfmResultObject.noticeList.push({ ...incompleteNoticeObject, bookID, filename });
+        aboutToOverwrite('checkUSFMText', ['bookID'], incompleteNoticeObject, { bookID });
+        if (incompleteNoticeObject.filename === undefined) incompleteNoticeObject.filename = filename; // Don't want to override "text extracted from..." filenames
+        usfmResultObject.noticeList.push({ ...incompleteNoticeObject, bookID });
     }
 
 
@@ -681,7 +682,8 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
             }
 
 
-        // Now do the general global checks (e.g., for general punctuation)
+        // Now do the general global checks (e.g., for general punctuation) -- this is the raw USFM code
+        // debugLog(`checkUSFMFileContents doing basic file checks on ${repoCode} (${fileText.length}) ${fileText}`);
         ourBasicFileChecks(filename, fileText, fileLocation, checkingOptions);
 
         for (const expectedMarker of EXPECTED_MARKERS_LIST)
@@ -705,17 +707,23 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
         //  but not worried about double spaces, etc, here -- more on word/punctuation stuff
         const cleanishText = extractTextFromComplexUSFM(fileText);
         // debugLog(`checkUSFMFileContents got ${repoCode} cleanishText (${cleanishText.length}) ${cleanishText}`);
-        const separatedDigitsRegex = new RegExp('\\d{1,3}, (\\d{1,3})', 'g'); // e.g., "5, 000"
-        let regexMatchObject;
-        while ((regexMatchObject = separatedDigitsRegex.exec(cleanishText))) {
-            if (regexMatchObject[1].startsWith('0'))
-                addNoticePartial({ priority: 498, message: "Found separated digits", excerpt: regexMatchObject[0], location: fileLocation });
-            else
-                addNoticePartial({ priority: 198, message: "Found possible separated digits", excerpt: regexMatchObject[0], location: fileLocation });
-        }
-        const noCapitalSentenceRegex = new RegExp(`[.!?] [a-z]{1,${excerptLength}}`, 'g'); // e.g., "end. start"
-        while ((regexMatchObject = noCapitalSentenceRegex.exec(cleanishText)))
-            addNoticePartial({ priority: ['en'].includes(languageCode) ? 197 : 97, message: "Sentence may not start with capital letter", excerpt: regexMatchObject[0], location: fileLocation });
+        // debugLog(`checkUSFMFileContents doing basic file checks on ${repoCode} (${fileText.length}) ${cleanishText}`);
+        // NOTE: This could conceivably get some notice double-ups, but it's a quite different text being checked than in the above call
+        // NOTE: The exact wording below much match RenderFileDetails() in RenderProcessedResults.js
+        ourBasicFileChecks(`text extracted from ${filename}`, cleanishText, fileLocation, checkingOptions);
+
+        // Code below is moved to plain-text-check.js
+        // const separatedDigitsRegex = new RegExp('\\d{1,3}, (\\d{1,3})', 'g'); // e.g., "5, 000"
+        // let regexMatchObject;
+        // while ((regexMatchObject = separatedDigitsRegex.exec(cleanishText))) {
+        //     if (regexMatchObject[1].startsWith('0'))
+        //         addNoticePartial({ priority: 498, message: "Found separated digits", excerpt: regexMatchObject[0], location: fileLocation });
+        //     else
+        //         addNoticePartial({ priority: 198, message: "Found possible separated digits", excerpt: regexMatchObject[0], location: fileLocation });
+        // }
+        // const noCapitalSentenceRegex = new RegExp(`[.!?] [a-z]{1,${excerptLength}}`, 'g'); // e.g., "end. start"
+        // while ((regexMatchObject = noCapitalSentenceRegex.exec(cleanishText)))
+        //     addNoticePartial({ priority: ['en'].includes(languageCode) ? 197 : 97, message: "Sentence may not start with capital letter", excerpt: regexMatchObject[0], location: fileLocation });
     }
     // end of checkUSFMFileContents function
 
