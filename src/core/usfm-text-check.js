@@ -2,7 +2,7 @@
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
 import { isWhitespace, countOccurrencesInString, ourDeleteAll, HEBREW_CANTILLATION_REGEX } from './text-handling-functions'
 import * as books from './books/books';
-import { cachedGetFile } from './getApi';
+import { cachedGetFile, cacheSegment, fetchSegmentIfCached } from './getApi';
 import { checkTextField } from './field-text-check';
 import { checkTextfileContents } from './file-text-check';
 import { checkStrongsField } from './strongs-field-check'; // and this may call checkLexiconFileContents()
@@ -15,7 +15,7 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '1.0.2';
+// const USFM_VALIDATOR_VERSION_STRING = '1.1.0';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for STs
@@ -1144,9 +1144,9 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
          * @param {Object} checkingOptions
          */
         async function getOriginalWordLists(bookID, C, V, checkingOptions) {
-            // TODO: Cache these ???
             // functionLog(`getOriginalWordLists(${bookID}, ${C}:${V}, )…`);
 
+            // TODO: Why not calculate and cache all of these at once
             let username;
             try {
                 username = checkingOptions?.originalLanguageRepoUsername;
@@ -1158,6 +1158,10 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
             } catch (qcunError) { }
             if (!branch) branch = 'master';
             const getFile_ = (checkingOptions && checkingOptions?.getFile) ? checkingOptions?.getFile : cachedGetFile;
+
+            const uniqueCacheID = `${username}_${languageCode}_${repoCode}_${branch}-${bookID}_${C}:${V}`;
+            const cachedWordLists = await fetchSegmentIfCached(uniqueCacheID);
+            if (cachedWordLists !== null) return cachedWordLists;
 
             const verseWordList = [], verseWordObjectList = [];
             const bookNumberAndName = books.usfmNumberName(bookID);
@@ -1195,6 +1199,7 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
             }
             if (!originalUSFM) {
                 debugLog(`Oops: getOriginalWordLists(${bookID}, ${C}:${V}, ) didn’t find a file!!!`);
+                cacheSegment(null, uniqueCacheID); // Don't bother (a)waiting
                 return null;
             }
 
@@ -1251,7 +1256,9 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
             }
 
             // debugLog(`  getOriginalWordLists(${bookID} ${C}:${V}) is returning (${verseWordList.length}) ${verseWordList} (${verseWordObjectList.length}) ${JSON.stringify(verseWordObjectList)}`);
-            return { originalLanguageRepoCode, verseWordList, verseWordObjectList };
+            const wordLists = { originalLanguageRepoCode, verseWordList, verseWordObjectList };
+            cacheSegment(wordLists, uniqueCacheID); // Don't bother (a)waiting
+            return wordLists;
         }
         // end of getOriginalWordLists function
 

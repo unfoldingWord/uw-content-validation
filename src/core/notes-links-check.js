@@ -163,7 +163,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         //parameterAssert(typeof incompleteNoticeObject.location === 'string', `cTNlnk addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
         // incompleteNoticeObject.debugChain = incompleteNoticeObject.debugChain ? `checkNotesLinksToOutside ${ incompleteNoticeObject.debugChain } ` : `checkNotesLinksToOutside(${ fieldName })`;
         if (bookID.length) incompleteNoticeObject.bookID = bookID; // Don't set the field if we don't have a useful bookID
-        aboutToOverwrite('checkNotesLinksToOutside', ['filename'], incompleteNoticeObject, { fieldName });
+        aboutToOverwrite('checkNotesLinksToOutside', ['fieldName'], incompleteNoticeObject, { fieldName });
         ctarResult.noticeList.push({ ...incompleteNoticeObject, fieldName });
     }
 

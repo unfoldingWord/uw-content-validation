@@ -3,12 +3,12 @@ import * as books from './books/books';
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults';
 // eslint-disable-next-line no-unused-vars
 import { CLOSING_PUNCTUATION_CHARACTERS, HEBREW_CANTILLATION_REGEX, PAIRED_PUNCTUATION_OPENERS, PAIRED_PUNCTUATION_CLOSERS } from './text-handling-functions';
-import { cachedGetFile } from './getApi';
+import { cachedGetFile, cacheSegment, fetchSegmentIfCached } from './getApi';
 // eslint-disable-next-line no-unused-vars
 import { functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt, aboutToOverwrite } from './utilities';
 
 
-// const OL_QUOTE_VALIDATOR_VERSION_STRING = '0.10.10';
+// const OL_QUOTE_VALIDATOR_VERSION_STRING = '1.0.0';
 
 
 /**
@@ -111,11 +111,10 @@ export async function checkOriginalLanguageQuoteAndOccurrence(username, language
      * @param {Object} checkingOptions
      */
     async function getOriginalVerse(bookID, C, V, checkingOptions) {
-        // TODO: Cache these ???
-
         // functionLog(`checkOriginalLanguageQuoteAndOccurrence getOriginalVerse(${bookID}, ${C}:${V})…`);
         //parameterAssert(V.indexOf('-') === -1 && V.indexOf('–') === -1, `checkOriginalLanguageQuoteAndOccurrence getOriginalVerse: Did not expect hyphen or dash in V parameter: '${V}'`);
 
+        // NOTE: We don't need to cache inside this function, because the results get cached in getOriginalPassage() below
         let username;
         try {
             username = checkingOptions?.originalLanguageRepoUsername;
@@ -265,27 +264,38 @@ export async function checkOriginalLanguageQuoteAndOccurrence(username, language
      * @param {Object} checkingOptions
      */
     async function getOriginalPassage(bookID, C, V, checkingOptions) {
-        // TODO: Cache these ???
-
         // functionLog(`checkOriginalLanguageQuoteAndOccurrence getOriginalPassage(${bookID}, ${C}:${V})…`);
 
-        if (/^[0-9]{1,3}$/.test(V)) // Assume it's a single verse or frame-number
-            return await getOriginalVerse(bookID, C, V, checkingOptions);
+        // TODO: Why not calculate and cache all of these at once
+        const uniqueCacheID = `${username}_${languageCode}_${repoCode}+${bookID}_${C}:${V}`;
+        const cachedPassage = await fetchSegmentIfCached(uniqueCacheID);
+        if (cachedPassage !== null) return cachedPassage;
+
+        let versePassage;
+        if (/^[0-9]{1,3}$/.test(V)) {// Assume it's a single verse or frame-number
+            versePassage = await getOriginalVerse(bookID, C, V, checkingOptions);
+            cacheSegment(versePassage, uniqueCacheID); // Don't bother (a)waiting
+            return versePassage;
+        }
 
         V = V.replace('–', '-'); // Make sure than en-dash becomes a hyphen
         const vBits = V.split('-');
-        if (vBits.length !== 2)
-            return await getOriginalVerse(bookID, C, V, checkingOptions);
+        if (vBits.length !== 2) {
+            versePassage = await getOriginalVerse(bookID, C, V, checkingOptions);
+            cacheSegment(versePassage, uniqueCacheID); // Don't bother (a)waiting
+            return versePassage;
+        }
 
         let vStartInt, vEndInt;
         try { vStartInt = parseInt(vBits[0]); vEndInt = parseInt(vBits[1]); }
         catch (e) { console.log(`checkOriginalLanguageQuoteAndOccurrence: getOriginalVerse failed on '${V}' with ${e}`); return; }
         if (vStartInt >= vEndInt) { console.log(`checkOriginalLanguageQuoteAndOccurrence: getOriginalVerse failed on '${V}'`); return; }
 
-        let versePassage = '';
+        versePassage = '';
         for (let vInt = vStartInt; vInt <= vEndInt; vInt++) {
             versePassage += (versePassage.length ? ' ' : '') + await getOriginalVerse(bookID, C, vInt.toString(), checkingOptions);
         }
+        cacheSegment(versePassage, uniqueCacheID); // Don't bother (a)waiting
         return versePassage;
     }
     // end of getOriginalPassage function

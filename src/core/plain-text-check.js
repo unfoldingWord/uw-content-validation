@@ -226,8 +226,8 @@ export function checkPlainText(username, languageCode, repoCode, textType, textN
                         addNotice({ priority: 198, message: "Found possible separated digits", excerpt: regexMatchObject[0], lineNumber: n, location: ourLocation });
 
             // Search for long numbers like "20000" which should probably be "20,000" in English text
-            // NOTE: Need to eliminate Strongs numbers, zip codes, copyright years, commit SHAs, etc.
-            if (cutoffPriorityLevel < 91 && !textName.endsWith('manifest') && !line.startsWith('\\id') && line.indexOf('strong="') === -1 && line.indexOf('Strong’s:') === -1 && line.indexOf('©') === -1 && line.indexOf('USA.') === -1&&line.indexOf('/commit/') === -1)
+            // NOTE: Need to eliminate Strongs numbers, zip codes, ISBN numbers, copyright years, commit SHAs, etc.
+            if (cutoffPriorityLevel < 91 && !textName.endsWith('manifest') && !line.startsWith('\\id') && line.indexOf('strong="') === -1 && line.indexOf('Strong’s:') === -1 && line.indexOf('©') === -1 && line.indexOf('ISBN') === -1 && line.indexOf('USA.') === -1 && line.indexOf('/commit/') === -1 && line.indexOf('Version') === -1)
                 while ((regexMatchObject = tooManyDigitsRegex.exec(line)))
                     addNotice({ priority: 91, message: "Possible missing separator in digit string", excerpt: regexMatchObject[0], lineNumber: n, location: ourLocation });
 
