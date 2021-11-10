@@ -1,0 +1,97 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`checkPlainText() -  short snippet tests -  might fail on tabbed line 1`] = `
+Object {
+  "noticeList": Array [],
+  "successList": Array [
+    "Checked all 2 lines from test snippet",
+    "No errors or warnings found by checkPlainText v1.0.0",
+  ],
+}
+`;
+
+exports[`checkPlainText() -  short snippet tests -  should fail on empty string 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "characterIndex": -1,
+      "excerpt": "",
+      "location": " from test snippet",
+      "message": "File ends without newline character",
+      "priority": 538,
+    },
+  ],
+  "successList": Array [
+    "Checked all 1 line from test snippet",
+    "checkPlainText v1.0.0 finished with 1 notice",
+  ],
+}
+`;
+
+exports[`checkPlainText() -  short snippet tests -  should fail on long digit string 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "excerpt": "5000",
+      "lineNumber": 1,
+      "location": " from test snippet",
+      "message": "Possible missing separator in digit string",
+      "priority": 91,
+    },
+    Object {
+      "excerpt": "456789",
+      "lineNumber": 1,
+      "location": " from test snippet",
+      "message": "Possible missing separator in digit string",
+      "priority": 91,
+    },
+  ],
+  "successList": Array [
+    "Checked all 2 lines from test snippet",
+    "checkPlainText v1.0.0 finished with 2 notices",
+  ],
+}
+`;
+
+exports[`checkPlainText() -  short snippet tests -  should fail on separated digits 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "characterIndex": 12,
+      "excerpt": "…sus fed 5, 000 peopl…",
+      "lineNumber": 1,
+      "location": " from test snippet",
+      "message": "Unexpected leading zero",
+      "priority": 92,
+    },
+    Object {
+      "excerpt": "5, 000",
+      "lineNumber": 1,
+      "location": " from test snippet",
+      "message": "Found separated digits",
+      "priority": 498,
+    },
+    Object {
+      "excerpt": "4, 999",
+      "lineNumber": 1,
+      "location": " from test snippet",
+      "message": "Found possible separated digits",
+      "priority": 198,
+    },
+  ],
+  "successList": Array [
+    "Checked all 2 lines from test snippet",
+    "checkPlainText v1.0.0 finished with 3 notices",
+  ],
+}
+`;
+
+exports[`checkPlainText() -  short snippet tests -  should pass on smallest snippet 1`] = `
+Object {
+  "noticeList": Array [],
+  "successList": Array [
+    "Checked all 2 lines from test snippet",
+    "No errors or warnings found by checkPlainText v1.0.0",
+  ],
+}
+`;

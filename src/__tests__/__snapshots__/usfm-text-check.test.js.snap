@@ -77,6 +77,7 @@ Object {
       "bookID": "2JN",
       "excerpt": "5, 000",
       "filename": "text extracted from test.usfm",
+      "lineNumber": 2,
       "location": " from test snippet",
       "message": "Found separated digits",
       "priority": 498,

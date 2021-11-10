@@ -15,13 +15,13 @@ const optionalCheckingOptions = {
   disableLinkedLexiconEntriesCheckFlag: true,
   getFile: params => {
     const { username, repository, path } = params;
-    // console.log(`tn-tsv7-table-row-check.test getFile(${username}, ${repository}, ${path})`)
+    // console.log(`usfm-text-check.test getFile(${username}, ${repository}, ${path})`)
     const filePath = Path.join('./src/__tests__/fixtures', username, repository, path);
     if (fs.existsSync(filePath)) {
       return fs.readFileSync(filePath).toString();
     }
     // eslint-disable-next-line no-throw-literal
-    throw `tn-table-row-check.test getFile(): Could not find ${filePath}`;
+    throw `usfm-text-check.test getFile(): Could not find ${filePath}`;
   }
 }
 
@@ -63,7 +63,7 @@ describe('checkUSFMText() - ', () => {
     it('should fail on no ID line', async () => {
       const rawResults = await checkUSFMText(username, languageCode, repoCode, 'RUT', 'test.usfm', "\\ide UTF-8\n", 'from test snippet', optionalCheckingOptions);
       // console.log(`checkUSFMText rawResults=${JSON.stringify(rawResults)}`);
-      // expect(rawResults.noticeList.length).toEqual(5);
+      expect(rawResults.noticeList.length).toEqual(5);
       expect(rawResults).toMatchSnapshot();
     });
 
@@ -117,4 +117,4 @@ describe('checkUSFMText() - ', () => {
 
   });
 
-  });
+});
