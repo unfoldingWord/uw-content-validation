@@ -40,7 +40,7 @@ describe('checkUSFMText() - ', () => {
 \\p \\v 1 a b c\\v 2 b c d\\v 3 c d e\\v 4 d e f\\v 5 e f g\\v 6 f g h\\v 7 g h i\\v 8 h i j\\v 9 i j k\\v 10 j k l\\v 11 k l m\\v 12 l m n\\v 13 n o p
 `; // There's a minimum number of words/characters expected in each verse
       const rawResults = await checkUSFMText(username, languageCode, repoCode, '2JN', 'test.usfm', usfmText, 'from test snippet', optionalCheckingOptions);
-      console.log(`checkUSFMText from usfmText='${usfmText}' got rawResults=${JSON.stringify(rawResults)}`);
+      // console.log(`checkUSFMText from usfmText='${usfmText}' got rawResults=${JSON.stringify(rawResults)}`);
       expect(rawResults.noticeList.length).toEqual(0);
       expect(rawResults).toMatchSnapshot();
     });
@@ -110,7 +110,7 @@ describe('checkUSFMText() - ', () => {
 \\zaln-s |x-strong="G04350" x-lemma="ἀνήρ" x-morph="Gr,N,,,,,NMP," x-occurrence="1" x-occurrences="1" x-content="ἄνδρες"\\*\\w men|x-occurrence="1" x-occurrences="1"\\w*\\zaln-e\\*.)
 `; // There's a minimum number of words/characters expected in each verse
       const rawResults = await checkUSFMText(username, languageCode, repoCode, '2JN', 'test.usfm', usfmText, 'from test snippet', optionalCheckingOptions);
-      console.log(`checkUSFMText from usfmText='${usfmText}' got rawResults=${JSON.stringify(rawResults)}`);
+      // console.log(`checkUSFMText from usfmText='${usfmText}' got rawResults=${JSON.stringify(rawResults)}`);
       expect(rawResults.noticeList.length).toEqual(1); // TODO: Why do we get "verse number didn't increment correctly"???
       expect(rawResults).toMatchSnapshot();
     });
