@@ -42,7 +42,7 @@ const tableIcons = {
 };
 
 
-// const RENDER_PROCESSED_RESULTS_VERSION = '1.0.1';
+// const RENDER_PROCESSED_RESULTS_VERSION = '1.0.2';
 
 
 /**
@@ -466,7 +466,7 @@ function RenderOneEntry({ color, entry }) {
         <RenderMessage color={color} message={entry.message} details={entry.details} />
         <RenderBCV bookID={entry.bookID} C={entry.C} V={entry.V} />
         <RenderFileDetails givenEntry={entry} />
-        {entry.characterIndex > 0 ? " (at character " + (entry.characterIndex + 1) + ")" : ""}
+        {entry.characterIndex > 0 ? " (at character " + (entry.characterIndex + 1).toLocaleDateString() + ")" : ""}
         <RenderExcerpt excerpt={entry.excerpt} message={entry.message} />
         {entry.location}
         <RenderPriority entry={entry} /></>;
