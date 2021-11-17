@@ -9,12 +9,13 @@ import { removeDisabledNotices } from './disabled-notices';
 import { debugLog, functionLog, parameterAssert, logicAssert } from './utilities';
 
 
-const MANIFEST_VALIDATOR_VERSION_STRING = '0.5.0';
+const MANIFEST_VALIDATOR_VERSION_STRING = '1.0.0';
 
 // Pasted in 2020-10-02 from https://raw.githubusercontent.com/unfoldingWord/dcs/master/options/schema/rc.schema.json
 // Updated 2021-02-19
 // Now March 2021 it’s moved to https://github.com/unfoldingWord/rc-schema/blob/master/rc.schema.json
 // TODO: Load the latest one dynamically
+// RJH added FRT book 17Nov2021
 const MANIFEST_SCHEMA = {
     "$schema": "http://json-schema.org/draft-07/schema",
     "$id": "https://resource-container.readthedocs.io/schema/rc.schema.json",
@@ -452,6 +453,7 @@ const MANIFEST_SCHEMA = {
         "projectIdentifier": {
             "type": "string",
             "enum": [
+                "frt",
                 "gen",
                 "exo",
                 "lev",
