@@ -15,7 +15,7 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '1.1.1';
+// const USFM_VALIDATOR_VERSION_STRING = '1.2.0';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for STs
@@ -1151,7 +1151,7 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
             const cachedWordLists = await fetchSegmentIfCached(uniqueCacheID);
             if (cachedWordLists !== null) return cachedWordLists;
 
-            const verseWordList = [], verseWordObjectList = [];
+            const originalLanguageVerseWordList = [], originalLanguageVerseWordObjectList = [];
             const bookNumberAndName = books.usfmNumberName(bookID);
             let whichTestament;
             try {
@@ -1239,12 +1239,12 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
                 // debugLog(`Got ${repoCode} wFields Regex in ${bookID} ${C}:${V}: (${regexMatchObject1.length}) ${JSON.stringify(regexMatchObject1)}`);
                 // eslint-disable-next-line no-unused-vars
                 const [_totalLink, word, lemma, strongs, morph] = regexMatchObject1;
-                verseWordList.push(word);
-                verseWordObjectList.push({ lemma, strongs, morph });
+                originalLanguageVerseWordList.push(word);
+                originalLanguageVerseWordObjectList.push({ lemma, strongs, morph });
             }
 
             // debugLog(`  getOriginalWordLists(${bookID} ${C}:${V}) is returning (${verseWordList.length}) ${verseWordList} (${verseWordObjectList.length}) ${JSON.stringify(verseWordObjectList)}`);
-            const wordLists = { originalLanguageRepoCode, verseWordList, verseWordObjectList };
+            const wordLists = { originalLanguageRepoCode, originalLanguageVerseWordList, originalLanguageVerseWordObjectList };
             cacheSegment(wordLists, uniqueCacheID); // Don't bother (a)waiting
             return wordLists;
         }
@@ -1258,15 +1258,17 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
          */
         async function checkZALNAttributes(zalnContents) {
             // functionLog(`checkWAttributes(${zalnContents})…`);
+            // zaln fields are custom USFM fields with word/phrase alignment information
+            //  i.e., they occur in aligned translations (not in the UHB or UGNT)
             // The parameter normally starts with a |
             dataAssert(repoCode !== 'UHB' && repoCode !== 'UGNT', `checkZALNAttributes did not expect an original language repo: '${repoCode}'`);
             let zalnSuggestion, regexMatchObject, attributeCounter = 0;
-            const attributes = {};
+            const zalnAttributes = {};
             while ((regexMatchObject = ATTRIBUTE_REGEX.exec(zalnContents))) {
                 attributeCounter += 1;
                 // debugLog(`  Got attribute Regex in \\zaln-s: ${attributeCounter} '${JSON.stringify(regexMatchObject2)}`);
                 const attributeName = regexMatchObject[1], attributeValue = regexMatchObject[2];
-                attributes[attributeName] = attributeValue;
+                zalnAttributes[attributeName] = attributeValue;
                 if (attributeCounter === 1) {
                     if (attributeName !== 'x-strong')
                         addNoticePartial({ priority: 830, message: "Unexpected first \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
@@ -1296,15 +1298,15 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
             //  during alignment by tC
             //  so we need to check them as it’s possible for them to get out of sync
             if (checkingOptions?.disableAllLinkFetchingFlag !== true) {
-                const wordListResult = await getOriginalWordLists(bookID, C, V, checkingOptions);
-                const { originalLanguageRepoCode, verseWordList, verseWordObjectList } = wordListResult;
-                // debugLog(`checkZALNAttributes has '${originalLanguageRepoCode}' ${bookID} ${C}:${V} ${verseWordList} ${JSON.stringify(verseWordObjectList)}`);
+                const originalLanguageWordListResult = await getOriginalWordLists(bookID, C, V, checkingOptions);
+                const { originalLanguageRepoCode, originalLanguageVerseWordList, originalLanguageVerseWordObjectList } = originalLanguageWordListResult;
+                // debugLog(`checkZALNAttributes has '${originalLanguageRepoCode}' ${bookID} ${C}:${V} ${originalLanguageVerseWordList} ${JSON.stringify(originalLanguageVerseWordObjectList)}`);
 
                 let oWord, oOccurrence, oOccurrences, oStrong, oLemma, oMorph;
                 try { // Could fail here if any of those attributes were missing (already notified, so don’t worry here)
-                    oWord = attributes['x-content'];
-                    oOccurrence = attributes['x-occurrence']; oOccurrences = attributes['x-occurrences'];
-                    oStrong = attributes['x-strong']; oLemma = attributes['x-lemma']; oMorph = attributes['x-morph'];
+                    oWord = zalnAttributes['x-content'];
+                    oOccurrence = zalnAttributes['x-occurrence']; oOccurrences = zalnAttributes['x-occurrences'];
+                    oStrong = zalnAttributes['x-strong']; oLemma = zalnAttributes['x-lemma']; oMorph = zalnAttributes['x-morph'];
                     // debugLog(`checkZALNAttributes has ${bookID} ${C}:${V} '${oWord}' ${oOccurrence}/${oOccurrences} ${oStrong} '${oLemma}' ${oMorph}`);
                     const oOccurrenceInt = parseInt(oOccurrence), oOccurrencesInt = parseInt(oOccurrences);
                     // debugLog(`checkZALNAttributes has ${bookID} ${C}:${V} ${oOccurrenceInt}/${oOccurrencesInt}`);
@@ -1315,36 +1317,44 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
                     if (oWordCount < oOccurrenceInt)
                         addNoticePartial({ priority: 802, message: "AAA Aligned x-occurrence for original word is too high", details: `only found ${oWordCount} occurrences of '${oWord}' instead of ${oOccurrence}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                     */
+
                     // Find the index of the correct occurrence of the word (index into the original language verse words list)
-                    let ix, gotCount = 0;
-                    for (ix = 0; ix < verseWordList.length; ix++) {
-                        if (verseWordList[ix] === oWord)
-                            if (++gotCount === oOccurrenceInt) break;
+                    let originalLanguageWordIndex, gotCount = 0, wordTotalCount = 0;
+                    for (let ix = 0; ix < originalLanguageVerseWordList.length; ix++) {
+                        if (originalLanguageVerseWordList[ix] === oWord) {
+                            ++wordTotalCount;
+                            if (originalLanguageWordIndex === undefined && ++gotCount === oOccurrenceInt)
+                                originalLanguageWordIndex = ix;
+                        }
                     }
+                    // First, check that the given number of occurrences really are there
+                    if (wordTotalCount !== oOccurrencesInt)
+                        addNoticePartial({ priority: 602, message: "Aligned word occurrences in original text is wrong", details: `found ${wordTotalCount} occurrences of '${oWord}' instead of ${oOccurrences} from ${originalLanguageVerseWordList.join(', ')}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                    // Now, check that the given occurrence is correct
                     if (gotCount !== oOccurrenceInt) // Can’t do checks below coz ix is invalid
                         if (gotCount === 0)
-                            addNoticePartial({ priority: 803, message: "Word can’t be found in original text", details: `found NO occurrences of '${oWord}' instead of ${oOccurrence} from ${verseWordList.join(', ')}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                            addNoticePartial({ priority: 803, message: "Aligned word can’t be found in original text", details: `found NO occurrences of '${oWord}' instead of ${oOccurrence} from ${originalLanguageVerseWordList.join(', ')}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                         else
-                            addNoticePartial({ priority: 802, message: "Aligned x-occurrence for original word is too high", details: `only found ${gotCount} occurrence${gotCount === 1 ? '' : 's'} of '${oWord}' instead of ${oOccurrence} from ${verseWordList.join(', ')}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                            addNoticePartial({ priority: 802, message: "Aligned x-occurrence for original word is too high", details: `only found ${gotCount} occurrence${gotCount === 1 ? '' : 's'} of '${oWord}' instead of ${oOccurrence} from ${originalLanguageVerseWordList.join(', ')}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                     else {
-                        const vwolStrongs = verseWordObjectList[ix]?.strongs;
+                        const vwolStrongs = originalLanguageVerseWordObjectList[originalLanguageWordIndex]?.strongs;
                         if (vwolStrongs !== oStrong) {
                             addNoticePartial({ priority: 805, message: "Aligned x-strong number doesn’t match original", details: `${originalLanguageRepoCode} had ‘${vwolStrongs}’`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                             zalnSuggestion = zalnContents.replace(`"${oStrong}"`, `"${vwolStrongs}"`);
                         }
-                        const vwolLemma = verseWordObjectList[ix]?.lemma;
+                        const vwolLemma = originalLanguageVerseWordObjectList[originalLanguageWordIndex]?.lemma;
                         if (vwolLemma !== oLemma) {
                             addNoticePartial({ priority: 806, message: "Aligned x-lemma doesn’t match original", details: `${originalLanguageRepoCode} had ‘${vwolLemma}’`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                             zalnSuggestion = zalnContents.replace(`"${oLemma}"`, `"${vwolLemma}"`);
                         }
-                        const vwolMorph = verseWordObjectList[ix]?.morph;
+                        const vwolMorph = originalLanguageVerseWordObjectList[originalLanguageWordIndex]?.morph;
                         if (vwolMorph !== oMorph) {
                             addNoticePartial({ priority: 804, message: "Aligned x-morph doesn’t match original", details: `${originalLanguageRepoCode} had ‘${vwolMorph}’`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                             zalnSuggestion = zalnContents.replace(`"${oMorph}"`, `"${vwolMorph}"`);
                         }
                     }
                 } catch (e) {
-                    debugLog(`checkZALNAttributes1: why couldn’t we get word attributes out of ${JSON.stringify(attributes)}: ${e.message}`);
+                    debugLog(`checkZALNAttributes1: why couldn’t we get word attributes out of ${JSON.stringify(zalnAttributes)}: ${e.message}`);
                 }
             }
             return zalnSuggestion;
