@@ -10,7 +10,7 @@ import {
 import { userLog, debugLog, functionLog, parameterAssert, logicAssert, aboutToOverwrite } from '../../core';
 
 
-// const CHECK_FILE_CONTENTS_VERSION_STRING = '1.0.1';
+// const CHECK_FILE_CONTENTS_VERSION_STRING = '1.0.2';
 
 
 /**
@@ -57,7 +57,7 @@ export async function checkFileContents(username, languageCode, repoCode, repoNa
   const filenameLower = filename.toLowerCase();
 
   const newCheckingOptions = givenCheckingOptions ? { ...givenCheckingOptions } : {}; // clone before modify
-  if (!newCheckingOptions.originalLanguageRepoUsername) newCheckingOptions.originalLanguageRepoUsername = username;
+  // if (!newCheckingOptions.originalLanguageRepoUsername) newCheckingOptions.originalLanguageRepoUsername = username;
   if (!newCheckingOptions.taRepoUsername) newCheckingOptions.taRepoUsername = username;
   if (!newCheckingOptions.twRepoUsername) newCheckingOptions.twRepoUsername = username;
 
@@ -90,7 +90,7 @@ export async function checkFileContents(username, languageCode, repoCode, repoNa
   else if (filenameLower.endsWith('.usfm')) {
     const filenameMain = filepath.slice(0, filepath.length - 5); // drop .usfm
     // debugLog(`Have USFM filenameMain=${filenameMain}`);
-    const bookID = filenameMain.slice(filenameMain.length - 3);
+    const bookID = filenameMain.endsWith('_book') ? filenameMain.slice(filenameMain.length - 8, filenameMain.length - 5) : filenameMain.slice(filenameMain.length - 3);
     // debugLog(`Have USFM bookcode=${bookID}`);
     //parameterAssert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
     checkFileResultObject = await checkUSFMText(username, languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, newCheckingOptions);
