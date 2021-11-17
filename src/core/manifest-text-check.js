@@ -412,6 +412,7 @@ const MANIFEST_SCHEMA = {
                             "title": "Items",
                             "type": "string",
                             "enum": [
+                                "bible-frt",
                                 "bible-ot",
                                 "bible-nt",
                                 "ta"
