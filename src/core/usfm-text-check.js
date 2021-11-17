@@ -15,10 +15,10 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '1.2.0';
+// const USFM_VALIDATOR_VERSION_STRING = '1.2.1';
 
 
-const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for STs
+const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for LTs and STs
 
 // See http://ubsicap.github.io/usfm/master/index.html
 // const COMPULSORY_MARKERS = ['id', 'ide']; // These are specifically checked for by the code near the start of mainUSFMCheck()
@@ -253,7 +253,7 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
     const lowercaseBookID = bookID.toLowerCase();
 
     let validLineStartCharacters = VALID_LINE_START_CHARACTERS;
-    if (repoCode === 'ST') validLineStartCharacters += '{';
+    if (repoCode === 'LT' || repoCode === 'ST') validLineStartCharacters += '{';
 
     const usfmResultObject = { successList: [], noticeList: [] };
 
@@ -1135,11 +1135,11 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
             // functionLog(`getOriginalWordLists(${bookID}, ${C}:${V}, )…`);
 
             // TODO: Why not calculate and cache all of these at once
-            let username;
+            let originalLanguageRepoUsername;
             try {
-                username = checkingOptions?.originalLanguageRepoUsername;
+                originalLanguageRepoUsername = checkingOptions?.originalLanguageRepoUsername;
             } catch (qcoError) { }
-            if (!username) username = languageCode === 'en' ? 'unfoldingWord' : 'Door43-Catalog'; // ??? !!!
+            if (!originalLanguageRepoUsername) originalLanguageRepoUsername = languageCode === 'en' ? 'unfoldingWord' : 'Door43-Catalog'; // ??? !!!
             let branch;
             try {
                 branch = checkingOptions?.originalLanguageRepoBranch;
@@ -1147,7 +1147,7 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
             if (!branch) branch = 'master';
             const getFile_ = (checkingOptions && checkingOptions?.getFile) ? checkingOptions?.getFile : cachedGetFile;
 
-            const uniqueCacheID = `${username}_${languageCode}_${repoCode}_${branch}-${bookID}_${C}:${V}`;
+            const uniqueCacheID = `${originalLanguageRepoUsername}_${languageCode}_${repoCode}_${branch}-${bookID}_${C}:${V}`;
             const cachedWordLists = await fetchSegmentIfCached(uniqueCacheID);
             if (cachedWordLists !== null) return cachedWordLists;
 
@@ -1170,25 +1170,26 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
             // debugLog(`Need to check against ${originalLanguageRepoCode}`);
             if (originalLanguageRepoCode === 'UHB') {
                 try {
-                    originalUSFM = await getFile_({ username, repository: originalLanguageRepoName, path: filename, branch });
+                    originalUSFM = await getFile_({ username: originalLanguageRepoUsername, repository: originalLanguageRepoName, path: filename, branch });
                     // debugLog("Fetched fileContent for", repoName, filename, typeof originalUSFM, originalUSFM.length);
                 } catch (gcUHBerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
-                    console.error(`getOriginalPassage(${bookID}, ${C}:${V}, ${JSON.stringify(checkingOptions)}) failed to load UHB`, username, originalLanguageRepoCode, filename, branch, gcUHBerror.message);
-                    addNoticePartial({ priority: 601, message: "Unable to load file", details: `error=${gcUHBerror}`, username, filename, location: ourLocation, extra: originalLanguageRepoName });
+                    console.error(`getOriginalPassage(${bookID}, ${C}:${V}, ${JSON.stringify(checkingOptions)}) failed to load UHB`, originalLanguageRepoUsername, originalLanguageRepoCode, filename, branch, gcUHBerror.message);
+                    addNoticePartial({ priority: 601, message: "Unable to load file", details: `error=${gcUHBerror}`, username: originalLanguageRepoUsername, filename, location: ourLocation, extra: originalLanguageRepoName });
                 }
             } else if (originalLanguageRepoCode === 'UGNT') {
                 try {
-                    originalUSFM = await getFile_({ username, repository: originalLanguageRepoName, path: filename, branch });
+                    originalUSFM = await getFile_({ username: originalLanguageRepoUsername, repository: originalLanguageRepoName, path: filename, branch });
                     // debugLog("Fetched fileContent for", repoName, filename, typeof originalUSFM, originalUSFM.length);
                 } catch (gcUGNTerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
-                    console.error(`getOriginalPassage(${bookID}, ${C}:${V}, ${JSON.stringify(checkingOptions)}) failed to load UGNT`, username, originalLanguageRepoCode, filename, branch, gcUGNTerror.message);
-                    addNoticePartial({ priority: 601, message: "Unable to load file", details: `error=${gcUGNTerror}`, username, filename, location: ourLocation, extra: originalLanguageRepoName });
+                    console.error(`getOriginalPassage(${bookID}, ${C}:${V}, ${JSON.stringify(checkingOptions)}) failed to load UGNT`, originalLanguageRepoUsername, originalLanguageRepoCode, filename, branch, gcUGNTerror.message);
+                    addNoticePartial({ priority: 601, message: "Unable to load file", details: `error=${gcUGNTerror}`, username: originalLanguageRepoUsername, filename, location: ourLocation, extra: originalLanguageRepoName });
                 }
             }
             if (!originalUSFM) {
-                debugLog(`Oops: getOriginalWordLists(${bookID}, ${C}:${V}, ) didn’t find a file!!!`);
-                cacheSegment(null, uniqueCacheID); // Don't bother (a)waiting
-                return null;
+                debugLog(`Oops: getOriginalWordLists(${bookID}, ${C}:${V}, ) didn’t find a file from ${originalLanguageRepoUsername} ${originalLanguageRepoName} ${filename} ${branch}!!!`);
+                const wordLists = { originalLanguageRepoCode, originalLanguageVerseWordList, originalLanguageVerseWordObjectList };
+                cacheSegment(wordLists, uniqueCacheID); // Don't bother (a)waiting
+                return wordLists;
             }
 
 
