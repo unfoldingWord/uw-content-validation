@@ -1,0 +1,6 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`check_USFM_Helpers() -  Should pass 1`] = `
+"‹v25› Eat everything that is sold in the market without asking for the sake of the conscience. For “the earth is the Lord’s, and the fullness of it.”
+"
+`;

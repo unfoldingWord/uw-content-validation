@@ -10,7 +10,7 @@ import { parameterAssert, debugLog, functionLog } from './utilities';
 const separatedDigitsRegex = new RegExp('\\d{1,3}, (\\d{1,3})', 'g'); // e.g., "5, 000"
 const tooManyDigitsRegex = new RegExp('\\d{4,}', 'g'); // e.g., "5000" should have a separator
 
-const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '1.0.0';
+const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '1.0.1';
 
 
 /**
@@ -262,7 +262,7 @@ export function checkPlainText(username, languageCode, repoCode, textType, textN
                                 && (textType !== 'markdown' || char !== '>')) { // Markdown uses > for block indents so ignore these
                                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + line.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < line.length ? '…' : '')
                                 addNotice({ priority: 774, message: `Unexpected ${char} closing character (no matching opener)`, lineNumber: n, characterIndex, excerpt, location: ourLocation });
-                                // debugLog(`  ERROR 774: closed with nothing open: ${char}`);
+                                // debugLog(`  ERROR 774: closed with nothing open: ${char} from ${line}`);
                             }
                     }
 
@@ -277,7 +277,7 @@ export function checkPlainText(username, languageCode, repoCode, textType, textN
     if (cutoffPriorityLevel < 768 && openMarkers.length) {
         const [{ char, n, x }] = openMarkers.slice(-1);
         const line = lines[n - 1];
-        const excerpt = (x > excerptHalfLength ? '…' : '') + line.slice(x - excerptHalfLength, x + excerptHalfLengthPlus) + (x + excerptHalfLengthPlus < line.length ? '…' : '')
+        const excerpt = (x > excerptHalfLength ? '…' : '') + line.substring(x - excerptHalfLength, x + excerptHalfLengthPlus) + (x + excerptHalfLengthPlus < line.length ? '…' : '')
         const details = openMarkers.length > 1 ? `${openMarkers.length} unclosed set${openMarkers.length === 1 ? '' : 's'}` : null;
         addNotice({ priority: 768, message: `At end of text with unclosed ${char} opening character`, details, lineNumber: n, characterIndex: x, excerpt, location: ourLocation });
     }
@@ -300,10 +300,17 @@ export function checkPlainText(username, languageCode, repoCode, textType, textN
 
     if (cutoffPriorityLevel < 97)
         while ((regexMatchObject = noCapitalSentenceRegex.exec(plainText)))
-            addNotice({ priority: ['en'].includes(languageCode) ? 197 : 97, message: "Sentence may not start with capital letter", excerpt: regexMatchObject[0], location: ourLocation });
+            if ((textType !== 'YAML' || regexMatchObject[0] !== '. in') // e.g., Ph.D. in "Shape of Greek iota symbol in late 3rd century manuscripts"
+            && (textType !== 'markdown' || regexMatchObject[0] !== '. t' || plainText.slice(regexMatchObject.index+3, regexMatchObject.index+4) !== 'C') // Sentence starting with tC
+            ){
+                const characterIndex = regexMatchObject.index;
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + plainText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < plainText.length ? '…' : '')
+                // debugLog(`checkPlainText for ${textType} found no capital with '${regexMatchObject[0]}' at index ${characterIndex} giving excerpt='${excerpt}'`);
+                addNotice({ priority: ['en'].includes(languageCode) ? 197 : 97, message: "Sentence may not start with capital letter", excerpt, location: ourLocation });
+            }
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        // functionLog(`checkPlainText: calling removeDisabledNotices(${cptResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        // debugLog(`checkPlainText: calling removeDisabledNotices(${cptResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
         cptResult.noticeList = removeDisabledNotices(cptResult.noticeList);
     }
 

@@ -9,13 +9,13 @@ import { checkStrongsField } from './strongs-field-check'; // and this may call 
 import { runUsfmJsCheck } from './usfm-js-check';
 import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
 import { checkNotesLinksToOutside } from './notes-links-check';
-import { extractTextFromComplexUSFM } from './usfm_helpers';
+import { extractTextFromComplexUSFM } from './usfm-helpers';
 // eslint-disable-next-line no-unused-vars
 import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt, aboutToOverwrite } from './utilities';
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '1.2.1';
+// const USFM_VALIDATOR_VERSION_STRING = '1.2.2';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for LTs and STs
@@ -647,6 +647,11 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
         //  process results line by line
         for (const noticeEntry of resultObject.noticeList) {
             logicAssert(Object.keys(noticeEntry).length >= 5, `USFM ourBasicFileChecks notice length=${Object.keys(noticeEntry).length}`);
+            if (filename.startsWith('text extracted from')) {
+                // The line number, etc. will be useless/misleading
+                delete noticeEntry.lineNumber;
+                delete noticeEntry.characterIndex;
+            }
             addNoticePartial(noticeEntry);
         }
     }
