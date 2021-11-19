@@ -5,7 +5,7 @@ Object {
   "noticeList": Array [],
   "successList": Array [
     "Checked all 2 lines from test snippet",
-    "No errors or warnings found by checkPlainText v1.0.0",
+    "No errors or warnings found by checkPlainText v1.0.1",
   ],
 }
 `;
@@ -23,7 +23,7 @@ Object {
   ],
   "successList": Array [
     "Checked all 1 line from test snippet",
-    "checkPlainText v1.0.0 finished with 1 notice",
+    "checkPlainText v1.0.1 finished with 1 notice",
   ],
 }
 `;
@@ -48,7 +48,7 @@ Object {
   ],
   "successList": Array [
     "Checked all 2 lines from test snippet",
-    "checkPlainText v1.0.0 finished with 2 notices",
+    "checkPlainText v1.0.1 finished with 2 notices",
   ],
 }
 `;
@@ -81,7 +81,7 @@ Object {
   ],
   "successList": Array [
     "Checked all 2 lines from test snippet",
-    "checkPlainText v1.0.0 finished with 3 notices",
+    "checkPlainText v1.0.1 finished with 3 notices",
   ],
 }
 `;
@@ -91,7 +91,7 @@ Object {
   "noticeList": Array [],
   "successList": Array [
     "Checked all 2 lines from test snippet",
-    "No errors or warnings found by checkPlainText v1.0.0",
+    "No errors or warnings found by checkPlainText v1.0.1",
   ],
 }
 `;

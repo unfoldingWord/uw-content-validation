@@ -1197,22 +1197,21 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
                 return wordLists;
             }
 
-
-            // Do global fixes
-            // originalUSFM = originalUSFM.replace(/\\k-e\\\*/g, ''); // Remove \k-e self-closed milestones
-            // originalUSFM = originalUSFM.replace(/\\k-s.+?\\\*/g, ''); // Remove \k-s self-closed milestones
-
+            // Ok, we now have the USFM for the entire book
             const V1 = V.split('-')[0]; // Usually identical to V
             let V2, intV2;
             if (V1 !== V) {
                 V2 = V.split('-')[1];
                 intV2 = Number(V2);
                 // debugLog(`getOriginalWordLists got verse range ${V1} and ${V2} (${intV2})`)
+                // Since we have a verse bridge, save some extra pointers so we can separate the verses later
+                originalLanguageVerseWordList.push(`v=${V1}`);
+                originalLanguageVerseWordObjectList.push(`v=${V1}`);
             }
 
             // Now find the desired C:V
             let foundChapter = false, foundVerse = false;
-            let wLinesVerseText = '';
+            // let wLinesVerseText = '';
             for (let bookLine of originalUSFM.split('\n')) {
                 // debugLog("bookLine", bookLine);
                 if (!foundChapter && bookLine === `\\c ${C}`) {
@@ -1229,25 +1228,29 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
                         if (!V2) // no range requested
                             break; // Don’t go into the next verse or chapter
                         else { // there is a range requested
-                            const intV = Number(bookLine.slice(3));
+                            const thisV = bookLine.slice(3);
+                            const intV = Number(thisV);
                             // debugLog(`getOriginalWordLists got verse number ${intV} for range ${V1} and ${V2} (${intV2})`)
                             if (intV > intV2) break; // we're past the bit we want
+                            // Since we have a verse bridge, save some extra pointers so we can separate the verses later
+                            originalLanguageVerseWordList.push(`v=${thisV}`);
+                            originalLanguageVerseWordObjectList.push(`v=${thisV}`);
                         }
-                    if (bookLine.indexOf('\\w ') !== -1 || bookLine.indexOf('\\+w ') !== -1)
-                        wLinesVerseText += bookLine;
+                    if (bookLine.indexOf('\\w ') !== -1 || bookLine.indexOf('\\+w ') !== -1) {
+                        // Get each \w field out
+                        let regexMatchObject1;
+                        while ((regexMatchObject1 = W_FIELDS_REGEX.exec(bookLine))) {
+                            // debugLog(`Got ${repoCode} wFields Regex in ${bookID} ${C}:${V}: (${regexMatchObject1.length}) ${JSON.stringify(regexMatchObject1)}`);
+                            // eslint-disable-next-line no-unused-vars
+                            const [_totalLink, word, lemma, strongs, morph] = regexMatchObject1;
+                            originalLanguageVerseWordList.push(word);
+                            originalLanguageVerseWordObjectList.push({ lemma, strongs, morph });
+                        }
+                        // wLinesVerseText += bookLine;
+                    }
                 }
             }
             // debugLog(`getOriginalWordLists: Got verse words: '${wLinesVerseText}'`);
-
-            // Get each \w field out
-            let regexMatchObject1;
-            while ((regexMatchObject1 = W_FIELDS_REGEX.exec(wLinesVerseText))) {
-                // debugLog(`Got ${repoCode} wFields Regex in ${bookID} ${C}:${V}: (${regexMatchObject1.length}) ${JSON.stringify(regexMatchObject1)}`);
-                // eslint-disable-next-line no-unused-vars
-                const [_totalLink, word, lemma, strongs, morph] = regexMatchObject1;
-                originalLanguageVerseWordList.push(word);
-                originalLanguageVerseWordObjectList.push({ lemma, strongs, morph });
-            }
 
             // debugLog(`  getOriginalWordLists(${bookID} ${C}:${V}) is returning (${verseWordList.length}) ${verseWordList} (${verseWordObjectList.length}) ${JSON.stringify(verseWordObjectList)}`);
             const wordLists = { originalLanguageRepoCode, originalLanguageVerseWordList, originalLanguageVerseWordObjectList };
@@ -1293,27 +1296,38 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
                 } else if (attributeCounter === 6) {
                     if (attributeName !== 'x-content')
                         addNoticePartial({ priority: 825, message: "Unexpected sixth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
-                } else // #7 or more
+                } else if (attributeCounter === 7) {
+                    if (attributeName !== 'x-ref') // For aligning of bridged verses
+                        addNoticePartial({ priority: 819, message: "Unexpected seventh \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
+                } else // #8 or more
                     addNoticePartial({ priority: 833, message: "Unexpected extra \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
             }
             if (attributeCounter < 6)
-                addNoticePartial({ priority: 834, message: "Seems too few translation \\zaln-s attributes", details: `expected six attributes but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexMatchObject1[0], location: lineLocation });
+                addNoticePartial({ priority: 834, message: "Seems too few translation \\zaln-s attributes", details: `expected 6-7 attributes but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexMatchObject1[0], location: lineLocation });
             // debugLog(`checkZALNAttributes has ${bookID} ${C}:${V} attributes: ${JSON.stringify(attributes)}`);
 
             // The Strongs, lemma and morph fields are copied from the original UHB/UGNT files
-            //  during alignment by tC
+            //  into the translation USFM during alignment by tC
             //  so we need to check them as it’s possible for them to get out of sync
             if (checkingOptions?.disableAllLinkFetchingFlag !== true) {
-                const originalLanguageWordListResult = await getOriginalWordLists(bookID, C, V, checkingOptions);
-                const { originalLanguageRepoCode, originalLanguageVerseWordList, originalLanguageVerseWordObjectList } = originalLanguageWordListResult;
-                // debugLog(`checkZALNAttributes has '${originalLanguageRepoCode}' ${bookID} ${C}:${V} ${originalLanguageVerseWordList} ${JSON.stringify(originalLanguageVerseWordObjectList)}`);
+                const { originalLanguageRepoCode, originalLanguageVerseWordList, originalLanguageVerseWordObjectList } = await getOriginalWordLists(bookID, C, V, checkingOptions);
+                // if (V.indexOf('-') !== -1)
+                //     debugLog(`checkZALNAttributes has '${originalLanguageRepoCode}' ${bookID} ${C}:${V} ${originalLanguageVerseWordList} ${JSON.stringify(originalLanguageVerseWordObjectList)}`);
 
-                let oWord, oOccurrence, oOccurrences, oStrong, oLemma, oMorph;
+                let oWord, oOccurrence, oOccurrences, oStrong, oLemma, oMorph, oRef, oC, oV;
                 try { // Could fail here if any of those attributes were missing (already notified, so don’t worry here)
                     oWord = zalnAttributes['x-content'];
                     oOccurrence = zalnAttributes['x-occurrence']; oOccurrences = zalnAttributes['x-occurrences'];
                     oStrong = zalnAttributes['x-strong']; oLemma = zalnAttributes['x-lemma']; oMorph = zalnAttributes['x-morph'];
-                    // debugLog(`checkZALNAttributes has ${bookID} ${C}:${V} '${oWord}' ${oOccurrence}/${oOccurrences} ${oStrong} '${oLemma}' ${oMorph}`);
+                    oRef = zalnAttributes['x-ref']; // usually undefined
+                    if (oRef) {
+                        if (oRef.indexOf(':') === -1)
+                            addNoticePartial({ priority: 807, message: "Aligned x-ref should contain C:V", lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                        [oC, oV] = oRef.split(':');
+                        if (oC !== C) // This theoretically is not a problem -- just that we haven't written the code for it here yet!
+                            addNoticePartial({ priority: 795, message: "Aligned x-ref should be in the same chapter", details: `found x-ref="${oRef}" but C=${C}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                    }
+                    // debugLog(`checkZALNAttributes has ${bookID} ${C}:${V} '${oWord}' ${oOccurrence}/${oOccurrences} ${oStrong} '${oLemma}' ${oMorph} ${oRef}`);
                     const oOccurrenceInt = parseInt(oOccurrence), oOccurrencesInt = parseInt(oOccurrences);
                     // debugLog(`checkZALNAttributes has ${bookID} ${C}:${V} ${oOccurrenceInt}/${oOccurrencesInt}`);
                     if (oOccurrenceInt > oOccurrencesInt)
@@ -1326,8 +1340,13 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
 
                     // Find the index of the correct occurrence of the word (index into the original language verse words list)
                     let originalLanguageWordIndex, gotCount = 0, wordTotalCount = 0;
+                    let listV;
                     for (let ix = 0; ix < originalLanguageVerseWordList.length; ix++) {
-                        if (originalLanguageVerseWordList[ix] === oWord) {
+                        const thisWord = originalLanguageVerseWordList[ix];
+                        if (thisWord.startsWith('v='))
+                            listV = thisWord.slice(2);
+                        else if ((oV === undefined || listV === oV)
+                            && thisWord === oWord) {
                             ++wordTotalCount;
                             if (originalLanguageWordIndex === undefined && ++gotCount === oOccurrenceInt)
                                 originalLanguageWordIndex = ix;
@@ -1684,20 +1703,20 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
             if (marker === 'id' && !rest.startsWith(bookID)) {
                 const thisLength = Math.max(4, excerptLength);
                 const excerpt = `${rest.slice(0, thisLength)}${rest.length > thisLength ? '…' : ''}`;
-                addNoticePartial({ priority: 987, C, V, message: "Expected \\id line to start with book identifier", lineNumber: n, characterIndex: 4, excerpt, location: ourLocation });
+                addNoticePartial({ priority: 987, C, V, message: "Expected USFM \\id line to start with book identifier", details: `expected bookID='${bookID}'`, lineNumber: n, characterIndex: 4, excerpt, location: ourLocation });
             }
 
             // Check the order of markers
             // In headers
             if (marker === 'toc2' && lastMarker !== 'toc1')
-                addNoticePartial({ priority: 87, C, V, message: "Expected \\toc2 line to follow \\toc1", lineNumber: n, characterIndex: 1, details: `not '\\${lastMarker}’`, location: ourLocation });
+                addNoticePartial({ priority: 87, C, V, message: "Expected USFM \\toc2 line to follow \\toc1", lineNumber: n, characterIndex: 1, details: `not '\\${lastMarker}’`, location: ourLocation });
             else if (marker === 'toc3' && lastMarker !== 'toc2')
-                addNoticePartial({ priority: 87, C, V, message: "Expected \\toc3 line to follow \\toc2", lineNumber: n, characterIndex: 1, details: `not '\\${lastMarker}’`, location: ourLocation });
+                addNoticePartial({ priority: 87, C, V, message: "Expected USFM \\toc3 line to follow \\toc2", lineNumber: n, characterIndex: 1, details: `not '\\${lastMarker}’`, location: ourLocation });
             // In chapters
             else if ((PARAGRAPH_MARKERS_LIST.includes(marker) || marker === 's5' || marker === 'ts\\*')
                 && PARAGRAPH_MARKERS_LIST.includes(lastMarker)
                 && !lastRest)
-                addNoticePartial({ priority: 399, C, V, message: "Useless paragraph marker", lineNumber: n, characterIndex: 1, details: `'\\${lastMarker}' before '\\${marker}’`, location: ourLocation });
+                addNoticePartial({ priority: 399, C, V, message: "Useless USFM paragraph marker", lineNumber: n, characterIndex: 1, details: `'\\${lastMarker}' before '\\${marker}’`, location: ourLocation });
             else if (['c', 'ca', 'cl'].includes(lastMarker) && marker === 'v'
                 && (rest === '1' || rest.startsWith('1 ')))
                 addNoticePartial({ priority: C === '1' ? 657 : 457, C, V, message: "Paragraph marker expected before first verse", lineNumber: n, characterIndex: 1, details: `'\\${marker}' after '\\${lastMarker}’`, location: ourLocation });
