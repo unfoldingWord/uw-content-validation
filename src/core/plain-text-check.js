@@ -301,8 +301,8 @@ export function checkPlainText(username, languageCode, repoCode, textType, textN
     if (cutoffPriorityLevel < 97)
         while ((regexMatchObject = noCapitalSentenceRegex.exec(plainText)))
             if ((textType !== 'YAML' || regexMatchObject[0] !== '. in') // e.g., Ph.D. in "Shape of Greek iota symbol in late 3rd century manuscripts"
-            && (textType !== 'markdown' || regexMatchObject[0] !== '. t' || plainText.slice(regexMatchObject.index+3, regexMatchObject.index+4) !== 'C') // Sentence starting with tC
-            ){
+                && (textType !== 'markdown' || regexMatchObject[0] !== '. t' || plainText.slice(regexMatchObject.index + 3, regexMatchObject.index + 4) !== 'C') // Sentence starting with tC
+            ) {
                 const characterIndex = regexMatchObject.index;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + plainText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < plainText.length ? '…' : '')
                 // debugLog(`checkPlainText for ${textType} found no capital with '${regexMatchObject[0]}' at index ${characterIndex} giving excerpt='${excerpt}'`);

@@ -9,10 +9,12 @@ import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAsser
 import jQuery from 'jquery'; // For avoiding CORS checking
 
 
-// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '1.0.0';
+// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '1.0.1';
 
 // const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
+
+const MISSING_FOLDER_SLASH_LINK_REGEX = new RegExp('\\d]\\(\\.\\.\\d', 'g'); // [2:1](..02/01.md)
 
 const GENERAL_MARKDOWN_LINK1_REGEX = new RegExp('\\[[^\\]]+?\\]\\([^\\)]+?\\)', 'g'); // [displayLink](URL)
 const GENERAL_MARKDOWN_LINK2_REGEX = new RegExp('\\[\\[[^\\]]+?\\]\\]', 'g'); // [[combinedDisplayLink]]
@@ -228,6 +230,15 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
     }
 
     let regexMatchObject;
+
+    // Check for common bad links like [2:1](..02/01.md) which is missing a forward slash after the double dots
+    while ((regexMatchObject = MISSING_FOLDER_SLASH_LINK_REGEX.exec(fieldText))) {
+        // debugLog(`Got bad link ${JSON.stringify(regexMatchObject)}`);
+        const [totalLink] = regexMatchObject;
+        const characterIndex = MISSING_FOLDER_SLASH_LINK_REGEX.lastIndex - totalLink.length + 4; // lastIndex points to the end of the field that was found
+        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
+        addNoticePartial({ priority: 753, message: "Link target is missing a forward slash", excerpt, location: ourLocation });
+    }
 
     // Check for image links (including OBS pictures)
     while ((regexMatchObject = SIMPLE_IMAGE_REGEX.exec(fieldText))) {
