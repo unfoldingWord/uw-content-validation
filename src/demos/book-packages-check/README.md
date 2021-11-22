@@ -32,10 +32,10 @@ import BookPackagesCheck from './BookPackagesCheck';
   languageCode='en'
   // Enter a string containing UPPERCASE USFM book identifiers separated only by commas
   //  and can also include OBS (for Open Bible Stories)
-  bookIDs='RUT,EZR,NEH,EST,OBA,JON, LUK,EPH,1TI,2TI,TIT,PHM,JAS,2PE,1JN,2JN,3JN, OBS'
+  // bookIDs='RUT,EZR,NEH,EST,OBA,JON, LUK,EPH,1TI,2TI,TIT,PHM,JAS,2PE,1JN,2JN,3JN, OBS' // Uncomment if you're interested in OT and NT
   // The above English book packages should all be finished or well along the way
   // bookIDs='RUT,EZR,NEH,EST,OBA,JON' // Uncomment if you're interested in OT only
-  // bookIDs='LUK,EPH,1TI,2TI,TIT,PHM,JAS,2PE,1JN,2JN,3JN, OBS' // Uncomment if you're interested in NT and OBS only
+  bookIDs='LUK,EPH,1TI,2TI,TIT,PHM,JAS,2PE,1JN,2JN,3JN, OBS' // If you're interested in NT and OBS only
 
   // We can choose the forthcoming new TSV formats or the existing formats
   // dataSet='OLD' // 'OLD' (Markdown TQ1, TSV TN, etc.), 'NEW' (TSV TQ, TN2, etc.), 'DEFAULT', or 'BOTH'

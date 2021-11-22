@@ -962,12 +962,12 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
         if (adjustedRest) {
             let characterIndex;
             if ((characterIndex = adjustedRest.indexOf('"')) !== -1) {
-                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + adjustedRest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < adjustedRest.length ? '…' : '')
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + adjustedRest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < adjustedRest.length ? '…' : '')
                 addNoticePartial({ priority: 776, message: 'Unexpected " straight quote character', details, lineNumber, C, V, excerpt, location: lineLocation });
                 // debugLog(`ERROR 776: in ${marker} '${adjustedRest}' from '${rest}'`);
             }
             if ((characterIndex = adjustedRest.indexOf("'")) >= 0) {
-                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + adjustedRest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < adjustedRest.length ? '…' : '')
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + adjustedRest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < adjustedRest.length ? '…' : '')
                 addNoticePartial({ priority: 775, message: "Unexpected ' straight quote character", details, lineNumber, C, V, excerpt, location: lineLocation });
                 // debugLog(`ERROR 775: in ${marker} '${adjustedRest}' from '${rest}'`);
             }
@@ -1325,7 +1325,7 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
                             addNoticePartial({ priority: 807, message: "Aligned x-ref should contain C:V", lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                         [oC, oV] = oRef.split(':');
                         if (oC !== C) // This theoretically is not a problem -- just that we haven't written the code for it here yet!
-                            addNoticePartial({ priority: 795, message: "Aligned x-ref should be in the same chapter", details: `found x-ref="${oRef}" but C=${C}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                            addNoticePartial({ priority: 795, message: "Aligned x-ref expected to be in the same chapter", details: `found x-ref="${oRef}" but C=${C}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                     }
                     // debugLog(`checkZALNAttributes has ${bookID} ${C}:${V} '${oWord}' ${oOccurrence}/${oOccurrences} ${oStrong} '${oLemma}' ${oMorph} ${oRef}`);
                     const oOccurrenceInt = parseInt(oOccurrence), oOccurrencesInt = parseInt(oOccurrences);
@@ -1352,9 +1352,11 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
                                 originalLanguageWordIndex = ix;
                         }
                     }
+                    // if (oV)
+                    //     debugLog(`checkZALNAttributes has ${bookID} oRef='${oRef}' oC=${oC} oV=${oV} oWord='${oWord}' oOccurrence=${oOccurrence} gotCount=${gotCount} originalLanguageWordIndex=${originalLanguageWordIndex} oOccurrences=${oOccurrences} wordTotalCount=${wordTotalCount}`);
                     // First, check that the given number of occurrences really are there
                     if (wordTotalCount !== oOccurrencesInt)
-                        addNoticePartial({ priority: 602, message: "Aligned word occurrences in original text is wrong", details: `found ${wordTotalCount} occurrences of '${oWord}' instead of ${oOccurrences} from ${originalLanguageVerseWordList.join(', ')}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                        addNoticePartial({ priority: 602, message: "Aligned word occurrences in original text is wrong", details: V.indexOf('-') === -1 || oRef?`found ${wordTotalCount} occurrences of '${oWord}' instead of ${oOccurrences} from ${originalLanguageVerseWordList.join(', ')}`:"THIS TEXT NEEDS RE-ALIGNING", lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                     // Now, check that the given occurrence is correct
                     if (gotCount !== oOccurrenceInt) // Can’t do checks below coz ix is invalid
                         if (gotCount === 0)

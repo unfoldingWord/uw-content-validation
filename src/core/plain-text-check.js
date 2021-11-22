@@ -252,7 +252,7 @@ export function checkPlainText(username, languageCode, repoCode, textType, textN
                             } else // something is still open and this isn’t a match -- might just be consequential error
                                 if (char !== '’' // Closing single quote is also used as apostrophe in English
                                     && (textType !== 'markdown' || char !== '>' || characterIndex > 4)) { // Markdown uses > or >> or > > or > > > for block indents so ignore these -- might just be consequential error
-                                    const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + line.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < line.length ? '…' : '')
+                                    const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + line.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < line.length ? '…' : '')
                                     const details = `'${lastEntry.char}' opened on line ${lastEntry.n.toLocaleString()} character ${lastEntry.x + 1}`;
                                     addNotice({ priority: 777, message: `Bad punctuation nesting: ${char} closing character doesn’t match`, details, lineNumber: n, characterIndex, excerpt, location: ourLocation });
                                     // debugLog(`  ERROR 777: mismatched characters: ${details}`);
@@ -260,7 +260,7 @@ export function checkPlainText(username, languageCode, repoCode, textType, textN
                         } else // Closed something unexpectedly without an opener
                             if (char !== '’' // Closing single quote is also used as apostrophe in English
                                 && (textType !== 'markdown' || char !== '>')) { // Markdown uses > for block indents so ignore these
-                                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + line.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < line.length ? '…' : '')
+                                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + line.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < line.length ? '…' : '')
                                 addNotice({ priority: 774, message: `Unexpected ${char} closing character (no matching opener)`, lineNumber: n, characterIndex, excerpt, location: ourLocation });
                                 // debugLog(`  ERROR 774: closed with nothing open: ${char} from ${line}`);
                             }
@@ -306,7 +306,8 @@ export function checkPlainText(username, languageCode, repoCode, textType, textN
                 const characterIndex = regexMatchObject.index;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + plainText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < plainText.length ? '…' : '')
                 // debugLog(`checkPlainText for ${textType} found no capital with '${regexMatchObject[0]}' at index ${characterIndex} giving excerpt='${excerpt}'`);
-                addNotice({ priority: ['en'].includes(languageCode) ? 197 : 97, message: "Sentence may not start with capital letter", excerpt, location: ourLocation });
+                const details = `the ‘${plainText.slice(characterIndex + 2, characterIndex + 3)}’ after ${plainText.slice(characterIndex, characterIndex + 1)}`;
+                addNotice({ priority: ['en'].includes(languageCode) ? 197 : 97, message: "Sentence may not start with capital letter", details, excerpt, location: ourLocation });
             }
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {

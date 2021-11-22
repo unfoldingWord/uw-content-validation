@@ -6,7 +6,7 @@ import { checkTN_TSV9DataRow } from './tn-tsv9-row-check';
 import { debugLog, parameterAssert, aboutToOverwrite } from './utilities';
 
 
-const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.5.0';
+const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '1.0.0';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -236,7 +236,7 @@ export async function internalCheckTN_TSV9Table(username, languageCode, repoCode
                         }
                     }
                     else
-                        addNoticePartial({ priority: 738, C, V, message: "Bad verse number", rowID, lineNumber: n + 1, location: ourLocation });
+                        addNoticePartial({ priority: 794, C, V, message: "Bad verse number", rowID, lineNumber: n + 1, location: ourLocation });
 
                 }
                 else

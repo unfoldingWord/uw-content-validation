@@ -6,7 +6,7 @@ import { checkNotesTSV7DataRow } from './notes-tsv7-row-check';
 import { parameterAssert, aboutToOverwrite } from './utilities';
 
 
-const NOTES_TABLE_VALIDATOR_VERSION_STRING = '0.4.2';
+const NOTES_TABLE_VALIDATOR_VERSION_STRING = '1.0.0';
 
 const NUM_EXPECTED_NOTES_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_NOTES_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tNote';
@@ -241,7 +241,7 @@ export async function checkNotesTSV7Table(username, languageCode, repoCode, book
                         }
                     }
                     else
-                        addNoticePartial({ priority: 738, C, V, message: "Bad verse number", rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
+                        addNoticePartial({ priority: 794, C, V, message: "Bad verse number", rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
 
                 }
                 else

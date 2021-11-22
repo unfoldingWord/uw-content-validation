@@ -15,7 +15,7 @@ import { debugLog, userLog, functionLog } from './utilities';
 */
 
 
-// const DISABLED_NOTICES_VERSION_STRING = '1.0.1';
+// const DISABLED_NOTICES_VERSION_STRING = '1.0.2';
 
 
 const disabledNotices = [
@@ -39,6 +39,7 @@ const disabledNotices = [
   { repoCode: 'LT', priority: 95, }, // "Unexpected trailing space(s)" tC3 outputs trailing spaces all over the place
   { repoCode: 'ST', priority: 95, }, // "Unexpected trailing space(s)" tC3 outputs trailing spaces all over the place
 
+  { repoCode: 'TN', bookID: '2PE', priority: 648, excerpt: '10a' }, // "Unusual [ ]( ) link(s)—not a recognized Bible, OBS, or TA, TN, or TW link"
   { repoCode: 'TN', excerpt: 'brackets [ ] ', message: "Unexpected space after [ character", }, // 192 (x2)
 
   { repoCode: 'TA', priority: 104, }, // "Unexpected trailing line break" UTA uses trailing <BR> for (1) (2) (3) style numbered lists
