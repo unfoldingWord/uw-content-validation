@@ -15,7 +15,7 @@ import { debugLog, userLog, functionLog } from './utilities';
 */
 
 
-// const DISABLED_NOTICES_VERSION_STRING = '1.0.2';
+// const DISABLED_NOTICES_VERSION_STRING = '1.0.3';
 
 
 const disabledNotices = [
@@ -30,6 +30,7 @@ const disabledNotices = [
   { repoCode: 'ST', message: "Bad punctuation nesting: } closing character doesn’t match", bookID: 'NEH', }, // 777 - complex { } nesting in direct speech
   { repoCode: 'ST', message: "Bad punctuation nesting: ” closing character doesn’t match", bookID: 'NEH', }, // 777 - complex { } nesting in direct speech
 
+  // Many/All of the next section of lines can be deleted after tC 3.0.2 is released
   { repoCode: 'LT', priority: 638, fieldName: '\\p', }, // "Only found whitespace" tC3 outputs trailing spaces here
   { repoCode: 'ST', priority: 638, fieldName: '\\p', }, // "Only found whitespace" tC3 outputs trailing spaces here
   { repoCode: 'LT', priority: 124, excerpt: '\\p␣␣', }, // "Unexpected double spaces" tC3 outputs trailing spaces here
@@ -39,7 +40,7 @@ const disabledNotices = [
   { repoCode: 'LT', priority: 95, }, // "Unexpected trailing space(s)" tC3 outputs trailing spaces all over the place
   { repoCode: 'ST', priority: 95, }, // "Unexpected trailing space(s)" tC3 outputs trailing spaces all over the place
 
-  { repoCode: 'TN', bookID: '2PE', priority: 648, excerpt: '10a' }, // "Unusual [ ]( ) link(s)—not a recognized Bible, OBS, or TA, TN, or TW link"
+  { repoCode: 'TN', bookID: '2PE', priority: 648, details: '10a' }, // "Unusual [ ]( ) link(s)—not a recognized Bible, OBS, or TA, TN, or TW link"
   { repoCode: 'TN', excerpt: 'brackets [ ] ', message: "Unexpected space after [ character", }, // 192 (x2)
 
   { repoCode: 'TA', priority: 104, }, // "Unexpected trailing line break" UTA uses trailing <BR> for (1) (2) (3) style numbered lists
@@ -107,27 +108,31 @@ export function isDisabledNotice(givenNotice) {
   // if (givenNotice.repoCode === undefined) debugLog(`isDisabledNotice() cannot work without repoCode for ${JSON.stringify(givenNotice)}`);
   for (const disabledNotice of disabledNotices) {
     let matchedAllSpecifiedFields = true;
-    for (const propertyName in disabledNotice)
+    for (const dNPropertyName in disabledNotice)
       // if ((propertyName !== 'repoCode' || givenNotice.repoCode !== undefined) // Some individual checks don’t set repoCode
       // && (givenNotice[propertyName] !== disabledNotice[propertyName])) {
-      if (propertyName in givenNotice) // as well as in disabledNotice
-        if (propertyName === 'excerpt') {
-          if (givenNotice[propertyName].indexOf(disabledNotice[propertyName]) === -1) {
+      if (dNPropertyName in givenNotice) {// as well as in disabledNotice, so we have it in both
+        if (['details', 'excerpt'].includes(dNPropertyName)) {
+          // these properties only need their content to be CONTAINED in the actual field
+          if (givenNotice[dNPropertyName].indexOf(disabledNotice[dNPropertyName]) === -1) {
             matchedAllSpecifiedFields = false;
             break;
           }
-        } else if (givenNotice[propertyName] !== disabledNotice[propertyName]) {
+        } else if (givenNotice[dNPropertyName] !== disabledNotice[dNPropertyName]) {
           matchedAllSpecifiedFields = false;
           break;
         }
-    // else // property name not in givenNotice
-    // Should we be setting matchedAllSpecifiedFields = false here ????
+      } else { // property name not in givenNotice
+        // debugLog(`pName=${dNPropertyName} from ${JSON.stringify(disabledNotice)} is not in this notice, so it's not disabled: ${JSON.stringify(givenNotice)}`);
+        matchedAllSpecifiedFields = false;
+        break;
+      }
     if (matchedAllSpecifiedFields) {
       // debugLog(`  isDisabledNotice() returning true for ${JSON.stringify(disabledNotice)}`);
-      return true;
+      return true; // i.e., notice is disabled
     }
   }
-  return false;
+  return false; // i.e., notice is NOT disabled
 }
 
 
@@ -139,9 +144,9 @@ export function isDisabledNotice(givenNotice) {
 export function removeDisabledNotices(givenNoticeList) {
   // NOTE: The function will fail if repoCode is not set in the notices passed to this function
   const remainingNoticeList = [];
-  let givenRepoCodeNotice = false;
+  // let givenRepoCodeNotice = false; // so we only give the warning once
   for (const thisNotice of givenNoticeList) {
-    if (thisNotice.repoCode === undefined && !givenRepoCodeNotice) { debugLog(`removeDisabledNotices() cannot work without repoCode for ${JSON.stringify(thisNotice)} in list of ${givenNoticeList.length} notices.`); givenRepoCodeNotice = true; }
+    // if (thisNotice.repoCode === undefined && !givenRepoCodeNotice) { debugLog(`removeDisabledNotices() cannot work without repoCode for ${JSON.stringify(thisNotice)} in list of ${givenNoticeList.length} notices.`); givenRepoCodeNotice = true; }
     if (!isDisabledNotice(thisNotice))
       remainingNoticeList.push(thisNotice);
     // else userLog(`  Removing disabled ${JSON.stringify(thisNotice)}`);

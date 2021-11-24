@@ -37,6 +37,13 @@ Object {
     },
     Object {
       "bookID": "RUT",
+      "filename": "text extracted from test.usfm",
+      "location": " from test snippet",
+      "message": "Only found whitespace",
+      "priority": 638,
+    },
+    Object {
+      "bookID": "RUT",
       "characterIndex": 0,
       "details": "
 > 1 | 
@@ -124,6 +131,13 @@ Object {
       "location": " from test snippet",
       "message": "Missing expected USFM line",
       "priority": 921,
+    },
+    Object {
+      "bookID": "RUT",
+      "filename": "text extracted from test.usfm",
+      "location": " from test snippet",
+      "message": "Only found whitespace",
+      "priority": 638,
     },
     Object {
       "bookID": "RUT",
@@ -337,6 +351,13 @@ Object {
       "location": " from test snippet",
       "message": "Missing expected USFM line",
       "priority": 921,
+    },
+    Object {
+      "bookID": "RUT",
+      "filename": "text extracted from test.usfm",
+      "location": " from test snippet",
+      "message": "Only found whitespace",
+      "priority": 638,
     },
     Object {
       "bookID": "RUT",
