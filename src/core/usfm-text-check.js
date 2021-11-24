@@ -1356,7 +1356,7 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
                     //     debugLog(`checkZALNAttributes has ${bookID} oRef='${oRef}' oC=${oC} oV=${oV} oWord='${oWord}' oOccurrence=${oOccurrence} gotCount=${gotCount} originalLanguageWordIndex=${originalLanguageWordIndex} oOccurrences=${oOccurrences} wordTotalCount=${wordTotalCount}`);
                     // First, check that the given number of occurrences really are there
                     if (wordTotalCount !== oOccurrencesInt)
-                        addNoticePartial({ priority: 602, message: "Aligned word occurrences in original text is wrong", details: V.indexOf('-') === -1 || oRef?`found ${wordTotalCount} occurrences of '${oWord}' instead of ${oOccurrences} from ${originalLanguageVerseWordList.join(', ')}`:"THIS TEXT NEEDS RE-ALIGNING", lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                        addNoticePartial({ priority: 602, message: "Aligned word occurrences in original text is wrong", details: V.indexOf('-') === -1 || oRef ? `found ${wordTotalCount} occurrences of '${oWord}' instead of ${oOccurrences} from ${originalLanguageVerseWordList.join(', ')}` : "THIS TEXT NEEDS RE-ALIGNING", lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                     // Now, check that the given occurrence is correct
                     if (gotCount !== oOccurrenceInt) // Can’t do checks below coz ix is invalid
                         if (gotCount === 0)

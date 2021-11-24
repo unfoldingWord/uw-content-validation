@@ -242,7 +242,7 @@ export async function checkQuestionsTSV7Table(username, languageCode, repoCode, 
                         }
                     }
                     else if (/^[,\d]+$/.test(V)) { // all digits and comma, i.e., a verse list
-                        addNoticePartial({ priority: 238, C, V, message: "Can't handle verse list yet", rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
+                        addNoticePartial({ priority: 238, C, V, message: "Checker can’t handle verse list yet", rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
                     } else
                         addNoticePartial({ priority: 794, C, V, message: "Bad verse number", rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
 

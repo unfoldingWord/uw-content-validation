@@ -9,7 +9,7 @@ import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAsser
 import jQuery from 'jquery'; // For avoiding CORS checking
 
 
-// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '1.0.2';
+// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '1.0.3';
 
 // const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
@@ -235,7 +235,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
     while ((regexMatchObject = MISSING_FOLDER_SLASH_LINK_REGEX.exec(fieldText))) {
         // debugLog(`Got bad link ${JSON.stringify(regexMatchObject)}`);
         // const [totalLink] = regexMatchObject;
-        const characterIndex = MISSING_FOLDER_SLASH_LINK_REGEX.index + 4;
+        const characterIndex = regexMatchObject.index + 4;
         const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
         addNoticePartial({ priority: 753, message: "Link target is missing a forward slash", excerpt, location: ourLocation });
     }
@@ -368,12 +368,12 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         processedLinkList.push(totalLink); // Save the full link
 
         if (foundLanguageCode !== '*') {
-            const characterIndex = TA_FULL_DISPLAY_LINK_REGEX.index + 7;
+            const characterIndex = regexMatchObject.index + 7;
             const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
             addNoticePartial({ priority: 450, message: "Resource container link should have '*' language code", details: `not ‘${foundLanguageCode}’`, characterIndex, excerpt, location: ourLocation });
         } else if (repoCode === 'TN') { // but not TN2
             // At the moment, tC can’t handle these links with * so we have to ensure that they're not there
-            const characterIndex = TA_FULL_DISPLAY_LINK_REGEX.index + 7;
+            const characterIndex = regexMatchObject.index + 7;
             const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
             addNoticePartial({ priority: 950, message: "tC cannot yet process '*' language code", characterIndex, excerpt, location: ourLocation });
         }
@@ -581,12 +581,12 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         processedLinkList.push(totalLink); // Save the full link
 
         if (foundLanguageCode !== '*') {
-            const characterIndex = TA_DOUBLE_BRACKETED_LINK_REGEX.index + 7;
+            const characterIndex = regexMatchObject.index + 7;
             const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
             addNoticePartial({ priority: 450, message: "Resource container link should have '*' language code", details: `not ‘${foundLanguageCode}’`, characterIndex, excerpt, location: ourLocation });
         } else if (repoCode === 'TN') { // but not TN2
             // At the moment, tC can’t handle these links with * so we have to ensure that they're not there
-            const characterIndex = TA_DOUBLE_BRACKETED_LINK_REGEX.index + 7;
+            const characterIndex = regexMatchObject.index + 7;
             const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
             addNoticePartial({ priority: 950, message: "tC cannot yet process '*' language code", characterIndex, excerpt, location: ourLocation });
         }

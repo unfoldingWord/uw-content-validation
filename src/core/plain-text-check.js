@@ -8,9 +8,9 @@ import { parameterAssert, debugLog, functionLog } from './utilities';
 
 
 const separatedDigitsRegex = new RegExp('\\d{1,3}, (\\d{1,3})', 'g'); // e.g., "5, 000"
-const tooManyDigitsRegex = new RegExp('\\d{4,}', 'g'); // e.g., "5000" should have a separator
+const tooManyDigitsRegex = new RegExp('[^HG]\\d{4,}', 'g'); // e.g., "5000" should have a separator but not H1234 or G12340
 
-const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '1.0.1';
+const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '1.0.2';
 
 
 /**

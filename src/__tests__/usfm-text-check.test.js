@@ -48,7 +48,7 @@ describe('checkUSFMText() - ', () => {
     it('should fail on empty string', async () => {
       const rawResults = await checkUSFMText(username, languageCode, repoCode, 'RUT', 'test.usfm', "", 'from test snippet', optionalCheckingOptions);
       // console.log(`checkUSFMText rawResults=${JSON.stringify(rawResults)}`);
-      expect(rawResults.noticeList.length).toEqual(5);
+      expect(rawResults.noticeList.length).toEqual(6);
       expect(rawResults).toMatchSnapshot();
     });
 
@@ -63,14 +63,14 @@ describe('checkUSFMText() - ', () => {
     it('should fail on no ID line', async () => {
       const rawResults = await checkUSFMText(username, languageCode, repoCode, 'RUT', 'test.usfm', "\\ide UTF-8\n", 'from test snippet', optionalCheckingOptions);
       // console.log(`checkUSFMText rawResults=${JSON.stringify(rawResults)}`);
-      expect(rawResults.noticeList.length).toEqual(5);
+      expect(rawResults.noticeList.length).toEqual(6);
       expect(rawResults).toMatchSnapshot();
     });
 
     it('should fail on wrong book code', async () => {
       const rawResults = await checkUSFMText(username, languageCode, repoCode, 'RUT', 'test.usfm', "\\id GEN\n", 'from test snippet', optionalCheckingOptions);
       // console.log(`checkUSFMText rawResults=${JSON.stringify(rawResults)}`);
-      expect(rawResults.noticeList.length).toEqual(5);
+      expect(rawResults.noticeList.length).toEqual(6);
       expect(rawResults).toMatchSnapshot();
     });
 
