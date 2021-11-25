@@ -346,9 +346,12 @@ function RenderBCV({ bookID, C, V }) {
 * @return {String} - rendered HTML for the given reference
 */
 function RenderFileDetails({ givenEntry }) {
-    // These are all optional parameters - they may be undefined or blank if irrelevant
+    // The fields are all optional parameters - they may be undefined or blank if irrelevant
+    //
+    // TODO: I'm sure this function can be rewritten and greatly simplified (but barely worth it???) -- maybe write some test cases first
+    //
     // functionLog(`RenderFileDetails(${JSON.stringify(givenEntry)})`);
-    // debugLog(`RenderFileDetails(${username}, ${repoName}, ${branch}, ${filename}, ${lineNumber}, ${rowID}, ${fieldName})`);
+    // debugLog(`RenderFileDetails(${JSON.stringify(givenEntry)})`);
     if (!givenEntry.repoName && !givenEntry.filename && !givenEntry.lineNumber && !givenEntry.rowID && !givenEntry.fieldName)
         return null; // They're all undefined or blank!
 
@@ -369,7 +372,7 @@ function RenderFileDetails({ givenEntry }) {
 
     let resultStart = '', lineResult = '', resultEnd = '', fileLineLink = '', fileLink = '';
     if (adjustedRepoName?.length) resultStart += ` in ${adjustedRepoName} repository`;
-    if (givenEntry.username && adjustedRepoName && givenEntry.filename ) {
+    if (givenEntry.username && adjustedRepoName && givenEntry.filename) {
         const useFilename = givenEntry.filename.startsWith('text extracted from ') ? givenEntry.filename.slice('text extracted from '.length) : givenEntry.filename;
         try { // use blame so we can see the actual line!
             if (useFilename.endsWith('.tsv') || useFilename.endsWith('.md')) {
@@ -385,9 +388,14 @@ function RenderFileDetails({ givenEntry }) {
             } else // not TSV or MD
                 fileLink = `https://git.door43.org/${givenEntry.username}/${adjustedRepoName}/src/branch/${givenEntry.branch}/${useFilename}`;
         } catch (someErr) { debugLog(`What was someErr here: ${someErr}`); }
-        if (givenEntry?.filename.length && !fileLink) resultStart += ` in file ${givenEntry.filename}`;
+        // // NOTE: WHY WAS " && !fileLink" in the next line?
+        // if (givenEntry?.filename.length) {
+        //     let adjustedFilename = givenEntry.filename;
+        //     if (adjustedFilename.startsWith('bible/')) adjustedFilename = adjustedFilename.slice(6); // drop that first foldername
+        //     resultStart += ` in FILE ${adjustedFilename}`;
+        // }
         if (givenEntry.lineNumber) {
-            resultStart += ' on ';
+            // resultStart += ' on ';
             if (fileLink && givenEntry.lineNumber)
                 fileLineLink = `${fileLink}#L${givenEntry.lineNumber}`;
             lineResult = `line ${givenEntry.lineNumber.toLocaleString()}`;
@@ -402,19 +410,25 @@ function RenderFileDetails({ givenEntry }) {
     if (givenEntry.fieldName && givenEntry.fieldName.length)
         resultEnd = <>{resultEnd} in {givenEntry.fieldName} field</>;
 
+    let adjustedFilename = givenEntry.filename;// could be undefined
+    if (adjustedFilename.startsWith('bible/')) adjustedFilename = adjustedFilename.slice(6); // drop that first foldername
+    let inFileBit = adjustedFilename? ` in file ${adjustedFilename}` : '';
+
     // debugLog(`RenderFileDetails got resultStart='${resultStart}'`);
+    // debugLog(`RenderFileDetails got adjustedFilename='${adjustedFilename}'`);
+    // debugLog(`RenderFileDetails got inFileBit='${inFileBit}'`);
     // debugLog(`RenderFileDetails got lineResult='${lineResult}'`);
     // debugLog(`RenderFileDetails got fileLineLink='${fileLineLink}'`);
     // debugLog(`RenderFileDetails got fileLink='${fileLink}'`);
     // debugLog(`RenderFileDetails got resultEnd='${resultEnd}'`);
-    if (fileLineLink.length)
-        return <>{resultStart}<a rel="noopener noreferrer" target="_blank" href={fileLineLink}>{lineResult}</a>{resultEnd}</>;
-    else if (fileLink.length)
+    if (fileLineLink.length) // we know the filename and the line number
+        return <>{resultStart}{inFileBit} on <a rel="noopener noreferrer" target="_blank" href={fileLineLink}>{lineResult}</a>{resultEnd}</>;
+    else if (fileLink.length) // we know the filename but not the line number
         return <>{resultStart} in file <a rel="noopener noreferrer" target="_blank" href={fileLink}>{givenEntry.filename}</a>{resultEnd}</>;
-    else if (lineResult.length)
-        return <>{resultStart}<b>{lineResult}</b>{resultEnd}</>;
-    else
-        return <>{resultStart} with file <b>{givenEntry.filename}</b>{resultEnd}</>;
+    else if (lineResult.length) // we know the line number -- how can this happen
+        return <> [DEBUG-CC] {resultStart}{inFileBit}<b>{lineResult}</b>{resultEnd}</>;
+    else // we know the filename -- isn't that already covered above ???
+        return <> [DEBUG-DD] {resultStart} with file <b>{givenEntry.filename}</b>{resultEnd}</>;
 }
 // end of RenderFileDetails
 
