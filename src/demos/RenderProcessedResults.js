@@ -412,7 +412,7 @@ function RenderFileDetails({ givenEntry }) {
 
     let adjustedFilename = givenEntry.filename;// could be undefined
     if (adjustedFilename.startsWith('bible/')) adjustedFilename = adjustedFilename.slice(6); // drop that first foldername
-    let inFileBit = adjustedFilename? ` in file ${adjustedFilename}` : '';
+    let inFileBit = adjustedFilename ? ` in file ${adjustedFilename}` : '';
 
     // debugLog(`RenderFileDetails got resultStart='${resultStart}'`);
     // debugLog(`RenderFileDetails got adjustedFilename='${adjustedFilename}'`);

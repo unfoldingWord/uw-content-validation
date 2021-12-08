@@ -5,7 +5,7 @@ import { OPEN_CLOSE_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, BAD_CHARACTER
 import { debugLog, parameterAssert } from './utilities';
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '1.0.1';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '1.0.2';
 
 
 /**
@@ -428,9 +428,10 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                 if (badChar === '.'
                     && (fieldText.indexOf('etc.') !== -1 || fieldText.indexOf('.x.') !== -1)) // Last one is for version numbers
                     continue;
-                if (badTwoChars === '.m'
-                    && (fieldText.toLowerCase().indexOf('a.m.') !== -1 || fieldText.toLowerCase().indexOf('p.m.') !== -1))
-                    continue;
+                // Content team is going to use AM and PM not a.m. and p.m.
+                // if (badTwoChars === '.m'
+                //     && (fieldText.toLowerCase().indexOf('a.m.') !== -1 || fieldText.toLowerCase().indexOf('p.m.') !== -1))
+                //     continue;
                 if ((badTwoChars === '.C' && fieldText.indexOf('B.C.') !== -1)
                     || (badTwoChars === '.D' && fieldText.indexOf('A.D.') !== -1))
                     continue;
@@ -461,7 +462,7 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                 if (nextNextChar !== '”' && nextNextChar !== '-' // e.g., “0” is ok and 0-2 is ok
                     && (fieldType !== 'YAML' || fieldText.indexOf('sort:') === -1)
                     && (fieldType !== 'USFM line' || (fieldName !== '\\id' // Some USFM producers put in a date like "Mar 03 2021"
-                     && fieldText.indexOf('\\w 0') === -1)) // A leading zero in a \w field might be a false alarm (it's the end of the \w marker)
+                        && fieldText.indexOf('\\w 0') === -1)) // A leading zero in a \w field might be a false alarm (it's the end of the \w marker)
                 ) { // "sort: 0" is ok in manifests
                     const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                     addNoticePartial({ priority: 92, message: `Unexpected leading zero`, characterIndex, excerpt, location: ourLocation });
