@@ -1,12 +1,12 @@
 import * as books from './books/books';
-import { DEFAULT_EXCERPT_LENGTH } from './defaults'
+import { DEFAULT_EXCERPT_LENGTH, NUM_OBS_STORIES, MAX_OBS_FRAMES } from './defaults'
 import { checkTWL_TSV6DataRow } from './twl-tsv6-row-check';
-import { removeDisabledNotices } from './disabled-notices';
+// import { removeDisabledNotices } from './disabled-notices';
 // eslint-disable-next-line no-unused-vars
-import { parameterAssert } from './utilities';
+import { parameterAssert, aboutToOverwrite } from './utilities';
 
 
-const TWL_TABLE_VALIDATOR_VERSION_STRING = '0.1.4';
+const TWL_TABLE_VALIDATOR_VERSION_STRING = '0.2.1';
 
 const NUM_EXPECTED_TWL_TSV_FIELDS = 6; // so expects 5 tabs per line
 const EXPECTED_TWL_HEADING_LINE = 'Reference\tID\tTags\tOrigWords\tOccurrence\tTWLink';
@@ -22,7 +22,7 @@ const EXPECTED_TWL_HEADING_LINE = 'Reference\tID\tTags\tOrigWords\tOccurrence\tT
  * @param {string} givenLocation
  * @param {Object} checkingOptions
  */
-export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filename, tableText, givenLocation, checkingOptions) {
+export async function internalCheckTWL_TSV6Table(username, languageCode, repoCode, bookID, filename, tableText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire file, i.e., all rows.
 
       It also has the advantage of being able to compare one row with the previous one.
@@ -31,17 +31,17 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
 
      Returns a result object containing a successList and a noticeList
      */
-    // functionLog(`checkTWL_TSV6Table(${languageCode}, ${repoCode}, ${bookID}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
-    //parameterAssert(languageCode !== undefined, "checkTWL_TSV6Table: 'languageCode' parameter should be defined");
-    //parameterAssert(typeof languageCode === 'string', `checkTWL_TSV6Table: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
-    //parameterAssert(repoCode === 'TWL' || repoCode === 'OBS-TWL', `checkTWL_TSV6Table: repoCode expected 'TWL' or 'OBS-TWL' not '${repoCode}'`);
-    //parameterAssert(bookID !== undefined, "checkTWL_TSV6Table: 'bookID' parameter should be defined");
-    //parameterAssert(typeof bookID === 'string', `checkTWL_TSV6Table: 'bookID' parameter should be a string not a '${typeof bookID}'`);
-    //parameterAssert(bookID.length === 3, `checkTWL_TSV6Table: 'bookID' parameter should be three characters long not ${bookID.length}`);
-    //parameterAssert(bookID.toUpperCase() === bookID, `checkTWL_TSV6Table: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
-    //parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkTWL_TSV6Table: '${bookID}' is not a valid USFM book identifier`);
-    //parameterAssert(givenLocation !== undefined, "checkTWL_TSV6Table: 'givenLocation' parameter should be defined");
-    //parameterAssert(typeof givenLocation === 'string', `checkTWL_TSV6Table: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
+    // functionLog(`internalCheckTWL_TSV6Table(${languageCode}, ${repoCode}, ${bookID}, ${tableText.length}, ${givenLocation},${JSON.stringify(checkingOptions)})…`);
+    //parameterAssert(languageCode !== undefined, "internalCheckTWL_TSV6Table: 'languageCode' parameter should be defined");
+    //parameterAssert(typeof languageCode === 'string', `internalCheckTWL_TSV6Table: 'languageCode' parameter should be a string not a '${typeof languageCode}'`);
+    //parameterAssert(repoCode === 'TWL' || repoCode === 'OBS-TWL', `internalCheckTWL_TSV6Table: repoCode expected 'TWL' or 'OBS-TWL' not '${repoCode}'`);
+    //parameterAssert(bookID !== undefined, "internalCheckTWL_TSV6Table: 'bookID' parameter should be defined");
+    //parameterAssert(typeof bookID === 'string', `internalCheckTWL_TSV6Table: 'bookID' parameter should be a string not a '${typeof bookID}'`);
+    //parameterAssert(bookID.length === 3, `internalCheckTWL_TSV6Table: 'bookID' parameter should be three characters long not ${bookID.length}`);
+    //parameterAssert(bookID.toUpperCase() === bookID, `internalCheckTWL_TSV6Table: 'bookID' parameter should be UPPERCASE not '${bookID}'`);
+    //parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `internalCheckTWL_TSV6Table: '${bookID}' is not a valid USFM book identifier`);
+    //parameterAssert(givenLocation !== undefined, "internalCheckTWL_TSV6Table: 'givenLocation' parameter should be defined");
+    //parameterAssert(typeof givenLocation === 'string', `internalCheckTWL_TSV6Table: 'givenLocation' parameter should be a string not a '${typeof givenLocation}'`);
 
     let ourLocation = givenLocation;
     if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
@@ -65,11 +65,11 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
     const carResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
-        // functionLog(`checkTWL_TSV6Table success: ${successString}`);
+        // functionLog(`internalCheckTWL_TSV6Table success: ${successString}`);
         carResult.successList.push(successString);
     }
     function addNoticePartial(incompleteNoticeObject) {
-        // functionLog(`checkTWL_TSV6Table notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
+        // functionLog(`internalCheckTWL_TSV6Table notice: (priority=${priority}) ${message}${characterIndex > 0 ? ` (at character ${characterIndex})` : ""}${excerpt ? ` ${excerpt}` : ""}${location}`);
         //parameterAssert(incompleteNoticeObject.priority !== undefined, "ATSV addNoticePartial: 'priority' parameter should be defined");
         //parameterAssert(typeof incompleteNoticeObject.priority === 'number', `TSV addNoticePartial: 'priority' parameter should be a number not a '${typeof incompleteNoticeObject.priority}': ${incompleteNoticeObject.priority}`);
         //parameterAssert(incompleteNoticeObject.message !== undefined, "ATSV addNoticePartial: 'message' parameter should be defined");
@@ -93,18 +93,19 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
         //parameterAssert(incompleteNoticeObject.location !== undefined, "ATSV addNoticePartial: 'location' parameter should be defined");
         //parameterAssert(typeof incompleteNoticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
 
-        if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkTWL_TSV6Table ${incompleteNoticeObject.debugChain}`;
+        if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `internalCheckTWL_TSV6Table ${incompleteNoticeObject.debugChain}`;
+        aboutToOverwrite('internalCheckTWL_TSV6Table', ['bookID', 'filename', 'repoCode'], incompleteNoticeObject, { bookID, filename, repoCode });
         carResult.noticeList.push({ ...incompleteNoticeObject, bookID, filename, repoCode });
     }
 
 
-    // Main code for checkTWL_TSV6Table
+    // Main code for internalCheckTWL_TSV6Table
     let lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook = 0;
     if (bookID === 'OBS')
-        numChaptersThisBook = 50; // There’s 50 Open Bible Stories
+        numChaptersThisBook = NUM_OBS_STORIES; // There’s 50 Open Bible Stories
     else {
-        //parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in checkTWL_TSV6Table");
+        //parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in internalCheckTWL_TSV6Table");
         try {
             numChaptersThisBook = books.chaptersInBook(bookID);
         }
@@ -121,7 +122,7 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
     let rowIDListForVerse = [], uniqueRowListForVerse = [];
     let numVersesThisChapter = 0;
     for (let n = 0; n < lines.length; n++) {
-        // functionLog(`checkTWL_TSV6Table checking line ${n}: ${JSON.stringify(lines[n])}`);
+        // functionLog(`internalCheckTWL_TSV6Table checking line ${n}: ${JSON.stringify(lines[n])}`);
         if (n === 0) {
             if (lines[0] === EXPECTED_TWL_HEADING_LINE)
                 addSuccessMessage(`Checked TSV header ${ourLocation}`);
@@ -137,7 +138,7 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
                 const [C, V] = reference.split(':')
 
                 // Use the row check to do most basic checks
-                const drResultObject = await checkTWL_TSV6DataRow(languageCode, repoCode, lines[n], bookID, C, V, ourLocation, checkingOptions);
+                const drResultObject = await checkTWL_TSV6DataRow(username, languageCode, repoCode, lines[n], bookID, C, V, ourLocation, checkingOptions);
                 // Choose only ONE of the following
                 // This is the fast way of append the results from this field
                 // result.noticeList = result.noticeList.concat(firstResult.noticeList);
@@ -186,13 +187,13 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
                         let intC = Number(C);
                         if (C !== lastC)
                             if (lowercaseBookID === 'obs')
-                                numVersesThisChapter = 99; // Set to maximum expected number of frames
+                                numVersesThisChapter = MAX_OBS_FRAMES; // Set to maximum expected number of frames
                             else
                                 numVersesThisChapter = books.versesInChapter(lowercaseBookID, intC);
                         if (intC === 0)
-                            addNoticePartial({ priority: 551, C, V, message: `Invalid zero chapter number`, rowID, lineNumber: n + 1, excerpt: C, location: ourLocation });
+                            addNoticePartial({ priority: 551, C, V, message: `Invalid zero chapter number`, rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
                         if (intC > numChaptersThisBook)
-                            addNoticePartial({ priority: 737, C, V, message: "Invalid large chapter number", rowID, lineNumber: n + 1, excerpt: C, location: ourLocation });
+                            addNoticePartial({ priority: 737, C, V, message: "Invalid large chapter number", rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
                         if (/^\d+$/.test(lastC)) {
                             let lastintC = Number(lastC);
                             if (intC < lastintC)
@@ -212,13 +213,13 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
                     else if (/^\d+$/.test(V)) {
                         let intV = Number(V);
                         if (intV === 0 && bookID !== 'PSA') // Psalms have \d titles
-                            addNoticePartial({ priority: 552, C, V, message: "Invalid zero verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
+                            addNoticePartial({ priority: 552, C, V, message: "Invalid zero verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
                         if (intV > numVersesThisChapter)
-                            addNoticePartial({ priority: 734, C, V, message: "Invalid large verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
+                            addNoticePartial({ priority: 734, C, V, message: "Invalid large verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
                         if (/^\d+$/.test(lastV)) {
                             let lastintV = Number(lastV);
                             if (C === lastC && intV < lastintV)
-                                addNoticePartial({ priority: 733, C, V, message: "Receding verse number", details: `'${V}' after '${lastV} for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
+                                addNoticePartial({ priority: 733, C, V, message: "Receding verse number", details: `'${V}' after '${lastV} for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
                             // else if (intV > lastintV + 1)
                             //   addNoticePartial({priority:556, `Skipped verses with '${V}' verse number after '${lastV}'${withString}`);
                         }
@@ -227,23 +228,23 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
                         const [V1, V2] = V.split('-')
                         let intV1 = Number(V1), intV2 = Number(V2);
                         if (intV1 >= intV2) // in the wrong order
-                            addNoticePartial({ priority: 732, C, V, message: "Verse range in wrong order", details: `detected ${intV1} before ${intV2}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
+                            addNoticePartial({ priority: 732, C, V, message: "Verse range in wrong order", details: `detected ${intV1} before ${intV2}`, rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
                         if (intV2 > numVersesThisChapter)
-                            addNoticePartial({ priority: 734, C, V, message: "Invalid large verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
+                            addNoticePartial({ priority: 734, C, V, message: "Invalid large verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
                         if (/^\d+$/.test(lastV)) {
                             let lastintV = Number(lastV);
                             if (C === lastC && intV1 < lastintV)
-                                addNoticePartial({ priority: 733, C, V, message: "Receding verse number", details: `'${V}' after '${lastV} for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
+                                addNoticePartial({ priority: 733, C, V, message: "Receding verse number", details: `'${V}' after '${lastV} for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
                             // else if (intV > lastintV + 1)
                             //   addNoticePartial({priority:556, `Skipped verses with '${V}' verse number after '${lastV}'${withString}`);
                         }
                     }
                     else
-                        addNoticePartial({ priority: 738, C, V, message: "Bad verse number", rowID, lineNumber: n + 1, location: ourLocation });
+                        addNoticePartial({ priority: 738, C, V, message: "Bad verse number", rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
 
                 }
                 else
-                    addNoticePartial({ priority: 790, C, V, message: "Missing verse number", rowID, lineNumber: n + 1, location: ` after ${C}:${lastV}${ourLocation}` });
+                    addNoticePartial({ priority: 790, C, V, message: "Missing verse number", rowID, lineNumber: n + 1, excerpt: reference, location: ` after ${C}:${lastV}${ourLocation}` });
 
                 if (rowID) {
                     if (rowIDListForVerse.includes(rowID))
@@ -270,21 +271,21 @@ export async function checkTWL_TSV6Table(languageCode, repoCode, bookID, filenam
         }
     }
 
-    if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        // functionLog(`checkTWL_TSV6Table: calling removeDisabledNotices(${carResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
-        carResult.noticeList = removeDisabledNotices(carResult.noticeList);
-    }
+    // if (!checkingOptions?.suppressNoticeDisablingFlag) {
+    //     // functionLog(`internalCheckTWL_TSV6Table: calling removeDisabledNotices(${carResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+    //     carResult.noticeList = removeDisabledNotices(carResult.noticeList);
+    // }
 
     if (cutoffPriorityLevel < 20 && checkingOptions?.disableAllLinkFetchingFlag)
         addNoticePartial({ priority: 20, message: "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked", location: ourLocation });
 
     addSuccessMessage(`Checked all ${(lines.length - 1).toLocaleString()} data line${lines.length - 1 === 1 ? '' : 's'}${ourLocation}`);
     if (carResult.noticeList.length)
-        addSuccessMessage(`checkTWL_TSV6Table v${TWL_TABLE_VALIDATOR_VERSION_STRING} finished with ${carResult.noticeList.length ? carResult.noticeList.length.toLocaleString() : "zero"} notice${carResult.noticeList.length === 1 ? '' : 's'}`);
+        addSuccessMessage(`internalCheckTWL_TSV6Table v${TWL_TABLE_VALIDATOR_VERSION_STRING} finished with ${carResult.noticeList.length ? carResult.noticeList.length.toLocaleString() : "zero"} notice${carResult.noticeList.length === 1 ? '' : 's'}`);
     else
-        addSuccessMessage(`No errors or warnings found by checkTWL_TSV6Table v${TWL_TABLE_VALIDATOR_VERSION_STRING}`)
-    // debugLog(`  checkTWL_TSV6Table returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
-    // debugLog("checkTWL_TSV6Table result is", JSON.stringify(carResult));
+        addSuccessMessage(`No errors or warnings found by internalCheckTWL_TSV6Table v${TWL_TABLE_VALIDATOR_VERSION_STRING}`)
+    // debugLog(`  internalCheckTWL_TSV6Table returning with ${result.successList.length.toLocaleString()} success(es), ${result.noticeList.length.toLocaleString()} notice(s).`);
+    // debugLog("internalCheckTWL_TSV6Table result is", JSON.stringify(carResult));
     return carResult;
 }
-// end of checkTWL_TSV6Table function
+// end of internalCheckTWL_TSV6Table function

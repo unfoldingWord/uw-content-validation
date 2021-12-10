@@ -10,11 +10,11 @@ import { runUsfmJsCheck } from './usfm-js-check';
 import { runBCSGrammarCheck } from './BCS-usfm-grammar-check';
 import { checkNotesLinksToOutside } from './notes-links-check';
 // eslint-disable-next-line no-unused-vars
-import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
+import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt, aboutToOverwrite } from './utilities';
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '0.10.12';
+// const USFM_VALIDATOR_VERSION_STRING = '1.0.0';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for STs
@@ -49,6 +49,7 @@ const PARAGRAPH_MARKERS_LIST = ['p',
     'q', 'q1', 'q2', 'q3', 'q4',
     'qm', 'qm1', 'qm2', 'qm3', 'qm4',
     'm', 'mi',
+    'nb', // well, it has text sort of like a paragraph marker
     'pi', 'pi1', 'pi2', 'pi3', 'pi4',
     'li', 'li1', 'li2', 'li3', 'li4',
     'lim', 'lim1', 'lim2', 'lim3', 'lim4',
@@ -61,7 +62,7 @@ const SPECIAL_MARKERS_LIST = ['w', 'zaln-s', 'k-s', // NOTE that we have \w in T
     'qt-s', 'qt1-s', 'qt2-s',
     'lit'];
 const MILESTONE_MARKERS_LIST = ['ts\\*', 'ts-s', 'ts-e', 'k-e\\*']; // Is this a good way to handle it???
-const TEXT_MARKERS_WITHOUT_CONTENT_LIST = ['b', 'nb', 'ib', 'ie'];
+const TEXT_MARKERS_WITHOUT_CONTENT_LIST = ['b', 'ib', 'ie'];
 const MARKERS_WITHOUT_CONTENT_LIST = [].concat(TEXT_MARKERS_WITHOUT_CONTENT_LIST).concat(MILESTONE_MARKERS_LIST);
 const ALLOWED_LINE_START_MARKERS_LIST = [].concat(INTRO_LINE_START_MARKER_LIST).concat(HEADING_TYPE_MARKERS_LIST)
     .concat(CV_MARKERS_LIST).concat(PARAGRAPH_MARKERS_LIST)
@@ -194,7 +195,7 @@ const BAD_HEBREW_FINAL_CONSONANT_REGEX = new RegExp('[ךםןףץ][^ |"־\\u0592\
  * @param {string} givenLocation
  * @param {Object} checkingOptions
  */
-export async function checkUSFMText(languageCode, repoCode, bookID, filename, givenText, givenLocation, checkingOptions) {
+export async function checkUSFMText(username, languageCode, repoCode, bookID, filename, givenText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
     bookID is a three-character UPPERCASE USFM book identifier.
@@ -203,7 +204,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
 
      Returns a result object containing a successList and a noticeList
      */
-    // functionLog(`checkUSFMText(${languageCode}, ${repoCode}, ${bookID}, ${filename}, ${givenText.length.toLocaleString()} chars, '${givenLocation}', ${JSON.stringify(checkingOptions)})…`);
+    // functionLog(`checkUSFMText(uN=${username} lC=${languageCode} rC=${repoCode}, bkID=${bookID} fN=${filename}, ${givenText.length.toLocaleString()} chars, '${givenLocation}', ${JSON.stringify(checkingOptions)})…`);
     // const regexMatchObject = HEBREW_CANTILLATION_REGEX.exec('\\f + \\ft Q \\+w הִנֵּ֤ה|lemma="הִנֵּ֤ה" strong="H2009" x-morph="He,Tm"\\+w*\\f*');
     // console.log(`Got test cantillation regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
 
@@ -291,6 +292,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         //parameterAssert(incompleteNoticeObject.message.indexOf("Mismatched {}") === -1 || incompleteNoticeObject.lineNumber === undefined, `checkUSFMText addNoticePartial: got bad notice: ${noticeObjectString}`);
         //parameterAssert(noticeObjectString.indexOf('NONE') === -1 && noticeObjectString.indexOf('SPECIAL') === -1, `checkUSFMText addNoticePartial: 'NONE' & 'SPECIAL' shouldn’t make it thru to end user: ${noticeObjectString}`)
         if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkUSFMText ${incompleteNoticeObject.debugChain}`;
+        aboutToOverwrite('checkUSFMText', ['bookID', 'filename'], incompleteNoticeObject, { bookID, filename });
         usfmResultObject.noticeList.push({ ...incompleteNoticeObject, bookID, filename });
     }
 
@@ -518,7 +520,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                     // if (chapterNumberString === '3' && verseNumberString === '14')
                     //     userLog(`verseObjects=${verseObjects}`);
                     const verseHasText = hasText(verseObjects);
-                    if (verseNumberString.indexOf('-') >= 0) { // It’s a verse bridge
+                    if (verseNumberString.indexOf('-') !== -1) { // It’s a verse bridge
                         const bits = verseNumberString.split('-');
                         const firstVString = bits[0], secondVString = bits[1];
                         let intFirstV, intSecondV;
@@ -590,7 +592,9 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         // We assume that checking for compulsory fields is done elsewhere
 
         // Updates the global list of notices
-        // debugLog(`cUSFM ourCheckTextField(${lineNumber}, ${C}:${V}, ${fieldName}, (${fieldText.length} chars), ${allowedLinks}, ${fieldLocation}, ${JSON.stringify(checkingOptions)})…`);
+        // debugLog(`cUSFM ourCheckTextField(${lineNumber} ${C}:${V} fN=${fieldName}, (${fieldText.length} chars) aL=${allowedLinks}, ${fieldLocation}, ${JSON.stringify(checkingOptions)})…`);
+        // if (fieldText.indexOf('| ') !== -1)
+        //     debugLog(`cUSFM ourCheckTextField(${lineNumber} ${C}:${V} fN=${fieldName}, '${fieldText}' aL=${allowedLinks}, ${fieldLocation}, ${JSON.stringify(checkingOptions)}) for ${repoCode}…`);
         //parameterAssert(lineNumber !== undefined, "cUSFM ourCheckTextField: 'lineNumber' parameter should be defined");
         //parameterAssert(typeof lineNumber === 'number', `cUSFM ourCheckTextField: 'lineNumber' parameter should be a number not a '${typeof lineNumber}'`);
         //parameterAssert(C !== undefined, "cUSFM ourCheckTextField: 'C' parameter should be defined");
@@ -609,7 +613,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         //parameterAssert(fieldLocation !== undefined, "cUSFM ourCheckTextField: 'fieldLocation' parameter should be defined");
         //parameterAssert(typeof fieldLocation === 'string', `cUSFM ourCheckTextField: 'fieldLocation' parameter should be a string not a '${typeof fieldLocation}'`);
 
-        const dbtcResultObject = checkTextField(languageCode, repoCode, fieldType, fieldName, fieldText, allowedLinks, fieldLocation, checkingOptions);
+        const dbtcResultObject = checkTextField(username, languageCode, repoCode, fieldType, fieldName, fieldText, allowedLinks, fieldLocation, checkingOptions);
 
         // Process noticeList line by line to filter out potential false positives
         //  for this particular kind of text field
@@ -635,7 +639,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         //parameterAssert(typeof fileText === 'string', `cUSFM ourBasicFileChecks: 'fileText' parameter should be a string not a '${typeof fileText}'`);
         //parameterAssert(checkingOptions !== undefined, "cUSFM ourBasicFileChecks: 'checkingOptions' parameter should be defined");
 
-        const resultObject = checkTextfileContents(languageCode, repoCode, 'USFM', filename, fileText, fileLocation, checkingOptions);
+        const resultObject = checkTextfileContents(username, languageCode, repoCode, 'USFM', filename, fileText, fileLocation, checkingOptions);
 
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
@@ -778,7 +782,9 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             //  \w 480|x-occurrence="1" x-occurrences="1"\w*\w th|x-occurrence="1" x-occurrences="1"\w*
             // Also UST Ezra 6:19 "14th" and Ezra 10:9 "20th"
             const badCount = countOccurrencesInString(rest, '\\w*\\w');
-            if (badCount > 1 || rest.indexOf('\\w*\\w th|') === -1) { // there’s multiple cases or it’s not an ordinal
+            if (badCount > 1
+                || ((rest.indexOf('\\w*\\w th|') === -1 && rest.indexOf('\\w*\\w st|') === -1 && rest.indexOf('\\w*\\w nd|') === -1 && rest.indexOf('\\w*\\w rd|') === -1))
+            ) { // there’s multiple cases or it’s not an ordinal like 1st, 2nd, 3rd, 4th
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
                 addNoticePartial({ priority: 444, message: "Shouldn’t have consecutive word fields without a space", details: badCount > 1 ? details + `${badCount} occurrences found in line` : details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
@@ -796,8 +802,9 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             const badCount = countOccurrencesInString(rest, ' \\x ');
             if (badCount > 1 || marker !== 'v' || characterIndex > 3) { // Accept it if it seems to be after the space after a verse number
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
-            addNoticePartial({ priority: 442, message: "Shouldn’t have a cross-reference after a space", details: badCount > 1 ? details + `${badCount} occurrences found in line` : details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
-        }}
+                addNoticePartial({ priority: 442, message: "Shouldn’t have a cross-reference after a space", details: badCount > 1 ? details + `${badCount} occurrences found in line` : details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+            }
+        }
 
         // Remove any self-closed milestones and internal \v markers
         // NOTE: replaceAll() is not generally available in browsers yet, so need to use RegExps
@@ -822,7 +829,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         let ixEnd;
         if (marker === 'w') { // Handle first \w field (i.e., if marker==w) -- there may be more \w fields in rest
             const ixWordEnd = adjustedRest.indexOf('|');
-            if (ixWordEnd < 0 && adjustedRest.indexOf('lemma="') >= 0) {
+            if (ixWordEnd < 0 && adjustedRest.indexOf('lemma="') !== -1) {
                 const characterIndex = 5; // Presumably, a little bit into the word
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + adjustedRest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < adjustedRest.length ? '…' : '')
                 addNoticePartial({ priority: 912, message: 'Missing | character in \\w line', lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
@@ -857,11 +864,13 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             adjustedRest = adjustedRest.replace('\\va*', '');
         else if (marker === 'ca')
             adjustedRest = adjustedRest.replace('\\ca*', '');
+        else if (marker === 'qs')
+            adjustedRest = adjustedRest.replace('\\qs*', '');
 
         // Remove any other \zaln-s fields in the line
-        // if (adjustedRest.indexOf('\\z') >= 0) userLog(`checkUSFMLineText here first at ${lineNumber} ${C}:${V} with ${marker}='${adjustedRest}'`);
+        // if (adjustedRest.indexOf('\\z') !== -1) userLog(`checkUSFMLineText here first at ${lineNumber} ${C}:${V} with ${marker}='${adjustedRest}'`);
         let nextZIndex;
-        while ((nextZIndex = adjustedRest.indexOf('\\zaln-s ')) >= 0) {
+        while ((nextZIndex = adjustedRest.indexOf('\\zaln-s ')) !== -1) {
             // functionLog(`checkUSFMLineText here with ${marker}='${adjustedRest}'`);
             const ixZEnd = adjustedRest.indexOf('\\*');
             // debugLog(`  ${nextZIndex} and ${ixZEnd}`);
@@ -876,9 +885,9 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         }
         // Remove any other \w fields in the line
         let nextWIndex;
-        while ((nextWIndex = adjustedRest.indexOf('\\w ')) >= 0) {
+        while ((nextWIndex = adjustedRest.indexOf('\\w ')) !== -1) {
             const ixWordEnd = adjustedRest.indexOf('|');
-            if (ixWordEnd < 0 && adjustedRest.indexOf('lemma="') >= 0) {
+            if (ixWordEnd < 0 && adjustedRest.indexOf('lemma="') !== -1) {
                 const characterIndex = nextWIndex + 5; // Presumably, a little bit into the word
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + adjustedRest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < adjustedRest.length ? '…' : '')
                 addNoticePartial({ priority: 911, message: 'Missing | character in \\w field', details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
@@ -897,9 +906,9 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             }
         }
         // Remove any other \+w fields in the line
-        while ((nextWIndex = adjustedRest.indexOf('\\+w ')) >= 0) {
+        while ((nextWIndex = adjustedRest.indexOf('\\+w ')) !== -1) {
             const ixWordEnd = adjustedRest.indexOf('|');
-            if (ixWordEnd < 0 && adjustedRest.indexOf('lemma="') >= 0) {
+            if (ixWordEnd < 0 && adjustedRest.indexOf('lemma="') !== -1) {
                 const characterIndex = nextWIndex + 6; // Presumably, a little bit into the word
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + adjustedRest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < adjustedRest.length ? '…' : '')
                 addNoticePartial({ priority: 911, message: 'Missing | character in \\+w field', details, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
@@ -919,7 +928,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
         }
         // Remove any other \f fields in the line
         let nextFIndex;
-        while ((nextFIndex = adjustedRest.indexOf('\\f + ')) >= 0) {
+        while ((nextFIndex = adjustedRest.indexOf('\\f + ')) !== -1) {
             const ixFEnd = adjustedRest.indexOf('\\f*');
             if (ixFEnd >= 0) {
                 dataAssert(ixFEnd > nextWIndex, `Expected closure at ${ixFEnd} to be AFTER \\w (${nextFIndex})`);
@@ -934,7 +943,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
 
         if (adjustedRest) {
             let characterIndex;
-            if ((characterIndex = adjustedRest.indexOf('"')) >= 0) {
+            if ((characterIndex = adjustedRest.indexOf('"')) !== -1) {
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + adjustedRest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < adjustedRest.length ? '…' : '')
                 addNoticePartial({ priority: 776, message: 'Unexpected " straight quote character', details, lineNumber, C, V, excerpt, location: lineLocation });
                 // debugLog(`ERROR 776: in ${marker} '${adjustedRest}' from '${rest}'`);
@@ -944,16 +953,15 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                 addNoticePartial({ priority: 775, message: "Unexpected ' straight quote character", details, lineNumber, C, V, excerpt, location: lineLocation });
                 // debugLog(`ERROR 775: in ${marker} '${adjustedRest}' from '${rest}'`);
             }
-            if (adjustedRest.indexOf('\\') >= 0 || adjustedRest.indexOf('|') >= 0) {
+            if ((characterIndex = adjustedRest.indexOf('\\')) !== -1 || adjustedRest.indexOf('|') !== -1) {
                 // functionLog(`checkUSFMLineText ${languageCode} ${filename} ${lineNumber} ${C}:${V} somehow ended up with ${marker}='${adjustedRest}'`);
-                characterIndex = adjustedRest.indexOf('\\');
                 if (characterIndex === -1) characterIndex = adjustedRest.indexOf('|');
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + adjustedRest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < adjustedRest.length ? '…' : '')
                 addNoticePartial({ priority: 875, message: "Unexpected USFM field", details, lineNumber, C, V, excerpt, location: lineLocation });
             }
             if (adjustedRest !== rest) // Only re-check if line has changed (because original is checked in checkUSFMLineInternals())
                 // Note: false (below) is for allowedLinks flag
-                ourCheckTextField(lineNumber, C, V, 'raw USFM line', `from \\${marker}`, adjustedRest, false, lineLocation, checkingOptions);
+                ourCheckTextField(lineNumber, C, V, 'raw USFM line', `adjusted text from \\${marker}`, adjustedRest, false, lineLocation, checkingOptions);
         }
     }
     // end of checkUSFMLineText function
@@ -1005,7 +1013,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
 
             let adjustedLanguageCode = languageCode; // This is the language code of the resource with the link
             if (languageCode === 'hbo' || languageCode === 'el-x-koine') adjustedLanguageCode = 'en' // This is a guess (and won’t be needed for TWs when we switch to TWLs)
-            const csfResultObject = await checkStrongsField(languageCode, repoCode, fieldName, fieldText, bookID, C, V, location, { ...checkingOptions, defaultLanguageCode: adjustedLanguageCode });
+            const csfResultObject = await checkStrongsField(username, languageCode, repoCode, fieldName, fieldText, bookID, C, V, location, { ...checkingOptions, defaultLanguageCode: adjustedLanguageCode });
             // debugLog(`csfResultObject=${JSON.stringify(csfResultObject)}`);
 
             // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
@@ -1170,6 +1178,13 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             // originalUSFM = originalUSFM.replace(/\\k-e\\\*/g, ''); // Remove \k-e self-closed milestones
             // originalUSFM = originalUSFM.replace(/\\k-s.+?\\\*/g, ''); // Remove \k-s self-closed milestones
 
+            const V1 = V.split('-')[0]; // Usually identical to V
+            let V2, intV2;
+            if (V1 !== V) {
+                V2 = V.split('-')[1];
+                intV2 = Number(V2);
+                // debugLog(`getOriginalWordLists got verse range ${V1} and ${V2} (${intV2})`)
+            }
 
             // Now find the desired C:V
             let foundChapter = false, foundVerse = false;
@@ -1180,13 +1195,20 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                     foundChapter = true;
                     continue;
                 }
-                if (foundChapter && !foundVerse && bookLine.startsWith(`\\v ${V}`)) {
+                if (foundChapter && !foundVerse && bookLine.startsWith(`\\v ${V1}`)) {
                     foundVerse = true;
-                    bookLine = bookLine.slice(3 + V.length); // Delete verse number so below bit doesn’t fail
+                    bookLine = bookLine.slice(3 + V1.length); // Delete verse number so below bit doesn’t fail
                 }
                 if (foundVerse) {
-                    if (bookLine.startsWith('\\v ') || bookLine.startsWith('\\c '))
-                        break; // Don’t go into the next verse or chapter
+                    if (bookLine.startsWith('\\c ')) break; // Don't go into the next chapter
+                    if (bookLine.startsWith('\\v '))
+                        if (!V2) // no range requested
+                            break; // Don’t go into the next verse or chapter
+                        else { // there is a range requested
+                            const intV = Number(bookLine.slice(3));
+                            // debugLog(`getOriginalWordLists got verse number ${intV} for range ${V1} and ${V2} (${intV2})`)
+                            if (intV > intV2) break; // we're past the bit we want
+                        }
                     if (bookLine.indexOf('\\w ') !== -1 || bookLine.indexOf('\\+w ') !== -1)
                         wLinesVerseText += bookLine;
                 }
@@ -1385,12 +1407,12 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
             if (rest) {
                 checkUSFMLineText(lineNumber, C, V, marker, rest, lineLocation, checkingOptions);
 
-                if (rest.indexOf('=') >= 0 || rest.indexOf('"') >= 0)
+                if (rest.indexOf('=') !== -1 || rest.indexOf('"') !== -1)
                     await checkUSFMLineAttributes(lineNumber, C, V, marker, rest, lineLocation, checkingOptions);
 
                 const allowedLinks = (marker === 'w' || marker === 'k-s' || marker === 'f' || marker === 'SPECIAL')
                     // (because we don’t know what marker SPECIAL is, so default to "no false alarms")
-                    && rest.indexOf('x-tw') >= 0;
+                    && rest.indexOf('x-tw') !== -1;
                 ourCheckTextField(lineNumber, C, V, 'USFM line', `\\${marker}`, rest, allowedLinks, lineLocation, checkingOptions);
             }
         }
@@ -1427,7 +1449,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
 
         let adjustedLanguageCode = languageCode; // This is the language code of the resource with the link
         if (languageCode === 'hbo' || languageCode === 'el-x-koine') adjustedLanguageCode = 'en' // This is a guess (and won’t be needed for TWs when we switch to TWLs)
-        const coTNlResultObject = await checkNotesLinksToOutside(languageCode, repoCode, bookID, C, V, 'TWLink', twLinkText, location, { ...checkingOptions, defaultLanguageCode: adjustedLanguageCode });
+        const coTNlResultObject = await checkNotesLinksToOutside(username, languageCode, repoCode, bookID, C, V, 'TWLink', twLinkText, location, { ...checkingOptions, defaultLanguageCode: adjustedLanguageCode });
         // debugLog(`coTNlResultObject=${JSON.stringify(coTNlResultObject)}`);
 
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
@@ -1531,7 +1553,7 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                 continue;
             }
             let characterIndex;
-            if ((characterIndex = line.indexOf('\r')) >= 0) {
+            if ((characterIndex = line.indexOf('\r')) !== -1) {
                 const iy = characterIndex + excerptHalfLength; // Want excerpt to focus more on what follows
                 const excerpt = (iy > excerptHalfLength ? '…' : '') + line.substring(iy - excerptHalfLength, iy + excerptHalfLengthPlus).replace(/ /g, '␣') + (iy + excerptHalfLengthPlus < line.length ? '…' : '')
                 addNoticePartial({ priority: 703, C, V, message: "Unexpected CarriageReturn character", lineNumber: n, characterIndex, excerpt, location: ourLocation });
@@ -1606,13 +1628,14 @@ export async function checkUSFMText(languageCode, repoCode, bookID, filename, gi
                         addNoticePartial({ priority: 766, C, V, message: "Bridged verse numbers didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${rest.slice(0, Math.max(9, excerptLength))}${rest.length > excerptLength ? '…' : ''} (${lastV} → ${firstV})`, location: ourLocation });
                     lastV = secondV; lastIntV = intSecondV;
                 }
-            } else if ((vIndex = rest.indexOf('\\v ')) >= 0) {
+            } else if ((vIndex = rest.indexOf('\\v ')) !== -1) {
                 // verse number marker follows another marker on the same line, so it’s inside `rest`
                 const restRest = rest.slice(vIndex + 3);
-                // debugLog(`Got restRest=${restRest}`);
+                // debugLog(`mainUSFMCheck at ${bookID} ${C}:${V} ${n} \\${marker} got restRest='${restRest}'`);
                 try {
-                    intV = parseInt(restRest);
-                    // debugLog("Got", intV);
+                    intV = parseInt(restRest); // Parses the first integer that it finds
+                    // debugLog(`mainUSFMCheck  got intV=${intV}`);
+                    V = intV.toString();
                 } catch (usfmIIVerror) {
                     addNoticePartial({ priority: 720, C, V, message: "Unable to convert internal verse number to integer", lineNumber: n, characterIndex: 3, excerpt: `${restRest.slice(0, excerptHalfLength)}${restRest.length > excerptHalfLength ? '…' : ''}`, location: ourLocation });
                     intV = -999; // Used to prevent consequential errors

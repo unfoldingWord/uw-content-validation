@@ -14,13 +14,13 @@ const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.8.2';
 /**
  *
  * @param {string} languageCode, e.g., 'en'
- * @param {string} repoCode -- e.g., 'TN' or 'TQ2', etc.
+ * @param {string} repoCode -- e.g., 'TN' or 'TQ', etc.
  * @param {string} textOrFileName -- used for identification
  * @param {string} markdownText -- the actual text to be checked
  * @param {string} givenLocation
  * @param {Object} checkingOptions
  */
-export async function checkMarkdownText(languageCode, repoCode, textOrFileName, markdownText, givenLocation, checkingOptions) {
+export async function checkMarkdownText(username, languageCode, repoCode, textOrFileName, markdownText, givenLocation, checkingOptions) {
     /* This function is optimised for doing general markdown format checks of the entire markdown text, i.e., all lines.
         It should not be called directly for checking an entire file -- use checkMarkdownFileContents() for that
 
@@ -126,7 +126,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
         //parameterAssert(optionalFieldLocation !== undefined, "cMdT ourCheckTextField: 'optionalFieldLocation' parameter should be defined");
         //parameterAssert(typeof optionalFieldLocation === 'string', `cMdT ourCheckTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
-        const dbtcResultObject = checkTextField(languageCode, repoCode, 'markdown', fieldName, fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
+        const dbtcResultObject = checkTextField(username, languageCode, repoCode, 'markdown', fieldName, fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
 
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line
@@ -155,7 +155,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
         if (textOrFileName === 'README.md' || textOrFileName === 'LICENSE.md') adjustedTextOrFileName = textOrFileName.slice(0, textOrFileName.length - 3);
         let adjustedLanguageCode = languageCode; // This is the language code of the resource with the link
         if (languageCode === 'hbo' || languageCode === 'el-x-koine') adjustedLanguageCode = 'en' // This is a guess (and won’t be needed for TWs when we switch to TWLs)
-        const coTNlResultObject = await checkNotesLinksToOutside(languageCode, repoCode, '', '', '', adjustedTextOrFileName, lineText, location, { ...checkingOptions, defaultLanguageCode: adjustedLanguageCode });
+        const coTNlResultObject = await checkNotesLinksToOutside(username, languageCode, repoCode, '', '', '', adjustedTextOrFileName, lineText, location, { ...checkingOptions, defaultLanguageCode: adjustedLanguageCode });
         // debugLog(`coTNlResultObject=${JSON.stringify(coTNlResultObject)}`);
 
         // Choose only ONE of the following
@@ -306,6 +306,7 @@ export async function checkMarkdownText(languageCode, repoCode, textOrFileName, 
                 addNoticePartial(notice);
             }
             if (nextLine?.length !== 0) {
+                // debugLog(`251 line is '${line}' nextLine is (${nextLine.length}) '${nextLine}'`);
                 const notice = { priority: 251, message: "Markdown headers should be followed by a blank line", lineNumber: n, location: ourLocation };
                 if (textOrFileName === 'Note' || textOrFileName === 'OccurrenceNote')
                     notice.details = `markdown line ${n}`;

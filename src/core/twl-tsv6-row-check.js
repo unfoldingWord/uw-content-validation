@@ -1,4 +1,4 @@
-import { DEFAULT_EXCERPT_LENGTH } from './defaults';
+import { DEFAULT_EXCERPT_LENGTH, NUM_OBS_STORIES, MAX_OBS_FRAMES } from './defaults';
 import { isWhitespace, countOccurrencesInString } from './text-handling-functions';
 import * as books from './books/books';
 import { checkTextField } from './field-text-check';
@@ -6,10 +6,10 @@ import { checkTextField } from './field-text-check';
 import { checkNotesLinksToOutside } from './notes-links-check';
 import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
 // eslint-disable-next-line no-unused-vars
-import { parameterAssert } from './utilities';
+import { parameterAssert, aboutToOverwrite } from './utilities';
 
 
-// const TWL_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.1.11';
+// const TWL_TABLE_ROW_VALIDATOR_VERSION_STRING = '1.0.0';
 
 const NUM_EXPECTED_TWL_TSV_FIELDS = 6; // so expects 5 tabs per line
 const EXPECTED_TWL_HEADING_LINE = 'Reference\tID\tTags\tOrigWords\tOccurrence\tTWLink';
@@ -32,7 +32,7 @@ const LC_ALPHABET_PLUS_DIGITS_PLUS_HYPHEN = 'abcdefghijklmnopqrstuvwxyz012345678
  * @param {Object} checkingOptions - may contain excerptLength parameter
  * @return {Object} - containing noticeList
  */
-export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID, givenC, givenV, givenRowLocation, checkingOptions) {
+export async function checkTWL_TSV6DataRow(username, languageCode, repoCode, line, bookID, givenC, givenV, givenRowLocation, checkingOptions) {
     /* This function is only for checking one data row
           and the function doesn’t assume that it has any previous context.
 
@@ -108,6 +108,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
 
         // Also uses the given bookID,C,V, parameters from the main function call
         // incompleteNoticeObject.debugChain = incompleteNoticeObject.debugChain ? `checkTWL_TSV6DataRow ${incompleteNoticeObject.debugChain}` : `checkTWL_TSV6DataRow(${repoCode})`;
+        aboutToOverwrite('checkTWL_TSV6DataRow', ['bookID', 'C', 'V'], incompleteNoticeObject, { bookID, C: givenC, V: givenV });
         drResult.noticeList.push({ ...incompleteNoticeObject, bookID, C: givenC, V: givenV });
     }
 
@@ -140,7 +141,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         //parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkTWL_TSV6DataRow ourCheckTextField: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
         const fieldType = 'raw';
-        const octfResultObject = checkTextField(languageCode, repoCode, fieldType, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions);
+        const octfResultObject = checkTextField(username, languageCode, repoCode, fieldType, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -174,7 +175,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         //parameterAssert(typeof occurrence === 'string', `checkTWL_TSV6DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'occurrence' parameter should be a string not a '${typeof occurrence}'`);
         //parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkTWL_TSV6DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const colqResultObject = await checkOriginalLanguageQuoteAndOccurrence(languageCode, repoCode, fieldName, fieldText, occurrence, bookID, givenC, givenV, rowLocation, checkingOptions);
+        const colqResultObject = await checkOriginalLanguageQuoteAndOccurrence(username, languageCode, repoCode, fieldName, fieldText, occurrence, bookID, givenC, givenV, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -203,7 +204,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
 
         let adjustedLanguageCode = languageCode; // This is the language code of the resource with the link
         if (languageCode === 'hbo' || languageCode === 'el-x-koine') adjustedLanguageCode = 'en' // This is a guess (and won’t be needed for TWs when we switch to TWLs)
-        const coTNlResultObject = await checkNotesLinksToOutside(languageCode, repoCode, bookID, givenC, givenV, fieldName, twLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: adjustedLanguageCode });
+        const coTNlResultObject = await checkNotesLinksToOutside(username, languageCode, repoCode, bookID, givenC, givenV, fieldName, twLinkText, rowLocation, { ...checkingOptions, defaultLanguageCode: adjustedLanguageCode });
         // debugLog(`coTNlResultObject=${JSON.stringify(coTNlResultObject)}`);
 
         // Process results line by line
@@ -254,7 +255,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
     const lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook;
     if (bookID === 'OBS')
-        numChaptersThisBook = 50; // There’s 50 Open Bible Stories
+        numChaptersThisBook = NUM_OBS_STORIES; // There’s 50 Open Bible Stories
     else {
         //parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in checkTWL_TSV6DataRow");
         try {
@@ -293,7 +294,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
                     haveGoodChapterNumber = false;
                 }
                 if (lowercaseBookID === 'obs')
-                    numVersesThisChapter = 99; // Set to maximum expected number of frames
+                    numVersesThisChapter = MAX_OBS_FRAMES; // Set to maximum expected number of frames
                 else {
                     try {
                         numVersesThisChapter = books.versesInChapter(lowercaseBookID, intC);
@@ -380,7 +381,7 @@ export async function checkTWL_TSV6DataRow(languageCode, repoCode, line, bookID,
         }
         else // TODO: Find more details about when these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             if (V !== 'intro' && occurrence !== '0')
-                addNoticePartial({ priority: 919, message: "Missing OrigWords field", fieldName: 'OrigWords', rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 919, message: "Missing OrigWords field", details: `should Occurrence be zero instead of ${occurrence}`, fieldName: 'OrigWords', rowID, location: ourRowLocation });
 
         if (occurrence.length) { // This should usually be a digit
             if ((characterIndex = occurrence.indexOf('\\n')) !== -1) {

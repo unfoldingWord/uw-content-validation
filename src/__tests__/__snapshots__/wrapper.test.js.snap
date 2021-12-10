@@ -1,0 +1,327 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`checkDeprecatedTN_TSV9Table() -  Should pass 1`] = `
+Object {
+  "checkedFilenames": undefined,
+  "checkedRepoNames": undefined,
+  "noticeList": Array [
+    Object {
+      "bookID": "TIT",
+      "filename": "testFile.tsv",
+      "location": "",
+      "message": "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked",
+      "priority": 20,
+      "repoCode": "TN",
+    },
+  ],
+  "successList": Array [
+    "Checked TSV header ",
+    "Checked all 10 data lines",
+    "internalCheckTN_TSV9Table v0.5.0 finished with 1 notice",
+  ],
+}
+`;
+
+exports[`checkSN_TSV7Table() -  Should pass 1`] = `
+Object {
+  "checkedFilenames": undefined,
+  "checkedRepoNames": undefined,
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "intro",
+      "bookID": "TIT",
+      "characterIndex": 29,
+      "excerpt": "…us chapter 01",
+      "fieldName": "Note",
+      "filename": "testFile.tsv",
+      "lineNumber": 3,
+      "location": "",
+      "message": "Unexpected leading zero",
+      "priority": 92,
+      "repoCode": "SN",
+      "rowID": "c7me",
+    },
+    Object {
+      "bookID": "TIT",
+      "filename": "testFile.tsv",
+      "location": "",
+      "message": "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked",
+      "priority": 20,
+      "repoCode": "SN",
+    },
+  ],
+  "successList": Array [
+    "Checked TSV header ",
+    "Checked all 6 data lines",
+    "checkNotesTSV7Table v0.4.2 finished with 2 notices",
+  ],
+}
+`;
+
+exports[`checkSQ_TSV7Table() -  Should pass 1`] = `
+Object {
+  "checkedFilenames": undefined,
+  "checkedRepoNames": undefined,
+  "noticeList": Array [
+    Object {
+      "bookID": "TIT",
+      "filename": "testFile.tsv",
+      "location": "",
+      "message": "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked",
+      "priority": 20,
+      "repoCode": "SQ",
+    },
+  ],
+  "successList": Array [
+    "Checked TSV header ",
+    "Checked all 5 data lines",
+    "checkQuestionsTSV7Table v0.3.3 finished with 1 notice",
+  ],
+}
+`;
+
+exports[`checkTA_markdownArticle() -  Should pass 1`] = `
+Object {
+  "checkedFilenames": undefined,
+  "checkedRepoNames": undefined,
+  "noticeList": Array [
+    Object {
+      "characterIndex": 12,
+      "details": "period not followed by space or digit or closing quote",
+      "excerpt": "… **Contact.** Make c…",
+      "filename": "translate/something",
+      "lineNumber": 5,
+      "location": "",
+      "message": "Unexpected bad character combination",
+      "priority": 329,
+      "repoCode": "TA",
+    },
+    Object {
+      "characterIndex": 11,
+      "details": "period not followed by space or digit or closing quote",
+      "excerpt": "…. **Review.** Review…",
+      "filename": "translate/something",
+      "lineNumber": 6,
+      "location": "",
+      "message": "Unexpected bad character combination",
+      "priority": 329,
+      "repoCode": "TA",
+    },
+    Object {
+      "characterIndex": 9,
+      "details": "period not followed by space or digit or closing quote",
+      "excerpt": "6. **Read.**",
+      "filename": "translate/something",
+      "lineNumber": 8,
+      "location": "",
+      "message": "Unexpected bad character combination",
+      "priority": 329,
+      "repoCode": "TA",
+    },
+    Object {
+      "characterIndex": 9,
+      "details": "period not followed by space or digit or closing quote",
+      "excerpt": "7. **Talk.** Discus…",
+      "filename": "translate/something",
+      "lineNumber": 11,
+      "location": "",
+      "message": "Unexpected bad character combination",
+      "priority": 329,
+      "repoCode": "TA",
+    },
+    Object {
+      "characterIndex": 14,
+      "details": "period not followed by space or digit or closing quote",
+      "excerpt": "…*Translate.** When y…",
+      "filename": "translate/something",
+      "lineNumber": 12,
+      "location": "",
+      "message": "Unexpected bad character combination",
+      "priority": 329,
+      "repoCode": "TA",
+    },
+  ],
+  "successList": Array [
+    "Checked markdown file: translate/something",
+    "checkMarkdownFileContents v0.6.0 finished with 5 notices",
+  ],
+}
+`;
+
+exports[`checkTN_TSV7Table() -  Should pass 1`] = `
+Object {
+  "checkedFilenames": undefined,
+  "checkedRepoNames": undefined,
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "3",
+      "bookID": "TIT",
+      "characterIndex": 60,
+      "excerpt": "…e: [[rc://*/ta/man/t…",
+      "fieldName": "Note",
+      "filename": "testFile.tsv",
+      "lineNumber": 3,
+      "location": "",
+      "message": "tC cannot yet process '*' language code",
+      "priority": 950,
+      "repoCode": "TN",
+      "rowID": "xy18",
+    },
+    Object {
+      "bookID": "TIT",
+      "filename": "testFile.tsv",
+      "location": "",
+      "message": "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked",
+      "priority": 20,
+      "repoCode": "TN",
+    },
+  ],
+  "successList": Array [
+    "Checked TSV header ",
+    "Checked all 3 data lines",
+    "checkNotesTSV7Table v0.4.2 finished with 2 notices",
+  ],
+}
+`;
+
+exports[`checkTQ_TSV7Table() -  Should pass 1`] = `
+Object {
+  "checkedFilenames": undefined,
+  "checkedRepoNames": undefined,
+  "noticeList": Array [
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "TIT",
+      "details": "should Occurrence be zero instead of ",
+      "fieldName": "Quote",
+      "filename": "testFile.tsv",
+      "lineNumber": 2,
+      "location": "",
+      "message": "Missing Quote field",
+      "priority": 119,
+      "repoCode": "TQ",
+      "rowID": "kowp",
+    },
+    Object {
+      "C": "1",
+      "V": "2",
+      "bookID": "TIT",
+      "details": "should Occurrence be zero instead of ",
+      "fieldName": "Quote",
+      "filename": "testFile.tsv",
+      "lineNumber": 3,
+      "location": "",
+      "message": "Missing Quote field",
+      "priority": 119,
+      "repoCode": "TQ",
+      "rowID": "gjx5",
+    },
+    Object {
+      "C": "1",
+      "V": "4",
+      "bookID": "TIT",
+      "details": "should Occurrence be zero instead of ",
+      "fieldName": "Quote",
+      "filename": "testFile.tsv",
+      "lineNumber": 4,
+      "location": "",
+      "message": "Missing Quote field",
+      "priority": 119,
+      "repoCode": "TQ",
+      "rowID": "b5g8",
+    },
+    Object {
+      "C": "1",
+      "V": "6",
+      "bookID": "TIT",
+      "details": "should Occurrence be zero instead of ",
+      "fieldName": "Quote",
+      "filename": "testFile.tsv",
+      "lineNumber": 5,
+      "location": "",
+      "message": "Missing Quote field",
+      "priority": 119,
+      "repoCode": "TQ",
+      "rowID": "ykne",
+    },
+    Object {
+      "C": "1",
+      "V": "7",
+      "bookID": "TIT",
+      "details": "should Occurrence be zero instead of ",
+      "fieldName": "Quote",
+      "filename": "testFile.tsv",
+      "lineNumber": 6,
+      "location": "",
+      "message": "Missing Quote field",
+      "priority": 119,
+      "repoCode": "TQ",
+      "rowID": "lyss",
+    },
+    Object {
+      "C": "1",
+      "V": "8",
+      "bookID": "TIT",
+      "details": "should Occurrence be zero instead of ",
+      "fieldName": "Quote",
+      "filename": "testFile.tsv",
+      "lineNumber": 7,
+      "location": "",
+      "message": "Missing Quote field",
+      "priority": 119,
+      "repoCode": "TQ",
+      "rowID": "ndy2",
+    },
+    Object {
+      "bookID": "TIT",
+      "filename": "testFile.tsv",
+      "location": "",
+      "message": "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked",
+      "priority": 20,
+      "repoCode": "TQ",
+    },
+  ],
+  "successList": Array [
+    "Checked TSV header ",
+    "Checked all 7 data lines",
+    "checkQuestionsTSV7Table v0.3.3 finished with 7 notices",
+  ],
+}
+`;
+
+exports[`checkTW_markdownArticle() -  Should pass 1`] = `
+Object {
+  "checkedFilenames": undefined,
+  "checkedRepoNames": undefined,
+  "noticeList": Array [],
+  "successList": Array [
+    "Checked markdown file: names/something",
+    "No errors or warnings found by checkMarkdownFileContents v0.6.0",
+  ],
+}
+`;
+
+exports[`checkTWL_TSV6Table() -  Should pass 1`] = `
+Object {
+  "checkedFilenames": undefined,
+  "checkedRepoNames": undefined,
+  "noticeList": Array [
+    Object {
+      "bookID": "1JN",
+      "filename": "testFile.tsv",
+      "location": "",
+      "message": "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked",
+      "priority": 20,
+      "repoCode": "TWL",
+    },
+  ],
+  "successList": Array [
+    "Checked TSV header ",
+    "Checked all 6 data lines",
+    "internalCheckTWL_TSV6Table v0.2.1 finished with 1 notice",
+  ],
+}
+`;

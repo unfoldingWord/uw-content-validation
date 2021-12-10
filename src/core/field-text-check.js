@@ -5,13 +5,14 @@ import { OPEN_CLOSE_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, BAD_CHARACTER
 import { debugLog, parameterAssert } from './utilities';
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '0.3.18';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '1.0.0';
 
 
 /**
  * @description -- Does basic checks for small errors like leading/trailing spaces, etc.
+ * @param {string} username
  * @param {string} languageCode -- can be an empty string
- * @param {string} repoCode -- e.g., 'TN' or 'TQ2', etc.
+ * @param {string} repoCode -- e.g., 'TN' or 'TQ', etc.
  * @param {string} fieldType -- classification, e.g., TSV, USFM, YAML, link, markdown, raw
  * @param {string} fieldName -- used for identification
  * @param {string} fieldText -- the field being checked
@@ -19,7 +20,7 @@ import { debugLog, parameterAssert } from './utilities';
  * @param {string} optionalFieldLocation -- used to inform where this field is located
  * @param {Object} checkingOptions
  */
-export function checkTextField(languageCode, repoCode, fieldType, fieldName, fieldText, allowedLinks, optionalFieldLocation, checkingOptions) {
+export function checkTextField(username, languageCode, repoCode, fieldType, fieldName, fieldText, allowedLinks, optionalFieldLocation, checkingOptions) {
     // We assume that checking for compulsory fields is done elsewhere
 
     // Returns a single notice list
@@ -283,11 +284,11 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
         let doubledPunctuationCheckList = '({}<>⟨⟩:،、‒–—―…!‹›«»‐?‘’“”\';⁄·&@•^†‡°¡¿※№÷×ºª%‰+−=‱¶′″‴§|‖¦©℗®℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥';
         if (!allowedLinks) doubledPunctuationCheckList += '/[].)'; // Double square brackets can be part of markdown links, double periods can be part of a path
         if (!fieldType.startsWith('markdown')) doubledPunctuationCheckList += '_*#~'; // There are used for markdown formatting
-        if (!fieldType.startsWith('USFM') || fieldText.indexOf('x-morph') < 0) doubledPunctuationCheckList += ',"'; // Allowed in original language morphology fields
+        if (fieldType.indexOf('USFM') === -1 || fieldText.indexOf('x-morph') === -1) doubledPunctuationCheckList += ',"'; // Allowed in original language morphology fields
         if (!fieldType.startsWith('YAML') || !fieldText.startsWith('--')) // NOTE: First hyphen may have been removed in preprocessing
             doubledPunctuationCheckList += '-';
         for (const punctChar of doubledPunctuationCheckList) {
-            if ((characterIndex = fieldText.indexOf(punctChar + punctChar)) >= 0) {
+            if ((characterIndex = fieldText.indexOf(punctChar + punctChar)) !== -1) {
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                 const notice = { priority: 177, message: `Unexpected doubled ${punctChar} characters`, excerpt, location: ourLocation };
                 if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.slice(0, 6) !== 'from \\')
@@ -303,7 +304,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
         let afterSpaceCheckList = ')}>⟩:,،、‒–—―!.›»‐-?’”;/⁄·@•^†‡°¡¿※#№÷×ºª%‰‱¶′″‴§‖¦℗®℠™¤₳฿₵¢₡₢₫₯֏₠ƒ₣₲₴₭₺₾ℳ₥₦₧₰£៛₽₹₨₪৳₸₮₩¥';
         // if (['en','hbo','el-x-koine'].includes(languageCode) ) afterSpaceCheckList += '’'; // These languages don't have words starting with apostrophe/right-single-quotation-mark
         if (!fieldType.startsWith('markdown')) afterSpaceCheckList += '_*~'; // These are used for markdown formatting
-        if (!fieldType.startsWith('USFM') || (fieldText.indexOf('x-lemma') < 0 && fieldText.indexOf('x-tw') < 0)) afterSpaceCheckList += '|';
+        if (fieldType.indexOf('USFM') === -1 || (fieldText.indexOf('x-lemma') === -1 && fieldText.indexOf('x-tw') === -1)) afterSpaceCheckList += '|';
         if (!fieldType.startsWith('YAML')) afterSpaceCheckList += '\'"'; // These are used for YAML strings, e.g., version: '0.15'
         // if (fieldName === 'OrigQuote' || fieldName === 'Quote') afterSpaceCheckList += '…'; // NOT NEEDED -- this is specifically checked elsewhere
         for (const punctCharBeingChecked of afterSpaceCheckList) {
@@ -312,7 +313,10 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
                 if (punctCharBeingChecked !== '-' || '1234567890'.indexOf(nextChar) === -1) { // Allow negative numbers, e.g., -1
                     const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                     // Lower priority for em-dash in markdown and for forward slash (used to list alternatives, e.g., "yes / no")
-                    const notice = { priority: 191 /* can be lowered to 71 */, message: `Unexpected ${punctCharBeingChecked} character after space`, excerpt, location: ourLocation };
+                    let optionalName = '';
+                    if (punctCharBeingChecked === '–') optionalName = ' (en-dash)';
+                    else if (punctCharBeingChecked === '—') optionalName = ' (em-dash)';
+                    const notice = { priority: 191 /* can be lowered to 71 */, message: `Unexpected ${punctCharBeingChecked}${optionalName} character after space`, excerpt, location: ourLocation };
                     if (((punctCharBeingChecked === '—' || punctCharBeingChecked === '/') && fieldType.startsWith('markdown'))
                         || (punctCharBeingChecked === '’' && !['en', 'hbo', 'el-x-koine'].includes(languageCode))) // Some other languages allow words to start with apostrophes
                         notice.priority = 71; // Lower the priority from 191
@@ -330,7 +334,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
                 addNoticePartial({ priority: 195, message: `Unexpected ${punctCharBeingChecked} character at start of line`, characterIndex, excerpt, location: ourLocation });
             }
         }
-        if (fieldType.startsWith('USFM'))
+        if (fieldType.indexOf('USFM') !== -1)
             suggestion = suggestion.replace(/| /g, '|');
     }
 
@@ -340,14 +344,17 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
         //  Removed ©
         let beforeSpaceCheckList = '({<⟨،、‒–—―‹«‐‘“/⁄·@\\•^†‡°¡¿※№×ºª‰‱¶′″‴§|‖¦℗℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥';
         if (!fieldType.startsWith('markdown')) beforeSpaceCheckList += '_~'; // These are used for markdown formatting
-        if (!fieldType.startsWith('markdown') && !fieldType.startsWith('USFM')) beforeSpaceCheckList += '*'; // There are used for markdown formatting and USFM closing markers
+        if (!fieldType.startsWith('markdown') && fieldType.indexOf('USFM') === -1) beforeSpaceCheckList += '*'; // There are used for markdown formatting and USFM closing markers
         if (!fieldType.startsWith('YAML')) beforeSpaceCheckList += '[';
         for (const punctCharBeingChecked of beforeSpaceCheckList) {
             if ((characterIndex = fieldText.indexOf(punctCharBeingChecked + ' ')) !== -1) {
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                 // Lower priority for em-dash in markdown and for forward slash (used to list alternatives, e.g., "yes / no")
                 // debugLog(`Got space after ${punctCharBeingChecked} in ${fieldType} around ${excerpt}: priority ${punctCharBeingChecked === '—' && fieldType.startsWith('markdown') ? 72 : 192}`);
-                const notice = { priority: (punctCharBeingChecked === '—' || punctCharBeingChecked === '/') && fieldType.startsWith('markdown') ? 72 : 192, message: `Unexpected space after ${punctCharBeingChecked} character`, excerpt, location: ourLocation };
+                let optionalName = '';
+                if (punctCharBeingChecked === '–') optionalName = ' (en-dash)';
+                else if (punctCharBeingChecked === '—') optionalName = ' (em-dash)';
+                const notice = { priority: (punctCharBeingChecked === '—' || punctCharBeingChecked === '/') && fieldType.startsWith('markdown') ? 72 : 192, message: `Unexpected space after ${punctCharBeingChecked}${optionalName} character`, excerpt, location: ourLocation };
                 if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.slice(0, 6) !== 'from \\')
                     notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
                 addNoticePartial(notice);
@@ -360,7 +367,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
         //  Removed ' (can be normal, e.g., Jesus' cloak)
         let beforeEOLCheckList = '([{<⟨،、‒–—―‹«‐‘“/⁄·@©\\•^†‡°¡¿※№×ºª‰‱¶′″‴§|‖¦℗℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥';
         if (!fieldType.startsWith('markdown')) beforeEOLCheckList += '_~'; // These are used for markdown formatting
-        if (!fieldType.startsWith('markdown') && !fieldType.startsWith('USFM')) beforeEOLCheckList += '*'; // There are used for markdown formatting and USFM closing markers
+        if (!fieldType.startsWith('markdown') && fieldType.indexOf('USFM') === -1) beforeEOLCheckList += '*'; // There are used for markdown formatting and USFM closing markers
         for (const punctChar of beforeEOLCheckList) {
             if (punctChar !== '—' && fieldText[fieldText.length - 1] === punctChar) {
                 characterIndex = fieldText.length - 1;
@@ -380,7 +387,7 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                 addNoticePartial({ priority: 849, message: `Unexpected '${badCharCombination}' character combination`, characterIndex, excerpt, location: ourLocation });
             }
-    if (cutoffPriorityLevel < 819)
+    if (cutoffPriorityLevel < 329)
         // Check for bad combinations of characters with regex
         for (const [details, badCharCombinationRegex] of BAD_CHARACTER_REGEXES)
             if ((characterIndex = fieldText.search(badCharCombinationRegex)) >= 0) {
@@ -406,8 +413,8 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
                     continue;
                 if (nextChars.startsWith('<sup>') && fieldType === 'markdown' && repoCode === 'TA')
                     continue;
-                if ((fieldName.startsWith('README') || fieldName.endsWith('.md line') || fieldName.endsWith('Note line'))
-                    && (nextChar === '*' || badTwoChars === '![')) // allow markdown formatting
+                if ((fieldName.startsWith('README') || fieldName.endsWith('.md line') || fieldName.endsWith('Note line') || fieldName === 'Question line' || fieldName === 'Response line')
+                    && (nextChar === '*' || nextChar === '_' || badTwoChars === '![' || nextTwoChars === '~~')) // allow markdown formatting
                     continue;
                 if (badChars.startsWith('.md') || badChars.startsWith('.usfm') || badChars.startsWith('.tsv') || badChars.startsWith('.yaml')
                     || badChars.startsWith('.org') || badChars.startsWith('.com') || badChars.startsWith('.bible')
@@ -418,7 +425,8 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
                 if ((badTwoChars === '.g' && fieldText.toLowerCase().indexOf('e.g.') !== -1)
                     || (badTwoChars === '.e' && fieldText.toLowerCase().indexOf('i.e.') !== -1))
                     continue;
-                if (badChar === '.' && fieldText.indexOf('etc.') !== -1)
+                if (badChar === '.'
+                    && (fieldText.indexOf('etc.') !== -1 || fieldText.indexOf('.x.') !== -1)) // Last one is for version numbers
                     continue;
                 if (badTwoChars === '.m'
                     && (fieldText.toLowerCase().indexOf('a.m.') !== -1 || fieldText.toLowerCase().indexOf('p.m.') !== -1))
@@ -430,7 +438,9 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
                     continue;
                 if (badChar === '?' && fieldText.indexOf('http') !== -1) // ? can be part of a URL
                     continue;
-                if (['\\w', '\\zaln-s', '\\v', '\\p', '\\q', '\\q1', '\\SPECIAL', '\\NONE', '\\f'].indexOf(fieldName) !== -1 && (badChar === ',' || badChar === ':')) // suppress x-morph formatting false alarms
+                // if (['\\w', '\\zaln-s', '\\v', '\\p', '\\pi', '\\q', '\\q1', '\\SPECIAL', '\\NONE', '\\f'].indexOf(fieldName) !== -1 && (badChar === ',' || badChar === ':')) // suppress x-morph formatting false alarms
+                if ((badChar === ',' || badChar === ':')
+                    && fieldText.indexOf('x-morph') !== -1) // suppress x-morph formatting false alarms
                     continue;
                 // debugLog(`checkTextField 329 at the bottom with ${badChar} in '${fieldName}' preceding ${nextChars}`);
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
@@ -446,9 +456,11 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
                 && (fieldText.slice(characterIndex + badZeroCharCombination.length, characterIndex + badZeroCharCombination.length + 1) !== '.')) {
                 // const nextChar = fieldText.slice(characterIndex + 1, characterIndex + 2);
                 const nextNextChar = fieldText.slice(characterIndex + 2, characterIndex + 3);
-                // debugLog(`92 leading zero for fieldType=${fieldType} fieldName=${fieldName} with nextChar=${nextChar} and nextNextChar=${nextNextChar}`);
-                if (nextNextChar !== '”' && nextNextChar !== '-' && // e.g., “0” is ok and 0-2 is ok
-                    (fieldType !== 'YAML' || fieldText.indexOf('sort:') === -1)) { // "sort: 0" is ok in manifests
+                // debugLog(`92 leading zero for fieldType='${fieldType}' fieldName='${fieldName}' with nextChar=${nextChar} and nextNextChar=${nextNextChar}`);
+                if (nextNextChar !== '”' && nextNextChar !== '-' // e.g., “0” is ok and 0-2 is ok
+                    && (fieldType !== 'YAML' || fieldText.indexOf('sort:') === -1)
+                    && (fieldType !== 'USFM line' || fieldName !== '\\id') // Some USFM producers put in a date like "Mar 03 2021"
+                ) { // "sort: 0" is ok in manifests
                     const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                     addNoticePartial({ priority: 92, message: `Unexpected leading zero`, characterIndex, excerpt, location: ourLocation });
                 }
@@ -466,48 +478,54 @@ export function checkTextField(languageCode, repoCode, fieldType, fieldName, fie
     //     userLog(`checkTextField(${fieldType}, ${fieldName}, '${fieldText}', ${allowedLinks}, ${ourLocation}) found ${countOccurrencesInString(fieldText, '(')} '(' but ${countOccurrencesInString(fieldText, ')')} ')'`);
     //     addNoticePartial({ priority: 1, message: `Mismatched ( ) characters`, details: `left=${countOccurrencesInString(fieldText, '(').toLocaleString()}, right=${countOccurrencesInString(fieldText, ')').toLocaleString()}`, location: ourLocation });
     // }
-    // Check matched pairs in the field
-    for (const punctSet of OPEN_CLOSE_PUNCTUATION_PAIRS) {
-        // Can’t check '‘’' coz they might be used as apostrophe
-        const leftChar = punctSet[0], rightChar = punctSet[1];
-        // if (fieldType === 'markdown' && leftChar === '<') continue; // markdown uses this for block quote
-        // TODO: The following 'continue' might not be doing the 2nd lot of checks
-        if ((fieldType.startsWith('USFM') || fieldName.startsWith('from \\') || (fieldType === 'markdown' && fieldName === ''))
-            && '([{“‘«'.indexOf(leftChar) >= 0) continue; // Start/end can be on different lines
-        if (!fieldType.startsWith('markdown') || leftChar !== '<') { // > is a markdown block marker and also used for HTML, e.g., <br>
-            const leftCount = countOccurrencesInString(fieldText, leftChar),
-                rightCount = countOccurrencesInString(fieldText, rightChar);
-            if (leftCount !== rightCount
-                && (rightChar !== '’' || leftCount > rightCount)) { // Closing single quote is also used as apostrophe in English
-                // NOTE: These are higher priority than similar checks in a whole file which is less specific
-                const thisPriority = leftChar === '“' ? 163 : 563;
-                if (cutoffPriorityLevel < thisPriority)
-                    addNoticePartial({ priority: thisPriority, message: `Mismatched ${leftChar}${rightChar} characters`, details: `left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()}`, location: ourLocation });
-            }
-            try { // This regex build fails for some of the characters
-                const leftRegex = new RegExp(`(\\w)\\${leftChar}(\\w)`, 'g'), rightRegex = new RegExp(`(\\w)\\${rightChar}(\\w)`, 'g');
-                // debugLog(`leftRegex is ${leftRegex}`);
-                let regexMatchObject;
-                while ((regexMatchObject = leftRegex.exec(fieldText)))
-                    if ((!fieldType.startsWith('markdown') || regexMatchObject[0][0] !== '_')
-                        && (!fieldType.startsWith('YAML') || leftChar !== '{')
-                        // TODO: We have to allow for a blank language code until we change checkPlainText()
-                        && (languageCode !== 'en' || regexMatchObject[0][2] !== 's' || fieldText.indexOf('(s)') === -1)) {
-                        // debugLog(`Got possible misplaced '${languageCode}' left ${leftChar} in ${fieldType} ${fieldName} '${fieldText}': ${JSON.stringify(regexMatchObject)}`);
-                        let thisPriority = 717, thisMessage = `Misplaced ${leftChar} character`;
-                        if (leftChar === '(' && regexMatchObject[0][2] === 's') { thisPriority = 17; thisMessage = `Possible misplaced ${leftChar} character`; } // Lower priority for words like 'thing(s)'
-                        if (cutoffPriorityLevel < thisPriority)
-                            addNoticePartial({ priority: thisPriority, message: thisMessage, excerpt: regexMatchObject[0], location: ourLocation });
-                    }
-                if (rightChar !== '’') // Can’t check '‘’' coz they might be used as apostrophe
-                    while ((regexMatchObject = rightRegex.exec(fieldText)))
-                        if ((!fieldType.startsWith('markdown') || regexMatchObject[0][2] !== '_')
-                            && (!fieldType.startsWith('YAML') || rightChar !== '}')) {
-                            // debugLog(`Got misplaced right ${rightChar} in ${fieldType} ${fieldName} '${fieldText}':`, JSON.stringify(regexMatchObject));
-                            if (cutoffPriorityLevel < 716)
-                                addNoticePartial({ priority: 716, message: `Misplaced ${rightChar} character`, excerpt: regexMatchObject[0], location: ourLocation });
+    if (fieldName !== 'GLQuote') { // NOTE: It's normal to have parts of quotes in the GLQuote field
+        // Check matched pairs in the field
+        for (const punctSet of OPEN_CLOSE_PUNCTUATION_PAIRS) {
+            // Can’t check '‘’' coz they might be used as apostrophe
+            const leftChar = punctSet[0], rightChar = punctSet[1];
+            // if (fieldType === 'markdown' && leftChar === '<') continue; // markdown uses this for block quote
+            // TODO: The following 'continue' might not be doing the 2nd lot of checks
+            if ((fieldType.indexOf('USFM') !== -1 // e.g., "raw USFM line"
+                || fieldName.startsWith('from \\')
+                || (fieldType === 'markdown' && fieldName === ''))
+                && '([{“‘«‹'.indexOf(leftChar) !== -1)
+                continue; // Start/end can be on different lines for these cases
+            if (!fieldType.startsWith('markdown') || leftChar !== '<') { // > is a markdown block marker and also used for HTML, e.g., <br>
+                const leftCount = countOccurrencesInString(fieldText, leftChar),
+                    rightCount = countOccurrencesInString(fieldText, rightChar);
+                if (leftCount !== rightCount
+                    && (rightChar !== '’' || leftCount > rightCount)) { // Closing single quote is also used as apostrophe in English
+                    // NOTE: These are higher priority than similar checks in a whole file which is less specific
+                    const thisPriority = leftChar === '“' ? 163 : 563;
+                    // debugLog(`checkTextField has ${thisPriority} notice for rC=${repoCode} fN=${fieldName} fT=${fieldType}`);
+                    if (cutoffPriorityLevel < thisPriority)
+                        addNoticePartial({ priority: thisPriority, message: `Mismatched ${leftChar}${rightChar} characters`, details: `left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()}`, location: ourLocation });
+                }
+                try { // This regex build fails for some of the characters
+                    const leftRegex = new RegExp(`(\\w)\\${leftChar}(\\w)`, 'g'), rightRegex = new RegExp(`(\\w)\\${rightChar}(\\w)`, 'g');
+                    // debugLog(`leftRegex is ${leftRegex}`);
+                    let regexMatchObject;
+                    while ((regexMatchObject = leftRegex.exec(fieldText)))
+                        if ((!fieldType.startsWith('markdown') || regexMatchObject[0][0] !== '_')
+                            && (!fieldType.startsWith('YAML') || leftChar !== '{')
+                            // TODO: We have to allow for a blank language code until we change checkPlainText()
+                            && (languageCode !== 'en' || regexMatchObject[0][2] !== 's' || fieldText.indexOf('(s)') === -1)) {
+                            // debugLog(`Got possible misplaced '${languageCode}' left ${leftChar} in ${fieldType} ${fieldName} '${fieldText}': ${JSON.stringify(regexMatchObject)}`);
+                            let thisPriority = 717, thisMessage = `Misplaced ${leftChar} character`;
+                            if (leftChar === '(' && regexMatchObject[0][2] === 's') { thisPriority = 17; thisMessage = `Possible misplaced ${leftChar} character`; } // Lower priority for words like 'thing(s)'
+                            if (cutoffPriorityLevel < thisPriority)
+                                addNoticePartial({ priority: thisPriority, message: thisMessage, excerpt: regexMatchObject[0], location: ourLocation });
                         }
-            } catch { }
+                    if (rightChar !== '’') // Can’t check '‘’' coz they might be used as apostrophe
+                        while ((regexMatchObject = rightRegex.exec(fieldText)))
+                            if ((!fieldType.startsWith('markdown') || regexMatchObject[0][2] !== '_')
+                                && (!fieldType.startsWith('YAML') || rightChar !== '}')) {
+                                // debugLog(`Got misplaced right ${rightChar} in ${fieldType} ${fieldName} '${fieldText}':`, JSON.stringify(regexMatchObject));
+                                if (cutoffPriorityLevel < 716)
+                                    addNoticePartial({ priority: 716, message: `Misplaced ${rightChar} character`, excerpt: regexMatchObject[0], location: ourLocation });
+                            }
+                } catch { }
+            }
         }
     }
 

@@ -219,6 +219,7 @@ projects:
 const data = {
   // You can choose any of the above lines here
   //  (to demonstrate differing results)
+  username: 'unfoldingWord',
   chosenTextName : 'textG',
   chosenText : textG,
   languageCode : 'en',
@@ -226,7 +227,7 @@ const data = {
 }
 
 function OurCheckManifestText(props) {
-  const { languageCode, chosenText, chosenTextName, givenLocation } = props.data;
+  const { username, languageCode, chosenText, chosenTextName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
 
@@ -238,7 +239,7 @@ function OurCheckManifestText(props) {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {chosenTextName}…</p>);
       const checkingOptions = {};
-      const rawResults = await checkManifestText(languageCode, 'LT', 'unfoldingWord', 'en_ult', 'master', chosenText, givenLocation, checkingOptions);
+      const rawResults = await checkManifestText(username, languageCode, 'LT', 'en_ult', 'master', chosenText, givenLocation, checkingOptions);
       if (!rawResults.successList || !rawResults.successList.length)
         rawResults.successList = ["Done manifest text checks"];
       setResults(

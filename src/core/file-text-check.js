@@ -4,20 +4,20 @@ import { checkPlainText } from './plain-text-check';
 // eslint-disable-next-line no-unused-vars
 import { parameterAssert } from './utilities';
 
-// const FILE_TEXT_VALIDATOR_VERSION_STRING = '0.3.1';
+// const FILE_TEXT_VALIDATOR_VERSION_STRING = '0.4.0';
 
 
 /**
  *
  * @param {string} languageCode
- * @param {string} repoCode -- e.g., 'TN' or 'TQ2', etc.
+ * @param {string} repoCode -- e.g., 'TN' or 'TQ', etc.
  * @param {string} fileType
  * @param {string} filename
  * @param {string} fileText
  * @param {string} optionalFileLocation
  * @param {Object} checkingOptions
  */
-export function checkTextfileContents(languageCode, repoCode, fileType, filename, fileText, optionalFileLocation, checkingOptions) {
+export function checkTextfileContents(username, languageCode, repoCode, fileType, filename, fileText, optionalFileLocation, checkingOptions) {
     // Does basic checks for small errors like mismatched punctuation pairs, etc.
     //  (Used by ourBasicFileChecks() in checkUSFMText() in usfm-text-check.js)
 
@@ -59,10 +59,12 @@ export function checkTextfileContents(languageCode, repoCode, fileType, filename
         //parameterAssert(noticeObject.message !== undefined, "dBTCs addNotice: 'message' parameter should be defined");
         //parameterAssert(typeof noticeObject.message === 'string', `dBTCs addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
         // parameterAssert(characterIndex !== undefined, "dBTCs addNotice: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) { parameterAssert(typeof noticeObject.characterIndex === 'number', `dBTCs addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        if (noticeObject.characterIndex) {
+            //parameterAssert(typeof noticeObject.characterIndex === 'number', `dBTCs addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
         }
         // parameterAssert(excerpt !== undefined, "dBTCs addNotice: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) { parameterAssert(typeof noticeObject.excerpt === 'string', `dBTCs addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        if (noticeObject.excerpt) {
+            //parameterAssert(typeof noticeObject.excerpt === 'string', `dBTCs addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         }
         //parameterAssert(noticeObject.location !== undefined, "dBTCs addNotice: 'location' parameter should be defined");
         //parameterAssert(typeof noticeObject.location === 'string', `dBTCs addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
@@ -89,7 +91,7 @@ export function checkTextfileContents(languageCode, repoCode, fileType, filename
         //parameterAssert(typeof plainText === 'string', `cPT ourCheckPlainText: 'plainText' parameter should be a string not a '${typeof plainText}'`);
         //parameterAssert(checkingOptions !== undefined, "cPT ourCheckPlainText: 'checkingOptions' parameter should be defined");
 
-        const resultObject = checkPlainText(languageCode, repoCode, textType, textFilename, plainText, givenLocation, checkingOptions);
+        const resultObject = checkPlainText(username, languageCode, repoCode, textType, textFilename, plainText, givenLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -99,7 +101,7 @@ export function checkTextfileContents(languageCode, repoCode, fileType, filename
         for (const noticeEntry of resultObject.noticeList)
             addNotice({ ...noticeEntry, filename: textFilename });
     }
-    // end of ourCheckTextField function
+    // end of ourCheckPlainText function
 
 
     // Main code for checkTextfileContents()

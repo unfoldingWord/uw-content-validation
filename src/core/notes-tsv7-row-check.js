@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults';
+import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST, NUM_OBS_STORIES, MAX_OBS_FRAMES } from './defaults';
 import { isWhitespace, countOccurrencesInString } from './text-handling-functions';
 import * as books from './books/books';
 import { checkTextField } from './field-text-check';
@@ -8,10 +8,10 @@ import { checkSupportReferenceInTA } from './ta-reference-check';
 // import { checkNotesLinksToOutside } from './notes-links-check';
 import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
 // eslint-disable-next-line no-unused-vars
-import { parameterAssert } from './utilities';
+import { parameterAssert, aboutToOverwrite } from './utilities';
 
 
-// const NOTES_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.6.15';
+// const NOTES_TABLE_ROW_VALIDATOR_VERSION_STRING = '1.0.0';
 
 const NUM_EXPECTED_NOTES_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_NOTES_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tNote';
@@ -36,7 +36,7 @@ const TA_REGEX = new RegExp('\\[\\[rc://[^ /]+?/ta/man/[^ /]+?/([^ \\]]+?)\\]\\]
  * @param {Object} checkingOptions - may contain excerptLength parameter
  * @return {Object} - containing noticeList
  */
-export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID, givenC, givenV, givenRowLocation, checkingOptions) {
+export async function checkNotesTSV7DataRow(username, languageCode, repoCode, line, bookID, givenC, givenV, givenRowLocation, checkingOptions) {
     /* This function is only for checking one data row
           and the function doesn’t assume that it has any previous context.
 
@@ -111,6 +111,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
 
         // Also uses the given bookID,C,V, parameters from the main function call
         // incompleteNoticeObject.debugChain = incompleteNoticeObject.debugChain ? `checkNotesTSV7DataRow ${incompleteNoticeObject.debugChain}` : `checkNotesTSV7DataRow(${repoCode})`;
+        aboutToOverwrite('checkNotesTSV7DataRow', ['bookID', 'C', 'V'], incompleteNoticeObject, { bookID, C: givenC, V: givenV });
         drResult.noticeList.push({ ...incompleteNoticeObject, bookID, C: givenC, V: givenV });
     }
 
@@ -145,7 +146,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
         //parameterAssert(typeof rowLocation === 'string', `checkNotesTSV7DataRow ourMarkdownTextChecks: 'rowLocation' parameter should be a string not a '${typeof rowLocation}'`);
         //parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkNotesTSV7DataRow ourMarkdownTextChecks: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const omtcResultObject = await checkMarkdownText(languageCode, repoCode, fieldName, fieldText, rowLocation, checkingOptions);
+        const omtcResultObject = await checkMarkdownText(username, languageCode, repoCode, fieldName, fieldText, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -194,7 +195,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
         //parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkNotesTSV7DataRow ourCheckTextField: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
         const fieldType = fieldName === 'Note' ? 'markdown' : 'raw';
-        const octfResultObject = checkTextField(languageCode, repoCode, fieldType, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions);
+        const octfResultObject = checkTextField(username, languageCode, repoCode, fieldType, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -256,7 +257,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
         //parameterAssert(typeof occurrence === 'string', `checkNotesTSV7DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'occurrence' parameter should be a string not a '${typeof occurrence}'`);
         //parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkNotesTSV7DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const coqResultObject = await checkOriginalLanguageQuoteAndOccurrence(languageCode, repoCode, fieldName, fieldText, occurrence, bookID, givenC, givenV, rowLocation, checkingOptions);
+        const coqResultObject = await checkOriginalLanguageQuoteAndOccurrence(username, languageCode, repoCode, fieldName, fieldText, occurrence, bookID, givenC, givenV, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -292,7 +293,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
     const lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook;
     if (bookID === 'OBS')
-        numChaptersThisBook = 50; // There’s 50 Open Bible Stories
+        numChaptersThisBook = NUM_OBS_STORIES; // There’s 50 Open Bible Stories
     else {
         //parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in checkNotesTSV7DataRow");
         try {
@@ -331,7 +332,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
                     haveGoodChapterNumber = false;
                 }
                 if (lowercaseBookID === 'obs')
-                    numVersesThisChapter = 99; // Set to maximum expected number of frames
+                    numVersesThisChapter = MAX_OBS_FRAMES; // Set to maximum expected number of frames
                 else {
                     try {
                         numVersesThisChapter = books.versesInChapter(lowercaseBookID, intC);
@@ -400,9 +401,8 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
             }
             let tagsList = tags.split('; ');
             for (const thisTag of tagsList) {
-                // No tags are yet defined for TNs or SNs
-                // if (thisTag !== 'keyterm' && thisTag !== 'name')
-                addNoticePartial({ priority: 746, message: "Unexpected tag", details: thisTag, excerpt: tags, fieldName: 'Tags', rowID, location: ourRowLocation });
+                if (thisTag !== 'title') // for TNs or SNs
+                    addNoticePartial({ priority: 740, message: "Unrecognized tag", details: thisTag, excerpt: tags, fieldName: 'Tags', rowID, location: ourRowLocation });
             }
         }
 
@@ -449,7 +449,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
         }
         else // TODO: Find more details about when these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             if (repoCode === 'TN2' && V !== 'intro' && occurrence !== '0')
-                addNoticePartial({ priority: 919, message: "Missing Quote field", fieldName: 'Quote', rowID, location: ourRowLocation });
+                addNoticePartial({ priority: 919, message: "Missing Quote field", details: `should Occurrence be zero instead of ${occurrence} with SR='${supportReference}'`, fieldName: 'Quote', rowID, location: ourRowLocation });
 
         if (occurrence.length) { // This should usually be a digit
             if ((characterIndex = occurrence.indexOf('\\n')) !== -1) {
@@ -494,6 +494,7 @@ export async function checkNotesTSV7DataRow(languageCode, repoCode, line, bookID
                 while ((regexMatchObject = TA_REGEX.exec(adjustedNote))) {
                     // debugLog("Got TA Regex in Note", JSON.stringify(regexMatchObject));
                     linksList.push(regexMatchObject[1])
+                    // What are we doing in the next line ???
                     const adjustedLink = regexMatchObject[0].slice(2, regexMatchObject[0].length - 2)
                     if (adjustedLink === supportReference) foundSR = true;
                 }

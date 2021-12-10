@@ -5,13 +5,17 @@ import { debugLog, userLog, functionLog } from './utilities';
     but we just want to disable it for certain resources to handle special cases.
     In some cases, it’s to handle software deficiencies.
 
-  NOTE: This is only recommended for resources which are relatively stable,
+  Some examples:
+    An article about punctuation discusses the use of "(" (which would normally cause a warning)
+    An article about how to encode markdown discusses "#" (which would normally cause a warning)
+
+    NOTE: This is only recommended for resources which are relatively stable,
           e.g., completed book packages
         as it can rely on details like filename and maybe line number.
 */
 
 
-// const DISABLED_NOTICES_VERSION_STRING = '0.3.7';
+// const DISABLED_NOTICES_VERSION_STRING = '1.0.1';
 
 
 const disabledNotices = [
@@ -19,6 +23,7 @@ const disabledNotices = [
   //  i.e., you can be as specific as you need about username and/or lineNumber, etc.
 
   { repoCode: 'TN', priority: 450, }, // TN "Resource container link should have '*' language code with (not 'en')" disabled as tC can’t handle it yet!
+  { repoCode: 'OBS-TN', priority: 450, }, // OBS-TN "Resource container link should have '*' language code with (not 'en')" disabled as tS can’t handle it yet!
   { repoCode: 'TW', priority: 450, }, // TW "Resource container link should have '*' language code with (not 'en')" disabled as tC can’t handle it yet!
   { extra: 'TW', priority: 450, }, // TW "Resource container link should have '*' language code with (not 'en')" disabled as tC can’t handle it yet!
 
@@ -34,19 +39,28 @@ const disabledNotices = [
   { repoCode: 'LT', priority: 95, }, // "Unexpected trailing space(s)" tC3 outputs trailing spaces all over the place
   { repoCode: 'ST', priority: 95, }, // "Unexpected trailing space(s)" tC3 outputs trailing spaces all over the place
 
+  { repoCode: 'TN', excerpt: 'brackets [ ] ', message: "Unexpected space after [ character", }, // 192 (x2)
+
   { repoCode: 'TA', priority: 104, }, // "Unexpected trailing line break" UTA uses trailing <BR> for (1) (2) (3) style numbered lists
 
-  { repoCode: 'TA', message: "Unexpected – character after space", }, // 191 -- temp en-dashes
-  { repoCode: 'TA', message: "Unexpected space after – character", }, // 192 -- temp en-dashes
+  // { repoCode: 'TA', message: "Unexpected – (en-dash) character after space", }, // 191 -- temp en-dashes
+  // { repoCode: 'TA', message: "Unexpected space after – (en-dash) character", }, // 192 -- temp en-dashes
 
   { repoCode: 'TA', priority: 172, }, // "Header levels should only increment by one" not required for TA
 
   { repoCode: 'TA', filename: 'translate/translate-alphabet/01.md', message: "At end of text with unclosed ‘ opening character", }, // 768
   { repoCode: 'TA', filename: 'translate/translate-alphabet/01.md', message: "Mismatched ‘’ characters", }, // 462
+  { repoCode: 'TA', filename: 'translate/translate-alphabet/01.md', message: "Unexpected space after ‘ character", }, // 192
+  { repoCode: 'TA', filename: 'translate/translate-alphabet/01.md', message: "Unexpected space after ^ character", }, // 192
+  { repoCode: 'TA', filename: 'translate/translate-alphabet/01.md', message: "Unexpected ^ character after space", }, // 191
+
   { repoCode: 'TA', filename: 'translate/translate-textvariants/01.md', message: "Unexpected space after [ character", }, // 192
   { repoCode: 'TA', filename: 'translate/translate-formatsignals/01.md', message: "Unexpected space after ( character", }, // 192
 
-  { repoCode: 'TN', excerpt: ' brackets [ ] to ind', message: "Unexpected space after [ character", }, // 192
+  { repoCode: 'TA', filename: 'translate/figs-litany/01.md', message: "Unexpected non-break space (u00A0) character", }, // 581
+
+  { repoCode: 'TA', filename: 'checking/intro-checking/01.md', excerpt: "Tuggy P.,", }, // 329 Unexpected bad character combination
+  { repoCode: 'TA', filename: 'translate/translate-retell/01.md', excerpt: "Tuggy P.,", }, // 329 Unexpected bad character combination
 
   // This file explains how to use markdown headings
   { repoCode: 'TA', filename: 'translate/file-formats/01.md', message: "Unexpected # character at start of line", }, // 195
@@ -57,14 +71,24 @@ const disabledNotices = [
   { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected space after ‘ character", lineNumber: 16, }, // 192
   { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected space after « character", }, // 192
   { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected space after ‹ character", }, // 192
-  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected space after — character", }, // 192
+  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected space after — (em-dash) character", }, // 192
 
   { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected . character after space", lineNumber: 16, }, // 191
   { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected ” character after space", }, // 191
   { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected ’ character after space", }, // 191
   { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected » character after space", }, // 191
   { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected › character after space", }, // 191
-  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected — character after space", }, // 191
+  { repoCode: 'TA', filename: 'translate/figs-quotemarks/01.md', message: "Unexpected — (em-dash) character after space", }, // 191
+
+  { repoCode: 'TA', filename: 'translate/writing-quotations/01.md', excerpt: " (“ ”).", }, // 192 & 191
+  { repoCode: 'TA', filename: 'translate/writing-quotations/01.md', message: "Unexpected » character after space", }, // 191
+  { repoCode: 'TA', filename: 'translate/writing-quotations/01.md', message: "Unexpected space after « character", }, // 192
+
+  { repoCode: 'TA', filename: 'checking/self-assessment/01.md', excerpt: "no | yes", }, // 192 & 191
+
+  { repoCode: 'TA', filename: 'translate/translate-formatsignals', excerpt: " “( )” ", }, // 192 & 191
+
+  { repoCode: 'TA', filename: 'translate/source-version/01.md', message: " .1 ", }, // 191 -- Unexpected . character after space
 
   { repoCode: 'TA', filename: 'translate/figs-metaphor/01.md', message: "Possible misplaced ( character", }, // 17
 ];
@@ -85,10 +109,18 @@ export function isDisabledNotice(givenNotice) {
     for (const propertyName in disabledNotice)
       // if ((propertyName !== 'repoCode' || givenNotice.repoCode !== undefined) // Some individual checks don’t set repoCode
       // && (givenNotice[propertyName] !== disabledNotice[propertyName])) {
-      if (givenNotice[propertyName] !== disabledNotice[propertyName]) {
-        matchedAllSpecifiedFields = false;
-        break;
-      }
+      if (propertyName in givenNotice) // as well as in disabledNotice
+        if (propertyName === 'excerpt') {
+          if (givenNotice[propertyName].indexOf(disabledNotice[propertyName]) === -1) {
+            matchedAllSpecifiedFields = false;
+            break;
+          }
+        } else if (givenNotice[propertyName] !== disabledNotice[propertyName]) {
+          matchedAllSpecifiedFields = false;
+          break;
+        }
+    // else // property name not in givenNotice
+    // Should we be setting matchedAllSpecifiedFields = false here ????
     if (matchedAllSpecifiedFields) {
       // debugLog(`  isDisabledNotice() returning true for ${JSON.stringify(disabledNotice)}`);
       return true;

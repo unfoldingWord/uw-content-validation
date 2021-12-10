@@ -5,13 +5,13 @@ import {
   REPO_CODES_LIST,
   formRepoName,
   checkUSFMText, checkMarkdownFileContents, checkLexiconFileContents, checkPlainText, checkYAMLText, checkManifestText,
-  checkTN_TSV9Table, checkNotesTSV7Table, checkQuestionsTSV7Table, checkTWL_TSV6Table,
+  internalCheckTN_TSV9Table, checkNotesTSV7Table, checkQuestionsTSV7Table, internalCheckTWL_TSV6Table,
 } from '../../core';
 // eslint-disable-next-line no-unused-vars
 import { userLog, debugLog, functionLog, parameterAssert, logicAssert } from '../../core';
 
 
-// const CHECK_FILE_CONTENTS_VERSION_STRING = '0.5.0';
+// const CHECK_FILE_CONTENTS_VERSION_STRING = '0.6.0';
 
 
 /**
@@ -71,21 +71,21 @@ export async function checkFileContents(username, languageCode, repoCode, branch
     //parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
     if (filepath.startsWith(`${languageCode}_`) || filenameMain.startsWith('en_')) {
       logicAssert(repoCode === 'TN', `These filenames ${filenameMain} are only for TN ${repoCode}`);
-      checkFileResultObject = await checkTN_TSV9Table(languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, newCheckingOptions);
+      checkFileResultObject = await internalCheckTN_TSV9Table(username, languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, newCheckingOptions);
     } else {
       // let adjustedRepoCode = repoCode;
       // if (adjustedRepoCode.startsWith('OBS-'))
       //   adjustedRepoCode = adjustedRepoCode.slice(4); // Remove the 'OBS-' from the beginning
-      logicAssert(repoCode !== 'TN' && repoCode !== 'TQ' && repoCode !== 'OBS-TN' && repoCode !== 'OBS-TQ' && repoCode !== 'OBS_SN' && repoCode !== 'OBS-SQ', `This code with ${filenameMain} is not for ${repoCode}`);
+      logicAssert(repoCode !== 'TN' && repoCode !== 'TQ1' && repoCode !== 'OBS-TN' && repoCode !== 'OBS-TQ1' && repoCode !== 'OBS_SN' && repoCode !== 'OBS-SQ', `This checkFileContents code with ${filenameMain} is not for ${repoCode}`);
       const checkFunction = {
-        'TWL': checkTWL_TSV6Table, 'OBS-TWL': checkTWL_TSV6Table,
-        'TN2': checkNotesTSV7Table, 'OBS-TN2': checkNotesTSV7Table,
-        'TQ2': checkQuestionsTSV7Table, 'OBS-TQ2': checkQuestionsTSV7Table,
-        'SN': checkNotesTSV7Table, 'OBS-SN2': checkNotesTSV7Table,
-        'SQ': checkQuestionsTSV7Table, 'OBS-SQ2': checkQuestionsTSV7Table,
+        'TWL': internalCheckTWL_TSV6Table, 'OBS-TWL': internalCheckTWL_TSV6Table,
+        'TN2': checkNotesTSV7Table, 'OBS-TN': checkNotesTSV7Table,
+        'TQ': checkQuestionsTSV7Table, 'OBS-TQ': checkQuestionsTSV7Table,
+        'SN': checkNotesTSV7Table, 'OBS-SN': checkNotesTSV7Table,
+        'SQ': checkQuestionsTSV7Table, 'OBS-SQ': checkQuestionsTSV7Table,
       }[repoCode];
       // debugLog(`checkFileContents() got ${checkFunction} function for ${repoCode}`);
-      checkFileResultObject = await checkFunction(languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, newCheckingOptions);
+      checkFileResultObject = await checkFunction(username, languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, newCheckingOptions);
     }
   }
   else if (filenameLower.endsWith('.usfm')) {
@@ -94,31 +94,31 @@ export async function checkFileContents(username, languageCode, repoCode, branch
     const bookID = filenameMain.slice(filenameMain.length - 3);
     // debugLog(`Have USFM bookcode=${bookID}`);
     //parameterAssert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
-    checkFileResultObject = await checkUSFMText(languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, newCheckingOptions);
+    checkFileResultObject = await checkUSFMText(username, languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, newCheckingOptions);
   } else if (filenameLower.endsWith('.sfm')) {
     const filenameMain = filepath.slice(0, filepath.length - 4); // drop .sfm
     userLog(`checkFileContents have SFM filenameMain=${filenameMain}`);
     const bookID = filenameMain.slice(2, 5);
     userLog(`checkFileContents have SFM bookcode=${bookID}`);
     //parameterAssert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
-    checkFileResultObject = await checkUSFMText(languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, newCheckingOptions);
+    checkFileResultObject = await checkUSFMText(username, languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, newCheckingOptions);
   } else if (filenameLower.endsWith('.md'))
     if ((repoCode === 'UHAL' && filename[0] === 'H' && filename.length === 8)
       || (repoCode === 'UGL' && filename === '01.md'))
-      checkFileResultObject = await checkLexiconFileContents(languageCode, repoCode, filepath, fileContent, ourCFLocation, newCheckingOptions);
+      checkFileResultObject = await checkLexiconFileContents(username, languageCode, repoCode, filepath, fileContent, ourCFLocation, newCheckingOptions);
     else
-      checkFileResultObject = await checkMarkdownFileContents(languageCode, repoCode, filepath, fileContent, ourCFLocation, newCheckingOptions);
+      checkFileResultObject = await checkMarkdownFileContents(username, languageCode, repoCode, filepath, fileContent, ourCFLocation, newCheckingOptions);
   else if (filenameLower.endsWith('.txt'))
-    checkFileResultObject = checkPlainText(languageCode, repoCode, 'text', filepath, fileContent, ourCFLocation, newCheckingOptions);
+    checkFileResultObject = checkPlainText(username, languageCode, repoCode, 'text', filepath, fileContent, ourCFLocation, newCheckingOptions);
   else if (filenameLower === 'manifest.yaml')
-    checkFileResultObject = await checkManifestText(languageCode, repoCode, username, repoName, branch, fileContent, ourCFLocation, newCheckingOptions); // don’t know username or branch
+    checkFileResultObject = await checkManifestText(username, languageCode, repoCode, repoName, branch, fileContent, ourCFLocation, newCheckingOptions); // don’t know username or branch
   else if (filenameLower.endsWith('.yaml'))
-    checkFileResultObject = checkYAMLText(languageCode, repoCode, filepath, fileContent, ourCFLocation, newCheckingOptions);
+    checkFileResultObject = checkYAMLText(username, languageCode, repoCode, filepath, fileContent, ourCFLocation, newCheckingOptions);
   else if (filenameLower.startsWith('license')) {
-    checkFileResultObject = await checkMarkdownFileContents(languageCode, repoCode, filepath, fileContent, ourCFLocation, newCheckingOptions);
+    checkFileResultObject = await checkMarkdownFileContents(username, languageCode, repoCode, filepath, fileContent, ourCFLocation, newCheckingOptions);
     checkFileResultObject.noticeList.unshift({ priority: 982, message: "File extension is not recognized, so treated as markdown.", filename: filepath, location: ourCFLocation });
   } else {
-    checkFileResultObject = checkPlainText(languageCode, repoCode, 'raw', filepath, fileContent, ourCFLocation, newCheckingOptions);
+    checkFileResultObject = checkPlainText(username, languageCode, repoCode, 'raw', filepath, fileContent, ourCFLocation, newCheckingOptions);
     checkFileResultObject.noticeList.unshift({ priority: 995, message: "File extension is not recognized, so treated as plain text.", filename: filepath, location: ourCFLocation });
   }
   // debugLog(`checkFileContents got initial results: ${JSON.stringify(checkFileResult)}`);

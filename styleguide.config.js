@@ -128,7 +128,7 @@ let sections = [
 				// description: ''
 			},
 			{
-				name: 'TQ2/SQ TSV7 table check',
+				name: 'TQ/SQ TSV7 table check',
 				content: 'src/core/questions-tsv7-table-check.md',
 				// description: ''
 			},
@@ -266,4 +266,3 @@ module.exports = {
 	version,
     webpackConfig: require('react-scripts/config/webpack.config')('development'),
 };
-

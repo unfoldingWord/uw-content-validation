@@ -5,10 +5,10 @@ import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults';
 import { CLOSING_PUNCTUATION_CHARACTERS, HEBREW_CANTILLATION_REGEX, PAIRED_PUNCTUATION_OPENERS, PAIRED_PUNCTUATION_CLOSERS } from './text-handling-functions';
 import { cachedGetFile } from './getApi';
 // eslint-disable-next-line no-unused-vars
-import { functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt } from './utilities';
+import { functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt, aboutToOverwrite } from './utilities';
 
 
-// const OL_QUOTE_VALIDATOR_VERSION_STRING = '0.10.8';
+// const OL_QUOTE_VALIDATOR_VERSION_STRING = '0.10.10';
 
 
 /**
@@ -24,7 +24,7 @@ import { functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourPar
  * @param {string} givenLocation
  * @param {Object} checkingOptions
  */
-export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repoCode, fieldName, fieldText, occurrenceString, bookID, C, V, givenLocation, checkingOptions) {
+export async function checkOriginalLanguageQuoteAndOccurrence(username, languageCode, repoCode, fieldName, fieldText, occurrenceString, bookID, C, V, givenLocation, checkingOptions) {
     // Checks that the Hebrew/Greek quote can be found in the original texts
 
     // Also checks that the Occurrence is valid
@@ -99,6 +99,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
         }
         //parameterAssert(incompleteNoticeObject.location !== undefined, "cOLQ addNotice: 'location' parameter should be defined");
         //parameterAssert(typeof incompleteNoticeObject.location === 'string', `cOLQ addNotice: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
+        aboutToOverwrite('checkOriginalLanguageQuoteAndOccurrence', ['bookID', 'C', 'V'], incompleteNoticeObject, { bookID, C, V });
         colqResult.noticeList.push({ ...incompleteNoticeObject, bookID, C, V });
     }
 
@@ -136,14 +137,14 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
             const OBSPathname = `content/${adjC}.md`;
             try {
                 originalMarkdown = await getFile_({ username, repository: OBSRepoName, path: OBSPathname, branch });
-                // debugLog("Fetched fileContent for", OBSRepoName, OBSPathname, typeof originalMarkdown, originalMarkdown.length);
+                // debugLog(`Fetched fileContent for ${OBSRepoName} ${OBSPathname} ${typeof originalMarkdown} ${originalMarkdown.length}`);
             } catch (gcUHBerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
                 console.error(`getOriginalVerse(${bookID}, ${C}:${V}, ${JSON.stringify(checkingOptions)}) failed to load UHB`, username, languageCode, OBSPathname, branch, gcUHBerror.message);
                 addNoticePartial({ priority: 601, message: "Unable to load file", details: `error=${gcUHBerror}`, username, OBSPathname, location: ourLocation, extra: OBSRepoName });
             }
             if (!originalMarkdown) return '';
 
-            let gotIt = V === 'intro'; // normally false, but true for intro (so grabs first line of text = heading line)
+            let gotIt = V === '0' || V === 'intro'; // normally false, but true for intro (so grabs first line of text = heading line)
             const searchString = `-${adjC}-${adjV}.`;
             // NOTE: Bible references get appended to the last frame text (but I don’t think it does any harm)
             for (const line of originalMarkdown.split('\n')) {
@@ -152,8 +153,8 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
                 if (gotIt)
                     if (line.indexOf('[OBS Image]') > 0) // This is the next frame
                         break;
-                    else if (line[0] === '_') // e.g., _A Bible story from...
-                        verseText += ` ${line.replace(/_/, '')}`; // NOTE: remove underlines (markdown format codes)
+                    else if (line[0] === '_') // e.g., _A Bible story from..._
+                        verseText += ` ${line.replace(/_/g, '')}`; // NOTE: remove underlines (markdown format codes)
                     else
                         verseText += line; // NOTE: works coz all text on one line, otherwise would need to insert spaces here
             }
@@ -657,7 +658,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
         else {
             verseText = await getOriginalPassage(bookID, C, V, checkingOptions);
             if (!verseText) {
-                addNoticePartial({ priority: 851, message: bookID === 'OBS' ? "Unable to load OBS story text" : "Unable to load original language verse text", location: ourLocation });
+                addNoticePartial({ priority: 851, message: bookID === 'OBS' ? "Unable to load original OBS story text" : "Unable to load original language verse text", location: ourLocation });
                 return colqResult; // nothing else we can do here
             }
             noDashVerseText = verseText.replace(/[—־]/g, ' '); // em-dash and then maqaf
@@ -769,7 +770,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(languageCode, repo
         } else // < 2
             addNoticePartial({ priority: 815, message: "Divider without surrounding snippet", location: ourLocation });
     } else { // Only a single quote (no discontiguousDivider)
-        if (repoCode === 'OBS-TN2' && (fieldText === "General Information" || fieldText === "Connecting Statement"))
+        if (repoCode === 'OBS-TN' && (fieldText === "General Information" || fieldText === "Connecting Statement"))
             ; // Just ignore these fixed strings
         else if (getWordsIndex(verseWordsList, noDashFieldText.split(' '), occurrence) >= 0) {
             if (occurrence > 1) {

@@ -9,7 +9,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { debugLog, functionLog, parameterAssert, logicAssert } from './utilities';
 
 
-const MANIFEST_VALIDATOR_VERSION_STRING = '0.4.7';
+const MANIFEST_VALIDATOR_VERSION_STRING = '0.5.0';
 
 // Pasted in 2020-10-02 from https://raw.githubusercontent.com/unfoldingWord/dcs/master/options/schema/rc.schema.json
 // Updated 2021-02-19
@@ -519,10 +519,6 @@ const MANIFEST_SCHEMA = {
                 "jud",
                 "rev",
                 "obs",
-                "obs-sn",
-                "obs-sq",
-                "obs-tn",
-                "obs-tq",
                 "intro",
                 "process",
                 "translate",
@@ -562,33 +558,34 @@ const validate = ajv.compile(MANIFEST_SCHEMA);
 
 /**
  *
+ * @param {string} username -- or orgname -- owner of DCS repo
  * @param {string} languageCode -- language of main thing being checked -- normally the same as the first part of the repoName, e.g., 'en', but may differ for original language repos
  * @param {string} repoCode -- e.g., 'UHB', 'LT', 'TN', 'OBS-SQ2'
- * @param {string} username -- or orgname -- owner of DCS repo
  * @param {string} repoName -- e.g., 'en_tn'
  * @param {string} repoBranch -- e.g., 'master'
  * @param {string} manifestText -- contents of manifest.yaml
  * @param {string} givenLocation -- optional description of location of manifest
  * @param {Object} checkingOptions -- optional option key:value pairs
  */
-export async function checkManifestText(languageCode, repoCode, username, repoName, repoBranch, manifestText, givenLocation, checkingOptions) {
+export async function checkManifestText(username, languageCode, repoCode, repoName, repoBranch, manifestText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
     See the specification at https://resource-container.readthedocs.io/en/latest/manifest.html.
 
     Returns a result object containing a successList and a noticeList
     */
-    // functionLog(`checkManifestText(${languageCode}, ${repoCode}, ${username}, ${repoName}, ${repoBranch}, ${manifestText.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
+    // functionLog(`checkManifestText(${username}, ${languageCode}, ${repoCode}, ${repoName}, ${repoBranch}, ${manifestText.length} chars, ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
+    //parameterAssert(username !== undefined, "checkManifestText: 'username' parameter should be defined");
+    //parameterAssert(typeof username === 'string', `checkManifestText: 'username' parameter should be a string not a '${typeof username}': ${username}`);
     //parameterAssert(languageCode !== undefined, "checkManifestText: 'languageCode' parameter should be defined");
     //parameterAssert(typeof languageCode === 'string', `checkManifestText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
     //parameterAssert(repoCode !== undefined, "checkManifestText: 'repoCode' parameter should be defined");
     //parameterAssert(typeof repoCode === 'string', `checkManifestText: 'repoCode' parameter should be a string not a '${typeof repoCode}': ${repoCode}`);
     //parameterAssert(REPO_CODES_LIST.includes(repoCode), `checkManifestText: 'repoCode' parameter should not be '${repoCode}'`);
-    //parameterAssert(username !== undefined, "checkManifestText: 'username' parameter should be defined");
-    //parameterAssert(typeof username === 'string', `checkManifestText: 'username' parameter should be a string not a '${typeof username}': ${username}`);
     //parameterAssert(repoName !== undefined, "checkManifestText: 'repoName' parameter should be defined");
     //parameterAssert(typeof repoName === 'string', `checkManifestText: 'repoName' parameter should be a string not a '${typeof repoName}': ${repoName}`);
-    if (repoCode !== 'UHB' && repoCode !== 'UGNT') { parameterAssert(repoName.startsWith(languageCode), `checkManifestText: 'repoName' parameter '${repoName}' should start with language code: '${languageCode}_'`);
+    if (repoCode !== 'UHB' && repoCode !== 'UGNT') {
+        //parameterAssert(repoName.startsWith(languageCode), `checkManifestText: 'repoName' parameter '${repoName}' should start with language code: '${languageCode}_'`);
     }
     //parameterAssert(repoBranch !== undefined, "checkManifestText: 'repoBranch' parameter should be defined");
     //parameterAssert(typeof repoBranch === 'string', `checkManifestText: 'repoBranch' parameter should be a string not a '${typeof repoBranch}': ${repoBranch}`);
@@ -598,7 +595,8 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
     //parameterAssert(typeof givenLocation === 'string', `checkManifestText: 'optionalFieldLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
     //parameterAssert(givenLocation.indexOf('true') === -1, `checkManifestText: 'optionalFieldLocation' parameter should not be '${givenLocation}'`);
     //parameterAssert(checkingOptions !== undefined, "checkManifestText: 'checkingOptions' parameter should be defined");
-    if (checkingOptions !== undefined) { parameterAssert(typeof checkingOptions === 'object', `checkManifestText: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
+    if (checkingOptions !== undefined) {
+        //parameterAssert(typeof checkingOptions === 'object', `checkManifestText: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
     }
 
     let ourLocation = givenLocation;
@@ -631,10 +629,12 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
         //parameterAssert(noticeObject.message !== undefined, "cManT addNotice: 'message' parameter should be defined");
         //parameterAssert(typeof noticeObject.message === 'string', `cManT addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
         // parameterAssert(characterIndex !== undefined, "cManT addNotice: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) { parameterAssert(typeof noticeObject.characterIndex === 'number', `cManT addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        if (noticeObject.characterIndex) {
+            //parameterAssert(typeof noticeObject.characterIndex === 'number', `cManT addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
         }
         // parameterAssert(excerpt !== undefined, "cManT addNotice: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) { parameterAssert(typeof noticeObject.excerpt === 'string', `cManT addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        if (noticeObject.excerpt) {
+            //parameterAssert(typeof noticeObject.excerpt === 'string', `cManT addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         }
         //parameterAssert(noticeObject.location !== undefined, "cManT addNotice: 'location' parameter should be defined");
         //parameterAssert(typeof noticeObject.location === 'string', `cManT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
@@ -658,7 +658,7 @@ export async function checkManifestText(languageCode, repoCode, username, repoNa
         //parameterAssert(typeof manifestText === 'string', `cManT ourYAMLTextChecks: 'manifestText' parameter should be a string not a '${typeof manifestText}'`);
         // parameterAssert( allowedLinks===true || allowedLinks===false, "cManT ourYAMLTextChecks: allowedLinks parameter must be either true or false");
 
-        const cYtResultObject = checkYAMLText('en', repoCode, textName, manifestText, givenLocation, checkingOptions);
+        const cYtResultObject = checkYAMLText(username, 'en', repoCode, textName, manifestText, givenLocation, checkingOptions);
 
         // Concat is faster if we don’t need to process each notice individually
         cmtResult.successList = cmtResult.successList.concat(cYtResultObject.successList);

@@ -314,7 +314,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             const READMEregex = /Checked ([\w\-_]{2,25}) README file/;
             const LICENSEregex = /Checked ([\w\-_]{2,25}) LICENSE file/;
             resultObject.successList = [];
-            const UHBBookList = [], UGNTBookList = [], LTBookList = [], STBookList = [], TNBookList = [], TN2BookList = [], TQ2BookList = [];
+            const UHBBookList = [], UGNTBookList = [], LTBookList = [], STBookList = [], TNBookList = [], TN2BookList = [], TQBookList = [];
             const USFMBookList = [], TSVNotesList = [], manifestsList = [], READMEsList = [], LICENSEsList = [];
             const TNList = [], TQList = [], TWLList = [];
             for (const thisParticularSuccessMsg of givenNoticeObject.successList) {
@@ -334,12 +334,12 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                     TNBookList.push(thisParticularSuccessMsg.slice(17, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked TN2 file: '))
                     TN2BookList.push(thisParticularSuccessMsg.slice(18, thisParticularSuccessMsg.length))
-                else if (thisParticularSuccessMsg.startsWith('Checked TQ2 file: '))
-                    TQ2BookList.push(thisParticularSuccessMsg.slice(18, thisParticularSuccessMsg.length))
+                else if (thisParticularSuccessMsg.startsWith('Checked TQ file: '))
+                    TQBookList.push(thisParticularSuccessMsg.slice(17, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked TN2 ') && thisParticularSuccessMsg.slice(14, 20) === ' file:')
                     TNList.push(thisParticularSuccessMsg.slice(21, thisParticularSuccessMsg.length))
-                else if (thisParticularSuccessMsg.startsWith('Checked TQ2 ') && thisParticularSuccessMsg.slice(14, 20) === ' file:')
-                    TQList.push(thisParticularSuccessMsg.slice(21, thisParticularSuccessMsg.length))
+                else if (thisParticularSuccessMsg.startsWith('Checked TQ ') && thisParticularSuccessMsg.slice(14, 20) === ' file:')
+                    TQList.push(thisParticularSuccessMsg.slice(20, thisParticularSuccessMsg.length))
                 else if (thisParticularSuccessMsg.startsWith('Checked TWL ') && thisParticularSuccessMsg.slice(15, 21) === ' file:')
                     TWLList.push(thisParticularSuccessMsg.slice(22, thisParticularSuccessMsg.length))
                 else if ((regexResult = BibleRegex.exec(thisParticularSuccessMsg)) !== null
@@ -376,8 +376,8 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
                 resultObject.successList.push(`Checked TN file: ${TNBookList[0]}`);
             if (TN2BookList.length === 1)
                 resultObject.successList.push(`Checked TN2 file: ${TN2BookList[0]}`);
-            if (TQ2BookList.length === 1)
-                resultObject.successList.push(`Checked TQ2 file: ${TQ2BookList[0]}`);
+            if (TQBookList.length === 1)
+                resultObject.successList.push(`Checked TQ file: ${TQBookList[0]}`);
             if (USFMBookList.length === 1)
                 resultObject.successList.push(`Checked ${USFMBookList[0]} file`);
             if (TSVNotesList.length === 1)
@@ -385,7 +385,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             if (TNList.length === 1)
                 resultObject.successList.push(`Checked TN2 file: ${TNList[0]}`);
             if (TQList.length === 1)
-                resultObject.successList.push(`Checked TQ2 file: ${TQList[0]}`);
+                resultObject.successList.push(`Checked TQ file: ${TQList[0]}`);
             if (TWLList.length === 1)
                 resultObject.successList.push(`Checked TWL file: ${TWLList[0]}`);
             if (manifestsList.length === 1)
@@ -409,11 +409,11 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
             if (TWLList.length > 1)
                 resultObject.successList.unshift(`Checked ${TWLList.length} TWL files: ${TWLList.join(', ')}`);
             if (TQList.length > 1)
-                resultObject.successList.unshift(`Checked ${TQList.length} TQ2 files: ${TQList.join(', ')}`);
+                resultObject.successList.unshift(`Checked ${TQList.length} TQ files: ${TQList.join(', ')}`);
             if (TNList.length > 1)
                 resultObject.successList.unshift(`Checked ${TNList.length} TN files: ${TNList.join(', ')}`);
-            if (TQ2BookList.length > 1)
-                resultObject.successList.unshift(`Checked ${TQ2BookList.length} TQ2 files: ${TQ2BookList.join(', ')}`);
+            if (TQBookList.length > 1)
+                resultObject.successList.unshift(`Checked ${TQBookList.length} TQ files: ${TQBookList.join(', ')}`);
             if (TN2BookList.length > 1)
                 resultObject.successList.unshift(`Checked ${TN2BookList.length} TN2 files: ${TN2BookList.join(', ')}`);
             if (TNBookList.length > 1)
@@ -506,7 +506,7 @@ function processNoticesCommon(givenNoticeObject, optionalProcessingOptions) {
     }
 
     // Sort the remainingNoticeList as required
-    const SORT_LIST = ['TN', 'TN2', 'LT', 'ST', 'UHB', 'UGNT', 'TWL', 'TW', 'TQ', 'TQ2', 'SN', 'SQ', 'TA', undefined, 'README', 'LICENSE'];
+    const SORT_LIST = ['TN', 'TN2', 'LT', 'ST', 'UHB', 'UGNT', 'TWL', 'TW', 'TQ', 'TQ1', 'SN', 'SQ', 'TA', undefined, 'README', 'LICENSE'];
     if (sortBy === 'ByPriority' || sortBy === 'ByRepo')
         // NOTE: We do have some notices with the same priority but different actual messages, esp. 191 Unexpected xx character after space
         remainingNoticeList.sort(function (a, b) { return `${String(b.priority).padStart(3, '0')}${b.message}` > `${String(a.priority).padStart(3, '0')}${a.message}`; });

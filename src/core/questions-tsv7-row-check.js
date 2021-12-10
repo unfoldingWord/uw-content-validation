@@ -1,15 +1,15 @@
 // eslint-disable-next-line no-unused-vars
-import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
+import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST, NUM_OBS_STORIES, OBS_FRAME_COUNT_LIST } from './defaults'
 import { isWhitespace, countOccurrencesInString } from './text-handling-functions'
 import * as books from './books/books';
 import { checkTextField } from './field-text-check';
 import { checkMarkdownText } from './markdown-text-check';
 import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
 // eslint-disable-next-line no-unused-vars
-import { debugLog, parameterAssert } from './utilities';
+import { debugLog, parameterAssert, aboutToOverwrite } from './utilities';
 
 
-// const QUESTIONS_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.2.9';
+// const QUESTIONS_TABLE_ROW_VALIDATOR_VERSION_STRING = '1.0.0';
 
 const NUM_EXPECTED_QUESTIONS_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_QUESTIONS_HEADING_LINE = 'Reference\tID\tTags\tQuote\tOccurrence\tQuestion\tResponse';
@@ -23,9 +23,9 @@ const LC_ALPHABET_PLUS_DIGITS_PLUS_HYPHEN = 'abcdefghijklmnopqrstuvwxyz012345678
 
 /**
  *
- * @description - Checks one TSV data row of translation notes (TQ2)
+ * @description - Checks one TSV data row of translation questions (TQ)
  * @param {string} languageCode - the language code, e.g., 'en'
- * @param {string} repoCode - 'TQ2' or 'SQ'
+ * @param {string} repoCode - 'TQ' or 'SQ'
  * @param {string} line - the TSV line to be checked
  * @param {string} bookID - 3-character UPPERCASE USFM book identifier or 'OBS'
  * @param {string} givenC - chapter number or (for OBS) story number string
@@ -34,11 +34,11 @@ const LC_ALPHABET_PLUS_DIGITS_PLUS_HYPHEN = 'abcdefghijklmnopqrstuvwxyz012345678
  * @param {Object} checkingOptions - may contain excerptLength parameter
  * @return {Object} - containing noticeList
  */
-export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bookID, givenC, givenV, givenRowLocation, checkingOptions) {
+export async function checkQuestionsTSV7DataRow(username, languageCode, repoCode, line, bookID, givenC, givenV, givenRowLocation, checkingOptions) {
     /* This function is only for checking one data row
           and the function doesn’t assume that it has any previous context.
 
-        TQ2 being translation or study questions.
+        TQ being translation or study questions.
 
         bookID is a three-character UPPERCASE USFM book identifier or 'OBS'
             so givenC and givenV are usually chapter number and verse number
@@ -112,6 +112,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
 
         // Also uses the given bookID,C,V, parameters from the main function call
         // incompleteNoticeObject.debugChain = incompleteNoticeObject.debugChain ? `checkQuestionsTSV7DataRow ${incompleteNoticeObject.debugChain}` : `checkQuestionsTSV7DataRow(${repoCode})`;
+        aboutToOverwrite('checkQuestionsTSV7DataRow', ['bookID', 'C', 'V'], incompleteNoticeObject, { bookID, C: givenC, V: givenV });
         drResult.noticeList.push({ ...incompleteNoticeObject, bookID, C: givenC, V: givenV });
     }
 
@@ -146,7 +147,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
         //parameterAssert(typeof rowLocation === 'string', `checkQuestionsTSV7DataRow ourMarkdownTextChecks: 'rowLocation' parameter should be a string not a '${typeof rowLocation}'`);
         //parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkQuestionsTSV7DataRow ourMarkdownTextChecks: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const omtcResultObject = await checkMarkdownText(languageCode, repoCode, fieldName, fieldText, rowLocation, checkingOptions);
+        const omtcResultObject = await checkMarkdownText(username, languageCode, repoCode, fieldName, fieldText, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -195,7 +196,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
         //parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkQuestionsTSV7DataRow ourCheckTextField: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
         const fieldType = fieldName === 'Question' ? 'markdown' : 'raw';
-        const octfResultObject = checkTextField(languageCode, repoCode, fieldType, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions);
+        const octfResultObject = checkTextField(username, languageCode, repoCode, fieldType, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -229,7 +230,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
         //parameterAssert(typeof occurrence === 'string', `checkQuestionsTSV7DataRow ourCheckQOriginalLanguageQuote: 'occurrence' parameter should be a string not a '${typeof occurrence}'`);
         //parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkQuestionsTSV7DataRow ourCheckQOriginalLanguageQuote: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const coqResultObject = await checkOriginalLanguageQuoteAndOccurrence(languageCode, repoCode, fieldName, fieldText, occurrence, bookID, givenC, givenV, rowLocation, checkingOptions);
+        const coqResultObject = await checkOriginalLanguageQuoteAndOccurrence(username, languageCode, repoCode, fieldName, fieldText, occurrence, bookID, givenC, givenV, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -265,7 +266,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
     const lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook;
     if (bookID === 'OBS')
-        numChaptersThisBook = 50; // There’s 50 Open Bible Stories
+        numChaptersThisBook = NUM_OBS_STORIES; // There’s 50 Open Bible Stories
     else {
         //parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in question-row-check");
         try {
@@ -288,7 +289,8 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
         // Check the fields one-by-one
         const [C, V] = reference.split(':');
         if (C === undefined || V === undefined)
-            addNoticePartial({ priority: 901, message: "Unexpected reference field", details: "expected C:V", fieldName: 'Reference', rowID, excerpt: reference, location: ourRowLocation });
+            if (repoCode !== 'OBS-SQ' || reference !== 'front')
+                addNoticePartial({ priority: 901, message: "Unexpected reference field", details: "expected C:V", fieldName: 'Reference', rowID, excerpt: reference, location: ourRowLocation });
 
         let numVersesThisChapter, haveGoodChapterNumber;
         if (C?.length) {
@@ -306,9 +308,10 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
                     addNoticePartial({ priority: 823, message: `Invalid large chapter number`, excerpt: C, rowID, fieldName: 'Reference', location: ourRowLocation });
                     haveGoodChapterNumber = false;
                 }
-                if (lowercaseBookID === 'obs')
-                    numVersesThisChapter = 99; // Set to maximum expected number of frames
-                else {
+                if (lowercaseBookID === 'obs') {
+                    haveGoodChapterNumber = intC >= 1 && intC <= NUM_OBS_STORIES;
+                    numVersesThisChapter = OBS_FRAME_COUNT_LIST[intC - 1]; // Set to maximum expected number of frames
+                } else {
                     try {
                         numVersesThisChapter = books.versesInChapter(lowercaseBookID, intC);
                         haveGoodChapterNumber = true;
@@ -363,14 +366,14 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
                             if (intV2 > numVersesThisChapter)
                                 addNoticePartial({ priority: 813, message: "Invalid large verse number", details: `${bookID} chapter ${C} only has ${numVersesThisChapter} verses`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
                         } else
-                            addNoticePartial({ priority: 812, message: "Unable to check verse number", rowID, fieldName: 'Reference', location: ourRowLocation });
+                            addNoticePartial({ priority: 812, message: "Unable to check verse numbers", rowID, fieldName: 'Reference', location: ourRowLocation });
                     }
                 } else
                     addNoticePartial({ priority: 808, message: "Bad verse range", details: "Should be digits", rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
 
             }
         }
-        else
+        else if (repoCode !== 'OBS-SQ' || reference !== 'front')
             addNoticePartial({ priority: 810, message: "Missing verse number", rowID, fieldName: 'Reference', location: ` after ${C}:?${ourRowLocation}` });
 
         if (!rowID.length)
@@ -400,9 +403,8 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
             }
             let tagsList = tags.split('; ');
             for (const thisTag of tagsList) {
-                // No tags are yet defined for TQs or SQs
-                // if (thisTag !== 'keyterm' && thisTag !== 'name')
-                addNoticePartial({ priority: 746, message: "Unexpected tag", details: thisTag, excerpt: tags, fieldName: 'Tags', rowID, location: ourRowLocation });
+                if (!['intro', 'meaning', 'application', 'summary'].includes(thisTag)) // For TQs or SQs
+                    addNoticePartial({ priority: 740, message: "Unrecognized tag", details: thisTag, excerpt: tags, fieldName: 'Tags', rowID, location: ourRowLocation });
             }
         }
 
@@ -419,7 +421,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
         }
         else // TODO: Find more details about when these fields are really compulsory (and when they're not, e.g., for 'intro') ???
             if (V !== 'intro' && occurrence !== '0')
-                addNoticePartial({ priority: repoCode === 'SQ' ? 919 : 119, message: "Missing Quote field", fieldName: 'Quote', rowID, location: ourRowLocation });
+                addNoticePartial({ priority: repoCode === 'SQ' ? 919 : 119, message: "Missing Quote field", details: `should Occurrence be zero instead of ${occurrence}`, fieldName: 'Quote', rowID, location: ourRowLocation });
 
         if (occurrence.length) { // This should usually be a digit
             if ((characterIndex = occurrence.indexOf('\\n')) !== -1) {
@@ -472,7 +474,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
             }
         }
         else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
-            if (repoCode === 'TQ2')
+            if (repoCode === 'TQ')
                 addNoticePartial({ priority: 274, message: "Missing Question field", fieldName: 'Question', rowID, location: ourRowLocation });
 
         if (response.length) {
@@ -502,7 +504,7 @@ export async function checkQuestionsTSV7DataRow(languageCode, repoCode, line, bo
             }
         }
         else // TODO: Find out if these fields are really compulsory (and when they're not, e.g., for 'intro') ???
-            if (repoCode === 'TQ2')
+            if (repoCode === 'TQ')
                 addNoticePartial({ priority: 274, message: "Missing Response field", fieldName: 'Response', rowID, location: ourRowLocation });
 
         // 7 [reference, rowID, tags, question, answer]

@@ -1,6 +1,6 @@
 ## Questions (TSV) Row Check Sandbox
 
-Designed for the new Translation Questions (TQ2) and Study Questions (SQ), this function checks one tab-separated line for typical formatting errors.
+Designed for the new Translation Questions (TQ) and Study Questions (SQ), this function checks one tab-separated line for typical formatting errors.
 
 It returns a list of success messages and a list of notice components. (There is always a priority number in the range 0..999 and the main message string, as well as other details to help locate the error as available.)
 
@@ -44,8 +44,9 @@ const lineA9 = "1:9\tha33\t\t\t0\tIt was so\t“It happened like that” or “T
 const data = {
   // You can choose any of the above lines here
   //  (to demonstrate differing results)
+  username: 'unfoldingWord',
   languageCode: 'en',
-  repoCode: 'TQ2',
+  repoCode: 'TQ',
   tableLineName : 'lineA9',
   tableLine : lineA9,
   bookID : 'GEN', C:'1', V:'2',
@@ -53,7 +54,7 @@ const data = {
 }
 
 function OurCheckQuestionsRow(props) {
-  const { languageCode, repoCode, bookID, C, V, tableLine, tableLineName, givenLocation } = props.data;
+  const { username, languageCode, repoCode, bookID, C, V, tableLine, tableLineName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
 
@@ -65,7 +66,7 @@ function OurCheckQuestionsRow(props) {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {tableLineName} <b>{bookID}</b>…</p>);
       const checkingOptions = {};
-      const rawResults = await checkQuestionsTSV7DataRow(languageCode, repoCode, tableLine, bookID, C, V, givenLocation, checkingOptions);
+      const rawResults = await checkQuestionsTSV7DataRow(username, languageCode, repoCode, tableLine, bookID, C, V, givenLocation, checkingOptions);
       setResults(
         <div>
           <b>Check</b> {tableLineName}: "{tableLine.substr(0,256)}…"<br/><br/>

@@ -72,6 +72,20 @@ export function dataAssert(truthStatement, optionalMessage) {
 
 /**
  *
+ * @param {string} location
+ * @param {Array} fieldList
+ * @param {Object} currentObject
+ */
+export function aboutToOverwrite(location, fieldList, currentObject, objectWithNewFields) {
+    for (const thisFieldName of fieldList)
+        if (currentObject[thisFieldName] !== undefined)
+            // NOTE: comment out the following line if trying to find/log useless operations (overwriting a value with the same value)
+            if (objectWithNewFields[thisFieldName] !== currentObject[thisFieldName]) // then overwriting with something different
+                console.log(`WARNING: ${location} is about to overwrite ${thisFieldName} field '${currentObject[thisFieldName]}' with '${objectWithNewFields[thisFieldName]}' for ${JSON.stringify(currentObject)}`);
+}
+
+/**
+ *
  * @param {string} clTitle
  * @param {Object} clObject
  */

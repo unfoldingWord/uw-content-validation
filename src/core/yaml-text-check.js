@@ -8,19 +8,20 @@ import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert } from './utilities';
 
 
-const YAML_VALIDATOR_VERSION_STRING = '0.4.4';
+const YAML_VALIDATOR_VERSION_STRING = '1.0.0';
 
 
 /**
  *
+ * @param {string} username
  * @param {string} languageCode
- * @param {string} repoCode -- e.g., 'TN' or 'TQ2', etc.
+ * @param {string} repoCode -- e.g., 'TN' or 'TQ', etc.
  * @param {string} textName -- e.g., 'TOC.yaml'
  * @param {string} YAMLText -- the text itself to be checked
  * @param {string} givenLocation
  * @param {Object} checkingOptions
  */
-export function checkYAMLText(languageCode, repoCode, textName, YAMLText, givenLocation, checkingOptions) {
+export function checkYAMLText(username, languageCode, repoCode, textName, YAMLText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire file, i.e., all lines.
 
      Returns a result object containing a successList and a noticeList,
@@ -41,7 +42,8 @@ export function checkYAMLText(languageCode, repoCode, textName, YAMLText, givenL
     //parameterAssert(typeof givenLocation === 'string', `checkYAMLText: 'optionalFieldLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
     //parameterAssert(givenLocation.indexOf('true') === -1, `checkYAMLText: 'optionalFieldLocation' parameter should not be '${givenLocation}'`);
     //parameterAssert(checkingOptions !== undefined, "checkYAMLText: 'checkingOptions' parameter should be defined");
-    if (checkingOptions !== undefined) { parameterAssert(typeof checkingOptions === 'object', `checkYAMLText: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
+    if (checkingOptions !== undefined) {
+        //parameterAssert(typeof checkingOptions === 'object', `checkYAMLText: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
     }
 
     let ourLocation = givenLocation;
@@ -58,8 +60,8 @@ export function checkYAMLText(languageCode, repoCode, textName, YAMLText, givenL
     }
     // else
     // debugLog(`Using supplied excerptLength=${excerptLength}`, `cf. default=${DEFAULT_EXCERPT_LENGTH}`);
-    // const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
-    // const excerptHalfLengthPlus = Math.floor((excerptLength+1) / 2); // rounded up
+    const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
+    const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
     // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
     const cytResult = { successList: [], noticeList: [] };
@@ -75,10 +77,12 @@ export function checkYAMLText(languageCode, repoCode, textName, YAMLText, givenL
         //parameterAssert(noticeObject.message !== undefined, "cYt addNotice: 'message' parameter should be defined");
         //parameterAssert(typeof noticeObject.message === 'string', `cManT addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
         // parameterAssert(characterIndex!==undefined, "cYt addNotice: 'characterIndex' parameter should be defined");
-        if (noticeObject.characterIndex) { parameterAssert(typeof noticeObject.characterIndex === 'number', `cManT addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        if (noticeObject.characterIndex) {
+            //parameterAssert(typeof noticeObject.characterIndex === 'number', `cManT addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
         }
         // parameterAssert(excerpt!==undefined, "cYt addNotice: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) { parameterAssert(typeof noticeObject.excerpt === 'string', `cManT addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        if (noticeObject.excerpt) {
+            //parameterAssert(typeof noticeObject.excerpt === 'string', `cManT addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         }
         //parameterAssert(noticeObject.location !== undefined, "cYt addNotice: 'location' parameter should be defined");
         //parameterAssert(typeof noticeObject.location === 'string', `cYt addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
@@ -107,7 +111,7 @@ export function checkYAMLText(languageCode, repoCode, textName, YAMLText, givenL
         //parameterAssert(optionalFieldLocation !== undefined, "cYt ourCheckTextField: 'optionalFieldLocation' parameter should be defined");
         //parameterAssert(typeof optionalFieldLocation === 'string', `cYt ourCheckTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
-        const resultObject = checkTextField(languageCode, repoCode, 'YAML', `${textName} line`, fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
+        const resultObject = checkTextField(username, languageCode, repoCode, 'YAML', `${textName} line`, fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
 
         // Concat is faster if we don’t need to process each notice individually
         // cytResult.noticeList = cytResult.noticeList.concat(resultObject.noticeList);
@@ -121,6 +125,18 @@ export function checkYAMLText(languageCode, repoCode, textName, YAMLText, givenL
     function checkYAMLLineContents(lineNumber, lineText, lineLocation) {
 
         // functionLog(`checkYAMLLineContents for '${lineNumber} ${lineText}' at${lineLocation}`);
+        let characterIndex = lineText.indexOf(': “');
+        if (characterIndex === -1) characterIndex = lineText.indexOf(':“');
+        if (characterIndex === -1) {
+            characterIndex = characterIndex = lineText.indexOf('”');
+            if (characterIndex !== lineText.length - 1) // Not at end of line
+                characterIndex = -1; // so ignore it
+        }
+        if (characterIndex !== -1) {
+            const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + lineText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < lineText.length ? '…' : '');
+            addNotice({ priority: 898, message: "Unexpected typographical double-quote character", characterIndex, excerpt, location: ourLocation });
+        }
+
         let thisText = lineText
 
         // Remove leading spaces
@@ -154,7 +170,7 @@ export function checkYAMLText(languageCode, repoCode, textName, YAMLText, givenL
         //parameterAssert(typeof fileText === 'string', `cYT ourBasicFileChecks: 'fileText' parameter should be a string not a '${typeof fileText}'`);
         //parameterAssert(checkingOptions !== undefined, "cYT ourBasicFileChecks: 'checkingOptions' parameter should be defined");
 
-        const resultObject = checkTextfileContents(languageCode, repoCode, 'YAML', filename, fileText, fileLocation, checkingOptions);
+        const resultObject = checkTextfileContents(username, languageCode, repoCode, 'YAML', filename, fileText, fileLocation, checkingOptions);
 
         // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
         //  process results line by line

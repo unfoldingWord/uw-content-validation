@@ -4,22 +4,25 @@ import { OPEN_CLOSE_PUNCTUATION_PAIRS, PAIRED_PUNCTUATION_OPENERS, PAIRED_PUNCTU
 import { checkTextField } from './field-text-check';
 import { removeDisabledNotices } from './disabled-notices';
 // eslint-disable-next-line no-unused-vars
-import { parameterAssert } from './utilities';
+import { parameterAssert, debugLog } from './utilities';
 
 
-const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.4.1';
+const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.5.1';
 
 
 /**
  *
+ * @param {string} username -- e.g., 'unfoldingWord'
+ * @param {string} languageCode -- e.g., 'en' or 'hbo'
+ * @param {string} repoCode -- e.g., 'TN' or 'TQ', etc.
  * @param {string} textType 'markdown', 'USFM', 'YAML', 'text', or 'raw'
- * @param {string} repoCode -- e.g., 'TN' or 'TQ2', etc.
  * @param {string} textName
  * @param {string} plainText -- text to be checked
  * @param {string} givenLocation
  * @param {Object} checkingOptions
+ * @returns {Object} probably containing 'noticeList' and 'successList'
  */
-export function checkPlainText(languageCode, repoCode, textType, textName, plainText, givenLocation, checkingOptions) {
+export function checkPlainText(username, languageCode, repoCode, textType, textName, plainText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire text, i.e., all lines.
         It is used in checkFileContents() in book-package-check.js
 
@@ -60,6 +63,8 @@ export function checkPlainText(languageCode, repoCode, textType, textName, plain
     const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
     // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
 
+    const cutoffPriorityLevel = checkingOptions?.cutoffPriorityLevel ? checkingOptions?.cutoffPriorityLevel : 0;
+
     const cptResult = { successList: [], noticeList: [] };
 
     function addSuccessMessage(successString) {
@@ -73,10 +78,12 @@ export function checkPlainText(languageCode, repoCode, textType, textName, plain
         //parameterAssert(typeof noticeObject.priority === 'number', `cPT addNotice: 'priority' parameter should be a number not a '${typeof noticeObject.priority}': ${noticeObject.priority}`);
         //parameterAssert(noticeObject.message !== undefined, "cPT addNotice: 'message' parameter should be defined");
         //parameterAssert(typeof noticeObject.message === 'string', `cPT addNotice: 'message' parameter should be a string not a '${typeof noticeObject.message}': ${noticeObject.message}`);
-        if (noticeObject.characterIndex) { parameterAssert(typeof noticeObject.characterIndex === 'number', `cPT addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
+        if (noticeObject.characterIndex) {
+            //parameterAssert(typeof noticeObject.characterIndex === 'number', `cPT addNotice: 'characterIndex' parameter should be a number not a '${typeof noticeObject.characterIndex}': ${noticeObject.characterIndex}`);
         }
         // parameterAssert(excerpt!==undefined, "cPT addNotice: 'excerpt' parameter should be defined");
-        if (noticeObject.excerpt) { parameterAssert(typeof noticeObject.excerpt === 'string', `cPT addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
+        if (noticeObject.excerpt) {
+            //parameterAssert(typeof noticeObject.excerpt === 'string', `cPT addNotice: 'excerpt' parameter should be a string not a '${typeof noticeObject.excerpt}': ${noticeObject.excerpt}`);
         }
         //parameterAssert(noticeObject.location !== undefined, "cPT addNotice: 'location' parameter should be defined");
         //parameterAssert(typeof noticeObject.location === 'string', `cPT addNotice: 'location' parameter should be a string not a '${typeof noticeObject.location}': ${noticeObject.location}`);
@@ -108,7 +115,7 @@ export function checkPlainText(languageCode, repoCode, textType, textName, plain
         //parameterAssert(optionalFieldLocation !== undefined, "cPT ourCheckTextField: 'optionalFieldLocation' parameter should be defined");
         //parameterAssert(typeof optionalFieldLocation === 'string', `cPT ourCheckTextField: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
-        const resultObject = checkTextField(languageCode, repoCode, textType, `${textName} line`, fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
+        const resultObject = checkTextField(username, languageCode, repoCode, textType, `${textName} line`, fieldText, allowedLinks, optionalFieldLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -133,40 +140,59 @@ export function checkPlainText(languageCode, repoCode, textType, textName, plain
 
 
     // Main code for checkPlainText function
-    if (isWhitespace(plainText)) {
+    if (cutoffPriorityLevel < 638 && isWhitespace(plainText)) {
         addNotice({ priority: 638, message: "Only found whitespace", location: ourLocation });
         return cptResult;
     }
 
     let characterIndex;
-    if ((characterIndex = plainText.indexOf('<<<<<<<')) >= 0) {
+    if (cutoffPriorityLevel < 993 && (characterIndex = plainText.indexOf('<<<<<<<')) >= 0) {
         const iy = characterIndex + excerptHalfLength; // Want excerpt to focus more on what follows
         const excerpt = (iy > excerptHalfLength ? '…' : '') + plainText.substring(iy - excerptHalfLength, iy + excerptHalfLengthPlus).replace(/ /g, '␣') + (iy + excerptHalfLengthPlus < plainText.length ? '…' : '')
         addNotice({ priority: 993, message: "Unresolved GIT conflict", characterIndex, excerpt, location: ourLocation });
-    } else if ((characterIndex = plainText.indexOf('=======')) >= 0) {
+    } else if (cutoffPriorityLevel < 992 && (characterIndex = plainText.indexOf('=======')) >= 0) {
         const iy = characterIndex + excerptHalfLength; // Want excerpt to focus more on what follows
         const excerpt = (iy > excerptHalfLength ? '…' : '') + plainText.substring(iy - excerptHalfLength, iy + excerptHalfLengthPlus).replace(/ /g, '␣') + (iy + excerptHalfLengthPlus < plainText.length ? '…' : '')
         addNotice({ priority: 992, message: "Unresolved GIT conflict", characterIndex, excerpt, location: ourLocation });
-    } else if ((characterIndex = plainText.indexOf('>>>>>>>>')) >= 0) {
+    } else if (cutoffPriorityLevel < 991 && (characterIndex = plainText.indexOf('>>>>>>>>')) >= 0) {
         const iy = characterIndex + excerptHalfLength; // Want excerpt to focus more on what follows
         const excerpt = (iy > excerptHalfLength ? '…' : '') + plainText.substring(iy - excerptHalfLength, iy + excerptHalfLengthPlus).replace(/ /g, '␣') + (iy + excerptHalfLengthPlus < plainText.length ? '…' : '')
         addNotice({ priority: 991, message: "Unresolved GIT conflict", characterIndex, excerpt, location: ourLocation });
     }
 
-    if (plainText[0] === '\n') {
+    if (cutoffPriorityLevel < 539 && plainText[0] === '\n') {
         characterIndex = 0;
         const excerpt = (plainText.length > excerptLength ? '…' : '') + plainText.slice(-excerptLength).replace(/ /g, '␣').replace(/\n/g, '\\n')
         addNotice({ priority: 539, message: "File starts with empty line", characterIndex, excerpt, location: ourLocation });
     }
-    if (!plainText.endsWith('\n') && !textName.endsWith('title.md')) {
+    if (cutoffPriorityLevel < 538 && !plainText.endsWith('\n') && !textName.endsWith('title.md')) {
         characterIndex = plainText.length - 1;
         const excerpt = (plainText.length > excerptLength ? '…' : '') + plainText.slice(-excerptLength).replace(/ /g, '␣').replace(/\n/g, '\\n')
         addNotice({ priority: 538, message: "File ends without newline character", characterIndex, excerpt, location: ourLocation });
     }
-    else if (plainText.endsWith('\n\n')) {
+    else if (cutoffPriorityLevel < 138 && plainText.endsWith('\n\n')) {
         characterIndex = plainText.length - 2;
         const excerpt = (plainText.length > excerptLength ? '…' : '') + plainText.slice(-excerptLength).replace(/ /g, '␣').replace(/\n/g, '\\n')
         addNotice({ priority: 138, message: "File ends with additional blank line(s)", characterIndex, excerpt, location: ourLocation });
+    }
+
+    // const doubleQuoteRE = /"[^ =]/g;
+    // const regexResult = contextRE.exec(plainText);
+    // // debugLog(`  regexResult: ${JSON.stringify(regexResult)}`);
+    // if (regexResult) {
+    // }
+    if (cutoffPriorityLevel < 237 && (characterIndex = plainText.indexOf('"')) !== -1 // file contains straight double-quote(s)
+        && plainText.indexOf('="') === -1 // e.g., in a field like word="abc"
+        && textType !== 'YAML') {
+        const iy = characterIndex + excerptHalfLength; // Want excerpt to focus more on what follows
+        const excerpt = (iy > excerptHalfLength ? '…' : '') + plainText.substring(iy - excerptHalfLength, iy + excerptHalfLengthPlus) + (iy + excerptHalfLengthPlus < plainText.length ? '…' : '')
+        // debugLog(`checkPlainText 237 with '${excerpt}' from un=${username} lC=${languageCode} rC=${repoCode} tT=${textType} tN=${textName}`);
+        addNotice({ priority: languageCode === 'en' ? 237 : 37, message: "File contains straight double-quote(s)", characterIndex, excerpt, location: ourLocation });
+    }
+
+    if (cutoffPriorityLevel < 201 && plainText.indexOf('،') !== -1 // file contains Arabic comma(s)
+        && plainText.indexOf(',') !== -1) { // and also normal commas
+        addNotice({ priority: 201, message: "File contains both Arabic and other commas", location: ourLocation });
     }
 
     const lines = plainText.split('\n');
@@ -185,40 +211,41 @@ export function checkPlainText(languageCode, repoCode, textType, textName, plain
                 checkPlainLineContents(n, line, ourLocation);
 
             // Check for nested brackets and quotes, etc.
-            for (let characterIndex = 0; characterIndex < line.length; characterIndex++) {
-                const char = line[characterIndex];
-                let closeCharacterIndex;
-                if (PAIRED_PUNCTUATION_OPENERS.indexOf(char) >= 0) {
-                    // debugLog(`Saving ${openMarkers.length} '${char}' ${n} ${x}`);
-                    openMarkers.push({ char, n, x: characterIndex });
-                } else if ((closeCharacterIndex = PAIRED_PUNCTUATION_CLOSERS.indexOf(char)) >= 0) {
-                    // debugLog(`Found '${char}' ${n} ${x}`);
-                    // debugLog(`Which: ${which} '${openers.charAt(which)}'`)
-                    if (openMarkers.length) {
-                        const [lastEntry] = openMarkers.slice(-1);
-                        // debugLog(`  Recovered lastEntry=${JSON.stringify(lastEntry)}`);
-                        // debugLog(`  Comparing found '${char}' with (${which}) '${openers.charAt(which)}' from '${lastEntry.char}'`);
-                        if (lastEntry.char === PAIRED_PUNCTUATION_OPENERS.charAt(closeCharacterIndex)) {
-                            // debugLog(`  Matched '${char}' with  '${openers.charAt(which)}' ${n} ${x}`);
-                            openMarkers.pop();
-                        } else // something is still open and this isn’t a match -- might just be consequential error
+            if (cutoffPriorityLevel < 777)
+                for (let characterIndex = 0; characterIndex < line.length; characterIndex++) {
+                    const char = line[characterIndex];
+                    let closeCharacterIndex;
+                    if (PAIRED_PUNCTUATION_OPENERS.indexOf(char) >= 0) {
+                        // debugLog(`Saving ${openMarkers.length} '${char}' ${n} ${x}`);
+                        openMarkers.push({ char, n, x: characterIndex });
+                    } else if ((closeCharacterIndex = PAIRED_PUNCTUATION_CLOSERS.indexOf(char)) >= 0) {
+                        // debugLog(`Found '${char}' ${n} ${x}`);
+                        // debugLog(`Which: ${which} '${openers.charAt(which)}'`)
+                        if (openMarkers.length) {
+                            const [lastEntry] = openMarkers.slice(-1);
+                            // debugLog(`  Recovered lastEntry=${JSON.stringify(lastEntry)}`);
+                            // debugLog(`  Comparing found '${char}' with (${which}) '${openers.charAt(which)}' from '${lastEntry.char}'`);
+                            if (lastEntry.char === PAIRED_PUNCTUATION_OPENERS.charAt(closeCharacterIndex)) {
+                                // debugLog(`  Matched '${char}' with  '${openers.charAt(which)}' ${n} ${x}`);
+                                openMarkers.pop();
+                            } else // something is still open and this isn’t a match -- might just be consequential error
+                                if (char !== '’' // Closing single quote is also used as apostrophe in English
+                                    && (textType !== 'markdown' || char !== '>' || characterIndex > 4)) { // Markdown uses > or >> or > > or > > > for block indents so ignore these -- might just be consequential error
+                                    const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + line.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < line.length ? '…' : '')
+                                    const details = `'${lastEntry.char}' opened on line ${lastEntry.n.toLocaleString()} character ${lastEntry.x + 1}`;
+                                    addNotice({ priority: 777, message: `Bad punctuation nesting: ${char} closing character doesn’t match`, details, lineNumber: n, characterIndex, excerpt, location: ourLocation });
+                                    // debugLog(`  ERROR 777: mismatched characters: ${details}`);
+                                }
+                        } else // Closed something unexpectedly without an opener
                             if (char !== '’' // Closing single quote is also used as apostrophe in English
-                                && (textType !== 'markdown' || char !== '>' || characterIndex > 4)) { // Markdown uses > or >> or > > or > > > for block indents so ignore these -- might just be consequential error
+                                && (textType !== 'markdown' || char !== '>')) { // Markdown uses > for block indents so ignore these
                                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + line.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < line.length ? '…' : '')
-                                const details = `'${lastEntry.char}' opened on line ${lastEntry.n} character ${lastEntry.x + 1}`;
-                                addNotice({ priority: 777, message: `Bad punctuation nesting: ${char} closing character doesn’t match`, details, lineNumber: n, characterIndex, excerpt, location: ourLocation });
-                                // debugLog(`  ERROR 777: mismatched characters: ${details}`);
+                                addNotice({ priority: 774, message: `Unexpected ${char} closing character (no matching opener)`, lineNumber: n, characterIndex, excerpt, location: ourLocation });
+                                // debugLog(`  ERROR 774: closed with nothing open: ${char}`);
                             }
-                    } else // Closed something unexpectedly without an opener
-                        if (char !== '’' // Closing single quote is also used as apostrophe in English
-                            && (textType !== 'markdown' || char !== '>')) { // Markdown uses > for block indents so ignore these
-                            const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + line.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < line.length ? '…' : '')
-                            addNotice({ priority: 774, message: `Unexpected ${char} closing character (no matching opener)`, lineNumber: n, characterIndex, excerpt, location: ourLocation });
-                            // debugLog(`  ERROR 774: closed with nothing open: ${char}`);
-                        }
-                }
+                    }
 
-            }
+                }
         } else {
             // This is a blank line
         }
@@ -226,28 +253,29 @@ export function checkPlainText(languageCode, repoCode, textType, textName, plain
         // lastLineContents = line;
     }
     //  At the end of the text -- check for left-over opening characters (unclosed)
-    if (openMarkers.length) {
+    if (cutoffPriorityLevel < 768 && openMarkers.length) {
         const [{ char, n, x }] = openMarkers.slice(-1);
         const line = lines[n - 1];
-        const excerpt = (x > excerptHalfLength ? '…' : '') + line.slice(x - excerptHalfLength, x + excerptHalfLengthPlus).replace(/ /g, '␣') + (x + excerptHalfLengthPlus < line.length ? '…' : '')
+        const excerpt = (x > excerptHalfLength ? '…' : '') + line.slice(x - excerptHalfLength, x + excerptHalfLengthPlus) + (x + excerptHalfLengthPlus < line.length ? '…' : '')
         const details = openMarkers.length > 1 ? `${openMarkers.length} unclosed set${openMarkers.length === 1 ? '' : 's'}` : null;
         addNotice({ priority: 768, message: `At end of text with unclosed ${char} opening character`, details, lineNumber: n, characterIndex: x, excerpt, location: ourLocation });
     }
 
     // TODO: Is this a duplicate of the above section about nesting?
     // Check matched pairs in the entire file
-    for (const punctSet of OPEN_CLOSE_PUNCTUATION_PAIRS) {
-        // Can’t check '‘’' coz they might be used as apostrophe
-        const leftChar = punctSet[0], rightChar = punctSet[1];
-        const leftCount = countOccurrencesInString(plainText, leftChar),
-            rightCount = countOccurrencesInString(plainText, rightChar);
-        if (leftCount !== rightCount
-            && (rightChar !== '’' || leftCount > rightCount) // Closing single quote is also used as apostrophe in English
-            && (textType !== 'markdown' || rightChar !== '>')) // markdown uses > as a block quote character
-            // NOTE: These are lower priority than similar checks in a field
-            //          since they occur only within the entire file
-            addNotice({ priority: leftChar === '“' ? 162 : 462, message: `Mismatched ${leftChar}${rightChar} characters`, details: `left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()}`, location: ourLocation });
-    }
+    if (cutoffPriorityLevel < 462)
+        for (const punctSet of OPEN_CLOSE_PUNCTUATION_PAIRS) {
+            // Can’t check '‘’' coz they might be used as apostrophe
+            const leftChar = punctSet[0], rightChar = punctSet[1];
+            const leftCount = countOccurrencesInString(plainText, leftChar),
+                rightCount = countOccurrencesInString(plainText, rightChar);
+            if (leftCount !== rightCount
+                && (rightChar !== '’' || leftCount > rightCount) // Closing single quote is also used as apostrophe in English
+                && (textType !== 'markdown' || rightChar !== '>')) // markdown uses > as a block quote character
+                // NOTE: These are lower priority than similar checks in a field
+                //          since they occur only within the entire file
+                addNotice({ priority: leftChar === '“' ? 162 : 462, message: `Mismatched ${leftChar}${rightChar} characters`, details: `left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()}`, location: ourLocation });
+        }
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
         // functionLog(`checkPlainText: calling removeDisabledNotices(${cptResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);

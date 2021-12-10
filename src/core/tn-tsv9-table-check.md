@@ -13,7 +13,7 @@ These raw notice components can then be filtered and/or sorted as required by th
 //    so if you want to enable those lines, you must remove the // from the beginning of the line.
 
 import React, { useState, useEffect } from 'react';
-import { checkTN_TSV9Table } from './tn-tsv9-table-check';
+import { internalCheckTN_TSV9Table } from './tn-tsv9-table-check';
 import { RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Text samples
@@ -41,20 +41,21 @@ const lineA9 = "GEN\t1\t9\tha33\t\t\t0\tIt was so\t“It happened like that” o
 const data = {
   // You can choose any of the above lines here
   //  (to demonstrate differing results)
+  username: 'unfoldingWord',
+  languageCode : 'en',
   tableTextName : 'textG',
   tableText : textG,
-  languageCode : 'en',
   bookID : 'GEN',
   filename: 'dummyFilename',
   givenLocation : 'that was supplied',
 }
 
 function OurCheckTN_TSV9Table(props) {
-  const { languageCode, bookID, filename, tableText, tableTextName, givenLocation } = props.data;
+  const { username, languageCode, bookID, filename, tableText, tableTextName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
 
-  // We need the following construction because checkTN_TSV9Table is an ASYNC function
+  // We need the following construction because internalCheckTN_TSV9Table is an ASYNC function
   useEffect(() => {
     // Use an IIFE (Immediately Invoked Function Expression)
     //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
@@ -62,7 +63,7 @@ function OurCheckTN_TSV9Table(props) {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {tableTextName} <b>{bookID}</b>…</p>);
       const checkingOptions = {};
-      const rawResults = await checkTN_TSV9Table(languageCode, 'TN', bookID, filename, tableText, givenLocation, checkingOptions);
+      const rawResults = await internalCheckTN_TSV9Table(username, languageCode, 'TN', bookID, filename, tableText, givenLocation, checkingOptions);
       setResults(
         <div>
           <b>Check</b> {tableTextName}: "{tableText.substr(0,256)}…"<br/><br/>

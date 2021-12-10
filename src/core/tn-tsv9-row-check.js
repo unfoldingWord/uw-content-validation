@@ -7,10 +7,10 @@ import { checkSupportReferenceInTA } from './ta-reference-check';
 // import { checkNotesLinksToOutside } from './notes-links-check';
 import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
 // eslint-disable-next-line no-unused-vars
-import { parameterAssert } from './utilities';
+import { parameterAssert, aboutToOverwrite } from './utilities';
 
 
-// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '0.7.3';
+// const TN_TABLE_ROW_VALIDATOR_VERSION_STRING = '1.0.0';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -35,7 +35,7 @@ const TA_REGEX = new RegExp('\\[\\[rc://[^ /]+?/ta/man/[^ /]+?/([^ \\]]+?)\\]\\]
  * @param {Object} checkingOptions - may contain excerptLength, taRepoUsername, twRepoUsername, twRepoBranch (or tag), disableLinkedTWArticlesCheckFlag parameters
  * @return {Object} - containing noticeList
  */
-export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, givenC, givenV, givenRowLocation, checkingOptions) {
+export async function checkTN_TSV9DataRow(username, languageCode, repoCode, line, bookID, givenC, givenV, givenRowLocation, checkingOptions) {
     /* This function is only for checking one data row
           and the function doesn’t assume that it has any previous context.
 
@@ -103,6 +103,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
         //parameterAssert(typeof incompleteNoticeObject.location === 'string', `checkTN_TSV9DataRow addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
         // incompleteNoticeObject.debugChain = incompleteNoticeObject.debugChain ? `checkTN_TSV9DataRow ${incompleteNoticeObject.debugChain}` : 'checkTN_TSV9DataRow';
         // Also uses the given bookID,C,V, parameters from the main function call
+        aboutToOverwrite('checkTN_TSV9DataRow', ['bookID', 'C', 'V'], incompleteNoticeObject, { bookID, C: givenC, V: givenV });
         drResult.noticeList.push({ ...incompleteNoticeObject, bookID, C: givenC, V: givenV });
     }
 
@@ -137,7 +138,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
         //parameterAssert(typeof rowLocation === 'string', `checkTN_TSV9DataRow ourMarkdownTextChecks: 'rowLocation' parameter should be a string not a '${typeof rowLocation}'`);
         //parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkTN_TSV9DataRow ourMarkdownTextChecks: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const omtcResultObject = await checkMarkdownText(languageCode, repoCode, fieldName, fieldText, rowLocation, checkingOptions);
+        const omtcResultObject = await checkMarkdownText(username, languageCode, repoCode, fieldName, fieldText, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -186,7 +187,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
         //parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkTN_TSV9DataRow ourCheckTextField: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
         const fieldType = fieldName === 'OccurrenceNote' ? 'markdown' : 'raw';
-        const octfResultObject = checkTextField(languageCode, repoCode, fieldType, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions);
+        const octfResultObject = checkTextField(username, languageCode, repoCode, fieldType, fieldName, fieldText, allowedLinks, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -265,7 +266,7 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
         //parameterAssert(typeof occurrence === 'string', `checkTN_TSV9DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'occurrence' parameter should be a string not a '${typeof occurrence}'`);
         //parameterAssert(rowLocation.indexOf(fieldName) < 0, `checkTN_TSV9DataRow ourCheckTNOriginalLanguageQuoteAndOccurrence: 'rowLocation' parameter should be not contain fieldName=${fieldName}`);
 
-        const coqResultObject = await checkOriginalLanguageQuoteAndOccurrence(languageCode, repoCode, fieldName, fieldText, occurrence, bookID, givenC, givenV, rowLocation, checkingOptions);
+        const coqResultObject = await checkOriginalLanguageQuoteAndOccurrence(username, languageCode, repoCode, fieldName, fieldText, occurrence, bookID, givenC, givenV, rowLocation, checkingOptions);
 
         // Choose only ONE of the following
         // This is the fast way of append the results from this field
@@ -437,8 +438,9 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
                     addNoticePartial({ priority: 750, message: "Missing occurrence field when we have an original quote", fieldName: 'Occurrence', rowID, location: ourRowLocation });
             }
         } else // TODO: Find more details about when these fields are really compulsory (and when they're not, e.g., for 'intro') ???
-            if (V !== 'intro' && occurrence !== '0')
-                addNoticePartial({ priority: 919, message: "Missing OrigQuote field", fieldName: 'OrigQuote', rowID, location: ourRowLocation });
+            if (V !== 'intro' && occurrence !== '0') {
+                addNoticePartial({ priority: 919, message: "Missing OrigQuote field", details: `should Occurrence be zero instead of ${occurrence} with SR='${supportReference}'`, fieldName: 'OrigQuote', rowID, location: ourRowLocation });
+            }
 
         if (occurrence.length) { // This should usually be a digit
             if (occurrence === '0') { // zero means that it doesn’t occur
@@ -493,7 +495,9 @@ export async function checkTN_TSV9DataRow(languageCode, repoCode, line, bookID, 
                 while ((regexMatchObject = TA_REGEX.exec(adjustedOccurrenceNote))) {
                     // debugLog("Got TA Regex in OccurrenceNote", JSON.stringify(regexMatchObject));
                     linksList.push(regexMatchObject[1])
-                    if (regexMatchObject[1] === supportReference) foundSR = true;
+                    if (regexMatchObject[1] === supportReference
+                        || `checking/${regexMatchObject[1]}` === supportReference) // for checking/headings
+                        foundSR = true;
                 }
                 if (linksList.length && V !== 'intro') {
                     let details = supportReference ? `SR='${supportReference}'` : "empty SR field"

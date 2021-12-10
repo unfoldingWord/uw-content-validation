@@ -38,12 +38,12 @@ This code is designed to thoroughly check various types of Bible-related content
 
 1. [Unified Standard Format Marker](ubsicap.github.io/usfm/) (USFM) Bible content files, including original language Bibles and Bible translations aligned by word/phrase to the original words/phrases
 1. Legacy Translation Notes (TN) tables in Tab-Separated Values (9-column TSV) files
-1. New tables in Tab-Separated Values (TSV) files (uses TWL, TN2 and TQ2, SN and SQ)
-1. Markdown files (and markdown fields in TSV files)
+1. New tables in Tab-Separated Values (TSV) files (for TWL, TN2 and TQ, SN, and SQ)
+1. Markdown files (for TA, TW, and TQ1; also markdown fields in TSV files)
 1. Plain-text files
 1. Metadata (manifest) YAML files
 
-Note: There is also a separate function for checking individual TSV lines (e.g., TN, TN2, TQ2) which is intended to be able to provide immediate user feedback if built into a TSV editor.
+Note: There is also a separate function for checking individual TSV lines (e.g., TN, TN2, TQ) which is intended to be able to provide immediate user feedback if built into a TSV editor.
 
 The top-level checking demonstrations return:
 
@@ -64,7 +64,7 @@ There are two compulsory fields in all of these notice objects:
 All of the following fields may be missing or undefined, i.e., they’re all optional:
 
 1. `details`: More helpful details about the notice (if applicable; doesn’t start with a capital letter)
-1. `repoCode`: brief repository code (if available), e.g., 'UHB', 'LT', 'ST', 'TN', 'TQ', 'TN2', 'TQ2', etc.
+1. `repoCode`: brief repository code (if available), e.g., 'UHB', 'LT', 'ST', 'TN', 'TQ', forthcoming 'TN2', old 'TQ1', etc.
 1. `repoName`: Door43 repository name (if available), e.g., 'en_ta', 'hi_tw'
 1. `filename`: filename string (if available)
 1. `bookID`: The 3-character UPPERCASE [book identifier](http://ubsicap.github.io/usfm/identification/books.html) or [OBS](https://www.openbiblestories.org/) (if relevant)
@@ -96,7 +96,9 @@ However, the user is, of course, free to create their own alternative version of
 
 There is provision for checking to be altered and/or sped-up when the calling app sets some or all of the following fields in `checkingOptions`:
 
-- `disableAllLinkFetchingFlag`: a boolean (true/false) which if set to true, stops the package from fetching and checking links, e.g., when a translation note refers to Translation Academy it won’t check that the TA article actually exists, and also stops the checking of any extra files like LICENSE.md—this gives a dramatic speed-up to many checks (but, of course, it means that the data might still contain quite major errors)
+- `disableAllLinkFetchingFlag`: a boolean (true/false) which if set to true, stops the package from fetching (hence checking) links, e.g., when a translation note refers to Translation Academy it won’t check that the TA article actually exists, and also stops the checking of any extra files like LICENSE.md—this gives a dramatic speed-up to many checks (but, of course, it means that the data might still contain quite major errors)
+- `disableLexiconLinkFetchingFlag`: this one boolean (true/false) flag exists to stop the package from fetching lexicon links. This is a separate flag so that the main link fetching (see the flag immediately above) can be enabled without slowing down the checks considerably by fetching/testing thousands of lexicon links.
+- `disableLinkedTAArticlesCheckFlag`, `disableLinkedTWArticlesCheckFlag`, `disableLinkedLexiconEntriesCheckFlag`: boolean (true/false) flags which if set to true, stop the functions from checking the CONTENT of articles linked to from other places. These flags only make a difference if the appropriate link fetching (the above two flags) is enabled.
 - `getFile`: a function which takes the four parameters ({username, repository, path, branch}) and returns the full text of the relevant Door43 file—default is to use our own function and associated caching
 - `fetchRepositoryZipFile`: a function which takes the three parameters ({username, repository, branch}) and returns the contents of the zip file containing all the Door43 files—default is to use our own function and associated caching
 - `getFileListFromZip`: takes the same three parameters and returns a list/array containing the filepaths of all the files in the zip file from Door43—default is to use our own function and associated caching
@@ -109,11 +111,11 @@ There is provision for checking to be altered and/or sped-up when the calling ap
 - `cutoffPriorityLevel`: an integer which can define notices to not be detected—defaults to 0 so none are dropped. Note that this will also affect the `suggestion` response. (Only partially implemented at present, so drops some but not all low priority notices.)
 - `suppressNoticeDisablingFlag`: Defaults to `false`, i.e., to removing (thus suppressing) notices for warnings which are expected in certain files and hence we don’t want them displayed. Note that this is always set to `true` for the demos (because they suppress these notices later—see the `showDisabledNoticesFlag` below).
 
-    Currently this supressing is only done in the (exported) `checkTN_TSV9Table` and `checkNotesTSV7Table` functions which we know to be called by [tC Create](https://github.com/unfoldingWord/tc-create-app) as well as `checkManifestText`, `checkMarkdownText`, `checkPlainText`, `checkTN_TSV9Table`, `checkUSFMText`, and `checkYAMLText` called by the [Content Validation App](https://github.com/unfoldingWord-box3/content-validation-app).
+    Currently this supressing is only done in the (exported) `internalCheckTN_TSV9Table` and `checkNotesTSV7Table` functions which we know to be called by [tC Create](https://github.com/unfoldingWord/tc-create-app) as well as `checkManifestText`, `checkMarkdownText`, `checkPlainText`, `internalCheckTN_TSV9Table`, `checkUSFMText`, and `checkYAMLText` called by the [Content Validation App](https://github.com/unfoldingWord-box3/content-validation-app).
 
 Most of the high-level demonstrations allow a choice of one of three display formats for notices:
 
-- 'SingleList': sorts notices by priority (highest first) then colours the highest ones bright red, slowly fading to black for the lowest priorities
+- 'SingleList' (recommended): sorts notices by priority (highest first) then colours the highest ones bright red, slowly fading to black for the lowest priorities
 - 'ErrorsWarnings': arbitrarily divides notices into a list of *errors* and a list of *warnings*, each displayed in different colours
 - 'SevereMediumLow': divides notices into three lists which are displayed in different colours
 
@@ -134,7 +136,8 @@ In addition, there are some options in the display of notices for the demonstrat
 
 There is a list of open issues at [[https://github.com/unfoldingWord/uw-content-validation/issues]] (and you can add suggestions and bug reports there at any time). But in summary, still unfinished (in rough priority order):
 
-1. Finish checking that new formats working are again (in `newFormat` branches)
+1. Keep up with changes are more repos are converted to the new TSV formats
+1. Handle the fact that Door43-Catalog repos now have different formats (old markdown) than unfoldingWord repos (new TSV)
 1. Finish moving `cutoffPriorityLevel` from `processingOptions` to `checkingOptions`
 1. The `suggestion` mechanism is working, but more suggestions need to be created
 1. Checking of general markdown and naked links (esp. in plain text and markdown files)
@@ -151,16 +154,13 @@ There is a list of open issues at [[https://github.com/unfoldingWord/uw-content-
 
 Known bugs:
 
-1. Not all demos have all available options
-1. 'NEW' option not yet working again in Book Package Check
+1. Not all demos have all options available
+1. Demos likely to fail on Door43-Catalog as we move unfoldingWord repos to the new TSV formats
 1. Work on checking naked links in text files is not yet completed
-1. File caching (i.e., not checking latest file versions) is still a frustration that needs to be investigated—presumably it’s out of control of this package and its demos???
+1. File caching (i.e., demos not checking latest file versions) is still a frustration for some users and needs to be investigated more—presumably it’s out of control of this package and its demos???
 
 Known check deficiencies:
 
-1. Markdown image format `![xx](yy)` is not yet fully checked
-1. Manifests are not checked against all files, i.e., to find files potentially missing from the manifest
-1. Naked HTTP links are not yet checked properly
 1. ULT/UST quotes in TranslationAcademy are not yet checked
 
 ## Functionality and Limitations

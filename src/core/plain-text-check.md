@@ -41,11 +41,12 @@ Another  paragraph.
 
 // You can choose any of the above texts here
 //  (to demonstrate differing results)
+const username = 'unfoldingWord';
 const chosenText = textSB;
 const chosenTextName = 'textSB';
 const checkingOptions = {};
 
-const rawResults = checkPlainText('en', 'TN', 'raw', chosenTextName, chosenText, 'that was supplied', checkingOptions);
+const rawResults = checkPlainText(username, 'en', 'TN', 'raw', chosenTextName, chosenText, 'that was supplied', checkingOptions);
 if (!rawResults.successList || !rawResults.successList.length)
   rawResults.successList = ["Done plain text checks"];
 

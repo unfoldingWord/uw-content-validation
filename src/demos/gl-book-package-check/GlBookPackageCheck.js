@@ -8,7 +8,7 @@ import { checkBookPackage } from '../book-package-check/checkBookPackage';
 import { userLog, logicAssert } from '../../core/utilities';
 
 
-// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.20';
+// const GL_BP_VALIDATOR_VERSION_STRING = '0.1.21';
 
 
 function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
@@ -85,34 +85,34 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
             const whichTestament = bookID === 'OBS' ? 'none' : books.testament(bookID); // returns 'old' or 'new'
             let repoPreloadList;
             if (bookID === 'OBS') {
-                repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ2']; // for DEFAULT
+                repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ']; // for DEFAULT
                 if (dataSet === 'OLD')
-                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
+                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN1', 'OBS-TQ1', 'OBS-SN1', 'OBS-SQ1'];
                 else if (dataSet === 'NEW')
-                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN2', 'OBS-TQ2', 'OBS-SN2', 'OBS-SQ'];
+                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
                 else if (dataSet === 'BOTH')
-                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TN2', 'OBS-TQ', 'OBS-TQ2', 'OBS-SN', 'OBS-SN2', 'OBS-SQ', 'OBS-SQ2'];
+                    repoPreloadList = ['OBS', 'OBS-TWL', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ'];
             } else { // not OBS
                 repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TQ', 'SN', 'SQ']; // for DEFAULT
                 if (dataSet === 'OLD')
-                    repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TQ'];
+                    repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TQ1'];
                 else if (dataSet === 'NEW')
-                    repoPreloadList = ['TWL', 'LT', 'ST', 'TN2', 'TQ2', 'SN', 'SQ'];
+                    repoPreloadList = ['TWL', 'LT', 'ST', 'TN2', 'TQ', 'SN', 'SQ'];
                 else if (dataSet === 'BOTH')
-                    repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TN2', 'TQ', 'TQ2', 'SN', 'SQ'];
+                    repoPreloadList = ['TWL', 'LT', 'ST', 'TN', 'TN2', 'TQ', 'SN', 'SQ'];
                 logicAssert(whichTestament === 'old' || whichTestament === 'new', `BookPackageCheck() couldn’t find testament for '${bookID}'`);
                 const origLangRepo = whichTestament === 'old' ? 'UHB' : 'UGNT';
                 repoPreloadList.unshift(origLangRepo);
             }
             if (!checkingOptions.disableAllLinkFetchingFlag) { // Both Bible books and OBS refer to TW and TA
-                repoPreloadList.push('TW');
-                repoPreloadList.push('TA');
+                repoPreloadList.push(checkingOptions.disableLinkedTWArticlesCheckFlag ? 'TWtree' : 'TW');
+                repoPreloadList.push(checkingOptions.disableLinkedTAArticlesCheckFlag ? 'TAtree' : 'TA');
                 if (!checkingOptions.disableLexiconLinkFetchingFlag) {
                     // TODO: What if it's OBS (whichTestament === 'none' ???)
                     // const lexiconRepo = whichTestament === 'old' ? 'UHAL' : 'UGL';
                     // repoPreloadList.push(whichTestament === 'old' ? 'UHAL' : 'UGL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
-                    repoPreloadList.push('UHAL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
-                    repoPreloadList.push('UGL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
+                    repoPreloadList.push(checkingOptions.disableLinkedLexiconEntriesCheckFlag ? 'UHALtree' : 'UHAL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
+                    repoPreloadList.push(checkingOptions.disableLinkedLexiconEntriesCheckFlag ? 'UGLtree' : 'UGL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
                 }
             }
             // debugLog(`GlBookPackageCheck got repoPreloadList=${repoPreloadList} for dataSet=${dataSet}`)

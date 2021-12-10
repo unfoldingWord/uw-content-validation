@@ -219,11 +219,12 @@ projects:
 
 // You can choose any of the above texts here
 //  (to demonstrate differing results)
+const username = 'unfoldingWord';
 const chosenText = textG2;
 const chosenTextName = 'textG2';
 const checkingOptions = {};
 
-const rawResults = checkYAMLText('en', '', chosenTextName, chosenText, 'in YAML data that was supplied', checkingOptions);
+const rawResults = checkYAMLText(username, 'en', '', chosenTextName, chosenText, 'in YAML data that was supplied', checkingOptions);
 
 <>
 <b>YAML contents</b>: <RenderNumberedLines text={chosenText} />

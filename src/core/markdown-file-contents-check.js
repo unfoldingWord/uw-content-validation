@@ -6,11 +6,12 @@ import { checkStrongsField } from './strongs-field-check'; // and this may call 
 import { userLog, functionLog, debugLog, logicAssert, parameterAssert } from './utilities';
 
 
-const MARKDOWN_FILE_VALIDATOR_VERSION_STRING = '0.5.1';
+const MARKDOWN_FILE_VALIDATOR_VERSION_STRING = '0.6.0';
 
 
 /**
  *
+ * @param {string} username
  * @param {string} languageCode
  * @param {string} repoCode -- e.g., 'TW', 'TA', 'TQ', or 'OBS', 'OBS-TN', 'OBS-TQ', 'OBS-SN', 'OBS-SQ', etc.
  * @param {string} markdownFilename -- used for identification
@@ -18,7 +19,7 @@ const MARKDOWN_FILE_VALIDATOR_VERSION_STRING = '0.5.1';
  * @param {string} givenLocation
  * @param {Object} checkingOptions
  */
-export async function checkMarkdownFileContents(languageCode, repoCode, markdownFilename, markdownText, givenLocation, checkingOptions) {
+export async function checkMarkdownFileContents(username, languageCode, repoCode, markdownFilename, markdownText, givenLocation, checkingOptions) {
   /* This function is optimised for checking the entire markdown file, i.e., all lines.
       It should not be used for just checking a field within a file, e.g., a markdown field within a TSV file
 
@@ -27,7 +28,7 @@ export async function checkMarkdownFileContents(languageCode, repoCode, markdown
 
    Returns a result object containing a successList and a noticeList
    */
-  // functionLog(`checkMarkdownFileContents(lC=${languageCode}, rC=${repoCode}, fn=${markdownFilename}, (${markdownText.length}), ${givenLocation})…`);
+  // functionLog(`checkMarkdownFileContents(${username}, lC=${languageCode}, rC=${repoCode}, fn=${markdownFilename}, (${markdownText.length}), ${givenLocation})…`);
   //parameterAssert(languageCode !== undefined, "checkMarkdownFileContents: 'languageCode' parameter should be defined");
   //parameterAssert(typeof languageCode === 'string', `checkMarkdownFileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
   // TODO: Check if/why we have both forms below
@@ -41,7 +42,8 @@ export async function checkMarkdownFileContents(languageCode, repoCode, markdown
   //parameterAssert(givenLocation !== undefined, "checkMarkdownFileContents: 'givenLocation' parameter should be defined");
   //parameterAssert(typeof givenLocation === 'string', `checkMarkdownFileContents: 'givenLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
   //parameterAssert(givenLocation.indexOf('true') === -1, `checkMarkdownFileContents: 'givenLocation' parameter should not be '${givenLocation}'`);
-  if (checkingOptions !== undefined) { parameterAssert(typeof checkingOptions === 'object', `checkMarkdownFileContents: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
+  if (checkingOptions !== undefined) {
+    //parameterAssert(typeof checkingOptions === 'object', `checkMarkdownFileContents: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
   }
 
   let ourLocation = givenLocation;
@@ -74,22 +76,27 @@ export async function checkMarkdownFileContents(languageCode, repoCode, markdown
     //parameterAssert(incompleteNoticeObject.message !== undefined, "cMdT addNoticePartial: 'message' parameter should be defined");
     //parameterAssert(typeof incompleteNoticeObject.message === 'string', `cMdT addNoticePartial: 'message' parameter should be a string not a '${typeof incompleteNoticeObject.message}': ${incompleteNoticeObject.message}`);
     // parameterAssert(characterIndex !== undefined, "cMdT addNoticePartial: 'characterIndex' parameter should be defined");
-    if (incompleteNoticeObject.characterIndex) { parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `cMdT addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
+    if (incompleteNoticeObject.characterIndex) {
+      //parameterAssert(typeof incompleteNoticeObject.characterIndex === 'number', `cMdT addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof incompleteNoticeObject.characterIndex}': ${incompleteNoticeObject.characterIndex}`);
     }
     // parameterAssert(excerpt !== undefined, "cMdT addNoticePartial: 'excerpt' parameter should be defined");
-    if (incompleteNoticeObject.excerpt) { parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `cMdT addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt}`);
+    if (incompleteNoticeObject.excerpt) {
+      //parameterAssert(typeof incompleteNoticeObject.excerpt === 'string', `cMdT addNoticePartial: 'excerpt' parameter should be a string not a '${typeof incompleteNoticeObject.excerpt}': ${incompleteNoticeObject.excerpt}`);
     }
     //parameterAssert(incompleteNoticeObject.location !== undefined, "cMdT addNoticePartial: 'location' parameter should be defined");
     //parameterAssert(typeof incompleteNoticeObject.location === 'string', `cMdT addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
 
-    if (incompleteNoticeObject.repoCode === undefined) {
+    if (!incompleteNoticeObject.repoCode) {
       // debugLog(`checkMarkdownFileContents addNoticePartial added rC=${repoCode} to ${JSON.stringify(incompleteNoticeObject)}`);
       incompleteNoticeObject.repoCode = repoCode;
     }
     // else if (repoCode !== incompleteNoticeObject.repoCode) debugLog(`checkMarkdownFileContents addNoticePartial DIDN'T ADD rC=${repoCode} to ${JSON.stringify(incompleteNoticeObject)}`);
 
     if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkMarkdownFileContents ${incompleteNoticeObject.debugChain}`; // Prepend our name
-    mfccResult.noticeList.push({ ...incompleteNoticeObject, filename: markdownFilename });
+    // aboutToOverwrite('checkMarkdownFileContents', ['filename'], incompleteNoticeObject, { filename: markdownFilename });
+    // Only put in our filename if we didn't already have (a linked) one
+    if (!incompleteNoticeObject.filename) incompleteNoticeObject.filename = markdownFilename;
+    mfccResult.noticeList.push(incompleteNoticeObject);
   }
   // end of addNoticePartial function
 
@@ -112,7 +119,7 @@ export async function checkMarkdownFileContents(languageCode, repoCode, markdown
     //parameterAssert(optionalFieldLocation !== undefined, "cMdFC ourCheckMarkdownText: 'optionalFieldLocation' parameter should be defined");
     //parameterAssert(typeof optionalFieldLocation === 'string', `cMdFC ourCheckMarkdownText: 'optionalFieldLocation' parameter should be a string not a '${typeof optionalFieldLocation}'`);
 
-    const cmtResultObject = await checkMarkdownText(languageCode, repoCode, markdownFilename, markdownText, optionalFieldLocation, checkingOptions);
+    const cmtResultObject = await checkMarkdownText(username, languageCode, repoCode, markdownFilename, markdownText, optionalFieldLocation, checkingOptions);
     // debugLog(`cmtResultObject=${JSON.stringify(cmtResultObject)}`);
 
     // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
@@ -140,7 +147,7 @@ export async function checkMarkdownFileContents(languageCode, repoCode, markdown
     //parameterAssert(typeof markdownText === 'string', `cMdFC ourFileTextCheck: 'markdownText' parameter should be a string not a '${typeof markdownText}'`);
     //parameterAssert(checkingOptions !== undefined, "cMdFC ourFileTextCheck: 'checkingOptions' parameter should be defined");
 
-    const ctfcResultObject = checkTextfileContents(languageCode, repoCode, 'markdown', markdownFilename, markdownText, optionalFieldLocation, checkingOptions);
+    const ctfcResultObject = checkTextfileContents(username, languageCode, repoCode, 'markdown', markdownFilename, markdownText, optionalFieldLocation, checkingOptions);
     // debugLog(`ctfcResultObject=${JSON.stringify(ctfcResultObject)}`);
 
     // If we need to put everything through addNoticePartial, e.g., for debugging or filtering
@@ -170,7 +177,7 @@ export async function checkMarkdownFileContents(languageCode, repoCode, markdown
 
     let adjustedLanguageCode = languageCode; // This is the language code of the resource with the link
     if (languageCode === 'hbo' || languageCode === 'el-x-koine') adjustedLanguageCode = 'en' // This is a guess (and won’t be needed for TWs when we switch to TWLs)
-    const csfResultObject = await checkStrongsField(languageCode, repoCode, 'TWStrongs', fieldText, '', '', '', location, { ...checkingOptions, defaultLanguageCode: adjustedLanguageCode });
+    const csfResultObject = await checkStrongsField(username, languageCode, repoCode, 'TWStrongs', fieldText, '', '', '', location, { ...checkingOptions, defaultLanguageCode: adjustedLanguageCode });
     // debugLog(`csfResultObject=${JSON.stringify(csfResultObject)}`);
 
     // If we need to put everything through addNoticePartial, e.g., for debugging or filtering

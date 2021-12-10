@@ -1,9 +1,9 @@
-import { cachedGetFile } from './getApi';
+import { cachedGetFile, alreadyChecked, markAsChecked, isFilepathInRepoTree } from './getApi';
 // eslint-disable-next-line no-unused-vars
-import { functionLog, parameterAssert } from './utilities';
+import { functionLog, parameterAssert, aboutToOverwrite } from './utilities';
 
 
-// const TA_REFERENCE_VALIDATOR_VERSION_STRING = '0.3.2';
+// const TA_REFERENCE_VALIDATOR_VERSION_STRING = '0.4.0';
 
 
 export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocation, checkingOptions) {
@@ -51,6 +51,7 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
         }
         //parameterAssert(incompleteNoticeObject.location !== undefined, "cTAref addNoticePartial: 'location' parameter should be defined");
         //parameterAssert(typeof incompleteNoticeObject.location === 'string', `cTAref addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
+        aboutToOverwrite('checkSupportReferenceInTA', ['fieldName'], incompleteNoticeObject, { fieldName });
         ctarResult.noticeList.push({ ...incompleteNoticeObject, fieldName });
     }
 
@@ -103,19 +104,33 @@ export async function checkSupportReferenceInTA(fieldName, fieldText, givenLocat
     else filepath = `${taRepoSectionName}/${fieldText}/01.md`; // Other files are title.md, sub-title.md
     // debugLog("checkSupportReferenceInTA filepath", filepath);
 
-    // debugLog(`Need to check against ${taRepoName}`);
-    let taFileContent; // Not really used here -- just to show that we got something valid
-    try {
-        const getFile_ = (checkingOptions && checkingOptions?.getFile) ? checkingOptions?.getFile : cachedGetFile;
-        taFileContent = await getFile_({ username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch });
-        // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
-        if (!taFileContent)
-            addNoticePartial({ priority: 889, message: "Unable to find/load linked TA article", details: `linked from TN ${fieldName}`, excerpt: fieldText, location: `${ourLocation} ${filepath}` });
-        else if (taFileContent.length < 10)
-            addNoticePartial({ priority: 887, message: "Linked TA article seems empty", details: `linked from TN ${fieldName}`, excerpt: fieldText, location: `${ourLocation} ${filepath}` });
-    } catch (trcGCerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
-        // console.error("checkSupportReferenceInTA() failed to load", taRepoUsername, taRepoName, filepath, taRepoBranch, trcGCerror.message);
-        addNoticePartial({ priority: 888, message: "Error loading linked TA article", details: `linked from TN ${fieldName}`, excerpt: fieldText, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+    const taPathParameters = { username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch };
+    if (!await alreadyChecked(taPathParameters)) {
+        if (checkingOptions?.disableLinkedTAArticlesCheckFlag === true) {
+            // New code
+            // We don't need/want to check the actual article, so we don't need to fetch it
+            // However, we still want to know if the given link actually links to an article
+            //  so we'll check it against the tree listing from DCS
+            if (!await isFilepathInRepoTree(taPathParameters)) {
+                addNoticePartial({ priority: 889, message: "Unable to find linked TA article", details: `linked from TN ${fieldName}`, excerpt: fieldText, location: `${ourLocation} ${filepath}` });
+            }
+        } else {
+            // debugLog(`Need to check against ${taRepoName}`);
+            let taFileContent; // Not really used here -- just to show that we got something valid
+            try {
+                const getFile_ = (checkingOptions && checkingOptions?.getFile) ? checkingOptions?.getFile : cachedGetFile;
+                taFileContent = await getFile_({ username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch });
+                // debugLog("Fetched fileContent for", taRepoName, filepath, typeof fileContent, fileContent.length);
+                if (!taFileContent)
+                    addNoticePartial({ priority: 889, message: "Unable to find/load linked TA article", details: `linked from TN ${fieldName}`, excerpt: fieldText, location: `${ourLocation} ${filepath}` });
+                else if (taFileContent.length < 10)
+                    addNoticePartial({ priority: 887, message: "Linked TA article seems empty", details: `linked from TN ${fieldName}`, excerpt: fieldText, location: `${ourLocation} ${filepath}` });
+            } catch (trcGCerror) { // NOTE: The error can depend on whether the zipped repo is cached or not
+                // console.error("checkSupportReferenceInTA() failed to load", taRepoUsername, taRepoName, filepath, taRepoBranch, trcGCerror.message);
+                addNoticePartial({ priority: 888, message: "Error loading linked TA article", details: `linked from TN ${fieldName}`, excerpt: fieldText, location: `${ourLocation} ${filepath}: ${trcGCerror}` });
+            }
+        }
+        markAsChecked(taPathParameters); // don’t bother waiting for the result of this async call
     }
 
     // functionLog(`checkSupportReferenceInTA is returning ${JSON.stringify(ctarResult)}`);

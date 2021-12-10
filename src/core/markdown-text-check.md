@@ -43,6 +43,7 @@ Another  paragraph.
 const data = {
   // You can choose any of the above lines here
   //  (to demonstrate differing results)
+  username: 'unfoldingWord',
   chosenTextName : 'textSB',
   chosenText : textSB,
   languageCode : 'en',
@@ -51,7 +52,7 @@ const data = {
 }
 
 function OurCheckMarkdownText(props) {
-  const { languageCode, repoCode, chosenText, chosenTextName, givenLocation } = props.data;
+  const { username, languageCode, repoCode, chosenText, chosenTextName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
 
@@ -63,7 +64,7 @@ function OurCheckMarkdownText(props) {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {chosenTextName}…</p>);
       const checkingOptions = {};
-      const rawResults = await checkMarkdownText(languageCode, repoCode, chosenTextName, chosenText, givenLocation, checkingOptions);
+      const rawResults = await checkMarkdownText(username, languageCode, repoCode, chosenTextName, chosenText, givenLocation, checkingOptions);
       if (!rawResults.successList || !rawResults.successList.length)
         rawResults.successList = ["Done markdown text checks"];
       setResults(

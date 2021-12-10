@@ -1,12 +1,12 @@
 import * as books from './books/books';
-import { DEFAULT_EXCERPT_LENGTH } from './defaults'
+import { DEFAULT_EXCERPT_LENGTH, NUM_OBS_STORIES, MAX_OBS_FRAMES } from './defaults'
 import { checkNotesTSV7DataRow } from './notes-tsv7-row-check';
-import { removeDisabledNotices } from './disabled-notices';
+// import { removeDisabledNotices } from './disabled-notices';
 // eslint-disable-next-line no-unused-vars
-import { parameterAssert } from './utilities';
+import { parameterAssert, aboutToOverwrite } from './utilities';
 
 
-const NOTES_TABLE_VALIDATOR_VERSION_STRING = '0.3.6';
+const NOTES_TABLE_VALIDATOR_VERSION_STRING = '0.4.2';
 
 const NUM_EXPECTED_NOTES_TSV_FIELDS = 7; // so expects 6 tabs per line
 const EXPECTED_NOTES_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuote\tOccurrence\tNote';
@@ -22,7 +22,7 @@ const EXPECTED_NOTES_HEADING_LINE = 'Reference\tID\tTags\tSupportReference\tQuot
  * @param {string} givenLocation
  * @param {Object} checkingOptions
  */
-export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filename, tableText, givenLocation, checkingOptions) {
+export async function checkNotesTSV7Table(username, languageCode, repoCode, bookID, filename, tableText, givenLocation, checkingOptions) {
     /* This function is optimised for checking the entire file, i.e., all rows.
 
       It also has the advantage of being able to compare one row with the previous one.
@@ -94,6 +94,8 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
         //parameterAssert(typeof incompleteNoticeObject.location === 'string', `TSV addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
 
         if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkNotesTSV7Table ${incompleteNoticeObject.debugChain}`;
+
+        aboutToOverwrite('checkNotesTSV7Table', ['bookID', 'filename', 'repoCode'], incompleteNoticeObject, { bookID, filename, repoCode });
         carResult.noticeList.push({ ...incompleteNoticeObject, bookID, filename, repoCode });
     }
 
@@ -102,7 +104,7 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
     let lowercaseBookID = bookID.toLowerCase();
     let numChaptersThisBook = 0;
     if (bookID === 'OBS')
-        numChaptersThisBook = 50; // There’s 50 Open Bible Stories
+        numChaptersThisBook = NUM_OBS_STORIES; // There’s 50 Open Bible Stories
     else {
         //parameterAssert(lowercaseBookID !== 'obs', "Shouldn’t happen in checkNotesTSV7Table");
         try {
@@ -137,7 +139,7 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
                 const [C, V] = reference.split(':')
 
                 // Use the row check to do most basic checks
-                const drResultObject = await checkNotesTSV7DataRow(languageCode, repoCode, lines[n], bookID, C, V, ourLocation, checkingOptions);
+                const drResultObject = await checkNotesTSV7DataRow(username, languageCode, repoCode, lines[n], bookID, C, V, ourLocation, checkingOptions);
                 // Choose only ONE of the following
                 // This is the fast way of append the results from this field
                 // result.noticeList = result.noticeList.concat(firstResult.noticeList);
@@ -186,13 +188,13 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
                         let intC = Number(C);
                         if (C !== lastC)
                             if (lowercaseBookID === 'obs')
-                                numVersesThisChapter = 99; // Set to maximum expected number of frames
+                                numVersesThisChapter = MAX_OBS_FRAMES; // Set to maximum expected number of frames
                             else
                                 numVersesThisChapter = books.versesInChapter(lowercaseBookID, intC);
                         if (intC === 0)
-                            addNoticePartial({ priority: 551, C, V, message: `Invalid zero chapter number`, rowID, lineNumber: n + 1, excerpt: C, location: ourLocation });
+                            addNoticePartial({ priority: 551, C, V, message: `Invalid zero chapter number`, rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
                         if (intC > numChaptersThisBook)
-                            addNoticePartial({ priority: 737, C, V, message: "Invalid large chapter number", rowID, lineNumber: n + 1, excerpt: C, location: ourLocation });
+                            addNoticePartial({ priority: 737, C, V, message: "Invalid large chapter number", rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
                         if (/^\d+$/.test(lastC)) {
                             let lastintC = Number(lastC);
                             if (intC < lastintC)
@@ -211,14 +213,14 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
                     if (V === 'intro') { }
                     else if (/^\d+$/.test(V)) { // all digits
                         let intV = Number(V);
-                        if (intV === 0 && bookID !== 'PSA') // Psalms have \d titles
-                            addNoticePartial({ priority: 552, C, V, message: "Invalid zero verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
+                        if (intV === 0 && bookID !== 'PSA' && repoCode !== 'OBS-TN') // Psalms have \d titles
+                            addNoticePartial({ priority: 552, C, V, message: "Invalid zero verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
                         if (intV > numVersesThisChapter)
-                            addNoticePartial({ priority: 734, C, V, message: "Invalid large verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
+                            addNoticePartial({ priority: 734, C, V, message: "Invalid large verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
                         if (/^\d+$/.test(lastV)) {
                             let lastintV = Number(lastV);
                             if (C === lastC && intV < lastintV)
-                                addNoticePartial({ priority: 733, C, V, message: "Receding verse number", details: `'${V}' after '${lastV} for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
+                                addNoticePartial({ priority: 733, C, V, message: "Receding verse number", details: `'${V}' after '${lastV} for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
                             // else if (intV > lastintV + 1)
                             //   addNoticePartial({priority:556, `Skipped verses with '${V}' verse number after '${lastV}'${withString}`);
                         }
@@ -227,23 +229,23 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
                         const [V1, V2] = V.split('-')
                         let intV1 = Number(V1), intV2 = Number(V2);
                         if (intV1 >= intV2) // in the wrong order
-                            addNoticePartial({ priority: 732, C, V, message: "Verse range in wrong order", details: `detected ${intV1} before ${intV2}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
+                            addNoticePartial({ priority: 732, C, V, message: "Verse range in wrong order", details: `detected ${intV1} before ${intV2}`, rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
                         if (intV2 > numVersesThisChapter)
-                            addNoticePartial({ priority: 734, C, V, message: "Invalid large verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
+                            addNoticePartial({ priority: 734, C, V, message: "Invalid large verse number", details: `for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
                         if (/^\d+$/.test(lastV)) {
                             let lastintV = Number(lastV);
                             if (C === lastC && intV1 < lastintV)
-                                addNoticePartial({ priority: 733, C, V, message: "Receding verse number", details: `'${V}' after '${lastV} for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: V, location: ourLocation });
+                                addNoticePartial({ priority: 733, C, V, message: "Receding verse number", details: `'${V}' after '${lastV} for chapter ${C}`, rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
                             // else if (intV > lastintV + 1)
                             //   addNoticePartial({priority:556, `Skipped verses with '${V}' verse number after '${lastV}'${withString}`);
                         }
                     }
                     else
-                        addNoticePartial({ priority: 738, C, V, message: "Bad verse number", rowID, lineNumber: n + 1, location: ourLocation });
+                        addNoticePartial({ priority: 738, C, V, message: "Bad verse number", rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
 
                 }
                 else
-                    addNoticePartial({ priority: 790, C, V, message: "Missing verse number", rowID, lineNumber: n + 1, location: ` after ${C}:${lastV}${ourLocation}` });
+                    addNoticePartial({ priority: 790, C, V, message: "Missing verse number", rowID, lineNumber: n + 1, excerpt: reference, location: ` after ${C}:${lastV}${ourLocation}` });
 
                 if (rowID) {
                     if (rowIDListForVerse.includes(rowID))
@@ -270,10 +272,10 @@ export async function checkNotesTSV7Table(languageCode, repoCode, bookID, filena
         }
     }
 
-    if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        // functionLog(`checkNotesTSV7Table: calling removeDisabledNotices(${carResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
-        carResult.noticeList = removeDisabledNotices(carResult.noticeList);
-    }
+    // if (!checkingOptions?.suppressNoticeDisablingFlag) {
+    //     // functionLog(`checkNotesTSV7Table: calling removeDisabledNotices(${carResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+    //     carResult.noticeList = removeDisabledNotices(carResult.noticeList);
+    // }
 
     if (cutoffPriorityLevel < 20 && checkingOptions?.disableAllLinkFetchingFlag)
         addNoticePartial({ priority: 20, message: "Note that 'disableAllLinkFetchingFlag' was set so link targets were not checked", location: ourLocation });

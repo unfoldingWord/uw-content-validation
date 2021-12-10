@@ -5,7 +5,7 @@ import * as books from '../../core/books/books';
 import { checkFileContents } from '../file-check/checkFileContents';
 import { repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetRepositoryZipFile } from '../../core/getApi';
 // eslint-disable-next-line no-unused-vars
-import { userLog, functionLog, debugLog, logicAssert, parameterAssert } from '../../core/utilities';
+import { userLog, functionLog, debugLog, logicAssert, parameterAssert, aboutToOverwrite } from '../../core/utilities';
 
 
 // const REPO_VALIDATOR_VERSION_STRING = '0.6.6';
@@ -44,18 +44,6 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
   // debugLog(`checkRepo got languageCode='${languageCode}' repoCode='${repoCode}' repoBranch='${repoBranch}'`);
   if (repoCode === 'TN2') {
     repoCode = 'TN';
-    if (repoBranch === undefined) repoBranch = 'newFormat';
-  } else if (repoCode === 'TQ2') {
-    repoCode = 'TQ';
-    if (repoBranch === undefined) repoBranch = 'newFormat';
-  } else if (repoCode === 'OBS-TN2') {
-    repoCode = 'OBS-TN';
-    if (repoBranch === undefined) repoBranch = 'newFormat';
-  } else if (repoCode === 'OBS-SN2') {
-    repoCode = 'OBS-SN';
-    if (repoBranch === undefined) repoBranch = 'newFormat';
-  } else if (repoCode === 'OBS-SQ2') {
-    repoCode = 'OBS-SQ';
     if (repoBranch === undefined) repoBranch = 'newFormat';
   } else if (repoCode.endsWith('LT')) repoCode = 'LT';
   else if (repoCode.endsWith('ST')) repoCode = 'ST';
@@ -119,6 +107,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
     //parameterAssert(typeof incompleteNoticeObject.extra === 'string', `cR addNoticePartial: 'extra' parameter should be a string not a '${typeof incompleteNoticeObject.extra}'`);
     if (incompleteNoticeObject.debugChain) incompleteNoticeObject.debugChain = `checkRepo ${incompleteNoticeObject.debugChain}`;
     // Add in the repoName from the outer scope
+    aboutToOverwrite('checkRepo', ['username', 'repoCode', 'repoName'], incompleteNoticeObject, { username, repoCode, repoName });
     checkRepoResult.noticeList.push({ ...incompleteNoticeObject, username, repoCode, repoName });
   }
 
@@ -284,7 +273,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
           bookID = bookOrFileCode.slice(-3).toUpperCase();
           logicAssert(bookID !== 'twl' && bookID !== 'TWL', `Should get a valid bookID here, not '${bookID}'`)
           // debugLog(`Have TSV bookcode(${bookID.length})='${bookID}'`);
-          if (repoCode === 'TWL' || repoCode === 'SN' || repoCode === 'SQ' || repoCode === 'TN2' || repoCode === 'TQ2') {// new repos allow `OBS`
+          if (repoCode === 'TWL' || repoCode === 'SN' || repoCode === 'SQ' || repoCode === 'TN2' || repoCode === 'TQ') {// new repos allow `OBS`
             //parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkRepo: '${bookID}' is not a valid USFM book identifier (for TSV)`);
           } else {
             //parameterAssert(bookID !== 'OBS' && books.isValidBookID(bookID), `checkRepo: '${bookID}' is not a valid USFM book identifier (for TSV)`);

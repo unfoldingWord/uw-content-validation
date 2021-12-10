@@ -1,6 +1,6 @@
 ## Questions (TSV) Table Text Check Sandbox
 
-Designed for the new Translation Questions (TQ2) and Study Questions (SQ), this function checks the given block of question/response (TSV) table lines for typical formatting errors.
+Designed for the new Translation Questions (TQ) and Study Questions (SQ), this function checks the given block of question/response (TSV) table lines for typical formatting errors.
 
 It returns a list of success messages and a list of notice components. (There is always a priority number in the range 0..999 and the main message string, as well as other details to help locate the error as available.)
 
@@ -41,8 +41,9 @@ const lineA9 = "1:9\tha33\t\t\t\t0\t“It happened like that” or “That is wh
 const data = {
   // You can choose any of the above lines here
   //  (to demonstrate differing results)
+  username: 'unfoldingWord',
   languageCode: 'en',
-  repoCode: 'TQ2',
+  repoCode: 'TQ',
   tableTextName : 'textG',
   tableText : textG,
   bookID : 'GEN',
@@ -51,7 +52,7 @@ const data = {
 }
 
 function OurCheckQuestionsTSV7Table(props) {
-  const { languageCode, repoCode, bookID, filename, tableText, tableTextName, givenLocation } = props.data;
+  const { username, languageCode, repoCode, bookID, filename, tableText, tableTextName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
 
@@ -63,7 +64,7 @@ function OurCheckQuestionsTSV7Table(props) {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {languageCode} {repoCode} for {tableTextName} <b>{bookID}</b>…</p>);
       const checkingOptions = {};
-      const rawResults = await checkQuestionsTSV7Table(languageCode, repoCode, bookID, filename, tableText, givenLocation, checkingOptions);
+      const rawResults = await checkQuestionsTSV7Table(username, languageCode, repoCode, bookID, filename, tableText, givenLocation, checkingOptions);
       setResults(
         <div>
           <b>Check</b> {tableTextName}: "{tableText.substr(0,256)}…"<br/><br/>

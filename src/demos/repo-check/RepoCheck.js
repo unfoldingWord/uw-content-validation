@@ -8,7 +8,7 @@ import { checkRepo } from './checkRepo';
 import { logicAssert, userLog, debugLog } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.3.4';
+// const REPO_VALIDATOR_VERSION_STRING = '0.3.5';
 
 
 function RepoCheck(/*username, languageCode,*/ props) {
@@ -90,7 +90,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
             let [languageCode, repoCode] = repoName.split('_');
             repoCode = repoCode.toUpperCase();
             if (repoCode === 'TN2') repoCode = 'TN';
-            else if (repoCode === 'TQ2') repoCode = 'TQ';
+            // else if (repoCode === 'TQ1') repoCode = 'TQ';
             // debugLog(`RepoCheck languageCode='${languageCode}' repoCode='${repoCode}'`);
 
             // Load whole repos, especially if we are going to check files in manifests
@@ -100,9 +100,9 @@ function RepoCheck(/*username, languageCode,*/ props) {
             const repoPreloadList = []; // The repo being checked doesn't need to be added here as done separately below
             if (!checkingOptions.disableAllLinkFetchingFlag) {
                 if (repoCode !== 'TW')
-                    repoPreloadList.push('TW');
+                    repoPreloadList.push(checkingOptions.disableLinkedTWArticlesCheckFlag ? 'TWtree' : 'TW');
                 if (repoCode !== 'UHB' && repoCode !== 'UGNT' && repoCode !== 'TA')
-                    repoPreloadList.push('TA'); // Original languages only have TW links
+                    repoPreloadList.push(checkingOptions.disableLinkedTAArticlesCheckFlag ? 'TAtree' : 'TA'); // Original languages only have TW links
                 // if (repoCode !== 'TA' && repoCode !== 'TW') repoPreloadList.push(repoCode);
                 if (repoCode === 'TWL' || repoCode === 'TN' || repoCode.endsWith('LT') || repoCode.endsWith('ST')) {
                     // These all refer to the original languages
@@ -114,9 +114,9 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 if (!checkingOptions.disableLexiconLinkFetchingFlag
                     && (['UHB', 'UGNT', 'TW'].includes(repoCode) || repoCode.endsWith('LT') || repoCode.endsWith('ST'))) {
                     if (repoCode !== 'UGNT')
-                        repoPreloadList.push('UHAL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
+                        repoPreloadList.push(checkingOptions.disableLinkedLexiconEntriesCheckFlag ? 'UHALtree' : 'UHAL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
                     if (repoCode !== 'UHB')
-                        repoPreloadList.push('UGL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
+                        repoPreloadList.push(checkingOptions.disableLinkedLexiconEntriesCheckFlag ? 'UGLtree' : 'UGL'); // UHB/UGNT, ULT, UST, TW all have lexicon links
                 }
             }
             setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoCode} and {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for {repoName} repo check…</p>);

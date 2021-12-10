@@ -13,7 +13,7 @@ These raw notice components can then be filtered and/or sorted as required by th
 //    so if you want to enable those lines, you must remove the // from the beginning of the line.
 
 import React, { useState, useEffect } from 'react';
-import { checkTWL_TSV6Table } from './twl-tsv6-table-check';
+import { internalCheckTWL_TSV6Table } from './twl-tsv6-table-check';
 import { RenderRawResults } from '../demos/RenderProcessedResults';
 
 // Text samples
@@ -41,6 +41,7 @@ const lineA9 = "1:9\tha33\t\t\t\t0\t“It happened like that” or “That is wh
 const data = {
   // You can choose any of the above lines here
   //  (to demonstrate differing results)
+  username: 'unfoldingWord',
   languageCode: 'en',
   repoCode: 'TWL',
   tableTextName : 'textG',
@@ -51,11 +52,11 @@ const data = {
 }
 
 function OurCheckTWL_TSV6Table(props) {
-  const { languageCode, repoCode, bookID, filename, tableText, tableTextName, givenLocation } = props.data;
+  const { username, languageCode, repoCode, bookID, filename, tableText, tableTextName, givenLocation } = props.data;
 
   const [results, setResults] = useState(null);
 
-  // We need the following construction because checkTWL_TSV6Table is an ASYNC function
+  // We need the following construction because internalCheckTWL_TSV6Table is an ASYNC function
   useEffect(() => {
     // Use an IIFE (Immediately Invoked Function Expression)
     //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
@@ -63,7 +64,7 @@ function OurCheckTWL_TSV6Table(props) {
       // Display our "waiting" message
       setResults(<p style={{ color: 'magenta' }}>Checking {languageCode} {repoCode} for {tableTextName} <b>{bookID}</b>…</p>);
       const checkingOptions = {};
-      const rawResults = await checkTWL_TSV6Table(languageCode, repoCode, bookID, filename, tableText, givenLocation, checkingOptions);
+      const rawResults = await internalCheckTWL_TSV6Table(username, languageCode, repoCode, bookID, filename, tableText, givenLocation, checkingOptions);
       setResults(
         <div>
           <b>Check</b> {tableTextName}: "{tableText.substr(0,256)}…"<br/><br/>
