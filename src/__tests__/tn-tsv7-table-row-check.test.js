@@ -368,7 +368,7 @@ describe('checkNotesTSV7DataRow() - ', () => {
   it('should find language code instead of asterisk', async () => {
     const chosenLine = "1:2\tu7qw\t\tfigs-imperative\t\t0\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://en/ta/man/translate/figs-imperative]])";
     const rawResults = await checkNotesTSV7DataRow(username, languageCode, repoCode, chosenLine, 'EXO', '1', '2', 'from test line', optionalCheckingOptions);
-    expect(rawResults.noticeList.length).toEqual(1);
+    expect(rawResults.noticeList.length).toEqual(2);
     expect(rawResults).toMatchSnapshot();
   });
 

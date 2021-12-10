@@ -9,7 +9,7 @@ import { checkRepo } from '../repo-check/checkRepo';
 import { userLog, functionLog, debugLog, parameterAssert, logicAssert, aboutToOverwrite } from '../../core/utilities';
 
 
-// const BP_VALIDATOR_VERSION_STRING = '0.9.7';
+// const BP_VALIDATOR_VERSION_STRING = '1.0.0';
 
 const STANDARD_MANIFEST_FILENAME = 'manifest.yaml';
 
@@ -136,7 +136,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     let adjustedLanguageCode = languageCode;
     // if (repoCode === 'UHB') adjustedLanguageCode = 'hbo'; // NO -- we need the languageCode of the BP being checked (so we can resolve TW links with * for language) !!!
     // else if (repoCode === 'UGNT') adjustedLanguageCode = 'el-x-koine';
-    const cfcResultObject = await checkFileContents(username, adjustedLanguageCode, repoCode, repoBranch, cfFilename, fileContent, fileLocation, checkingOptions);
+    const cfcResultObject = await checkFileContents(username, adjustedLanguageCode, repoCode, repoName, repoBranch, cfFilename, fileContent, fileLocation, checkingOptions);
     // debugLog("checkFileContents() returned", cfResultObject.successList.length, "success message(s) and", cfResultObject.noticeList.length, "notice(s)");
     // for (const successEntry of cfResultObject.successList) debugLog("  ourCheckBPFileContents:", successEntry);
     // debugLog("cfcResultObject", JSON.stringify(cfcResultObject));
@@ -145,8 +145,11 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     for (const cfcNoticeEntry of cfcResultObject.noticeList) // noticeEntry is an object
       if (cfcNoticeEntry.extra) // it must be an indirect check on a TA/TW article from a TN2 check or UHAL/UGL lexicon check
         checkBookPackageResult.noticeList.push(cfcNoticeEntry); // Just copy the complete notice as is
-      else // For our direct checks, we add the repoCode as an extra value (unless it’s already there from a TA or TW check)
-        addNoticePartial({ ...cfcNoticeEntry, repoCode, repoName, branch: repoBranch, filename: cfFilename, extra: cfcNoticeEntry.extra ? cfcNoticeEntry.extra : repoCode });
+      else {// For our direct checks, we add the repoCode as an extra value (unless it’s already there from a TA or TW check)
+        if (cfcNoticeEntry.filename === undefined) cfcNoticeEntry.filename = cfFilename;
+    aboutToOverwrite('ourCheckBPFileContents', ['repoCode', 'repoName', 'branch', 'extra'], cfcNoticeEntry, { repoCode, repoName, branch: repoBranch, extra: cfcNoticeEntry.extra ? cfcNoticeEntry.extra : repoCode });
+    addNoticePartial({ ...cfcNoticeEntry, repoCode, repoName, branch: repoBranch, extra: cfcNoticeEntry.extra ? cfcNoticeEntry.extra : repoCode });
+      }
 
     // The following is needed coz we might be checking the linked TA/TW articles from TN2 TSV files or UHAL/UGL entries
     if (cfcResultObject.checkedFileCount && cfcResultObject.checkedFileCount > 0) {
@@ -291,7 +294,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         // debugLog(`Year ${fullYearString} is ${typeof fullYearString}`);
         if (markdownFileContent.indexOf(fullYearString) === -1 && markdownFileContent.indexOf(`${thisYear - 1}`) === -1) // Can’t find this year or previous year in file
           // NOTE: We don’t use addNoticePartial, because it adds a misleading BookID
-          checkBookPackageResult.noticeList.push({ priority: 256, message: "Possibly missing current copyright year", details: `possibly expecting '${fullYearString}'`, username, repoName, filename, location: markdownLocation, extra: repoCode });
+          checkBookPackageResult.noticeList.push({ priority: 256, message: "Possibly missing current copyright year", details: `possibly expecting ‘${fullYearString}’`, username, repoName, filename, location: markdownLocation, extra: repoCode });
       }
 
       return markdownFileContent.length;
@@ -617,7 +620,7 @@ async function checkMarkdownBook(username, languageCode, repoCode, repoName, bra
     //parameterAssert(typeof incompleteNoticeObject.location === 'string', `cTQ addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}'`);
     //parameterAssert(incompleteNoticeObject.extra !== undefined, "cTQ addNoticePartial: 'extra' parameter should be defined");
     //parameterAssert(typeof incompleteNoticeObject.extra === 'string', `cTQ addNoticePartial: 'extra' parameter should be a string not a '${typeof incompleteNoticeObject.extra}'`);
-    aboutToOverwrite('checkMarkdownBook', ['username', 'repoCode', 'repoName', 'bookID'], incompleteNoticeObject, { username, repoCode, repoName, bookID });
+    aboutToOverwrite('checkBookPackage checkMarkdownBook', ['username', 'repoCode', 'repoName', 'bookID'], incompleteNoticeObject, { username, repoCode, repoName, bookID });
     ctqResult.noticeList.push({ ...incompleteNoticeObject, username, repoCode, repoName, bookID });
   }
 
@@ -648,7 +651,7 @@ async function checkMarkdownBook(username, languageCode, repoCode, repoName, bra
     //parameterAssert(typeof fileLocation === 'string', `cTQ ourCheckFileContents: 'fileLocation' parameter should be a string not a '${typeof fileLocation}'`);
     //parameterAssert(checkingOptions !== undefined, "cTQ ourCheckFileContents: 'checkingOptions' parameter should be defined");
 
-    const cfResultObject = await checkFileContents(username, languageCode, repoCode, branch, cfFilename, fileContent, fileLocation, checkingOptions);
+    const cfResultObject = await checkFileContents(username, languageCode, repoCode, repoName, branch, cfFilename, fileContent, fileLocation, checkingOptions);
     // debugLog("checkFileContents() returned", cfResultObject.successList.length, "success message(s) and", cfResultObject.noticeList.length, "notice(s)");
     // for (const successEntry of cfResultObject.successList) debugLog("  ourCheckFileContents:", successEntry);
 
@@ -657,6 +660,7 @@ async function checkMarkdownBook(username, languageCode, repoCode, repoName, bra
       // noticeEntry is an array of eight fields: 1=priority, 2=bookID, 3=C, 4=V, 5=msg, 6=characterIndex, 7=excerpt, 8=location
       // parameterAssert(Object.keys(noticeEntry).length === 5, `cTQ ourCheckFileContents notice length=${Object.keys(noticeEntry).length}`);
       // We add the repoCode as an extra value
+      aboutToOverwrite('checkBookPackage checkMarkdownBook ourCheckFileContents', ['bookID', 'C', 'V', 'extra'], noticeEntry, { bookID, C, V, extra: repoCode });
       addNoticePartial({ ...noticeEntry, bookID, C, V, extra: repoCode });
     }
   }

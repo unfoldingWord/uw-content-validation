@@ -4,10 +4,13 @@ import { OPEN_CLOSE_PUNCTUATION_PAIRS, PAIRED_PUNCTUATION_OPENERS, PAIRED_PUNCTU
 import { checkTextField } from './field-text-check';
 import { removeDisabledNotices } from './disabled-notices';
 // eslint-disable-next-line no-unused-vars
-import { parameterAssert, debugLog } from './utilities';
+import { parameterAssert, debugLog, functionLog } from './utilities';
 
 
-const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '0.5.1';
+const separatedDigitsRegex = new RegExp('\\d{1,3}, (\\d{1,3})', 'g'); // e.g., "5, 000"
+const tooManyDigitsRegex = new RegExp('[^HG]\\d{4,}', 'g'); // e.g., "5000" should have a separator but not H1234 or G12340
+
+const PLAIN_TEXT_VALIDATOR_VERSION_STRING = '1.0.2';
 
 
 /**
@@ -30,7 +33,7 @@ export function checkPlainText(username, languageCode, repoCode, textType, textN
 
      Returns a result object containing a successList and a noticeList
      */
-    // functionLog(`checkPlainText(${textName}, (${plainText.length} chars), ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
+    // functionLog(`checkPlainText(${username}, ${languageCode}, ${repoCode}, ${textType}, ${textName}, (${plainText.length} chars), ${givenLocation}, ${JSON.stringify(checkingOptions)})…`);
     //parameterAssert(languageCode !== undefined, "checkPlainText: 'languageCode' parameter should be defined");
     //parameterAssert(typeof languageCode === 'string', `checkPlainText: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
     //parameterAssert(languageCode !== 'markdown' && languageCode !== 'USFM' && languageCode !== 'YAML' && languageCode !== 'text' && languageCode !== 'raw' && languageCode !== 'unfoldingWord', `checkPlainText: 'languageCode' ${languageCode} parameter should be not be '${languageCode}'`);
@@ -62,6 +65,8 @@ export function checkPlainText(username, languageCode, repoCode, textType, textN
     const excerptHalfLength = Math.floor(excerptLength / 2); // rounded down
     const excerptHalfLengthPlus = Math.floor((excerptLength + 1) / 2); // rounded up
     // debugLog(`Using excerptHalfLength=${excerptHalfLength}`, `excerptHalfLengthPlus=${excerptHalfLengthPlus}`);
+
+    const noCapitalSentenceRegex = new RegExp(`[.!?] [a-z]{1,${excerptLength}}`, 'g'); // e.g., "end. start"
 
     const cutoffPriorityLevel = checkingOptions?.cutoffPriorityLevel ? checkingOptions?.cutoffPriorityLevel : 0;
 
@@ -195,6 +200,7 @@ export function checkPlainText(username, languageCode, repoCode, textType, textN
         addNotice({ priority: 201, message: "File contains both Arabic and other commas", location: ourLocation });
     }
 
+    let regexMatchObject;
     const lines = plainText.split('\n');
     // debugLog(`  '${location}' has ${lines.length.toLocaleString()} total lines`);
     //  checking nested markers (so that we can give the line number in the notice)
@@ -209,6 +215,21 @@ export function checkPlainText(username, languageCode, repoCode, textType, textN
         if (line) {
             if (textType === 'text' || textType === 'raw') // other file-types do these checks themselves
                 checkPlainLineContents(n, line, ourLocation);
+
+            // Search for separated digits, e.g, "5, 000" which can happen in aligned USFM
+            // NOTE: This could also pick up a list of 1, 2, and 3.
+            if (cutoffPriorityLevel < 198)
+                while ((regexMatchObject = separatedDigitsRegex.exec(line)))
+                    if (regexMatchObject[1].startsWith('0'))
+                        addNotice({ priority: 498, message: "Found separated digits", excerpt: regexMatchObject[0], lineNumber: n, location: ourLocation });
+                    else
+                        addNotice({ priority: 198, message: "Found possible separated digits", excerpt: regexMatchObject[0], lineNumber: n, location: ourLocation });
+
+            // Search for long numbers like "20000" which should probably be "20,000" in English text
+            // NOTE: Need to eliminate Strongs numbers, zip codes, ISBN numbers, copyright years, commit SHAs, etc.
+            if (cutoffPriorityLevel < 91 && !textName.endsWith('manifest') && !line.startsWith('\\id') && line.indexOf('strong="') === -1 && line.indexOf('Strong’s:') === -1 && line.indexOf('©') === -1 && line.indexOf('ISBN') === -1 && line.indexOf('USA.') === -1 && line.indexOf('/commit/') === -1 && line.indexOf('Version') === -1)
+                while ((regexMatchObject = tooManyDigitsRegex.exec(line)))
+                    addNotice({ priority: 91, message: "Possible missing separator in digit string", excerpt: regexMatchObject[0], lineNumber: n, location: ourLocation });
 
             // Check for nested brackets and quotes, etc.
             if (cutoffPriorityLevel < 777)
@@ -231,7 +252,7 @@ export function checkPlainText(username, languageCode, repoCode, textType, textN
                             } else // something is still open and this isn’t a match -- might just be consequential error
                                 if (char !== '’' // Closing single quote is also used as apostrophe in English
                                     && (textType !== 'markdown' || char !== '>' || characterIndex > 4)) { // Markdown uses > or >> or > > or > > > for block indents so ignore these -- might just be consequential error
-                                    const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + line.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < line.length ? '…' : '')
+                                    const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + line.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < line.length ? '…' : '')
                                     const details = `'${lastEntry.char}' opened on line ${lastEntry.n.toLocaleString()} character ${lastEntry.x + 1}`;
                                     addNotice({ priority: 777, message: `Bad punctuation nesting: ${char} closing character doesn’t match`, details, lineNumber: n, characterIndex, excerpt, location: ourLocation });
                                     // debugLog(`  ERROR 777: mismatched characters: ${details}`);
@@ -239,9 +260,9 @@ export function checkPlainText(username, languageCode, repoCode, textType, textN
                         } else // Closed something unexpectedly without an opener
                             if (char !== '’' // Closing single quote is also used as apostrophe in English
                                 && (textType !== 'markdown' || char !== '>')) { // Markdown uses > for block indents so ignore these
-                                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + line.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < line.length ? '…' : '')
+                                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + line.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < line.length ? '…' : '')
                                 addNotice({ priority: 774, message: `Unexpected ${char} closing character (no matching opener)`, lineNumber: n, characterIndex, excerpt, location: ourLocation });
-                                // debugLog(`  ERROR 774: closed with nothing open: ${char}`);
+                                // debugLog(`  ERROR 774: closed with nothing open: ${char} from ${line}`);
                             }
                     }
 
@@ -256,7 +277,7 @@ export function checkPlainText(username, languageCode, repoCode, textType, textN
     if (cutoffPriorityLevel < 768 && openMarkers.length) {
         const [{ char, n, x }] = openMarkers.slice(-1);
         const line = lines[n - 1];
-        const excerpt = (x > excerptHalfLength ? '…' : '') + line.slice(x - excerptHalfLength, x + excerptHalfLengthPlus) + (x + excerptHalfLengthPlus < line.length ? '…' : '')
+        const excerpt = (x > excerptHalfLength ? '…' : '') + line.substring(x - excerptHalfLength, x + excerptHalfLengthPlus) + (x + excerptHalfLengthPlus < line.length ? '…' : '')
         const details = openMarkers.length > 1 ? `${openMarkers.length} unclosed set${openMarkers.length === 1 ? '' : 's'}` : null;
         addNotice({ priority: 768, message: `At end of text with unclosed ${char} opening character`, details, lineNumber: n, characterIndex: x, excerpt, location: ourLocation });
     }
@@ -277,8 +298,20 @@ export function checkPlainText(username, languageCode, repoCode, textType, textN
                 addNotice({ priority: leftChar === '“' ? 162 : 462, message: `Mismatched ${leftChar}${rightChar} characters`, details: `left=${leftCount.toLocaleString()}, right=${rightCount.toLocaleString()}`, location: ourLocation });
         }
 
+    if (cutoffPriorityLevel < 97)
+        while ((regexMatchObject = noCapitalSentenceRegex.exec(plainText)))
+            if ((textType !== 'YAML' || regexMatchObject[0] !== '. in') // e.g., Ph.D. in "Shape of Greek iota symbol in late 3rd century manuscripts"
+                && (textType !== 'markdown' || regexMatchObject[0] !== '. t' || plainText.slice(regexMatchObject.index + 3, regexMatchObject.index + 4) !== 'C') // Sentence starting with tC
+            ) {
+                const characterIndex = regexMatchObject.index;
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + plainText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < plainText.length ? '…' : '')
+                // debugLog(`checkPlainText for ${textType} found no capital with '${regexMatchObject[0]}' at index ${characterIndex} giving excerpt='${excerpt}'`);
+                const details = `the ‘${plainText.slice(characterIndex + 2, characterIndex + 3)}’ after ${plainText.slice(characterIndex, characterIndex + 1)}`;
+                addNotice({ priority: ['en'].includes(languageCode) ? 197 : 97, message: "Sentence may not start with capital letter", details, excerpt, location: ourLocation });
+            }
+
     if (!checkingOptions?.suppressNoticeDisablingFlag) {
-        // functionLog(`checkPlainText: calling removeDisabledNotices(${cptResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
+        // debugLog(`checkPlainText: calling removeDisabledNotices(${cptResult.noticeList.length}) having ${JSON.stringify(checkingOptions)}`);
         cptResult.noticeList = removeDisabledNotices(cptResult.noticeList);
     }
 

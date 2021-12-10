@@ -3,12 +3,12 @@ import * as books from './books/books';
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults';
 // eslint-disable-next-line no-unused-vars
 import { CLOSING_PUNCTUATION_CHARACTERS, HEBREW_CANTILLATION_REGEX, PAIRED_PUNCTUATION_OPENERS, PAIRED_PUNCTUATION_CLOSERS } from './text-handling-functions';
-import { cachedGetFile } from './getApi';
+import { cachedGetFile, cacheSegment, fetchSegmentIfCached } from './getApi';
 // eslint-disable-next-line no-unused-vars
 import { functionLog, debugLog, parameterAssert, logicAssert, dataAssert, ourParseInt, aboutToOverwrite } from './utilities';
 
 
-// const OL_QUOTE_VALIDATOR_VERSION_STRING = '0.10.10';
+// const OL_QUOTE_VALIDATOR_VERSION_STRING = '1.0.0';
 
 
 /**
@@ -111,11 +111,10 @@ export async function checkOriginalLanguageQuoteAndOccurrence(username, language
      * @param {Object} checkingOptions
      */
     async function getOriginalVerse(bookID, C, V, checkingOptions) {
-        // TODO: Cache these ???
-
         // functionLog(`checkOriginalLanguageQuoteAndOccurrence getOriginalVerse(${bookID}, ${C}:${V})…`);
         //parameterAssert(V.indexOf('-') === -1 && V.indexOf('–') === -1, `checkOriginalLanguageQuoteAndOccurrence getOriginalVerse: Did not expect hyphen or dash in V parameter: '${V}'`);
 
+        // NOTE: We don't need to cache inside this function, because the results get cached in getOriginalPassage() below
         let username;
         try {
             username = checkingOptions?.originalLanguageRepoUsername;
@@ -213,7 +212,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(username, language
                     verseText += (bookLine.startsWith('\\f ') ? '' : ' ') + bookLine;
                 }
             }
-            verseText = verseText.replace(/\\p/g, '').trim().replace(/ {2}/g, ' ')
+            verseText = verseText.replace(/\\p/g, '').trim().replace(/ {2}/g, ' ') // Eliminate double spaces
             // debugLog(`Got verse text1: '${verseText}'`);
 
             // Remove \w fields (just leaving the actual Bible text words)
@@ -243,7 +242,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(username, language
             // debugLog(`Got verse text3: '${verseText}'`);
 
             // Final clean-up (shouldn’t be necessary, but just in case)
-            verseText = verseText.replace(/ {2}/g, ' ');
+            verseText = verseText.replace(/ {2}/g, ' '); // Eliminate double spaces
             //parameterAssert(verseText.indexOf('\\w') === -1, `getOriginalVerse: Should be no \\w in ${bookID} ${C}:${V} '${verseText}'`);
             //parameterAssert(verseText.indexOf('\\k') === -1, `getOriginalVerse: Should be no \\k in ${bookID} ${C}:${V} '${verseText}'`);
             //parameterAssert(verseText.indexOf('x-') === -1, `getOriginalVerse: Should be no x- in ${bookID} ${C}:${V} '${verseText}'`);
@@ -265,27 +264,38 @@ export async function checkOriginalLanguageQuoteAndOccurrence(username, language
      * @param {Object} checkingOptions
      */
     async function getOriginalPassage(bookID, C, V, checkingOptions) {
-        // TODO: Cache these ???
-
         // functionLog(`checkOriginalLanguageQuoteAndOccurrence getOriginalPassage(${bookID}, ${C}:${V})…`);
 
-        if (/^[0-9]{1,3}$/.test(V)) // Assume it's a single verse or frame-number
-            return await getOriginalVerse(bookID, C, V, checkingOptions);
+        // TODO: Why not calculate and cache all of these at once
+        const uniqueCacheID = `${username}_${languageCode}_${repoCode}+${bookID}_${C}:${V}`;
+        const cachedPassage = await fetchSegmentIfCached(uniqueCacheID);
+        if (cachedPassage !== null) return cachedPassage;
+
+        let versePassage;
+        if (/^[0-9]{1,3}$/.test(V)) {// Assume it's a single verse or frame-number
+            versePassage = await getOriginalVerse(bookID, C, V, checkingOptions);
+            cacheSegment(versePassage, uniqueCacheID); // Don't bother (a)waiting
+            return versePassage;
+        }
 
         V = V.replace('–', '-'); // Make sure than en-dash becomes a hyphen
         const vBits = V.split('-');
-        if (vBits.length !== 2)
-            return await getOriginalVerse(bookID, C, V, checkingOptions);
+        if (vBits.length !== 2) {
+            versePassage = await getOriginalVerse(bookID, C, V, checkingOptions);
+            cacheSegment(versePassage, uniqueCacheID); // Don't bother (a)waiting
+            return versePassage;
+        }
 
         let vStartInt, vEndInt;
         try { vStartInt = parseInt(vBits[0]); vEndInt = parseInt(vBits[1]); }
         catch (e) { console.log(`checkOriginalLanguageQuoteAndOccurrence: getOriginalVerse failed on '${V}' with ${e}`); return; }
         if (vStartInt >= vEndInt) { console.log(`checkOriginalLanguageQuoteAndOccurrence: getOriginalVerse failed on '${V}'`); return; }
 
-        let versePassage = '';
+        versePassage = '';
         for (let vInt = vStartInt; vInt <= vEndInt; vInt++) {
             versePassage += (versePassage.length ? ' ' : '') + await getOriginalVerse(bookID, C, vInt.toString(), checkingOptions);
         }
+        cacheSegment(versePassage, uniqueCacheID); // Don't bother (a)waiting
         return versePassage;
     }
     // end of getOriginalPassage function
@@ -584,7 +594,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(username, language
     const match = HEBREW_CANTILLATION_REGEX.exec(fieldText);
     if (match) { // it’s null if no matches
         debugLog(`checkOriginalLanguageQuoteAndOccurrence: got cantillation match: ${typeof match} ${match.length} '${JSON.stringify(match)}'`);
-        addNoticePartial({ priority: 904, message: "Unexpected Hebrew cantillation mark in original language field", details: `found ${match.length} '${match}'`, C, V, excerpt: fieldText, location: ourLocation });
+        addNoticePartial({ priority: 904, message: "Unexpected Hebrew cantillation mark in original language field", details: `found ${match.length} '${match}’`, C, V, excerpt: fieldText, location: ourLocation });
     }
     */
 
@@ -611,14 +621,14 @@ export async function checkOriginalLanguageQuoteAndOccurrence(username, language
     if (fieldText.length > 1 && (opener_index = PAIRED_PUNCTUATION_OPENERS.indexOf(fieldText[0])) !== -1
         && fieldText.indexOf(expected_closing_char = PAIRED_PUNCTUATION_CLOSERS[opener_index]) === -1) {
         const excerpt = fieldText.length <= excerptLength ? fieldText : `${fieldText.slice(0, excerptHalfLength)}…${fieldText.substring(fieldText.length - excerptHalfLength)}`;
-        addNoticePartial({ priority: 859, message: `Unexpected unclosed paired punctuation at beginning of quote`, details: `Found '${fieldText[0]}' at start, but no matching '${expected_closing_char}'`, characterIndex: 0, excerpt, location: ourLocation });
+        addNoticePartial({ priority: 859, message: `Unexpected unclosed paired punctuation at beginning of quote`, details: `Found '${fieldText[0]}' at start, but no matching '${expected_closing_char}’`, characterIndex: 0, excerpt, location: ourLocation });
     }
     let closer_index, expected_opening_char
     if (fieldText.length > 1 && (closer_index = PAIRED_PUNCTUATION_CLOSERS.indexOf(fieldText.slice(-1))) !== -1
         && ((whichTestament !== 'new' && whichTestament !== 'both') || fieldText.slice(-1) !== '’') // Allow final apostrophe for UGNT and OBS
         && fieldText.indexOf(expected_opening_char = PAIRED_PUNCTUATION_OPENERS[closer_index]) === -1) {
         const excerpt = fieldText.length <= excerptLength ? fieldText : `${fieldText.slice(0, excerptHalfLength)}…${fieldText.substring(fieldText.length - excerptHalfLength)}`;
-        addNoticePartial({ priority: 858, message: `Unexpected unopened paired punctuation at end of quote`, details: `Found '${fieldText.slice(-1)}' at end, but no matching '${expected_opening_char}'`, characterIndex: fieldText.length - 1, excerpt, location: ourLocation });
+        addNoticePartial({ priority: 858, message: `Unexpected unopened paired punctuation at end of quote`, details: `Found '${fieldText.slice(-1)}' at end, but no matching '${expected_opening_char}’`, characterIndex: fieldText.length - 1, excerpt, location: ourLocation });
     }
 
     const noDashFieldText = fieldText.replace(/[—־]/g, ' '); // em-dash and then maqaf

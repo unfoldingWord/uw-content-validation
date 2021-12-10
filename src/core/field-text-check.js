@@ -5,7 +5,7 @@ import { OPEN_CLOSE_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, BAD_CHARACTER
 import { debugLog, parameterAssert } from './utilities';
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '1.0.0';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '1.0.2';
 
 
 /**
@@ -115,7 +115,7 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
     let characterIndex;
     if (cutoffPriorityLevel < 895 && (characterIndex = fieldText.indexOf('\u200B')) !== -1) {
         const charCount = countOccurrencesInString(fieldText, '\u200B');
-        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/\u200B/g, '‼') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
+        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/\u200B/g, '‡') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
         addNoticePartial({ priority: 895, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, characterIndex, excerpt, location: ourLocation });
         suggestion = suggestion.replace(/\u200B/g, ''); // Or should it be space ???
     }
@@ -151,11 +151,11 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
         else
             addNoticePartial({ priority: 109, message: `Unexpected leading space`, characterIndex: 0, excerpt, location: ourLocation });
     } else if (fieldText[0] === '\u2060') {
-        const excerpt = fieldText.slice(0, excerptLength).replace(/\u2060/g, '‼') + (fieldText.length > excerptLength ? '…' : '');
+        const excerpt = fieldText.slice(0, excerptLength).replace(/\u2060/g, '‡') + (fieldText.length > excerptLength ? '…' : '');
         addNoticePartial({ priority: 770, message: `Unexpected leading word-joiner (u2060) character`, characterIndex: 0, excerpt, location: ourLocation });
         if (suggestion[0] === '\u2060') suggestion = suggestion.slice(1);
     } else if (fieldText[0] === '\u200D') {
-        const excerpt = fieldText.slice(0, excerptLength).replace(/\u200D/g, '‼') + (fieldText.length > excerptLength ? '…' : '');
+        const excerpt = fieldText.slice(0, excerptLength).replace(/\u200D/g, '‡') + (fieldText.length > excerptLength ? '…' : '');
         addNoticePartial({ priority: 771, message: `Unexpected leading zero-width joiner (u200D) character`, characterIndex: 0, excerpt, location: ourLocation });
         if (suggestion[0] === '\u200D') suggestion = suggestion.slice(1);
     }
@@ -169,11 +169,11 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
     }
 
     if (cutoffPriorityLevel < 772 && fieldText[fieldText.length - 1] === '\u2060') {
-        const excerpt = fieldText.slice(0, excerptLength).replace(/\u2060/g, '‼') + (fieldText.length > excerptLength ? '…' : '');
+        const excerpt = fieldText.slice(0, excerptLength).replace(/\u2060/g, '‡') + (fieldText.length > excerptLength ? '…' : '');
         addNoticePartial({ priority: 772, message: `Unexpected trailing word-joiner (u2060) character`, characterIndex: 0, excerpt, location: ourLocation });
         if (suggestion[suggestion.length - 1] === '\u2060') suggestion = suggestion.slice(0, suggestion.length - 1);
     } else if (cutoffPriorityLevel < 773 && fieldText[fieldText.length - 1] === '\u200D') {
-        const excerpt = fieldText.slice(0, excerptLength).replace(/\u200D/g, '‼') + (fieldText.length > excerptLength ? '…' : '');
+        const excerpt = fieldText.slice(0, excerptLength).replace(/\u200D/g, '‡') + (fieldText.length > excerptLength ? '…' : '');
         addNoticePartial({ priority: 773, message: `Unexpected trailing zero-width joiner (u200D) character`, characterIndex: 0, excerpt, location: ourLocation });
         if (suggestion[suggestion.length - 1] === '\u200D') suggestion = suggestion.slice(0, suggestion.length - 1);
     }
@@ -275,7 +275,7 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
             suggestion = suggestion.replace(/… /g, '…');
         }
     }
-    suggestion = suggestion.replace(/ {2}/g, ' ');
+    suggestion = suggestion.replace(/ {2}/g, ' '); // Eliminate double spaces
 
     if (cutoffPriorityLevel < 177) {
         // Check for doubled punctuation chars (international)
@@ -428,9 +428,10 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                 if (badChar === '.'
                     && (fieldText.indexOf('etc.') !== -1 || fieldText.indexOf('.x.') !== -1)) // Last one is for version numbers
                     continue;
-                if (badTwoChars === '.m'
-                    && (fieldText.toLowerCase().indexOf('a.m.') !== -1 || fieldText.toLowerCase().indexOf('p.m.') !== -1))
-                    continue;
+                // Content team is going to use AM and PM not a.m. and p.m.
+                // if (badTwoChars === '.m'
+                //     && (fieldText.toLowerCase().indexOf('a.m.') !== -1 || fieldText.toLowerCase().indexOf('p.m.') !== -1))
+                //     continue;
                 if ((badTwoChars === '.C' && fieldText.indexOf('B.C.') !== -1)
                     || (badTwoChars === '.D' && fieldText.indexOf('A.D.') !== -1))
                     continue;
@@ -457,9 +458,11 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                 // const nextChar = fieldText.slice(characterIndex + 1, characterIndex + 2);
                 const nextNextChar = fieldText.slice(characterIndex + 2, characterIndex + 3);
                 // debugLog(`92 leading zero for fieldType='${fieldType}' fieldName='${fieldName}' with nextChar=${nextChar} and nextNextChar=${nextNextChar}`);
+                // debugLog(`92 leading zero for fieldType='${fieldType}' fieldName='${fieldName}' fieldText='${fieldText}' with nextChar=${nextChar} and nextNextChar=${nextNextChar}`);
                 if (nextNextChar !== '”' && nextNextChar !== '-' // e.g., “0” is ok and 0-2 is ok
                     && (fieldType !== 'YAML' || fieldText.indexOf('sort:') === -1)
-                    && (fieldType !== 'USFM line' || fieldName !== '\\id') // Some USFM producers put in a date like "Mar 03 2021"
+                    && (fieldType !== 'USFM line' || (fieldName !== '\\id' // Some USFM producers put in a date like "Mar 03 2021"
+                        && fieldText.indexOf('\\w 0') === -1)) // A leading zero in a \w field might be a false alarm (it's the end of the \w marker)
                 ) { // "sort: 0" is ok in manifests
                     const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                     addNoticePartial({ priority: 92, message: `Unexpected leading zero`, characterIndex, excerpt, location: ourLocation });

@@ -9,12 +9,13 @@ import { removeDisabledNotices } from './disabled-notices';
 import { debugLog, functionLog, parameterAssert, logicAssert } from './utilities';
 
 
-const MANIFEST_VALIDATOR_VERSION_STRING = '0.5.0';
+const MANIFEST_VALIDATOR_VERSION_STRING = '1.0.0';
 
 // Pasted in 2020-10-02 from https://raw.githubusercontent.com/unfoldingWord/dcs/master/options/schema/rc.schema.json
 // Updated 2021-02-19
 // Now March 2021 it’s moved to https://github.com/unfoldingWord/rc-schema/blob/master/rc.schema.json
 // TODO: Load the latest one dynamically
+// RJH added FRT book 17Nov2021
 const MANIFEST_SCHEMA = {
     "$schema": "http://json-schema.org/draft-07/schema",
     "$id": "https://resource-container.readthedocs.io/schema/rc.schema.json",
@@ -411,6 +412,7 @@ const MANIFEST_SCHEMA = {
                             "title": "Items",
                             "type": "string",
                             "enum": [
+                                "bible-frt",
                                 "bible-ot",
                                 "bible-nt",
                                 "ta"
@@ -452,6 +454,7 @@ const MANIFEST_SCHEMA = {
         "projectIdentifier": {
             "type": "string",
             "enum": [
+                "frt",
                 "gen",
                 "exo",
                 "lev",
@@ -692,7 +695,7 @@ export async function checkManifestText(username, languageCode, repoCode, repoNa
             if ((repoCode === 'UHB' && languageIdentifier !== 'hbo')
                 || (repoCode === 'UGNT' && languageIdentifier !== 'el-x-koine')
                 || (repoCode !== 'UHB' && repoCode !== 'UGNT' && languageIdentifier !== languageCode)) // for most repos
-                addNotice({ priority: 933, message: "Manifest' language' 'identifier' doesn’t match", details: `expected '${languageCode}' but manifest has '${languageIdentifier}'`, location: ourLocation });
+                addNotice({ priority: 933, message: "Manifest' language' 'identifier' doesn’t match", details: `expected ‘${languageCode}’ but manifest has ‘${languageIdentifier}’`, location: ourLocation });
         } catch (e) {
             debugLog(`checkManifestText got error ${e.message} while loading 'language' 'identifier'`);
             addNotice({ priority: 934, message: "'language' key or 'idenfier' subkey is missing", location: ourLocation });

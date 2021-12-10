@@ -3,15 +3,14 @@ import * as books from '../../core/books/books';
 import {
   // eslint-disable-next-line no-unused-vars
   REPO_CODES_LIST,
-  formRepoName,
   checkUSFMText, checkMarkdownFileContents, checkLexiconFileContents, checkPlainText, checkYAMLText, checkManifestText,
   internalCheckTN_TSV9Table, checkNotesTSV7Table, checkQuestionsTSV7Table, internalCheckTWL_TSV6Table,
 } from '../../core';
 // eslint-disable-next-line no-unused-vars
-import { userLog, debugLog, functionLog, parameterAssert, logicAssert } from '../../core';
+import { userLog, debugLog, functionLog, parameterAssert, logicAssert, aboutToOverwrite } from '../../core';
 
 
-// const CHECK_FILE_CONTENTS_VERSION_STRING = '0.6.0';
+// const CHECK_FILE_CONTENTS_VERSION_STRING = '1.0.3';
 
 
 /**
@@ -19,13 +18,14 @@ import { userLog, debugLog, functionLog, parameterAssert, logicAssert } from '..
  * @param {string} username for Door43.org
  * @param {string} languageCode, e.g., 'en'
  * @param {string} repoCode, e.g., 'LT', 'TN', 'TN2', 'TQ', 'TWL', etc.
+ * @param {string} repoName, e.g., 'en_ult', 'ru_gst', etc.
  * @param {string} branch, e.g., 'master'
  * @param {string} filepath -- often just a filename
  * @param {string} fileContent
  * @param {string} givenLocation
  * @param {Object} givenCheckingOptions
  */
-export async function checkFileContents(username, languageCode, repoCode, branch, filepath, fileContent, givenLocation, givenCheckingOptions) {
+export async function checkFileContents(username, languageCode, repoCode, repoName, branch, filepath, fileContent, givenLocation, givenCheckingOptions) {
   // Determine the file type from the filename extension
   //  and return the results of checking that kind of file text
   // functionLog(`checkFileContents(un='${username}', lC='${languageCode}', rC='${repoCode}', rBr='${branch}', fn='${filepath}', ${fileContent.length} chars, ${givenLocation}, ${JSON.stringify(givenCheckingOptions)})…`);
@@ -55,10 +55,9 @@ export async function checkFileContents(username, languageCode, repoCode, branch
   const filename = filebits[filebits.length - 1];
   // debugLog(`checkFileContents from filepath='${filepath}' got (${filebits.length}) ${filebits} and then '${filename}'`);
   const filenameLower = filename.toLowerCase();
-  const repoName = formRepoName(languageCode, repoCode);
 
   const newCheckingOptions = givenCheckingOptions ? { ...givenCheckingOptions } : {}; // clone before modify
-  if (!newCheckingOptions.originalLanguageRepoUsername) newCheckingOptions.originalLanguageRepoUsername = username;
+  // if (!newCheckingOptions.originalLanguageRepoUsername) newCheckingOptions.originalLanguageRepoUsername = username;
   if (!newCheckingOptions.taRepoUsername) newCheckingOptions.taRepoUsername = username;
   if (!newCheckingOptions.twRepoUsername) newCheckingOptions.twRepoUsername = username;
 
@@ -91,7 +90,7 @@ export async function checkFileContents(username, languageCode, repoCode, branch
   else if (filenameLower.endsWith('.usfm')) {
     const filenameMain = filepath.slice(0, filepath.length - 5); // drop .usfm
     // debugLog(`Have USFM filenameMain=${filenameMain}`);
-    const bookID = filenameMain.slice(filenameMain.length - 3);
+    const bookID = filenameMain.endsWith('_book') ? filenameMain.slice(filenameMain.length - 8, filenameMain.length - 5).toUpperCase() : filenameMain.slice(filenameMain.length - 3);
     // debugLog(`Have USFM bookcode=${bookID}`);
     //parameterAssert(books.isValidBookID(bookID), `checkFileContents: '${bookID}' is not a valid USFM book identifier`);
     checkFileResultObject = await checkUSFMText(username, languageCode, repoCode, bookID, filepath, fileContent, ourCFLocation, newCheckingOptions);
@@ -125,13 +124,19 @@ export async function checkFileContents(username, languageCode, repoCode, branch
   // debugLog(`checkFileContents got initial results with ${checkFileResult.successList.length} success message(s) and ${checkFileResult.noticeList.length} notice(s)`);
 
   // Make sure that we have the filename in all of our notices (in case other files are being checked as well)
+  /*
   function addFilenameField(noticeObjectParameter) {
     if (noticeObjectParameter.debugChain) noticeObjectParameter.debugChain = `checkFileContents ${noticeObjectParameter.debugChain}`;
     if (noticeObjectParameter.fieldName === filepath) delete noticeObjectParameter.fieldName;
+    // aboutToOverwrite('checkFileContents', ['filename'], noticeObjectParameter, { filename: filepath });
     // TODO: Might we need to add username, repoName, or branch here ???
     return noticeObjectParameter.extra ? noticeObjectParameter : { ...noticeObjectParameter, filename: filepath }; // NOTE: might be an indirect check on a TA/TW article or UHAL/UGL entry
   }
   checkFileResultObject.noticeList = checkFileResultObject.noticeList.map(addFilenameField);
+  */
+  for (const noticeObject of checkFileResultObject.noticeList) {
+    if (noticeObject.filename === undefined) noticeObject.filename = filepath;
+  }
 
   // Add some extra fields to our checkFileResult object
   //  in case we need this information again later

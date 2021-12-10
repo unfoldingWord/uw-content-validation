@@ -4,9 +4,19 @@
 
 [Full Changelog](https://github.com/unfoldingWord/uw-content-validation/compare/2.2.5...HEAD)
 
+**Implemented enhancements:**
+
+- Detect missing footnote closer [\#207](https://github.com/unfoldingWord/uw-content-validation/issues/207)
+
+**Fixed bugs:**
+
+- Searches Door43-Catalog for new repos [\#208](https://github.com/unfoldingWord/uw-content-validation/issues/208)
+
 **Closed issues:**
 
+- TWL CV Results for Book of Acts [\#221](https://github.com/unfoldingWord/uw-content-validation/issues/221)
 - Problems with TWL [\#220](https://github.com/unfoldingWord/uw-content-validation/issues/220)
+- Possible false notices for the tN resource for book of Acts [\#218](https://github.com/unfoldingWord/uw-content-validation/issues/218)
 
 ## [2.2.5](https://github.com/unfoldingWord/uw-content-validation/tree/2.2.5) (2021-09-28)
 

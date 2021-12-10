@@ -6,7 +6,7 @@ import { checkTWL_TSV6DataRow } from './twl-tsv6-row-check';
 import { parameterAssert, aboutToOverwrite } from './utilities';
 
 
-const TWL_TABLE_VALIDATOR_VERSION_STRING = '0.2.1';
+const TWL_TABLE_VALIDATOR_VERSION_STRING = '1.0.0';
 
 const NUM_EXPECTED_TWL_TSV_FIELDS = 6; // so expects 5 tabs per line
 const EXPECTED_TWL_HEADING_LINE = 'Reference\tID\tTags\tOrigWords\tOccurrence\tTWLink';
@@ -127,7 +127,7 @@ export async function internalCheckTWL_TSV6Table(username, languageCode, repoCod
             if (lines[0] === EXPECTED_TWL_HEADING_LINE)
                 addSuccessMessage(`Checked TSV header ${ourLocation}`);
             else
-                addNoticePartial({ priority: 988, message: "Bad TSV header", details: `expected '${EXPECTED_TWL_HEADING_LINE}'`, excerpt: lines[0], lineNumber: 1, location: ourLocation });
+                addNoticePartial({ priority: 988, message: "Bad TSV header", details: `expected ‘${EXPECTED_TWL_HEADING_LINE}’`, excerpt: lines[0], lineNumber: 1, location: ourLocation });
         }
         else // not the header
         {
@@ -197,7 +197,7 @@ export async function internalCheckTWL_TSV6Table(username, languageCode, repoCod
                         if (/^\d+$/.test(lastC)) {
                             let lastintC = Number(lastC);
                             if (intC < lastintC)
-                                addNoticePartial({ priority: 736, C, V, message: "Receding chapter number", details: `'${C}' after '${lastC}'`, rowID, lineNumber: n + 1, location: ourLocation });
+                                addNoticePartial({ priority: 736, C, V, message: "Receding chapter number", details: `'${C}' after '${lastC}’`, rowID, lineNumber: n + 1, location: ourLocation });
                             else if (intC > lastintC + 1)
                                 addNoticePartial({ priority: 735, C, V, message: "Advancing chapter number", details: `'${C}' after '${lastC}'`.rowID, lineNumber: n + 1, location: ourLocation });
                         }
@@ -240,7 +240,7 @@ export async function internalCheckTWL_TSV6Table(username, languageCode, repoCod
                         }
                     }
                     else
-                        addNoticePartial({ priority: 738, C, V, message: "Bad verse number", rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
+                        addNoticePartial({ priority: 794, C, V, message: "Bad verse number", rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
 
                 }
                 else

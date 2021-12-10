@@ -6,7 +6,7 @@ import { checkTN_TSV9DataRow } from './tn-tsv9-row-check';
 import { debugLog, parameterAssert, aboutToOverwrite } from './utilities';
 
 
-const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '0.5.0';
+const TN_TABLE_TEXT_VALIDATOR_VERSION_STRING = '1.0.0';
 
 const NUM_EXPECTED_TN_TSV_FIELDS = 9; // so expects 8 tabs per line
 const EXPECTED_TN_HEADING_LINE = 'Book\tChapter\tVerse\tID\tSupportReference\tOrigQuote\tOccurrence\tGLQuote\tOccurrenceNote';
@@ -135,7 +135,7 @@ export async function internalCheckTN_TSV9Table(username, languageCode, repoCode
             if (lines[0] === EXPECTED_TN_HEADING_LINE)
                 addSuccessMessage(`Checked TSV header ${ourLocation}`);
             else
-                addNoticePartial({ priority: 988, message: "Bad TSV header", details: `expected '${EXPECTED_TN_HEADING_LINE}'`, excerpt: lines[0], lineNumber: 1, location: ourLocation });
+                addNoticePartial({ priority: 988, message: "Bad TSV header", details: `expected ‘${EXPECTED_TN_HEADING_LINE}’`, excerpt: lines[0], lineNumber: 1, location: ourLocation });
         }
         else // not the header
         {
@@ -208,7 +208,7 @@ export async function internalCheckTN_TSV9Table(username, languageCode, repoCode
                         if (/^\d+$/.test(lastC)) {
                             let lastintC = Number(lastC);
                             if (intC < lastintC)
-                                addNoticePartial({ priority: 736, C, V, message: "Receding chapter number", details: `'${C}' after '${lastC}'`, rowID, lineNumber: n + 1, location: ourLocation });
+                                addNoticePartial({ priority: 736, C, V, message: "Receding chapter number", details: `'${C}' after '${lastC}’`, rowID, lineNumber: n + 1, location: ourLocation });
                             else if (intC > lastintC + 1)
                                 addNoticePartial({ priority: 735, C, V, message: "Advancing chapter number", details: `'${C}' after '${lastC}'`.rowID, lineNumber: n + 1, location: ourLocation });
                         }
@@ -236,7 +236,7 @@ export async function internalCheckTN_TSV9Table(username, languageCode, repoCode
                         }
                     }
                     else
-                        addNoticePartial({ priority: 738, C, V, message: "Bad verse number", rowID, lineNumber: n + 1, location: ourLocation });
+                        addNoticePartial({ priority: 794, C, V, message: "Bad verse number", rowID, lineNumber: n + 1, location: ourLocation });
 
                 }
                 else

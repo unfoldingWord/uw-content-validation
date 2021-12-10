@@ -22,8 +22,8 @@ import RepoCheck from './RepoCheck';
   // If you're checking and then editing & saving files, ensure that it's set to Y before you recheck
   reloadAllFilesFirst='Y' // 'Y' (for Yes -- same as ClearCache in menu) or 'N' (for No)
 
-  // username = 'Door43-Catalog'
   username = 'unfoldingWord'
+  // username = 'Door43-Catalog'
 
   // Lines starting with // are ignored -- you can add or remove // as desired
   // NOTE: Some of these whole repository checks can take a looong time!

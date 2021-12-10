@@ -8,7 +8,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert, dataAssert, debugLog, functionLog } from './utilities';
 
 
-const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '0.8.2';
+const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '1.0.0';
 
 
 /**
@@ -317,6 +317,15 @@ export async function checkMarkdownText(username, languageCode, repoCode, textOr
         let numLeadingSpaces;
         if (line) {
             const thisHeaderLevel = line.match(/^#*/)[0].length;
+            if (thisHeaderLevel > 0)
+                if (line.length === thisHeaderLevel)
+                    addNoticePartial({ priority: 780, message: "Markdown header has no text", lineNumber: n, characterIndex: 0, excerpt: line, location: ourLocation });
+                else // have more characters after the hashes
+                    if (line[thisHeaderLevel] !== ' ') {
+                        const excerpt = line.slice(0, excerptLength) + (line.length > excerptLength ? '…' : '');
+                        addNoticePartial({ priority: 779, message: "Markdown header is missing the following space", lineNumber: n, characterIndex: 0, excerpt, location: ourLocation });
+                    }
+
             // if (thisHeaderLevel) debugLog(`checkMarkdownText: Got1 thisHeaderLevel=${thisHeaderLevel} after ${currentHeaderLevel} for line ${n}: ${line}`);
             if (thisHeaderLevel > currentHeaderLevel + 1
                 && !textOrFileName.startsWith('TA ')) { // Suppress this notice for translationAcademy subsections

@@ -9,10 +9,12 @@ import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAsser
 import jQuery from 'jquery'; // For avoiding CORS checking
 
 
-// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '1.0.0';
+// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '1.0.3';
 
 // const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
+
+const MISSING_FOLDER_SLASH_LINK_REGEX = new RegExp('\\d]\\(\\.\\.\\d', 'g'); // [2:1](..02/01.md) missing a forward slash after the ..
 
 const GENERAL_MARKDOWN_LINK1_REGEX = new RegExp('\\[[^\\]]+?\\]\\([^\\)]+?\\)', 'g'); // [displayLink](URL)
 const GENERAL_MARKDOWN_LINK2_REGEX = new RegExp('\\[\\[[^\\]]+?\\]\\]', 'g'); // [[combinedDisplayLink]]
@@ -163,7 +165,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         //parameterAssert(typeof incompleteNoticeObject.location === 'string', `cTNlnk addNoticePartial: 'location' parameter should be a string not a '${typeof incompleteNoticeObject.location}': ${incompleteNoticeObject.location}`);
         // incompleteNoticeObject.debugChain = incompleteNoticeObject.debugChain ? `checkNotesLinksToOutside ${ incompleteNoticeObject.debugChain } ` : `checkNotesLinksToOutside(${ fieldName })`;
         if (bookID.length) incompleteNoticeObject.bookID = bookID; // Don't set the field if we don't have a useful bookID
-        aboutToOverwrite('checkNotesLinksToOutside', ['filename'], incompleteNoticeObject, { fieldName });
+        aboutToOverwrite('checkNotesLinksToOutside', ['fieldName'], incompleteNoticeObject, { fieldName });
         ctarResult.noticeList.push({ ...incompleteNoticeObject, fieldName });
     }
 
@@ -228,6 +230,15 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
     }
 
     let regexMatchObject;
+
+    // Check for common bad links like [2:1](..02/01.md) which is missing a forward slash after the double dots
+    while ((regexMatchObject = MISSING_FOLDER_SLASH_LINK_REGEX.exec(fieldText))) {
+        // debugLog(`Got bad link ${JSON.stringify(regexMatchObject)}`);
+        // const [totalLink] = regexMatchObject;
+        const characterIndex = regexMatchObject.index + 4;
+        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
+        addNoticePartial({ priority: 753, message: "Link target is missing a forward slash", excerpt, location: ourLocation });
+    }
 
     // Check for image links (including OBS pictures)
     while ((regexMatchObject = SIMPLE_IMAGE_REGEX.exec(fieldText))) {
@@ -357,12 +368,12 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         processedLinkList.push(totalLink); // Save the full link
 
         if (foundLanguageCode !== '*') {
-            const characterIndex = TA_FULL_DISPLAY_LINK_REGEX.lastIndex - totalLink.length + 7; // lastIndex points to the end of the field that was found
+            const characterIndex = regexMatchObject.index + 7;
             const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
-            addNoticePartial({ priority: 450, message: "Resource container link should have '*' language code", details: `not '${foundLanguageCode}'`, characterIndex, excerpt, location: ourLocation });
+            addNoticePartial({ priority: 450, message: "Resource container link should have '*' language code", details: `not ‘${foundLanguageCode}’`, characterIndex, excerpt, location: ourLocation });
         } else if (repoCode === 'TN') { // but not TN2
             // At the moment, tC can’t handle these links with * so we have to ensure that they're not there
-            const characterIndex = TA_FULL_DISPLAY_LINK_REGEX.lastIndex - totalLink.length + 7; // lastIndex points to the end of the field that was found
+            const characterIndex = regexMatchObject.index + 7;
             const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
             addNoticePartial({ priority: 950, message: "tC cannot yet process '*' language code", characterIndex, excerpt, location: ourLocation });
         }
@@ -570,12 +581,12 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         processedLinkList.push(totalLink); // Save the full link
 
         if (foundLanguageCode !== '*') {
-            const characterIndex = TA_DOUBLE_BRACKETED_LINK_REGEX.lastIndex - totalLink.length + 7; // lastIndex points to the end of the field that was found
+            const characterIndex = regexMatchObject.index + 7;
             const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
-            addNoticePartial({ priority: 450, message: "Resource container link should have '*' language code", details: `not '${foundLanguageCode}'`, characterIndex, excerpt, location: ourLocation });
+            addNoticePartial({ priority: 450, message: "Resource container link should have '*' language code", details: `not ‘${foundLanguageCode}’`, characterIndex, excerpt, location: ourLocation });
         } else if (repoCode === 'TN') { // but not TN2
             // At the moment, tC can’t handle these links with * so we have to ensure that they're not there
-            const characterIndex = TA_DOUBLE_BRACKETED_LINK_REGEX.lastIndex - totalLink.length + 7; // lastIndex points to the end of the field that was found
+            const characterIndex = regexMatchObject.index + 7;
             const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '')
             addNoticePartial({ priority: 950, message: "tC cannot yet process '*' language code", characterIndex, excerpt, location: ourLocation });
         }
@@ -724,7 +735,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         processedLinkList.push(totalLink); // Save the full link
 
         if (Lg !== '*' && Lg !== languageCode)
-            addNoticePartial({ priority: 669, message: "Unexpected language code in link", details: `resource language code is '${languageCode}'`, excerpt: Lg, location: ourLocation });
+            addNoticePartial({ priority: 669, message: "Unexpected language code in link", details: `resource language code is ‘${languageCode}’`, excerpt: Lg, location: ourLocation });
 
         if (optionalN1) {
             logicAssert(optionalB1, `Should have book name as well as number '${optionalN1}' in '${totalLink}'`);
@@ -792,7 +803,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         processedLinkList.push(totalLink); // Save the full link
 
         if (Lg !== '*' && Lg !== languageCode)
-            addNoticePartial({ priority: 669, message: "Unexpected language code in link", details: `resource language code is '${languageCode}'`, excerpt: Lg, location: ourLocation });
+            addNoticePartial({ priority: 669, message: "Unexpected language code in link", details: `resource language code is '${languageCode}’`, excerpt: Lg, location: ourLocation });
 
         if (optionalN1) {
             logicAssert(optionalB1, `Should have book name as well as number '${optionalN1}' in '${totalLink}'`);
@@ -819,7 +830,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
             console.error(`TN Link CheckA couldn’t compare chapter numbers for ${bookID} ${givenC}:${givenV} ${fieldName} with ${C1} from '${fieldText}': ${ccError}`);
         }
         if (linkVerseInt !== 1)
-                addNoticePartial({ priority: 729, message: "Expected verse one for whole chapter link", details: `not verse ${linkVerseInt}`, excerpt: totalLink, location: ourLocation });
+            addNoticePartial({ priority: 729, message: "Expected verse one for whole chapter link", details: `not verse ${linkVerseInt}`, excerpt: totalLink, location: ourLocation });
 
         if (linkBookCode === 'obs') {
             const numStories = 50;
