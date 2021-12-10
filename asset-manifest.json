@@ -1,6 +1,6 @@
 {
   "files": {
-    "build/0.8415d7f9.js": "/uw-content-validation/build/0.8415d7f9.js",
+    "build/0.6d2fda44.js": "/uw-content-validation/build/0.6d2fda44.js",
     "build/1.308765ed.js": "/uw-content-validation/build/1.308765ed.js",
     "build/2.ea0f4317.js": "/uw-content-validation/build/2.ea0f4317.js",
     "build/3.04c1706f.js": "/uw-content-validation/build/3.04c1706f.js",
@@ -10,7 +10,7 @@
   },
   "entrypoints": [
     "build/bundle.bc971f8f.js",
-    "build/0.8415d7f9.js",
+    "build/0.6d2fda44.js",
     "build/main.694935b9.js"
   ]
 }
