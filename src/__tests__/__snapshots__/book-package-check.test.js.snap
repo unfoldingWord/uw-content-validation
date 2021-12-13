@@ -4602,6 +4602,7 @@ Object {
       "bookID": "RUT",
       "branch": "master",
       "characterIndex": 52,
+      "details": "should this be an em-dash (—)?",
       "excerpt": "…ospitality - that he…",
       "extra": "TN",
       "fieldName": "OccurrenceNote",

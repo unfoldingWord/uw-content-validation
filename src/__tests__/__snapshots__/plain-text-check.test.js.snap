@@ -95,3 +95,13 @@ Object {
   ],
 }
 `;
+
+exports[`checkPlainText() -  short snippet tests -  should pass on year 1`] = `
+Object {
+  "noticeList": Array [],
+  "successList": Array [
+    "Checked all 2 lines from test snippet",
+    "No errors or warnings found by checkPlainText v1.0.2",
+  ],
+}
+`;

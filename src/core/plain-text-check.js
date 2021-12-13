@@ -229,7 +229,7 @@ export function checkPlainText(username, languageCode, repoCode, textType, textN
             // NOTE: Need to eliminate Strongs numbers, zip codes, ISBN numbers, copyright years, commit SHAs, etc.
             if (cutoffPriorityLevel < 91 && !textName.endsWith('manifest') && !line.startsWith('\\id') && line.indexOf('strong="') === -1 && line.indexOf('Strong’s:') === -1 && line.indexOf('©') === -1 && line.indexOf('ISBN') === -1 && line.indexOf('USA.') === -1 && line.indexOf('/commit/') === -1 && line.indexOf('Version') === -1)
                 while ((regexMatchObject = tooManyDigitsRegex.exec(line)))
-                    if (['2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025'].includes(regexMatchObject[0].slice(1))) // regex includes the preceding char
+                    if (!['2010','2011','2012','2013','2014','2015','2016','2017','2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025','2026'].includes(regexMatchObject[0].slice(1))) // regex includes the preceding char
                         addNotice({ priority: 91, message: "Possible missing separator in digit string", excerpt: regexMatchObject[0], lineNumber: n, location: ourLocation });
 
             // Check for nested brackets and quotes, etc.
