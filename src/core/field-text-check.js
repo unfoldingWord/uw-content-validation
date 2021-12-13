@@ -5,7 +5,7 @@ import { OPEN_CLOSE_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, BAD_CHARACTER
 import { debugLog, parameterAssert } from './utilities';
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '1.0.2';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '1.0.3';
 
 
 /**
@@ -317,6 +317,8 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                     if (punctCharBeingChecked === '–') optionalName = ' (en-dash)';
                     else if (punctCharBeingChecked === '—') optionalName = ' (em-dash)';
                     const notice = { priority: 191 /* can be lowered to 71 */, message: `Unexpected ${punctCharBeingChecked}${optionalName} character after space`, excerpt, location: ourLocation };
+                    if ((punctCharBeingChecked === '-' || punctCharBeingChecked === '–') && (nextChar === ' ' || nextChar === '-')) // hyphen or en-dash
+                        notice.details = "should this be an em-dash (—)?";
                     if (((punctCharBeingChecked === '—' || punctCharBeingChecked === '/') && fieldType.startsWith('markdown'))
                         || (punctCharBeingChecked === '’' && !['en', 'hbo', 'el-x-koine'].includes(languageCode))) // Some other languages allow words to start with apostrophes
                         notice.priority = 71; // Lower the priority from 191
