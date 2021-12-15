@@ -15,7 +15,7 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '1.2.2';
+// const USFM_VALIDATOR_VERSION_STRING = '1.2.3';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for LTs and STs
@@ -36,7 +36,8 @@ const INTRO_LINE_START_MARKER_LIST = ['id', 'usfm', 'ide', 'h',
     'iq', 'iq1', 'iq2',
     'ili', 'ili1', 'ili2',
     'iot', 'io', 'io1', 'io2',
-    'iex', 'imte', 'imte1', 'imte2'];
+    'iex',
+    'imte', 'imte1', 'imte2'];
 const CV_MARKERS_LIST = ['c', 'v', 'ca', 'va'];
 const HEADING_TYPE_MARKERS_LIST = [ // expected to contain text on the same line
     's', 's1', 's2', 's3', 's4', 'sr',
@@ -69,6 +70,7 @@ const ALLOWED_LINE_START_MARKERS_LIST = [].concat(INTRO_LINE_START_MARKER_LIST).
     .concat(CV_MARKERS_LIST).concat(PARAGRAPH_MARKERS_LIST)
     .concat(MAIN_NOTE_MARKERS_LIST).concat(SPECIAL_MARKERS_LIST).concat(MARKERS_WITHOUT_CONTENT_LIST)
     .concat(MILESTONE_MARKERS_LIST).concat(['qs']);
+const OPTIONALLY_NUMBERED_MARKERS_LIST = ['mt','mte','imt','imte','is','iq','io','ili','s','ms','sd','q','qm','pi','li','lim','ph','qt-s'];
 const DEPRECATED_MARKERS_LIST = [
     'h1', 'h2', 'h3', 'h4',
     'pr',
@@ -686,6 +688,14 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
                     addNoticePartial({ priority: 873, message: `Mismatched ${opener}${closer} fields`, details: `(opening=${lCount.toLocaleString()}, closing=${rCount.toLocaleString()})`, location: fileLocation });
             }
 
+        // We recommend mt1 and s1 and q1, etc. instead of mt, s, and q
+        const foundOptionalMarkersList = [];
+        for (const optionallyNumberedMarker of OPTIONALLY_NUMBERED_MARKERS_LIST) {
+            if (fileText.indexOf(`\\${optionallyNumberedMarker} `) !== -1)
+                foundOptionalMarkersList.push(optionallyNumberedMarker);
+        }
+        if (foundOptionalMarkersList.length)
+            addNoticePartial({ priority: 260, message: `It’s recommended to use the explicitly-numbered USFM markers`, details: `found ${foundOptionalMarkersList}`, location: fileLocation });
 
         // Now do the general global checks (e.g., for general punctuation) -- this is the raw USFM code
         // debugLog(`checkUSFMFileContents doing basic file checks on ${repoCode} (${fileText.length}) ${fileText}`);
