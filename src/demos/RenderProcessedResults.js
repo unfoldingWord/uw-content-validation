@@ -42,7 +42,7 @@ const tableIcons = {
 };
 
 
-// const RENDER_PROCESSED_RESULTS_VERSION = '1.0.2';
+// const RENDER_PROCESSED_RESULTS_VERSION = '1.0.3';
 
 
 /**
@@ -411,7 +411,7 @@ function RenderFileDetails({ givenEntry }) {
         resultEnd = <>{resultEnd} in {givenEntry.fieldName} field</>;
 
     let adjustedFilename = givenEntry.filename;// could be undefined
-    if (adjustedFilename.startsWith('bible/')) adjustedFilename = adjustedFilename.slice(6); // drop that first foldername
+    if (adjustedFilename?.startsWith('bible/')) adjustedFilename = adjustedFilename.slice(6); // drop that first foldername
     let inFileBit = adjustedFilename ? ` in file ${adjustedFilename}` : '';
 
     // debugLog(`RenderFileDetails got resultStart='${resultStart}'`);

@@ -385,7 +385,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     }
     // if (bookID === 'OBS' && dataSet === 'OLD' && repoCode !== 'OBS' && repoCode !== 'TWL' && repoName === `${languageCode}_${adjustedRepoCode.toLowerCase()}`)
     //   repoName = `${languageCode}_obs-${adjustedRepoCode.toLowerCase()}`;
-    userLog(`checkBookPackage: check ${languageCode} ${bookID} in ${thisRepoCode} (${adjustedRepoCode}) from ${adjustedUsername} ${repoName} ${adjustedBranch}…`);
+    userLog(`checkBookPackage: check ${languageCode} BP ${bookID} in ${thisRepoCode} (${adjustedRepoCode}) from ${adjustedUsername} ${repoName} ${adjustedBranch}…`);
 
     // Update our "waiting" message
     setResultValue(<p style={{ color: 'magenta' }}>Checking <i>{adjustedUsername}</i> {languageCode} <b>{bookID}</b> book package in <b>{thisRepoCode}</b> (checked <b>{numCheckedRepos}</b>/{repoCodeList.length} repos)…</p>);

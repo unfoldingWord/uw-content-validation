@@ -8,7 +8,7 @@ import { repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetR
 import { userLog, functionLog, debugLog, logicAssert, parameterAssert, aboutToOverwrite } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '1.0.0';
+// const REPO_VALIDATOR_VERSION_STRING = '1.0.1';
 
 
 /**
@@ -214,7 +214,8 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
       setResultValue(<p style={{ color: 'magenta' }}>Fetching zipped files from <b>{username}/{repoName}</b> repository…</p>);
 
       const repoNamePart2 = repoName.split('_')[1]
-      if ((username !== 'unfoldingWord' || languageCode !== 'en') && repoNamePart2.startsWith('u'))
+      if ((username !== 'unfoldingWord' || (languageCode !== 'en' && languageCode !== 'hbo' && languageCode !== 'el-x-koine'))
+        && repoNamePart2.startsWith('u'))
         addNoticePartial({ priority: 980, message: "Unexpected repo name", details: `expected ‘g${repoNamePart2.slice(1)}’`, excerpt: repoNamePart2, location: ourLocation });
 
       // Let’s fetch the zipped repo since it should be much more efficient than individual fetches

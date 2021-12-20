@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import { DEFAULT_EXCERPT_LENGTH, REPO_CODES_LIST } from './defaults'
-import { isWhitespace, countOccurrencesInString, ourDeleteAll, HEBREW_CANTILLATION_REGEX } from './text-handling-functions'
+import { isWhitespace, countOccurrencesInString, ourDeleteAll, HEBREW_CANTILLATION_REGEX, HEBREW_ALL_CONSONANTS } from './text-handling-functions'
 import * as books from './books/books';
 import { cachedGetFile, cacheSegment, fetchSegmentIfCached } from './getApi';
 import { checkTextField } from './field-text-check';
@@ -15,7 +15,7 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '1.2.3';
+// const USFM_VALIDATOR_VERSION_STRING = '1.2.4';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for LTs and STs
@@ -70,7 +70,7 @@ const ALLOWED_LINE_START_MARKERS_LIST = [].concat(INTRO_LINE_START_MARKER_LIST).
     .concat(CV_MARKERS_LIST).concat(PARAGRAPH_MARKERS_LIST)
     .concat(MAIN_NOTE_MARKERS_LIST).concat(SPECIAL_MARKERS_LIST).concat(MARKERS_WITHOUT_CONTENT_LIST)
     .concat(MILESTONE_MARKERS_LIST).concat(['qs']);
-const OPTIONALLY_NUMBERED_MARKERS_LIST = ['mt','mte','imt','imte','is','iq','io','ili','s','ms','sd','q','qm','pi','li','lim','ph','qt-s'];
+const OPTIONALLY_NUMBERED_MARKERS_LIST = ['mt', 'mte', 'imt', 'imte', 'is', 'iq', 'io', 'ili', 's', 'ms', 'sd', 'q', 'qm', 'pi', 'li', 'lim', 'ph', 'qt-s'];
 const DEPRECATED_MARKERS_LIST = [
     'h1', 'h2', 'h3', 'h4',
     'pr',
@@ -173,10 +173,14 @@ const ZALN_S_REGEX = new RegExp('\\\\zaln-s (.+?)\\\\\\*', 'g');
 const KS_REGEX = new RegExp('\\\\k-s (.+?)\\\\\\*', 'g');
 const ATTRIBUTE_REGEX = new RegExp('[ |]([^ |]+?)="([^"]*?)"', 'g');
 
+// NOTE: We only have these checks for USFM, not for other files which OrigLQuotes
+//          however, maybe that's ok coz they'll get mismatch errors if encoding doesn't match
 // TODO: Are one or two of these checks superfluous ???
 // See https://codepoints.net/hebrew for a list of the Unicode chars in this block
 // Only shin/sin consonant should come before a sin/shin dot
 const BAD_HEBREW_SIN_SHIN_DOT_REGEX = new RegExp('[^\\u05E9][\\u05C1\\u05C2]', 'g');
+// Should have a sin/shin dot after the shin/sin consonant
+const MISSING_HEBREW_SIN_SHIN_DOT_REGEX = new RegExp('[\\u05E9][^\\u05C1\\u05C2]', 'g');
 // Only certain consonants should come before a dagesh dot -- Unicode char is also used for mapiq
 const BAD_HEBREW_DAGESH_MAPIQ_REGEX = new RegExp('[^\\u05C1\\u05C2אבגדהוזחטיכךלמנספףצקרת]\\u05BC', 'g'); // includes shin/sin dots and some final consonants
 // Hebrew vowels should never come before a dagesh
@@ -750,15 +754,27 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
         const details = `line marker='\\${marker}'`
 
         // Check for invalid character combinations
+        // debugLog(`Here with ${repoCode} ${languageCode} ${filename}`)
         if (languageCode === 'hbo') {
+            // debugLog(`Checking Hebrew encoding for ${filename}…`)
             let regexMatchObject;
             // NOTE: Use else statements so we only get ONE of these types of errors
             // NOTE: We have no while loops, so only get one error per line, even if there's multiple errors!!!
             if ((regexMatchObject = BAD_HEBREW_SIN_SHIN_DOT_REGEX.exec(rest))) { // it’s null if no matches
-                debugLog(`checkUSFMLineText 865: ${bookID} ${C}:${V} line ${lineNumber} got BAD character before shin/sin dot regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
+                // debugLog(`checkUSFMLineText 865: ${bookID} ${C}:${V} line ${lineNumber} got BAD character before shin/sin dot regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
                 const characterIndex = regexMatchObject.index;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
                 addNoticePartial({ priority: 865, message: "Unexpected Hebrew character before shin/sin dot", details: `found ${regexMatchObject.length} ‘${regexMatchObject}’`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
+            }
+            else if ((regexMatchObject = MISSING_HEBREW_SIN_SHIN_DOT_REGEX.exec(rest))) { // it’s null if no matches
+                // debugLog(`checkUSFMLineText 871: ${bookID} ${C}:${V} line ${lineNumber} got BAD character after shin/sin consonant regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
+                const characterIndex = regexMatchObject.index;
+                const nextChar = rest.slice(characterIndex + 1, characterIndex + 2);
+                // u2060 is word joiner
+                const priority = nextChar !== ' ' && nextChar !== '|' && nextChar !== '\u2060' && HEBREW_ALL_CONSONANTS.indexOf(nextChar) === -1 ? 871 : 105; // Lower the priority for Hebrew consonants (qere is unpointed)
+                const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
+                // if (priority === 871) debugLog(`Git 871 with ${nextChar} for ${excerpt} from ${rest}`);
+                addNoticePartial({ priority, message: "Hebrew shin consonant is not followed by a shin/sin dot", details: `found ${regexMatchObject.length} ‘${regexMatchObject}’`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
             else if ((regexMatchObject = BAD_HEBREW_VOWEL_DAGESH_REGEX.exec(rest))) { // it’s null if no matches
                 // debugLog(`checkUSFMLineText 864: ${bookID} ${C}:${V} line ${lineNumber} got BAD dagesh after vowel character order regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
@@ -767,13 +783,13 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
                 addNoticePartial({ priority: 864, message: "Unexpected Hebrew dagesh after vowel", details: `found ${regexMatchObject.length} ‘${regexMatchObject}’`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
             else if ((regexMatchObject = BAD_HEBREW_DAGESH_MAPIQ_REGEX.exec(rest))) { // it’s null if no matches
-                debugLog(`checkUSFMLineText 863: ${bookID} ${C}:${V} line ${lineNumber} got BAD character before dagesh regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
+                // debugLog(`checkUSFMLineText 863: ${bookID} ${C}:${V} line ${lineNumber} got BAD character before dagesh regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
                 const characterIndex = regexMatchObject.index;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
                 addNoticePartial({ priority: 863, message: "Unexpected Hebrew character before dagesh or mappiq", details: `found ${regexMatchObject.length} ‘${regexMatchObject}’`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
             }
             else if ((regexMatchObject = BAD_HEBREW_CANTILLATION_DAGESH_REGEX.exec(rest))) { // it’s null if no matches
-                debugLog(`checkUSFMLineText 862: ${bookID} ${C}:${V} line ${lineNumber} got BAD cantillation mark character before dagesh regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
+                // debugLog(`checkUSFMLineText 862: ${bookID} ${C}:${V} line ${lineNumber} got BAD cantillation mark character before dagesh regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
                 const characterIndex = regexMatchObject.index;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
                 addNoticePartial({ priority: 862, message: "Unexpected Hebrew cantillation mark before dagesh", details: `found ${regexMatchObject.length} ‘${regexMatchObject}’`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
@@ -786,7 +802,7 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
                 // debugLog(`checkUSFMLineText 861 regexMatchObject: ${typeof regexMatchObject} ${Object.keys(regexMatchObject)}`); // object with keys: 0,index,input,groups
                 // debugLog(`checkUSFMLineText 861 regexMatchObject: ${typeof regexMatchObject[0]} (${regexMatchObject[0].length}) '${regexMatchObject[0]}'  ${typeof regexMatchObject[0][0]} (${regexMatchObject[0][0].length}) '${regexMatchObject[0][0]}'`);
                 // debugLog(`checkUSFMLineText 861 regexMatchObject: ${regexMatchObject[0] !== '\u0591\u05B4'} ${regexMatchObject[0] !== '\u0596\u05B4'} ${rest.indexOf('וּשָׁל') === -1} => ${(regexMatchObject[0] !== '\u0591\u05B4' && regexMatchObject[0] !== '\u0596\u05B4') || rest.indexOf('וּשָׁל') === -1} '${rest}'`);
-                debugLog(`checkUSFMLineText 861: ${bookID} ${C}:${V} line ${lineNumber} got BAD vowel after cantillation mark character order regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
+                // debugLog(`checkUSFMLineText 861: ${bookID} ${C}:${V} line ${lineNumber} got BAD vowel after cantillation mark character order regexMatchObject: (${regexMatchObject.length}) ${JSON.stringify(regexMatchObject)}`);
                 const characterIndex = regexMatchObject.index;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + rest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < rest.length ? '…' : '')
                 addNoticePartial({ priority: 861, message: "Unexpected Hebrew vowel after cantillation mark", details: `found ${regexMatchObject.length} ‘${regexMatchObject}’`, lineNumber, C, V, characterIndex, excerpt, location: lineLocation });
