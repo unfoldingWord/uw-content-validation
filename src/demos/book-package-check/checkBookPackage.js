@@ -147,8 +147,8 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         checkBookPackageResult.noticeList.push(cfcNoticeEntry); // Just copy the complete notice as is
       else {// For our direct checks, we add the repoCode as an extra value (unless it’s already there from a TA or TW check)
         if (cfcNoticeEntry.filename === undefined) cfcNoticeEntry.filename = cfFilename;
-    aboutToOverwrite('ourCheckBPFileContents', ['repoCode', 'repoName', 'branch', 'extra'], cfcNoticeEntry, { repoCode, repoName, branch: repoBranch, extra: cfcNoticeEntry.extra ? cfcNoticeEntry.extra : repoCode });
-    addNoticePartial({ ...cfcNoticeEntry, repoCode, repoName, branch: repoBranch, extra: cfcNoticeEntry.extra ? cfcNoticeEntry.extra : repoCode });
+        aboutToOverwrite('ourCheckBPFileContents', ['repoCode', 'repoName', 'branch', 'extra'], cfcNoticeEntry, { repoCode, repoName, branch: repoBranch, extra: cfcNoticeEntry.extra ? cfcNoticeEntry.extra : repoCode });
+        addNoticePartial({ ...cfcNoticeEntry, repoCode, repoName, branch: repoBranch, extra: cfcNoticeEntry.extra ? cfcNoticeEntry.extra : repoCode });
       }
 
     // The following is needed coz we might be checking the linked TA/TW articles from TN2 TSV files or UHAL/UGL entries

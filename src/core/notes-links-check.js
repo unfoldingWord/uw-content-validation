@@ -9,12 +9,12 @@ import { userLog, debugLog, functionLog, parameterAssert, logicAssert, dataAsser
 import jQuery from 'jquery'; // For avoiding CORS checking
 
 
-// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '1.0.3';
+// const NOTES_LINKS_VALIDATOR_VERSION_STRING = '1.1.0';
 
 // const DEFAULT_LANGUAGE_CODE = 'en';
 const DEFAULT_BRANCH = 'master';
 
-const MISSING_FOLDER_SLASH_LINK_REGEX = new RegExp('\\d]\\(\\.\\.\\d', 'g'); // [2:1](..02/01.md) missing a forward slash after the ..
+const MISSING_FOLDER_SLASH_LINK_REGEX = new RegExp('[0-9०-९]\\]\\(\\.\\.\\d', 'g'); // [2:1](..02/01.md) missing a forward slash after the ..
 
 const GENERAL_MARKDOWN_LINK1_REGEX = new RegExp('\\[[^\\]]+?\\]\\([^\\)]+?\\)', 'g'); // [displayLink](URL)
 const GENERAL_MARKDOWN_LINK2_REGEX = new RegExp('\\[\\[[^\\]]+?\\]\\]', 'g'); // [[combinedDisplayLink]]
@@ -33,28 +33,32 @@ const TW_INTERNAL_REGEX = new RegExp('\\[([-,\\w ()]+?)\\]\\(\\.{2}/([a-z]{2,5})
 //          (we don’t care about the displayed text) doesn’t specify superfluous levels/information
 // TODO: We need a decision on hyphen vs en-dash in verse references -- we currently allow either which isn't good in the long term!
 // TODO: Test to see if "[2:23](../02/03.md)" is found by more than one regex below
-const BIBLE_REGEX_OTHER_BOOK_ABSOLUTE = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(\\d{1,3}):(\\d{1,3})\\]\\(([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Revelation 3:11](rev/03/11.md)
+const BIBLE_REGEX_OTHER_BOOK_ABSOLUTE = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)([0-9०-९]{1,3}):([0-9०-९]{1,3})\\]\\(([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Revelation 3:11](rev/03/11.md)
 // TODO: Is this option with ../../ really valid? Where/Why does it occur?
-const BIBLE_REGEX_OTHER_BOOK_RELATIVE = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(\\d{1,3}):(\\d{1,3})\\]\\((?:\\.{2}/)?\\.{2}/([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Revelation 3:11](../../rev/03/11.md) or (../rev/03/11.md) NOTE: only one of these must theoretically be correct!!!
-const BIBLE_REGEX_THIS_BOOK_RELATIVE = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(\\d{1,3}):(\\d{1,3})\\]\\(\\.{2}/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Revelation 3:11](../03/11.md) or [Song of Solomon 3:11](../03/11.md)
-const BCV_V_TO_OTHER_BOOK_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(\\d{1,3}):(\\d{1,3})[–-](\\d{1,3})\\]\\((?:\\.{2})/([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Genesis 26:12-14](../gen/26/12.md) NOTE en-dash
-const BCV_V_TO_THIS_BOOK_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(\\d{1,3}):(\\d{1,3})[–-](\\d{1,3})\\]\\((\\.{2})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Genesis 26:12-14](../26/12.md) or [4:11–16](../04/11.md) NOTE en-dash
-const BIBLE_REGEX_THIS_CHAPTER_RELATIVE = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(?:(\\d{1,3}):)?(\\d{1,3})\\]\\(\\./(\\d{1,3})\\.md\\)', 'g'); // [Exodus 2:7](./07.md)
-const THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[(?:verse )?(\\d{1,3})\\]\\(\\.{2}/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');// [27](../11/27.md) or [verse 27](../11/27.md)
-const THIS_VERSE_RANGE_TO_THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[(?:verses )?(\\d{1,3})[–-](\\d{1,3})\\]\\(\\.{2}/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');// [2–7](../09/2.md) or [verses 2–7](../09/2.md) NOTE en-dash
-const BCV_V_TO_THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(\\d{1,3}):(\\d{1,3})[–-](\\d{1,3})\\]\\(\\./(\\d{1,3})\\.md\\)', 'g'); // [Genesis 26:12-14](./12.md) NOTE en-dash
+const BIBLE_REGEX_OTHER_BOOK_RELATIVE = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)([0-9०-९]{1,3}):([0-9०-९]{1,3})\\]\\((?:\\.{2}/)?\\.{2}/([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Revelation 3:11](../../rev/03/11.md) or (../rev/03/11.md) NOTE: only one of these must theoretically be correct!!!
+const BIBLE_REGEX_THIS_BOOK_RELATIVE = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)([0-9०-९]{1,3}):([0-9०-९]{1,3})\\]\\(\\.{2}/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Revelation 3:11](../03/11.md) or [Song of Solomon 3:11](../03/11.md)
+const BCV_V_TO_OTHER_BOOK_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)([0-9०-९]{1,3}):([0-9०-९]{1,3})[–-]([0-9०-९]{1,3})\\]\\((?:\\.{2})/([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Genesis 26:12-14](../gen/26/12.md) NOTE en-dash
+const BCV_V_TO_THIS_BOOK_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)([0-9०-९]{1,3}):([0-9०-९]{1,3})[–-]([0-9०-९]{1,3})\\]\\((\\.{2})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g'); // [Genesis 26:12-14](../26/12.md) or [4:11–16](../04/11.md) NOTE en-dash
+const BIBLE_REGEX_THIS_CHAPTER_RELATIVE = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(?:([0-9०-९]{1,3}):)?([0-9०-९]{1,3})\\]\\(\\./(\\d{1,3})\\.md\\)', 'g'); // [Exodus 2:7](./07.md)
+const THIS_VERSE_TO_THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[(?:verse )?([0-9०-९]{1,3})\\]\\(\\.{2}/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');// [27](../11/27.md) or [verse 27](../11/27.md)
+const THIS_VERSE_RANGE_TO_THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[(?:verses )?([0-9०-९]{1,3})[–-]([0-9०-९]{1,3})\\]\\(\\.{2}/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');// [2–7](../09/2.md) or [verses 2–7](../09/2.md) NOTE en-dash
+const BCV_V_TO_THIS_CHAPTER_BIBLE_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)([0-9०-९]{1,3}):([0-9०-९]{1,3})[–-]([0-9०-९]{1,3})\\]\\(\\./(\\d{1,3})\\.md\\)', 'g'); // [Genesis 26:12-14](./12.md) NOTE en-dash
 
-const TN_FULL_HELP_CV_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(\\d{1,3}):(\\d{1,3})(?:[–-]\\d{1,3})?\\]\\(rc://([^ /]+?)/tn/help/([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\)', 'g'); // [Song of Solomon 29:23-24](rc://en/tn/help/sng/29/23)
-const TN_FULL_HELP_C_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(\\d{1,3})\\]\\(rc://([^ /]+?)/tn/help/([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\)', 'g'); // [Song of Solomon 29:23-24](rc://en/tn/help/sng/29/23)
+const TN_FULL_HELP_CV_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)([0-9०-९]{1,3}):([0-9०-९]{1,3})(?:[–-][0-9०-९]{1,3})?\\]\\(rc://([^ /]+?)/tn/help/([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\)', 'g'); // [Song of Solomon 29:23-24](rc://en/tn/help/sng/29/23)
+const TN_FULL_HELP_C_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)([0-9०-९]{1,3})\\]\\(rc://([^ /]+?)/tn/help/([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\)', 'g'); // [Song of Solomon 29:23-24](rc://en/tn/help/sng/29/23)
 
-const TN_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)(\\d{1,3}):(\\d{1,3})\\]\\((\\.{2})/(\\d{1,3})/(\\d{1,3})/([a-z][a-z0-9][a-z0-9][a-z0-9])\\)', 'g');
+const TN_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)([0-9०-९]{1,3}):([0-9०-९]{1,3})\\]\\((\\.{2})/(\\d{1,3})/(\\d{1,3})/([a-z][a-z0-9][a-z0-9][a-z0-9])\\)', 'g');
 
 const SIMPLE_DISPLAY_LINK_REGEX = new RegExp('\\[([^\\]]+?)\\]\\((https?://[^\\)]+?)\\)', 'g');// [ULT](https://something)
 
 const SIMPLE_IMAGE_REGEX = new RegExp('!\\[([^\\]]*?)\\]\\(([^ "\\)]+?)\\)', 'g'); // ![alt](y)
 const TITLED_IMAGE_REGEX = new RegExp('!\\[([^\\]]*?)\\]\\(([^ \\)]+?) "([^"\\)]+?)"\\)', 'g'); // ![alt](link "title")
 
-const OBS_LINK_REGEX = new RegExp('\\[(\\d?\\d):(\\d?\\d)\\]\\((\\d\\d)/(\\d\\d)\\)', 'g'); // [7:3](07/03)
+// Seems from https://www.w3schools.com/jsref/jsref_regexp_digit.asp that \d only matches 0-9 (not other language digits)
+//  so I replaced it in the display link for clarity
+// We allow leading zeroes here coz that's checked for elsewhere
+const OBS_LINK_REGEX = new RegExp('\\[([0-9]?[0-9]):([0-9]?[0-9])\\]\\((\\d\\d)/(\\d\\d)\\)', 'g'); // [7:3](07/03)
+const NE_OBS_LINK_REGEX = new RegExp('\\[([०-९]?[०-९]):([०-९]?[०-९])\\]\\((\\d\\d)/(\\d\\d)\\)', 'g'); // [७:३](07/03)
 
 
 /**
@@ -1422,21 +1426,29 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
 
     if (repoCode.startsWith('OBS-')) {
         // Check for OBS links like [03:04](03/04)
-        while ((regexMatchObject = OBS_LINK_REGEX.exec(fieldText))) {
-            // debugLog(`  checkNotesLinksToOutside OBS_LINK_REGEX resultArray=${JSON.stringify(regexMatchObject)}`);
+        let obs_link_regex = OBS_LINK_REGEX;
+        if (languageCode === 'ne') obs_link_regex = NE_OBS_LINK_REGEX;
+        while ((regexMatchObject = obs_link_regex.exec(fieldText))) {
+            // debugLog(`  checkNotesLinksToOutside obs_link_regex resultArray=${JSON.stringify(regexMatchObject)}`);
             // OBSLinkCount += 1;
-            logicAssert(regexMatchObject.length === 5, `OBS_LINK_REGEX expected 5 fields (not ${regexMatchObject.length})`)
+            logicAssert(regexMatchObject.length === 5, `obs_link_regex expected 5 fields (not ${regexMatchObject.length})`)
             // eslint-disable-next-line no-unused-vars
             let [totalLink, storyNumberA, frameNumberA, storyNumberB, frameNumberB] = regexMatchObject;
             processedLinkList.push(totalLink); // Save the full link
 
-            const storyIntA = ourParseInt(storyNumberA), frameIntA = ourParseInt(frameNumberA);
-            const storyIntB = ourParseInt(storyNumberB), frameIntB = ourParseInt(frameNumberB);
-            if (storyIntA !== storyIntB || frameIntA !== frameIntB)
-                addNoticePartial({ priority: 731, message: `OBS link has internal mismatch`, details: `${storyNumberA}:${frameNumberA} should equal ${storyNumberB}/${frameNumberA}`, excerpt: totalLink, location: ourLocation });
-            else {
-                if (storyIntB < 1 || storyIntB > NUM_OBS_STORIES || frameIntB < 1 || frameIntB > MAX_OBS_FRAMES)
-                    addNoticePartial({ priority: 730, message: `OBS link has out-of-range values`, details: `${NUM_OBS_STORIES} stories, max of ${MAX_OBS_FRAMES} frames`, excerpt: `${storyNumberA}/${frameNumberA}`, location: ourLocation });
+            try {
+                // NOTE: the display digits may be from other digits types, i.e., may not parse to integers
+                const storyIntA = ourParseInt(storyNumberA), frameIntA = ourParseInt(frameNumberA);
+                const storyIntB = ourParseInt(storyNumberB), frameIntB = ourParseInt(frameNumberB);
+                if (storyIntA !== storyIntB || frameIntA !== frameIntB)
+                    addNoticePartial({ priority: 731, message: `OBS link has internal mismatch`, details: `${storyNumberA}:${frameNumberA} should equal ${storyNumberB}/${frameNumberA}`, excerpt: totalLink, location: ourLocation });
+                else {
+                    if (storyIntB < 1 || storyIntB > NUM_OBS_STORIES || frameIntB < 1 || frameIntB > MAX_OBS_FRAMES)
+                        addNoticePartial({ priority: 730, message: `OBS link has out-of-range values`, details: `${NUM_OBS_STORIES} stories, max of ${MAX_OBS_FRAMES} frames`, excerpt: `${storyNumberA}/${frameNumberA}`, location: ourLocation });
+                }
+            } catch (e) {
+                if (languageCode !== 'ne') // coz we know about this one
+                    debugLog(`Unable to convert digits to number: '${storyNumberA}' or '${frameNumberA}': ${e}`);
             }
             // const OBSRepoName = `${defaultLanguageCode}_obs`;
             // // debugLog(`Got taRepoName=${taRepoName}`);
@@ -1446,11 +1458,11 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
             // if (fieldName.startsWith('intro/')) TAsection = 'intro';
             // dataAssert(TAsection === 'translate' || TAsection === 'checking' || TAsection === 'process' || TAsection === 'intro', `Unexpected TA section name = '${TAsection}'`);
             // const filepath = `${TAsection}/${article}/01.md`; // Other files are title.md, sub-title.md
-            // // debugLog(`checkNotesLinksToOutside OBS_LINK_REGEX got tA filepath=${filepath}`);
+            // // debugLog(`checkNotesLinksToOutside obs_link_regex got tA filepath=${filepath}`);
 
             /*
             if (!checkingOptions?.disableAllLinkFetchingFlag) {
-                // debugLog(`checkNotesLinksToOutside OBS_LINK_REGEX need to check ${filepath} against ${taRepoName}`);
+                // debugLog(`checkNotesLinksToOutside obs_link_regex need to check ${filepath} against ${taRepoName}`);
                 const taPathParameters = { username: taRepoUsername, repository: taRepoName, path: filepath, branch: taRepoBranch };
                 let taFileContent, alreadyGaveError = false;
                 try {

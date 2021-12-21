@@ -247,7 +247,7 @@ export async function checkStrongsField(username, languageCode, repoCode, fieldN
                     // However, we still want to know if the given link actually links to an article
                     //  so we'll check it against the tree listing from DCS
                     if (!await isFilepathInRepoTree(fetchLexiconFileParameters))
-                        addNoticePartial({ priority: 850, message: "Unable to find lexicon entry", details:lexiconRepoCode, username, excerpt: fetchLinkDescription, location: ourLocation });
+                        addNoticePartial({ priority: 850, message: "Unable to find lexicon entry", details: lexiconRepoCode, username, excerpt: fetchLinkDescription, location: ourLocation });
                 }
                 else {
                     // debugLog(`checkStrongsField(${adjustedLanguageCode}, ${repoCode}, ${fieldName}, ${fieldText}, ${bookID} ${C}:${V}, ${givenLocation}, ${JSON.stringify(checkingOptions)} got ${JSON.stringify(fetchLexiconFileParameters)}`);
