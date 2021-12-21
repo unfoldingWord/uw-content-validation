@@ -58,7 +58,7 @@ const TITLED_IMAGE_REGEX = new RegExp('!\\[([^\\]]*?)\\]\\(([^ \\)]+?) "([^"\\)]
 //  so I replaced it in the display link for clarity
 // We allow leading zeroes here coz that's checked for elsewhere
 const OBS_LINK_REGEX = new RegExp('\\[([0-9]?[0-9]):([0-9]?[0-9])\\]\\((\\d\\d)/(\\d\\d)\\)', 'g'); // [7:3](07/03)
-const NE_OBS_LINK_REGEX = new RegExp('\\[([०-९]?[०-९]):([०-९]?[०-९])\\]\\((\\d\\d)/(\\d\\d)\\)', 'g'); // [७:३](07/03)
+const NE_OBS_LINK_REGEX = new RegExp('\\[([०-९]?[०-९]):([०-९]?[०-९])\\]\\((\\d\\d)/(\\d\\d)\\)', 'g'); // [७:३](07/03) For Nepali but these are actually Devanagari digits
 
 
 /**

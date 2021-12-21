@@ -24,6 +24,7 @@ import RepoCheck from './RepoCheck';
 
   username = 'unfoldingWord'
   // username = 'Door43-Catalog'
+  // username = 'RepoConversions'
 
   // Lines starting with // are ignored -- you can add or remove // as desired
   // NOTE: Some of these whole repository checks can take a looong time!
