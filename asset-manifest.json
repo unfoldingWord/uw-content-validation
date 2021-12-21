@@ -4,13 +4,13 @@
     "build/1.859ce9dc.js": "/uw-content-validation/build/1.859ce9dc.js",
     "build/2.ea0f4317.js": "/uw-content-validation/build/2.ea0f4317.js",
     "build/3.04c1706f.js": "/uw-content-validation/build/3.04c1706f.js",
-    "main.js": "/uw-content-validation/build/main.a7dff473.js",
+    "main.js": "/uw-content-validation/build/main.4c25da00.js",
     "runtime-main.js": "/uw-content-validation/build/bundle.50cd19e3.js",
     "index.html": "/uw-content-validation/index.html"
   },
   "entrypoints": [
     "build/bundle.50cd19e3.js",
     "build/0.e16374b4.js",
-    "build/main.a7dff473.js"
+    "build/main.4c25da00.js"
   ]
 }
